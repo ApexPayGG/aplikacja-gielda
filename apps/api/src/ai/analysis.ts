@@ -26,22 +26,45 @@ Provide a brief investment-style note in two sections:
 Be concise and clearly label "PL:" and "EN:" sections. This is not personalized financial advice.`;
 }
 
+async function readAnalysisCache(cacheKey: string): Promise<AnalysisResult | null> {
+  if (!process.env.REDIS_URL?.trim()) return null;
+  try {
+    const redis = getCacheRedis();
+    const cached = await redis.get(cacheKey);
+    if (!cached) return null;
+    const parsed = JSON.parse(cached) as AnalysisResult;
+    if (parsed.brief && parsed.updatedAt) return parsed;
+  } catch {
+    /* Redis down or bad payload */
+  }
+  return null;
+}
+
+async function writeAnalysisCache(cacheKey: string, payload: string): Promise<void> {
+  if (!process.env.REDIS_URL?.trim()) return;
+  try {
+    const redis = getCacheRedis();
+    await redis.set(cacheKey, payload, "EX", CACHE_TTL_SEC);
+  } catch {
+    /* ignore cache write failures */
+  }
+}
+
 /**
- * Claude Sonnet brief + Redis cache (1 hour).
+ * Claude Sonnet brief + optional Redis cache (1 hour) when REDIS_URL is set.
  */
 export async function analyzeStock(symbol: string): Promise<AnalysisResult> {
   const sym = symbol.toUpperCase();
   const cacheKey = `${CACHE_PREFIX}${sym}`;
-  const redis = getCacheRedis();
 
-  const cached = await redis.get(cacheKey);
-  if (cached) {
-    try {
-      const parsed = JSON.parse(cached) as AnalysisResult;
-      if (parsed.brief && parsed.updatedAt) return parsed;
-    } catch {
-      /* fall through */
-    }
+  const cached = await readAnalysisCache(cacheKey);
+  if (cached) return cached;
+
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) {
+    throw new Error(
+      "ANTHROPIC_API_KEY is not set. Add your Anthropic API key to apps/api/.env to enable the AI brief.",
+    );
   }
 
   const [quote, news, rsiRow] = await Promise.all([
@@ -62,7 +85,7 @@ export async function analyzeStock(symbol: string): Promise<AnalysisResult> {
   const newsTitles = news.map((n) => n.title);
   const rsi = rsiRow ? rsiRow.value.toString() : null;
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const client = new Anthropic({ apiKey });
   const msg = await client.messages.create({
     model: MODEL,
     max_tokens: 2048,
@@ -74,6 +97,6 @@ export async function analyzeStock(symbol: string): Promise<AnalysisResult> {
   const updatedAt = new Date().toISOString();
   const out: AnalysisResult = { brief, updatedAt };
 
-  await redis.set(cacheKey, JSON.stringify(out), "EX", CACHE_TTL_SEC);
+  await writeAnalysisCache(cacheKey, JSON.stringify(out));
   return out;
 }

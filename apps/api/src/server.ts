@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import cors from "cors";
 import express from "express";
 import path from "node:path";
 import process from "node:process";
@@ -16,8 +17,36 @@ import {
   getLatestQuote,
   getQuoteHistory,
   getRecentNews,
+  insertIndicator,
+  insertNews,
+  insertQuote,
 } from "./db/queries";
-import { fetchCompanyProfile } from "./scrapers/index";
+import {
+  fetchAlphaVantageLatestRSI,
+  fetchCompanyProfile,
+  fetchFinnhubCompanyNews,
+  fetchFinnhubQuoteDetailed,
+} from "./scrapers/index";
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function isDatabaseUnavailable(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  const m = err.message;
+  return (
+    m.includes("Can't reach database server") ||
+    m.includes("Connection refused") ||
+    m.includes("ECONNREFUSED") ||
+    m.includes("P1001") ||
+    m.includes("P1000")
+  );
+}
+
+function isAnalysisConfigurationError(err: unknown): boolean {
+  return err instanceof Error && err.message.includes("ANTHROPIC_API_KEY is not set");
+}
 
 export function createApp(): express.Express {
   const app = express();
@@ -27,6 +56,13 @@ export function createApp(): express.Express {
     if (value instanceof Prisma.Decimal) return value.toString();
     return value;
   });
+
+  app.use(
+    cors({
+      origin: ["http://localhost:5173", "http://localhost:5174"],
+      credentials: false,
+    }),
+  );
 
   app.use(express.json({ limit: "1mb" }));
 
@@ -41,6 +77,62 @@ export function createApp(): express.Express {
       const profile = await fetchCompanyProfile(symbol);
       const company = await upsertCompany(symbol, profile);
       res.json({ success: true, company });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.post("/api/test/populate/:symbol", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const symbol = (req.params.symbol ?? "").trim();
+      if (!symbol) return res.status(400).json({ error: "Missing symbol" });
+      const sym = symbol.toUpperCase();
+
+      const profile = await fetchCompanyProfile(sym);
+      const company = await upsertCompany(sym, profile);
+
+      const quoteData = await fetchFinnhubQuoteDetailed(sym);
+      let quote;
+      try {
+        quote = await insertQuote(sym, {
+          timestamp: new Date(quoteData.timestampMs),
+          open: quoteData.open,
+          high: quoteData.high,
+          low: quoteData.low,
+          close: quoteData.close,
+          volume: quoteData.volume,
+          source: "finnhub",
+        });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        if (msg.includes("Unique constraint") || msg.includes("P2002")) {
+          const existing = await getLatestQuote(sym);
+          if (!existing) throw e;
+          quote = existing;
+        } else {
+          throw e;
+        }
+      }
+
+      const newsItems = await fetchFinnhubCompanyNews(sym, 14);
+      const news: Awaited<ReturnType<typeof insertNews>>[] = [];
+      for (const n of newsItems.slice(0, 3)) {
+        const ts = n.datetime < 1e12 ? n.datetime * 1000 : n.datetime;
+        const row = await insertNews(sym, {
+          timestamp: new Date(ts),
+          title: n.headline.slice(0, 500),
+          url: n.url,
+          sentiment: null,
+          source: n.source || "finnhub",
+        });
+        news.push(row);
+      }
+
+      await sleep(1500);
+      const rsi = await fetchAlphaVantageLatestRSI(sym, 14);
+      const indicator = await insertIndicator(sym, rsi.indicator, rsi.value);
+
+      res.json({ success: true, company, quote, news, indicator });
     } catch (e) {
       next(e);
     }
@@ -137,6 +229,15 @@ export function createApp(): express.Express {
 
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     console.error("[api]", err);
+    if (isDatabaseUnavailable(err)) {
+      return res.status(503).json({
+        error:
+          "Database unavailable. Start Postgres (e.g. `docker compose up` in infra/), run `npx prisma db push` in apps/api if needed, and check DATABASE_URL in apps/api/.env.",
+      });
+    }
+    if (isAnalysisConfigurationError(err) && err instanceof Error) {
+      return res.status(503).json({ error: err.message });
+    }
     const message = err instanceof Error ? err.message : "Internal Server Error";
     res.status(500).json({ error: message });
   });
