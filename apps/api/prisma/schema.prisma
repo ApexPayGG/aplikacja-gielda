@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Company {
+  symbol      String   @id
+  name        String
+  sector      String
+  industry    String
+  logoUrl     String?
+  description String?
+  webUrl      String?  @map("web_url")
+  createdAt   DateTime @default(now())
+
+  quotes               Quote[]
+  news                 News[]
+  technicalIndicators  TechnicalIndicator[]
+
+  @@map("companies")
+}
+
 model Quote {
   id        BigInt   @default(autoincrement())
   symbol    String
@@ -17,6 +34,7 @@ model Quote {
   close     Decimal  @db.Decimal(18, 8)
   volume    BigInt
   source    String
+  company   Company  @relation(fields: [symbol], references: [symbol], onUpdate: Cascade)
 
   @@id([timestamp, id])
   @@unique([symbol, timestamp, source])
@@ -32,6 +50,7 @@ model News {
   url       String   @db.Text
   sentiment String?
   source    String
+  company   Company  @relation(fields: [symbol], references: [symbol], onUpdate: Cascade)
 
   @@id([timestamp, id])
   @@index([symbol, timestamp(sort: Desc)])
@@ -44,6 +63,7 @@ model TechnicalIndicator {
   timestamp DateTime
   indicator String
   value     Decimal  @db.Decimal(24, 8)
+  company   Company  @relation(fields: [symbol], references: [symbol], onUpdate: Cascade)
 
   @@id([timestamp, id])
   @@unique([symbol, timestamp, indicator])

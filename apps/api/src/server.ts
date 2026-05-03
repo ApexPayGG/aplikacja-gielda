@@ -5,6 +5,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { Prisma } from "@prisma/client";
 import { analyzeStock } from "./ai/analysis";
+import { getCompaniesBySector, getCompanyBySymbol, searchCompanies } from "./db/company-queries";
 import {
   getLatestIndicator,
   getLatestQuote,
@@ -25,6 +26,41 @@ export function createApp(): express.Express {
 
   app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });
+  });
+
+  app.get("/api/companies/search", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const q = String(req.query.q ?? "").trim();
+      if (!q) return res.status(400).json({ error: "Missing query parameter q" });
+      const limit = Math.min(50, Math.max(1, parseInt(String(req.query.limit ?? "20"), 10) || 20));
+      const rows = await searchCompanies(q, limit);
+      res.json({ query: q, count: rows.length, data: rows });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.get("/api/companies/sector/:sector", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const sector = decodeURIComponent(req.params.sector ?? "");
+      if (!sector) return res.status(400).json({ error: "Missing sector" });
+      const page = Math.max(1, parseInt(String(req.query.page ?? "1"), 10) || 1);
+      const pageSize = Math.min(100, Math.max(1, parseInt(String(req.query.pageSize ?? "20"), 10) || 20));
+      const result = await getCompaniesBySector(sector, page, pageSize);
+      res.json(result);
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.get("/api/companies/:symbol", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const row = await getCompanyBySymbol(req.params.symbol ?? "");
+      if (!row) return res.status(404).json({ error: "Company not found" });
+      res.json(row);
+    } catch (e) {
+      next(e);
+    }
   });
 
   app.get("/api/quotes/:symbol", async (req: Request, res: Response, next: NextFunction) => {

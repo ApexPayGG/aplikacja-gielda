@@ -5,9 +5,11 @@ import { fileURLToPath } from "node:url";
 import { createRedisConnection } from "./redis";
 import {
   fetchAlphaVantageLatestRSI,
+  fetchCompanyProfile,
   fetchFinnhubCompanyNews,
   fetchFinnhubQuoteDetailed,
 } from "./scrapers/index";
+import { upsertCompany } from "./db/company-queries";
 import { insertIndicator, insertNews, insertQuote } from "./db/queries";
 
 const QUEUE_NAME = "market-scrape";
@@ -19,6 +21,9 @@ function sleep(ms: number): Promise<void> {
 
 async function scrapeSymbol(symbol: string): Promise<void> {
   const sym = symbol.toUpperCase();
+
+  const profile = await fetchCompanyProfile(sym);
+  await upsertCompany(sym, profile);
 
   const quote = await fetchFinnhubQuoteDetailed(sym);
   try {

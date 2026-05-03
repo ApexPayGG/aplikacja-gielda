@@ -1,9 +1,11 @@
 import "./load-env";
 import {
   fetchAlphaVantageLatestRSI,
+  fetchCompanyProfile,
   fetchFinnhubCompanyNews,
   fetchFinnhubQuoteDetailed,
 } from "./scrapers/index";
+import { upsertCompany } from "./db/company-queries";
 import { prisma } from "./db/index";
 import {
   getLatestQuote,
@@ -21,7 +23,12 @@ async function main(): Promise<void> {
   const symbol = "AAPL";
 
   try {
-    console.log("=== Integration: Finnhub quote → DB ===\n");
+    console.log("=== Integration: Company profile → DB ===\n");
+    const profile = await fetchCompanyProfile(symbol);
+    await upsertCompany(symbol, profile);
+    console.log("upsertCompany:", { symbol: profile.symbol, name: profile.name, sector: profile.sector });
+
+    console.log("\n=== Integration: Finnhub quote → DB ===\n");
     const quote = await fetchFinnhubQuoteDetailed(symbol);
     const quoteRow = await insertQuote(symbol, {
       timestamp: new Date(quote.timestampMs),
