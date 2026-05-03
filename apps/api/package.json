@@ -1,0 +1,21 @@
+{
+  "name": "stockai-api",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "tsx src/test-apis.ts && tsx src/test-ai-router.ts",
+    "test:apis": "tsx src/test-apis.ts",
+    "test:ai": "tsx src/test-ai-router.ts",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.6"
+  }
+}
