@@ -11,6 +11,32 @@ export interface MarketQuote {
   currency?: string;
 }
 
+/** Finnhub `/quote` with OHLC + volume for DB inserts */
+export interface FinnhubDetailedQuote extends MarketQuote {
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+/** Finnhub company-news item */
+export interface FinnhubNewsItem {
+  datetime: number;
+  headline: string;
+  url: string;
+  source: string;
+  summary?: string;
+}
+
+/** Latest technical indicator reading from Alpha Vantage */
+export interface AlphaVantageIndicatorPoint {
+  symbol: string;
+  indicator: string;
+  date: string;
+  value: number;
+}
+
 /** OHLCV bar (daily or as returned by the API) */
 export interface OhlcvBar {
   date: string;

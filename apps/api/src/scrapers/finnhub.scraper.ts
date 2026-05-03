@@ -1,19 +1,22 @@
 import process from "node:process";
-import type { MarketQuote } from "../types/scraper.types";
+import type { FinnhubDetailedQuote, FinnhubNewsItem, MarketQuote } from "../types/scraper.types";
 
 const BASE = "https://finnhub.io/api/v1";
 
 interface FinnhubQuoteJson {
   c?: number;
   t?: number;
+  o?: number;
+  h?: number;
+  l?: number;
+  v?: number;
 }
 
 function finnhubTimeToMs(t: number): number {
   return t < 1e12 ? t * 1000 : t;
 }
 
-/** Last quote from Finnhub `/quote` endpoint. */
-export async function fetchFinnhubQuote(symbol: string): Promise<MarketQuote> {
+async function loadFinnhubQuoteDetailed(symbol: string): Promise<FinnhubDetailedQuote> {
   const token = process.env.FINNHUB_API_KEY;
   if (!token) {
     throw new Error("FINNHUB_API_KEY is not set");
@@ -32,10 +35,74 @@ export async function fetchFinnhubQuote(symbol: string): Promise<MarketQuote> {
     throw new Error(`Finnhub unexpected payload: ${JSON.stringify(data)}`);
   }
 
+  const close = price;
+  const open = data.o ?? close;
+  const high = data.h ?? close;
+  const low = data.l ?? close;
+  const volume = data.v != null && !Number.isNaN(data.v) ? Math.round(data.v) : 0;
+
   return {
     symbol: symbol.toUpperCase(),
     source: "finnhub",
-    price,
+    price: close,
     timestampMs: finnhubTimeToMs(rawT),
+    open,
+    high,
+    low,
+    close,
+    volume,
   };
+}
+
+/** Last quote from Finnhub `/quote` endpoint. */
+export async function fetchFinnhubQuote(symbol: string): Promise<MarketQuote> {
+  const d = await loadFinnhubQuoteDetailed(symbol);
+  return {
+    symbol: d.symbol,
+    source: d.source,
+    price: d.price,
+    timestampMs: d.timestampMs,
+    currency: d.currency,
+  };
+}
+
+/** Quote with OHLC + volume (from same `/quote` payload). */
+export async function fetchFinnhubQuoteDetailed(symbol: string): Promise<FinnhubDetailedQuote> {
+  return loadFinnhubQuoteDetailed(symbol);
+}
+
+function toYmd(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+/** Company news for a symbol (last `days` calendar days). */
+export async function fetchFinnhubCompanyNews(symbol: string, days = 7): Promise<FinnhubNewsItem[]> {
+  const token = process.env.FINNHUB_API_KEY;
+  if (!token) {
+    throw new Error("FINNHUB_API_KEY is not set");
+  }
+
+  const to = new Date();
+  const from = new Date(to);
+  from.setUTCDate(from.getUTCDate() - days);
+
+  const params = new URLSearchParams({
+    symbol: symbol.toUpperCase(),
+    from: toYmd(from),
+    to: toYmd(to),
+    token,
+  });
+
+  const url = `${BASE}/company-news?${params.toString()}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Finnhub company-news HTTP ${res.status}: ${await res.text()}`);
+  }
+
+  const data = (await res.json()) as FinnhubNewsItem[];
+  if (!Array.isArray(data)) {
+    throw new Error(`Finnhub company-news unexpected payload: ${JSON.stringify(data)}`);
+  }
+
+  return data;
 }

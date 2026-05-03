@@ -3,10 +3,22 @@ import { fetchAlphaVantageGlobalQuote } from "./alpha-vantage.scraper";
 import { fetchEodhdDaily } from "./eodhd.scraper";
 import { fetchFinnhubQuote } from "./finnhub.scraper";
 
-export { fetchAlphaVantageGlobalQuote } from "./alpha-vantage.scraper";
+export { fetchAlphaVantageGlobalQuote, fetchAlphaVantageLatestRSI } from "./alpha-vantage.scraper";
 export { fetchEodhdDaily } from "./eodhd.scraper";
-export { fetchFinnhubQuote } from "./finnhub.scraper";
-export type { EodhdFetchOptions, MarketQuote, OhlcvBar, ScraperOutcome } from "../types/scraper.types";
+export {
+  fetchFinnhubCompanyNews,
+  fetchFinnhubQuote,
+  fetchFinnhubQuoteDetailed,
+} from "./finnhub.scraper";
+export type {
+  AlphaVantageIndicatorPoint,
+  EodhdFetchOptions,
+  FinnhubDetailedQuote,
+  FinnhubNewsItem,
+  MarketQuote,
+  OhlcvBar,
+  ScraperOutcome,
+} from "../types/scraper.types";
 
 export interface OrchestratedQuotes {
   finnhub: ScraperOutcome<MarketQuote>;

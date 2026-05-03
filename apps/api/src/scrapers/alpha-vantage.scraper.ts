@@ -1,5 +1,5 @@
 import process from "node:process";
-import type { MarketQuote } from "../types/scraper.types";
+import type { AlphaVantageIndicatorPoint, MarketQuote } from "../types/scraper.types";
 
 const BASE = "https://www.alphavantage.co/query";
 
@@ -65,5 +65,63 @@ export async function fetchAlphaVantageGlobalQuote(symbol: string): Promise<Mark
     source: "alpha_vantage",
     price,
     timestampMs: parseDayToUtcMs(day),
+  };
+}
+
+/** Latest RSI (daily) from Alpha Vantage TECHNICAL_INDICATORS. */
+export async function fetchAlphaVantageLatestRSI(
+  symbol: string,
+  timePeriod = 14,
+): Promise<AlphaVantageIndicatorPoint> {
+  const apiKey = process.env.ALPHA_VANTAGE_KEY;
+  if (!apiKey) {
+    throw new Error("ALPHA_VANTAGE_KEY is not set");
+  }
+
+  const params = new URLSearchParams({
+    function: "RSI",
+    symbol: symbol.toUpperCase(),
+    interval: "daily",
+    time_period: String(timePeriod),
+    series_type: "close",
+    apikey: apiKey,
+  });
+
+  const url = `${BASE}?${params.toString()}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Alpha Vantage HTTP ${res.status}: ${await res.text()}`);
+  }
+
+  const data = (await res.json()) as Record<string, unknown>;
+  if (typeof data["Error Message"] === "string") {
+    throw new Error(`Alpha Vantage: ${data["Error Message"]}`);
+  }
+  if (typeof data.Note === "string") {
+    throw new Error(`Alpha Vantage rate limit: ${data.Note}`);
+  }
+
+  const series = data["Technical Analysis: RSI"] as Record<string, { RSI?: string }> | undefined;
+  if (!series || typeof series !== "object") {
+    throw new Error(`Alpha Vantage RSI unexpected payload: ${JSON.stringify(data).slice(0, 400)}`);
+  }
+
+  const dates = Object.keys(series).sort((a, b) => b.localeCompare(a));
+  const latestDate = dates[0];
+  const rsiStr = series[latestDate]?.RSI;
+  if (!latestDate || rsiStr == null) {
+    throw new Error(`Alpha Vantage RSI empty series`);
+  }
+
+  const value = Number(rsiStr);
+  if (Number.isNaN(value)) {
+    throw new Error(`Alpha Vantage RSI invalid value: ${rsiStr}`);
+  }
+
+  return {
+    symbol: symbol.toUpperCase(),
+    indicator: "RSI",
+    date: latestDate,
+    value,
   };
 }

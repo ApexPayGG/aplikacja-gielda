@@ -7,14 +7,19 @@
     "test:scrapers": "tsx src/test-scrapers.ts",
     "test:apis": "tsx src/test-apis.ts",
     "test:ai": "tsx src/test-ai-router.ts",
-    "dev": "tsx watch src/index.ts"
+    "test:integration": "tsx src/integration-tests.ts",
+    "dev": "tsx watch src/index.ts",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
+    "@prisma/client": "^6.3.0",
     "axios": "^1.6.0",
     "dotenv": "^16.3.1"
   },
   "devDependencies": {
+    "prisma": "^6.3.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "@types/node": "^20.10.6"
