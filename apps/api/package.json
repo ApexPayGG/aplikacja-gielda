@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "test": "tsx src/test-apis.ts && tsx src/test-ai-router.ts",
+    "test": "tsx src/test-apis.ts && tsx src/test-ai-router.ts && tsx src/test-scrapers.ts",
+    "test:scrapers": "tsx src/test-scrapers.ts",
     "test:apis": "tsx src/test-apis.ts",
     "test:ai": "tsx src/test-ai-router.ts",
     "dev": "tsx watch src/index.ts"
