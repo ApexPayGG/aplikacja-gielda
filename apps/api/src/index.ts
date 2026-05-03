@@ -3,15 +3,18 @@ import process from "node:process";
 import { prisma } from "./db/index";
 import { startScheduler } from "./scheduler";
 import { startServer } from "./server";
+import { startTelegramBot, stopTelegramBot } from "./telegram/index";
 
 async function main(): Promise<void> {
   const port = parseInt(process.env.PORT ?? "3000", 10);
   await startScheduler();
   await startServer(port);
+  await startTelegramBot();
 }
 
 function shutdown(signal: string): void {
   console.log(`\n${signal} received, shutting down…`);
+  stopTelegramBot();
   void prisma.$disconnect().finally(() => process.exit(0));
 }
 

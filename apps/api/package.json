@@ -17,9 +17,11 @@
     "cors": "^2.8.6",
     "dotenv": "^16.3.1",
     "express": "^4.21.2",
-    "ioredis": "^5.4.2"
+    "ioredis": "^5.4.2",
+    "node-telegram-bot-api": "^0.66.0"
   },
   "devDependencies": {
+    "@types/node-telegram-bot-api": "^0.64.13",
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.21",
     "@types/node": "^20.10.6",

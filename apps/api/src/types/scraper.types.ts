@@ -60,3 +60,12 @@ export interface CompanyProfile {
   webUrl?: string | null;
   description?: string | null;
 }
+
+/** Subset of Telegram Bot API message fields used by our handlers */
+export interface TelegramMessage {
+  message_id: number;
+  chat: { id: number; type: string };
+  from?: { id: number; is_bot?: boolean; first_name?: string; username?: string };
+  text?: string;
+  date: number;
+}

@@ -263,8 +263,19 @@ const runServerCli = entryFile === thisFile;
 
 if (runServerCli) {
   await import("./load-env");
-  startServer().catch((e) => {
+  const { startTelegramBot, stopTelegramBot } = await import("./telegram/index");
+  const shutdown = (signal: string) => {
+    console.log(`\n${signal} received, shutting down…`);
+    stopTelegramBot();
+    process.exit(0);
+  };
+  process.once("SIGINT", () => shutdown("SIGINT"));
+  process.once("SIGTERM", () => shutdown("SIGTERM"));
+  try {
+    await startServer();
+    await startTelegramBot();
+  } catch (e) {
     console.error(e);
     process.exit(1);
-  });
+  }
 }
