@@ -5,13 +5,19 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { Prisma } from "@prisma/client";
 import { analyzeStock } from "./ai/analysis";
-import { getCompaniesBySector, getCompanyBySymbol, searchCompanies } from "./db/company-queries";
+import {
+  getCompaniesBySector,
+  getCompanyBySymbol,
+  searchCompanies,
+  upsertCompany,
+} from "./db/company-queries";
 import {
   getLatestIndicator,
   getLatestQuote,
   getQuoteHistory,
   getRecentNews,
 } from "./db/queries";
+import { fetchCompanyProfile } from "./scrapers/index";
 
 export function createApp(): express.Express {
   const app = express();
@@ -26,6 +32,18 @@ export function createApp(): express.Express {
 
   app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });
+  });
+
+  app.post("/api/test/scrape/:symbol", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const symbol = (req.params.symbol ?? "").trim();
+      if (!symbol) return res.status(400).json({ error: "Missing symbol" });
+      const profile = await fetchCompanyProfile(symbol);
+      const company = await upsertCompany(symbol, profile);
+      res.json({ success: true, company });
+    } catch (e) {
+      next(e);
+    }
   });
 
   app.get("/api/companies/search", async (req: Request, res: Response, next: NextFunction) => {
