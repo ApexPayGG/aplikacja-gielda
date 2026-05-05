@@ -16,11 +16,11 @@ ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 RUN npm install --omit=dev \
-  && npm install tsx --no-save
+  && npm install -g tsx
 
 COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
 COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
 COPY src ./src
 
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["tsx", "src/index.ts"]
