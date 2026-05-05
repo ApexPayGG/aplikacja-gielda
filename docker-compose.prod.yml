@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+  timescaledb:
+    image: postgres:15-alpine
+    container_name: stockai-timescaledb-prod
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: stockai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d stockai"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: stockai-redis-prod
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: always
+
+  api:
+    image: stockai-api:latest
+    container_name: stockai-api-prod
+    env_file:
+      - path: .env.production
+        required: false
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+
+  frontend:
+    image: stockai-frontend:latest
+    container_name: stockai-frontend-prod
+    expose:
+      - "80"
+    restart: always
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: stockai-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - api
+      - frontend
+    restart: always
+
+volumes:
+  postgres_data:
+  redis_data:
