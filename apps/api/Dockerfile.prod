@@ -3,19 +3,24 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+COPY prisma ./prisma
 RUN npm install
 
 COPY . .
-RUN npm run build
+RUN npx prisma generate
 
 FROM node:20-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
 COPY package.json package-lock.json ./
-RUN npm install --omit=dev
+COPY prisma ./prisma
+RUN npm install --omit=dev \
+  && npm install tsx --no-save
 
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
+COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
+COPY src ./src
 
 EXPOSE 3000
-CMD ["node", "dist/index.js"]
+CMD ["npm", "start"]

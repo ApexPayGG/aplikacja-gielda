@@ -32,11 +32,13 @@ services:
     restart: always
 
   api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.prod
     image: stockai-api:latest
     container_name: stockai-api-prod
     env_file:
-      - path: .env.production
-        required: false
+      - .env.production
     environment:
       NODE_ENV: production
       PORT: "3000"
@@ -50,6 +52,9 @@ services:
     restart: always
 
   frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile.prod
     image: stockai-frontend:latest
     container_name: stockai-frontend-prod
     expose:
