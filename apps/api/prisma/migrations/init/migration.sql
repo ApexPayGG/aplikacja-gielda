@@ -1,0 +1,3 @@
+-- Baseline migration placeholder.
+-- Historical schema setup for this project was managed via `prisma db push`
+-- and helper SQL scripts in this folder.

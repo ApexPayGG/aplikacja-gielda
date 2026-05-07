@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8"/>
+  <title>StockAI Pro — k6 load test report</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; color: #1e293b; }
+    h1 { border-bottom: 2px solid #0ea5e9; padding-bottom: 0.5rem; }
+    h2 { margin-top: 2rem; }
+    table { border-collapse: collapse; width: 100%; max-width: 720px; }
+    th, td { border: 1px solid #cbd5e1; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f1f5f9; }
+    .hint { background: #fff7ed; border-left: 4px solid #f97316; padding: 0.75rem 1rem; margin: 0.5rem 0; }
+    code { background: #f1f5f9; padding: 0.1rem 0.35rem; }
+  </style>
+</head>
+<body>
+  <h1>StockAI Pro — raport obciążeniowy k6 (baseline)</h1>
+  <p>Wygenerowano: <strong>2026-05-06T17:38:45.878Z</strong></p>
+  <p>
+    <code>BASE_URL</code>=http://host.docker.internal:3000 &nbsp;
+    <code>HOME_PATH</code>=/health &nbsp;
+    <code>SEARCH_PATH</code>=/api/companies/search?q=TESTER &nbsp;
+    <code>QUOTE_SYMBOL</code>=AAPL
+  </p>
+
+  <h2>1. Summary metrics</h2>
+  <table>
+    <thead><tr><th>Metryka</th><th>Wartość</th></tr></thead>
+    <tbody>
+      <tr><td>http_reqs (count)</td><td>166543</td></tr>
+      <tr><td>http_reqs (rate / RPS)</td><td>460.13</td></tr>
+      <tr><td>http_req_failed (rate = error rate)</td><td>0.07</td></tr>
+      <tr><td>http_req_duration p50 (med)</td><td>2.86 ms</td></tr>
+      <tr><td>http_req_duration p95</td><td>8.04 ms</td></tr>
+      <tr><td>http_req_duration p99</td><td>11.70 ms</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2. Response time distribution (global http_req_duration)</h2>
+  
+    <h3>http_req_duration</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>3.54 ms</td></tr><tr><td>min</td><td>0.55 ms</td></tr><tr><td>med</td><td>2.86 ms</td></tr><tr><td>max</td><td>234.48 ms</td></tr><tr><td>p(90)</td><td>6.55 ms</td></tr><tr><td>p(95)</td><td>8.04 ms</td></tr><tr><td>p(99)</td><td>11.70 ms</td></tr></tbody>
+    </table>
+
+  <h2>3. Custom metric: homepage_response (Scenario A)</h2>
+  
+    <h3>homepage_response</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>2.84 ms</td></tr><tr><td>min</td><td>0.55 ms</td></tr><tr><td>med</td><td>2.24 ms</td></tr><tr><td>max</td><td>137.22 ms</td></tr><tr><td>p(90)</td><td>5.10 ms</td></tr><tr><td>p(95)</td><td>6.68 ms</td></tr><tr><td>p(99)</td><td>11.04 ms</td></tr></tbody>
+    </table>
+
+  <h2>4. Scenario B — search_response</h2>
+  
+    <h3>search_response</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>4.52 ms</td></tr><tr><td>min</td><td>1.19 ms</td></tr><tr><td>med</td><td>3.80 ms</td></tr><tr><td>max</td><td>234.48 ms</td></tr><tr><td>p(90)</td><td>6.54 ms</td></tr><tr><td>p(95)</td><td>7.93 ms</td></tr><tr><td>p(99)</td><td>13.43 ms</td></tr></tbody>
+    </table>
+
+  <h2>5. Scenario C — quotes_response</h2>
+  
+    <h3>quotes_response</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>7.27 ms</td></tr><tr><td>min</td><td>2.37 ms</td></tr><tr><td>med</td><td>6.88 ms</td></tr><tr><td>max</td><td>175.17 ms</td></tr><tr><td>p(90)</td><td>9.41 ms</td></tr><tr><td>p(95)</td><td>10.32 ms</td></tr><tr><td>p(99)</td><td>13.16 ms</td></tr></tbody>
+    </table>
+
+  <h2>6. Error analysis</h2>
+  <p>Globalny wskaźnik błędów HTTP (k6): <strong>0.07</strong> (0 = 0%, 1 = 100%).</p>
+  <p>Szczegóły żądań z kodami 4xx/5xx sprawdź w logach serwera oraz w konsoli k6 (uruchom z <code>--verbose</code> lub eksportem JSON).</p>
+
+  <h2>7. Bottleneck suggestions</h2>
+  <div class="hint">Wysoki error rate: sprawdź czy BASE_URL i ścieżki są poprawne (GET / i /api/search często nie istnieją na samym API — użyj nginx lub HOME_PATH=/health i SEARCH_PATH=/api/companies/search?q=TESTER).</div>
+
+  <h2>8. Scenariusze</h2>
+  <ul>
+    <li><strong>A</strong>: 100 VU × 2 min — <code>GET /health</code></li>
+    <li><strong>B</strong>: 50 VU × 2 min — <code>GET /api/companies/search?q=TESTER</code></li>
+    <li><strong>C</strong>: 20 VU × 2 min — <code>GET /api/quotes/AAPL</code></li>
+  </ul>
+  <p>Czas całkowity testu: ok. <strong>6 minut</strong> (3 × 2 min sekwencyjnie).</p>
+</body>
+</html>

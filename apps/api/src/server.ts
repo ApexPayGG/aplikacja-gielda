@@ -6,6 +6,9 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { Prisma } from "@prisma/client";
 import { analyzeStock } from "./ai/analysis";
+import { cacheJsonGet, cacheJsonSet } from "./cache/jsonCache";
+import { REDIS_TTL_SEC, redisKeys } from "./config/redis";
+import { prisma } from "./db/index";
 import {
   getCompaniesBySector,
   getCompanyBySymbol,
@@ -27,6 +30,27 @@ import {
   fetchFinnhubCompanyNews,
   fetchFinnhubQuoteDetailed,
 } from "./scrapers/index";
+import { redisStatsHandler } from "./routes/redisStats";
+import {
+  calculateTaxPL,
+  estimateGrossDividend,
+  getDividendHistory,
+  searchGrowthScreener,
+} from "./services/dividendService";
+import {
+  getDividendIntelligence,
+  getRecentAlerts,
+  getSectorComparison,
+} from "./services/dividendIntelligenceService";
+import type { SustainabilityBreakdown } from "./types/sustainability";
+import {
+  breakdownFromRow,
+  getSustainabilityScoreRow,
+} from "./services/dividendSustainabilityPersistenceService";
+import { createCopilotRouter } from "./routes/copilot";
+import { createDividendsRouter } from "./routes/dividends";
+import { createBacktestRouter } from "./routes/backtest";
+import { createPortfolioRouter } from "./routes/portfolio";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -48,6 +72,27 @@ function isAnalysisConfigurationError(err: unknown): boolean {
   return err instanceof Error && err.message.includes("ANTHROPIC_API_KEY is not set");
 }
 
+/**
+ * Włącza `screenerDebug` + `sqlDebug` i omija Redis cache w `searchGrowthScreener`.
+ * 1) Query: `debug=1` | `debug=true` (string z Express).
+ * 2) Surowy URL / nagłówek — na wypadek gdy shell psuje `&debug=1` w curl (CMD).
+ */
+function isDividendGrowthScreenerDebugRequest(req: Request): boolean {
+  const d = req.query.debug;
+  // Jawna specyfikacja (req.query to zwykle string):
+  if (d === "1" || d === "true") return true;
+  if (Array.isArray(d) && d.some((x) => x === "1" || x === "true")) return true;
+  if (String(d ?? "").toLowerCase() === "true" || String(d ?? "").toLowerCase() === "yes") return true;
+
+  const raw = req.originalUrl ?? req.url ?? "";
+  if (/(?:[?&])debug=(?:1|true|yes)(?:&|$|#)/i.test(raw)) return true;
+
+  const h = req.headers["x-dividend-screener-debug"] ?? req.headers["x-screener-debug"];
+  if (h === "1" || String(h ?? "").toLowerCase() === "true") return true;
+
+  return false;
+}
+
 export function createApp(): express.Express {
   const app = express();
 
@@ -65,10 +110,16 @@ export function createApp(): express.Express {
   );
 
   app.use(express.json({ limit: "1mb" }));
+  app.use(createCopilotRouter());
+  app.use(createDividendsRouter());
+  app.use(createBacktestRouter());
+  app.use(createPortfolioRouter());
 
   app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });
   });
+
+  app.get("/api/redis/stats", redisStatsHandler);
 
   app.post("/api/test/scrape/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -143,8 +194,16 @@ export function createApp(): express.Express {
       const q = String(req.query.q ?? "").trim();
       if (!q) return res.status(400).json({ error: "Missing query parameter q" });
       const limit = Math.min(50, Math.max(1, parseInt(String(req.query.limit ?? "20"), 10) || 20));
+      const cacheKey = redisKeys.companySearch(q, limit);
+      const cached = await cacheJsonGet<{ query: string; count: number; data: unknown[] }>(cacheKey);
+      if (cached !== null) {
+        res.json(cached);
+        return;
+      }
       const rows = await searchCompanies(q, limit);
-      res.json({ query: q, count: rows.length, data: rows });
+      const payload = { query: q, count: rows.length, data: rows };
+      await cacheJsonSet(cacheKey, payload, REDIS_TTL_SEC.SEARCH);
+      res.json(payload);
     } catch (e) {
       next(e);
     }
@@ -175,8 +234,17 @@ export function createApp(): express.Express {
 
   app.get("/api/quotes/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const row = await getLatestQuote(req.params.symbol ?? "");
+      const sym = (req.params.symbol ?? "").trim().toUpperCase();
+      if (!sym) return res.status(400).json({ error: "Missing symbol" });
+      const cacheKey = redisKeys.quoteLatest(sym);
+      const cached = await cacheJsonGet<unknown>(cacheKey);
+      if (cached !== null) {
+        res.json(cached);
+        return;
+      }
+      const row = await getLatestQuote(sym);
       if (!row) return res.status(404).json({ error: "No quote found" });
+      await cacheJsonSet(cacheKey, row, REDIS_TTL_SEC.QUOTES);
       res.json(row);
     } catch (e) {
       next(e);
@@ -195,9 +263,24 @@ export function createApp(): express.Express {
 
   app.get("/api/news/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const sym = (req.params.symbol ?? "").trim().toUpperCase();
+      if (!sym) return res.status(400).json({ error: "Missing symbol" });
       const limit = Math.min(50, Math.max(1, parseInt(String(req.query.limit ?? "10"), 10) || 10));
-      const rows = await getRecentNews(req.params.symbol ?? "", limit);
-      res.json({ symbol: (req.params.symbol ?? "").toUpperCase(), limit, count: rows.length, data: rows });
+      const cacheKey = redisKeys.newsRecent(sym, limit);
+      const cached = await cacheJsonGet<{
+        symbol: string;
+        limit: number;
+        count: number;
+        data: unknown[];
+      }>(cacheKey);
+      if (cached !== null) {
+        res.json(cached);
+        return;
+      }
+      const rows = await getRecentNews(sym, limit);
+      const payload = { symbol: sym, limit, count: rows.length, data: rows };
+      await cacheJsonSet(cacheKey, payload, REDIS_TTL_SEC.NEWS);
+      res.json(payload);
     } catch (e) {
       next(e);
     }
@@ -218,6 +301,219 @@ export function createApp(): express.Express {
     try {
       const result = await analyzeStock(req.params.symbol ?? "");
       res.json(result);
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.post("/api/dividends/tax-calculator-pl", (req: Request, res: Response) => {
+    try {
+      const body = req.body as {
+        shares?: unknown;
+        currentPrice?: unknown;
+        dividendPerShare?: unknown;
+        annualDividendYieldPercent?: unknown;
+      };
+      const shares = Number(body.shares);
+      const currentPrice = Number(body.currentPrice);
+      if (!Number.isFinite(shares) || !Number.isFinite(currentPrice)) {
+        return res.status(400).json({ error: "Wymagane liczby: shares, currentPrice" });
+      }
+      const dividendPerShare =
+        body.dividendPerShare !== undefined ? Number(body.dividendPerShare) : undefined;
+      const annualDividendYieldPercent =
+        body.annualDividendYieldPercent !== undefined
+          ? Number(body.annualDividendYieldPercent)
+          : undefined;
+
+      let gross: number;
+      let method: string;
+      try {
+        const est = estimateGrossDividend({
+          shares,
+          currentPrice,
+          dividendPerShare:
+            dividendPerShare !== undefined && Number.isFinite(dividendPerShare)
+              ? dividendPerShare
+              : undefined,
+          annualDividendYieldPercent:
+            annualDividendYieldPercent !== undefined && Number.isFinite(annualDividendYieldPercent)
+              ? annualDividendYieldPercent
+              : undefined,
+        });
+        gross = est.grossDividend;
+        method = est.method;
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Invalid input";
+        return res.status(400).json({ error: msg });
+      }
+
+      const tax = calculateTaxPL(gross);
+      res.json({
+        ...tax,
+        method,
+        inputs: { shares, currentPrice, dividendPerShare, annualDividendYieldPercent },
+      });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Bad request";
+      res.status(400).json({ error: message });
+    }
+  });
+
+  app.get("/api/screeners/dividend/growth", async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const minYears = Math.min(30, Math.max(1, parseInt(String(_req.query.minYears ?? "5"), 10) || 5));
+      const minYield = Math.min(50, Math.max(0, parseFloat(String(_req.query.minYield ?? "3")) || 3));
+      const limit = Math.min(50, Math.max(1, parseInt(String(_req.query.limit ?? "50"), 10) || 50));
+      const page = Math.max(1, parseInt(String(_req.query.page ?? "1"), 10) || 1);
+      const offset = (page - 1) * limit;
+      const debug = isDividendGrowthScreenerDebugRequest(_req);
+
+      const result = await searchGrowthScreener({
+        minYears,
+        minYield,
+        limit,
+        offset,
+        includeDebug: debug,
+      });
+
+      let sqlDebug: Record<string, unknown> | undefined;
+      if (debug) {
+        const [dhRow] = await prisma.$queryRaw<[{ c: bigint }]>`SELECT COUNT(*)::bigint AS c FROM dividend_histories`;
+        const sample5 = await prisma.$queryRaw<
+          { symbol: string; year: number; cagr_5y: number | null }[]
+        >`SELECT symbol, year, cagr_5y FROM dividend_histories ORDER BY symbol ASC, year ASC LIMIT 5`;
+        const aaplRows = await prisma.$queryRaw<
+          { symbol: string; year: number; cagr_5y: number | null }[]
+        >`SELECT symbol, year, cagr_5y FROM dividend_histories WHERE symbol = 'AAPL' ORDER BY year ASC`;
+        sqlDebug = {
+          dividend_histories_count: Number(dhRow?.c ?? 0),
+          sample_limit_5: sample5,
+          aapl: aaplRows,
+        };
+      }
+
+      const redisCacheKey = redisKeys.screenerDividendGrowth({ minYears, minYield, limit, offset });
+      const screenerDebug = debug
+        ? {
+            ...(result.debug ?? {
+              _warning: "searchGrowthScreener nie zwrócił debug (includeDebug)",
+            }),
+            redisKeyPrefix: "cache:v1:screener:dividend:growth:v2",
+            redisCacheKey,
+          }
+        : undefined;
+
+      res.json({
+        screenerCacheKeyVersion: 2,
+        minYears,
+        minYield,
+        page,
+        limit,
+        total: result.total,
+        count: result.items.length,
+        data: result.items,
+        ...(screenerDebug ? { screenerDebug } : {}),
+        ...(sqlDebug ? { sqlDebug } : {}),
+      });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.get("/api/intelligence/dividend/comparison/sector", async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const sectors = await getSectorComparison();
+      res.json(sectors);
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.get("/api/intelligence/dividend/:symbol/alerts", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const symbol = (req.params.symbol ?? "").trim();
+      if (!symbol) return res.status(400).json({ error: "Missing symbol" });
+      const limit = Math.min(20, Math.max(1, parseInt(String(req.query.limit ?? "20"), 10) || 20));
+      const body = await getRecentAlerts(symbol, limit);
+      res.json(body);
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.get("/api/intelligence/dividend/:symbol", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const symbol = (req.params.symbol ?? "").trim();
+      if (!symbol) return res.status(400).json({ error: "Missing symbol" });
+      const row = await getDividendIntelligence(symbol);
+      if (!row) {
+        return res.status(404).json({ error: "Dividend intelligence not found for symbol" });
+      }
+      res.json(row);
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.get(
+    "/api/ai/dividend/sustainability/:symbol",
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const sym = (req.params.symbol ?? "").trim().toUpperCase();
+        if (!sym) return res.status(400).json({ error: "Missing symbol" });
+
+        type CachePayload = {
+          symbol: string;
+          finalScore: number;
+          breakdown: SustainabilityBreakdown;
+          lastCalculatedAt: string;
+        };
+
+        const cacheKey = redisKeys.sustainabilityDividend(sym);
+        const cached = await cacheJsonGet<CachePayload>(cacheKey);
+        if (cached !== null) {
+          res.json(cached);
+          return;
+        }
+
+        const row = await getSustainabilityScoreRow(sym);
+        if (!row) {
+          return res.status(404).json({ error: "Dividend sustainability score not found for symbol" });
+        }
+
+        const breakdown = breakdownFromRow(row);
+        const payload: CachePayload = {
+          symbol: sym,
+          finalScore: row.finalScore,
+          breakdown,
+          lastCalculatedAt: row.lastCalculatedAt.toISOString(),
+        };
+        await cacheJsonSet(cacheKey, payload, REDIS_TTL_SEC.SUSTAINABILITY_DIVIDEND);
+        res.json(payload);
+      } catch (e) {
+        next(e);
+      }
+    },
+  );
+
+  app.get("/api/dividends/:symbol", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const symbol = (req.params.symbol ?? "").trim();
+      if (!symbol) return res.status(400).json({ error: "Missing symbol" });
+      const years = Math.min(30, Math.max(1, parseInt(String(req.query.years ?? "5"), 10) || 5));
+      const rows = await getDividendHistory(symbol, years);
+      res.json({
+        symbol: symbol.toUpperCase(),
+        years,
+        count: rows.length,
+        data: rows.map((r) => ({
+          exDate: r.exDate.toISOString(),
+          payDate: r.payDate.toISOString(),
+          amount: r.amount,
+          yield: r.yield,
+        })),
+      });
     } catch (e) {
       next(e);
     }

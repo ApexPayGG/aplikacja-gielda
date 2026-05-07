@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { DividendAlertsResponse, DividendIntelligence, SectorComparison } from "../types/dividend";
 
 const baseURL = import.meta.env.VITE_API_BASE ?? "http://localhost:3000/api";
 
@@ -115,3 +116,89 @@ export async function getAnalysis(symbol: string): Promise<AnalysisResponse> {
   const { data } = await api.get<AnalysisResponse>(`/analysis/${encodeURIComponent(symbol)}`);
   return data;
 }
+
+export interface DividendHistoryItem {
+  exDate: string;
+  payDate: string;
+  amount: number;
+  yield: number | null;
+}
+
+export interface DividendHistoryResponse {
+  symbol: string;
+  years: number;
+  count: number;
+  data: DividendHistoryItem[];
+}
+
+export async function getDividendHistory(symbol: string, years = 5): Promise<DividendHistoryResponse> {
+  const { data } = await api.get<DividendHistoryResponse>(`/dividends/${encodeURIComponent(symbol)}`, {
+    params: { years },
+  });
+  return data;
+}
+
+export interface DividendGrowthRow {
+  symbol: string;
+  latestYear: number;
+  totalAmount: number;
+  growthYoY: number | null;
+  cagr5Y: number | null;
+  cagr10Y: number | null;
+  latestYield: number | null;
+}
+
+export interface DividendGrowthScreenerResponse {
+  screenerCacheKeyVersion?: number;
+  minYears: number;
+  minYield: number;
+  page: number;
+  limit: number;
+  total: number;
+  count: number;
+  data: DividendGrowthRow[];
+  screenerDebug?: Record<string, unknown>;
+  sqlDebug?: Record<string, unknown>;
+}
+
+export async function getDividendGrowthScreener(
+  minYears = 5,
+  minYield = 3,
+  limit = 50,
+  page = 1,
+): Promise<DividendGrowthScreenerResponse> {
+  const { data } = await api.get<DividendGrowthScreenerResponse>("/screeners/dividend/growth", {
+    params: { minYears, minYield, limit, page },
+  });
+  return data;
+}
+
+export interface TaxPLResponse {
+  grossDividend: number;
+  taxAmount: number;
+  netIncome: number;
+  taxRate: number;
+  method: string;
+}
+
+export async function calculateDividendTaxPL(body: {
+  shares: number;
+  currentPrice: number;
+  dividendPerShare?: number;
+  annualDividendYieldPercent?: number;
+}): Promise<TaxPLResponse> {
+  const { data } = await api.post<TaxPLResponse>("/dividends/tax-calculator-pl", body);
+  return data;
+}
+
+/** `baseURL` już zawiera `/api` — ścieżka bez drugiego prefiksu. */
+export const getDividendIntelligence = (symbol: string) =>
+  api.get<DividendIntelligence>(`/intelligence/dividend/${encodeURIComponent(symbol)}`);
+
+export const getDividendAlerts = (symbol: string, limit: number = 20) =>
+  api.get<DividendAlertsResponse>(`/intelligence/dividend/${encodeURIComponent(symbol)}/alerts`, {
+    params: { limit },
+  });
+
+export const getSectorComparison = () =>
+  api.get<SectorComparison>("/intelligence/dividend/comparison/sector");

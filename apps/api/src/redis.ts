@@ -12,7 +12,7 @@ export function createRedisConnection(): IORedis {
 
 let cacheClient: IORedis | undefined;
 
-/** Shared Redis for short-lived cache (e.g. analysis JSON). */
+/** Shared Redis for cache / queues. TTLs and key naming: `src/config/redis.ts`. */
 export function getCacheRedis(): IORedis {
   if (!cacheClient) {
     cacheClient = createRedisConnection();

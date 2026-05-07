@@ -63,20 +63,23 @@ export async function insertIndicator(
   });
 }
 
-export async function insertFundamental(
+/** Upsert metryki fundamentalnej (Phase 11). `year` = rok fiskalny; `0` = np. snapshot TTM (`eps_ttm`). */
+export async function upsertFundamental(
   symbol: string,
   metric: string,
   value: number,
+  year: number,
 ): Promise<Fundamental> {
   const sym = symbol.toUpperCase();
   const now = new Date();
   return prisma.fundamental.upsert({
     where: {
-      symbol_metric: { symbol: sym, metric },
+      symbol_metric_year: { symbol: sym, metric, year },
     },
     create: {
       symbol: sym,
       metric,
+      year,
       value: new Prisma.Decimal(value),
       lastUpdated: now,
     },

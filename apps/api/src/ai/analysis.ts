@@ -1,10 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import process from "node:process";
-import { getCacheRedis } from "../redis";
+import { REDIS_TTL_SEC, redisKeys } from "../config/redis";
 import { getLatestIndicator, getLatestQuote, getRecentNews } from "../db/queries";
-
-const CACHE_PREFIX = "analysis:";
-const CACHE_TTL_SEC = 3600;
+import { getCacheRedis } from "../redis";
 const MODEL = "claude-sonnet-4-6";
 
 export type AnalysisResult = {
@@ -44,7 +42,7 @@ async function writeAnalysisCache(cacheKey: string, payload: string): Promise<vo
   if (!process.env.REDIS_URL?.trim()) return;
   try {
     const redis = getCacheRedis();
-    await redis.set(cacheKey, payload, "EX", CACHE_TTL_SEC);
+    await redis.set(cacheKey, payload, "EX", REDIS_TTL_SEC.AI_ANALYSIS);
   } catch {
     /* ignore cache write failures */
   }
@@ -55,7 +53,7 @@ async function writeAnalysisCache(cacheKey: string, payload: string): Promise<vo
  */
 export async function analyzeStock(symbol: string): Promise<AnalysisResult> {
   const sym = symbol.toUpperCase();
-  const cacheKey = `${CACHE_PREFIX}${sym}`;
+  const cacheKey = redisKeys.analysisBrief(sym);
 
   const cached = await readAnalysisCache(cacheKey);
   if (cached) return cached;

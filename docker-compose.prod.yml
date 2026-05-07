@@ -21,7 +21,16 @@ services:
   redis:
     image: redis:7-alpine
     container_name: stockai-redis-prod
-    command: ["redis-server", "--appendonly", "yes"]
+    command:
+      [
+        "redis-server",
+        "--maxmemory",
+        "512mb",
+        "--maxmemory-policy",
+        "allkeys-lru",
+        "--appendonly",
+        "yes",
+      ]
     volumes:
       - redis_data:/data
     healthcheck:

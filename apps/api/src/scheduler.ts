@@ -11,6 +11,13 @@ import {
 } from "./scrapers/index";
 import { upsertCompany } from "./db/company-queries";
 import { insertIndicator, insertNews, insertQuote } from "./db/queries";
+import { registerFundamentalSync, scheduleDailyFundamentalJob } from "./jobs/syncFundamentals";
+import { registerDividendSync, scheduleDailyDividendJob } from "./jobs/syncDividends";
+import { registerDividendAlerts, scheduleDailyDividendAlertsJob } from "./jobs/dividendAlerts";
+import { registerScanSignals, scheduleScanSignalsJob } from "./jobs/scanSignals";
+import { processSignalQueue } from "./jobs/queues/processSignal";
+import { registerProcessSignal } from "./jobs/processSignal";
+import { registerPortfolioSnapshots, scheduleDailyPortfolioSnapshotsJob } from "./jobs/portfolioSnapshots";
 
 const QUEUE_NAME = "market-scrape";
 const SYMBOLS = ["AAPL", "GOOGL", "MSFT"] as const;
@@ -87,6 +94,16 @@ async function runHourlyJob(): Promise<void> {
 export async function startScheduler(): Promise<void> {
   const connection = createRedisConnection();
   const duplicate = createRedisConnection();
+  const divConn = createRedisConnection();
+  const divWorkerConn = createRedisConnection();
+  const fundConn = createRedisConnection();
+  const fundWorkerConn = createRedisConnection();
+  const scanConn = createRedisConnection();
+  const scanWorkerConn = createRedisConnection();
+  const divAlertsConn = createRedisConnection();
+  const divAlertsWorkerConn = createRedisConnection();
+  const portfolioConn = createRedisConnection();
+  const portfolioWorkerConn = createRedisConnection();
 
   const queue = new Queue(QUEUE_NAME, { connection });
   const worker = new Worker(QUEUE_NAME, () => runHourlyJob(), { connection: duplicate });
@@ -107,7 +124,68 @@ export async function startScheduler(): Promise<void> {
     },
   );
 
+  const { queue: divQueue, worker: divWorker } = registerDividendSync(divConn, divWorkerConn);
+
+  divWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] dividend job ${job?.id} failed`, err);
+  });
+  divWorker.on("completed", (job) => {
+    console.log(`[scheduler] dividend job ${job.id} completed`);
+  });
+
+  await scheduleDailyDividendJob(divQueue);
+
+  const { queue: dividendAlertsQueue, worker: dividendAlertsWorker } = registerDividendAlerts(
+    divAlertsConn,
+    divAlertsWorkerConn,
+  );
+  dividendAlertsWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] dividend alerts job ${job?.id} failed`, err);
+  });
+  dividendAlertsWorker.on("completed", (job) => {
+    console.log(`[scheduler] dividend alerts job ${job.id} completed`);
+  });
+  await scheduleDailyDividendAlertsJob(dividendAlertsQueue);
+
+  const { queue: portfolioQueue, worker: portfolioWorker } = registerPortfolioSnapshots(
+    portfolioConn,
+    portfolioWorkerConn,
+  );
+  portfolioWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] portfolio snapshots job ${job?.id} failed`, err);
+  });
+  portfolioWorker.on("completed", (job) => {
+    console.log(`[scheduler] portfolio snapshots job ${job.id} completed`);
+  });
+  await scheduleDailyPortfolioSnapshotsJob(portfolioQueue);
+
+  const { queue: fundQueue, worker: fundWorker } = registerFundamentalSync(fundConn, fundWorkerConn);
+  fundWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] fundamental job ${job?.id} failed`, err);
+  });
+  fundWorker.on("completed", (job) => {
+    console.log(`[scheduler] fundamental job ${job.id} completed`);
+  });
+  await scheduleDailyFundamentalJob(fundQueue);
+
+  const { queue: scanQueue, worker: scanWorker } = registerScanSignals(scanConn, scanWorkerConn);
+  scanWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] signals scan job ${job?.id} failed`, err);
+  });
+  scanWorker.on("completed", (job) => {
+    console.log(`[scheduler] signals scan job ${job.id} completed`);
+  });
+  await scheduleScanSignalsJob(scanQueue);
+
+  // Register process signal worker
+  registerProcessSignal(processSignalQueue);
+
   console.log("[scheduler] BullMQ worker started; hourly job scheduled");
+  console.log("[scheduler] Dividend hybrid sync: daily @ 01:00 UTC (queue dividend-sync)");
+  console.log("[scheduler] Dividend alerts: daily @ 06:00 UTC (queue dividend-alerts)");
+  console.log("[scheduler] Portfolio snapshots: daily @ 17:00 UTC (queue portfolio-snapshots)");
+  console.log("[scheduler] Fundamentals (EODHD): daily @ 03:00 UTC (queue fundamental-sync)");
+  console.log("[scheduler] Scan signals: every 5 minutes (queue scan:signals)");
 }
 
 const schedulerFile = path.resolve(fileURLToPath(import.meta.url));

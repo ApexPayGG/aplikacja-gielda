@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8"/>
+  <title>StockAI Pro — k6 FINAL (surowy)</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; color: #1e293b; }
+    h1 { border-bottom: 2px solid #0ea5e9; padding-bottom: 0.5rem; }
+    table { border-collapse: collapse; width: 100%; max-width: 720px; }
+    th, td { border: 1px solid #cbd5e1; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f1f5f9; }
+    code { background: #f1f5f9; padding: 0.1rem 0.35rem; }
+  </style>
+</head>
+<body>
+  <h1>k6 FINAL — fragment roboczy</h1>
+  <p>Pełny raport porównawczy: <code>results/load-test-final-report.html</code> (generowany przez <code>npm run load:test:final:report</code>).</p>
+  <p>Wygenerowano: <strong>2026-05-06T17:48:50.716Z</strong> · <code>BASE_URL</code>=http://host.docker.internal:3000</p>
+  <h2>Global http_req_duration</h2>
+  
+    <h3>http_req_duration</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>3.53 ms</td></tr><tr><td>min</td><td>0.60 ms</td></tr><tr><td>med</td><td>2.93 ms</td></tr><tr><td>max</td><td>177.27 ms</td></tr><tr><td>p(90)</td><td>6.06 ms</td></tr><tr><td>p(95)</td><td>7.36 ms</td></tr><tr><td>p(99)</td><td>11.70 ms</td></tr></tbody>
+    </table>
+  <h2>Scenariusze A–F (custom trends)</h2>
+  
+    <h3>A homepage_response</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>2.86 ms</td></tr><tr><td>min</td><td>0.60 ms</td></tr><tr><td>med</td><td>2.23 ms</td></tr><tr><td>max</td><td>177.27 ms</td></tr><tr><td>p(90)</td><td>4.89 ms</td></tr><tr><td>p(95)</td><td>6.32 ms</td></tr><tr><td>p(99)</td><td>11.09 ms</td></tr></tbody>
+    </table>
+  
+    <h3>B search_response</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>4.23 ms</td></tr><tr><td>min</td><td>1.08 ms</td></tr><tr><td>med</td><td>3.80 ms</td></tr><tr><td>max</td><td>28.91 ms</td></tr><tr><td>p(90)</td><td>6.62 ms</td></tr><tr><td>p(95)</td><td>7.89 ms</td></tr><tr><td>p(99)</td><td>12.06 ms</td></tr></tbody>
+    </table>
+  
+    <h3>C quotes_response</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>5.84 ms</td></tr><tr><td>min</td><td>2.55 ms</td></tr><tr><td>med</td><td>5.29 ms</td></tr><tr><td>max</td><td>171.89 ms</td></tr><tr><td>p(90)</td><td>7.53 ms</td></tr><tr><td>p(95)</td><td>8.52 ms</td></tr><tr><td>p(99)</td><td>11.67 ms</td></tr></tbody>
+    </table>
+  
+    <h3>D dividend_response</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>4.23 ms</td></tr><tr><td>min</td><td>1.15 ms</td></tr><tr><td>med</td><td>3.65 ms</td></tr><tr><td>max</td><td>28.89 ms</td></tr><tr><td>p(90)</td><td>6.89 ms</td></tr><tr><td>p(95)</td><td>8.40 ms</td></tr><tr><td>p(99)</td><td>12.98 ms</td></tr></tbody>
+    </table>
+  
+    <h3>E screener_response</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>4.25 ms</td></tr><tr><td>min</td><td>1.16 ms</td></tr><tr><td>med</td><td>3.57 ms</td></tr><tr><td>max</td><td>28.01 ms</td></tr><tr><td>p(90)</td><td>7.13 ms</td></tr><tr><td>p(95)</td><td>8.93 ms</td></tr><tr><td>p(99)</td><td>13.96 ms</td></tr></tbody>
+    </table>
+  
+    <h3>F tax_calc_response</h3>
+    <table>
+      <thead><tr><th>Stat</th><th>Wartość</th></tr></thead>
+      <tbody><tr><td>avg</td><td>3.24 ms</td></tr><tr><td>min</td><td>0.75 ms</td></tr><tr><td>med</td><td>3.09 ms</td></tr><tr><td>max</td><td>10.45 ms</td></tr><tr><td>p(90)</td><td>4.78 ms</td></tr><tr><td>p(95)</td><td>5.37 ms</td></tr><tr><td>p(99)</td><td>6.92 ms</td></tr></tbody>
+    </table>
+  <p>RPS: 358.02 · error rate: 0.05</p>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8"/>
+  <title>StockAI Pro — Load test FINAL vs baseline</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; color: #1e293b; max-width: 1100px; }
+    h1 { border-bottom: 2px solid #0ea5e9; padding-bottom: 0.5rem; }
+    h2 { margin-top: 2rem; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #cbd5e1; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f1f5f9; }
+    .hint { background: #eff6ff; border-left: 4px solid #2563eb; padding: 0.75rem 1rem; margin: 0.5rem 0; }
+    code { background: #f1f5f9; padding: 0.1rem 0.35rem; }
+    .ok { color: #15803d; }
+    .warn { color: #c2410c; }
+  </style>
+</head>
+<body>
+  <h1>StockAI Pro — raport obciążeniowy: <span class="ok">FINAL</span> vs <span class="warn">baseline</span></h1>
+  <p>Wygenerowano: <strong>2026-05-06T17:48:51.592Z</strong></p>
+  <p>Baseline: <code>results/baseline-summary.json</code> ✓ · Final: <code>results/final-summary.json</code> ✓</p>
+  <p>CSV: <code>results/load-test-comparison.csv</code></p>
+
+  <h2>1. Metryki globalne (http_req_*)</h2>
+  <h3>Baseline (tylko A–C, ~6 min)</h3>
+  <table>
+    <thead><tr><th>Metryka</th><th>Wartość</th></tr></thead>
+    <tbody>
+      <tr><td>RPS (http_reqs rate)</td><td>460.13</td></tr>
+      <tr><td>Error rate (http_req_failed)</td><td>0.07</td></tr>
+      <tr><td>p50 (med)</td><td>2.86 ms</td></tr>
+      <tr><td>p95</td><td>8.04 ms</td></tr>
+      <tr><td>p99</td><td>11.70 ms</td></tr>
+    </tbody>
+  </table>
+  <h3>FINAL (A–F, ~10 min)</h3>
+  <table>
+    <thead><tr><th>Metryka</th><th>Wartość</th></tr></thead>
+    <tbody>
+      <tr><td>RPS (http_reqs rate)</td><td>358.02</td></tr>
+      <tr><td>Error rate (http_req_failed)</td><td>0.05</td></tr>
+      <tr><td>p50 (med)</td><td>2.93 ms</td></tr>
+      <tr><td>p95</td><td>7.36 ms</td></tr>
+      <tr><td>p99</td><td>11.70 ms</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2. Porównanie scenariuszy (p50 / p95 / p99, ms)</h2>
+  <p>Dla D–E–F baseline jest puste — pierwszy pomiar w kolumnie „final”.</p>
+  <table><thead><tr><th>Scenariusz</th><th>p50 base</th><th>p50 final</th><th>p95 base</th><th>p95 final</th><th>p99 base</th><th>p99 final</th></tr></thead><tbody><tr>
+        <td><strong>A</strong> GET health/home</td>
+        <td>2.24</td>
+        <td>2.23</td>
+        <td>6.68</td>
+        <td>6.32</td>
+        <td>11.04</td>
+        <td>11.09</td>
+      </tr><tr>
+        <td><strong>B</strong> GET search</td>
+        <td>3.80</td>
+        <td>3.80</td>
+        <td>7.93</td>
+        <td>7.89</td>
+        <td>13.43</td>
+        <td>12.06</td>
+      </tr><tr>
+        <td><strong>C</strong> GET quotes</td>
+        <td>6.88</td>
+        <td>5.29</td>
+        <td>10.32</td>
+        <td>8.52</td>
+        <td>13.16</td>
+        <td>11.67</td>
+      </tr><tr>
+        <td><strong>D</strong> GET dividends</td>
+        <td>—</td>
+        <td>3.65</td>
+        <td>—</td>
+        <td>8.40</td>
+        <td>—</td>
+        <td>12.98</td>
+      </tr><tr>
+        <td><strong>E</strong> GET screener</td>
+        <td>—</td>
+        <td>3.57</td>
+        <td>—</td>
+        <td>8.93</td>
+        <td>—</td>
+        <td>13.96</td>
+      </tr><tr>
+        <td><strong>F</strong> POST tax PL</td>
+        <td>—</td>
+        <td>3.09</td>
+        <td>—</td>
+        <td>5.37</td>
+        <td>—</td>
+        <td>6.92</td>
+      </tr></tbody></table>
+
+  <h2>3. CSV — interpretacja</h2>
+  <p><code>improvement_percent</code> = <code>(baseline_p95 - final_p95) / baseline_p95 × 100</code>. Wartość dodatnia = krótszy czas odpowiedzi w FINAL (lepiej).</p>
+
+  <h2>4. Analiza (heurystyka)</h2>
+  <div class="hint">Dla A–C p95 w FINAL jest nieco niższe lub zbliżone — baseline nie wygląda na zdegradowany; Redis może obniżać koszt powtarzalnych zapytań (quotes/search) po rozgrzaniu.</div><div class="hint">Wysoki globalny error rate w FINAL (5.4%): często 404 na /api/quotes gdy brak notowania w DB — sprawdź seed i dane; baseline 6.9%.</div><div class="hint">Redis: przy powtarzających się GET /api/quotes i /api/companies/search oczekuj spadku opóźnień po pierwszym żądaniu (TTL w config/redis.ts). Dywidendy i screener korzystają z cache Redis — drugie i kolejne żądania tego samego klucza powinny być szybsze w realnym ruchu.</div><div class="hint">Wąskie gardła: screener (agregacja wielu wierszy w DB) oraz pierwsze trafienia bez cache; tax-calculator jest lekki (CPU), ale pod obciążeniem sprawdź event loop.</div>
+
+  <h2>5. Opis scenariuszy FINAL</h2>
+  <ul>
+    <li><strong>A</strong>: 100 VU × 2 min — GET health</li>
+    <li><strong>B</strong>: 50 VU × 2 min — GET company search</li>
+    <li><strong>C</strong>: 20 VU × 2 min — GET quote</li>
+    <li><strong>D</strong>: 30 VU × 2 min — GET /api/dividends/AAPL?years=5</li>
+    <li><strong>E</strong>: 25 VU × 2 min — GET screener growth</li>
+    <li><strong>F</strong>: 10 VU × 2 min — POST tax calculator</li>
+  </ul>
+  <p>Oś czasu: A→B→C sekwencyjnie; D i E równolegle (6–8 min); F (8–10 min).</p>
+</body>
+</html>

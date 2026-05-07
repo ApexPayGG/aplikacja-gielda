@@ -1,0 +1,7 @@
+scenario,baseline_p95,final_p95,difference_ms,improvement_%
+A,6.68,6.32,-0.36,5.4
+B,7.93,7.89,-0.04,0.6
+C,10.32,8.52,-1.80,17.5
+D,,8.40,,
+E,,8.93,,
+F,,5.37,,

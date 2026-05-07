@@ -1,0 +1,155 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: stockai-pro
+      IMAGE_TAG_SHA: ${{ github.sha }}
+      HETZNER_USER: ${{ secrets.HETZNER_USER }}
+      HETZNER_IP: ${{ secrets.HETZNER_IP }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/api/package-lock.json
+
+      - name: Install deps
+        working-directory: apps/api
+        run: npm ci
+
+      - name: Lint
+        working-directory: apps/api
+        run: npm run lint --if-present
+
+      - name: Test
+        working-directory: apps/api
+        run: npm run test --if-present
+
+      - name: Build
+        working-directory: apps/api
+        run: npm run build --if-present
+
+      - name: Docker build
+        run: |
+          docker build -t ${IMAGE_NAME}:latest .
+          docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${IMAGE_TAG_SHA}
+
+      - name: Login to Docker Hub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+
+      - name: Push image
+        run: |
+          docker push ${IMAGE_NAME}:latest
+          docker push ${IMAGE_NAME}:${IMAGE_TAG_SHA}
+
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${HETZNER_IP}" >> ~/.ssh/known_hosts
+
+      - name: Deploy to Hetzner VPS
+        run: |
+          ssh -i ~/.ssh/id_rsa "${HETZNER_USER}@${HETZNER_IP}" << 'EOF'
+          set -e
+          cd /opt/stockai-pro
+          PREV_IMAGE_ID="$(docker inspect --format='{{.Image}}' stockai-pro 2>/dev/null || true)"
+          docker pull stockai-pro:latest
+
+          # Canary phase: run new image side-by-side on :3001.
+          APP_NETWORK="$(docker inspect stockai-timescaledb --format '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' 2>/dev/null || true)"
+          if [ -z "${APP_NETWORK}" ]; then
+            APP_NETWORK="$(docker network ls --format '{{.Name}}' | awk '/stockai/ {print; exit}')"
+          fi
+
+          docker rm -f stockai-pro-canary >/dev/null 2>&1 || true
+          docker run -d \
+            --name stockai-pro-canary \
+            --env-file .env.production \
+            -e NODE_ENV=production \
+            -e PORT=3000 \
+            --network "${APP_NETWORK}" \
+            -p 3001:3000 \
+            stockai-pro:latest
+
+          CANARY_OK=0
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:3001/health >/dev/null 2>&1; then
+              CANARY_OK=1
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "$CANARY_OK" -ne 1 ]; then
+            echo "Canary startup failed."
+            docker logs --tail=200 stockai-pro-canary || true
+            docker rm -f stockai-pro-canary >/dev/null 2>&1 || true
+            exit 1
+          fi
+
+          # 10% canary gate (10 probes, >=9 must pass).
+          CANARY_SUCCESS=0
+          for i in $(seq 1 10); do
+            if curl -fsS http://localhost:3001/health >/dev/null 2>&1; then
+              CANARY_SUCCESS=$((CANARY_SUCCESS + 1))
+            fi
+            sleep 1
+          done
+
+          if [ "$CANARY_SUCCESS" -lt 9 ]; then
+            echo "Canary probe gate failed: ${CANARY_SUCCESS}/10"
+            docker logs --tail=200 stockai-pro-canary || true
+            docker rm -f stockai-pro-canary >/dev/null 2>&1 || true
+            exit 1
+          fi
+
+          echo "Canary passed (${CANARY_SUCCESS}/10). Promoting to 100% traffic..."
+          docker rm -f stockai-pro-canary >/dev/null 2>&1 || true
+          export STOCKAI_IMAGE=stockai-pro:latest
+          docker compose down
+          docker compose up -d
+
+          HEALTH_OK=0
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:3000/health >/dev/null 2>&1; then
+              HEALTH_OK=1
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "$HEALTH_OK" -ne 1 ]; then
+            echo "Smoke check failed. Attempting rollback..."
+            if [ -n "${PREV_IMAGE_ID}" ]; then
+              docker tag "${PREV_IMAGE_ID}" stockai-pro:rollback
+              export STOCKAI_IMAGE=stockai-pro:rollback
+              docker compose down
+              docker compose up -d
+              echo "Rollback deployed."
+            else
+              echo "No previous image found for rollback."
+            fi
+            docker compose logs --tail=200
+            exit 1
+          fi
+
+          docker compose logs -f --tail=100
+          EOF

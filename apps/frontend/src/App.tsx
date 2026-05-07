@@ -1,6 +1,8 @@
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { CompanyDetail } from "./pages/CompanyDetail";
 import { Dashboard } from "./pages/Dashboard";
+import { DividendIntelligencePage } from "./pages/DividendIntelligencePage";
+import { Dividends } from "./pages/Dividends";
 import { Home } from "./pages/Home";
 
 export default function App() {
@@ -18,6 +20,12 @@ export default function App() {
             <Link to="/dashboard" className="text-slate-400 hover:text-white">
               Dashboard
             </Link>
+            <Link to="/dividends" className="text-slate-400 hover:text-white">
+              Dividends
+            </Link>
+            <Link to="/intelligence/dividends" className="text-slate-400 hover:text-white">
+              Dividend Intelligence
+            </Link>
           </div>
         </div>
       </nav>
@@ -26,6 +34,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dividends" element={<Dividends />} />
+          <Route path="/intelligence/dividends" element={<DividendIntelligencePage />} />
           <Route path="/company/:symbol" element={<CompanyDetail />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
