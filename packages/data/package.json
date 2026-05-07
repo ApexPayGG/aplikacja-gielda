@@ -1,0 +1,20 @@
+{
+  "name": "@stockai/data",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./polygon/client": "./src/polygon/client.ts"
+  },
+  "peerDependencies": {
+    "pino": "^9.14.0"
+  },
+  "peerDependenciesMeta": {
+    "pino": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6"
+  }
+}

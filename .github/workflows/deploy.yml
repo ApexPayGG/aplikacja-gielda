@@ -1,3 +1,5 @@
+# Scheduled Polygon quote ingestion (every 5 min, SSH → docker exec) lives in
+# `.github/workflows/polygon-live-ingest.yml` so pushes to main do not rebuild/deploy on that cadence.
 name: Deploy
 
 on:

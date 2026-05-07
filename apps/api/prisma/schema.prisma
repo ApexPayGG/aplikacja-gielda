@@ -74,6 +74,26 @@ model Quote {
   @@map("quotes")
 }
 
+/// Live Polygon snapshots (5‑minute ingest job). Separate from legacy OHLC `quotes` tied to `companies`.
+model LiveQuote {
+  id             BigInt   @id @default(autoincrement())
+  ticker         String   @db.VarChar(10)
+  price          Decimal  @db.Decimal(10, 2)
+  open           Decimal? @db.Decimal(10, 2)
+  high           Decimal? @db.Decimal(10, 2)
+  low            Decimal? @db.Decimal(10, 2)
+  close          Decimal? @db.Decimal(10, 2)
+  volume         BigInt?
+  vwap           Decimal? @db.Decimal(10, 2)
+  idempotencyKey String   @unique @map("idempotency_key") @db.VarChar(64)
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([ticker])
+  @@index([createdAt(sort: Desc)])
+  @@map("live_quotes")
+}
+
 model News {
   id        BigInt   @default(autoincrement())
   symbol    String

@@ -1,16 +1,15 @@
 FROM node:20-alpine AS deps
-WORKDIR /app
+WORKDIR /repo/apps/api
+COPY packages/data /repo/packages/data
 COPY apps/api/package*.json ./
 RUN npm ci
 
 FROM node:20-alpine AS runtime
-WORKDIR /app
+WORKDIR /repo/apps/api
 ENV NODE_ENV=production
 
-# Copy Prisma schema (wymagane do runtime)
-COPY apps/api/prisma ./prisma
-
-COPY --from=deps /app/node_modules ./node_modules
+COPY packages/data /repo/packages/data
+COPY --from=deps /repo/apps/api/node_modules ./node_modules
 COPY apps/api ./
 
 EXPOSE 3000

@@ -18,6 +18,7 @@ import { registerScanSignals, scheduleScanSignalsJob } from "./jobs/scanSignals"
 import { processSignalQueue } from "./jobs/queues/processSignal";
 import { registerProcessSignal } from "./jobs/processSignal";
 import { registerPortfolioSnapshots, scheduleDailyPortfolioSnapshotsJob } from "./jobs/portfolioSnapshots";
+import { registerFetchPolygonQuotes } from "./jobs/fetchPolygonQuotes";
 
 const QUEUE_NAME = "market-scrape";
 const SYMBOLS = ["AAPL", "GOOGL", "MSFT"] as const;
@@ -104,6 +105,8 @@ export async function startScheduler(): Promise<void> {
   const divAlertsWorkerConn = createRedisConnection();
   const portfolioConn = createRedisConnection();
   const portfolioWorkerConn = createRedisConnection();
+  const fetchQuotesConn = createRedisConnection();
+  const fetchQuotesWorkerConn = createRedisConnection();
 
   const queue = new Queue(QUEUE_NAME, { connection });
   const worker = new Worker(QUEUE_NAME, () => runHourlyJob(), { connection: duplicate });
@@ -177,6 +180,21 @@ export async function startScheduler(): Promise<void> {
   });
   await scheduleScanSignalsJob(scanQueue);
 
+  if (process.env.POLYGON_API_KEY) {
+    const { queue: fetchQuotesQueue, worker: fetchQuotesWorker } = registerFetchPolygonQuotes(
+      fetchQuotesConn,
+      fetchQuotesWorkerConn,
+    );
+    fetchQuotesWorker.on("failed", (job, err) => {
+      console.error(`[scheduler] polygon fetch quotes job ${job?.id} failed`, err);
+    });
+    fetchQuotesWorker.on("completed", (job) => {
+      console.log(`[scheduler] polygon fetch quotes job ${job.id} completed`);
+    });
+  } else {
+    console.log("[scheduler] Polygon live quotes: disabled (POLYGON_API_KEY not set)");
+  }
+
   // Register process signal worker
   registerProcessSignal(processSignalQueue);
 
@@ -186,6 +204,11 @@ export async function startScheduler(): Promise<void> {
   console.log("[scheduler] Portfolio snapshots: daily @ 17:00 UTC (queue portfolio-snapshots)");
   console.log("[scheduler] Fundamentals (EODHD): daily @ 03:00 UTC (queue fundamental-sync)");
   console.log("[scheduler] Scan signals: every 5 minutes (queue scan:signals)");
+  if (process.env.POLYGON_API_KEY) {
+    console.log(
+      "[scheduler] Polygon live quotes: worker ready (enqueue via GitHub cron or `npm run job:fetch-quotes`)",
+    );
+  }
 }
 
 const schedulerFile = path.resolve(fileURLToPath(import.meta.url));

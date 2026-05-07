@@ -6,6 +6,7 @@
     "start": "tsx src/index.ts",
     "server": "tsx src/server.ts",
     "scheduler": "tsx src/scheduler.ts",
+    "job:fetch-quotes": "tsx scripts/trigger-fetch-quotes.ts",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed",

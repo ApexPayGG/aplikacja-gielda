@@ -9,37 +9,34 @@ const TEST_SOURCE = "scan-signals-integration";
 const TEST_EXCHANGE = "US";
 
 const testDbUrl = process.env.DATABASE_URL_TEST;
-if (!testDbUrl) {
-  throw new Error("DATABASE_URL_TEST is required for scanSignals integration test");
-}
 
-const testPrisma = new PrismaClient({
-  datasourceUrl: testDbUrl,
-});
-
-async function seedQuotes30Bars5Days(): Promise<void> {
-  const now = Date.now();
-  const startMs = now - 5 * 24 * 60 * 60 * 1000;
-  const stepMs = 4 * 60 * 60 * 1000;
-
-  const rows = Array.from({ length: 30 }, (_, i) => {
-    const base = 180 + i * 0.4;
-    return {
-      symbol: TEST_SYMBOL,
-      timestamp: new Date(startMs + i * stepMs),
-      open: base,
-      high: base + 1.2,
-      low: base - 0.8,
-      close: base + 0.5,
-      volume: BigInt(1_000_000 + i * 12_500),
-      source: TEST_SOURCE,
-    };
+describe("scanSignals integration", { skip: !testDbUrl }, () => {
+  const testPrisma = new PrismaClient({
+    datasourceUrl: testDbUrl!,
   });
 
-  await testPrisma.quote.createMany({ data: rows });
-}
+  async function seedQuotes30Bars5Days(): Promise<void> {
+    const now = Date.now();
+    const startMs = now - 5 * 24 * 60 * 60 * 1000;
+    const stepMs = 4 * 60 * 60 * 1000;
 
-describe("scanSignals integration", () => {
+    const rows = Array.from({ length: 30 }, (_, i) => {
+      const base = 180 + i * 0.4;
+      return {
+        symbol: TEST_SYMBOL,
+        timestamp: new Date(startMs + i * stepMs),
+        open: base,
+        high: base + 1.2,
+        low: base - 0.8,
+        close: base + 0.5,
+        volume: BigInt(1_000_000 + i * 12_500),
+        source: TEST_SOURCE,
+      };
+    });
+
+    await testPrisma.quote.createMany({ data: rows });
+  }
+
   const queuedProcessSignals: Array<{ name: string; payload: unknown }> = [];
   const queuedProcessAlerts: Array<{ name: string; payload: unknown }> = [];
   const capturedLogs: Array<Record<string, unknown>> = [];
