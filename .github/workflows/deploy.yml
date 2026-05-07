@@ -65,6 +65,31 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H "${HETZNER_IP}" >> ~/.ssh/known_hosts
 
+      - name: Create .env.production
+        run: |
+          cat > .env.production << 'ENVEOF'
+          NODE_ENV=production
+          PORT=3000
+          DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@timescaledb:5432/stockai
+          REDIS_URL=redis://redis:6379
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POLYGON_API_KEY=${{ secrets.POLYGON_API_KEY }}
+          EODHD_API_KEY=${{ secrets.EODHD_API_KEY }}
+          ALPHA_VANTAGE_KEY=${{ secrets.ALPHA_VANTAGE_KEY }}
+          FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+          DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_GUILD_ID=${{ secrets.DISCORD_GUILD_ID }}
+          RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+          ENVEOF
+
+      - name: Copy .env.production to Hetzner
+        run: |
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+            .env.production "${HETZNER_USER}@${HETZNER_IP}:/opt/stockai-pro/"
+
       - name: Deploy to Hetzner VPS
         run: |
           ssh -i ~/.ssh/id_rsa "${HETZNER_USER}@${HETZNER_IP}" << 'EOF'
