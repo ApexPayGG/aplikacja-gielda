@@ -35,6 +35,27 @@ enum PaperTradeStatus {
   CLOSED
 }
 
+enum ExitAction {
+  HOLD
+  EXIT_NOW
+  TIGHTEN_SL
+  SCALE_OUT
+}
+
+enum ExitUrgency {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlphaWindowType {
+  EARNINGS_CYCLE
+  SEASONAL
+  SECTOR_ROTATION
+  REGIME_SHIFT
+}
+
 model User {
   id                  String              @id @default(cuid())
   createdAt           DateTime            @default(now()) @map("created_at")
@@ -254,6 +275,10 @@ model Signal {
   scoring_reasoning String?
   marketRegime      String?
   regimeConfidence  Int?
+  narrativeHeadline String?
+  narrativeBody     String?
+  narrativeRisk     String?
+  narrativeConfidence String?
 
   // Meta
   created_at     DateTime @default(now())
@@ -346,4 +371,36 @@ model BehavioralSnapshot {
 
   @@index([userId, calculatedAt])
   @@map("behavioral_snapshots")
+}
+
+model ExitSignal {
+  id        String      @id @default(cuid())
+  tradeId   String      @map("trade_id")
+  ticker    String
+  action    ExitAction
+  urgency   ExitUrgency
+  pnlPct    Float       @map("pnl_pct")
+  reason    String
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  @@index([tradeId, createdAt])
+  @@index([ticker, createdAt])
+  @@map("exit_signals")
+}
+
+model AlphaWindow {
+  id                  String          @id @default(cuid())
+  ticker              String
+  windowStart         DateTime        @map("window_start")
+  windowEnd           DateTime        @map("window_end")
+  type                AlphaWindowType
+  probabilityScore    Int             @map("probability_score")
+  historicalAvgReturn Float           @map("historical_avg_return")
+  description         String
+  aiNote              String          @map("ai_note")
+  createdAt           DateTime        @default(now()) @map("created_at")
+
+  @@index([ticker, createdAt])
+  @@index([type, probabilityScore])
+  @@map("alpha_windows")
 }

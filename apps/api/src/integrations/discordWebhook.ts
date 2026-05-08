@@ -14,6 +14,14 @@ interface SignalAlertMeta {
   stopLoss?: number;
   takeProfit?: number;
   logicalChannel?: string;
+  marketRegime?: string;
+  regimeConfidence?: number;
+  playbookAction?: string;
+  signalDna?: string;
+  narrativeHeadline?: string;
+  narrativeBody?: string;
+  narrativeRisk?: string;
+  narrativeConfidence?: "HIGH" | "MEDIUM" | "LOW";
 }
 
 interface SignalAlertInput {
@@ -99,29 +107,53 @@ function buildEmbed(
   const setup = meta?.setup ?? signal;
   const timeframe = meta?.timeframe ?? "swing (1D)";
   const confidence = meta?.confidence ?? 0;
-  const confidenceText = confidence > 0 ? `${Math.max(0, Math.min(100, Math.round(confidence)))}%` : "n/a";
+  const modelConfidenceText = confidence > 0 ? `${Math.max(0, Math.min(100, Math.round(confidence)))}%` : "n/a";
+  const narrativeConfidence = meta?.narrativeConfidence ?? "MEDIUM";
   return {
-    title: `${emoji} ${ticker.toUpperCase()} • ${signal}`,
-    description: `**AI Brief**\n${normalizeBrief(brief)}`,
+    title: meta?.narrativeHeadline?.trim() || `${emoji} ${ticker.toUpperCase()} • ${signal}`,
+    description: meta?.narrativeBody?.trim() || `**AI Brief**\n${normalizeBrief(brief)}`,
     color: scoreColor(safeScore),
     fields: [
       { name: "Ticker", value: `\`${ticker.toUpperCase()}\``, inline: true },
       { name: "Setup", value: setup, inline: true },
       { name: "Timeframe", value: timeframe, inline: true },
       { name: "Risk Score", value: `**${safeScore}/100** (${band})`, inline: true },
-      { name: "Confidence", value: confidenceText, inline: true },
+      { name: "Model Confidence", value: modelConfidenceText, inline: true },
+      { name: "Confidence", value: narrativeConfidence, inline: true },
+      ...(meta?.marketRegime
+        ? [
+            {
+              name: "Market Regime",
+              value: `${meta.marketRegime} (${Math.max(0, Math.min(100, Math.round(meta.regimeConfidence ?? 0)))}%)`,
+              inline: true,
+            },
+          ]
+        : []),
       {
         name: "Levels",
         value: `Entry: ${formatPrice(meta?.entry)} | SL: ${formatPrice(meta?.stopLoss)} | TP: ${formatPrice(meta?.takeProfit)}`,
         inline: false,
       },
       { name: "Chart", value: `[Open on TradingView](${chartLink})`, inline: true },
-      { name: "Action", value: "Confirm setup with your strategy before entry.", inline: false },
+      {
+        name: "Action",
+        value: meta?.playbookAction ?? "Confirm setup with your strategy before entry.",
+        inline: false,
+      },
+      ...(meta?.signalDna
+        ? [
+            {
+              name: "Signal DNA",
+              value: meta.signalDna,
+              inline: false,
+            },
+          ]
+        : []),
     ],
     thumbnail: {
       url: "https://s3.tradingview.com/static/bundles/chart-widget-logo.svg",
     },
-    footer: { text: "Stock-AI Pro • Discord Signal Alert" },
+    footer: { text: meta?.narrativeRisk?.trim() || "Stock-AI Pro • Discord Signal Alert" },
     timestamp: new Date().toISOString(),
   };
 }

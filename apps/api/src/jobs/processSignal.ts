@@ -3,6 +3,9 @@ import Anthropic from "@anthropic-ai/sdk";
 import pino from "pino";
 import { prisma } from "../db/index";
 import { getMarketRegime, type MarketRegime } from "../marketRegime";
+import { getDividendHealth, type DividendData } from "../modules/dividend/dividendModule";
+import { generateNarrative, type NarrativeContext } from "../modules/narrativeEngine/narrativeEngine";
+import { getSignalDnaSummary } from "../modules/signalDna/signalDna";
 import { enqueueDiscordSignalAlert } from "../queues/discordSignalAlerts";
 import { getCacheRedis } from "../redis";
 import { recordAlphaJournalEvent } from "../services/alphaJournalService";
@@ -39,6 +42,8 @@ interface BriefInput {
   market_sentiment: string;
   sector_trend: string;
   vix: number;
+  regime: string;
+  regime_description: string;
 }
 
 interface ScoreInput {
@@ -61,6 +66,14 @@ interface SignalAlertPayload {
   stopLoss?: number;
   takeProfit?: number;
   logicalChannel?: string;
+  marketRegime?: string;
+  regimeConfidence?: number;
+  playbookAction?: string;
+  signalDna?: string;
+  narrativeHeadline?: string;
+  narrativeBody?: string;
+  narrativeRisk?: string;
+  narrativeConfidence?: "HIGH" | "MEDIUM" | "LOW";
 }
 
 interface NewsItem {
@@ -230,6 +243,7 @@ async function defaultGenerateSignalBrief(input: BriefInput): Promise<{ pl: stri
       "Length must be 30 to 50 words.",
       "Tone: professional, concise, risk-aware.",
       `Pattern: ${input.pattern_type}, confidence: ${input.confidence}, RSI: ${input.rsi}, MACD: ${input.macd}, volume ratio: ${input.volume_ratio}, win rate: ${input.win_rate}, avg return 10d: ${input.avg_return_10d}, max drawdown: ${input.max_drawdown}, sentiment: ${input.market_sentiment}, sector: ${input.sector_trend}, VIX: ${input.vix}.`,
+      `Aktualny reżim rynkowy: ${input.regime} — ${input.regime_description}. Uwzględnij to w analizie.`,
       "Return only plain text with no markdown.",
     ].join(" ");
 
@@ -279,6 +293,23 @@ async function localFallbackMarketRegime(): Promise<MarketRegime> {
   };
 }
 
+function buildPlaybookAction(regime: MarketRegime, setupType: string): string {
+  const setup = setupType.toLowerCase();
+  if (regime.regime === "RISK_OFF") {
+    return "Reduce risk, wait for stronger confirmation, and prefer defensive setups.";
+  }
+  if (regime.regime === "RANGING") {
+    return "Favor mean-reversion entries near range edges; avoid chasing breakouts.";
+  }
+  if (regime.regime === "TRENDING" && setup.includes("breakout")) {
+    return "Add on pullbacks after breakout confirmation; trail stop below structure.";
+  }
+  if (setup.includes("momentum") || setup.includes("volume")) {
+    return "Scale in with momentum continuation only while volume stays supportive.";
+  }
+  return "Watch for confirmation before entry and keep position sizing disciplined.";
+}
+
 async function defaultSendSignalAlert(input: SignalAlertPayload): Promise<void> {
   await enqueueDiscordSignalAlert({
     ticker: input.ticker,
@@ -292,7 +323,22 @@ async function defaultSendSignalAlert(input: SignalAlertPayload): Promise<void> 
     stopLoss: input.stopLoss,
     takeProfit: input.takeProfit,
     logicalChannel: input.logicalChannel,
+    marketRegime: input.marketRegime,
+    regimeConfidence: input.regimeConfidence,
+    signalDna: input.signalDna,
+    narrativeHeadline: input.narrativeHeadline,
+    narrativeBody: input.narrativeBody,
+    narrativeRisk: input.narrativeRisk,
+    narrativeConfidence: input.narrativeConfidence,
   });
+}
+
+async function maybeGetDividendData(ticker: string): Promise<DividendData | undefined> {
+  try {
+    return await getDividendHealth(ticker);
+  } catch {
+    return undefined;
+  }
 }
 
 async function sendRadarSummaryWebhook(items: Array<{ ticker: string; score: number }>): Promise<void> {
@@ -479,6 +525,8 @@ export async function runProcessSignalJob(
     const sentiment = await deps.classifySentiment({ ticker: signal.ticker, news });
     const macro = await deps.fetchMacroContext(signal.ticker);
 
+    const regime = await getMarketRegime(signal.ticker);
+
     const brief = await deps.generateSignalBrief({
       ticker: signal.ticker,
       pattern_type: signal.pattern_type,
@@ -496,6 +544,8 @@ export async function runProcessSignalJob(
       market_sentiment: sentiment.label,
       sector_trend: macro.sectorTrend,
       vix: macro.vix,
+      regime: regime.regime,
+      regime_description: regime.description,
     });
 
     const technical = computeTechnicalScore(technicalData, signal.confidence);
@@ -503,28 +553,34 @@ export async function runProcessSignalJob(
     const sentimentScore = clampScore(sentiment.score);
     const fundamentals = 50;
     const macroScore = computeMacroScore(macro);
-    const marketRegime = await deps.fetchMarketRegime(signal.ticker);
-    const patternWeightKey = classifyPatternWeightKey(signal.pattern_type);
-    const regimeWeight = marketRegime.weights[patternWeightKey];
-    const adjustedTechnical = clampScore(technical * regimeWeight);
-    const adjustedHistory = clampScore(history * (0.7 + regimeWeight * 0.3));
-    const adjustedSentiment = clampScore(sentimentScore * (0.85 + marketRegime.confidence / 1000));
-
     const scored = await deps.scoreSignal({
-      technical: adjustedTechnical,
-      history: adjustedHistory,
-      sentiment: adjustedSentiment,
+      technical,
+      history,
+      sentiment: sentimentScore,
       fundamentals,
       macro: macroScore,
     });
+
+    let finalScore = scored.score;
+    const setupType = signal.pattern_type.toLowerCase();
+    if (setupType.includes("breakout")) {
+      finalScore *= regime.weights.breakout;
+    } else if (setupType.includes("oversold") || setupType.includes("bounce")) {
+      finalScore *= regime.weights.mean_reversion;
+    } else if (setupType.includes("momentum") || setupType.includes("volume")) {
+      finalScore *= regime.weights.momentum;
+    }
+    finalScore = Math.min(100, Math.max(0, Math.round(finalScore)));
 
     const updated = await deps.db.signal.update({
       where: { id: signal.id },
       data: {
         brief_pl: brief.pl,
         brief_en: brief.en,
-        score: scored.score,
-        scoring_reasoning: `${scored.reasoning} | regime=${marketRegime.regime} confidence=${marketRegime.confidence} weight=${regimeWeight.toFixed(2)} key=${patternWeightKey}`,
+        score: finalScore,
+        scoring_reasoning: `${scored.reasoning} | regime=${regime.regime} confidence=${regime.confidence}`,
+        marketRegime: regime.regime,
+        regimeConfidence: regime.confidence,
       },
     });
 
@@ -532,27 +588,82 @@ export async function runProcessSignalJob(
       ts: new Date().toISOString(),
       feature: "market_regime_ai",
       symbol: signal.ticker.toUpperCase(),
-      impactScore: clampScore(scored.score - technical),
-      details: `Regime ${marketRegime.regime} (${marketRegime.confidence}%) applied weight ${regimeWeight.toFixed(2)} for ${patternWeightKey}.`,
+      impactScore: clampScore(finalScore - scored.score),
+      details: `Regime ${regime.regime} (${regime.confidence}%) applied to setup ${signal.pattern_type}.`,
       metadata: {
         patternType: signal.pattern_type,
-        regime: marketRegime.regime,
-        regimeConfidence: marketRegime.confidence,
-        weightKey: patternWeightKey,
-        weightValue: regimeWeight,
-        baseTechnical: technical,
-        adjustedTechnical,
-        baseHistory: history,
-        adjustedHistory,
+        regime: regime.regime,
+        regimeConfidence: regime.confidence,
+        baseScore: scored.score,
+        finalScore,
       },
     });
 
     try {
+      const signalDna = await getSignalDnaSummary(updated.id).catch(() => null);
+      const topTwin = signalDna?.twins?.[0];
+      const signalDnaField = topTwin
+        ? `Top twin: ${topTwin.ticker} ${topTwin.date} → ${topTwin.resultPct.toFixed(2)}%`
+        : "Brak wystarczających danych historycznych.";
+      const dividendData = await maybeGetDividendData(updated.ticker);
       const supportLevel = Number(technicalData.support_level);
       const resistanceLevel = Number(technicalData.resistance_level);
       const entry = Number(technicalData.entry_price);
       const stopLoss = Number(technicalData.stop_loss);
       const takeProfit = Number(technicalData.take_profit);
+      const resolvedEntry = Number.isFinite(entry) ? entry : Number(technicalData.current_price ?? supportLevel ?? 0);
+      const resolvedSl = Number.isFinite(stopLoss)
+        ? stopLoss
+        : Number.isFinite(supportLevel)
+          ? supportLevel * 0.99
+          : resolvedEntry * 0.97;
+      const resolvedTp = Number.isFinite(takeProfit)
+        ? takeProfit
+        : Number.isFinite(resistanceLevel)
+          ? resistanceLevel
+          : Number.isFinite(supportLevel)
+            ? supportLevel * 1.05
+            : resolvedEntry * 1.06;
+      const risk = Math.max(0.0001, resolvedEntry - resolvedSl);
+      const reward = Math.max(0, resolvedTp - resolvedEntry);
+      const riskRewardRatio = Number((reward / risk).toFixed(4));
+      const narrativeContext: NarrativeContext = {
+        signal: {
+          ticker: updated.ticker,
+          setupType: updated.pattern_type,
+          rsiValue: Number(technicalData.rsi ?? 50),
+          volumeRatio: Number(technicalData.volume_ratio ?? 1),
+          score: updated.score ?? 0,
+        },
+        regime,
+        dna: {
+          avgResultPct: signalDna?.avgResultPct ?? 0,
+          winRate: signalDna?.winRate ?? 0,
+          bestCase: signalDna?.bestCase ?? 0,
+          worstCase: signalDna?.worstCase ?? 0,
+          topTwin: topTwin
+            ? { ticker: topTwin.ticker, date: topTwin.date, resultPct: topTwin.resultPct }
+            : null,
+          twinsCount: signalDna?.twins?.length ?? 0,
+        },
+        exitLevels: {
+          entry: Number(resolvedEntry.toFixed(4)),
+          sl: Number(resolvedSl.toFixed(4)),
+          tp: Number(resolvedTp.toFixed(4)),
+          riskRewardRatio,
+        },
+        dividendData,
+      };
+      const narrative = await generateNarrative(narrativeContext);
+      await deps.db.signal.update({
+        where: { id: updated.id },
+        data: {
+          narrativeHeadline: narrative.headline,
+          narrativeBody: narrative.body,
+          narrativeRisk: narrative.riskNote,
+          narrativeConfidence: narrative.confidence,
+        },
+      });
       await routeDiscordAlert(deps, {
         ticker: updated.ticker,
         signal: updated.pattern_type,
@@ -562,16 +673,17 @@ export async function runProcessSignalJob(
         timeframe: "1D",
         setup: updated.pattern_type,
         logicalChannel: updated.pattern_type,
-        entry: Number.isFinite(entry) ? entry : undefined,
-        stopLoss: Number.isFinite(stopLoss) ? stopLoss : Number.isFinite(supportLevel) ? supportLevel * 0.99 : undefined,
-        takeProfit:
-          Number.isFinite(takeProfit)
-            ? takeProfit
-            : Number.isFinite(resistanceLevel)
-              ? resistanceLevel
-              : Number.isFinite(supportLevel)
-                ? supportLevel * 1.05
-                : undefined,
+        marketRegime: regime.regime,
+        regimeConfidence: regime.confidence,
+        playbookAction: buildPlaybookAction(regime, updated.pattern_type),
+        signalDna: signalDnaField,
+        narrativeHeadline: narrative.headline,
+        narrativeBody: narrative.body,
+        narrativeRisk: narrative.riskNote,
+        narrativeConfidence: narrative.confidence,
+        entry: resolvedEntry,
+        stopLoss: resolvedSl,
+        takeProfit: resolvedTp,
       });
     } catch (error) {
       await deps.dlqQueue.add("discord:signal:failed", {

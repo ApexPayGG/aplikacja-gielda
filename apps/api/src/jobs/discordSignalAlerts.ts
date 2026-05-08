@@ -20,6 +20,14 @@ export interface DiscordSignalAlertJobInput {
   stopLoss?: number;
   takeProfit?: number;
   logicalChannel?: string;
+  marketRegime?: string;
+  regimeConfidence?: number;
+  playbookAction?: string;
+  signalDna?: string;
+  narrativeHeadline?: string;
+  narrativeBody?: string;
+  narrativeRisk?: string;
+  narrativeConfidence?: "HIGH" | "MEDIUM" | "LOW";
 }
 
 const logger = pino({
@@ -57,6 +65,14 @@ export function registerDiscordSignalAlerts(): { queue: Queue; worker: Worker; d
           stopLoss: input.stopLoss,
           takeProfit: input.takeProfit,
           logicalChannel: input.logicalChannel,
+          marketRegime: input.marketRegime,
+          regimeConfidence: input.regimeConfidence,
+          playbookAction: input.playbookAction,
+          signalDna: input.signalDna,
+          narrativeHeadline: input.narrativeHeadline,
+          narrativeBody: input.narrativeBody,
+          narrativeRisk: input.narrativeRisk,
+          narrativeConfidence: input.narrativeConfidence,
         },
       });
       return { dispatchedAt: new Date().toISOString(), ticker: input.ticker, signal: input.signal };

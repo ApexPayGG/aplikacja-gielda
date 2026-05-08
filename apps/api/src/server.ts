@@ -53,9 +53,12 @@ import { createDividendRouter } from "./routes/dividend";
 import { createBacktestRouter } from "./routes/backtest";
 import { createPortfolioRouter } from "./routes/portfolio";
 import { createPaperTradingRouter } from "./routes/paperTrading";
+import { createExitIntelligenceRouter } from "./routes/exitIntelligence";
 import { createQuotesRouter } from "./routes/quotes";
 import { createAlphaJournalRouter } from "./routes/alphaJournal";
+import { createAlphaCalendarRouter } from "./routes/alphaCalendar";
 import { createSignalMemoryRouter } from "./routes/signalMemory";
+import { createSignalDnaRouter } from "./routes/signalDna";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -121,9 +124,12 @@ export function createApp(): express.Express {
   app.use(createBacktestRouter());
   app.use(createPortfolioRouter());
   app.use(createPaperTradingRouter());
+  app.use(createExitIntelligenceRouter());
   app.use(createQuotesRouter());
   app.use(createAlphaJournalRouter());
+  app.use(createAlphaCalendarRouter());
   app.use(createSignalMemoryRouter());
+  app.use(createSignalDnaRouter());
 
   app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });
