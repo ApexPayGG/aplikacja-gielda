@@ -49,6 +49,7 @@ import {
 } from "./services/dividendSustainabilityPersistenceService";
 import { createCopilotRouter } from "./routes/copilot";
 import { createDividendsRouter } from "./routes/dividends";
+import { createDividendRouter } from "./routes/dividend";
 import { createBacktestRouter } from "./routes/backtest";
 import { createPortfolioRouter } from "./routes/portfolio";
 import { createQuotesRouter } from "./routes/quotes";
@@ -115,6 +116,7 @@ export function createApp(): express.Express {
   app.use(express.json({ limit: "1mb" }));
   app.use(createCopilotRouter());
   app.use(createDividendsRouter());
+  app.use(createDividendRouter());
   app.use(createBacktestRouter());
   app.use(createPortfolioRouter());
   app.use(createQuotesRouter());

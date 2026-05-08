@@ -18,6 +18,7 @@ import { registerScanSignals, scheduleScanSignalsJob } from "./jobs/scanSignals"
 import { processSignalQueue } from "./jobs/queues/processSignal";
 import { registerProcessSignal } from "./jobs/processSignal";
 import { registerDiscordSignalAlerts, scheduleDiscordBatchFlush } from "./jobs/discordSignalAlerts";
+import { registerDividendAlertsJob, scheduleDailyDividendAlerts } from "./modules/dividend/dividendModule";
 import { registerPortfolioSnapshots, scheduleDailyPortfolioSnapshotsJob } from "./jobs/portfolioSnapshots";
 import { registerFetchPolygonQuotes } from "./jobs/fetchPolygonQuotes";
 
@@ -150,6 +151,14 @@ export async function startScheduler(): Promise<void> {
     console.log(`[scheduler] dividend alerts job ${job.id} completed`);
   });
   await scheduleDailyDividendAlertsJob(dividendAlertsQueue);
+  const { queue: dividendModuleQueue, worker: dividendModuleWorker } = registerDividendAlertsJob();
+  dividendModuleWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] dividend module alerts job ${job?.id} failed`, err);
+  });
+  dividendModuleWorker.on("completed", (job) => {
+    console.log(`[scheduler] dividend module alerts job ${job.id} completed`);
+  });
+  await scheduleDailyDividendAlerts(dividendModuleQueue);
 
   const { queue: portfolioQueue, worker: portfolioWorker } = registerPortfolioSnapshots(
     portfolioConn,
@@ -210,6 +219,7 @@ export async function startScheduler(): Promise<void> {
   console.log("[scheduler] BullMQ worker started; hourly job scheduled");
   console.log("[scheduler] Dividend hybrid sync: daily @ 01:00 UTC (queue dividend-sync)");
   console.log("[scheduler] Dividend alerts: daily @ 06:00 UTC (queue dividend-alerts)");
+  console.log("[scheduler] Dividend module ex-date alerts: daily @ 08:00 UTC (queue dividend-module-alerts)");
   console.log("[scheduler] Portfolio snapshots: daily @ 17:00 UTC (queue portfolio-snapshots)");
   console.log("[scheduler] Fundamentals (EODHD): daily @ 03:00 UTC (queue fundamental-sync)");
   console.log("[scheduler] Scan signals: every 5 minutes (queue scan:signals)");
