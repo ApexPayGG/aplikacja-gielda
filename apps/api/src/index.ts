@@ -1,6 +1,6 @@
 import "./load-env";
 import process from "node:process";
-import { startDlqMonitor } from "../../../packages/notifications/src/dlqMonitor";
+import { startDlqMonitor } from "./modules/dlqMonitor";
 import { prisma } from "./db/index";
 import { PROCESS_SIGNAL_DLQ_NAME, PROCESS_SIGNAL_QUEUE_NAME } from "./jobs/processSignal";
 import { startMarketRegimeCache } from "./marketRegime";
