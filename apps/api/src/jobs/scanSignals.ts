@@ -6,9 +6,9 @@ import { processSignalQueue } from "../queues/processSignal";
 import { getCacheRedis } from "../redis";
 import { loadTopDividendSymbols } from "../services/dividendDataService";
 
-export const SCAN_SIGNALS_QUEUE_NAME = "scan:signals";
-export const ALERT_QUEUE_NAME = "alert:push";
-const TOP_TICKERS_CACHE_KEY = "scan:signals:top_tickers";
+export const SCAN_SIGNALS_QUEUE_NAME = "scan-signals";
+export const ALERT_QUEUE_NAME = "alert-push";
+const TOP_TICKERS_CACHE_KEY = "scan-signals:top_tickers";
 const TOP_TICKERS_TTL_SEC = 60 * 5;
 const SCANNER_BASE_URL = (process.env.SCANNER_BASE_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 

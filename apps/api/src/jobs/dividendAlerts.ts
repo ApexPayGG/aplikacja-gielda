@@ -3,7 +3,6 @@ import type { Redis } from "ioredis";
 import pino from "pino";
 import { prisma } from "../db/index";
 import { getCacheRedis } from "../redis";
-import { ALERT_QUEUE_NAME } from "./scanSignals";
 
 export const DIVIDEND_ALERTS_QUEUE_NAME = "dividend-alerts";
 export const DIVIDEND_ALERTS_JOB_NAME = "dividend:alerts";

@@ -240,7 +240,7 @@ export async function startScheduler(): Promise<void> {
   console.log("[scheduler] Dividend module ex-date alerts: daily @ 08:00 UTC (queue dividend-module-alerts)");
   console.log("[scheduler] Portfolio snapshots: daily @ 17:00 UTC (queue portfolio-snapshots)");
   console.log("[scheduler] Fundamentals (EODHD): daily @ 03:00 UTC (queue fundamental-sync)");
-  console.log("[scheduler] Scan signals: every 5 minutes (queue scan:signals)");
+  console.log("[scheduler] Scan signals: every 5 minutes (queue scan-signals)");
   console.log("[scheduler] Discord signal alerts: dispatch + batch flush every 1 minute");
   console.log("[scheduler] Exit intelligence monitor: every 15 minutes (queue exit-monitor)");
   console.log("[scheduler] Alpha calendar: daily @ 07:00 UTC (queue alpha-calendar)");
