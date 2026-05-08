@@ -1,13 +1,20 @@
 import { Queue, Worker } from "bullmq";
+import Anthropic from "@anthropic-ai/sdk";
 import pino from "pino";
 import { prisma } from "../db/index";
-import { discordBot } from "../integrations/discord";
+import { enqueueDiscordSignalAlert } from "../queues/discordSignalAlerts";
 import { getCacheRedis } from "../redis";
 import { ALERT_QUEUE_NAME } from "./scanSignals";
 
 export const PROCESS_SIGNAL_QUEUE_NAME = "process-signal";
 export const PROCESS_SIGNAL_DLQ_NAME = "process-signal-dlq";
+export const BATCH_LOW_SIGNALS_QUEUE_NAME = "batch-low-signals";
 const PROCESS_SIGNAL_JOB_NAME = "process:signal";
+const BATCH_LOW_SIGNALS_JOB_NAME = "batchLowSignals";
+const ALERT_SENT_KEY_PREFIX = "alert:sent:";
+const ALERT_SENT_TTL_SEC = 300;
+const LOW_SIGNAL_BUFFER_KEY = "alerts:low:buffer";
+const LOW_SIGNAL_WINDOW_MS = 5 * 60 * 1000;
 
 export interface ProcessSignalJobInput {
   signalId: string;
@@ -40,6 +47,20 @@ interface ScoreInput {
   macro: number;
 }
 
+interface SignalAlertPayload {
+  ticker: string;
+  signal: string;
+  score: number;
+  brief: string;
+  confidence?: number;
+  timeframe?: string;
+  setup?: string;
+  entry?: number;
+  stopLoss?: number;
+  takeProfit?: number;
+  logicalChannel?: string;
+}
+
 interface NewsItem {
   title: string;
   timestamp: Date;
@@ -55,6 +76,14 @@ interface MacroContext {
 interface SentimentResult {
   score: number;
   label: string;
+}
+
+interface LowSignalStore {
+  get: (key: string) => Promise<string | null>;
+  set: (key: string, value: string, mode: "EX", ttlSec: number) => Promise<unknown>;
+  rpush: (key: string, value: string) => Promise<number>;
+  lrange: (key: string, start: number, stop: number) => Promise<string[]>;
+  del: (key: string) => Promise<number>;
 }
 
 export interface ProcessSignalResult {
@@ -73,6 +102,9 @@ export interface ProcessSignalDeps {
   fetchMacroContext: (ticker: string) => Promise<MacroContext>;
   generateSignalBrief: (input: BriefInput) => Promise<{ pl: string; en: string }>;
   scoreSignal: (input: ScoreInput) => Promise<{ score: number; reasoning: string }>;
+  sendSignalAlert: (input: SignalAlertPayload) => Promise<void>;
+  lowSignalQueue: Pick<Queue, "add">;
+  lowSignalStore: LowSignalStore;
   getUsersWithMatchingCriteria: (input: {
     ticker: string;
     patternType: string;
@@ -173,9 +205,37 @@ async function defaultFetchMacroContext(_ticker: string): Promise<MacroContext> 
 }
 
 async function defaultGenerateSignalBrief(input: BriefInput): Promise<{ pl: string; en: string }> {
-  const pl = `Sygnał ${input.pattern_type} dla ${input.ticker} (confidence ${input.confidence}). Kontekst news/sentyment: ${input.market_sentiment}.`;
-  const en = `Signal ${input.pattern_type} for ${input.ticker} (confidence ${input.confidence}). News/sentiment context: ${input.market_sentiment}.`;
-  return { pl, en };
+  const fallbackEn = `Signal ${input.pattern_type} on ${input.ticker} carries ${input.confidence}% confidence with ${input.market_sentiment} sentiment. Momentum and participation look constructive, yet risk remains elevated; use disciplined sizing, respect stop levels, and monitor volatility around key support and resistance.`;
+  const fallbackPl = `Sygnał ${input.pattern_type} na ${input.ticker} ma ${input.confidence}% pewności i sentyment ${input.market_sentiment}. Technika wygląda konstruktywnie, ale trzymaj dyscyplinę wielkości pozycji i monitoruj zmienność przy wsparciu przed wejściem.`;
+
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) return { pl: fallbackPl, en: fallbackEn };
+
+  try {
+    const model = process.env.ANTHROPIC_SIGNAL_BRIEF_MODEL?.trim() || "claude-sonnet-4-6";
+    const client = new Anthropic({ apiKey });
+    const prompt = [
+      `Write a compact trading brief in ENGLISH for ${input.ticker}.`,
+      "Length must be 30 to 50 words.",
+      "Tone: professional, concise, risk-aware.",
+      `Pattern: ${input.pattern_type}, confidence: ${input.confidence}, RSI: ${input.rsi}, MACD: ${input.macd}, volume ratio: ${input.volume_ratio}, win rate: ${input.win_rate}, avg return 10d: ${input.avg_return_10d}, max drawdown: ${input.max_drawdown}, sentiment: ${input.market_sentiment}, sector: ${input.sector_trend}, VIX: ${input.vix}.`,
+      "Return only plain text with no markdown.",
+    ].join(" ");
+
+    const msg = await client.messages.create({
+      model,
+      max_tokens: 160,
+      messages: [{ role: "user", content: prompt }],
+    });
+    const raw = msg.content[0];
+    const text = raw?.type === "text" ? raw.text.trim() : "";
+    const normalized = text.replace(/\s+/g, " ");
+    const wordCount = normalized ? normalized.split(/\s+/).length : 0;
+    const en = wordCount >= 30 && wordCount <= 50 ? normalized : fallbackEn;
+    return { pl: fallbackPl, en };
+  } catch {
+    return { pl: fallbackPl, en: fallbackEn };
+  }
 }
 
 async function defaultScoreSignal(input: ScoreInput): Promise<{ score: number; reasoning: string }> {
@@ -190,6 +250,97 @@ async function defaultScoreSignal(input: ScoreInput): Promise<{ score: number; r
     score,
     reasoning: `Score ${score} bo: technical ${input.technical}, history ${input.history}, sentiment ${input.sentiment}, fundamentals ${input.fundamentals}, macro ${input.macro}`,
   };
+}
+
+async function defaultSendSignalAlert(input: SignalAlertPayload): Promise<void> {
+  await enqueueDiscordSignalAlert({
+    ticker: input.ticker,
+    signal: input.signal,
+    score: input.score,
+    brief: input.brief,
+    confidence: input.confidence,
+    timeframe: input.timeframe,
+    setup: input.setup,
+    entry: input.entry,
+    stopLoss: input.stopLoss,
+    takeProfit: input.takeProfit,
+    logicalChannel: input.logicalChannel,
+  });
+}
+
+async function sendRadarSummaryWebhook(items: Array<{ ticker: string; score: number }>): Promise<void> {
+  if (items.length === 0) return;
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL?.trim();
+  if (!webhookUrl) return;
+  const top = items.slice(0, 25);
+  const lines = top.map((item) => `• ${item.ticker.toUpperCase()} — ${Math.round(item.score)}/100`).join("\n");
+  const hidden = items.length > 25 ? `\n...and ${items.length - 25} more` : "";
+  const tickers = Array.from(new Set(items.map((item) => item.ticker.toUpperCase())));
+  const companies = await prisma.company.findMany({
+    where: { symbol: { in: tickers } },
+    select: { symbol: true, sector: true },
+  });
+  const sectorByTicker = new Map(companies.map((c) => [c.symbol.toUpperCase(), (c.sector ?? "Other").trim() || "Other"]));
+  const sectorCounts = new Map<string, number>();
+  for (const ticker of tickers) {
+    const sector = sectorByTicker.get(ticker) ?? "Other";
+    sectorCounts.set(sector, (sectorCounts.get(sector) ?? 0) + 1);
+  }
+  const sortedSectors = [...sectorCounts.entries()].sort((a, b) => b[1] - a[1]);
+  const sectorCluster =
+    sortedSectors.length > 0 ? sortedSectors.slice(0, 3).map(([s, n]) => `${s} x${n}`).join(", ") : "n/a";
+  const topSectorShare = sortedSectors.length > 0 ? (sortedSectors[0]?.[1] ?? 0) / tickers.length : 0;
+  const concentration = topSectorShare >= 0.6 ? "HIGH" : topSectorShare >= 0.4 ? "MEDIUM" : "LOW";
+  const payload = {
+    embeds: [
+      {
+        title: "📋 Radar Summary",
+        description: `${lines}${hidden}` || "No low-score signals in this window.",
+        color: 0x3b82f6,
+        fields: [
+          { name: "Signals", value: String(items.length), inline: true },
+          { name: "Sector Cluster", value: sectorCluster, inline: false },
+          { name: "Concentration", value: `${concentration} (${Math.round(topSectorShare * 100)}%)`, inline: true },
+        ],
+        footer: { text: "Stock-AI Pro Signal Alerts" },
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  };
+  const res = await fetch(webhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`Radar summary webhook failed (${res.status})`);
+}
+
+async function routeDiscordAlert(
+  deps: Pick<ProcessSignalDeps, "sendSignalAlert" | "lowSignalQueue" | "lowSignalStore">,
+  payload: SignalAlertPayload,
+): Promise<void> {
+  const score = payload.score;
+  const ticker = payload.ticker.toUpperCase();
+  if (score >= 85) {
+    await deps.sendSignalAlert(payload);
+    await deps.lowSignalStore.set(`${ALERT_SENT_KEY_PREFIX}${ticker}`, "1", "EX", ALERT_SENT_TTL_SEC);
+    return;
+  }
+
+  if (score >= 60) {
+    const key = `${ALERT_SENT_KEY_PREFIX}${ticker}`;
+    const sent = await deps.lowSignalStore.get(key);
+    if (sent) return;
+    await deps.sendSignalAlert(payload);
+    await deps.lowSignalStore.set(key, "1", "EX", ALERT_SENT_TTL_SEC);
+    return;
+  }
+
+  await deps.lowSignalQueue.add(BATCH_LOW_SIGNALS_JOB_NAME, {
+    ticker: payload.ticker,
+    score: payload.score,
+    ts: Date.now(),
+  });
 }
 
 async function defaultGetUsersWithMatchingCriteria(_input: {
@@ -236,6 +387,25 @@ export async function runProcessSignalJob(
     fetchMacroContext: depsInput?.fetchMacroContext ?? defaultFetchMacroContext,
     generateSignalBrief: depsInput?.generateSignalBrief ?? defaultGenerateSignalBrief,
     scoreSignal: depsInput?.scoreSignal ?? defaultScoreSignal,
+    sendSignalAlert: depsInput?.sendSignalAlert ?? defaultSendSignalAlert,
+    lowSignalQueue:
+      depsInput?.lowSignalQueue ??
+      (depsInput
+        ? ({
+            add: async () => ({} as never),
+          } as Pick<Queue, "add">)
+        : new Queue(BATCH_LOW_SIGNALS_QUEUE_NAME, { connection: redis ?? getCacheRedis() })),
+    lowSignalStore:
+      depsInput?.lowSignalStore ??
+      ((depsInput
+        ? ({
+            get: async () => null,
+            set: async () => "OK",
+            rpush: async () => 1,
+            lrange: async () => [],
+            del: async () => 0,
+          } as LowSignalStore)
+        : ((redis ?? getCacheRedis()) as unknown as LowSignalStore))),
     getUsersWithMatchingCriteria: depsInput?.getUsersWithMatchingCriteria ?? defaultGetUsersWithMatchingCriteria,
   };
 
@@ -319,18 +489,46 @@ export async function runProcessSignalJob(
       },
     });
 
-    // Post to Discord
-    if ((updated.score ?? 0) >= 70) {
-      const channel = updated.exchange === "GPW" ? "signals_gpw" : "signals_us";
-      await discordBot
-        .sendSignal(channel, {
-          ticker: updated.ticker,
-          score: updated.score ?? 0,
-          brief_pl: updated.brief_pl ?? "",
-          pattern: updated.pattern_type,
-          confidence: updated.confidence,
-        })
-        .catch((err) => processSignalLogger.error({ err }, "Discord send failed"));
+    try {
+      const supportLevel = Number(technicalData.support_level);
+      const resistanceLevel = Number(technicalData.resistance_level);
+      const entry = Number(technicalData.entry_price);
+      const stopLoss = Number(technicalData.stop_loss);
+      const takeProfit = Number(technicalData.take_profit);
+      await routeDiscordAlert(deps, {
+        ticker: updated.ticker,
+        signal: updated.pattern_type,
+        score: updated.score ?? 0,
+        brief: updated.brief_en ?? updated.brief_pl ?? "",
+        confidence: updated.confidence,
+        timeframe: "1D",
+        setup: updated.pattern_type,
+        logicalChannel: updated.pattern_type,
+        entry: Number.isFinite(entry) ? entry : undefined,
+        stopLoss: Number.isFinite(stopLoss) ? stopLoss : Number.isFinite(supportLevel) ? supportLevel * 0.99 : undefined,
+        takeProfit:
+          Number.isFinite(takeProfit)
+            ? takeProfit
+            : Number.isFinite(resistanceLevel)
+              ? resistanceLevel
+              : Number.isFinite(supportLevel)
+                ? supportLevel * 1.05
+                : undefined,
+      });
+    } catch (error) {
+      await deps.dlqQueue.add("discord:signal:failed", {
+        signalId: updated.id,
+        ticker: updated.ticker,
+        pattern: updated.pattern_type,
+        score: updated.score ?? 0,
+        err: error instanceof Error ? error.message : String(error),
+        failedAt: new Date().toISOString(),
+      });
+      processSignalLogger.error({
+        msg: "discord_signal_send_failed",
+        signalId: updated.id,
+        err: error instanceof Error ? error.message : String(error),
+      });
     }
 
     const users = await deps.getUsersWithMatchingCriteria({
@@ -349,15 +547,11 @@ export async function runProcessSignalJob(
           orderBy: { executed_at: "desc" },
         });
         if (lastTrade) {
-          await discordBot
-            .sendPaperTradeUpdate(userId, {
-              ticker: lastTrade.ticker,
-              side: lastTrade.side,
-              quantity: Number(lastTrade.quantity),
-              price: Number(lastTrade.price),
-              pnl_pct: lastTrade.pnl_pct ?? undefined,
-            })
-            .catch((err) => processSignalLogger.warn({ err }, "Paper trade Discord post failed"));
+          processSignalLogger.debug({
+            msg: "paper_trade_snapshot_ready",
+            userId,
+            ticker: lastTrade.ticker,
+          });
         }
       }
     }
@@ -399,7 +593,7 @@ export async function runProcessSignalJob(
 
 export function registerProcessSignal(
   _processSignalQueue?: Pick<Queue, "add">,
-): { queue: Queue; worker: Worker; alertQueue: Queue; dlqQueue: Queue } {
+): { queue: Queue; worker: Worker; alertQueue: Queue; dlqQueue: Queue; lowSignalQueue: Queue; lowSignalWorker: Worker } {
   const queueConnection = getCacheRedis();
   const workerConnection = getCacheRedis();
   const queue = new Queue(PROCESS_SIGNAL_QUEUE_NAME, {
@@ -411,6 +605,7 @@ export function registerProcessSignal(
   });
   const alertQueue = new Queue(ALERT_QUEUE_NAME, { connection: queueConnection });
   const dlqQueue = new Queue(PROCESS_SIGNAL_DLQ_NAME, { connection: queueConnection });
+  const lowSignalQueue = new Queue(BATCH_LOW_SIGNALS_QUEUE_NAME, { connection: queueConnection });
 
   const worker = new Worker(
     PROCESS_SIGNAL_QUEUE_NAME,
@@ -431,7 +626,58 @@ export function registerProcessSignal(
     });
   });
 
-  return { queue, worker, alertQueue, dlqQueue };
+  const lowSignalWorker = new Worker(
+    BATCH_LOW_SIGNALS_QUEUE_NAME,
+    async (job) => {
+      if (job.name !== BATCH_LOW_SIGNALS_JOB_NAME) return;
+      const redisStore = getCacheRedis() as unknown as LowSignalStore;
+      const data = job.data as { ticker?: string; score?: number; ts?: number; flushOnly?: boolean };
+      if (data.flushOnly) {
+        const rows = await redisStore.lrange(LOW_SIGNAL_BUFFER_KEY, 0, -1);
+        if (rows.length === 0) return;
+        const now = Date.now();
+        const items: Array<{ ticker: string; score: number }> = rows
+          .map((raw) => {
+            try {
+              return JSON.parse(raw) as { ticker: string; score: number; ts: number };
+            } catch {
+              return null;
+            }
+          })
+          .filter((x): x is { ticker: string; score: number; ts: number } => Boolean(x))
+          .filter((x) => now - x.ts <= LOW_SIGNAL_WINDOW_MS)
+          .map((x) => ({ ticker: x.ticker, score: x.score }));
+        await redisStore.del(LOW_SIGNAL_BUFFER_KEY);
+        if (items.length > 0) {
+          await sendRadarSummaryWebhook(items);
+        }
+        return;
+      }
+      const payload = JSON.stringify({
+        ticker: data.ticker,
+        score: data.score,
+        ts: data.ts ?? Date.now(),
+      });
+      await redisStore.rpush(LOW_SIGNAL_BUFFER_KEY, payload);
+    },
+    { connection: workerConnection },
+  );
+
+  lowSignalWorker.on("failed", (job, err) => {
+    processSignalLogger.error({
+      msg: "low_signal_worker_failed",
+      jobId: job?.id,
+      err: err instanceof Error ? err.message : String(err),
+    });
+  });
+
+  void lowSignalQueue.add(
+    BATCH_LOW_SIGNALS_JOB_NAME,
+    { flushOnly: true },
+    { repeat: { every: LOW_SIGNAL_WINDOW_MS }, jobId: "batch-low-signals-every-5-min" },
+  );
+
+  return { queue, worker, alertQueue, dlqQueue, lowSignalQueue, lowSignalWorker };
 }
 
 export async function enqueueProcessSignal(queue: Queue, signalId: string): Promise<void> {

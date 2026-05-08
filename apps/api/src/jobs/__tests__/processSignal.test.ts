@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { discordBot } from "../../integrations/discord";
 import { processSignalLogger, runProcessSignalJob } from "../processSignal";
 
 describe("processSignal job", () => {
@@ -8,7 +7,7 @@ describe("processSignal job", () => {
     const queuedAlerts: Array<{ name: string; payload: unknown }> = [];
     const queuedDlq: Array<{ name: string; payload: unknown }> = [];
     const logs: Array<Record<string, unknown>> = [];
-    const discordSignalCalls: Array<{ channel: string; payload: unknown }> = [];
+    const discordSignalCalls: Array<{ ticker: string; signal: string; score: number; brief: string }> = [];
 
     const signalRows = [
       {
@@ -51,13 +50,6 @@ describe("processSignal job", () => {
       },
     ];
 
-    const originalDiscordSendSignal = discordBot.sendSignal.bind(discordBot);
-    (discordBot as { sendSignal: (channel: any, signal: any) => Promise<void> }).sendSignal = async (
-      channel,
-      signal,
-    ) => {
-      discordSignalCalls.push({ channel, payload: signal });
-    };
     const originalInfo = processSignalLogger.info.bind(processSignalLogger);
     (processSignalLogger as unknown as { info: (obj: Record<string, unknown>) => void }).info = (
       obj: Record<string, unknown>,
@@ -92,6 +84,9 @@ describe("processSignal job", () => {
           reasoning:
             "Score 74 bo: technical 80, history 65, sentiment 70, fundamentals 75, macro 60",
         }),
+        sendSignalAlert: async (input: { ticker: string; signal: string; score: number; brief: string }) => {
+          discordSignalCalls.push(input);
+        },
         getUsersWithMatchingCriteria: async () => [{ id: "u1" }, { id: "u2" }],
         alertQueue: {
           add: async (name: string, payload: unknown) => {
@@ -118,8 +113,13 @@ describe("processSignal job", () => {
       assert.equal(queuedAlerts[0]?.name, "alert:push");
       assert.equal(queuedDlq.length, 0);
       assert.equal(discordSignalCalls.length, 2);
-      assert.equal(discordSignalCalls[0]?.channel, "signals_gpw");
-      assert.equal(discordSignalCalls[1]?.channel, "signals_us");
+      assert.equal(discordSignalCalls[0]?.ticker, "AAPL");
+      assert.equal(discordSignalCalls[1]?.ticker, "MSFT");
+      assert.equal(discordSignalCalls[0]?.signal, "supportBounce");
+      assert.equal(discordSignalCalls[1]?.signal, "breakout");
+      assert.equal(discordSignalCalls[0]?.score, 74);
+      assert.equal(discordSignalCalls[1]?.score, 74);
+      assert.match(discordSignalCalls[0]?.brief ?? "", /brief/i);
 
       const processedLog = logs.find((l) => l.msg === "signal_processed");
       assert.ok(processedLog, "Expected signal_processed log");
@@ -130,7 +130,6 @@ describe("processSignal job", () => {
       assert.ok(alertPayload.signal.brief_en, "brief_en should be populated");
       assert.equal(alertPayload.signal.score, 74);
     } finally {
-      (discordBot as { sendSignal: typeof originalDiscordSendSignal }).sendSignal = originalDiscordSendSignal;
       (processSignalLogger as unknown as { info: typeof originalInfo }).info = originalInfo;
     }
   });

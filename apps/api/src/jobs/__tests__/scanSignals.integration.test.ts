@@ -152,6 +152,7 @@ describe("scanSignals integration", { skip: !testDbUrl }, () => {
           reasoning:
             "Score 74 bo: technical 80, history 65, sentiment 70, fundamentals 75, macro 60",
         }),
+        sendSignalAlert: async () => undefined,
         getUsersWithMatchingCriteria: async () => [{ id: "process-user-1" }],
         alertQueue: {
           add: async (name: string, payload: unknown) => {

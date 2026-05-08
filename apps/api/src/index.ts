@@ -1,6 +1,10 @@
 import "./load-env";
 import process from "node:process";
+import { startDlqMonitor } from "../../../packages/notifications/src/dlqMonitor";
 import { prisma } from "./db/index";
+import { PROCESS_SIGNAL_DLQ_NAME, PROCESS_SIGNAL_QUEUE_NAME } from "./jobs/processSignal";
+import { enqueueDiscordSignalAlert } from "./queues/discordSignalAlerts";
+import { getCacheRedis } from "./redis";
 import { startScheduler } from "./scheduler";
 import { startServer } from "./server";
 import { startTelegramBot, stopTelegramBot } from "./telegram/index";
@@ -8,6 +12,13 @@ import { startTelegramBot, stopTelegramBot } from "./telegram/index";
 async function main(): Promise<void> {
   const port = parseInt(process.env.PORT ?? "3000", 10);
   await startScheduler();
+  startDlqMonitor({
+    redisClient: getCacheRedis(),
+    db: prisma,
+    enqueueDiscordSignalAlert,
+    processSignalQueueName: PROCESS_SIGNAL_QUEUE_NAME,
+    processSignalDlqQueueName: PROCESS_SIGNAL_DLQ_NAME,
+  });
   await startServer(port);
   await startTelegramBot();
 }

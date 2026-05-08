@@ -24,3 +24,32 @@ End-to-end flow: GitHub Actions (`.github/workflows/polygon-live-ingest.yml`, ev
 ### Timescale hypertable
 
 The migration adds a BRIN index on `created_at`. Converting `live_quotes` to a Timescale hypertable is left as an optional DBA step: standard unique constraints must include the partition column, which would require a schema adjustment before `create_hypertable` (see commented SQL in the migration file).
+
+## Signal Alert Workflow
+
+`scanSignals` creates raw market signals and enqueues `process:signal`. Then `processSignal` enriches each signal with an AI brief (Claude Sonnet), computes risk score (`0-100`), persists fields in DB (`brief_pl`, `brief_en`, `score`, `scoring_reasoning`), and sends Discord notifications.
+
+### Discord delivery pipeline
+
+- **Service:** `apps/api/src/integrations/discordWebhook.ts`
+- **Dispatch worker:** `apps/api/src/jobs/discordSignalAlerts.ts` (`discord-signal-alerts` queue)
+- **Transport:** one Discord webhook (`DISCORD_WEBHOOK_URL`)
+- **Logical channels:** per signal type (derived from `pattern_type`, e.g. `breakout`, `supportBounce`)
+- **Retry policy:** 3 attempts for `429` / `5xx`
+- **DLQ:** `discord:signal:failed` (BullMQ)
+- **Batch flush job:** repeat every 1 minute (`discord:signal:flush-batches`)
+
+### Alert routing rules
+
+- **Critical (`score > 80`)**: sent immediately
+- **Small (`score < 60`)**: batched every 5 minutes per logical channel
+- **Regular (`60-80`)**: rate-limited to max 10 alerts per minute per logical channel
+
+### Embeds
+
+Discord embeds include ticker, setup/signal type, risk score band, confidence, AI brief, optional levels (entry/SL/TP), and TradingView link.
+
+### Testing
+
+- Unit/integration: `apps/api/src/integrations/__tests__/discordWebhook.test.ts`
+- Includes mocked webhook, embed payload assertions, rate-limit behavior, batching behavior, and load scenario of 100 signals/minute.

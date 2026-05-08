@@ -17,6 +17,7 @@ import { registerDividendAlerts, scheduleDailyDividendAlertsJob } from "./jobs/d
 import { registerScanSignals, scheduleScanSignalsJob } from "./jobs/scanSignals";
 import { processSignalQueue } from "./jobs/queues/processSignal";
 import { registerProcessSignal } from "./jobs/processSignal";
+import { registerDiscordSignalAlerts, scheduleDiscordBatchFlush } from "./jobs/discordSignalAlerts";
 import { registerPortfolioSnapshots, scheduleDailyPortfolioSnapshotsJob } from "./jobs/portfolioSnapshots";
 import { registerFetchPolygonQuotes } from "./jobs/fetchPolygonQuotes";
 
@@ -197,6 +198,14 @@ export async function startScheduler(): Promise<void> {
 
   // Register process signal worker
   registerProcessSignal(processSignalQueue);
+  const { queue: discordAlertsQueue, worker: discordAlertsWorker } = registerDiscordSignalAlerts();
+  discordAlertsWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] discord signal alert job ${job?.id} failed`, err);
+  });
+  discordAlertsWorker.on("completed", (job) => {
+    console.log(`[scheduler] discord signal alert job ${job.id} completed`);
+  });
+  await scheduleDiscordBatchFlush(discordAlertsQueue);
 
   console.log("[scheduler] BullMQ worker started; hourly job scheduled");
   console.log("[scheduler] Dividend hybrid sync: daily @ 01:00 UTC (queue dividend-sync)");
@@ -204,6 +213,7 @@ export async function startScheduler(): Promise<void> {
   console.log("[scheduler] Portfolio snapshots: daily @ 17:00 UTC (queue portfolio-snapshots)");
   console.log("[scheduler] Fundamentals (EODHD): daily @ 03:00 UTC (queue fundamental-sync)");
   console.log("[scheduler] Scan signals: every 5 minutes (queue scan:signals)");
+  console.log("[scheduler] Discord signal alerts: dispatch + batch flush every 1 minute");
   if (process.env.POLYGON_API_KEY) {
     console.log(
       "[scheduler] Polygon live quotes: worker ready (enqueue via GitHub cron or `npm run job:fetch-quotes`)",

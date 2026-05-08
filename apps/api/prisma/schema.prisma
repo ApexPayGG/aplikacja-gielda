@@ -253,6 +253,19 @@ model Signal {
   @@index([expires_at])
 }
 
+model DlqEvent {
+  id        Int      @id @default(autoincrement())
+  jobId     String   @map("job_id")
+  ticker    String
+  attempt   Int
+  status    String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt(sort: Desc)], map: "dlq_events_created_at_idx")
+  @@index([jobId], map: "dlq_events_job_id_idx")
+  @@map("dlq_events")
+}
+
 model VirtualTrade {
   id        String    @id @default(cuid())
   user      User      @relation(fields: [userId], references: [id])

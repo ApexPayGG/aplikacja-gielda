@@ -52,6 +52,7 @@ import { createDividendsRouter } from "./routes/dividends";
 import { createBacktestRouter } from "./routes/backtest";
 import { createPortfolioRouter } from "./routes/portfolio";
 import { createQuotesRouter } from "./routes/quotes";
+import { createSignalMemoryRouter } from "./routes/signalMemory";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -116,6 +117,7 @@ export function createApp(): express.Express {
   app.use(createBacktestRouter());
   app.use(createPortfolioRouter());
   app.use(createQuotesRouter());
+  app.use(createSignalMemoryRouter());
 
   app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });
