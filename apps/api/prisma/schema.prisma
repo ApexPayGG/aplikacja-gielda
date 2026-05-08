@@ -25,6 +25,16 @@ enum TradeSide {
   SELL
 }
 
+enum PaperTradeDirection {
+  LONG
+  SHORT
+}
+
+enum PaperTradeStatus {
+  OPEN
+  CLOSED
+}
+
 model User {
   id                  String              @id @default(cuid())
   createdAt           DateTime            @default(now()) @map("created_at")
@@ -242,6 +252,8 @@ model Signal {
   brief_en          String?
   score             Int?
   scoring_reasoning String?
+  marketRegime      String?
+  regimeConfidence  Int?
 
   // Meta
   created_at     DateTime @default(now())
@@ -299,4 +311,39 @@ model PortfolioSnapshot {
   benchmark_sp500  Float?
 
   @@index([userId, date])
+}
+
+model PaperTrade {
+  id           String              @id @default(cuid())
+  userId       String              @map("user_id")
+  ticker       String
+  direction    PaperTradeDirection
+  entryPrice   Float               @map("entry_price")
+  exitPrice    Float?              @map("exit_price")
+  quantity     Float
+  entryAt      DateTime            @default(now()) @map("entry_at")
+  exitAt       DateTime?           @map("exit_at")
+  status       PaperTradeStatus
+  pnl          Float?
+  pnlPct       Float?              @map("pnl_pct")
+  signalId     String?             @map("signal_id")
+  marketRegime String?             @map("market_regime")
+
+  @@index([userId, status, entryAt])
+  @@index([userId, exitAt])
+  @@map("paper_trades")
+}
+
+model BehavioralSnapshot {
+  id                  String   @id @default(cuid())
+  userId              String   @map("user_id")
+  biases              Json
+  avgWinPct           Float    @map("avg_win_pct")
+  avgLossPct          Float    @map("avg_loss_pct")
+  avgHoldingWinHours  Float    @map("avg_holding_win_hours")
+  avgHoldingLossHours Float    @map("avg_holding_loss_hours")
+  calculatedAt        DateTime @default(now()) @map("calculated_at")
+
+  @@index([userId, calculatedAt])
+  @@map("behavioral_snapshots")
 }

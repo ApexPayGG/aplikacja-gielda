@@ -52,6 +52,7 @@ import { createDividendsRouter } from "./routes/dividends";
 import { createDividendRouter } from "./routes/dividend";
 import { createBacktestRouter } from "./routes/backtest";
 import { createPortfolioRouter } from "./routes/portfolio";
+import { createPaperTradingRouter } from "./routes/paperTrading";
 import { createQuotesRouter } from "./routes/quotes";
 import { createAlphaJournalRouter } from "./routes/alphaJournal";
 import { createSignalMemoryRouter } from "./routes/signalMemory";
@@ -119,6 +120,7 @@ export function createApp(): express.Express {
   app.use(createDividendRouter());
   app.use(createBacktestRouter());
   app.use(createPortfolioRouter());
+  app.use(createPaperTradingRouter());
   app.use(createQuotesRouter());
   app.use(createAlphaJournalRouter());
   app.use(createSignalMemoryRouter());
