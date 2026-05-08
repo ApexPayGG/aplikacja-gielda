@@ -26,4 +26,4 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
             "${HETZNER_USER}@${HETZNER_IP}" \
-            'docker exec stockai-pro node --import tsx/esm scripts/trigger-fetch-quotes.ts'
+           'docker exec stockai-api-prod node --import tsx/esm scripts/trigger-fetch-quotes.ts'
