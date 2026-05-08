@@ -2,8 +2,10 @@ import { Queue, Worker } from "bullmq";
 import Anthropic from "@anthropic-ai/sdk";
 import pino from "pino";
 import { prisma } from "../db/index";
+import { getMarketRegime, type MarketRegime } from "../marketRegime";
 import { enqueueDiscordSignalAlert } from "../queues/discordSignalAlerts";
 import { getCacheRedis } from "../redis";
+import { recordAlphaJournalEvent } from "../services/alphaJournalService";
 import { ALERT_QUEUE_NAME } from "./scanSignals";
 
 export const PROCESS_SIGNAL_QUEUE_NAME = "process-signal";
@@ -102,6 +104,15 @@ export interface ProcessSignalDeps {
   fetchMacroContext: (ticker: string) => Promise<MacroContext>;
   generateSignalBrief: (input: BriefInput) => Promise<{ pl: string; en: string }>;
   scoreSignal: (input: ScoreInput) => Promise<{ score: number; reasoning: string }>;
+  fetchMarketRegime: (symbol: string) => Promise<MarketRegime>;
+  logAlphaJournal: (entry: {
+    ts: string;
+    feature: string;
+    symbol: string;
+    impactScore: number;
+    details: string;
+    metadata?: Record<string, unknown>;
+  }) => Promise<void>;
   sendSignalAlert: (input: SignalAlertPayload) => Promise<void>;
   lowSignalQueue: Pick<Queue, "add">;
   lowSignalStore: LowSignalStore;
@@ -252,6 +263,22 @@ async function defaultScoreSignal(input: ScoreInput): Promise<{ score: number; r
   };
 }
 
+function classifyPatternWeightKey(patternType: string): keyof MarketRegime["weights"] {
+  const p = patternType.toLowerCase();
+  if (p.includes("breakout")) return "breakout";
+  if (p.includes("reversion") || p.includes("mean")) return "mean_reversion";
+  return "momentum";
+}
+
+async function localFallbackMarketRegime(): Promise<MarketRegime> {
+  return {
+    regime: "RANGING",
+    confidence: 25,
+    description: "Local fallback regime for isolated job execution without Redis/market data context.",
+    weights: { momentum: 1, mean_reversion: 1, breakout: 1 },
+  };
+}
+
 async function defaultSendSignalAlert(input: SignalAlertPayload): Promise<void> {
   await enqueueDiscordSignalAlert({
     ticker: input.ticker,
@@ -387,6 +414,12 @@ export async function runProcessSignalJob(
     fetchMacroContext: depsInput?.fetchMacroContext ?? defaultFetchMacroContext,
     generateSignalBrief: depsInput?.generateSignalBrief ?? defaultGenerateSignalBrief,
     scoreSignal: depsInput?.scoreSignal ?? defaultScoreSignal,
+    fetchMarketRegime: depsInput?.fetchMarketRegime ?? (depsInput ? localFallbackMarketRegime : getMarketRegime),
+    logAlphaJournal:
+      depsInput?.logAlphaJournal ??
+      (depsInput
+        ? (async () => undefined)
+        : recordAlphaJournalEvent),
     sendSignalAlert: depsInput?.sendSignalAlert ?? defaultSendSignalAlert,
     lowSignalQueue:
       depsInput?.lowSignalQueue ??
@@ -470,11 +503,17 @@ export async function runProcessSignalJob(
     const sentimentScore = clampScore(sentiment.score);
     const fundamentals = 50;
     const macroScore = computeMacroScore(macro);
+    const marketRegime = await deps.fetchMarketRegime(signal.ticker);
+    const patternWeightKey = classifyPatternWeightKey(signal.pattern_type);
+    const regimeWeight = marketRegime.weights[patternWeightKey];
+    const adjustedTechnical = clampScore(technical * regimeWeight);
+    const adjustedHistory = clampScore(history * (0.7 + regimeWeight * 0.3));
+    const adjustedSentiment = clampScore(sentimentScore * (0.85 + marketRegime.confidence / 1000));
 
     const scored = await deps.scoreSignal({
-      technical,
-      history,
-      sentiment: sentimentScore,
+      technical: adjustedTechnical,
+      history: adjustedHistory,
+      sentiment: adjustedSentiment,
       fundamentals,
       macro: macroScore,
     });
@@ -485,7 +524,26 @@ export async function runProcessSignalJob(
         brief_pl: brief.pl,
         brief_en: brief.en,
         score: scored.score,
-        scoring_reasoning: scored.reasoning,
+        scoring_reasoning: `${scored.reasoning} | regime=${marketRegime.regime} confidence=${marketRegime.confidence} weight=${regimeWeight.toFixed(2)} key=${patternWeightKey}`,
+      },
+    });
+
+    await deps.logAlphaJournal({
+      ts: new Date().toISOString(),
+      feature: "market_regime_ai",
+      symbol: signal.ticker.toUpperCase(),
+      impactScore: clampScore(scored.score - technical),
+      details: `Regime ${marketRegime.regime} (${marketRegime.confidence}%) applied weight ${regimeWeight.toFixed(2)} for ${patternWeightKey}.`,
+      metadata: {
+        patternType: signal.pattern_type,
+        regime: marketRegime.regime,
+        regimeConfidence: marketRegime.confidence,
+        weightKey: patternWeightKey,
+        weightValue: regimeWeight,
+        baseTechnical: technical,
+        adjustedTechnical,
+        baseHistory: history,
+        adjustedHistory,
       },
     });
 

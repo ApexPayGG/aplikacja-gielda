@@ -52,6 +52,7 @@ import { createDividendsRouter } from "./routes/dividends";
 import { createBacktestRouter } from "./routes/backtest";
 import { createPortfolioRouter } from "./routes/portfolio";
 import { createQuotesRouter } from "./routes/quotes";
+import { createAlphaJournalRouter } from "./routes/alphaJournal";
 import { createSignalMemoryRouter } from "./routes/signalMemory";
 
 function sleep(ms: number): Promise<void> {
@@ -117,6 +118,7 @@ export function createApp(): express.Express {
   app.use(createBacktestRouter());
   app.use(createPortfolioRouter());
   app.use(createQuotesRouter());
+  app.use(createAlphaJournalRouter());
   app.use(createSignalMemoryRouter());
 
   app.get("/health", (_req: Request, res: Response) => {
