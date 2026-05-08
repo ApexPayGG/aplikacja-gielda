@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:1
-# Build from repository root (see docker-compose.prod.yml: context `.`, dockerfile `apps/api/Dockerfile.prod`).
+# Build context: repository root (docker-compose.prod.yml: context `.`, dockerfile `apps/api/Dockerfile.prod`).
 FROM node:20-alpine AS build
 WORKDIR /repo/apps/api
 
+COPY apps/api/package.json apps/api/package-lock.json ./
+COPY apps/api/prisma ./prisma
 COPY packages/data /repo/packages/data
 COPY packages/ai /repo/packages/ai
 COPY packages/dividends /repo/packages/dividends
-COPY apps/api/package.json apps/api/package-lock.json ./
-COPY apps/api/prisma ./prisma
 RUN npm ci
 
 COPY apps/api/src ./src
@@ -18,11 +18,11 @@ FROM node:20-alpine AS runtime
 WORKDIR /repo/apps/api
 ENV NODE_ENV=production
 
+COPY apps/api/package.json apps/api/package-lock.json ./
+COPY apps/api/prisma ./prisma
 COPY packages/data /repo/packages/data
 COPY packages/ai /repo/packages/ai
 COPY packages/dividends /repo/packages/dividends
-COPY apps/api/package.json apps/api/package-lock.json ./
-COPY apps/api/prisma ./prisma
 RUN npm install --omit=dev \
   && npm install -g tsx
 

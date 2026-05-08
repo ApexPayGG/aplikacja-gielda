@@ -42,8 +42,8 @@ services:
 
   api:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile.prod
+      context: .
+      dockerfile: apps/api/Dockerfile.prod
     image: stockai-api:latest
     container_name: stockai-api-prod
     env_file:
