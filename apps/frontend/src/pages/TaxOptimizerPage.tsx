@@ -164,8 +164,8 @@ export function TaxOptimizerPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.trades.map((r) => (
-                    <tr key={`${r.ticker}-${r.closeDate}`} className="border-b border-white/5 font-mono text-slate-200">
+                  {data.trades.map((r, idx) => (
+                    <tr key={`${r.ticker}-${r.closeDate}-${idx}`} className="border-b border-white/5 font-mono text-slate-200">
                       <td className="py-2 pr-4 font-semibold text-white">{r.ticker}</td>
                       <td className="py-2 pr-4 text-xs text-slate-400">
                         {new Date(r.openDate).toLocaleDateString(locale)}
