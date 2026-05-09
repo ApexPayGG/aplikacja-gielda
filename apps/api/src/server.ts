@@ -131,7 +131,7 @@ export function createApp(): express.Express {
   app.use(createAlphaCalendarRouter());
   app.use(createSignalMemoryRouter());
   app.use(createSignalDnaRouter());
-  app.use(createPositionSizeRouter());
+  app.use("/api/position-size", createPositionSizeRouter(prisma));
 
   app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });

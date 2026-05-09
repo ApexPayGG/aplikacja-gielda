@@ -1,3 +1,4 @@
+import type { PrismaClient } from "@prisma/client";
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import {
@@ -10,10 +11,10 @@ function parseConviction(v: unknown): ConvictionLevel | null {
   return null;
 }
 
-export function createPositionSizeRouter(): Router {
+export function createPositionSizeRouter(_prisma: PrismaClient): Router {
   const router = Router();
 
-  router.post("/api/position-size/calculate", (req: Request, res: Response, next: NextFunction) => {
+  router.post("/calculate", (req: Request, res: Response, next: NextFunction) => {
     try {
       const body = req.body as Record<string, unknown>;
       const accountSize = Number(body.accountSize);
