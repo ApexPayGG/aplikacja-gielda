@@ -6,7 +6,7 @@
     "start": "tsx src/index.ts",
     "server": "tsx src/server.ts",
     "scheduler": "tsx src/scheduler.ts",
-    "job:fetch-quotes": "tsx src/scrapers/orchestrator.ts",
+    "job:fetch-quotes": "tsx src/jobs/fetchPolygonQuotesOnce.ts",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed",

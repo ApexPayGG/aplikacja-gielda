@@ -90,18 +90,21 @@ jobs:
       - name: Copy .env.production to Hetzner
         run: |
           scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            .env.production "${HETZNER_USER}@${HETZNER_IP}:/opt/stockai-pro/"
+            .env.production "${HETZNER_USER}@${HETZNER_IP}:/root/aplikacja-gielda/"
 
       - name: Deploy to Hetzner VPS
         run: |
           ssh -i ~/.ssh/id_rsa "${HETZNER_USER}@${HETZNER_IP}" << 'EOF'
           set -e
-          cd /opt/stockai-pro
+          cd /root/aplikacja-gielda
           PREV_IMAGE_ID="$(docker inspect --format='{{.Image}}' stockai-api-prod 2>/dev/null || true)"
           docker pull stockai-api-prod:latest
 
           # Canary phase: run new image side-by-side on :3001.
-          APP_NETWORK="$(docker inspect stockai-timescaledb --format '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' 2>/dev/null || true)"
+          APP_NETWORK="$(docker inspect stockai-timescaledb-prod --format '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' 2>/dev/null || true)"
+          if [ -z "${APP_NETWORK}" ]; then
+            APP_NETWORK="$(docker inspect stockai-timescaledb --format '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' 2>/dev/null || true)"
+          fi
           if [ -z "${APP_NETWORK}" ]; then
             APP_NETWORK="$(docker network ls --format '{{.Name}}' | awk '/stockai/ {print; exit}')"
           fi

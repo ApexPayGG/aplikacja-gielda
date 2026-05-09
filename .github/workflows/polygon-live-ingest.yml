@@ -26,4 +26,4 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
             "${HETZNER_USER}@${HETZNER_IP}" \
-            'docker exec stockai-api-prod npm run -s job:fetch-quotes'
+            'docker exec stockai-api-prod npm run -s job:fetch-quotes || { echo "--- stockai-api-prod logs (tail) ---"; docker logs --tail 120 stockai-api-prod 2>&1; exit 1; }'

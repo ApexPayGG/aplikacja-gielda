@@ -98,6 +98,9 @@ describe("quotes routes", () => {
   it("GET /api/quotes/latest returns quote", async () => {
     const res = await fetch(`${baseUrl}/api/quotes/latest?ticker=AAPL`);
     assert.equal(res.status, 200);
+    assert.equal(res.headers.get("x-ratelimit-limit"), "50");
+    assert.match(res.headers.get("x-ratelimit-remaining") ?? "", /^[0-9]+$/);
+    assert.match(res.headers.get("x-ratelimit-reset") ?? "", /^[0-9]+$/);
     const body = (await res.json()) as { quote: { ticker: string; price: string } };
     assert.equal(body.quote.ticker, "AAPL");
     assert.equal(body.quote.price, "150.25");

@@ -28,21 +28,30 @@ function defaultClientIp(req: Request): string {
 async function applyRateLimit(
   rateStore: RedisRateStore,
   key: string,
-): Promise<{ ok: boolean; retryAfterSec?: number }> {
+): Promise<
+  | { ok: true; remaining: number; resetUnix: number }
+  | { ok: false; retryAfterSec: number }
+> {
   const count = await rateStore.incr(key);
   if (count === 1) {
     await rateStore.expire(key, QUOTES_RATE_WINDOW_SEC);
   }
+  const ttlSec = await rateStore.ttl(key);
+  const windowTtl = ttlSec > 0 ? ttlSec : QUOTES_RATE_WINDOW_SEC;
+  const resetUnix = Math.floor(Date.now() / 1000) + windowTtl;
   if (count > QUOTES_RATE_LIMIT) {
-    const ttl = await rateStore.ttl(key);
-    return { ok: false, retryAfterSec: Math.max(1, ttl) };
+    return { ok: false, retryAfterSec: Math.max(1, ttlSec) };
   }
-  return { ok: true };
+  return {
+    ok: true,
+    remaining: Math.max(0, QUOTES_RATE_LIMIT - count),
+    resetUnix,
+  };
 }
 
 function parseTicker(q: unknown): string | null {
   const t = String(q ?? "").trim().toUpperCase();
-  if (!t || !/^[A-Z0-9.\-]{1,10}$/.test(t)) return null;
+  if (!t || !/^[A-Z0-9.-]{1,10}$/.test(t)) return null;
   return t;
 }
 
@@ -88,6 +97,9 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
       res.setHeader("Retry-After", String(rl.retryAfterSec ?? 60));
       return res.status(429).json({ error: "Rate limit exceeded", retryAfterSec: rl.retryAfterSec });
     }
+    res.setHeader("X-RateLimit-Limit", String(QUOTES_RATE_LIMIT));
+    res.setHeader("X-RateLimit-Remaining", String(rl.remaining));
+    res.setHeader("X-RateLimit-Reset", String(rl.resetUnix));
     next();
   });
 

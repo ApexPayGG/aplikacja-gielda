@@ -291,7 +291,7 @@ export class DiscordSignalAlertDispatcher {
   }
 
   private async drainRegularQueue(channel: string): Promise<void> {
-    while (true) {
+    for (;;) {
       const allowed = await this.tryAcquireRateSlot(channel);
       if (!allowed) return;
       const nextRaw = await this.redis.lpop(this.regularQueueListKey(channel));
