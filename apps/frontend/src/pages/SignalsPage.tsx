@@ -62,6 +62,8 @@ type ExecutionPlan = {
   worstCasePct: number;
 };
 
+type ConfidenceCue = "PRIME" | "STRONG" | "WATCH";
+
 const marketFlags: Record<MarketCode, string> = {
   US: "🇺🇸",
   PL: "🇵🇱",
@@ -171,22 +173,22 @@ function clampPercent(v: number): number {
 }
 
 function riskScoreColor(score: number): string {
-  if (score >= 80) return "text-[#00c87a]";
-  if (score >= 60) return "text-[#0096ff]";
-  return "text-[#ff4a4a]";
+  if (score >= 80) return "text-brand-green";
+  if (score >= 60) return "text-brand-blue";
+  return "text-brand-red";
 }
 
 function typeBadgeClass(type: SignalKind): string {
-  if (type === "CRITICAL") return "bg-[#00c87a]/15 text-[#00c87a] border border-[#00c87a]/30";
-  if (type === "STANDARD") return "bg-[#0096ff]/15 text-[#0096ff] border border-[#0096ff]/30";
-  return "bg-[#ff4a4a]/15 text-[#ff4a4a] border border-[#ff4a4a]/30";
+  if (type === "CRITICAL") return "bg-brand-green/15 text-brand-green border border-brand-green/30";
+  if (type === "STANDARD") return "bg-brand-blue/15 text-brand-blue border border-brand-blue/30";
+  return "bg-brand-red/15 text-brand-red border border-brand-red/30";
 }
 
 function regimeBadgeClass(regime: MarketRegime): string {
-  if (regime === "TRENDING") return "bg-[#00c87a]/15 text-[#00c87a]";
+  if (regime === "TRENDING") return "bg-brand-green/15 text-brand-green";
   if (regime === "RANGING") return "bg-slate-500/25 text-slate-200";
-  if (regime === "RISK_ON") return "bg-[#0096ff]/15 text-[#0096ff]";
-  return "bg-[#ff4a4a]/15 text-[#ff4a4a]";
+  if (regime === "RISK_ON") return "bg-brand-blue/15 text-brand-blue";
+  return "bg-brand-red/15 text-brand-red";
 }
 
 function parseSignal(raw: unknown): SignalListItem | null {
@@ -252,13 +254,13 @@ function mergeSignals(prev: SignalListItem[], incoming: SignalListItem[]): Signa
 
 function regimeProtocol(regime: MarketRegime): { mode: string; style: string; riskCap: string; color: string } {
   if (regime === "TRENDING") {
-    return { mode: "Trend Acceleration", style: "Breakout continuation", riskCap: "1.25R", color: "text-[#00c87a]" };
+    return { mode: "Trend Acceleration", style: "Breakout continuation", riskCap: "1.25R", color: "text-brand-green" };
   }
   if (regime === "RISK_ON") {
-    return { mode: "Pro-Risk Expansion", style: "Momentum basket", riskCap: "1.00R", color: "text-[#0096ff]" };
+    return { mode: "Pro-Risk Expansion", style: "Momentum basket", riskCap: "1.00R", color: "text-brand-blue" };
   }
   if (regime === "RISK_OFF") {
-    return { mode: "Capital Defense", style: "Mean-reversion only", riskCap: "0.50R", color: "text-[#ff4a4a]" };
+    return { mode: "Capital Defense", style: "Mean-reversion only", riskCap: "0.50R", color: "text-brand-red" };
   }
   return { mode: "Neutral Grid", style: "Range edges + quick exits", riskCap: "0.75R", color: "text-slate-300" };
 }
@@ -299,6 +301,19 @@ function buildWatchlist(signals: SignalListItem[]): SignalListItem[] {
   return [...signals]
     .sort((a, b) => b.riskScore * 0.55 + b.winRate * 0.45 - (a.riskScore * 0.55 + a.winRate * 0.45))
     .slice(0, 5);
+}
+
+function confidenceCue(signal: SignalListItem): ConfidenceCue {
+  const prime = signal.riskScore >= 80 && signal.winRate >= 65 && (signal.marketRegime === "TRENDING" || signal.marketRegime === "RISK_ON");
+  if (prime) return "PRIME";
+  if (signal.riskScore >= 70 && signal.winRate >= 57) return "STRONG";
+  return "WATCH";
+}
+
+function confidenceCueClass(level: ConfidenceCue): string {
+  if (level === "PRIME") return "bg-brand-violet/20 text-brand-violet border border-brand-violet/45";
+  if (level === "STRONG") return "bg-brand-blue/18 text-brand-blue border border-brand-blue/35";
+  return "bg-brand-amber/18 text-brand-amber border border-brand-amber/35";
 }
 
 function dnaRationale(match: DnaMatch): { why: string; counter: string } {
@@ -548,24 +563,27 @@ export function SignalsPage() {
   }, [selectedSignal]);
 
   return (
-    <div className="min-h-screen bg-[#060d18] text-slate-100">
+    <div className="min-h-screen bg-brand-bg text-slate-100">
       <div className="mx-auto flex max-w-7xl gap-4 px-4 py-6">
         <aside className="w-[320px] shrink-0 space-y-3">
           <h1 className="text-xl font-semibold text-white">{t("signals.title")}</h1>
-          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-3 text-xs">
+          <div className="neo-panel rounded-xl p-3 text-xs">
             <div className="flex items-center justify-between">
               <span className="text-slate-400">Live Engine</span>
-              <span
-                className={`rounded px-2 py-0.5 font-semibold ${
-                  liveTransport === "SSE"
-                    ? "bg-[#00c87a]/15 text-[#00c87a]"
-                    : liveTransport === "POLLING"
-                      ? "bg-[#0096ff]/15 text-[#0096ff]"
-                      : "bg-slate-700/40 text-slate-300"
-                }`}
-              >
-                {liveTransport}
-              </span>
+              <div className="flex items-center gap-2">
+                {liveTransport !== "OFFLINE" && <span className="live-dot" />}
+                <span
+                  className={`rounded px-2 py-0.5 font-semibold ${
+                    liveTransport === "SSE"
+                      ? "bg-brand-green/15 text-brand-green"
+                      : liveTransport === "POLLING"
+                        ? "bg-brand-blue/15 text-brand-blue"
+                        : "bg-slate-700/40 text-slate-300"
+                  }`}
+                >
+                  {liveTransport}
+                </span>
+              </div>
             </div>
             <p className="mt-2 text-slate-300">{liveNote}</p>
             <p className="mt-1 font-mono text-slate-500">
@@ -581,46 +599,52 @@ export function SignalsPage() {
               </div>
             ))}
           {!loadingList && listError && (
-            <div className="rounded-xl border border-[#ff4a4a]/30 bg-[#ff4a4a]/10 p-3 text-sm text-[#ff7a7a]">{listError}</div>
+            <div className="rounded-xl border border-brand-red/30 bg-brand-red/10 p-3 text-sm text-brand-red">{listError}</div>
           )}
           {!loadingList &&
-            signals.map((signal) => (
-              <button
-                key={signal.id}
-                type="button"
-                onClick={() => setSelectedId(signal.id)}
-                className={`w-full rounded-xl border p-3 text-left transition ${
-                  selectedId === signal.id
-                    ? "border-[#00c87a]/60 bg-[#00c87a]/8"
-                    : hotSignalIds.includes(signal.id)
-                      ? "border-[#0096ff]/60 bg-[#0096ff]/10"
-                      : "border-slate-800 bg-slate-900/70 hover:border-[#0096ff]/50"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-base font-semibold text-white">
-                      {signal.ticker} <span className="text-slate-400">{signal.market}</span> {marketFlags[signal.market]}
+            signals.map((signal) => {
+              const cue = confidenceCue(signal);
+              return (
+                <button
+                  key={signal.id}
+                  type="button"
+                  onClick={() => setSelectedId(signal.id)}
+                  className={`interactive-tilt w-full rounded-xl border p-3 text-left transition ${
+                    selectedId === signal.id
+                      ? "border-brand-green/60 bg-brand-green/10"
+                      : hotSignalIds.includes(signal.id)
+                        ? "border-brand-blue/60 bg-brand-blue/10"
+                        : "border-slate-800 bg-slate-900/70 hover:border-brand-blue/50"
+                  } ${cue === "PRIME" ? "confidence-halo" : ""}`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-base font-semibold text-white">
+                        {signal.ticker} <span className="text-slate-400">{signal.market}</span> {marketFlags[signal.market]}
+                      </div>
+                      <div className="mt-1 text-xs text-slate-400">{signal.setupType}</div>
+                      <span className={`mt-2 inline-flex rounded px-2 py-0.5 text-[10px] font-semibold tracking-wide ${confidenceCueClass(cue)}`}>
+                        {cue}
+                      </span>
                     </div>
-                    <div className="mt-1 text-xs text-slate-400">{signal.setupType}</div>
+                    <div className={`font-mono text-2xl font-bold ${riskScoreColor(signal.riskScore)}`}>{Math.round(signal.riskScore)}</div>
                   </div>
-                  <div className={`font-mono text-2xl font-bold ${riskScoreColor(signal.riskScore)}`}>{Math.round(signal.riskScore)}</div>
-                </div>
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
-                  <span className={`rounded px-2 py-1 ${regimeBadgeClass(signal.marketRegime)}`}>{signal.marketRegime}</span>
-                  <span className={`${signal.changePct >= 0 ? "text-[#00c87a]" : "text-[#ff4a4a]"} font-mono`}>
-                    {signal.changePct >= 0 ? "+" : ""}
-                    {signal.changePct.toFixed(2)}%
-                  </span>
-                  <span className={`ml-auto rounded px-2 py-1 font-semibold ${typeBadgeClass(signal.signalType)}`}>
-                    {signal.signalType}
-                  </span>
-                </div>
-              </button>
-            ))}
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
+                    <span className={`rounded px-2 py-1 ${regimeBadgeClass(signal.marketRegime)}`}>{signal.marketRegime}</span>
+                    <span className={`${signal.changePct >= 0 ? "text-brand-green" : "text-brand-red"} font-mono`}>
+                      {signal.changePct >= 0 ? "+" : ""}
+                      {signal.changePct.toFixed(2)}%
+                    </span>
+                    <span className={`ml-auto rounded px-2 py-1 font-semibold ${typeBadgeClass(signal.signalType)}`}>
+                      {signal.signalType}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
           {!loadingList && watchlist.length > 0 && (
-            <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#0096ff]">Autonomous Watchlist</h3>
+            <div className="neo-panel rounded-xl p-3">
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-blue">Autonomous Watchlist</h3>
               <div className="space-y-2">
                 {watchlist.map((w) => (
                   <div key={`watch-${w.id}`} className="flex items-center justify-between text-xs">
@@ -635,7 +659,7 @@ export function SignalsPage() {
           )}
         </aside>
 
-        <section className="min-w-0 flex-1 rounded-xl border border-slate-800 bg-slate-900/55 p-5">
+        <section className="neo-panel neo-panel-accent min-w-0 flex-1 rounded-xl p-5">
           {!selectedSignal && !loadingList && <div className="text-slate-400">No signal selected.</div>}
           {selectedSignal && (
             <>
@@ -645,10 +669,15 @@ export function SignalsPage() {
                     {selectedSignal.ticker} <span className="text-sm text-slate-400">{selectedSignal.market}</span>
                   </h2>
                   <p className="mt-1 text-sm text-slate-400">{selectedSignal.setupType}</p>
+                  <span
+                    className={`mt-2 inline-flex rounded px-2 py-1 text-xs font-semibold tracking-wide ${confidenceCueClass(confidenceCue(selectedSignal))}`}
+                  >
+                    Confidence: {confidenceCue(selectedSignal)}
+                  </span>
                 </div>
                 <div className="text-right font-mono">
                   <div className="text-2xl font-semibold text-white">${selectedSignal.price.toFixed(2)}</div>
-                  <div className={selectedSignal.changePct >= 0 ? "text-[#00c87a]" : "text-[#ff4a4a]"}>
+                  <div className={selectedSignal.changePct >= 0 ? "text-brand-green" : "text-brand-red"}>
                     {selectedSignal.changePct >= 0 ? "+" : ""}
                     {selectedSignal.changePct.toFixed(2)}%
                   </div>
@@ -657,12 +686,12 @@ export function SignalsPage() {
 
               <div className="mb-5 grid gap-3 md:grid-cols-3">
                 <StatBox label={t("signals.riskScore")} value={Math.round(selectedSignal.riskScore).toString()} valueClass={riskScoreColor(selectedSignal.riskScore)} />
-                <StatBox label={t("signals.winRate")} value={`${selectedSignal.winRate.toFixed(1)}%`} valueClass="text-[#00c87a]" />
-                <StatBox label={t("signals.avgReturn")} value={`${selectedSignal.avgReturn >= 0 ? "+" : ""}${selectedSignal.avgReturn.toFixed(2)}%`} valueClass={selectedSignal.avgReturn >= 0 ? "text-[#0096ff]" : "text-[#ff4a4a]"} />
+                <StatBox label={t("signals.winRate")} value={`${selectedSignal.winRate.toFixed(1)}%`} valueClass="text-brand-green" />
+                <StatBox label={t("signals.avgReturn")} value={`${selectedSignal.avgReturn >= 0 ? "+" : ""}${selectedSignal.avgReturn.toFixed(2)}%`} valueClass={selectedSignal.avgReturn >= 0 ? "text-brand-blue" : "text-brand-red"} />
               </div>
 
               {regime && (
-                <article className="mb-5 rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+                <article className="neo-panel mb-5 rounded-lg p-4">
                   <h3 className="mb-2 text-lg font-semibold text-white">Live Market Regime Engine</h3>
                   <div className="grid gap-3 md:grid-cols-3">
                     <MiniInfo label="Mode" value={regime.mode} valueClass={regime.color} />
@@ -689,10 +718,10 @@ export function SignalsPage() {
               {!loadingDetail && narrative && dna && (
                 <div className="space-y-5">
                   {copilot && (
-                    <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+                    <article className="neo-panel neo-panel-accent rounded-lg p-4">
                       <div className="mb-3 flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-white">AI Copilot Decision</h3>
-                        <span className="rounded bg-[#00c87a]/15 px-2 py-1 text-xs font-semibold text-[#00c87a]">
+                        <span className="rounded bg-brand-green/15 px-2 py-1 text-xs font-semibold text-brand-green">
                           {copilot.action}
                         </span>
                       </div>
@@ -702,7 +731,7 @@ export function SignalsPage() {
                           label="Conviction"
                           valueText={`${copilot.conviction}%`}
                           barPercent={copilot.conviction}
-                          colorClass="bg-[#00c87a]"
+                          colorClass="bg-brand-green"
                         />
                       </div>
                       <p className="mt-2 text-xs text-slate-400">Invalidation: {copilot.invalidation}</p>
@@ -710,19 +739,19 @@ export function SignalsPage() {
                     </article>
                   )}
 
-                  <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+                  <article className="neo-panel rounded-lg p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <h3 className="text-lg font-semibold text-white">{t("signals.narrative")}</h3>
-                      <span className="rounded bg-[#0096ff]/15 px-2 py-1 text-xs font-semibold text-[#0096ff]">
+                      <span className="rounded bg-brand-blue/15 px-2 py-1 text-xs font-semibold text-brand-blue">
                         {narrative.confidence}
                       </span>
                     </div>
                     <h4 className="text-2xl font-semibold text-white">{narrative.headline}</h4>
                     <p className="mt-3 text-sm leading-6 text-slate-300">{narrative.body}</p>
-                    <p className="mt-3 border-l-2 border-[#ff4a4a] pl-3 text-sm text-slate-300">{narrative.riskNote}</p>
+                    <p className="mt-3 border-l-2 border-brand-red pl-3 text-sm text-slate-300">{narrative.riskNote}</p>
                   </article>
 
-                  <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+                  <article className="neo-panel rounded-lg p-4">
                     <h3 className="mb-3 text-lg font-semibold text-white">{t("signals.dna")}</h3>
                     <div className="space-y-2">
                       {dna.matches.slice(0, 3).map((match) => {
@@ -731,25 +760,25 @@ export function SignalsPage() {
                           <div key={match.id} className="rounded-md border border-slate-800 bg-[#060d18]/70 px-3 py-3">
                             <div className="flex items-center justify-between">
                               <div className="text-sm text-slate-200">{match.date}</div>
-                              <div className="font-mono text-sm text-[#0096ff]">{match.similarityPct.toFixed(0)}%</div>
+                              <div className="font-mono text-sm text-brand-blue">{match.similarityPct.toFixed(0)}%</div>
                               <div
-                                className={`font-mono text-sm ${match.outcome.startsWith("-") ? "text-[#ff4a4a]" : "text-[#00c87a]"}`}
+                                className={`font-mono text-sm ${match.outcome.startsWith("-") ? "text-brand-red" : "text-brand-green"}`}
                               >
                                 {match.outcome}
                               </div>
                             </div>
                             <p className="mt-2 text-xs text-slate-300">Why similar: {explanation.why}</p>
-                            <p className="mt-1 text-xs text-[#ff7a7a]">Counterpoint: {explanation.counter}</p>
+                            <p className="mt-1 text-xs text-brand-red">Counterpoint: {explanation.counter}</p>
                           </div>
                         );
                       })}
                     </div>
                   </article>
 
-                  <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+                  <article className="neo-panel rounded-lg p-4">
                     <h3 className="mb-3 text-lg font-semibold text-white">Discord Embed Preview</h3>
-                    <div className="rounded border border-[#0096ff]/30 bg-[#0a1424] p-4">
-                      <div className="text-sm text-[#0096ff]">{selectedSignal.ticker} • {selectedSignal.setupType}</div>
+                    <div className="rounded border border-brand-blue/30 bg-brand-bg/70 p-4 spot-glow">
+                      <div className="text-sm text-brand-blue">{selectedSignal.ticker} • {selectedSignal.setupType}</div>
                       <div className="mt-2 text-xl font-semibold text-white">{narrative.headline}</div>
                       <p className="mt-2 text-sm text-slate-300">{narrative.body}</p>
                       <div className="mt-3 flex flex-wrap gap-2 text-xs">
@@ -760,35 +789,35 @@ export function SignalsPage() {
                     </div>
                   </article>
 
-                  <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+                  <article className="neo-panel rounded-lg p-4">
                     <h3 className="mb-3 text-lg font-semibold text-white">Track Record</h3>
-                    <TrackMetric label="Win rate" valueText={`${selectedSignal.winRate.toFixed(1)}%`} barPercent={clampPercent(selectedSignal.winRate)} colorClass="bg-[#00c87a]" />
-                    <TrackMetric label="Avg return" valueText={`${selectedSignal.avgReturn >= 0 ? "+" : ""}${selectedSignal.avgReturn.toFixed(2)}%`} barPercent={clampPercent((selectedSignal.avgReturn + 10) * 5)} colorClass="bg-[#0096ff]" />
-                    <TrackMetric label="Max DD" valueText={`${selectedSignal.maxDrawdown.toFixed(2)}%`} barPercent={clampPercent(100 - Math.abs(selectedSignal.maxDrawdown) * 8)} colorClass="bg-[#ff4a4a]" />
+                    <TrackMetric label="Win rate" valueText={`${selectedSignal.winRate.toFixed(1)}%`} barPercent={clampPercent(selectedSignal.winRate)} colorClass="bg-brand-green" />
+                    <TrackMetric label="Avg return" valueText={`${selectedSignal.avgReturn >= 0 ? "+" : ""}${selectedSignal.avgReturn.toFixed(2)}%`} barPercent={clampPercent((selectedSignal.avgReturn + 10) * 5)} colorClass="bg-brand-blue" />
+                    <TrackMetric label="Max DD" valueText={`${selectedSignal.maxDrawdown.toFixed(2)}%`} barPercent={clampPercent(100 - Math.abs(selectedSignal.maxDrawdown) * 8)} colorClass="bg-brand-red" />
                     <TrackMetric label="Total signals" valueText={selectedSignal.totalSignals.toString()} barPercent={clampPercent((selectedSignal.totalSignals / 100) * 100)} colorClass="bg-slate-400" />
                   </article>
 
                   {execution && (
-                    <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+                    <article className="neo-panel rounded-lg p-4">
                       <h3 className="mb-3 text-lg font-semibold text-white">Battle-Tested Execution Simulator</h3>
                       <div className="grid gap-3 md:grid-cols-3">
                         <MiniInfo label="Entry" value={`$${execution.entry.toFixed(2)}`} valueClass="font-mono text-white" />
-                        <MiniInfo label="Stop" value={`$${execution.stop.toFixed(2)}`} valueClass="font-mono text-[#ff4a4a]" />
-                        <MiniInfo label="Target" value={`$${execution.target.toFixed(2)}`} valueClass="font-mono text-[#00c87a]" />
-                        <MiniInfo label="R:R" value={`${execution.rr.toFixed(2)}R`} valueClass="font-mono text-[#0096ff]" />
+                        <MiniInfo label="Stop" value={`$${execution.stop.toFixed(2)}`} valueClass="font-mono text-brand-red" />
+                        <MiniInfo label="Target" value={`$${execution.target.toFixed(2)}`} valueClass="font-mono text-brand-green" />
+                        <MiniInfo label="R:R" value={`${execution.rr.toFixed(2)}R`} valueClass="font-mono text-brand-blue" />
                         <MiniInfo
                           label="Expected Value"
                           value={`${execution.expectedValuePct >= 0 ? "+" : ""}${execution.expectedValuePct.toFixed(2)}%`}
-                          valueClass={`font-mono ${execution.expectedValuePct >= 0 ? "text-[#00c87a]" : "text-[#ff4a4a]"}`}
+                          valueClass={`font-mono ${execution.expectedValuePct >= 0 ? "text-brand-green" : "text-brand-red"}`}
                         />
-                        <MiniInfo label="Worst Case" value={`${execution.worstCasePct.toFixed(2)}%`} valueClass="font-mono text-[#ff4a4a]" />
+                        <MiniInfo label="Worst Case" value={`${execution.worstCasePct.toFixed(2)}%`} valueClass="font-mono text-brand-red" />
                       </div>
                     </article>
                   )}
                 </div>
               )}
               {!loadingDetail && detailError && (
-                <div className="mt-4 rounded-md border border-[#ff4a4a]/30 bg-[#ff4a4a]/10 p-3 text-sm text-[#ff7a7a]">
+                <div className="mt-4 rounded-md border border-brand-red/30 bg-brand-red/10 p-3 text-sm text-brand-red">
                   {detailError}
                 </div>
               )}
@@ -802,7 +831,7 @@ export function SignalsPage() {
 
 function StatBox(props: { label: string; value: string; valueClass?: string }) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-3">
+    <div className="neo-panel rounded-lg p-3">
       <div className="text-xs uppercase tracking-wide text-slate-400">{props.label}</div>
       <div className={`mt-2 font-mono text-2xl font-bold ${props.valueClass ?? "text-white"}`}>{props.value}</div>
     </div>
@@ -811,7 +840,7 @@ function StatBox(props: { label: string; value: string; valueClass?: string }) {
 
 function MiniInfo(props: { label: string; value: string; valueClass?: string }) {
   return (
-    <div className="rounded border border-slate-800 bg-[#060d18]/70 p-3">
+    <div className="rounded border border-brand-border/80 bg-brand-bg/70 p-3">
       <div className="text-[11px] uppercase tracking-wide text-slate-500">{props.label}</div>
       <div className={`mt-1 text-sm text-slate-200 ${props.valueClass ?? ""}`}>{props.value}</div>
     </div>
@@ -826,7 +855,7 @@ function TrackMetric(props: { label: string; valueText: string; barPercent: numb
         <span className="font-mono text-slate-100">{props.valueText}</span>
       </div>
       <div className="h-2 overflow-hidden rounded bg-slate-800">
-        <div className={`h-full ${props.colorClass}`} style={{ width: `${props.barPercent}%` }} />
+        <div className={`risk-beam h-full ${props.colorClass}`} style={{ width: `${props.barPercent}%` }} />
       </div>
     </div>
   );

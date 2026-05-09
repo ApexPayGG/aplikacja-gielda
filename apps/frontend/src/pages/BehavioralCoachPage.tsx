@@ -69,7 +69,7 @@ function buildSyntheticHistory(snapshot: CoachSnapshot | null): SnapshotHistoryP
 
 function StatBox(props: { label: string; value: string; colorClass: string }) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-3">
+    <div className="neo-panel rounded-lg p-3">
       <div className="text-xs uppercase tracking-wide text-slate-400">{props.label}</div>
       <div className={`mt-2 font-mono text-2xl font-bold ${props.colorClass}`}>{props.value}</div>
     </div>
@@ -91,7 +91,7 @@ function BiasCard(props: { bias: Bias; avgWinHours: number; avgLossHours: number
   }
   if (props.bias === "HOLDS_LOSERS_TOO_LONG") {
     return (
-      <div className="rounded-lg border border-[#ff4a4a]/50 bg-[#ff4a4a]/10 p-4">
+      <div className="rounded-lg border border-brand-red/50 bg-brand-red/10 p-4">
         <h3 className="text-sm font-semibold text-[#ff9d9d]">⏳ {t("coach.holdsLosers")}</h3>
         <p className="mt-2 text-sm text-slate-300">
           Średnia strata: <span className="font-mono">{props.avgLossPct.toFixed(2)}%</span>, czas trzymania:{" "}
@@ -164,7 +164,7 @@ export function BehavioralCoachPage() {
   const biases = useMemo(() => snapshot?.biases ?? [], [snapshot?.biases]);
 
   return (
-    <div className="min-h-screen bg-[#060d18] text-slate-100">
+    <div className="min-h-screen bg-brand-bg text-slate-100">
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight text-white">{t("coach.traderProfile")}</h1>
@@ -173,9 +173,9 @@ export function BehavioralCoachPage() {
           </span>
         </header>
 
-        {error && <div className="rounded border border-[#ff4a4a]/30 bg-[#ff4a4a]/10 p-3 text-sm text-[#ff8f8f]">{error}</div>}
+        {error && <div className="rounded border border-brand-red/30 bg-brand-red/10 p-3 text-sm text-brand-red">{error}</div>}
 
-        <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+        <section className="neo-panel neo-panel-accent rounded-xl p-5">
           {loading ? (
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, idx) => (
@@ -185,12 +185,12 @@ export function BehavioralCoachPage() {
           ) : (
             <>
               <div className="grid gap-3 md:grid-cols-4">
-                <StatBox label={t("coach.avgWin")} value={`${snapshot?.avgWinPct.toFixed(2) ?? "0.00"}%`} colorClass="text-[#00c87a]" />
-                <StatBox label={t("coach.avgLoss")} value={`${snapshot?.avgLossPct.toFixed(2) ?? "0.00"}%`} colorClass="text-[#ff4a4a]" />
+                <StatBox label={t("coach.avgWin")} value={`${snapshot?.avgWinPct.toFixed(2) ?? "0.00"}%`} colorClass="text-brand-green" />
+                <StatBox label={t("coach.avgLoss")} value={`${snapshot?.avgLossPct.toFixed(2) ?? "0.00"}%`} colorClass="text-brand-red" />
                 <StatBox
                   label={t("coach.avgHoldWin", { defaultValue: "Avg Hold Win" })}
                   value={`${snapshot?.avgHoldingWinHours.toFixed(1) ?? "0.0"} h`}
-                  colorClass="text-[#0096ff]"
+                  colorClass="text-brand-blue"
                 />
                 <StatBox
                   label={t("coach.avgHoldLoss", { defaultValue: "Avg Hold Loss" })}
@@ -201,7 +201,7 @@ export function BehavioralCoachPage() {
 
               <div className="mt-5 space-y-3">
                 {biases.length === 0 && (
-                  <div className="rounded-lg border border-[#00c87a]/50 bg-[#00c87a]/10 p-4 text-[#95f4c9]">{t("coach.noBiases")} 🎯</div>
+                  <div className="rounded-lg border border-brand-green/50 bg-brand-green/10 p-4 text-brand-green">{t("coach.noBiases")} 🎯</div>
                 )}
                 {biases.map((bias) => (
                   <BiasCard
@@ -214,8 +214,8 @@ export function BehavioralCoachPage() {
                 ))}
               </div>
 
-              <div className="mt-5 rounded-lg border border-[#0096ff]/35 bg-[#0096ff]/10 p-4">
-                <h3 className="text-base font-semibold text-[#9ed5ff]">💬 {t("coach.aiCoach")}:</h3>
+              <div className="mt-5 rounded-lg border border-brand-blue/35 bg-brand-blue/10 p-4">
+                <h3 className="text-base font-semibold text-brand-blue">💬 {t("coach.aiCoach")}:</h3>
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-200">
                   {coach?.aiDescription ?? "Brak treści od AI Coacha."}
                 </p>
@@ -224,7 +224,7 @@ export function BehavioralCoachPage() {
           )}
         </section>
 
-        <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+        <section className="neo-panel rounded-xl p-5">
           <h2 className="mb-4 text-lg font-semibold text-white">{t("paperTrading.history")}</h2>
           {loading ? (
             <div className="h-64 animate-pulse rounded bg-slate-700/35" />
@@ -242,8 +242,8 @@ export function BehavioralCoachPage() {
                       color: "#e2e8f0",
                     }}
                   />
-                  <Line type="monotone" dataKey="avgWinPct" stroke="#00c87a" strokeWidth={2.5} dot={false} name="Avg Win %" />
-                  <Line type="monotone" dataKey="avgLossPct" stroke="#ff4a4a" strokeWidth={2.5} dot={false} name="Avg Loss %" />
+                  <Line type="monotone" dataKey="avgWinPct" stroke="rgb(0 200 122)" strokeWidth={2.5} dot={false} name="Avg Win %" />
+                  <Line type="monotone" dataKey="avgLossPct" stroke="rgb(255 74 74)" strokeWidth={2.5} dot={false} name="Avg Loss %" />
                 </LineChart>
               </ResponsiveContainer>
             </div>

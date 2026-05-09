@@ -7,13 +7,22 @@ export default {
         sans: ["DM Sans", "system-ui", "sans-serif"],
       },
       colors: {
+        brand: {
+          bg: "rgb(var(--color-brand-bg) / <alpha-value>)",
+          green: "rgb(var(--color-brand-green) / <alpha-value>)",
+          blue: "rgb(var(--color-brand-blue) / <alpha-value>)",
+          red: "rgb(var(--color-brand-red) / <alpha-value>)",
+          violet: "rgb(var(--color-brand-violet) / <alpha-value>)",
+          amber: "rgb(var(--color-brand-amber) / <alpha-value>)",
+          border: "rgb(var(--color-brand-border) / <alpha-value>)",
+        },
         surface: {
-          DEFAULT: "#0f1419",
-          elevated: "#1a2332",
-          border: "#2d3a4d",
+          DEFAULT: "rgb(var(--color-brand-bg) / <alpha-value>)",
+          elevated: "#101b2e",
+          border: "rgb(var(--color-brand-border) / <alpha-value>)",
         },
         accent: {
-          DEFAULT: "#3b82f6",
+          DEFAULT: "rgb(var(--color-brand-blue) / <alpha-value>)",
           muted: "#60a5fa",
         },
       },

@@ -6,8 +6,266 @@
 
 :root {
   color-scheme: dark;
+  --color-brand-bg: 6 13 24;
+  --color-brand-green: 0 200 122;
+  --color-brand-blue: 0 150 255;
+  --color-brand-red: 255 74 74;
+  --color-brand-border: 15 31 54;
+  --color-brand-violet: 126 82 255;
+  --color-brand-amber: 255 176 59;
+  --glow-green: 0 200 122;
+  --glow-blue: 0 150 255;
+  --glow-violet: 126 82 255;
 }
 
 body {
-  @apply bg-surface text-slate-100 antialiased min-h-screen;
+  @apply bg-brand-bg text-slate-100 antialiased min-h-screen;
+}
+
+.app-shell {
+  background:
+    radial-gradient(140% 100% at 0% 0%, rgb(0 150 255 / 0.12) 0%, transparent 45%),
+    radial-gradient(120% 90% at 100% 0%, rgb(0 200 122 / 0.1) 0%, transparent 45%),
+    radial-gradient(90% 80% at 50% 100%, rgb(126 82 255 / 0.08) 0%, transparent 55%),
+    rgb(var(--color-brand-bg));
+}
+
+.app-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgb(148 163 184 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(circle at 50% 35%, black 20%, transparent 80%);
+  z-index: 0;
+}
+
+.glass-nav {
+  backdrop-filter: blur(10px);
+  background:
+    linear-gradient(180deg, rgb(7 17 31 / 0.9) 0%, rgb(6 13 24 / 0.75) 100%);
+  border-bottom: 1px solid rgb(var(--color-brand-border) / 0.9);
+  box-shadow:
+    0 8px 20px rgb(0 0 0 / 0.28),
+    inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+
+.nav-link-chrome {
+  position: relative;
+  transition: color 0.18s ease;
+}
+
+.nav-link-chrome::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+  background: linear-gradient(90deg, rgb(var(--color-brand-blue)), rgb(var(--color-brand-green)));
+}
+
+.nav-link-chrome:hover::after,
+.nav-link-chrome.is-active::after {
+  transform: scaleX(1);
+}
+
+.neo-panel {
+  border: 1px solid rgb(var(--color-brand-border) / 0.9);
+  background:
+    linear-gradient(160deg, rgb(10 22 40 / 0.9) 0%, rgb(9 18 32 / 0.92) 60%, rgb(7 14 26 / 0.95) 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.04),
+    0 10px 24px rgb(0 0 0 / 0.28);
+}
+
+.neo-panel-accent {
+  position: relative;
+  overflow: hidden;
+}
+
+.neo-panel-accent::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, rgb(var(--glow-blue) / 0.28), rgb(var(--glow-violet) / 0.22), rgb(var(--glow-green) / 0.26));
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  padding: 1px;
+}
+
+.spot-glow {
+  box-shadow:
+    0 0 0 1px rgb(var(--color-brand-border) / 0.7),
+    0 0 16px rgb(var(--glow-blue) / 0.28);
+}
+
+.text-gradient-brand {
+  background: linear-gradient(90deg, rgb(var(--color-brand-blue)), rgb(var(--color-brand-violet)), rgb(var(--color-brand-green)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pill-signal {
+  border: 1px solid rgb(255 255 255 / 0.1);
+  backdrop-filter: blur(5px);
+}
+
+.interactive-tilt {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+  will-change: transform;
+}
+
+.interactive-tilt:hover {
+  transform: translateY(-2px) scale(1.003);
+  box-shadow:
+    0 14px 28px rgb(0 0 0 / 0.34),
+    0 0 18px rgb(var(--glow-blue) / 0.16);
+}
+
+.interactive-tilt:active {
+  transform: translateY(0) scale(0.998);
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgb(var(--color-brand-green));
+  box-shadow: 0 0 0 0 rgb(var(--color-brand-green) / 0.65);
+  animation: livePulse 1.9s infinite;
+}
+
+.feedback-layer {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.feedback-toast {
+  min-width: 240px;
+  max-width: 340px;
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid rgb(var(--color-brand-border) / 0.9);
+  background: linear-gradient(160deg, rgb(10 22 40 / 0.95) 0%, rgb(8 16 29 / 0.96) 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.03),
+    0 10px 22px rgb(0 0 0 / 0.32);
+  animation: toastIn 0.24s ease;
+}
+
+.feedback-toast-success {
+  border-color: rgb(var(--color-brand-green) / 0.5);
+}
+
+.feedback-toast-error {
+  border-color: rgb(var(--color-brand-red) / 0.55);
+}
+
+.feedback-toast-info {
+  border-color: rgb(var(--color-brand-blue) / 0.5);
+}
+
+.pnl-glow-positive {
+  text-shadow: 0 0 12px rgb(var(--color-brand-green) / 0.26);
+}
+
+.pnl-glow-negative {
+  text-shadow: 0 0 12px rgb(var(--color-brand-red) / 0.28);
+}
+
+.confidence-halo {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.05),
+    0 0 0 1px rgb(var(--color-brand-violet) / 0.35),
+    0 0 18px rgb(var(--color-brand-violet) / 0.24);
+}
+
+.risk-beam {
+  position: relative;
+  overflow: hidden;
+}
+
+.risk-beam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.14), transparent);
+  animation: riskSweep 2.8s ease-in-out infinite;
+}
+
+@keyframes riskSweep {
+  0% {
+    transform: translateX(-110%);
+  }
+  55% {
+    transform: translateX(110%);
+  }
+  100% {
+    transform: translateX(110%);
+  }
+}
+
+@keyframes livePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(var(--color-brand-green) / 0.62);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgb(var(--color-brand-green) / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(var(--color-brand-green) / 0);
+  }
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .risk-beam::after,
+  .live-dot,
+  .feedback-toast {
+    animation: none;
+  }
+
+  .interactive-tilt,
+  .interactive-tilt:hover,
+  .interactive-tilt:active {
+    transition: none;
+    transform: none;
+  }
 }

@@ -82,8 +82,8 @@ function isFallbackError(e: unknown): boolean {
 }
 
 function typeBadgeClass(type: WindowType): string {
-  if (type === "EARNINGS_CYCLE") return "bg-[#0096ff]/20 text-[#8fd3ff]";
-  if (type === "SEASONAL") return "bg-[#00c87a]/20 text-[#93f5ca]";
+  if (type === "EARNINGS_CYCLE") return "bg-brand-blue/20 text-[#8fd3ff]";
+  if (type === "SEASONAL") return "bg-brand-green/20 text-[#93f5ca]";
   if (type === "SECTOR_ROTATION") return "bg-purple-500/20 text-purple-200";
   return "bg-orange-500/20 text-orange-200";
 }
@@ -96,9 +96,9 @@ function typeLabel(type: WindowType, t: (key: string) => string): string {
 }
 
 function probabilityColor(score: number): string {
-  if (score >= 80) return "text-[#00c87a]";
-  if (score >= 60) return "text-[#0096ff]";
-  return "text-[#ff4a4a]";
+  if (score >= 80) return "text-brand-green";
+  if (score >= 60) return "text-brand-blue";
+  return "text-brand-red";
 }
 
 function formatDateTime(value: string): string {
@@ -173,7 +173,7 @@ export function AlphaCalendarPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060d18] text-slate-100">
+    <div className="min-h-screen bg-brand-bg text-slate-100">
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
         <header className="flex items-center justify-between gap-3">
           <div>
@@ -187,9 +187,9 @@ export function AlphaCalendarPage() {
           </span>
         </header>
 
-        {error && <div className="rounded border border-[#ff4a4a]/30 bg-[#ff4a4a]/10 p-3 text-sm text-[#ff8f8f]">{error}</div>}
+        {error && <div className="rounded border border-brand-red/30 bg-brand-red/10 p-3 text-sm text-brand-red">{error}</div>}
 
-        <section className="space-y-4 rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+        <section className="neo-panel neo-panel-accent space-y-4 rounded-xl p-5">
           {calendarLoading ? (
             <>
               <div className="h-24 animate-pulse rounded bg-slate-700/30" />
@@ -201,8 +201,8 @@ export function AlphaCalendarPage() {
             </>
           ) : (
             <>
-              <div className="rounded-lg border border-[#0096ff]/35 bg-[#0096ff]/12 p-4">
-                <h2 className="text-sm font-semibold text-[#9fd8ff]">🤖 AI Summary</h2>
+              <div className="rounded-lg border border-brand-blue/35 bg-brand-blue/12 p-4">
+                <h2 className="text-sm font-semibold text-brand-blue">🤖 AI Summary</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-200">
                   {calendar?.aiSummary ?? "Brak podsumowania AI."}
                 </p>
@@ -210,13 +210,13 @@ export function AlphaCalendarPage() {
 
               <div className="grid gap-3 md:grid-cols-3">
                 {sortedWindows.map((w, idx) => (
-                  <article key={`${w.ticker}-${w.type}-${idx}`} className="rounded-lg border border-slate-800 bg-[#081425] p-4">
+                  <article key={`${w.ticker}-${w.type}-${idx}`} className="neo-panel rounded-lg p-4">
                     <div className="mb-2 flex items-center justify-between gap-2">
                       <span className={`rounded px-2 py-1 text-[11px] font-semibold ${typeBadgeClass(w.type)}`}>{typeLabel(w.type, t)}</span>
                       <span className={`font-mono text-3xl font-bold ${probabilityColor(w.probabilityScore)}`}>{Math.round(w.probabilityScore)}</span>
                     </div>
                     <h3 className="text-lg font-semibold text-white">{w.ticker}</h3>
-                    <p className={`mt-1 font-mono text-sm ${w.historicalAvgReturn >= 0 ? "text-[#00c87a]" : "text-[#ff4a4a]"}`}>
+                    <p className={`mt-1 font-mono text-sm ${w.historicalAvgReturn >= 0 ? "text-brand-green" : "text-brand-red"}`}>
                       {t("alpha.historicalReturn")}: {w.historicalAvgReturn >= 0 ? "+" : ""}
                       {w.historicalAvgReturn.toFixed(2)}%
                     </p>
@@ -232,13 +232,13 @@ export function AlphaCalendarPage() {
           )}
         </section>
 
-        <section className="space-y-4 rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+        <section className="neo-panel space-y-4 rounded-xl p-5">
           <h2 className="text-lg font-semibold text-white">{t("common.search")}</h2>
           <form onSubmit={onCheckTicker} className="flex flex-wrap items-end gap-3">
             <label className="flex min-w-[220px] flex-col gap-1 text-sm">
               <span className="text-slate-400">Ticker</span>
               <input
-                className="rounded border border-slate-700 bg-[#060d18] px-3 py-2 text-white outline-none focus:border-[#0096ff]"
+                className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
                 value={tickerInput}
                 onChange={(e) => setTickerInput(e.target.value.toUpperCase())}
                 placeholder="AAPL"
@@ -247,7 +247,7 @@ export function AlphaCalendarPage() {
             <button
               type="submit"
               disabled={tickerLoading}
-              className="rounded bg-[#0096ff] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#007cd4] disabled:opacity-60"
+              className="interactive-tilt rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-blue/80 disabled:opacity-60"
             >
               {tickerLoading ? t("common.loading") : t("common.search")}
             </button>
@@ -282,7 +282,7 @@ export function AlphaCalendarPage() {
                         <span className={`rounded px-2 py-1 text-[11px] font-semibold ${typeBadgeClass(w.type)}`}>{typeLabel(w.type, t)}</span>
                       </td>
                       <td className={`px-2 py-2 font-mono ${probabilityColor(w.probabilityScore)}`}>{Math.round(w.probabilityScore)}%</td>
-                      <td className={`px-2 py-2 font-mono ${w.historicalAvgReturn >= 0 ? "text-[#00c87a]" : "text-[#ff4a4a]"}`}>
+                      <td className={`px-2 py-2 font-mono ${w.historicalAvgReturn >= 0 ? "text-brand-green" : "text-brand-red"}`}>
                         {w.historicalAvgReturn >= 0 ? "+" : ""}
                         {w.historicalAvgReturn.toFixed(2)}%
                       </td>
