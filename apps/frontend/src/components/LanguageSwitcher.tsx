@@ -18,7 +18,7 @@ const options: LangOption[] = [
   { code: "fr", label: "Français", flag: "🇫🇷" },
 ];
 
-export function LanguageSwitcher() {
+export default function LanguageSwitcher() {
   const { i18n } = useTranslation();
   const active = options.find((x) => i18n.resolvedLanguage?.startsWith(x.code));
   const value = active?.code ?? "en";
@@ -34,7 +34,7 @@ export function LanguageSwitcher() {
       <select
         value={value}
         onChange={(e) => void handleChange(e.target.value)}
-        className="rounded border border-[#284362] bg-[#060d18] px-2 py-1 text-xs text-slate-200 outline-none focus:border-[#0096ff]"
+        className="interactive-tilt rounded border border-brand-border/80 bg-brand-bg px-2 py-1 text-xs text-slate-200 outline-none focus:border-brand-blue"
       >
         {options.map((opt) => (
           <option key={opt.code} value={opt.code}>
