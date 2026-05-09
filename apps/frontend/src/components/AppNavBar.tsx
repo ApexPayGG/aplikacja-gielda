@@ -141,8 +141,8 @@ export function AppNavBar() {
   return (
     <nav className="glass-nav relative z-20">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4">
-        <Link to="/" className="shrink-0 text-lg font-bold tracking-tight text-white">
-          StockAI <span className="logo-pro font-semibold">Pro</span>
+        <Link to="/" className="shrink-0">
+          <img src="/logo.png" alt="StockAI Pro" className="h-8 w-auto" />
         </Link>
 
         <button
