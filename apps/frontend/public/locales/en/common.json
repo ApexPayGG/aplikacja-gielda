@@ -144,8 +144,14 @@
     "industry": "Industry",
     "website": "Website",
     "chartTitle": "Close - recent history",
+    "close": "Close",
+    "noQuoteHistory": "No quote history yet.",
     "recentNews": "Recent news",
     "noNews": "No news rows in database yet."
+  },
+  "analysisBrief": {
+    "title": "AI brief (PL + EN)",
+    "updated": "Updated"
   },
   "dividendIntelligence": {
     "title": "Dividend Intelligence",

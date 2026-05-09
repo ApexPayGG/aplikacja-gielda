@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 import type { QuoteRow } from "../services/api";
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export function Chart({ quotes, title = "Close (latest window)" }: Props) {
+  const { t } = useTranslation();
   const data = quotes.map((q) => ({
     t: new Date(q.timestamp).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
     close: Number(q.close),
@@ -23,7 +25,7 @@ export function Chart({ quotes, title = "Close (latest window)" }: Props) {
   if (data.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-surface-border bg-slate-900/40 text-sm text-slate-500">
-        No quote history yet.
+        {t("company.noQuoteHistory", { defaultValue: "No quote history yet." })}
       </div>
     );
   }
@@ -45,7 +47,14 @@ export function Chart({ quotes, title = "Close (latest window)" }: Props) {
               }}
               labelStyle={{ color: "#e2e8f0" }}
             />
-            <Line type="monotone" dataKey="close" stroke="#60a5fa" strokeWidth={2} dot={false} name="Close" />
+            <Line
+              type="monotone"
+              dataKey="close"
+              stroke="#60a5fa"
+              strokeWidth={2}
+              dot={false}
+              name={t("company.close", { defaultValue: "Close" })}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

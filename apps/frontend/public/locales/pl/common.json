@@ -144,8 +144,14 @@
     "industry": "Branża",
     "website": "Strona WWW",
     "chartTitle": "Cena zamknięcia - ostatnia historia",
+    "close": "Zamknięcie",
+    "noQuoteHistory": "Brak historii notowań.",
     "recentNews": "Najnowsze wiadomości",
     "noNews": "Brak wiadomości w bazie danych."
+  },
+  "analysisBrief": {
+    "title": "Brief AI (PL + EN)",
+    "updated": "Aktualizacja"
   },
   "dividendIntelligence": {
     "title": "Analiza Dywidend",
