@@ -10,7 +10,11 @@
     "alphaCalendar": "Kalendarz Alpha",
     "positionSize": "Kalkulator",
     "stressTest": "Test stresu",
-    "concentration": "Koncentracja"
+    "concentration": "Koncentracja",
+    "markets": "Rynki",
+    "portfolio": "Portfel",
+    "tools": "Narzędzia",
+    "menu": "Menu"
   },
   "common": {
     "search": "Szukaj",

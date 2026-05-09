@@ -10,7 +10,11 @@
     "alphaCalendar": "알파 캘린더",
     "positionSize": "계산기",
     "stressTest": "스트레스 테스트",
-    "concentration": "집중도"
+    "concentration": "집중도",
+    "markets": "마켓",
+    "portfolio": "포트폴리오",
+    "tools": "도구",
+    "menu": "메뉴"
   },
   "common": {
     "search": "검색",

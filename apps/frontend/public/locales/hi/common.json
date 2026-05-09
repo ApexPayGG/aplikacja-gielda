@@ -10,7 +10,11 @@
     "alphaCalendar": "अल्फा कैलेंडर",
     "positionSize": "कैलकुलेटर",
     "stressTest": "स्ट्रेस टेस्ट",
-    "concentration": "केंद्रीकरण"
+    "concentration": "केंद्रीकरण",
+    "markets": "बाज़ार",
+    "portfolio": "पोर्टफोलियो",
+    "tools": "उपकरण",
+    "menu": "मेनू"
   },
   "common": {
     "search": "खोजें",

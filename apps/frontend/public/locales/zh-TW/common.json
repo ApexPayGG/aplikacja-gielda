@@ -10,7 +10,11 @@
     "alphaCalendar": "Alpha 行事曆",
     "positionSize": "計算機",
     "stressTest": "壓力測試",
-    "concentration": "集中度"
+    "concentration": "集中度",
+    "markets": "市場",
+    "portfolio": "投組",
+    "tools": "工具",
+    "menu": "選單"
   },
   "common": {
     "search": "搜尋",

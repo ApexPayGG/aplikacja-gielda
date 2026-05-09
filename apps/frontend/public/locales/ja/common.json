@@ -10,7 +10,11 @@
     "alphaCalendar": "アルファカレンダー",
     "positionSize": "計算機",
     "stressTest": "ストレステスト",
-    "concentration": "集中度"
+    "concentration": "集中度",
+    "markets": "マーケット",
+    "portfolio": "ポートフォリオ",
+    "tools": "ツール",
+    "menu": "メニュー"
   },
   "common": {
     "search": "検索",
