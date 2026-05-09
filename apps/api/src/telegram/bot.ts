@@ -78,7 +78,7 @@ function welcomeText(): string {
 
 export async function sendAnalysisBrief(bot: TelegramBot, chatId: number, symbol: string): Promise<void> {
   const sym = symbol.toUpperCase();
-  const { brief } = await analyzeStock(sym);
+  const { brief } = await analyzeStock(sym, "pl");
   const header = `${sym} — AI brief (PL + EN)\n\n`;
   const body = `${header}${brief}`;
   for (const part of chunkText(body)) {

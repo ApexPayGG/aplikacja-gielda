@@ -35,7 +35,8 @@
   },
   "analysisBrief": {
     "title": "AI 摘要",
-    "updated": "更新時間"
+    "updated": "更新時間",
+    "englishSection": "English"
   },
   "signals": {
     "title": "訊號",

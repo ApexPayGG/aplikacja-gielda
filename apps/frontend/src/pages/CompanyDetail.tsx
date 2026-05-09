@@ -5,11 +5,11 @@ import { Link, useParams } from "react-router-dom";
 import { AnalysisBrief } from "../components/AnalysisBrief";
 import { Chart } from "../components/Chart";
 import type { AnalysisResponse, Company, NewsRow, QuoteRow } from "../services/api";
-import { getAnalysis, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
+import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function CompanyDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { symbol = "" } = useParams();
   const sym = decodeURIComponent(symbol).toUpperCase();
 
@@ -57,7 +57,7 @@ export function CompanyDetail() {
       setAnalysisLoading(true);
       setAnalysisError(null);
       try {
-        const a = await getAnalysis(sym);
+        const a = await getCompanyBrief(sym, i18n.language);
         if (!cancelled) setAnalysis(a);
       } catch (e) {
         if (!cancelled) setAnalysisError(apiErrorMessage(e));
@@ -68,7 +68,7 @@ export function CompanyDetail() {
     return () => {
       cancelled = true;
     };
-  }, [sym]);
+  }, [sym, i18n.language]);
 
   if (loading && !company) {
     return (

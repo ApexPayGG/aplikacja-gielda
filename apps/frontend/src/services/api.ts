@@ -88,9 +88,16 @@ export interface NewsListResponse {
   data: NewsRow[];
 }
 
+export interface BriefSection {
+  lang: string;
+  body: string;
+}
+
 export interface AnalysisResponse {
   brief: string;
   updatedAt: string;
+  requestedLang?: string;
+  sections?: BriefSection[];
 }
 
 export async function searchCompanies(query: string, limit = 20): Promise<Company[]> {
@@ -131,8 +138,18 @@ export async function getNews(symbol: string, limit = 10): Promise<NewsRow[]> {
   return data.data;
 }
 
-export async function getAnalysis(symbol: string): Promise<AnalysisResponse> {
-  const { data } = await api.get<AnalysisResponse>(`/analysis/${encodeURIComponent(symbol)}`);
+export async function getCompanyBrief(symbol: string, lang: string): Promise<AnalysisResponse> {
+  const { data } = await api.get<AnalysisResponse>(`/companies/${encodeURIComponent(symbol)}/brief`, {
+    params: { lang },
+  });
+  return data;
+}
+
+/** @deprecated Prefer getCompanyBrief(symbol, lang) for i18n-aware briefs */
+export async function getAnalysis(symbol: string, lang = "pl"): Promise<AnalysisResponse> {
+  const { data } = await api.get<AnalysisResponse>(`/analysis/${encodeURIComponent(symbol)}`, {
+    params: { lang },
+  });
   return data;
 }
 

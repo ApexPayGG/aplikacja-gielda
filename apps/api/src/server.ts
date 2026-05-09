@@ -246,6 +246,18 @@ export function createApp(): express.Express {
     }
   });
 
+  app.get("/api/companies/:symbol/brief", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const sym = (req.params.symbol ?? "").trim().toUpperCase();
+      if (!sym) return res.status(400).json({ error: "Missing symbol" });
+      const lang = String(req.query.lang ?? "en").trim() || "en";
+      const result = await analyzeStock(sym, lang);
+      res.json(result);
+    } catch (e) {
+      next(e);
+    }
+  });
+
   app.get("/api/companies/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const row = await getCompanyBySymbol(req.params.symbol ?? "");
@@ -323,7 +335,8 @@ export function createApp(): express.Express {
 
   app.get("/api/analysis/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await analyzeStock(req.params.symbol ?? "");
+      const lang = String(req.query.lang ?? "pl").trim() || "pl";
+      const result = await analyzeStock(req.params.symbol ?? "", lang);
       res.json(result);
     } catch (e) {
       next(e);
