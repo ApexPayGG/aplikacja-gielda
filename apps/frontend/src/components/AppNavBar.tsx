@@ -142,7 +142,7 @@ export function AppNavBar() {
     <nav className="glass-nav relative z-20">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4">
         <Link to="/" className="shrink-0">
-          <img src="/logo.png" alt="StockAI Pro" className="h-8 w-auto" />
+          <img src="/logo.png" alt="StockAI Pro" className="h-8 w-40 object-cover object-center" />
         </Link>
 
         <button
@@ -244,3 +244,4 @@ function MobileSection({
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import type { DividendAlertsResponse, DividendIntelligence, SectorComparison } from "../types/dividend";
 
 /** Dev proxy uses `VITE_API_BASE=/api`. If env is only origin (no `/api`), append it so paths like `/position-size/calculate` resolve correctly. */
@@ -139,10 +139,21 @@ export async function getNews(symbol: string, limit = 10): Promise<NewsRow[]> {
 }
 
 export async function getCompanyBrief(symbol: string, lang: string): Promise<AnalysisResponse> {
-  const { data } = await api.get<AnalysisResponse>(`/companies/${encodeURIComponent(symbol)}/brief`, {
-    params: { lang },
-  });
-  return data;
+  try {
+    const { data } = await api.get<AnalysisResponse>(`/companies/${encodeURIComponent(symbol)}/brief`, {
+      params: { lang },
+    });
+    return data;
+  } catch (error) {
+    if (error instanceof AxiosError && error.response?.status === 404) {
+      // Backward compatibility for API versions that don't expose /companies/:symbol/brief yet.
+      const { data } = await api.get<AnalysisResponse>(`/analysis/${encodeURIComponent(symbol)}`, {
+        params: { lang },
+      });
+      return data;
+    }
+    throw error;
+  }
 }
 
 /** @deprecated Prefer getCompanyBrief(symbol, lang) for i18n-aware briefs */
@@ -238,3 +249,4 @@ export const getDividendAlerts = (symbol: string, limit: number = 20) =>
 
 export const getSectorComparison = () =>
   api.get<SectorComparison>("/intelligence/dividend/comparison/sector");
+
