@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { DividendGrowthTable } from "../components/DividendGrowthTable";
 import { TaxCalculatorPL } from "../components/TaxCalculatorPL";
 import type { DividendGrowthRow, DividendHistoryItem } from "../services/api";
@@ -6,6 +7,7 @@ import { getDividendHistory, getDividendGrowthScreener } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function Dividends() {
+  const { t } = useTranslation();
   const [symbol, setSymbol] = useState("AAPL");
   const [years, setYears] = useState(5);
   const [history, setHistory] = useState<DividendHistoryItem[]>([]);
@@ -53,18 +55,24 @@ export function Dividends() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <header className="mb-10">
-        <h1 className="text-3xl font-bold tracking-tight text-white">Dividend screening (MVP)</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-white">
+          {t("dividendsPage.title", { defaultValue: "Dividend screening (MVP)" })}
+        </h1>
         <p className="mt-2 max-w-2xl text-sm text-slate-400">
-          Historia dywidend (mock seed), screener wzrostu oraz kalkulator podatku 19% (szacunek). Dane:{" "}
+          {t("dividendsPage.subtitle", {
+            defaultValue: "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
+          })}{" "}
           <code className="text-accent">npm run db:seed</code> w <code>apps/api</code>.
         </p>
       </header>
 
       <section className="mb-12">
-        <h2 className="text-xl font-semibold text-white">Historia dywidend</h2>
+        <h2 className="text-xl font-semibold text-white">
+          {t("dividendsPage.historyTitle", { defaultValue: "Dividend history" })}
+        </h2>
         <div className="mt-4 flex flex-wrap items-end gap-4">
           <label className="text-sm">
-            <span className="text-slate-400">Symbol</span>
+            <span className="text-slate-400">{t("dividendsPage.symbol", { defaultValue: "Symbol" })}</span>
             <input
               className="mt-1 block rounded-md border border-surface-border bg-surface px-3 py-2 font-mono text-white"
               value={symbol}
@@ -72,7 +80,7 @@ export function Dividends() {
             />
           </label>
           <label className="text-sm">
-            <span className="text-slate-400">Lata wstecz</span>
+            <span className="text-slate-400">{t("dividendsPage.yearsBack", { defaultValue: "Years back" })}</span>
             <input
               type="number"
               min={1}
@@ -87,20 +95,20 @@ export function Dividends() {
             onClick={() => void loadHistory()}
             className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90"
           >
-            Pobierz
+            {t("dividendsPage.fetch", { defaultValue: "Fetch" })}
           </button>
         </div>
-        {histLoading && <p className="mt-4 text-sm text-slate-400">Ładowanie…</p>}
+        {histLoading && <p className="mt-4 text-sm text-slate-400">{t("common.loading")}</p>}
         {histError && <p className="mt-4 text-sm text-red-400">{histError}</p>}
         {!histLoading && !histError && history.length > 0 && (
           <div className="mt-4 overflow-x-auto rounded-lg border border-surface-border">
             <table className="min-w-full text-left text-sm text-slate-300">
               <thead className="bg-surface-elevated text-xs uppercase text-slate-400">
                 <tr>
-                  <th className="px-4 py-3">Ex-date</th>
-                  <th className="px-4 py-3">Pay date</th>
-                  <th className="px-4 py-3">Kwota</th>
-                  <th className="px-4 py-3">Yield %</th>
+                  <th className="px-4 py-3">{t("dividendsPage.exDate", { defaultValue: "Ex-date" })}</th>
+                  <th className="px-4 py-3">{t("dividendsPage.payDate", { defaultValue: "Pay date" })}</th>
+                  <th className="px-4 py-3">{t("dividendsPage.amount", { defaultValue: "Amount" })}</th>
+                  <th className="px-4 py-3">{t("dividendsPage.yield", { defaultValue: "Yield %" })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -117,15 +125,21 @@ export function Dividends() {
           </div>
         )}
         {!histLoading && !histError && history.length === 0 && (
-          <p className="mt-4 text-sm text-slate-500">Brak wpisów — uruchom seed lub zmień filtr.</p>
+          <p className="mt-4 text-sm text-slate-500">
+            {t("dividendsPage.emptyHistory", { defaultValue: "No rows yet — run seed or change filters." })}
+          </p>
         )}
       </section>
 
       <section className="mb-12">
-        <h2 className="text-xl font-semibold text-white">Screener: wzrost dywidend (CAGR)</h2>
+        <h2 className="text-xl font-semibold text-white">
+          {t("dividendsPage.screenerTitle", { defaultValue: "Screener: dividend growth (CAGR)" })}
+        </h2>
         <div className="mt-4 flex flex-wrap items-end gap-4">
           <label className="text-sm">
-            <span className="text-slate-400">Min. lat historii</span>
+            <span className="text-slate-400">
+              {t("dividendsPage.minYears", { defaultValue: "Min. years of history" })}
+            </span>
             <input
               type="number"
               min={1}
@@ -136,7 +150,7 @@ export function Dividends() {
             />
           </label>
           <label className="text-sm">
-            <span className="text-slate-400">Min. yield %</span>
+            <span className="text-slate-400">{t("dividendsPage.minYield", { defaultValue: "Min. yield %" })}</span>
             <input
               type="number"
               min={0}
@@ -151,7 +165,7 @@ export function Dividends() {
             onClick={() => void loadGrowth()}
             className="rounded-md border border-surface-border px-4 py-2 text-sm text-slate-200 hover:bg-white/5"
           >
-            Odśwież
+            {t("dividendsPage.refresh", { defaultValue: "Refresh" })}
           </button>
         </div>
         <div className="mt-4">

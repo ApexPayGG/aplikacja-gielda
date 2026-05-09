@@ -1,11 +1,11 @@
 {
   "nav": {
-    "home": "Home",
-    "dashboard": "Dashboard",
+    "home": "Strona główna",
+    "dashboard": "Panel",
     "signals": "Sygnały",
     "dividend": "Dywidenda",
-    "dividendIntelligence": "Inteligencja Dywidendowa",
-    "paperTrading": "Paper Trading",
+    "dividendIntelligence": "Analiza Dywidend",
+    "paperTrading": "Wirtualny Portfel",
     "coach": "Coach",
     "alphaCalendar": "Kalendarz Alpha"
   },

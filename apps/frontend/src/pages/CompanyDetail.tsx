@@ -1,5 +1,6 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { AnalysisBrief } from "../components/AnalysisBrief";
 import { Chart } from "../components/Chart";
@@ -8,6 +9,7 @@ import { getAnalysis, getCompanyDetail, getNews, getQuoteHistory } from "../serv
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function CompanyDetail() {
+  const { t } = useTranslation();
   const { symbol = "" } = useParams();
   const sym = decodeURIComponent(symbol).toUpperCase();
 
@@ -71,7 +73,7 @@ export function CompanyDetail() {
   if (loading && !company) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center text-slate-500">
-        Loading company…
+        {t("company.loading", { defaultValue: "Loading company..." })}
       </div>
     );
   }
@@ -81,7 +83,7 @@ export function CompanyDetail() {
       <div className="mx-auto max-w-4xl px-4 py-20">
         <p className="text-red-300">{error ?? "Company not found"}</p>
         <Link to="/" className="mt-4 inline-block text-accent-muted hover:underline">
-          ← Back home
+          {t("company.backHome", { defaultValue: "<- Back home" })}
         </Link>
       </div>
     );
@@ -90,7 +92,7 @@ export function CompanyDetail() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <Link to="/" className="mb-6 inline-block text-sm text-accent-muted hover:underline">
-        ← Companies
+        {t("company.backCompanies", { defaultValue: "<- Companies" })}
       </Link>
 
       <div className="mb-10 flex flex-col gap-8 md:flex-row md:items-start">
@@ -106,16 +108,16 @@ export function CompanyDetail() {
           <p className="mt-1 font-mono text-sm text-slate-500">{company.symbol}</p>
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
             <div>
-              <dt className="text-slate-500">Sector</dt>
+              <dt className="text-slate-500">{t("company.sector", { defaultValue: "Sector" })}</dt>
               <dd className="text-slate-200">{company.sector}</dd>
             </div>
             <div>
-              <dt className="text-slate-500">Industry</dt>
+              <dt className="text-slate-500">{t("company.industry", { defaultValue: "Industry" })}</dt>
               <dd className="text-slate-200">{company.industry}</dd>
             </div>
             {company.webUrl && (
               <div className="sm:col-span-2">
-                <dt className="text-slate-500">Website</dt>
+                <dt className="text-slate-500">{t("company.website", { defaultValue: "Website" })}</dt>
                 <dd>
                   <a
                     href={company.webUrl}
@@ -137,14 +139,16 @@ export function CompanyDetail() {
       </div>
 
       <div className="mb-10">
-        <Chart quotes={quotes} title="Close — recent history" />
+        <Chart quotes={quotes} title={t("company.chartTitle", { defaultValue: "Close - recent history" })} />
       </div>
 
       <div className="mb-10">
-        <h2 className="mb-3 text-lg font-semibold text-white">Recent news</h2>
+        <h2 className="mb-3 text-lg font-semibold text-white">{t("company.recentNews", { defaultValue: "Recent news" })}</h2>
         <ul className="divide-y divide-surface-border rounded-2xl border border-surface-border bg-surface-elevated">
           {news.length === 0 && (
-            <li className="px-4 py-6 text-sm text-slate-500">No news rows in database yet.</li>
+            <li className="px-4 py-6 text-sm text-slate-500">
+              {t("company.noNews", { defaultValue: "No news rows in database yet." })}
+            </li>
           )}
           {news.map((n) => (
             <li key={`${n.id}-${n.timestamp}`} className="px-4 py-3">

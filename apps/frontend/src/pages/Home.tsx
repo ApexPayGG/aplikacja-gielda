@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CompanyCard } from "../components/CompanyCard";
 import { SearchBar } from "../components/SearchBar";
 import { SectorFilter } from "../components/SectorFilter";
@@ -7,6 +8,7 @@ import { getCompanyBySector, searchCompanies } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function Home() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [sector, setSector] = useState("All");
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -53,9 +55,11 @@ export function Home() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <header className="mb-10">
-        <h1 className="text-3xl font-bold tracking-tight text-white">Companies</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-white">{t("home.title", { defaultValue: "Companies" })}</h1>
         <p className="mt-2 max-w-2xl text-sm text-slate-400">
-          Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.
+          {t("home.subtitle", {
+            defaultValue: "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
+          })}
         </p>
       </header>
 
@@ -72,13 +76,15 @@ export function Home() {
 
       {loading && (
         <p className="mb-6 text-sm text-slate-500" aria-live="polite">
-          Loading…
+          {t("common.loading")}
         </p>
       )}
 
       {!loading && companies.length === 0 && (
         <p className="rounded-2xl border border-dashed border-surface-border bg-slate-900/30 px-6 py-12 text-center text-sm text-slate-500">
-          {sector === "All" ? "Choose a sector or run a search to see companies." : "No companies in this sector yet."}
+          {sector === "All"
+            ? t("home.emptySelectSector", { defaultValue: "Choose a sector or run a search to see companies." })
+            : t("home.emptySector", { defaultValue: "No companies in this sector yet." })}
         </p>
       )}
 
