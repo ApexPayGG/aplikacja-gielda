@@ -115,6 +115,7 @@
     "copy": "複製",
     "copyAllTp": "複製全部 TP 位階",
     "copyAriaTp": "複製 {{label}} 價格",
-    "copied": "已複製到剪貼簿"
+    "copied": "已複製到剪貼簿",
+    "errorApi404": "找不到計算 API (404)。請在連接埠 3000 啟動最新版 API，或將 VITE_API_BASE 設為包含 /api 的完整網址。"
   }
 }

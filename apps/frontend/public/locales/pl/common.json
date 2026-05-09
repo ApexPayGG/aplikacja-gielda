@@ -188,6 +188,7 @@
     "copy": "Kopiuj",
     "copyAllTp": "Skopiuj wszystkie poziomy TP",
     "copyAriaTp": "Kopiuj cenę {{label}}",
-    "copied": "Skopiowano do schowka"
+    "copied": "Skopiowano do schowka",
+    "errorApi404": "Nie znaleziono endpointu kalkulatora (404). Uruchom API na porcie 3000 z aktualnym kodem albo ustaw VITE_API_BASE na pełny adres z /api (np. http://localhost:3000/api)."
   }
 }

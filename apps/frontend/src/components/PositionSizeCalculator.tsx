@@ -22,6 +22,11 @@ function formatMoney(n: number, currency: Currency): string {
   return `${n.toFixed(2)} ${currency}`;
 }
 
+/** Parses PL/EU-style decimals (`187,5`) and strips spaces. */
+function parseDecimalInput(value: string): number {
+  return Number(String(value).trim().replace(/\s/g, "").replace(/,/g, "."));
+}
+
 function CopyIcon({ className }: { className?: string }) {
   return (
     <svg className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -68,9 +73,9 @@ export function PositionSizeCalculator() {
 
   const onCalculate = async () => {
     setError(null);
-    const acc = Number(accountSize);
-    const entry = Number(entryPrice);
-    const stop = Number(stopLossPrice);
+    const acc = parseDecimalInput(accountSize);
+    const entry = parseDecimalInput(entryPrice);
+    const stop = parseDecimalInput(stopLossPrice);
     if (!Number.isFinite(acc) || acc <= 0 || !Number.isFinite(entry) || entry <= 0 || !Number.isFinite(stop) || stop <= 0) {
       setError(t("positionSize.errorInvalid", { defaultValue: "Enter valid numbers for account, entry, and stop." }));
       return;
@@ -86,7 +91,9 @@ export function PositionSizeCalculator() {
       });
       setResult(data);
     } catch (e) {
-      if (axios.isAxiosError(e) && e.response?.data && typeof e.response.data === "object" && "error" in e.response.data) {
+      if (axios.isAxiosError(e) && e.response?.status === 404) {
+        setError(t("positionSize.errorApi404"));
+      } else if (axios.isAxiosError(e) && e.response?.data && typeof e.response.data === "object" && "error" in e.response.data) {
         setError(String((e.response.data as { error: string }).error));
       } else {
         setError(apiErrorMessage(e));
@@ -125,6 +132,7 @@ export function PositionSizeCalculator() {
               type="number"
               min="0"
               step="0.01"
+              inputMode="decimal"
               className="rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
               value={accountSize}
               onChange={(e) => setAccountSize(e.target.value)}
@@ -153,6 +161,7 @@ export function PositionSizeCalculator() {
               type="number"
               min="0"
               step="0.01"
+              inputMode="decimal"
               className="rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
               value={entryPrice}
               onChange={(e) => setEntryPrice(e.target.value)}
@@ -165,6 +174,7 @@ export function PositionSizeCalculator() {
               type="number"
               min="0"
               step="0.01"
+              inputMode="decimal"
               className="rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
               value={stopLossPrice}
               onChange={(e) => setStopLossPrice(e.target.value)}

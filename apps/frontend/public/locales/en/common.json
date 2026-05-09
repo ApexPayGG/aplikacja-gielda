@@ -188,6 +188,7 @@
     "copy": "Copy",
     "copyAllTp": "Copy all TP levels",
     "copyAriaTp": "Copy {{label}} price",
-    "copied": "Copied to clipboard"
+    "copied": "Copied to clipboard",
+    "errorApi404": "The calculator API was not found (404). Start the API on port 3000 with the latest code, or set VITE_API_BASE to the full URL including /api (e.g. http://localhost:3000/api)."
   }
 }

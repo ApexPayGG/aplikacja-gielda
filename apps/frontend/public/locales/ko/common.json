@@ -115,6 +115,7 @@
     "copy": "복사",
     "copyAllTp": "모든 TP 구간 복사",
     "copyAriaTp": "{{label}} 가격 복사",
-    "copied": "클립보드에 복사됨"
+    "copied": "클립보드에 복사됨",
+    "errorApi404": "계산 API를 찾을 수 없습니다(404). 최신 코드로 3000번 포트에서 API를 실행하거나 VITE_API_BASE를 /api가 포함된 전체 URL로 설정하세요."
   }
 }

@@ -115,6 +115,7 @@
     "copy": "コピー",
     "copyAllTp": "全TPレベルをコピー",
     "copyAriaTp": "{{label}} の価格をコピー",
-    "copied": "クリップボードにコピーしました"
+    "copied": "クリップボードにコピーしました",
+    "errorApi404": "計算APIが見つかりません (404)。最新コードでポート3000のAPIを起動するか、VITE_API_BASE を /api を含む完全なURLに設定してください。"
   }
 }

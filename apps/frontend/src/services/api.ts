@@ -1,7 +1,26 @@
 import axios from "axios";
 import type { DividendAlertsResponse, DividendIntelligence, SectorComparison } from "../types/dividend";
 
-const baseURL = import.meta.env.VITE_API_BASE ?? "http://localhost:3000/api";
+/** Dev proxy uses `VITE_API_BASE=/api`. If env is only origin (no `/api`), append it so paths like `/position-size/calculate` resolve correctly. */
+function normalizeApiBase(raw: string | undefined): string {
+  const fallback = "http://localhost:3000/api";
+  if (raw == null || String(raw).trim() === "") return fallback;
+  const s = String(raw).trim();
+  if (s.startsWith("/")) return s;
+  try {
+    const url = new URL(s);
+    const pathname = url.pathname.replace(/\/+$/, "") || "/";
+    if (pathname === "/") {
+      url.pathname = "/api";
+      return url.href.replace(/\/+$/, "");
+    }
+    return url.href.replace(/\/+$/, "");
+  } catch {
+    return fallback;
+  }
+}
+
+const baseURL = normalizeApiBase(import.meta.env.VITE_API_BASE as string | undefined);
 
 export const api = axios.create({
   baseURL,
