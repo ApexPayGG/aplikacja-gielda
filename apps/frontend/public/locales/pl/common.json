@@ -9,7 +9,8 @@
     "coach": "Coach",
     "alphaCalendar": "Kalendarz Alpha",
     "positionSize": "Kalkulator",
-    "stressTest": "Test stresu"
+    "stressTest": "Test stresu",
+    "concentration": "Koncentracja"
   },
   "common": {
     "search": "Szukaj",
@@ -209,6 +210,27 @@
       "COVID_2020": "COVID 2020 (−34%)",
       "DOT_COM_2001": "Bańka dot-com 2001 (−49%)",
       "CUSTOM": "Własny scenariusz (−{{drop}}%)"
+    }
+  },
+  "concentration": {
+    "title": "Analiza koncentracji",
+    "empty": "Otwórz pozycje w Wirtualnym Portfelu, aby zobaczyć analizę koncentracji.",
+    "currency": "Waluta wyświetlania",
+    "scoreLabel": "Wynik dywersyfikacji (0–100)",
+    "totalValue": "Łączna wartość portfela",
+    "positionCount": "Otwarte pozycje paper",
+    "chartByStock": "Podział wg spółki",
+    "chartBySector": "Podział wg sektora",
+    "positionsTable": "Pozycje i wagi",
+    "colTicker": "Ticker",
+    "colSector": "Sektor",
+    "colValue": "Wartość",
+    "colWeight": "Udział %",
+    "value": "Wartość",
+    "warnings": {
+      "SINGLE_STOCK": "{{ticker}} stanowi {{weight}}% portfela. Zalecane max {{maxStock}}%.",
+      "SINGLE_SECTOR": "Sektor {{sector}} stanowi {{weight}}% portfela. Zalecane max {{maxSector}}%.",
+      "TOP_HEAVY": "Top 3 spółki stanowią {{top3Share}}% portfela."
     }
   }
 }

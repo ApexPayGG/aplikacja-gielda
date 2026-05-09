@@ -9,7 +9,8 @@
     "coach": "コーチ",
     "alphaCalendar": "アルファカレンダー",
     "positionSize": "計算機",
-    "stressTest": "ストレステスト"
+    "stressTest": "ストレステスト",
+    "concentration": "集中度"
   },
   "common": {
     "search": "検索",
@@ -136,6 +137,27 @@
       "COVID_2020": "2020年COVID (−34%)",
       "DOT_COM_2001": "2001年ドットコム (−49%)",
       "CUSTOM": "カスタム (−{{drop}}%)"
+    }
+  },
+  "concentration": {
+    "title": "ポートフォリオ集中度",
+    "empty": "分析を表示するにはペーパートレードでポジションを開いてください。",
+    "currency": "表示通貨",
+    "scoreLabel": "分散スコア（0–100）",
+    "totalValue": "ポートフォリオ総額",
+    "positionCount": "未決済ペーパートレード数",
+    "chartByStock": "銘柄別配分",
+    "chartBySector": "セクター別配分",
+    "positionsTable": "ポジションと比率",
+    "colTicker": "ティッカー",
+    "colSector": "セクター",
+    "colValue": "金額",
+    "colWeight": "比率 %",
+    "value": "金額",
+    "warnings": {
+      "SINGLE_STOCK": "{{ticker}} がポートフォリオの {{weight}}%（推奨上限 {{maxStock}}%）。",
+      "SINGLE_SECTOR": "セクター {{sector}} が {{weight}}%（推奨上限 {{maxSector}}%）。",
+      "TOP_HEAVY": "上位3銘柄が {{top3Share}}% を占めています。"
     }
   }
 }

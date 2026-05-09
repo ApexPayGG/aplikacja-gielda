@@ -9,7 +9,8 @@
     "coach": "Coach",
     "alphaCalendar": "Alpha-Kalender",
     "positionSize": "Rechner",
-    "stressTest": "Stresstest"
+    "stressTest": "Stresstest",
+    "concentration": "Konzentration"
   },
   "common": {
     "search": "Suchen",
@@ -136,6 +137,27 @@
       "COVID_2020": "COVID 2020 (−34%)",
       "DOT_COM_2001": "Dot-com 2001 (−49%)",
       "CUSTOM": "Benutzerdefiniert (−{{drop}}%)"
+    }
+  },
+  "concentration": {
+    "title": "Portfolio-Konzentration",
+    "empty": "Eröffnen Sie Positionen im Paper Trading, um die Analyse zu sehen.",
+    "currency": "Anzeigewährung",
+    "scoreLabel": "Diversifikations-Score (0–100)",
+    "totalValue": "Gesamtwert Portfolio",
+    "positionCount": "Offene Paper-Trades",
+    "chartByStock": "Verteilung nach Unternehmen",
+    "chartBySector": "Verteilung nach Sektor",
+    "positionsTable": "Positionen & Gewichte",
+    "colTicker": "Ticker",
+    "colSector": "Sektor",
+    "colValue": "Wert",
+    "colWeight": "Gewicht %",
+    "value": "Wert",
+    "warnings": {
+      "SINGLE_STOCK": "{{ticker}} macht {{weight}}% des Portfolios aus (empfohlen max. {{maxStock}}%).",
+      "SINGLE_SECTOR": "Sektor {{sector}} macht {{weight}}% des Portfolios aus (empfohlen max. {{maxSector}}%).",
+      "TOP_HEAVY": "Die Top-3-Werte machen {{top3Share}}% des Portfolios aus."
     }
   }
 }

@@ -4,6 +4,7 @@ import LanguageSwitcher from "./components/LanguageSwitcher";
 import { AlphaCalendarPage } from "./pages/AlphaCalendarPage";
 import { BehavioralCoachPage } from "./pages/BehavioralCoachPage";
 import { CompanyDetail } from "./pages/CompanyDetail";
+import { ConcentrationPage } from "./pages/ConcentrationPage";
 import { Dashboard } from "./pages/Dashboard";
 import { DividendIntelligencePage } from "./pages/DividendIntelligencePage";
 import { Dividends } from "./pages/Dividends";
@@ -30,6 +31,7 @@ const navLinks: NavItem[] = [
   { to: "/alpha", labelKey: "nav.alphaCalendar" },
   { to: "/position-size", labelKey: "nav.positionSize" },
   { to: "/stress-test", labelKey: "nav.stressTest" },
+  { to: "/concentration", labelKey: "nav.concentration" },
 ];
 
 export default function App() {
@@ -76,6 +78,7 @@ export default function App() {
           <Route path="/alpha" element={<AlphaCalendarPage />} />
           <Route path="/position-size" element={<PositionSizePage />} />
           <Route path="/stress-test" element={<StressTestPage />} />
+          <Route path="/concentration" element={<ConcentrationPage />} />
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
           <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
           <Route path="/company/:symbol" element={<CompanyDetail />} />

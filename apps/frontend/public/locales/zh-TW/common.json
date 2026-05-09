@@ -9,7 +9,8 @@
     "coach": "教練",
     "alphaCalendar": "Alpha 行事曆",
     "positionSize": "計算機",
-    "stressTest": "壓力測試"
+    "stressTest": "壓力測試",
+    "concentration": "集中度"
   },
   "common": {
     "search": "搜尋",
@@ -136,6 +137,27 @@
       "COVID_2020": "2020 COVID (−34%)",
       "DOT_COM_2001": "2001 網路泡沫 (−49%)",
       "CUSTOM": "自訂 (−{{drop}}%)"
+    }
+  },
+  "concentration": {
+    "title": "投組集中度分析",
+    "empty": "請先在模擬交易中開倉，才能看到分析。",
+    "currency": "顯示幣別",
+    "scoreLabel": "分散評分（0–100）",
+    "totalValue": "投組總值",
+    "positionCount": "未平倉模擬部位數",
+    "chartByStock": "依公司配置",
+    "chartBySector": "依產業配置",
+    "positionsTable": "部位與權重",
+    "colTicker": "代號",
+    "colSector": "產業",
+    "colValue": "金額",
+    "colWeight": "權重 %",
+    "value": "金額",
+    "warnings": {
+      "SINGLE_STOCK": "{{ticker}} 占投組 {{weight}}%（建議上限 {{maxStock}}%）。",
+      "SINGLE_SECTOR": "{{sector}} 產業占 {{weight}}%（建議上限 {{maxSector}}%）。",
+      "TOP_HEAVY": "前三大標的合計 {{top3Share}}%。"
     }
   }
 }

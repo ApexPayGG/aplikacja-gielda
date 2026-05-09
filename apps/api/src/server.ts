@@ -61,6 +61,7 @@ import { createSignalMemoryRouter } from "./routes/signalMemory";
 import { createSignalDnaRouter } from "./routes/signalDna";
 import { createPositionSizeRouter } from "./routes/positionSize";
 import { createStressTestRouter } from "./routes/stressTest";
+import { createConcentrationRouter } from "./routes/concentration";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -134,6 +135,7 @@ export function createApp(): express.Express {
   app.use(createSignalDnaRouter());
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));
+  app.use("/api/concentration", createConcentrationRouter(prisma));
 
   app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });

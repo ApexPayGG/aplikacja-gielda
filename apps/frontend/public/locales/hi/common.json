@@ -9,7 +9,8 @@
     "coach": "कोच",
     "alphaCalendar": "अल्फा कैलेंडर",
     "positionSize": "कैलकुलेटर",
-    "stressTest": "स्ट्रेस टेस्ट"
+    "stressTest": "स्ट्रेस टेस्ट",
+    "concentration": "केंद्रीकरण"
   },
   "common": {
     "search": "खोजें",
@@ -136,6 +137,27 @@
       "COVID_2020": "2020 COVID (−34%)",
       "DOT_COM_2001": "2001 डॉट-कॉम (−49%)",
       "CUSTOM": "कस्टम (−{{drop}}%)"
+    }
+  },
+  "concentration": {
+    "title": "पोर्टफोलियो केंद्रीकरण",
+    "empty": "विश्लेषण देखने के लिए पेपर ट्रेडिंग में पोज़िशन खोलें।",
+    "currency": "प्रदर्शन मुद्रा",
+    "scoreLabel": "विविधीकरण स्कोर (0–100)",
+    "totalValue": "कुल पोर्टफोलियो मूल्य",
+    "positionCount": "खुले पेपर ट्रेड",
+    "chartByStock": "कंपनी अनुसार आवंटन",
+    "chartBySector": "सेक्टर अनुसार आवंटन",
+    "positionsTable": "पोज़िशन और वज़न",
+    "colTicker": "टिकर",
+    "colSector": "सेक्टर",
+    "colValue": "मूल्य",
+    "colWeight": "वज़न %",
+    "value": "मूल्य",
+    "warnings": {
+      "SINGLE_STOCK": "{{ticker}} पोर्टफोलियो का {{weight}}% है (अनुशंसित अधिकतम {{maxStock}}%)।",
+      "SINGLE_SECTOR": "सेक्टर {{sector}} {{weight}}% है (अनुशंसित अधिकतम {{maxSector}}%)।",
+      "TOP_HEAVY": "शीर्ष 3 होल्डिंग्स {{top3Share}}% हैं।"
     }
   }
 }

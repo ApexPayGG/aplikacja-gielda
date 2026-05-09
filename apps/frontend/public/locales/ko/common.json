@@ -9,7 +9,8 @@
     "coach": "코치",
     "alphaCalendar": "알파 캘린더",
     "positionSize": "계산기",
-    "stressTest": "스트레스 테스트"
+    "stressTest": "스트레스 테스트",
+    "concentration": "집중도"
   },
   "common": {
     "search": "검색",
@@ -136,6 +137,27 @@
       "COVID_2020": "2020 코로나 (−34%)",
       "DOT_COM_2001": "2001 닷컴 (−49%)",
       "CUSTOM": "사용자 정의 (−{{drop}}%)"
+    }
+  },
+  "concentration": {
+    "title": "포트폴리오 집중도",
+    "empty": "분석을 보려면 페이퍼 트레이딩에서 포지션을 여세요.",
+    "currency": "표시 통화",
+    "scoreLabel": "분산 점수 (0–100)",
+    "totalValue": "포트폴리오 총액",
+    "positionCount": "미결제 페이퍼 트레이드",
+    "chartByStock": "종목별 배분",
+    "chartBySector": "섹터별 배분",
+    "positionsTable": "포지션 및 비중",
+    "colTicker": "티커",
+    "colSector": "섹터",
+    "colValue": "금액",
+    "colWeight": "비중 %",
+    "value": "금액",
+    "warnings": {
+      "SINGLE_STOCK": "{{ticker}}가 포트폴리오의 {{weight}}%입니다(권장 최대 {{maxStock}}%).",
+      "SINGLE_SECTOR": "{{sector}} 섹터가 {{weight}}%입니다(권장 최대 {{maxSector}}%).",
+      "TOP_HEAVY": "상위 3종목이 {{top3Share}}%를 차지합니다."
     }
   }
 }
