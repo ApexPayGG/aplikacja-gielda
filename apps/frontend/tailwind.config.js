@@ -9,6 +9,8 @@ export default {
       colors: {
         brand: {
           bg: "rgb(var(--color-brand-bg) / <alpha-value>)",
+          text: "rgb(var(--color-brand-text) / <alpha-value>)",
+          neutral: "rgb(var(--color-brand-neutral) / <alpha-value>)",
           green: "rgb(var(--color-brand-green) / <alpha-value>)",
           blue: "rgb(var(--color-brand-blue) / <alpha-value>)",
           red: "rgb(var(--color-brand-red) / <alpha-value>)",
@@ -18,12 +20,12 @@ export default {
         },
         surface: {
           DEFAULT: "rgb(var(--color-brand-bg) / <alpha-value>)",
-          elevated: "#101b2e",
+          elevated: "#141920",
           border: "rgb(var(--color-brand-border) / <alpha-value>)",
         },
         accent: {
-          DEFAULT: "rgb(var(--color-brand-blue) / <alpha-value>)",
-          muted: "#60a5fa",
+          DEFAULT: "rgb(var(--color-brand-amber) / <alpha-value>)",
+          muted: "rgb(var(--color-brand-neutral) / <alpha-value>)",
         },
       },
     },

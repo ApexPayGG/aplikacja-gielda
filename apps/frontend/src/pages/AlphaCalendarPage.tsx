@@ -82,7 +82,7 @@ function isFallbackError(e: unknown): boolean {
 }
 
 function typeBadgeClass(type: WindowType): string {
-  if (type === "EARNINGS_CYCLE") return "bg-brand-blue/20 text-[#8fd3ff]";
+  if (type === "EARNINGS_CYCLE") return "bg-brand-blue/20 text-brand-blue";
   if (type === "SEASONAL") return "bg-brand-green/20 text-[#93f5ca]";
   if (type === "SECTOR_ROTATION") return "bg-purple-500/20 text-purple-200";
   return "bg-orange-500/20 text-orange-200";
@@ -247,7 +247,7 @@ export function AlphaCalendarPage() {
             <button
               type="submit"
               disabled={tickerLoading}
-              className="interactive-tilt rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-blue/80 disabled:opacity-60"
+              className="interactive-tilt rounded bg-brand-amber px-4 py-2 text-sm font-semibold text-brand-bg transition hover:bg-brand-amber/85 disabled:opacity-60"
             >
               {tickerLoading ? t("common.loading") : t("common.search")}
             </button>

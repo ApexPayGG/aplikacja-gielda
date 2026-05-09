@@ -203,7 +203,7 @@ function computeUnrealized(trade: PaperTrade, currentPrice: number): { pnl: numb
 function exitBadgeClass(action: ExitAction): string {
   if (action === "HOLD") return "bg-slate-700/40 text-slate-300";
   if (action === "TIGHTEN_SL") return "bg-orange-500/20 text-orange-300";
-  if (action === "SCALE_OUT") return "bg-brand-blue/20 text-[#7fc9ff]";
+  if (action === "SCALE_OUT") return "bg-brand-blue/20 text-brand-blue";
   return "animate-pulse bg-brand-red/20 text-brand-red";
 }
 
@@ -518,7 +518,7 @@ export function PaperTradingPage() {
               <button
                 type="submit"
                 disabled={submittingOpen}
-                className="interactive-tilt rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-blue/80 disabled:cursor-not-allowed disabled:opacity-60"
+                className="interactive-tilt rounded bg-brand-amber px-4 py-2 text-sm font-semibold text-brand-bg transition hover:bg-brand-amber/85 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submittingOpen ? t("common.loading") : t("paperTrading.openPosition")}
               </button>

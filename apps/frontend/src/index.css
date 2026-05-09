@@ -6,27 +6,30 @@
 
 :root {
   color-scheme: dark;
-  --color-brand-bg: 6 13 24;
-  --color-brand-green: 0 200 122;
-  --color-brand-blue: 0 150 255;
-  --color-brand-red: 255 74 74;
-  --color-brand-border: 15 31 54;
-  --color-brand-violet: 126 82 255;
-  --color-brand-amber: 255 176 59;
-  --glow-green: 0 200 122;
-  --glow-blue: 0 150 255;
-  --glow-violet: 126 82 255;
+  /* Paleta „V1” — tło / tekst / CTA / rynek / akcenty tech (PDF użytkownika) */
+  --color-brand-bg: 11 14 17;
+  --color-brand-text: 234 236 239;
+  --color-brand-neutral: 132 142 156;
+  --color-brand-green: 2 192 118;
+  --color-brand-red: 207 48 74;
+  --color-brand-blue: 0 242 255;
+  --color-brand-violet: 138 43 226;
+  --color-brand-amber: 240 185 11;
+  --color-brand-border: 33 40 52;
+  --glow-green: 2 192 118;
+  --glow-blue: 0 242 255;
+  --glow-violet: 138 43 226;
 }
 
 body {
-  @apply bg-brand-bg text-slate-100 antialiased min-h-screen;
+  @apply bg-brand-bg text-brand-text antialiased min-h-screen;
 }
 
 .app-shell {
   background:
-    radial-gradient(140% 100% at 0% 0%, rgb(0 150 255 / 0.12) 0%, transparent 45%),
-    radial-gradient(120% 90% at 100% 0%, rgb(0 200 122 / 0.1) 0%, transparent 45%),
-    radial-gradient(90% 80% at 50% 100%, rgb(126 82 255 / 0.08) 0%, transparent 55%),
+    radial-gradient(140% 100% at 0% 0%, rgb(var(--glow-blue) / 0.1) 0%, transparent 45%),
+    radial-gradient(120% 90% at 100% 0%, rgb(var(--glow-green) / 0.08) 0%, transparent 45%),
+    radial-gradient(90% 80% at 50% 100%, rgb(var(--glow-violet) / 0.07) 0%, transparent 55%),
     rgb(var(--color-brand-bg));
 }
 
@@ -36,8 +39,8 @@ body {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(to right, rgb(148 163 184 / 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(148 163 184 / 0.035) 1px, transparent 1px);
+    linear-gradient(to right, rgb(var(--color-brand-neutral) / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--color-brand-neutral) / 0.05) 1px, transparent 1px);
   background-size: 28px 28px;
   mask-image: radial-gradient(circle at 50% 35%, black 20%, transparent 80%);
   z-index: 0;
@@ -46,7 +49,7 @@ body {
 .glass-nav {
   backdrop-filter: blur(10px);
   background:
-    linear-gradient(180deg, rgb(7 17 31 / 0.9) 0%, rgb(6 13 24 / 0.75) 100%);
+    linear-gradient(180deg, rgb(14 17 22 / 0.92) 0%, rgb(11 14 17 / 0.78) 100%);
   border-bottom: 1px solid rgb(var(--color-brand-border) / 0.9);
   box-shadow:
     0 8px 20px rgb(0 0 0 / 0.28),
@@ -79,7 +82,7 @@ body {
 .neo-panel {
   border: 1px solid rgb(var(--color-brand-border) / 0.9);
   background:
-    linear-gradient(160deg, rgb(10 22 40 / 0.9) 0%, rgb(9 18 32 / 0.92) 60%, rgb(7 14 26 / 0.95) 100%);
+    linear-gradient(160deg, rgb(18 22 28 / 0.95) 0%, rgb(15 18 24 / 0.96) 60%, rgb(12 15 20 / 0.98) 100%);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.04),
     0 10px 24px rgb(0 0 0 / 0.28);
@@ -172,7 +175,7 @@ body {
   border-radius: 0.75rem;
   padding: 0.65rem 0.8rem;
   border: 1px solid rgb(var(--color-brand-border) / 0.9);
-  background: linear-gradient(160deg, rgb(10 22 40 / 0.95) 0%, rgb(8 16 29 / 0.96) 100%);
+  background: linear-gradient(160deg, rgb(18 22 28 / 0.96) 0%, rgb(14 17 22 / 0.98) 100%);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.03),
     0 10px 22px rgb(0 0 0 / 0.32);

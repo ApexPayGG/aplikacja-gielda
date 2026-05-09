@@ -200,7 +200,7 @@ export function PositionSizeCalculator() {
               type="button"
               disabled={loading}
               onClick={() => void onCalculate()}
-              className="interactive-tilt rounded-lg bg-brand-blue px-5 py-2 text-sm font-semibold text-white hover:bg-brand-blue/80 disabled:opacity-60"
+              className="interactive-tilt rounded-lg bg-brand-amber px-5 py-2 text-sm font-semibold text-brand-bg hover:bg-brand-amber/85 disabled:opacity-60"
             >
               {loading ? t("common.loading") : t("positionSize.calculate")}
             </button>
