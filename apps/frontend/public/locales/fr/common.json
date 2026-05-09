@@ -11,6 +11,7 @@
     "positionSize": "Calculateur",
     "stressTest": "Test de stress",
     "concentration": "Concentration",
+    "taxOptimizer": "PIT-38",
     "markets": "Marchés",
     "portfolio": "Portefeuille",
     "tools": "Outils",
@@ -28,6 +29,13 @@
     "open": "Ouvrir",
     "buy": "Acheter",
     "sell": "Vendre"
+  },
+  "money": {
+    "gpwCaption": "Montants en PLN (notional GPW) ; l’USD affiché à côté est indicatif (≈ 3,95 PLN par USD, pas un cours temps réel)."
+  },
+  "analysisBrief": {
+    "title": "Brief IA",
+    "updated": "Mis à jour"
   },
   "signals": {
     "title": "Signaux",
@@ -97,6 +105,7 @@
   "positionSize": {
     "title": "Calculateur de taille de position",
     "currency": "Devise du compte",
+    "currencyHint": "Saisies et résultats en PLN (notional GPW) ; l’USD affiché à côté est indicatif.",
     "pln": "PLN",
     "usd": "USD",
     "accountSize": "Taille du compte",
@@ -163,5 +172,29 @@
       "SINGLE_SECTOR": "Le secteur {{sector}} représente {{weight}}% du portefeuille (max. recommandé {{maxSector}}%).",
       "TOP_HEAVY": "Les 3 principales valeurs représentent {{top3Share}}% du portefeuille."
     }
+  },
+  "taxOptimizer": {
+    "title": "Optimiseur fiscal PIT-38",
+    "year": "Exercice",
+    "grossGains": "Gains bruts",
+    "losses": "Pertes",
+    "netIncome": "Revenu net",
+    "tax19": "Impôt Belka 19 %",
+    "toPay": "À payer",
+    "alreadyPaid": "Retenu chez le courtier (placeholder) : {{amount}}",
+    "netLossTaxNote": "Avec un résultat net négatif, la base fiscale de ce module est 0 (simplifié).",
+    "suggestionsTitle": "Suggestions d’optimisation",
+    "suggestions": {
+      "CLOSE_LOSS_BEFORE_YEAR_END": "Envisagez de clôturer {{ticker}} avant le 31.12 — une perte d’environ {{value}} PLN peut réduire l’impôt d’environ {{saving}} PLN.",
+      "CARRY_FORWARD_LOSS": "Pertes antérieures potentiellement non imputées (fenêtre 5 ans) — vérifiez avec un conseiller fiscal."
+    },
+    "closedTrades": "Trades papier clôturés",
+    "noTrades": "Aucun trade clôturé sur l’année sélectionnée.",
+    "colTicker": "Ticker",
+    "colOpen": "Ouverture",
+    "colClose": "Clôture",
+    "colPnl": "P&L",
+    "colPct": "%",
+    "disclaimer": "Résultats à titre informatif uniquement. Consultez un conseiller fiscal."
   }
 }

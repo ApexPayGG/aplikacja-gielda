@@ -11,6 +11,7 @@
     "positionSize": "計算機",
     "stressTest": "ストレステスト",
     "concentration": "集中度",
+    "taxOptimizer": "PIT-38",
     "markets": "マーケット",
     "portfolio": "ポートフォリオ",
     "tools": "ツール",
@@ -28,6 +29,13 @@
     "open": "開く",
     "buy": "買い",
     "sell": "売り"
+  },
+  "money": {
+    "gpwCaption": "金額はPLN（GPW想定）。横のUSDは目安です（約3.95 PLN = 1 USD、ライブ為替ではありません）。"
+  },
+  "analysisBrief": {
+    "title": "AIブリーフ",
+    "updated": "更新"
   },
   "signals": {
     "title": "シグナル",
@@ -97,6 +105,7 @@
   "positionSize": {
     "title": "ポジションサイズ計算機",
     "currency": "口座通貨",
+    "currencyHint": "入力と結果はPLN（GPW想定）として扱います。横のUSDは参考値です。",
     "pln": "PLN",
     "usd": "USD",
     "accountSize": "口座資金",
@@ -163,5 +172,29 @@
       "SINGLE_SECTOR": "セクター {{sector}} が {{weight}}%（推奨上限 {{maxSector}}%）。",
       "TOP_HEAVY": "上位3銘柄が {{top3Share}}% を占めています。"
     }
+  },
+  "taxOptimizer": {
+    "title": "税務最適化 PIT-38",
+    "year": "課税年度",
+    "grossGains": "総利益",
+    "losses": "損失",
+    "netIncome": "純所得",
+    "tax19": "Belka税 19%",
+    "toPay": "納付額",
+    "alreadyPaid": "証券会社での源泉（プレースホルダー）: {{amount}}",
+    "netLossTaxNote": "純損失の年はこのモジュール上の課税標準は0です（簡易）。",
+    "suggestionsTitle": "最適化のヒント",
+    "suggestions": {
+      "CLOSE_LOSS_BEFORE_YEAR_END": "12/31前に {{ticker}} を検討 — 約 {{value}} PLN の損失で税約 {{saving}} PLN 削減の可能性。",
+      "CARRY_FORWARD_LOSS": "過去5年の繰越損失の可能性 — 税理士に確認してください。"
+    },
+    "closedTrades": "決済済みペーパー取引",
+    "noTrades": "選択年に決済済み取引はありません。",
+    "colTicker": "銘柄",
+    "colOpen": "建玉",
+    "colClose": "決済",
+    "colPnl": "損益",
+    "colPct": "%",
+    "disclaimer": "結果は参考情報です。税務アドバイザーにご相談ください。"
   }
 }

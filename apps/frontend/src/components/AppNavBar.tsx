@@ -20,7 +20,10 @@ const portfolioLinks: { to: string; labelKey: string }[] = [
   { to: "/concentration", labelKey: "nav.concentration" },
 ];
 
-const toolsLinks: { to: string; labelKey: string }[] = [{ to: "/position-size", labelKey: "nav.positionSize" }];
+const toolsLinks: { to: string; labelKey: string }[] = [
+  { to: "/position-size", labelKey: "nav.positionSize" },
+  { to: "/tax-optimizer", labelKey: "nav.taxOptimizer" },
+];
 
 function isMarketsPath(pathname: string): boolean {
   return pathname.startsWith("/signals") || pathname.startsWith("/dividend") || pathname.startsWith("/alpha");
@@ -36,7 +39,7 @@ function isPortfolioPath(pathname: string): boolean {
 }
 
 function isToolsPath(pathname: string): boolean {
-  return pathname.startsWith("/position-size");
+  return pathname.startsWith("/position-size") || pathname.startsWith("/tax-optimizer");
 }
 
 function navLinkClass(isActive: boolean): string {

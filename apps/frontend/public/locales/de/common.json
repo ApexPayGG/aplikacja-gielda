@@ -11,6 +11,7 @@
     "positionSize": "Rechner",
     "stressTest": "Stresstest",
     "concentration": "Konzentration",
+    "taxOptimizer": "PIT-38",
     "markets": "Märkte",
     "portfolio": "Portfolio",
     "tools": "Tools",
@@ -28,6 +29,13 @@
     "open": "Öffnen",
     "buy": "Kaufen",
     "sell": "Verkaufen"
+  },
+  "money": {
+    "gpwCaption": "Beträge in PLN (GPW-Notional); USD daneben ist indikativ (ca. 3,95 PLN pro USD, kein Live-Kurs)."
+  },
+  "analysisBrief": {
+    "title": "KI-Kurzbericht",
+    "updated": "Aktualisiert"
   },
   "signals": {
     "title": "Signale",
@@ -97,6 +105,7 @@
   "positionSize": {
     "title": "Positionsgrößen-Rechner",
     "currency": "Kontowährung",
+    "currencyHint": "Eingaben und Ergebnisse werden als PLN (GPW-Notional) behandelt; USD daneben ist indikativ.",
     "pln": "PLN",
     "usd": "USD",
     "accountSize": "Kontogröße",
@@ -163,5 +172,29 @@
       "SINGLE_SECTOR": "Sektor {{sector}} macht {{weight}}% des Portfolios aus (empfohlen max. {{maxSector}}%).",
       "TOP_HEAVY": "Die Top-3-Werte machen {{top3Share}}% des Portfolios aus."
     }
+  },
+  "taxOptimizer": {
+    "title": "Steuer-Optimierer PIT-38",
+    "year": "Steuerjahr",
+    "grossGains": "Bruttogewinne",
+    "losses": "Verluste",
+    "netIncome": "Nettoertrag",
+    "tax19": "Belka-Steuer 19 %",
+    "toPay": "Zu zahlen",
+    "alreadyPaid": "Einbehalt beim Broker (Platzhalter): {{amount}}",
+    "netLossTaxNote": "Bei negativem Nettoergebnis ist die Bemessungsgrundlage in diesem Modul 0 (vereinfacht).",
+    "suggestionsTitle": "Optimierungshinweise",
+    "suggestions": {
+      "CLOSE_LOSS_BEFORE_YEAR_END": "Erwägen Sie, {{ticker}} vor dem 31.12. zu schließen — ein Verlust von ca. {{value}} PLN kann die Steuer um ca. {{saving}} PLN senken.",
+      "CARRY_FORWARD_LOSS": "Möglicherweise nicht verrechnete Vorjahresverluste (5-Jahres-Fenster) — mit Steuerberater prüfen."
+    },
+    "closedTrades": "Geschlossene Paper-Trades",
+    "noTrades": "Keine geschlossenen Trades im gewählten Jahr.",
+    "colTicker": "Ticker",
+    "colOpen": "Eröffnung",
+    "colClose": "Schluss",
+    "colPnl": "P&L",
+    "colPct": "%",
+    "disclaimer": "Ergebnisse nur informativ. Bitte Steuerberater konsultieren."
   }
 }

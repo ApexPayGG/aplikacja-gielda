@@ -11,6 +11,7 @@
     "positionSize": "계산기",
     "stressTest": "스트레스 테스트",
     "concentration": "집중도",
+    "taxOptimizer": "PIT-38",
     "markets": "마켓",
     "portfolio": "포트폴리오",
     "tools": "도구",
@@ -28,6 +29,13 @@
     "open": "열기",
     "buy": "매수",
     "sell": "매도"
+  },
+  "money": {
+    "gpwCaption": "금액은 PLN(GPW 기준). 옆 USD는 참고용입니다(약 3.95 PLN당 1 USD, 실시간 환율 아님)."
+  },
+  "analysisBrief": {
+    "title": "AI 브리핑",
+    "updated": "업데이트"
   },
   "signals": {
     "title": "시그널",
@@ -97,6 +105,7 @@
   "positionSize": {
     "title": "포지션 크기 계산기",
     "currency": "계좌 통화",
+    "currencyHint": "입력과 결과는 PLN(GPW 기준)으로 처리하며, 옆 USD는 참고용입니다.",
     "pln": "PLN",
     "usd": "USD",
     "accountSize": "계좌 자금",
@@ -163,5 +172,29 @@
       "SINGLE_SECTOR": "{{sector}} 섹터가 {{weight}}%입니다(권장 최대 {{maxSector}}%).",
       "TOP_HEAVY": "상위 3종목이 {{top3Share}}%를 차지합니다."
     }
+  },
+  "taxOptimizer": {
+    "title": "세금 최적화 PIT-38",
+    "year": "과세 연도",
+    "grossGains": "총 이익",
+    "losses": "손실",
+    "netIncome": "순소득",
+    "tax19": "Belka 세 19%",
+    "toPay": "납부액",
+    "alreadyPaid": "브로커 원천징수(플레이스홀더): {{amount}}",
+    "netLossTaxNote": "순손실 연도에는 이 모듈의 과세표준이 0입니다(단순화).",
+    "suggestionsTitle": "최적화 제안",
+    "suggestions": {
+      "CLOSE_LOSS_BEFORE_YEAR_END": "12/31 전 {{ticker}} 청산 검토 — 약 {{value}} PLN 손실로 세금 약 {{saving}} PLN 절감 가능.",
+      "CARRY_FORWARD_LOSS": "이전 연도 이월 손실 가능성(5년) — 세무사와 확인하세요."
+    },
+    "closedTrades": "청산된 페이퍼 거래",
+    "noTrades": "선택한 연도에 청산 거래가 없습니다.",
+    "colTicker": "티커",
+    "colOpen": "진입",
+    "colClose": "청산",
+    "colPnl": "손익",
+    "colPct": "%",
+    "disclaimer": "참고용입니다. 세무 전문가와 상담하세요."
   }
 }

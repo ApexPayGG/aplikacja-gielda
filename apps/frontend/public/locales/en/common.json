@@ -11,6 +11,7 @@
     "positionSize": "Calculator",
     "stressTest": "Stress test",
     "concentration": "Concentration",
+    "taxOptimizer": "PIT-38",
     "markets": "Markets",
     "portfolio": "Portfolio",
     "tools": "Tools",
@@ -28,6 +29,9 @@
     "open": "Open",
     "buy": "Buy",
     "sell": "Sell"
+  },
+  "money": {
+    "gpwCaption": "Amounts in PLN (GPW notionals); USD shown alongside is indicative (≈ 3.95 PLN per USD, not a live FX feed)."
   },
   "signals": {
     "title": "Signals",
@@ -157,7 +161,7 @@
     "noNews": "No news rows in database yet."
   },
   "analysisBrief": {
-    "title": "AI brief (PL + EN)",
+    "title": "AI brief",
     "updated": "Updated"
   },
   "dividendIntelligence": {
@@ -170,6 +174,7 @@
   "positionSize": {
     "title": "Position Size Calculator",
     "currency": "Account currency",
+    "currencyHint": "Inputs and results are treated as PLN (GPW notionals); USD is shown alongside as an indicative conversion.",
     "pln": "PLN",
     "usd": "USD",
     "accountSize": "Account size",
@@ -236,5 +241,29 @@
       "SINGLE_SECTOR": "Sector {{sector}} is {{weight}}% of the portfolio (recommended max {{maxSector}}%).",
       "TOP_HEAVY": "Top 3 holdings are {{top3Share}}% of the portfolio."
     }
+  },
+  "taxOptimizer": {
+    "title": "Tax Optimizer (PIT-38)",
+    "year": "Tax year",
+    "grossGains": "Gross gains",
+    "losses": "Losses",
+    "netIncome": "Net income",
+    "tax19": "Belka tax 19%",
+    "toPay": "Tax due",
+    "alreadyPaid": "Withheld at broker (placeholder): {{amount}}",
+    "netLossTaxNote": "With a net loss for the year, this module sets the tax base to 0 (simplified; carryforwards not fully modeled).",
+    "suggestionsTitle": "Optimization hints",
+    "suggestions": {
+      "CLOSE_LOSS_BEFORE_YEAR_END": "Consider closing {{ticker}} before 31 Dec — a loss of about {{value}} PLN may reduce tax by about {{saving}} PLN.",
+      "CARRY_FORWARD_LOSS": "You may have unused losses from prior years (5-year window) — confirm with a tax advisor."
+    },
+    "closedTrades": "Closed paper trades",
+    "noTrades": "No closed trades in the selected year.",
+    "colTicker": "Ticker",
+    "colOpen": "Open",
+    "colClose": "Close",
+    "colPnl": "P&L",
+    "colPct": "%",
+    "disclaimer": "Results are for information only. Consult a qualified tax advisor."
   }
 }

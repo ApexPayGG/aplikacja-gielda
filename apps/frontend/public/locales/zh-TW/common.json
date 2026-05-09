@@ -11,6 +11,7 @@
     "positionSize": "計算機",
     "stressTest": "壓力測試",
     "concentration": "集中度",
+    "taxOptimizer": "PIT-38",
     "markets": "市場",
     "portfolio": "投組",
     "tools": "工具",
@@ -28,6 +29,13 @@
     "open": "開啟",
     "buy": "買入",
     "sell": "賣出"
+  },
+  "money": {
+    "gpwCaption": "金額為 PLN（GPW 名目）；旁邊的 USD 為參考（約 3.95 PLN 兌 1 USD，非即時匯率）。"
+  },
+  "analysisBrief": {
+    "title": "AI 摘要",
+    "updated": "更新時間"
   },
   "signals": {
     "title": "訊號",
@@ -97,6 +105,7 @@
   "positionSize": {
     "title": "部位大小計算機",
     "currency": "帳戶幣別",
+    "currencyHint": "輸入與結果以 PLN（GPW 名目）計算；旁邊的 USD 為參考換算。",
     "pln": "PLN",
     "usd": "USD",
     "accountSize": "帳戶資金",
@@ -163,5 +172,29 @@
       "SINGLE_SECTOR": "{{sector}} 產業占 {{weight}}%（建議上限 {{maxSector}}%）。",
       "TOP_HEAVY": "前三大標的合計 {{top3Share}}%。"
     }
+  },
+  "taxOptimizer": {
+    "title": "稅務優化 PIT-38",
+    "year": "課稅年度",
+    "grossGains": "總獲利",
+    "losses": "虧損",
+    "netIncome": "淨所得",
+    "tax19": "Belka 稅 19%",
+    "toPay": "應納稅額",
+    "alreadyPaid": "券商預扣（占位）: {{amount}}",
+    "netLossTaxNote": "淨虧損年度時，本模組課稅基礎為 0（簡化）。",
+    "suggestionsTitle": "優化建議",
+    "suggestions": {
+      "CLOSE_LOSS_BEFORE_YEAR_END": "考慮在 12/31 前平倉 {{ticker}} — 約 {{value}} PLN 虧損可能減少約 {{saving}} PLN 稅負。",
+      "CARRY_FORWARD_LOSS": "可能有前五年未抵減虧損 — 請與稅務顧問確認。"
+    },
+    "closedTrades": "已平倉模擬交易",
+    "noTrades": "所選年度沒有已平倉交易。",
+    "colTicker": "代號",
+    "colOpen": "開倉",
+    "colClose": "平倉",
+    "colPnl": "損益",
+    "colPct": "%",
+    "disclaimer": "結果僅供參考，請諮詢合格稅務顧問。"
   }
 }

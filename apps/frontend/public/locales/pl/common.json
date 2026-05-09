@@ -11,6 +11,7 @@
     "positionSize": "Kalkulator",
     "stressTest": "Test stresu",
     "concentration": "Koncentracja",
+    "taxOptimizer": "PIT-38",
     "markets": "Rynki",
     "portfolio": "Portfel",
     "tools": "Narzędzia",
@@ -28,6 +29,9 @@
     "open": "Otwórz",
     "buy": "Kup",
     "sell": "Sprzedaj"
+  },
+  "money": {
+    "gpwCaption": "Kwoty w PLN (notional GPW); wartość w USD jest przybliżona (ok. 3,95 PLN za 1 USD, nie kurs live)."
   },
   "signals": {
     "title": "Sygnały",
@@ -157,7 +161,7 @@
     "noNews": "Brak wiadomości w bazie danych."
   },
   "analysisBrief": {
-    "title": "Brief AI (PL + EN)",
+    "title": "Brief AI",
     "updated": "Aktualizacja"
   },
   "dividendIntelligence": {
@@ -170,6 +174,7 @@
   "positionSize": {
     "title": "Kalkulator wielkości pozycji",
     "currency": "Waluta konta",
+    "currencyHint": "Wpisy i wyniki liczone jak PLN (notional GPW); obok wyświetlamy przybliżony odpowiednik w USD.",
     "pln": "PLN",
     "usd": "USD",
     "accountSize": "Kapitał konta",
@@ -236,5 +241,29 @@
       "SINGLE_SECTOR": "Sektor {{sector}} stanowi {{weight}}% portfela. Zalecane max {{maxSector}}%.",
       "TOP_HEAVY": "Top 3 spółki stanowią {{top3Share}}% portfela."
     }
+  },
+  "taxOptimizer": {
+    "title": "Optymalizator Podatkowy PIT-38",
+    "year": "Rok rozliczeniowy",
+    "grossGains": "Zyski brutto",
+    "losses": "Straty",
+    "netIncome": "Dochód netto",
+    "tax19": "Podatek Belki 19%",
+    "toPay": "Do zapłaty",
+    "alreadyPaid": "Zaliczka u brokera (placeholder): {{amount}}",
+    "netLossTaxNote": "Przy ujemnej nadwyżce zysków nad stratami w tym roku podstawa z modułu wynosi 0 (uproszczenie, bez pełnej symulacji strat z lat wcześniejszych).",
+    "suggestionsTitle": "Sugestie optymalizacji",
+    "suggestions": {
+      "CLOSE_LOSS_BEFORE_YEAR_END": "Rozważ zamknięcie pozycji {{ticker}} przed 31.12 — strata ok. {{value}} PLN może zmniejszyć podatek o ok. {{saving}} PLN.",
+      "CARRY_FORWARD_LOSS": "Masz nieodliczone straty z lat poprzednich (okno 5 lat) — zweryfikuj z doradcą podatkowym."
+    },
+    "closedTrades": "Zamknięte transakcje (paper)",
+    "noTrades": "Brak zamkniętych transakcji w wybranym roku.",
+    "colTicker": "Ticker",
+    "colOpen": "Otwarcie",
+    "colClose": "Zamknięcie",
+    "colPnl": "P&L",
+    "colPct": "%",
+    "disclaimer": "Wyniki mają charakter informacyjny. Skonsultuj z doradcą podatkowym."
   }
 }

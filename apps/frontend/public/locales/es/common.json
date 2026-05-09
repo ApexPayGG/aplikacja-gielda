@@ -11,6 +11,7 @@
     "positionSize": "Calculadora",
     "stressTest": "Test de estrés",
     "concentration": "Concentración",
+    "taxOptimizer": "PIT-38",
     "markets": "Mercados",
     "portfolio": "Cartera",
     "tools": "Herramientas",
@@ -28,6 +29,13 @@
     "open": "Abrir",
     "buy": "Comprar",
     "sell": "Vender"
+  },
+  "money": {
+    "gpwCaption": "Importes en PLN (nocional GPW); el USD mostrado es orientativo (≈ 3,95 PLN por USD, no es tipo en vivo)."
+  },
+  "analysisBrief": {
+    "title": "Resumen IA",
+    "updated": "Actualizado"
   },
   "signals": {
     "title": "Señales",
@@ -97,6 +105,7 @@
   "positionSize": {
     "title": "Calculadora de tamaño de posición",
     "currency": "Moneda de la cuenta",
+    "currencyHint": "Entradas y resultados se tratan como PLN (nocional GPW); el USD junto es orientativo.",
     "pln": "PLN",
     "usd": "USD",
     "accountSize": "Capital de la cuenta",
@@ -163,5 +172,29 @@
       "SINGLE_SECTOR": "El sector {{sector}} representa el {{weight}}% del portafolio (máx. recomendado {{maxSector}}%).",
       "TOP_HEAVY": "Las 3 principales representan el {{top3Share}}% del portafolio."
     }
+  },
+  "taxOptimizer": {
+    "title": "Optimizador fiscal PIT-38",
+    "year": "Ejercicio",
+    "grossGains": "Ganancias brutas",
+    "losses": "Pérdidas",
+    "netIncome": "Ingreso neto",
+    "tax19": "Impuesto Belka 19 %",
+    "toPay": "A pagar",
+    "alreadyPaid": "Retención en bróker (placeholder): {{amount}}",
+    "netLossTaxNote": "Con resultado neto negativo, la base imponible de este módulo es 0 (simplificado).",
+    "suggestionsTitle": "Sugerencias de optimización",
+    "suggestions": {
+      "CLOSE_LOSS_BEFORE_YEAR_END": "Valora cerrar {{ticker}} antes del 31.12 — una pérdida de ~{{value}} PLN puede reducir el impuesto ~{{saving}} PLN.",
+      "CARRY_FORWARD_LOSS": "Posibles pérdidas no compensadas de años anteriores (ventana 5 años) — consúltalo con un asesor fiscal."
+    },
+    "closedTrades": "Operaciones paper cerradas",
+    "noTrades": "No hay operaciones cerradas en el año seleccionado.",
+    "colTicker": "Ticker",
+    "colOpen": "Apertura",
+    "colClose": "Cierre",
+    "colPnl": "P&L",
+    "colPct": "%",
+    "disclaimer": "Resultados solo informativos. Consulta a un asesor fiscal."
   }
 }

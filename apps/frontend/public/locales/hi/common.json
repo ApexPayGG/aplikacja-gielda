@@ -11,6 +11,7 @@
     "positionSize": "कैलकुलेटर",
     "stressTest": "स्ट्रेस टेस्ट",
     "concentration": "केंद्रीकरण",
+    "taxOptimizer": "PIT-38",
     "markets": "बाज़ार",
     "portfolio": "पोर्टफोलियो",
     "tools": "उपकरण",
@@ -28,6 +29,13 @@
     "open": "खोलें",
     "buy": "खरीदें",
     "sell": "बेचें"
+  },
+  "money": {
+    "gpwCaption": "राशि PLN में (GPW नोशनल); साथ का USD संकेतक है (≈ 3.95 PLN प्रति USD, लाइव दर नहीं)।"
+  },
+  "analysisBrief": {
+    "title": "AI ब्रीफ़",
+    "updated": "अपडेट"
   },
   "signals": {
     "title": "सिग्नल्स",
@@ -97,6 +105,7 @@
   "positionSize": {
     "title": "पोज़िशन साइज़ कैलकुलेटर",
     "currency": "खाता मुद्रा",
+    "currencyHint": "इनपुट और परिणाम PLN (GPW नोशनल) मानकर; साथ का USD संकेतक है।",
     "pln": "PLN",
     "usd": "USD",
     "accountSize": "खाते का आकार",
@@ -163,5 +172,29 @@
       "SINGLE_SECTOR": "सेक्टर {{sector}} {{weight}}% है (अनुशंसित अधिकतम {{maxSector}}%)।",
       "TOP_HEAVY": "शीर्ष 3 होल्डिंग्स {{top3Share}}% हैं।"
     }
+  },
+  "taxOptimizer": {
+    "title": "कर अनुकूलन PIT-38",
+    "year": "कर वर्ष",
+    "grossGains": "सकल लाभ",
+    "losses": "हानि",
+    "netIncome": "शुद्ध आय",
+    "tax19": "Belka कर 19%",
+    "toPay": "देय कर",
+    "alreadyPaid": "ब्रोकर पर कटौती (प्लेसहोल्डर): {{amount}}",
+    "netLossTaxNote": "शुद्ध हानि पर इस मॉड्यूल में कर आधार 0 है (सरलीकृत)।",
+    "suggestionsTitle": "अनुकूलन सुझाव",
+    "suggestions": {
+      "CLOSE_LOSS_BEFORE_YEAR_END": "31.12 से पहले {{ticker}} बंद करने पर विचार करें — ~{{value}} PLN हानि से ~{{saving}} PLN कर कम हो सकता है।",
+      "CARRY_FORWARD_LOSS": "पिछले वर्षों की अप्रयुक्त हानि (5 वर्ष) — कर सलाहकार से पुष्टि करें।"
+    },
+    "closedTrades": "बंद पेपर ट्रेड",
+    "noTrades": "चयनित वर्ष में कोई बंद ट्रेड नहीं।",
+    "colTicker": "टिकर",
+    "colOpen": "खुलना",
+    "colClose": "बंद",
+    "colPnl": "P&L",
+    "colPct": "%",
+    "disclaimer": "परिणाम केवल सूचनात्मक हैं। कर सलाहकार से परामर्श करें।"
   }
 }
