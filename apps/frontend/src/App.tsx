@@ -34,23 +34,27 @@ export default function App() {
   return (
     <div className="app-shell min-h-screen">
       <nav className="glass-nav relative z-10">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4">
           <Link to="/" className="text-lg font-bold tracking-tight text-white">
             StockAI <span className="text-gradient-brand">Pro</span>
           </Link>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-            {navLinks.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={({ isActive }) =>
-                  `nav-link-chrome ${isActive ? "is-active text-brand-green" : "text-slate-300 hover:text-brand-blue"}`
-                }
-              >
-                {t(item.labelKey)}
-              </NavLink>
-            ))}
+          <div className="min-w-0 flex-1 overflow-x-auto">
+            <div className="flex min-w-max items-center gap-x-4 gap-y-2 text-sm">
+              {navLinks.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    `nav-link-chrome ${isActive ? "is-active text-brand-green" : "text-slate-300 hover:text-brand-blue"}`
+                  }
+                >
+                  {t(item.labelKey)}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+          <div className="shrink-0">
             <LanguageSwitcher />
           </div>
         </div>
