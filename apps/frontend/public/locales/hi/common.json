@@ -7,7 +7,8 @@
     "dividendIntelligence": "डिविडेंड इंटेलिजेंस",
     "paperTrading": "पेपर ट्रेडिंग",
     "coach": "कोच",
-    "alphaCalendar": "अल्फा कैलेंडर"
+    "alphaCalendar": "अल्फा कैलेंडर",
+    "positionSize": "कैलकुलेटर"
   },
   "common": {
     "search": "खोजें",
@@ -86,5 +87,30 @@
     "seasonal": "सीज़नल",
     "sectorRotation": "सेक्टर रोटेशन",
     "regimeShift": "रेजीम शिफ्ट"
+  },
+  "positionSize": {
+    "title": "पोज़िशन साइज़ कैलकुलेटर",
+    "currency": "खाता मुद्रा",
+    "pln": "PLN",
+    "usd": "USD",
+    "accountSize": "खाते का आकार",
+    "riskPercent": "अधिकतम जोखिम % पूंजी",
+    "entry": "प्रवेश मूल्य",
+    "stop": "स्टॉप लॉस",
+    "conviction": "सेटअप विश्वास",
+    "convictionLow": "कम",
+    "convictionMedium": "मध्यम",
+    "convictionHigh": "उच्च",
+    "calculate": "गणना करें",
+    "shares": "खरीदने के लिए शेयर",
+    "positionValue": "पोज़िशन मूल्य",
+    "plannedRisk": "नियोजित जोखिम",
+    "actualRiskPct": "वास्तविक जोखिम % पूंजी",
+    "maxLoss": "स्टॉप पर अधिकतम हानि",
+    "takeProfits": "टेक प्रॉफिट (R गुणक)",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "errorInvalid": "खाता, प्रवेश और स्टॉप के लिए वैध धनात्मक संख्याएँ दर्ज करें।"
   }
 }

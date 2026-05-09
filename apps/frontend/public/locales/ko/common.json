@@ -7,7 +7,8 @@
     "dividendIntelligence": "배당 인텔리전스",
     "paperTrading": "페이퍼 트레이딩",
     "coach": "코치",
-    "alphaCalendar": "알파 캘린더"
+    "alphaCalendar": "알파 캘린더",
+    "positionSize": "계산기"
   },
   "common": {
     "search": "검색",
@@ -86,5 +87,30 @@
     "seasonal": "계절성",
     "sectorRotation": "섹터 로테이션",
     "regimeShift": "레짐 전환"
+  },
+  "positionSize": {
+    "title": "포지션 크기 계산기",
+    "currency": "계좌 통화",
+    "pln": "PLN",
+    "usd": "USD",
+    "accountSize": "계좌 자금",
+    "riskPercent": "최대 리스크 % (자본 대비)",
+    "entry": "진입가",
+    "stop": "스탑 로스",
+    "conviction": "셋업 확신도",
+    "convictionLow": "낮음",
+    "convictionMedium": "보통",
+    "convictionHigh": "높음",
+    "calculate": "계산",
+    "shares": "매수할 주식 수",
+    "positionValue": "포지션 가치",
+    "plannedRisk": "계획된 리스크",
+    "actualRiskPct": "실제 리스크 % (자본 대비)",
+    "maxLoss": "스탑 시 최대 손실",
+    "takeProfits": "익절 (R 배수)",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "errorInvalid": "계좌, 진입가, 스탑에 유효한 양수를 입력하세요."
   }
 }

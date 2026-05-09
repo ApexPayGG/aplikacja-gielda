@@ -59,6 +59,7 @@ import { createAlphaJournalRouter } from "./routes/alphaJournal";
 import { createAlphaCalendarRouter } from "./routes/alphaCalendar";
 import { createSignalMemoryRouter } from "./routes/signalMemory";
 import { createSignalDnaRouter } from "./routes/signalDna";
+import { createPositionSizeRouter } from "./routes/positionSize";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -130,6 +131,7 @@ export function createApp(): express.Express {
   app.use(createAlphaCalendarRouter());
   app.use(createSignalMemoryRouter());
   app.use(createSignalDnaRouter());
+  app.use(createPositionSizeRouter());
 
   app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });

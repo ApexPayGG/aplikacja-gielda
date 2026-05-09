@@ -9,6 +9,7 @@ import { DividendIntelligencePage } from "./pages/DividendIntelligencePage";
 import { Dividends } from "./pages/Dividends";
 import { Home } from "./pages/Home";
 import { PaperTradingPage } from "./pages/PaperTradingPage";
+import { PositionSizePage } from "./pages/PositionSizePage";
 import { SignalsPage } from "./pages/SignalsPage";
 
 type NavItem = {
@@ -26,6 +27,7 @@ const navLinks: NavItem[] = [
   { to: "/paper-trading", labelKey: "nav.paperTrading" },
   { to: "/coach", labelKey: "nav.coach" },
   { to: "/alpha", labelKey: "nav.alphaCalendar" },
+  { to: "/position-size", labelKey: "nav.positionSize" },
 ];
 
 export default function App() {
@@ -70,6 +72,7 @@ export default function App() {
           <Route path="/paper-trading" element={<PaperTradingPage />} />
           <Route path="/coach" element={<BehavioralCoachPage />} />
           <Route path="/alpha" element={<AlphaCalendarPage />} />
+          <Route path="/position-size" element={<PositionSizePage />} />
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
           <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
           <Route path="/company/:symbol" element={<CompanyDetail />} />

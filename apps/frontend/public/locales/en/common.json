@@ -7,7 +7,8 @@
     "dividendIntelligence": "Dividend Intelligence",
     "paperTrading": "Paper Trading",
     "coach": "Coach",
-    "alphaCalendar": "Alpha Calendar"
+    "alphaCalendar": "Alpha Calendar",
+    "positionSize": "Calculator"
   },
   "common": {
     "search": "Search",
@@ -159,5 +160,30 @@
     "symbol": "Symbol",
     "sectorPercentile": "Sector percentile",
     "vsPeers": "(vs peers in sector)"
+  },
+  "positionSize": {
+    "title": "Position Size Calculator",
+    "currency": "Account currency",
+    "pln": "PLN",
+    "usd": "USD",
+    "accountSize": "Account size",
+    "riskPercent": "Max risk % of account",
+    "entry": "Entry price",
+    "stop": "Stop loss",
+    "conviction": "Conviction",
+    "convictionLow": "Low",
+    "convictionMedium": "Medium",
+    "convictionHigh": "High",
+    "calculate": "Calculate",
+    "shares": "Shares to buy",
+    "positionValue": "Position value",
+    "plannedRisk": "Planned risk",
+    "actualRiskPct": "Actual risk % of account",
+    "maxLoss": "Max loss at stop",
+    "takeProfits": "Take profit (R multiples)",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "errorInvalid": "Enter valid positive numbers for account, entry, and stop."
   }
 }

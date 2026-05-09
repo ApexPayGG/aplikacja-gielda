@@ -7,7 +7,8 @@
     "dividendIntelligence": "股息智慧",
     "paperTrading": "模擬交易",
     "coach": "教練",
-    "alphaCalendar": "Alpha 行事曆"
+    "alphaCalendar": "Alpha 行事曆",
+    "positionSize": "計算機"
   },
   "common": {
     "search": "搜尋",
@@ -86,5 +87,30 @@
     "seasonal": "季節性",
     "sectorRotation": "產業輪動",
     "regimeShift": "狀態轉換"
+  },
+  "positionSize": {
+    "title": "部位大小計算機",
+    "currency": "帳戶幣別",
+    "pln": "PLN",
+    "usd": "USD",
+    "accountSize": "帳戶資金",
+    "riskPercent": "最大風險 %（占資金）",
+    "entry": "進場價",
+    "stop": "停損",
+    "conviction": "設定信心",
+    "convictionLow": "低",
+    "convictionMedium": "中",
+    "convictionHigh": "高",
+    "calculate": "計算",
+    "shares": "建議買入股數",
+    "positionValue": "部位價值",
+    "plannedRisk": "計畫風險金額",
+    "actualRiskPct": "實際風險 %（占資金）",
+    "maxLoss": "停損時最大虧損",
+    "takeProfits": "獲利了結（R 倍數）",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "errorInvalid": "請輸入帳戶、進場與停損的有效正數。"
   }
 }

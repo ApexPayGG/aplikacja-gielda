@@ -7,7 +7,8 @@
     "dividendIntelligence": "配当インテリジェンス",
     "paperTrading": "ペーパートレード",
     "coach": "コーチ",
-    "alphaCalendar": "アルファカレンダー"
+    "alphaCalendar": "アルファカレンダー",
+    "positionSize": "計算機"
   },
   "common": {
     "search": "検索",
@@ -86,5 +87,30 @@
     "seasonal": "季節性",
     "sectorRotation": "セクターローテーション",
     "regimeShift": "レジームシフト"
+  },
+  "positionSize": {
+    "title": "ポジションサイズ計算機",
+    "currency": "口座通貨",
+    "pln": "PLN",
+    "usd": "USD",
+    "accountSize": "口座資金",
+    "riskPercent": "最大リスク %（資金比）",
+    "entry": "エントリー価格",
+    "stop": "ストップロス",
+    "conviction": "セットアップの確信度",
+    "convictionLow": "低",
+    "convictionMedium": "中",
+    "convictionHigh": "高",
+    "calculate": "計算",
+    "shares": "買付株数",
+    "positionValue": "ポジション評価額",
+    "plannedRisk": "計画リスク額",
+    "actualRiskPct": "実際のリスク %（資金比）",
+    "maxLoss": "ストップ時の最大損失",
+    "takeProfits": "利確（R倍）",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "errorInvalid": "口座・エントリー・ストップに有効な正の数を入力してください。"
   }
 }

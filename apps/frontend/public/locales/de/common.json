@@ -7,7 +7,8 @@
     "dividendIntelligence": "Dividenden-Intelligenz",
     "paperTrading": "Paper Trading",
     "coach": "Coach",
-    "alphaCalendar": "Alpha-Kalender"
+    "alphaCalendar": "Alpha-Kalender",
+    "positionSize": "Rechner"
   },
   "common": {
     "search": "Suchen",
@@ -86,5 +87,30 @@
     "seasonal": "Saisonal",
     "sectorRotation": "Sektorrotation",
     "regimeShift": "Regimewechsel"
+  },
+  "positionSize": {
+    "title": "Positionsgrößen-Rechner",
+    "currency": "Kontowährung",
+    "pln": "PLN",
+    "usd": "USD",
+    "accountSize": "Kontogröße",
+    "riskPercent": "Max. Risiko % des Kapitals",
+    "entry": "Einstiegspreis",
+    "stop": "Stop-Loss",
+    "conviction": "Setup-Überzeugung",
+    "convictionLow": "Niedrig",
+    "convictionMedium": "Mittel",
+    "convictionHigh": "Hoch",
+    "calculate": "Berechnen",
+    "shares": "Zu kaufende Aktien",
+    "positionValue": "Positionswert",
+    "plannedRisk": "Geplantes Risiko",
+    "actualRiskPct": "Tatsächliches Risiko % des Kapitals",
+    "maxLoss": "Maximalverlust am Stop",
+    "takeProfits": "Take-Profit (R-Vielfache)",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "errorInvalid": "Bitte gültige positive Zahlen für Konto, Einstieg und Stop eingeben."
   }
 }

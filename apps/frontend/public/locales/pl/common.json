@@ -7,7 +7,8 @@
     "dividendIntelligence": "Analiza Dywidend",
     "paperTrading": "Wirtualny Portfel",
     "coach": "Coach",
-    "alphaCalendar": "Kalendarz Alpha"
+    "alphaCalendar": "Kalendarz Alpha",
+    "positionSize": "Kalkulator"
   },
   "common": {
     "search": "Szukaj",
@@ -159,5 +160,30 @@
     "symbol": "Symbol",
     "sectorPercentile": "Percentyl sektorowy",
     "vsPeers": "(na tle spółek z sektora)"
+  },
+  "positionSize": {
+    "title": "Kalkulator wielkości pozycji",
+    "currency": "Waluta konta",
+    "pln": "PLN",
+    "usd": "USD",
+    "accountSize": "Kapitał konta",
+    "riskPercent": "Maks. ryzyko % kapitału",
+    "entry": "Cena wejścia",
+    "stop": "Stop loss",
+    "conviction": "Pewność setupu",
+    "convictionLow": "Niska",
+    "convictionMedium": "Średnia",
+    "convictionHigh": "Wysoka",
+    "calculate": "Oblicz",
+    "shares": "Liczba akcji do kupienia",
+    "positionValue": "Wartość pozycji",
+    "plannedRisk": "Zaplanowane ryzyko",
+    "actualRiskPct": "Rzeczywiste ryzyko % kapitału",
+    "maxLoss": "Maksymalna strata przy stopie",
+    "takeProfits": "Take profit (wielokrotności R)",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "errorInvalid": "Podaj poprawne dodatnie liczby: kapitał, wejście i stop."
   }
 }
