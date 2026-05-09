@@ -8,7 +8,8 @@
     "paperTrading": "ペーパートレード",
     "coach": "コーチ",
     "alphaCalendar": "アルファカレンダー",
-    "positionSize": "計算機"
+    "positionSize": "計算機",
+    "stressTest": "ストレステスト"
   },
   "common": {
     "search": "検索",
@@ -117,5 +118,24 @@
     "copyAriaTp": "{{label}} の価格をコピー",
     "copied": "クリップボードにコピーしました",
     "errorApi404": "計算APIが見つかりません (404)。最新コードでポート3000のAPIを起動するか、VITE_API_BASE を /api を含む完全なURLに設定してください。"
+  },
+  "stressTest": {
+    "title": "ポートフォリオストレステスト",
+    "empty": "結果を表示するにはペーパートレードでポジションを開いてください。",
+    "currency": "表示通貨",
+    "drop": "市場下落",
+    "portfolioLoss": "ポートフォリオ損失",
+    "portfolioLossPct": "ポートフォリオ損失 %",
+    "positions": "銘柄別インパクト",
+    "currentValue": "現在価値",
+    "lossValue": "損失 / 利益",
+    "newValue": "ショック後の価値",
+    "error404": "ストレステストAPIが見つかりません。",
+    "scenarios": {
+      "CRASH_2008": "2008年危機 (−54%)",
+      "COVID_2020": "2020年COVID (−34%)",
+      "DOT_COM_2001": "2001年ドットコム (−49%)",
+      "CUSTOM": "カスタム (−{{drop}}%)"
+    }
   }
 }

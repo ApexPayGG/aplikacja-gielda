@@ -8,7 +8,8 @@
     "paperTrading": "模擬交易",
     "coach": "教練",
     "alphaCalendar": "Alpha 行事曆",
-    "positionSize": "計算機"
+    "positionSize": "計算機",
+    "stressTest": "壓力測試"
   },
   "common": {
     "search": "搜尋",
@@ -117,5 +118,24 @@
     "copyAriaTp": "複製 {{label}} 價格",
     "copied": "已複製到剪貼簿",
     "errorApi404": "找不到計算 API (404)。請在連接埠 3000 啟動最新版 API，或將 VITE_API_BASE 設為包含 /api 的完整網址。"
+  },
+  "stressTest": {
+    "title": "投組壓力測試",
+    "empty": "請先在模擬交易中開倉，才能看到結果。",
+    "currency": "顯示幣別",
+    "drop": "市場跌幅",
+    "portfolioLoss": "投組虧損",
+    "portfolioLossPct": "投組虧損 %",
+    "positions": "個股影響",
+    "currentValue": "目前價值",
+    "lossValue": "虧損 / 獲利",
+    "newValue": "衝擊後價值",
+    "error404": "找不到壓力測試 API。",
+    "scenarios": {
+      "CRASH_2008": "2008 金融海嘯 (−54%)",
+      "COVID_2020": "2020 COVID (−34%)",
+      "DOT_COM_2001": "2001 網路泡沫 (−49%)",
+      "CUSTOM": "自訂 (−{{drop}}%)"
+    }
   }
 }

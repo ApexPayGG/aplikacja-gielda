@@ -8,7 +8,8 @@
     "paperTrading": "Wirtualny Portfel",
     "coach": "Coach",
     "alphaCalendar": "Kalendarz Alpha",
-    "positionSize": "Kalkulator"
+    "positionSize": "Kalkulator",
+    "stressTest": "Test stresu"
   },
   "common": {
     "search": "Szukaj",
@@ -190,5 +191,24 @@
     "copyAriaTp": "Kopiuj cenę {{label}}",
     "copied": "Skopiowano do schowka",
     "errorApi404": "Nie znaleziono endpointu kalkulatora (404). Uruchom API na porcie 3000 z aktualnym kodem albo ustaw VITE_API_BASE na pełny adres z /api (np. http://localhost:3000/api)."
+  },
+  "stressTest": {
+    "title": "Test stresu portfela",
+    "empty": "Otwórz pozycje w Wirtualnym Portfelu, aby zobaczyć wyniki.",
+    "currency": "Waluta wyświetlania",
+    "drop": "Spadek rynku",
+    "portfolioLoss": "Strata portfela",
+    "portfolioLossPct": "Strata portfela %",
+    "positions": "Wpływ na pozycje",
+    "currentValue": "Wartość bieżąca",
+    "lossValue": "Strata / zysk",
+    "newValue": "Wartość po szoku",
+    "error404": "Nie znaleziono API testu stresu.",
+    "scenarios": {
+      "CRASH_2008": "Kryzys 2008 (−54%)",
+      "COVID_2020": "COVID 2020 (−34%)",
+      "DOT_COM_2001": "Bańka dot-com 2001 (−49%)",
+      "CUSTOM": "Własny scenariusz (−{{drop}}%)"
+    }
   }
 }

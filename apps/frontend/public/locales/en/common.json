@@ -8,7 +8,8 @@
     "paperTrading": "Paper Trading",
     "coach": "Coach",
     "alphaCalendar": "Alpha Calendar",
-    "positionSize": "Calculator"
+    "positionSize": "Calculator",
+    "stressTest": "Stress test"
   },
   "common": {
     "search": "Search",
@@ -190,5 +191,24 @@
     "copyAriaTp": "Copy {{label}} price",
     "copied": "Copied to clipboard",
     "errorApi404": "The calculator API was not found (404). Start the API on port 3000 with the latest code, or set VITE_API_BASE to the full URL including /api (e.g. http://localhost:3000/api)."
+  },
+  "stressTest": {
+    "title": "Portfolio Stress Test",
+    "empty": "Open positions in Paper Trading to see results.",
+    "currency": "Display currency",
+    "drop": "Market drop",
+    "portfolioLoss": "Portfolio loss",
+    "portfolioLossPct": "Portfolio loss %",
+    "positions": "Holdings impact",
+    "currentValue": "Current value",
+    "lossValue": "Loss / gain",
+    "newValue": "Value after shock",
+    "error404": "Stress test API not found.",
+    "scenarios": {
+      "CRASH_2008": "2008 crash (−54%)",
+      "COVID_2020": "2020 COVID (−34%)",
+      "DOT_COM_2001": "2001 dot-com (−49%)",
+      "CUSTOM": "Custom (−{{drop}}%)"
+    }
   }
 }

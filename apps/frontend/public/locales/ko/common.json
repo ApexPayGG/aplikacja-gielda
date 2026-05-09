@@ -8,7 +8,8 @@
     "paperTrading": "페이퍼 트레이딩",
     "coach": "코치",
     "alphaCalendar": "알파 캘린더",
-    "positionSize": "계산기"
+    "positionSize": "계산기",
+    "stressTest": "스트레스 테스트"
   },
   "common": {
     "search": "검색",
@@ -117,5 +118,24 @@
     "copyAriaTp": "{{label}} 가격 복사",
     "copied": "클립보드에 복사됨",
     "errorApi404": "계산 API를 찾을 수 없습니다(404). 최신 코드로 3000번 포트에서 API를 실행하거나 VITE_API_BASE를 /api가 포함된 전체 URL로 설정하세요."
+  },
+  "stressTest": {
+    "title": "포트폴리오 스트레스 테스트",
+    "empty": "결과를 보려면 페이퍼 트레이딩에서 포지션을 여세요.",
+    "currency": "표시 통화",
+    "drop": "시장 하락",
+    "portfolioLoss": "포트폴리오 손실",
+    "portfolioLossPct": "포트폴리오 손실 %",
+    "positions": "종목별 영향",
+    "currentValue": "현재 가치",
+    "lossValue": "손실 / 이익",
+    "newValue": "쇼크 후 가치",
+    "error404": "스트레스 테스트 API를 찾을 수 없습니다.",
+    "scenarios": {
+      "CRASH_2008": "2008 위기 (−54%)",
+      "COVID_2020": "2020 코로나 (−34%)",
+      "DOT_COM_2001": "2001 닷컴 (−49%)",
+      "CUSTOM": "사용자 정의 (−{{drop}}%)"
+    }
   }
 }

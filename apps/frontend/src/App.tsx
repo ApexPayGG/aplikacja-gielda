@@ -11,6 +11,7 @@ import { Home } from "./pages/Home";
 import { PaperTradingPage } from "./pages/PaperTradingPage";
 import { PositionSizePage } from "./pages/PositionSizePage";
 import { SignalsPage } from "./pages/SignalsPage";
+import { StressTestPage } from "./pages/StressTestPage";
 
 type NavItem = {
   to: string;
@@ -28,6 +29,7 @@ const navLinks: NavItem[] = [
   { to: "/coach", labelKey: "nav.coach" },
   { to: "/alpha", labelKey: "nav.alphaCalendar" },
   { to: "/position-size", labelKey: "nav.positionSize" },
+  { to: "/stress-test", labelKey: "nav.stressTest" },
 ];
 
 export default function App() {
@@ -73,6 +75,7 @@ export default function App() {
           <Route path="/coach" element={<BehavioralCoachPage />} />
           <Route path="/alpha" element={<AlphaCalendarPage />} />
           <Route path="/position-size" element={<PositionSizePage />} />
+          <Route path="/stress-test" element={<StressTestPage />} />
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
           <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
           <Route path="/company/:symbol" element={<CompanyDetail />} />

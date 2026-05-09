@@ -8,7 +8,8 @@
     "paperTrading": "Paper Trading",
     "coach": "Coach",
     "alphaCalendar": "Calendario Alpha",
-    "positionSize": "Calculadora"
+    "positionSize": "Calculadora",
+    "stressTest": "Test de estrés"
   },
   "common": {
     "search": "Buscar",
@@ -117,5 +118,24 @@
     "copyAriaTp": "Copiar precio {{label}}",
     "copied": "Copiado al portapapeles",
     "errorApi404": "No se encontró la API del calculador (404). Inicia la API en el puerto 3000 con el código actual o configura VITE_API_BASE con la URL completa incluyendo /api."
+  },
+  "stressTest": {
+    "title": "Test de estrés del portafolio",
+    "empty": "Abre posiciones en Paper Trading para ver resultados.",
+    "currency": "Moneda mostrada",
+    "drop": "Caída del mercado",
+    "portfolioLoss": "Pérdida del portafolio",
+    "portfolioLossPct": "Pérdida del portafolio %",
+    "positions": "Impacto por activo",
+    "currentValue": "Valor actual",
+    "lossValue": "Pérdida / ganancia",
+    "newValue": "Valor tras el shock",
+    "error404": "API de test de estrés no encontrada.",
+    "scenarios": {
+      "CRASH_2008": "Crisis 2008 (−54%)",
+      "COVID_2020": "COVID 2020 (−34%)",
+      "DOT_COM_2001": "Dot-com 2001 (−49%)",
+      "CUSTOM": "Personalizado (−{{drop}}%)"
+    }
   }
 }
