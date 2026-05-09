@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -206,6 +207,7 @@ function exitBadgeClass(action: ExitAction): string {
 }
 
 export function PaperTradingPage() {
+  const { t } = useTranslation();
   const [form, setForm] = useState<OpenTradeForm>({
     ticker: "",
     direction: "LONG",
@@ -425,7 +427,7 @@ export function PaperTradingPage() {
     <div className="min-h-screen bg-[#060d18] text-slate-100">
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
         <header className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight text-white">Paper Trading</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">{t("paperTrading.title")}</h1>
           <div className={`rounded px-3 py-1 text-xs ${usingMock ? "bg-orange-500/20 text-orange-200" : "bg-slate-700/40 text-slate-300"}`}>
             {usingMock ? "Mock fallback active" : "Live API"}
           </div>
@@ -434,7 +436,7 @@ export function PaperTradingPage() {
         {error && <div className="rounded border border-[#ff4a4a]/30 bg-[#ff4a4a]/10 p-3 text-sm text-[#ff7a7a]">{error}</div>}
 
         <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-4">
-          <h2 className="mb-4 text-lg font-semibold text-white">Otwórz pozycję</h2>
+          <h2 className="mb-4 text-lg font-semibold text-white">{t("paperTrading.openPosition")}</h2>
           <form onSubmit={onOpenTrade} className="grid gap-3 md:grid-cols-4">
             <label className="flex flex-col gap-1 text-sm">
               <span className="text-slate-400">Ticker</span>
@@ -447,27 +449,27 @@ export function PaperTradingPage() {
             </label>
 
             <div className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">Direction</span>
+              <span className="text-slate-400">{t("paperTrading.direction")}</span>
               <div className="flex overflow-hidden rounded border border-slate-700">
                 <button
                   type="button"
                   onClick={() => setForm((prev) => ({ ...prev, direction: "LONG" }))}
                   className={`flex-1 px-3 py-2 ${form.direction === "LONG" ? "bg-[#00c87a]/20 text-[#00c87a]" : "bg-[#060d18] text-slate-300"}`}
                 >
-                  LONG
+                  {t("paperTrading.long")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setForm((prev) => ({ ...prev, direction: "SHORT" }))}
                   className={`flex-1 px-3 py-2 ${form.direction === "SHORT" ? "bg-[#ff4a4a]/20 text-[#ff7a7a]" : "bg-[#060d18] text-slate-300"}`}
                 >
-                  SHORT
+                  {t("paperTrading.short")}
                 </button>
               </div>
             </div>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">Entry Price</span>
+              <span className="text-slate-400">{t("paperTrading.entryPrice")}</span>
               <input
                 type="number"
                 min="0"
@@ -480,7 +482,7 @@ export function PaperTradingPage() {
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">Quantity</span>
+              <span className="text-slate-400">{t("paperTrading.quantity")}</span>
               <input
                 type="number"
                 min="0"
@@ -498,7 +500,7 @@ export function PaperTradingPage() {
                 disabled={submittingOpen}
                 className="rounded bg-[#0096ff] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#007ad0] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {submittingOpen ? "Otwieranie..." : "Otwórz pozycję"}
+                {submittingOpen ? t("common.loading") : t("paperTrading.openPosition")}
               </button>
             </div>
           </form>
@@ -506,7 +508,7 @@ export function PaperTradingPage() {
 
         <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">Aktywne pozycje</h2>
+            <h2 className="text-lg font-semibold text-white">{t("paperTrading.portfolio")}</h2>
             <div className="text-right">
               <div className={`font-mono text-sm ${pnlClass(totalUnrealized)}`}>Unrealized: {formatMoney(totalUnrealized)}</div>
               <div className="text-xs text-slate-500">Open trades: {portfolio?.openPositions.length ?? 0}</div>
@@ -520,14 +522,14 @@ export function PaperTradingPage() {
                 <thead className="text-left text-slate-400">
                   <tr className="border-b border-slate-800">
                     <th className="px-2 py-2">Ticker</th>
-                    <th className="px-2 py-2">Direction</th>
-                    <th className="px-2 py-2">Entry Price</th>
+                    <th className="px-2 py-2">{t("paperTrading.direction")}</th>
+                    <th className="px-2 py-2">{t("paperTrading.entryPrice")}</th>
                     <th className="px-2 py-2">Current Price</th>
-                    <th className="px-2 py-2">PnL</th>
+                    <th className="px-2 py-2">{t("paperTrading.pnl")}</th>
                     <th className="px-2 py-2">PnL%</th>
                     <th className="px-2 py-2">Czas otwarcia</th>
                     <th className="px-2 py-2">Exit Signal</th>
-                    <th className="px-2 py-2">Akcja</th>
+                    <th className="px-2 py-2">{t("common.close")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -543,7 +545,7 @@ export function PaperTradingPage() {
                     return (
                       <tr key={row.id} className="border-b border-slate-900/80">
                         <td className="px-2 py-2 font-semibold text-white">{row.ticker}</td>
-                        <td className={`px-2 py-2 ${row.direction === "LONG" ? "text-[#00c87a]" : "text-[#ff7a7a]"}`}>{row.direction}</td>
+                        <td className={`px-2 py-2 ${row.direction === "LONG" ? "text-[#00c87a]" : "text-[#ff7a7a]"}`}>{row.direction === "LONG" ? t("paperTrading.long") : t("paperTrading.short")}</td>
                         <td className="px-2 py-2 font-mono">{formatMoney(row.entryPrice)}</td>
                         <td className="px-2 py-2 font-mono">{formatMoney(row.currentPrice)}</td>
                         <td className={`px-2 py-2 font-mono ${pnlClass(row.pnl)}`}>{formatMoney(row.pnl)}</td>
@@ -561,7 +563,7 @@ export function PaperTradingPage() {
                             onClick={() => void onCloseTrade(row)}
                             className="rounded bg-[#ff4a4a]/20 px-3 py-1 text-xs font-semibold text-[#ff7a7a] hover:bg-[#ff4a4a]/30 disabled:opacity-60"
                           >
-                            {closingTradeId === row.id ? "Zamykanie..." : "Zamknij"}
+                            {closingTradeId === row.id ? t("common.loading") : t("paperTrading.closePosition")}
                           </button>
                         </td>
                       </tr>
@@ -574,7 +576,7 @@ export function PaperTradingPage() {
         </section>
 
         <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-4">
-          <h2 className="mb-3 text-lg font-semibold text-white">Historia (ostatnie 10)</h2>
+          <h2 className="mb-3 text-lg font-semibold text-white">{t("paperTrading.history")} (10)</h2>
           {loadingHistory ? (
             <TableSkeleton rows={5} />
           ) : (
@@ -583,10 +585,10 @@ export function PaperTradingPage() {
                 <thead className="text-left text-slate-400">
                   <tr className="border-b border-slate-800">
                     <th className="px-2 py-2">Ticker</th>
-                    <th className="px-2 py-2">Direction</th>
+                    <th className="px-2 py-2">{t("paperTrading.direction")}</th>
                     <th className="px-2 py-2">Entry</th>
                     <th className="px-2 py-2">Exit</th>
-                    <th className="px-2 py-2">PnL</th>
+                    <th className="px-2 py-2">{t("paperTrading.pnl")}</th>
                     <th className="px-2 py-2">PnL%</th>
                     <th className="px-2 py-2">Czas trwania</th>
                   </tr>
@@ -605,7 +607,7 @@ export function PaperTradingPage() {
                     return (
                       <tr key={row.id} className="border-b border-slate-900/80">
                         <td className="px-2 py-2 font-semibold text-white">{row.ticker}</td>
-                        <td className={`px-2 py-2 ${row.direction === "LONG" ? "text-[#00c87a]" : "text-[#ff7a7a]"}`}>{row.direction}</td>
+                        <td className={`px-2 py-2 ${row.direction === "LONG" ? "text-[#00c87a]" : "text-[#ff7a7a]"}`}>{row.direction === "LONG" ? t("paperTrading.long") : t("paperTrading.short")}</td>
                         <td className="px-2 py-2 font-mono">{formatMoney(row.entryPrice)}</td>
                         <td className="px-2 py-2 font-mono">{formatMoney(Number(row.exitPrice ?? row.entryPrice))}</td>
                         <td className={`px-2 py-2 font-mono ${pnlClass(pnl)}`}>{formatMoney(pnl)}</td>

@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "signals": "Signals",
+    "dividend": "Dividend",
+    "dividendIntelligence": "Dividend Intelligence",
+    "paperTrading": "Paper Trading",
+    "coach": "Coach",
+    "alphaCalendar": "Alpha Calendar"
+  },
+  "common": {
+    "search": "Search",
+    "loading": "Loading...",
+    "noData": "No data available",
+    "error": "Error",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "open": "Open",
+    "buy": "Buy",
+    "sell": "Sell"
+  },
+  "signals": {
+    "title": "Signals",
+    "riskScore": "Risk Score",
+    "winRate": "Win Rate",
+    "avgReturn": "Avg Return",
+    "confidence": "Confidence",
+    "regime": "Market Regime",
+    "entry": "Entry",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "aiBreif": "AI Brief",
+    "dna": "Signal DNA",
+    "similarity": "Similarity",
+    "narrative": "Narrative",
+    "headline": "Headline",
+    "riskNote": "Risk Note"
+  },
+  "dividend": {
+    "title": "Dividend Radar",
+    "yield": "Dividend Yield",
+    "health": "Health Score",
+    "years": "Years of Growth",
+    "exDate": "Ex-Date",
+    "payoutRatio": "Payout Ratio",
+    "trend": "Trend",
+    "safe": "Safe",
+    "watch": "Watch",
+    "risky": "Risky"
+  },
+  "paperTrading": {
+    "title": "Paper Trading",
+    "openPosition": "Open Position",
+    "closePosition": "Close Position",
+    "portfolio": "Portfolio",
+    "history": "Trade History",
+    "pnl": "P&L",
+    "direction": "Direction",
+    "quantity": "Quantity",
+    "entryPrice": "Entry Price",
+    "exitPrice": "Exit Price",
+    "long": "Long",
+    "short": "Short"
+  },
+  "coach": {
+    "title": "Behavioral Coach",
+    "traderProfile": "Trader Profile",
+    "avgWin": "Avg Win",
+    "avgLoss": "Avg Loss",
+    "biases": "Detected Biases",
+    "noBiases": "No biases detected",
+    "cutsWinners": "Cuts Winners Early",
+    "holdsLosers": "Holds Losers Too Long",
+    "overtrading": "Overtrading",
+    "aiCoach": "AI Coach says"
+  },
+  "alpha": {
+    "title": "Alpha Calendar",
+    "windows": "Probability Windows",
+    "probability": "Probability",
+    "historicalReturn": "Historical Return",
+    "earningsCycle": "Earnings Cycle",
+    "seasonal": "Seasonal",
+    "sectorRotation": "Sector Rotation",
+    "regimeShift": "Regime Shift"
+  }
+}

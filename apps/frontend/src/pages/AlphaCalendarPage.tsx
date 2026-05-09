@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -87,6 +88,13 @@ function typeBadgeClass(type: WindowType): string {
   return "bg-orange-500/20 text-orange-200";
 }
 
+function typeLabel(type: WindowType, t: (key: string) => string): string {
+  if (type === "EARNINGS_CYCLE") return t("alpha.earningsCycle");
+  if (type === "SEASONAL") return t("alpha.seasonal");
+  if (type === "SECTOR_ROTATION") return t("alpha.sectorRotation");
+  return t("alpha.regimeShift");
+}
+
 function probabilityColor(score: number): string {
   if (score >= 80) return "text-[#00c87a]";
   if (score >= 60) return "text-[#0096ff]";
@@ -100,6 +108,7 @@ function formatDateTime(value: string): string {
 }
 
 export function AlphaCalendarPage() {
+  const { t } = useTranslation();
   const [calendar, setCalendar] = useState<AlphaCalendarResponse | null>(null);
   const [calendarLoading, setCalendarLoading] = useState(false);
   const [tickerInput, setTickerInput] = useState("");
@@ -168,7 +177,7 @@ export function AlphaCalendarPage() {
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
         <header className="flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-white">📅 Alpha Calendar — Okna Probabilistyczne</h1>
+            <h1 className="text-2xl font-bold text-white">📅 {t("alpha.title")} — {t("alpha.windows")}</h1>
             <p className="mt-1 text-sm text-slate-400">
               {new Date().toLocaleDateString()} • Następne 48h
             </p>
@@ -203,12 +212,12 @@ export function AlphaCalendarPage() {
                 {sortedWindows.map((w, idx) => (
                   <article key={`${w.ticker}-${w.type}-${idx}`} className="rounded-lg border border-slate-800 bg-[#081425] p-4">
                     <div className="mb-2 flex items-center justify-between gap-2">
-                      <span className={`rounded px-2 py-1 text-[11px] font-semibold ${typeBadgeClass(w.type)}`}>{w.type}</span>
+                      <span className={`rounded px-2 py-1 text-[11px] font-semibold ${typeBadgeClass(w.type)}`}>{typeLabel(w.type, t)}</span>
                       <span className={`font-mono text-3xl font-bold ${probabilityColor(w.probabilityScore)}`}>{Math.round(w.probabilityScore)}</span>
                     </div>
                     <h3 className="text-lg font-semibold text-white">{w.ticker}</h3>
                     <p className={`mt-1 font-mono text-sm ${w.historicalAvgReturn >= 0 ? "text-[#00c87a]" : "text-[#ff4a4a]"}`}>
-                      Avg Return: {w.historicalAvgReturn >= 0 ? "+" : ""}
+                      {t("alpha.historicalReturn")}: {w.historicalAvgReturn >= 0 ? "+" : ""}
                       {w.historicalAvgReturn.toFixed(2)}%
                     </p>
                     <p className="mt-2 text-xs text-slate-400">
@@ -224,7 +233,7 @@ export function AlphaCalendarPage() {
         </section>
 
         <section className="space-y-4 rounded-xl border border-slate-800 bg-slate-900/60 p-5">
-          <h2 className="text-lg font-semibold text-white">Konkretny ticker</h2>
+          <h2 className="text-lg font-semibold text-white">{t("common.search")}</h2>
           <form onSubmit={onCheckTicker} className="flex flex-wrap items-end gap-3">
             <label className="flex min-w-[220px] flex-col gap-1 text-sm">
               <span className="text-slate-400">Ticker</span>
@@ -240,7 +249,7 @@ export function AlphaCalendarPage() {
               disabled={tickerLoading}
               className="rounded bg-[#0096ff] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#007cd4] disabled:opacity-60"
             >
-              {tickerLoading ? "Sprawdzanie..." : "Sprawdź"}
+              {tickerLoading ? t("common.loading") : t("common.search")}
             </button>
           </form>
 
@@ -251,9 +260,9 @@ export function AlphaCalendarPage() {
               <table className="min-w-full text-sm">
                 <thead className="text-left text-slate-400">
                   <tr className="border-b border-slate-800">
-                    <th className="px-2 py-2">Typ</th>
-                    <th className="px-2 py-2">Prob%</th>
-                    <th className="px-2 py-2">Avg Return</th>
+                    <th className="px-2 py-2">{t("alpha.windows")}</th>
+                    <th className="px-2 py-2">{t("alpha.probability")}</th>
+                    <th className="px-2 py-2">{t("alpha.historicalReturn")}</th>
                     <th className="px-2 py-2">Start</th>
                     <th className="px-2 py-2">End</th>
                     <th className="px-2 py-2">Opis</th>
@@ -270,7 +279,7 @@ export function AlphaCalendarPage() {
                   {tickerRows.map((w, idx) => (
                     <tr key={`${w.ticker}-row-${w.type}-${idx}`} className="border-b border-slate-900/80">
                       <td className="px-2 py-2">
-                        <span className={`rounded px-2 py-1 text-[11px] font-semibold ${typeBadgeClass(w.type)}`}>{w.type}</span>
+                        <span className={`rounded px-2 py-1 text-[11px] font-semibold ${typeBadgeClass(w.type)}`}>{typeLabel(w.type, t)}</span>
                       </td>
                       <td className={`px-2 py-2 font-mono ${probabilityColor(w.probabilityScore)}`}>{Math.round(w.probabilityScore)}%</td>
                       <td className={`px-2 py-2 font-mono ${w.historicalAvgReturn >= 0 ? "text-[#00c87a]" : "text-[#ff4a4a]"}`}>

@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "ホーム",
+    "dashboard": "ダッシュボード",
+    "signals": "シグナル",
+    "dividend": "配当",
+    "dividendIntelligence": "配当インテリジェンス",
+    "paperTrading": "ペーパートレード",
+    "coach": "コーチ",
+    "alphaCalendar": "アルファカレンダー"
+  },
+  "common": {
+    "search": "検索",
+    "loading": "読み込み中...",
+    "noData": "データがありません",
+    "error": "エラー",
+    "retry": "再試行",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "open": "開く",
+    "buy": "買い",
+    "sell": "売り"
+  },
+  "signals": {
+    "title": "シグナル",
+    "riskScore": "リスクスコア",
+    "winRate": "勝率",
+    "avgReturn": "平均リターン",
+    "confidence": "信頼度",
+    "regime": "市場レジーム",
+    "entry": "エントリー",
+    "stopLoss": "ストップロス",
+    "takeProfit": "利確",
+    "aiBreif": "AIブリーフ",
+    "dna": "シグナルDNA",
+    "similarity": "類似度",
+    "narrative": "ナラティブ",
+    "headline": "見出し",
+    "riskNote": "リスクメモ"
+  },
+  "dividend": {
+    "title": "配当レーダー",
+    "yield": "配当利回り",
+    "health": "健全性スコア",
+    "years": "増配年数",
+    "exDate": "権利落ち日",
+    "payoutRatio": "配当性向",
+    "trend": "トレンド",
+    "safe": "安全",
+    "watch": "監視",
+    "risky": "リスク高"
+  },
+  "paperTrading": {
+    "title": "ペーパートレード",
+    "openPosition": "ポジションを開く",
+    "closePosition": "ポジションを閉じる",
+    "portfolio": "ポートフォリオ",
+    "history": "取引履歴",
+    "pnl": "損益",
+    "direction": "方向",
+    "quantity": "数量",
+    "entryPrice": "エントリー価格",
+    "exitPrice": "決済価格",
+    "long": "ロング",
+    "short": "ショート"
+  },
+  "coach": {
+    "title": "行動コーチ",
+    "traderProfile": "トレーダープロファイル",
+    "avgWin": "平均利益",
+    "avgLoss": "平均損失",
+    "biases": "検出されたバイアス",
+    "noBiases": "バイアスは検出されませんでした",
+    "cutsWinners": "利益確定が早すぎる",
+    "holdsLosers": "損失を長く保持しすぎる",
+    "overtrading": "オーバートレード",
+    "aiCoach": "AIコーチのコメント"
+  },
+  "alpha": {
+    "title": "アルファカレンダー",
+    "windows": "確率ウィンドウ",
+    "probability": "確率",
+    "historicalReturn": "過去リターン",
+    "earningsCycle": "決算サイクル",
+    "seasonal": "季節性",
+    "sectorRotation": "セクターローテーション",
+    "regimeShift": "レジームシフト"
+  }
+}

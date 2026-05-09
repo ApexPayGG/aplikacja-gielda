@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "dashboard": "Tableau de bord",
+    "signals": "Signaux",
+    "dividend": "Dividende",
+    "dividendIntelligence": "Intelligence Dividende",
+    "paperTrading": "Paper Trading",
+    "coach": "Coach",
+    "alphaCalendar": "Calendrier Alpha"
+  },
+  "common": {
+    "search": "Rechercher",
+    "loading": "Chargement...",
+    "noData": "Aucune donnée disponible",
+    "error": "Erreur",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "open": "Ouvrir",
+    "buy": "Acheter",
+    "sell": "Vendre"
+  },
+  "signals": {
+    "title": "Signaux",
+    "riskScore": "Score de Risque",
+    "winRate": "Taux de Réussite",
+    "avgReturn": "Rendement Moyen",
+    "confidence": "Confiance",
+    "regime": "Régime de Marché",
+    "entry": "Entrée",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "aiBreif": "Brief IA",
+    "dna": "ADN du Signal",
+    "similarity": "Similarité",
+    "narrative": "Narratif",
+    "headline": "Titre",
+    "riskNote": "Note de Risque"
+  },
+  "dividend": {
+    "title": "Radar Dividende",
+    "yield": "Rendement du Dividende",
+    "health": "Score de Santé",
+    "years": "Années de Croissance",
+    "exDate": "Date Ex",
+    "payoutRatio": "Taux de Distribution",
+    "trend": "Tendance",
+    "safe": "Sûr",
+    "watch": "Surveiller",
+    "risky": "Risqué"
+  },
+  "paperTrading": {
+    "title": "Paper Trading",
+    "openPosition": "Ouvrir une Position",
+    "closePosition": "Fermer la Position",
+    "portfolio": "Portefeuille",
+    "history": "Historique des Trades",
+    "pnl": "P&L",
+    "direction": "Direction",
+    "quantity": "Quantité",
+    "entryPrice": "Prix d'Entrée",
+    "exitPrice": "Prix de Sortie",
+    "long": "Long",
+    "short": "Short"
+  },
+  "coach": {
+    "title": "Coach Comportemental",
+    "traderProfile": "Profil du Trader",
+    "avgWin": "Gain Moyen",
+    "avgLoss": "Perte Moyenne",
+    "biases": "Biais Détectés",
+    "noBiases": "Aucun biais détecté",
+    "cutsWinners": "Coupe les Gagnants Trop Tôt",
+    "holdsLosers": "Garde les Perdants Trop Longtemps",
+    "overtrading": "Surtrading",
+    "aiCoach": "Le Coach IA dit"
+  },
+  "alpha": {
+    "title": "Calendrier Alpha",
+    "windows": "Fenêtres de Probabilité",
+    "probability": "Probabilité",
+    "historicalReturn": "Rendement Historique",
+    "earningsCycle": "Cycle des Résultats",
+    "seasonal": "Saisonnier",
+    "sectorRotation": "Rotation Sectorielle",
+    "regimeShift": "Changement de Régime"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "dashboard": "Dashboard",
+    "signals": "Signale",
+    "dividend": "Dividende",
+    "dividendIntelligence": "Dividenden-Intelligenz",
+    "paperTrading": "Paper Trading",
+    "coach": "Coach",
+    "alphaCalendar": "Alpha-Kalender"
+  },
+  "common": {
+    "search": "Suchen",
+    "loading": "Lädt...",
+    "noData": "Keine Daten verfügbar",
+    "error": "Fehler",
+    "retry": "Erneut versuchen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "open": "Öffnen",
+    "buy": "Kaufen",
+    "sell": "Verkaufen"
+  },
+  "signals": {
+    "title": "Signale",
+    "riskScore": "Risikowert",
+    "winRate": "Trefferquote",
+    "avgReturn": "Ø Rendite",
+    "confidence": "Konfidenz",
+    "regime": "Marktregime",
+    "entry": "Einstieg",
+    "stopLoss": "Stop-Loss",
+    "takeProfit": "Take-Profit",
+    "aiBreif": "KI-Überblick",
+    "dna": "Signal-DNA",
+    "similarity": "Ähnlichkeit",
+    "narrative": "Narrativ",
+    "headline": "Überschrift",
+    "riskNote": "Risiko-Hinweis"
+  },
+  "dividend": {
+    "title": "Dividenden-Radar",
+    "yield": "Dividendenrendite",
+    "health": "Gesundheitswert",
+    "years": "Wachstumsjahre",
+    "exDate": "Ex-Datum",
+    "payoutRatio": "Ausschüttungsquote",
+    "trend": "Trend",
+    "safe": "Sicher",
+    "watch": "Beobachten",
+    "risky": "Riskant"
+  },
+  "paperTrading": {
+    "title": "Paper Trading",
+    "openPosition": "Position eröffnen",
+    "closePosition": "Position schließen",
+    "portfolio": "Portfolio",
+    "history": "Trade-Verlauf",
+    "pnl": "P&L",
+    "direction": "Richtung",
+    "quantity": "Menge",
+    "entryPrice": "Einstiegspreis",
+    "exitPrice": "Ausstiegspreis",
+    "long": "Long",
+    "short": "Short"
+  },
+  "coach": {
+    "title": "Behavioral Coach",
+    "traderProfile": "Trader-Profil",
+    "avgWin": "Ø Gewinn",
+    "avgLoss": "Ø Verlust",
+    "biases": "Erkannte Biases",
+    "noBiases": "Keine Biases erkannt",
+    "cutsWinners": "Gewinne zu früh begrenzt",
+    "holdsLosers": "Verluste zu lange gehalten",
+    "overtrading": "Overtrading",
+    "aiCoach": "KI-Coach sagt"
+  },
+  "alpha": {
+    "title": "Alpha-Kalender",
+    "windows": "Wahrscheinlichkeitsfenster",
+    "probability": "Wahrscheinlichkeit",
+    "historicalReturn": "Historische Rendite",
+    "earningsCycle": "Earnings-Zyklus",
+    "seasonal": "Saisonal",
+    "sectorRotation": "Sektorrotation",
+    "regimeShift": "Regimewechsel"
+  }
+}

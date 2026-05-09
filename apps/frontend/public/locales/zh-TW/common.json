@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "首頁",
+    "dashboard": "儀表板",
+    "signals": "訊號",
+    "dividend": "股息",
+    "dividendIntelligence": "股息智慧",
+    "paperTrading": "模擬交易",
+    "coach": "教練",
+    "alphaCalendar": "Alpha 行事曆"
+  },
+  "common": {
+    "search": "搜尋",
+    "loading": "載入中...",
+    "noData": "目前沒有資料",
+    "error": "錯誤",
+    "retry": "重試",
+    "save": "儲存",
+    "cancel": "取消",
+    "close": "關閉",
+    "open": "開啟",
+    "buy": "買入",
+    "sell": "賣出"
+  },
+  "signals": {
+    "title": "訊號",
+    "riskScore": "風險分數",
+    "winRate": "勝率",
+    "avgReturn": "平均報酬",
+    "confidence": "信心",
+    "regime": "市場狀態",
+    "entry": "進場",
+    "stopLoss": "停損",
+    "takeProfit": "停利",
+    "aiBreif": "AI 摘要",
+    "dna": "訊號 DNA",
+    "similarity": "相似度",
+    "narrative": "敘事",
+    "headline": "標題",
+    "riskNote": "風險提示"
+  },
+  "dividend": {
+    "title": "股息雷達",
+    "yield": "股息殖利率",
+    "health": "健康分數",
+    "years": "成長年數",
+    "exDate": "除息日",
+    "payoutRatio": "派息率",
+    "trend": "趨勢",
+    "safe": "安全",
+    "watch": "觀察",
+    "risky": "高風險"
+  },
+  "paperTrading": {
+    "title": "模擬交易",
+    "openPosition": "開啟倉位",
+    "closePosition": "關閉倉位",
+    "portfolio": "投資組合",
+    "history": "交易歷史",
+    "pnl": "損益",
+    "direction": "方向",
+    "quantity": "數量",
+    "entryPrice": "進場價",
+    "exitPrice": "出場價",
+    "long": "做多",
+    "short": "做空"
+  },
+  "coach": {
+    "title": "行為教練",
+    "traderProfile": "交易者檔案",
+    "avgWin": "平均獲利",
+    "avgLoss": "平均虧損",
+    "biases": "偵測偏誤",
+    "noBiases": "未偵測到偏誤",
+    "cutsWinners": "過早了結獲利",
+    "holdsLosers": "虧損持有過久",
+    "overtrading": "過度交易",
+    "aiCoach": "AI 教練建議"
+  },
+  "alpha": {
+    "title": "Alpha 行事曆",
+    "windows": "機率視窗",
+    "probability": "機率",
+    "historicalReturn": "歷史報酬",
+    "earningsCycle": "財報週期",
+    "seasonal": "季節性",
+    "sectorRotation": "產業輪動",
+    "regimeShift": "狀態轉換"
+  }
+}

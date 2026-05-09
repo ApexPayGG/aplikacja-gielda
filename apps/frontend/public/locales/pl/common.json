@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "signals": "Sygnały",
+    "dividend": "Dywidenda",
+    "dividendIntelligence": "Inteligencja Dywidendowa",
+    "paperTrading": "Paper Trading",
+    "coach": "Coach",
+    "alphaCalendar": "Kalendarz Alpha"
+  },
+  "common": {
+    "search": "Szukaj",
+    "loading": "Ładowanie...",
+    "noData": "Brak danych",
+    "error": "Błąd",
+    "retry": "Ponów",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "close": "Zamknij",
+    "open": "Otwórz",
+    "buy": "Kup",
+    "sell": "Sprzedaj"
+  },
+  "signals": {
+    "title": "Sygnały",
+    "riskScore": "Ocena Ryzyka",
+    "winRate": "Skuteczność",
+    "avgReturn": "Śr. Zwrot",
+    "confidence": "Pewność",
+    "regime": "Reżim Rynku",
+    "entry": "Wejście",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "aiBreif": "Brief AI",
+    "dna": "DNA Sygnału",
+    "similarity": "Podobieństwo",
+    "narrative": "Narracja",
+    "headline": "Nagłówek",
+    "riskNote": "Notatka o Ryzyku"
+  },
+  "dividend": {
+    "title": "Radar Dywidend",
+    "yield": "Stopa Dywidendy",
+    "health": "Ocena Kondycji",
+    "years": "Lata Wzrostu",
+    "exDate": "Dzień Ex",
+    "payoutRatio": "Payout Ratio",
+    "trend": "Trend",
+    "safe": "Bezpieczna",
+    "watch": "Obserwuj",
+    "risky": "Ryzykowna"
+  },
+  "paperTrading": {
+    "title": "Paper Trading",
+    "openPosition": "Otwórz Pozycję",
+    "closePosition": "Zamknij Pozycję",
+    "portfolio": "Portfel",
+    "history": "Historia Transakcji",
+    "pnl": "P&L",
+    "direction": "Kierunek",
+    "quantity": "Ilość",
+    "entryPrice": "Cena Wejścia",
+    "exitPrice": "Cena Wyjścia",
+    "long": "Long",
+    "short": "Short"
+  },
+  "coach": {
+    "title": "Coach Behawioralny",
+    "traderProfile": "Profil Tradera",
+    "avgWin": "Śr. Zysk",
+    "avgLoss": "Śr. Strata",
+    "biases": "Wykryte Biasy",
+    "noBiases": "Brak wykrytych biasów",
+    "cutsWinners": "Ucinasz Zyski za Wcześnie",
+    "holdsLosers": "Trzymasz Straty za Długo",
+    "overtrading": "Overtrading",
+    "aiCoach": "AI Coach mówi"
+  },
+  "alpha": {
+    "title": "Kalendarz Alpha",
+    "windows": "Okna Probabilistyczne",
+    "probability": "Prawdopodobieństwo",
+    "historicalReturn": "Zwrot Historyczny",
+    "earningsCycle": "Cykl Wyników",
+    "seasonal": "Sezonowość",
+    "sectorRotation": "Rotacja Sektorowa",
+    "regimeShift": "Zmiana Reżimu"
+  }
+}

@@ -1,4 +1,6 @@
 import { Link, NavLink, Navigate, Route, Routes } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { AlphaCalendarPage } from "./pages/AlphaCalendarPage";
 import { BehavioralCoachPage } from "./pages/BehavioralCoachPage";
 import { CompanyDetail } from "./pages/CompanyDetail";
@@ -11,22 +13,24 @@ import { SignalsPage } from "./pages/SignalsPage";
 
 type NavItem = {
   to: string;
-  label: string;
+  labelKey: string;
   end?: boolean;
 };
 
 const navLinks: NavItem[] = [
-  { to: "/", label: "Home", end: true },
-  { to: "/dashboard", label: "Dashboard" },
-  { to: "/signals", label: "Signals" },
-  { to: "/dividend", label: "Dividend" },
-  { to: "/dividend/intelligence", label: "Dividend Intelligence" },
-  { to: "/paper-trading", label: "Paper Trading" },
-  { to: "/coach", label: "Coach" },
-  { to: "/alpha", label: "Alpha Calendar" },
+  { to: "/", labelKey: "nav.home", end: true },
+  { to: "/dashboard", labelKey: "nav.dashboard" },
+  { to: "/signals", labelKey: "nav.signals" },
+  { to: "/dividend", labelKey: "nav.dividend" },
+  { to: "/dividend/intelligence", labelKey: "nav.dividendIntelligence" },
+  { to: "/paper-trading", labelKey: "nav.paperTrading" },
+  { to: "/coach", labelKey: "nav.coach" },
+  { to: "/alpha", labelKey: "nav.alphaCalendar" },
 ];
 
 export default function App() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen">
       <nav className="border-b border-[#0f1f36] bg-[#060d18]">
@@ -44,9 +48,10 @@ export default function App() {
                   `transition-colors ${isActive ? "text-[#00c87a]" : "text-slate-300 hover:text-[#0096ff]"}`
                 }
               >
-                {item.label}
+                {t(item.labelKey)}
               </NavLink>
             ))}
+            <LanguageSwitcher />
           </div>
         </div>
       </nav>

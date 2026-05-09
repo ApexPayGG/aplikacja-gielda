@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "dashboard": "Dashboard",
+    "signals": "Señales",
+    "dividend": "Dividendo",
+    "dividendIntelligence": "Inteligencia de Dividendos",
+    "paperTrading": "Paper Trading",
+    "coach": "Coach",
+    "alphaCalendar": "Calendario Alpha"
+  },
+  "common": {
+    "search": "Buscar",
+    "loading": "Cargando...",
+    "noData": "No hay datos disponibles",
+    "error": "Error",
+    "retry": "Reintentar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "buy": "Comprar",
+    "sell": "Vender"
+  },
+  "signals": {
+    "title": "Señales",
+    "riskScore": "Puntuación de Riesgo",
+    "winRate": "Tasa de Acierto",
+    "avgReturn": "Retorno Medio",
+    "confidence": "Confianza",
+    "regime": "Régimen de Mercado",
+    "entry": "Entrada",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "aiBreif": "Resumen IA",
+    "dna": "ADN de la Señal",
+    "similarity": "Similitud",
+    "narrative": "Narrativa",
+    "headline": "Titular",
+    "riskNote": "Nota de Riesgo"
+  },
+  "dividend": {
+    "title": "Radar de Dividendos",
+    "yield": "Rendimiento por Dividendo",
+    "health": "Puntuación de Salud",
+    "years": "Años de Crecimiento",
+    "exDate": "Fecha Ex",
+    "payoutRatio": "Ratio de Pago",
+    "trend": "Tendencia",
+    "safe": "Seguro",
+    "watch": "Vigilar",
+    "risky": "Riesgoso"
+  },
+  "paperTrading": {
+    "title": "Paper Trading",
+    "openPosition": "Abrir Posición",
+    "closePosition": "Cerrar Posición",
+    "portfolio": "Portafolio",
+    "history": "Historial de Operaciones",
+    "pnl": "P&L",
+    "direction": "Dirección",
+    "quantity": "Cantidad",
+    "entryPrice": "Precio de Entrada",
+    "exitPrice": "Precio de Salida",
+    "long": "Long",
+    "short": "Short"
+  },
+  "coach": {
+    "title": "Coach Conductual",
+    "traderProfile": "Perfil del Trader",
+    "avgWin": "Ganancia Promedio",
+    "avgLoss": "Pérdida Promedio",
+    "biases": "Sesgos Detectados",
+    "noBiases": "No se detectaron sesgos",
+    "cutsWinners": "Corta Ganadores Demasiado Pronto",
+    "holdsLosers": "Mantiene Perdedores Demasiado Tiempo",
+    "overtrading": "Sobreoperación",
+    "aiCoach": "El Coach IA dice"
+  },
+  "alpha": {
+    "title": "Calendario Alpha",
+    "windows": "Ventanas de Probabilidad",
+    "probability": "Probabilidad",
+    "historicalReturn": "Retorno Histórico",
+    "earningsCycle": "Ciclo de Resultados",
+    "seasonal": "Estacional",
+    "sectorRotation": "Rotación Sectorial",
+    "regimeShift": "Cambio de Régimen"
+  }
+}

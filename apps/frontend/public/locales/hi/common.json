@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "होम",
+    "dashboard": "डैशबोर्ड",
+    "signals": "सिग्नल्स",
+    "dividend": "डिविडेंड",
+    "dividendIntelligence": "डिविडेंड इंटेलिजेंस",
+    "paperTrading": "पेपर ट्रेडिंग",
+    "coach": "कोच",
+    "alphaCalendar": "अल्फा कैलेंडर"
+  },
+  "common": {
+    "search": "खोजें",
+    "loading": "लोड हो रहा है...",
+    "noData": "डेटा उपलब्ध नहीं है",
+    "error": "त्रुटि",
+    "retry": "फिर से प्रयास करें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "close": "बंद करें",
+    "open": "खोलें",
+    "buy": "खरीदें",
+    "sell": "बेचें"
+  },
+  "signals": {
+    "title": "सिग्नल्स",
+    "riskScore": "रिस्क स्कोर",
+    "winRate": "विन रेट",
+    "avgReturn": "औसत रिटर्न",
+    "confidence": "विश्वास",
+    "regime": "मार्केट रेजीम",
+    "entry": "एंट्री",
+    "stopLoss": "स्टॉप लॉस",
+    "takeProfit": "टेक प्रॉफिट",
+    "aiBreif": "AI ब्रीफ",
+    "dna": "सिग्नल DNA",
+    "similarity": "समानता",
+    "narrative": "नैरेटिव",
+    "headline": "हेडलाइन",
+    "riskNote": "रिस्क नोट"
+  },
+  "dividend": {
+    "title": "डिविडेंड रडार",
+    "yield": "डिविडेंड यील्ड",
+    "health": "हेल्थ स्कोर",
+    "years": "ग्रोथ के वर्ष",
+    "exDate": "एक्स-डेट",
+    "payoutRatio": "पेआउट रेशियो",
+    "trend": "ट्रेंड",
+    "safe": "सुरक्षित",
+    "watch": "निगरानी",
+    "risky": "जोखिमपूर्ण"
+  },
+  "paperTrading": {
+    "title": "पेपर ट्रेडिंग",
+    "openPosition": "पोज़िशन खोलें",
+    "closePosition": "पोज़िशन बंद करें",
+    "portfolio": "पोर्टफोलियो",
+    "history": "ट्रेड हिस्ट्री",
+    "pnl": "P&L",
+    "direction": "दिशा",
+    "quantity": "मात्रा",
+    "entryPrice": "एंट्री प्राइस",
+    "exitPrice": "एग्ज़िट प्राइस",
+    "long": "लॉन्ग",
+    "short": "शॉर्ट"
+  },
+  "coach": {
+    "title": "व्यवहारिक कोच",
+    "traderProfile": "ट्रेडर प्रोफाइल",
+    "avgWin": "औसत जीत",
+    "avgLoss": "औसत नुकसान",
+    "biases": "पहचाने गए बायस",
+    "noBiases": "कोई बायस नहीं मिला",
+    "cutsWinners": "मुनाफ़ा जल्दी काटते हैं",
+    "holdsLosers": "घाटे वाली पोज़िशन ज़्यादा देर रखते हैं",
+    "overtrading": "ओवरट्रेडिंग",
+    "aiCoach": "AI कोच कहता है"
+  },
+  "alpha": {
+    "title": "अल्फा कैलेंडर",
+    "windows": "प्रायिकता विंडोज़",
+    "probability": "प्रायिकता",
+    "historicalReturn": "ऐतिहासिक रिटर्न",
+    "earningsCycle": "अर्निंग्स साइकिल",
+    "seasonal": "सीज़नल",
+    "sectorRotation": "सेक्टर रोटेशन",
+    "regimeShift": "रेजीम शिफ्ट"
+  }
+}

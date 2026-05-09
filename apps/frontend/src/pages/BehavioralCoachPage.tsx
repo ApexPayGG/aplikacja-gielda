@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -76,10 +77,11 @@ function StatBox(props: { label: string; value: string; colorClass: string }) {
 }
 
 function BiasCard(props: { bias: Bias; avgWinHours: number; avgLossHours: number; avgLossPct: number }) {
+  const { t } = useTranslation();
   if (props.bias === "CUTS_WINNERS_EARLY") {
     return (
       <div className="rounded-lg border border-orange-400/50 bg-orange-500/10 p-4">
-        <h3 className="text-sm font-semibold text-orange-200">✂️ Ucinasz zyski za wcześnie</h3>
+        <h3 className="text-sm font-semibold text-orange-200">✂️ {t("coach.cutsWinners")}</h3>
         <p className="mt-2 text-sm text-slate-300">
           Zamykasz zyskowne pozycje średnio po <span className="font-mono">{props.avgWinHours.toFixed(1)} h</span>, ale trzymasz straty
           przez <span className="font-mono"> {props.avgLossHours.toFixed(1)} h</span>.
@@ -90,7 +92,7 @@ function BiasCard(props: { bias: Bias; avgWinHours: number; avgLossHours: number
   if (props.bias === "HOLDS_LOSERS_TOO_LONG") {
     return (
       <div className="rounded-lg border border-[#ff4a4a]/50 bg-[#ff4a4a]/10 p-4">
-        <h3 className="text-sm font-semibold text-[#ff9d9d]">⏳ Trzymasz straty za długo</h3>
+        <h3 className="text-sm font-semibold text-[#ff9d9d]">⏳ {t("coach.holdsLosers")}</h3>
         <p className="mt-2 text-sm text-slate-300">
           Średnia strata: <span className="font-mono">{props.avgLossPct.toFixed(2)}%</span>, czas trzymania:{" "}
           <span className="font-mono">{props.avgLossHours.toFixed(1)} h</span>.
@@ -100,13 +102,14 @@ function BiasCard(props: { bias: Bias; avgWinHours: number; avgLossHours: number
   }
   return (
     <div className="rounded-lg border border-yellow-400/50 bg-yellow-500/10 p-4">
-      <h3 className="text-sm font-semibold text-yellow-200">⚡ Overtrading</h3>
+      <h3 className="text-sm font-semibold text-yellow-200">⚡ {t("coach.overtrading")}</h3>
       <p className="mt-2 text-sm text-slate-300">Więcej niż 3 trades w ostatnich 24h.</p>
     </div>
   );
 }
 
 export function BehavioralCoachPage() {
+  const { t } = useTranslation();
   const [coach, setCoach] = useState<CoachResponse | null>(null);
   const [history, setHistory] = useState<SnapshotHistoryPoint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -164,7 +167,7 @@ export function BehavioralCoachPage() {
     <div className="min-h-screen bg-[#060d18] text-slate-100">
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
         <header className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight text-white">Twój Profil Tradera</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-white">{t("coach.traderProfile")}</h1>
           <span className={`rounded px-3 py-1 text-xs ${usingMock ? "bg-orange-500/20 text-orange-200" : "bg-slate-700/40 text-slate-300"}`}>
             {usingMock ? "Mock fallback active" : "Live API"}
           </span>
@@ -182,15 +185,23 @@ export function BehavioralCoachPage() {
           ) : (
             <>
               <div className="grid gap-3 md:grid-cols-4">
-                <StatBox label="Avg Win" value={`${snapshot?.avgWinPct.toFixed(2) ?? "0.00"}%`} colorClass="text-[#00c87a]" />
-                <StatBox label="Avg Loss" value={`${snapshot?.avgLossPct.toFixed(2) ?? "0.00"}%`} colorClass="text-[#ff4a4a]" />
-                <StatBox label="Avg Hold Win" value={`${snapshot?.avgHoldingWinHours.toFixed(1) ?? "0.0"} h`} colorClass="text-[#0096ff]" />
-                <StatBox label="Avg Hold Loss" value={`${snapshot?.avgHoldingLossHours.toFixed(1) ?? "0.0"} h`} colorClass="text-orange-300" />
+                <StatBox label={t("coach.avgWin")} value={`${snapshot?.avgWinPct.toFixed(2) ?? "0.00"}%`} colorClass="text-[#00c87a]" />
+                <StatBox label={t("coach.avgLoss")} value={`${snapshot?.avgLossPct.toFixed(2) ?? "0.00"}%`} colorClass="text-[#ff4a4a]" />
+                <StatBox
+                  label={t("coach.avgHoldWin", { defaultValue: "Avg Hold Win" })}
+                  value={`${snapshot?.avgHoldingWinHours.toFixed(1) ?? "0.0"} h`}
+                  colorClass="text-[#0096ff]"
+                />
+                <StatBox
+                  label={t("coach.avgHoldLoss", { defaultValue: "Avg Hold Loss" })}
+                  value={`${snapshot?.avgHoldingLossHours.toFixed(1) ?? "0.0"} h`}
+                  colorClass="text-orange-300"
+                />
               </div>
 
               <div className="mt-5 space-y-3">
                 {biases.length === 0 && (
-                  <div className="rounded-lg border border-[#00c87a]/50 bg-[#00c87a]/10 p-4 text-[#95f4c9]">Brak wykrytych biasów 🎯</div>
+                  <div className="rounded-lg border border-[#00c87a]/50 bg-[#00c87a]/10 p-4 text-[#95f4c9]">{t("coach.noBiases")} 🎯</div>
                 )}
                 {biases.map((bias) => (
                   <BiasCard
@@ -204,7 +215,7 @@ export function BehavioralCoachPage() {
               </div>
 
               <div className="mt-5 rounded-lg border border-[#0096ff]/35 bg-[#0096ff]/10 p-4">
-                <h3 className="text-base font-semibold text-[#9ed5ff]">💬 AI Coach mówi:</h3>
+                <h3 className="text-base font-semibold text-[#9ed5ff]">💬 {t("coach.aiCoach")}:</h3>
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-200">
                   {coach?.aiDescription ?? "Brak treści od AI Coacha."}
                 </p>
@@ -214,7 +225,7 @@ export function BehavioralCoachPage() {
         </section>
 
         <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
-          <h2 className="mb-4 text-lg font-semibold text-white">Historia snapshotów</h2>
+          <h2 className="mb-4 text-lg font-semibold text-white">{t("paperTrading.history")}</h2>
           {loading ? (
             <div className="h-64 animate-pulse rounded bg-slate-700/35" />
           ) : (

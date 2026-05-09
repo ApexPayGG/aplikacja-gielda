@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -40,6 +41,25 @@ type DnaMatch = {
 
 type DnaData = {
   matches: DnaMatch[];
+};
+
+type LiveTransport = "SSE" | "POLLING" | "OFFLINE";
+
+type CopilotPlan = {
+  action: "ENTER" | "WAIT" | "REDUCE";
+  conviction: number;
+  thesis: string;
+  invalidation: string;
+  nextCheckpoint: string;
+};
+
+type ExecutionPlan = {
+  entry: number;
+  stop: number;
+  target: number;
+  rr: number;
+  expectedValuePct: number;
+  worstCasePct: number;
 };
 
 const marketFlags: Record<MarketCode, string> = {
@@ -203,7 +223,105 @@ function parseSignal(raw: unknown): SignalListItem | null {
   };
 }
 
+function unpackSignalRows(data: unknown): unknown[] {
+  if (!data || typeof data !== "object") return [];
+  const d = data as Record<string, unknown>;
+  if (Array.isArray(d.data)) return d.data;
+  if (Array.isArray(d.items)) return d.items;
+  if (Array.isArray(d.signals)) return d.signals;
+  if (Array.isArray(d.signalUpdates)) return d.signalUpdates;
+  return [];
+}
+
+function rankSignals(rows: SignalListItem[]): SignalListItem[] {
+  return [...rows].sort((a, b) => {
+    const lhs = a.riskScore * 0.55 + a.winRate * 0.35 + a.changePct * 2;
+    const rhs = b.riskScore * 0.55 + b.winRate * 0.35 + b.changePct * 2;
+    return rhs - lhs;
+  });
+}
+
+function mergeSignals(prev: SignalListItem[], incoming: SignalListItem[]): SignalListItem[] {
+  const map = new Map(prev.map((s) => [s.id, s] as const));
+  for (const row of incoming) {
+    const existing = map.get(row.id);
+    map.set(row.id, existing ? { ...existing, ...row } : row);
+  }
+  return rankSignals([...map.values()]);
+}
+
+function regimeProtocol(regime: MarketRegime): { mode: string; style: string; riskCap: string; color: string } {
+  if (regime === "TRENDING") {
+    return { mode: "Trend Acceleration", style: "Breakout continuation", riskCap: "1.25R", color: "text-[#00c87a]" };
+  }
+  if (regime === "RISK_ON") {
+    return { mode: "Pro-Risk Expansion", style: "Momentum basket", riskCap: "1.00R", color: "text-[#0096ff]" };
+  }
+  if (regime === "RISK_OFF") {
+    return { mode: "Capital Defense", style: "Mean-reversion only", riskCap: "0.50R", color: "text-[#ff4a4a]" };
+  }
+  return { mode: "Neutral Grid", style: "Range edges + quick exits", riskCap: "0.75R", color: "text-slate-300" };
+}
+
+function buildCopilotPlan(signal: SignalListItem, narrative: NarrativeData | null): CopilotPlan {
+  const conviction = clampPercent(Math.round(signal.riskScore * 0.65 + signal.winRate * 0.35));
+  const action: CopilotPlan["action"] =
+    signal.riskScore >= 80 && signal.changePct >= 0 ? "ENTER" : signal.riskScore < 60 ? "REDUCE" : "WAIT";
+  return {
+    action,
+    conviction,
+    thesis: narrative?.headline ?? `${signal.setupType} aligned with ${signal.marketRegime}`,
+    invalidation: `Exit if move reaches ${signal.maxDrawdown.toFixed(1)}% from entry or regime flips.`,
+    nextCheckpoint: "Re-evaluate after next session close and fresh volume print.",
+  };
+}
+
+function buildExecutionPlan(signal: SignalListItem): ExecutionPlan {
+  const entry = signal.price;
+  const stopDistancePct = Math.max(1.2, Math.abs(signal.maxDrawdown) * 0.45);
+  const targetDistancePct = Math.max(1.8, Math.abs(signal.avgReturn) * 1.4);
+  const stop = entry * (1 - stopDistancePct / 100);
+  const target = entry * (1 + targetDistancePct / 100);
+  const rr = (target - entry) / Math.max(0.0001, entry - stop);
+  const winP = clampPercent(signal.winRate) / 100;
+  const expectedValuePct = winP * targetDistancePct - (1 - winP) * stopDistancePct;
+  return {
+    entry,
+    stop,
+    target,
+    rr,
+    expectedValuePct,
+    worstCasePct: -stopDistancePct,
+  };
+}
+
+function buildWatchlist(signals: SignalListItem[]): SignalListItem[] {
+  return [...signals]
+    .sort((a, b) => b.riskScore * 0.55 + b.winRate * 0.45 - (a.riskScore * 0.55 + a.winRate * 0.45))
+    .slice(0, 5);
+}
+
+function dnaRationale(match: DnaMatch): { why: string; counter: string } {
+  if (match.similarityPct >= 90) {
+    return {
+      why: "Price structure and volatility regime are near-identical.",
+      counter: "Macro context differs; avoid oversized position.",
+    };
+  }
+  if (match.similarityPct >= 85) {
+    return {
+      why: "Momentum profile and volume compression match historical winners.",
+      counter: "Signal can decay quickly without follow-through volume.",
+    };
+  }
+  return {
+    why: "Partial setup overlap with lower confidence.",
+    counter: "Treat as supporting evidence, not primary trigger.",
+  };
+}
+
 export function SignalsPage() {
+  const { t } = useTranslation();
   const [signals, setSignals] = useState<SignalListItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [narrative, setNarrative] = useState<NarrativeData | null>(null);
@@ -212,10 +330,27 @@ export function SignalsPage() {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
   const [detailError, setDetailError] = useState<string | null>(null);
+  const [liveTransport, setLiveTransport] = useState<LiveTransport>("OFFLINE");
+  const [liveNote, setLiveNote] = useState<string>("Waiting for stream...");
+  const [lastLiveAt, setLastLiveAt] = useState<string | null>(null);
+  const [hotSignalIds, setHotSignalIds] = useState<string[]>([]);
 
   const selectedSignal = useMemo(
     () => signals.find((s) => s.id === selectedId) ?? null,
     [signals, selectedId],
+  );
+  const copilot = useMemo(
+    () => (selectedSignal ? buildCopilotPlan(selectedSignal, narrative) : null),
+    [selectedSignal, narrative],
+  );
+  const execution = useMemo(
+    () => (selectedSignal ? buildExecutionPlan(selectedSignal) : null),
+    [selectedSignal],
+  );
+  const watchlist = useMemo(() => buildWatchlist(signals), [signals]);
+  const regime = useMemo(
+    () => (selectedSignal ? regimeProtocol(selectedSignal.marketRegime) : null),
+    [selectedSignal],
   );
 
   useEffect(() => {
@@ -224,20 +359,18 @@ export function SignalsPage() {
       setLoadingList(true);
       setListError(null);
       try {
-        const { data } = await api.get<{ data?: unknown[]; items?: unknown[]; signals?: unknown[]; count?: number }>(
-          "/signals",
-          { params: { limit: 20 } },
-        );
-        const rows = (data.data ?? data.items ?? data.signals ?? [])
+        const { data } = await api.get<Record<string, unknown>>("/signals", { params: { limit: 20 } });
+        const rows = unpackSignalRows(data)
           .map(parseSignal)
           .filter((row): row is SignalListItem => row !== null);
         if (!cancelled) {
           if (rows.length === 0) {
-            setSignals(mockSignals);
-            setSelectedId(mockSignals[0].id);
+            setSignals(rankSignals(mockSignals));
+            setSelectedId(mockSignals[0]?.id ?? null);
           } else {
-            setSignals(rows);
-            setSelectedId(rows[0].id);
+            const ranked = rankSignals(rows);
+            setSignals(ranked);
+            setSelectedId(ranked[0]?.id ?? null);
           }
         }
       } catch (e) {
@@ -257,6 +390,96 @@ export function SignalsPage() {
     void loadSignals();
     return () => {
       cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    let eventSource: EventSource | null = null;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+    let clearHotTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const markLiveUpdate = (ids: string[], note: string) => {
+      if (cancelled || ids.length === 0) return;
+      setLastLiveAt(new Date().toISOString());
+      setLiveNote(note);
+      setHotSignalIds(ids.slice(0, 8));
+      if (clearHotTimer) clearTimeout(clearHotTimer);
+      clearHotTimer = setTimeout(() => setHotSignalIds([]), 2000);
+    };
+
+    const applyRows = (rows: SignalListItem[], source: "SSE" | "POLLING") => {
+      if (rows.length === 0) return;
+      setSignals((prev) => mergeSignals(prev, rows));
+      setSelectedId((prev) => prev ?? rows[0]?.id ?? null);
+      markLiveUpdate(
+        rows.map((r) => r.id),
+        source === "SSE" ? "Live stream update received" : "Polling update received",
+      );
+    };
+
+    const startPolling = () => {
+      if (cancelled || pollTimer) return;
+      setLiveTransport("POLLING");
+      setLiveNote("SSE unavailable — polling every 15s");
+      const pull = async () => {
+        try {
+          const { data } = await api.get<Record<string, unknown>>("/signals", { params: { limit: 20 } });
+          const rows = unpackSignalRows(data)
+            .map(parseSignal)
+            .filter((row): row is SignalListItem => row !== null);
+          applyRows(rows, "POLLING");
+        } catch {
+          // keep silent; page already handles missing APIs with mocks
+        }
+      };
+      void pull();
+      pollTimer = setInterval(() => {
+        void pull();
+      }, 15_000);
+    };
+
+    const trySse = () => {
+      const base = String(api.defaults.baseURL ?? "http://localhost:3000/api").replace(/\/$/, "");
+      const streamUrl = `${base}/signals/stream`;
+      try {
+        eventSource = new EventSource(streamUrl);
+      } catch {
+        startPolling();
+        return;
+      }
+      eventSource.onopen = () => {
+        if (cancelled) return;
+        setLiveTransport("SSE");
+        setLiveNote("Connected to live stream");
+      };
+      eventSource.onmessage = (event) => {
+        if (cancelled) return;
+        try {
+          const payload = JSON.parse(event.data) as unknown;
+          const rows = (Array.isArray(payload) ? payload : unpackSignalRows(payload))
+            .map(parseSignal)
+            .filter((row): row is SignalListItem => row !== null);
+          applyRows(rows, "SSE");
+        } catch {
+          // ignore malformed packet
+        }
+      };
+      eventSource.onerror = () => {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
+        if (!cancelled) startPolling();
+      };
+    };
+
+    trySse();
+    return () => {
+      cancelled = true;
+      if (eventSource) eventSource.close();
+      if (pollTimer) clearInterval(pollTimer);
+      if (clearHotTimer) clearTimeout(clearHotTimer);
     };
   }, []);
 
@@ -328,7 +551,27 @@ export function SignalsPage() {
     <div className="min-h-screen bg-[#060d18] text-slate-100">
       <div className="mx-auto flex max-w-7xl gap-4 px-4 py-6">
         <aside className="w-[320px] shrink-0 space-y-3">
-          <h1 className="text-xl font-semibold text-white">Signals</h1>
+          <h1 className="text-xl font-semibold text-white">{t("signals.title")}</h1>
+          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-3 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-400">Live Engine</span>
+              <span
+                className={`rounded px-2 py-0.5 font-semibold ${
+                  liveTransport === "SSE"
+                    ? "bg-[#00c87a]/15 text-[#00c87a]"
+                    : liveTransport === "POLLING"
+                      ? "bg-[#0096ff]/15 text-[#0096ff]"
+                      : "bg-slate-700/40 text-slate-300"
+                }`}
+              >
+                {liveTransport}
+              </span>
+            </div>
+            <p className="mt-2 text-slate-300">{liveNote}</p>
+            <p className="mt-1 font-mono text-slate-500">
+              {lastLiveAt ? `last: ${new Date(lastLiveAt).toLocaleTimeString()}` : "last: --:--:--"}
+            </p>
+          </div>
           {loadingList &&
             Array.from({ length: 6 }).map((_, idx) => (
               <div key={`list-skeleton-${idx}`} className="animate-pulse rounded-xl border border-slate-800 bg-slate-900/70 p-3">
@@ -349,7 +592,9 @@ export function SignalsPage() {
                 className={`w-full rounded-xl border p-3 text-left transition ${
                   selectedId === signal.id
                     ? "border-[#00c87a]/60 bg-[#00c87a]/8"
-                    : "border-slate-800 bg-slate-900/70 hover:border-[#0096ff]/50"
+                    : hotSignalIds.includes(signal.id)
+                      ? "border-[#0096ff]/60 bg-[#0096ff]/10"
+                      : "border-slate-800 bg-slate-900/70 hover:border-[#0096ff]/50"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -373,6 +618,21 @@ export function SignalsPage() {
                 </div>
               </button>
             ))}
+          {!loadingList && watchlist.length > 0 && (
+            <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#0096ff]">Autonomous Watchlist</h3>
+              <div className="space-y-2">
+                {watchlist.map((w) => (
+                  <div key={`watch-${w.id}`} className="flex items-center justify-between text-xs">
+                    <span className="text-slate-200">
+                      {w.ticker} {marketFlags[w.market]}
+                    </span>
+                    <span className={`font-mono ${riskScoreColor(w.riskScore)}`}>{Math.round(w.riskScore)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </aside>
 
         <section className="min-w-0 flex-1 rounded-xl border border-slate-800 bg-slate-900/55 p-5">
@@ -396,10 +656,21 @@ export function SignalsPage() {
               </header>
 
               <div className="mb-5 grid gap-3 md:grid-cols-3">
-                <StatBox label="Risk Score" value={Math.round(selectedSignal.riskScore).toString()} valueClass={riskScoreColor(selectedSignal.riskScore)} />
-                <StatBox label="Win Rate" value={`${selectedSignal.winRate.toFixed(1)}%`} valueClass="text-[#00c87a]" />
-                <StatBox label="Avg Return" value={`${selectedSignal.avgReturn >= 0 ? "+" : ""}${selectedSignal.avgReturn.toFixed(2)}%`} valueClass={selectedSignal.avgReturn >= 0 ? "text-[#0096ff]" : "text-[#ff4a4a]"} />
+                <StatBox label={t("signals.riskScore")} value={Math.round(selectedSignal.riskScore).toString()} valueClass={riskScoreColor(selectedSignal.riskScore)} />
+                <StatBox label={t("signals.winRate")} value={`${selectedSignal.winRate.toFixed(1)}%`} valueClass="text-[#00c87a]" />
+                <StatBox label={t("signals.avgReturn")} value={`${selectedSignal.avgReturn >= 0 ? "+" : ""}${selectedSignal.avgReturn.toFixed(2)}%`} valueClass={selectedSignal.avgReturn >= 0 ? "text-[#0096ff]" : "text-[#ff4a4a]"} />
               </div>
+
+              {regime && (
+                <article className="mb-5 rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+                  <h3 className="mb-2 text-lg font-semibold text-white">Live Market Regime Engine</h3>
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <MiniInfo label="Mode" value={regime.mode} valueClass={regime.color} />
+                    <MiniInfo label="Execution Style" value={regime.style} />
+                    <MiniInfo label="Risk Cap / Trade" value={regime.riskCap} />
+                  </div>
+                </article>
+              )}
 
               {loadingDetail && (
                 <div className="space-y-4">
@@ -417,9 +688,31 @@ export function SignalsPage() {
 
               {!loadingDetail && narrative && dna && (
                 <div className="space-y-5">
+                  {copilot && (
+                    <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+                      <div className="mb-3 flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-white">AI Copilot Decision</h3>
+                        <span className="rounded bg-[#00c87a]/15 px-2 py-1 text-xs font-semibold text-[#00c87a]">
+                          {copilot.action}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-300">{copilot.thesis}</p>
+                      <div className="mt-3">
+                        <TrackMetric
+                          label="Conviction"
+                          valueText={`${copilot.conviction}%`}
+                          barPercent={copilot.conviction}
+                          colorClass="bg-[#00c87a]"
+                        />
+                      </div>
+                      <p className="mt-2 text-xs text-slate-400">Invalidation: {copilot.invalidation}</p>
+                      <p className="mt-1 text-xs text-slate-400">Checkpoint: {copilot.nextCheckpoint}</p>
+                    </article>
+                  )}
+
                   <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <h3 className="text-lg font-semibold text-white">Narrative</h3>
+                      <h3 className="text-lg font-semibold text-white">{t("signals.narrative")}</h3>
                       <span className="rounded bg-[#0096ff]/15 px-2 py-1 text-xs font-semibold text-[#0096ff]">
                         {narrative.confidence}
                       </span>
@@ -430,17 +723,26 @@ export function SignalsPage() {
                   </article>
 
                   <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-                    <h3 className="mb-3 text-lg font-semibold text-white">Signal DNA</h3>
+                    <h3 className="mb-3 text-lg font-semibold text-white">{t("signals.dna")}</h3>
                     <div className="space-y-2">
-                      {dna.matches.slice(0, 3).map((match) => (
-                        <div key={match.id} className="flex items-center justify-between rounded-md border border-slate-800 bg-[#060d18]/70 px-3 py-2">
-                          <div className="text-sm text-slate-200">{match.date}</div>
-                          <div className="font-mono text-sm text-[#0096ff]">{match.similarityPct.toFixed(0)}%</div>
-                          <div className={`font-mono text-sm ${match.outcome.startsWith("-") ? "text-[#ff4a4a]" : "text-[#00c87a]"}`}>
-                            {match.outcome}
+                      {dna.matches.slice(0, 3).map((match) => {
+                        const explanation = dnaRationale(match);
+                        return (
+                          <div key={match.id} className="rounded-md border border-slate-800 bg-[#060d18]/70 px-3 py-3">
+                            <div className="flex items-center justify-between">
+                              <div className="text-sm text-slate-200">{match.date}</div>
+                              <div className="font-mono text-sm text-[#0096ff]">{match.similarityPct.toFixed(0)}%</div>
+                              <div
+                                className={`font-mono text-sm ${match.outcome.startsWith("-") ? "text-[#ff4a4a]" : "text-[#00c87a]"}`}
+                              >
+                                {match.outcome}
+                              </div>
+                            </div>
+                            <p className="mt-2 text-xs text-slate-300">Why similar: {explanation.why}</p>
+                            <p className="mt-1 text-xs text-[#ff7a7a]">Counterpoint: {explanation.counter}</p>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </article>
 
@@ -465,6 +767,24 @@ export function SignalsPage() {
                     <TrackMetric label="Max DD" valueText={`${selectedSignal.maxDrawdown.toFixed(2)}%`} barPercent={clampPercent(100 - Math.abs(selectedSignal.maxDrawdown) * 8)} colorClass="bg-[#ff4a4a]" />
                     <TrackMetric label="Total signals" valueText={selectedSignal.totalSignals.toString()} barPercent={clampPercent((selectedSignal.totalSignals / 100) * 100)} colorClass="bg-slate-400" />
                   </article>
+
+                  {execution && (
+                    <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+                      <h3 className="mb-3 text-lg font-semibold text-white">Battle-Tested Execution Simulator</h3>
+                      <div className="grid gap-3 md:grid-cols-3">
+                        <MiniInfo label="Entry" value={`$${execution.entry.toFixed(2)}`} valueClass="font-mono text-white" />
+                        <MiniInfo label="Stop" value={`$${execution.stop.toFixed(2)}`} valueClass="font-mono text-[#ff4a4a]" />
+                        <MiniInfo label="Target" value={`$${execution.target.toFixed(2)}`} valueClass="font-mono text-[#00c87a]" />
+                        <MiniInfo label="R:R" value={`${execution.rr.toFixed(2)}R`} valueClass="font-mono text-[#0096ff]" />
+                        <MiniInfo
+                          label="Expected Value"
+                          value={`${execution.expectedValuePct >= 0 ? "+" : ""}${execution.expectedValuePct.toFixed(2)}%`}
+                          valueClass={`font-mono ${execution.expectedValuePct >= 0 ? "text-[#00c87a]" : "text-[#ff4a4a]"}`}
+                        />
+                        <MiniInfo label="Worst Case" value={`${execution.worstCasePct.toFixed(2)}%`} valueClass="font-mono text-[#ff4a4a]" />
+                      </div>
+                    </article>
+                  )}
                 </div>
               )}
               {!loadingDetail && detailError && (
@@ -485,6 +805,15 @@ function StatBox(props: { label: string; value: string; valueClass?: string }) {
     <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-3">
       <div className="text-xs uppercase tracking-wide text-slate-400">{props.label}</div>
       <div className={`mt-2 font-mono text-2xl font-bold ${props.valueClass ?? "text-white"}`}>{props.value}</div>
+    </div>
+  );
+}
+
+function MiniInfo(props: { label: string; value: string; valueClass?: string }) {
+  return (
+    <div className="rounded border border-slate-800 bg-[#060d18]/70 p-3">
+      <div className="text-[11px] uppercase tracking-wide text-slate-500">{props.label}</div>
+      <div className={`mt-1 text-sm text-slate-200 ${props.valueClass ?? ""}`}>{props.value}</div>
     </div>
   );
 }

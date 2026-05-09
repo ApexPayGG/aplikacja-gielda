@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "홈",
+    "dashboard": "대시보드",
+    "signals": "시그널",
+    "dividend": "배당",
+    "dividendIntelligence": "배당 인텔리전스",
+    "paperTrading": "페이퍼 트레이딩",
+    "coach": "코치",
+    "alphaCalendar": "알파 캘린더"
+  },
+  "common": {
+    "search": "검색",
+    "loading": "로딩 중...",
+    "noData": "데이터가 없습니다",
+    "error": "오류",
+    "retry": "다시 시도",
+    "save": "저장",
+    "cancel": "취소",
+    "close": "닫기",
+    "open": "열기",
+    "buy": "매수",
+    "sell": "매도"
+  },
+  "signals": {
+    "title": "시그널",
+    "riskScore": "리스크 점수",
+    "winRate": "승률",
+    "avgReturn": "평균 수익률",
+    "confidence": "신뢰도",
+    "regime": "시장 레짐",
+    "entry": "진입",
+    "stopLoss": "손절",
+    "takeProfit": "익절",
+    "aiBreif": "AI 브리프",
+    "dna": "시그널 DNA",
+    "similarity": "유사도",
+    "narrative": "내러티브",
+    "headline": "헤드라인",
+    "riskNote": "리스크 노트"
+  },
+  "dividend": {
+    "title": "배당 레이더",
+    "yield": "배당 수익률",
+    "health": "건강 점수",
+    "years": "성장 연수",
+    "exDate": "배당락일",
+    "payoutRatio": "배당성향",
+    "trend": "추세",
+    "safe": "안전",
+    "watch": "관찰",
+    "risky": "위험"
+  },
+  "paperTrading": {
+    "title": "페이퍼 트레이딩",
+    "openPosition": "포지션 열기",
+    "closePosition": "포지션 닫기",
+    "portfolio": "포트폴리오",
+    "history": "거래 이력",
+    "pnl": "손익",
+    "direction": "방향",
+    "quantity": "수량",
+    "entryPrice": "진입가",
+    "exitPrice": "청산가",
+    "long": "롱",
+    "short": "숏"
+  },
+  "coach": {
+    "title": "행동 코치",
+    "traderProfile": "트레이더 프로필",
+    "avgWin": "평균 수익",
+    "avgLoss": "평균 손실",
+    "biases": "감지된 편향",
+    "noBiases": "감지된 편향이 없습니다",
+    "cutsWinners": "수익 포지션을 너무 빨리 청산",
+    "holdsLosers": "손실 포지션을 너무 오래 보유",
+    "overtrading": "과잉매매",
+    "aiCoach": "AI 코치의 조언"
+  },
+  "alpha": {
+    "title": "알파 캘린더",
+    "windows": "확률 윈도우",
+    "probability": "확률",
+    "historicalReturn": "과거 수익률",
+    "earningsCycle": "실적 사이클",
+    "seasonal": "계절성",
+    "sectorRotation": "섹터 로테이션",
+    "regimeShift": "레짐 전환"
+  }
+}
