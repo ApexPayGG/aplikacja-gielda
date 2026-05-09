@@ -111,6 +111,10 @@
     "tp1": "1R",
     "tp2": "2R",
     "tp3": "3R",
-    "errorInvalid": "Saisissez des nombres positifs valides pour le compte, l'entrée et le stop."
+    "errorInvalid": "Saisissez des nombres positifs valides pour le compte, l'entrée et le stop.",
+    "copy": "Copier",
+    "copyAllTp": "Copier tous les TP",
+    "copyAriaTp": "Copier le prix {{label}}",
+    "copied": "Copié dans le presse-papiers"
   }
 }

@@ -111,6 +111,10 @@
     "tp1": "1R",
     "tp2": "2R",
     "tp3": "3R",
-    "errorInvalid": "Introduce números positivos válidos para cuenta, entrada y stop."
+    "errorInvalid": "Introduce números positivos válidos para cuenta, entrada y stop.",
+    "copy": "Copiar",
+    "copyAllTp": "Copiar todos los TP",
+    "copyAriaTp": "Copiar precio {{label}}",
+    "copied": "Copiado al portapapeles"
   }
 }

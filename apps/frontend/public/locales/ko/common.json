@@ -111,6 +111,10 @@
     "tp1": "1R",
     "tp2": "2R",
     "tp3": "3R",
-    "errorInvalid": "계좌, 진입가, 스탑에 유효한 양수를 입력하세요."
+    "errorInvalid": "계좌, 진입가, 스탑에 유효한 양수를 입력하세요.",
+    "copy": "복사",
+    "copyAllTp": "모든 TP 구간 복사",
+    "copyAriaTp": "{{label}} 가격 복사",
+    "copied": "클립보드에 복사됨"
   }
 }

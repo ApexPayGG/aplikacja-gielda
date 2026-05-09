@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { api } from "../services/api";
@@ -22,6 +22,15 @@ function formatMoney(n: number, currency: Currency): string {
   return `${n.toFixed(2)} ${currency}`;
 }
 
+function CopyIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
 export function PositionSizeCalculator() {
   const { t } = useTranslation();
   const [currency, setCurrency] = useState<Currency>("PLN");
@@ -33,6 +42,29 @@ export function PositionSizeCalculator() {
   const [result, setResult] = useState<CalcResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copyAnnounced, setCopyAnnounced] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
+
+  const flashCopied = () => {
+    setCopyAnnounced(true);
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopyAnnounced(false), 2200);
+  };
+
+  const copyPlain = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      flashCopied();
+    } catch {
+      /* clipboard may be denied without secure context */
+    }
+  };
 
   const onCalculate = async () => {
     setError(null);
@@ -170,6 +202,9 @@ export function PositionSizeCalculator() {
 
       {result && (
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <p className="sr-only" aria-live="polite">
+            {copyAnnounced ? t("positionSize.copied") : ""}
+          </p>
           <div className="neo-panel rounded-xl p-4">
             <div className="text-xs uppercase tracking-wide text-slate-400">{t("positionSize.shares")}</div>
             <div className="mt-1 font-mono text-2xl font-bold text-white">{result.shares}</div>
@@ -193,20 +228,46 @@ export function PositionSizeCalculator() {
             <div className="mt-1 font-mono text-2xl font-bold text-brand-red">{formatMoney(result.maxLoss, currency)}</div>
           </div>
           <div className="neo-panel neo-panel-accent rounded-xl p-4 sm:col-span-2">
-            <div className="mb-2 text-sm font-semibold text-white">{t("positionSize.takeProfits")}</div>
-            <div className="grid gap-2 font-mono text-sm sm:grid-cols-3">
-              <div>
-                <span className="text-slate-500">{t("positionSize.tp1")}:</span>{" "}
-                <span className="text-brand-green">{result.takeProfit1R.toFixed(4)}</span>
-              </div>
-              <div>
-                <span className="text-slate-500">{t("positionSize.tp2")}:</span>{" "}
-                <span className="text-brand-green">{result.takeProfit2R.toFixed(4)}</span>
-              </div>
-              <div>
-                <span className="text-slate-500">{t("positionSize.tp3")}:</span>{" "}
-                <span className="text-brand-green">{result.takeProfit3R.toFixed(4)}</span>
-              </div>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="text-sm font-semibold text-white">{t("positionSize.takeProfits")}</div>
+              <button
+                type="button"
+                onClick={() =>
+                  void copyPlain(
+                    `${t("positionSize.tp1")}\t${result.takeProfit1R.toFixed(4)}\n${t("positionSize.tp2")}\t${result.takeProfit2R.toFixed(4)}\n${t("positionSize.tp3")}\t${result.takeProfit3R.toFixed(4)}`,
+                  )
+                }
+                className="interactive-tilt flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-200 hover:border-brand-blue/50 hover:text-white motion-safe:transition-colors"
+                title={t("positionSize.copyAllTp")}
+              >
+                <CopyIcon />
+                {t("positionSize.copyAllTp")}
+              </button>
+            </div>
+            <div className="grid gap-3 font-mono text-sm sm:grid-cols-3">
+              {(
+                [
+                  { key: "tp1", label: t("positionSize.tp1"), value: result.takeProfit1R },
+                  { key: "tp2", label: t("positionSize.tp2"), value: result.takeProfit2R },
+                  { key: "tp3", label: t("positionSize.tp3"), value: result.takeProfit3R },
+                ] as const
+              ).map((row) => (
+                <div key={row.key} className="flex items-center justify-between gap-2 rounded-lg bg-black/20 px-2 py-1.5">
+                  <div className="min-w-0">
+                    <span className="text-slate-500">{row.label}:</span>{" "}
+                    <span className="text-brand-green">{row.value.toFixed(4)}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void copyPlain(row.value.toFixed(4))}
+                    className="interactive-tilt shrink-0 rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-brand-blue motion-safe:transition-colors"
+                    title={t("positionSize.copy")}
+                    aria-label={t("positionSize.copyAriaTp", { label: row.label })}
+                  >
+                    <CopyIcon />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         </div>

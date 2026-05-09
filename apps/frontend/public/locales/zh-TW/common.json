@@ -111,6 +111,10 @@
     "tp1": "1R",
     "tp2": "2R",
     "tp3": "3R",
-    "errorInvalid": "請輸入帳戶、進場與停損的有效正數。"
+    "errorInvalid": "請輸入帳戶、進場與停損的有效正數。",
+    "copy": "複製",
+    "copyAllTp": "複製全部 TP 位階",
+    "copyAriaTp": "複製 {{label}} 價格",
+    "copied": "已複製到剪貼簿"
   }
 }

@@ -184,6 +184,10 @@
     "tp1": "1R",
     "tp2": "2R",
     "tp3": "3R",
-    "errorInvalid": "Enter valid positive numbers for account, entry, and stop."
+    "errorInvalid": "Enter valid positive numbers for account, entry, and stop.",
+    "copy": "Copy",
+    "copyAllTp": "Copy all TP levels",
+    "copyAriaTp": "Copy {{label}} price",
+    "copied": "Copied to clipboard"
   }
 }

@@ -111,6 +111,10 @@
     "tp1": "1R",
     "tp2": "2R",
     "tp3": "3R",
-    "errorInvalid": "Bitte gültige positive Zahlen für Konto, Einstieg und Stop eingeben."
+    "errorInvalid": "Bitte gültige positive Zahlen für Konto, Einstieg und Stop eingeben.",
+    "copy": "Kopieren",
+    "copyAllTp": "Alle TP-Levels kopieren",
+    "copyAriaTp": "Preis {{label}} kopieren",
+    "copied": "In die Zwischenablage kopiert"
   }
 }

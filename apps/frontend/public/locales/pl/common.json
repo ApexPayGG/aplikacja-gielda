@@ -184,6 +184,10 @@
     "tp1": "1R",
     "tp2": "2R",
     "tp3": "3R",
-    "errorInvalid": "Podaj poprawne dodatnie liczby: kapitał, wejście i stop."
+    "errorInvalid": "Podaj poprawne dodatnie liczby: kapitał, wejście i stop.",
+    "copy": "Kopiuj",
+    "copyAllTp": "Skopiuj wszystkie poziomy TP",
+    "copyAriaTp": "Kopiuj cenę {{label}}",
+    "copied": "Skopiowano do schowka"
   }
 }
