@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
-import { formatPlnAndUsd, localeTagForLanguage } from "../utils/money";
+import { formatCurrency, formatPct } from "../utils/money";
 
 const USER_ID = "demo-user";
 
@@ -41,8 +41,8 @@ export function TaxOptimizerPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fmt = useCallback((n: number) => formatPlnAndUsd(n, i18n.language), [i18n.language]);
-  const locale = localeTagForLanguage(i18n.language);
+  const fmt = useCallback((n: number) => formatCurrency(n, "PLN"), []);
+  const dateLocale = i18n.language.replace(/_/g, "-");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -168,13 +168,13 @@ export function TaxOptimizerPage() {
                     <tr key={`${r.ticker}-${r.closeDate}-${idx}`} className="border-b border-white/5 font-mono text-slate-200">
                       <td className="py-2 pr-4 font-semibold text-white">{r.ticker}</td>
                       <td className="py-2 pr-4 text-xs text-slate-400">
-                        {new Date(r.openDate).toLocaleDateString(locale)}
+                        {new Date(r.openDate).toLocaleDateString(dateLocale)}
                       </td>
                       <td className="py-2 pr-4 text-xs text-slate-400">
-                        {new Date(r.closeDate).toLocaleDateString(locale)}
+                        {new Date(r.closeDate).toLocaleDateString(dateLocale)}
                       </td>
                       <td className={`py-2 pr-4 ${r.pnl >= 0 ? "text-brand-green" : "text-brand-red"}`}>{fmt(r.pnl)}</td>
-                      <td className={`py-2 ${r.pnlPct >= 0 ? "text-brand-green" : "text-brand-red"}`}>{r.pnlPct.toFixed(2)}%</td>
+                      <td className={`py-2 ${r.pnlPct >= 0 ? "text-brand-green" : "text-brand-red"}`}>{formatPct(r.pnlPct)}</td>
                     </tr>
                   ))}
                 </tbody>
