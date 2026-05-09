@@ -86,5 +86,72 @@
     "seasonal": "Sezonowość",
     "sectorRotation": "Rotacja Sektorowa",
     "regimeShift": "Zmiana Reżimu"
+  },
+  "home": {
+    "title": "Spółki",
+    "subtitle": "Szukaj po nazwie lub tickerze albo filtruj po sektorze. Karty prowadzą do notowań, newsów i briefu AI.",
+    "searchPlaceholder": "Szukaj po nazwie lub tickerze...",
+    "emptySelectSector": "Wybierz sektor albo użyj wyszukiwarki, aby zobaczyć spółki.",
+    "emptySector": "Brak spółek w tym sektorze.",
+    "sectorLabel": "Sektor"
+  },
+  "sector": {
+    "all": "Wszystkie",
+    "technology": "Technologia",
+    "financialServices": "Usługi finansowe",
+    "healthcare": "Ochrona zdrowia",
+    "consumerCyclical": "Dobra cykliczne",
+    "industrials": "Przemysł",
+    "energy": "Energetyka",
+    "communicationServices": "Usługi komunikacyjne",
+    "consumerDefensive": "Dobra defensywne",
+    "utilities": "Użyteczność publiczna",
+    "realEstate": "Nieruchomości",
+    "basicMaterials": "Surowce podstawowe"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Centrum podglądu StockAI Pro. Użyj przeglądarki spółek, aby pobierać dane z API.",
+    "companiesTitle": "Spółki",
+    "companiesDesc": "Wyszukiwarka i siatka sektorów z logo.",
+    "signalsTitle": "Sygnały",
+    "signalsDesc": "Wkrótce - screener i oceny AI.",
+    "portfolioTitle": "Portfel",
+    "portfolioDesc": "Wkrótce - watchlisty i alerty."
+  },
+  "dividendsPage": {
+    "title": "Screening dywidend (MVP)",
+    "subtitle": "Historia dywidend (mock seed), screener wzrostu i kalkulator podatku 19% (szacunek). Dane:",
+    "historyTitle": "Historia dywidend",
+    "symbol": "Symbol",
+    "yearsBack": "Lata wstecz",
+    "fetch": "Pobierz",
+    "exDate": "Dzień ex-date",
+    "payDate": "Dzień wypłaty",
+    "amount": "Kwota",
+    "yield": "Yield %",
+    "emptyHistory": "Brak wpisów - uruchom seed lub zmień filtry.",
+    "screenerTitle": "Screener: wzrost dywidend (CAGR)",
+    "minYears": "Min. lat historii",
+    "minYield": "Min. yield %",
+    "refresh": "Odśwież"
+  },
+  "company": {
+    "loading": "Ładowanie spółki...",
+    "backHome": "<- Powrót",
+    "backCompanies": "<- Spółki",
+    "sector": "Sektor",
+    "industry": "Branża",
+    "website": "Strona WWW",
+    "chartTitle": "Cena zamknięcia - ostatnia historia",
+    "recentNews": "Najnowsze wiadomości",
+    "noNews": "Brak wiadomości w bazie danych."
+  },
+  "dividendIntelligence": {
+    "title": "Analiza Dywidend",
+    "subtitle": "Wskaźnik bezpieczeństwa, trend, sektor i ostatnie alerty. Wpisz ticker - dane odświeżają się z opóźnieniem:",
+    "symbol": "Symbol",
+    "sectorPercentile": "Percentyl sektorowy",
+    "vsPeers": "(na tle spółek z sektora)"
   }
 }
