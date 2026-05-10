@@ -171,6 +171,44 @@ export interface ReplayEvaluateResponse {
   actualOutcome: number;
 }
 
+export type StrategyDnaLegend = "BUFFETT" | "LYNCH" | "GREENBLATT" | "SOROS";
+
+export interface StrategyDnaMatch {
+  name: StrategyDnaLegend;
+  pct: number;
+}
+
+export interface StrategyDnaStats {
+  avgHoldingDays: number;
+  winRate: number;
+  avgWinPct: number;
+  avgLossPct: number;
+  preferredSectors: string[];
+  riskTolerance: number;
+}
+
+export interface StrategyDnaResponse {
+  primary: StrategyDnaMatch;
+  secondary: StrategyDnaMatch;
+  insight: string;
+  stats: StrategyDnaStats;
+  hasEnoughData: boolean;
+}
+
+export interface TrackRecordGenerateResponse {
+  publicHash: string;
+  shareUrl: string;
+}
+
+export interface TrackRecordPublicResponse {
+  winRate: number;
+  totalTrades: number;
+  avgReturn: number;
+  bestTradePct: number;
+  worstTradePct: number;
+  generatedAt: string;
+}
+
 export type CrowdWisdomSignal = "CONTRARIAN_BUY" | "CONTRARIAN_SELL" | "NEUTRAL";
 
 export interface CrowdWisdomResponse {
@@ -275,6 +313,25 @@ export async function evaluateReplayDecision(
   body: ReplayEvaluateBody,
 ): Promise<ReplayEvaluateResponse> {
   const { data } = await api.post<ReplayEvaluateResponse>("/replay/evaluate", body);
+  return data;
+}
+
+export async function getStrategyDna(userId: string): Promise<StrategyDnaResponse> {
+  const { data } = await api.get<StrategyDnaResponse>(`/strategydna/${encodeURIComponent(userId)}`);
+  return data;
+}
+
+export async function generateTrackRecord(userId: string): Promise<TrackRecordGenerateResponse> {
+  const { data } = await api.post<TrackRecordGenerateResponse>(
+    `/trackrecord/generate/${encodeURIComponent(userId)}`,
+  );
+  return data;
+}
+
+export async function getPublicTrackRecord(hash: string): Promise<TrackRecordPublicResponse> {
+  const { data } = await api.get<TrackRecordPublicResponse>(
+    `/trackrecord/public/${encodeURIComponent(hash)}`,
+  );
   return data;
 }
 
