@@ -14,6 +14,7 @@ import { PositionSizePage } from "./pages/PositionSizePage";
 import { PreMortemPage } from "./pages/PreMortemPage";
 import { ReplayModePage } from "./pages/ReplayModePage";
 import { StrategyDnaPage } from "./pages/StrategyDnaPage";
+import { TrackRecordPage } from "./pages/TrackRecordPage";
 import { CrowdWisdomPage } from "./pages/CrowdWisdomPage";
 import { SignalsPage } from "./pages/SignalsPage";
 import { StressTestPage } from "./pages/StressTestPage";
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/premortem" element={<PreMortemPage />} />
           <Route path="/replay" element={<ReplayModePage />} />
           <Route path="/strategy-dna" element={<StrategyDnaPage />} />
+          <Route path="/track-record" element={<TrackRecordPage />} />
           <Route path="/crowd-wisdom" element={<CrowdWisdomPage />} />
           <Route path="/tax-optimizer" element={<TaxOptimizerPage />} />
           <Route path="/stress-test" element={<StressTestPage />} />

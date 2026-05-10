@@ -359,6 +359,21 @@ model PaperTrade {
   @@map("paper_trades")
 }
 
+model TrackRecord {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  publicHash    String   @unique @map("public_hash")
+  winRate       Float    @map("win_rate")
+  totalTrades   Int      @map("total_trades")
+  avgReturn     Float    @map("avg_return")
+  bestTradePct  Float    @map("best_trade_pct")
+  worstTradePct Float    @map("worst_trade_pct")
+  generatedAt   DateTime @default(now()) @map("generated_at")
+
+  @@index([userId, generatedAt])
+  @@map("track_records")
+}
+
 model BehavioralSnapshot {
   id                  String   @id @default(cuid())
   userId              String   @map("user_id")
