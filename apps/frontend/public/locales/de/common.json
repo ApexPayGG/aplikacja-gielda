@@ -184,10 +184,10 @@
     },
     "copilot": {
       "title": "Decyzja AI Copilot",
-      "conviction": "Przekonanie",
-      "invalidation": "Unieważnienie",
+      "conviction": "Conviction",
+      "invalidation": "Invalidation",
       "invalidationBody": "Wyjdź, jeśli ruch sięgnie {{pct}}% od wejścia albo zmieni się reżim.",
-      "checkpoint": "Punkt kontrolny",
+      "checkpoint": "Checkpoint",
       "checkpointBody": "Oceń ponownie po zamknięciu sesji i przy świeżym wolumenie.",
       "enter": "Wchodzę"
     }
