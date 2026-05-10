@@ -626,6 +626,7 @@ export function SignalsPage() {
     async function loadMentorGuidance(): Promise<void> {
       setMentorLoading(true);
       setMentorError(null);
+      if (!selectedSignal) return;
       try {
         const { data } = await api.post<MentorGuidance>("/mentor/guidance", {
           ticker: selectedSignal.ticker,
