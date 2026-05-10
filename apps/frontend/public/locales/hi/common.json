@@ -2,7 +2,7 @@
   "nav": {
     "home": "होम",
     "dashboard": "डैशबोर्ड",
-    "signals": "सिग्नल्स",
+    "signals": "बाज़ार",
     "dividend": "डिविडेंड",
     "dividendIntelligence": "डिविडेंड इंटेलिजेंस",
     "paperTrading": "पेपर ट्रेडिंग",
@@ -40,7 +40,10 @@
     "sell": "बेचें",
     "apiMockBadge": "Mock fallback active",
     "apiLiveBadge": "Live API",
-    "notAvailable": "n/a"
+    "notAvailable": "n/a",
+    "high": "उच्च",
+    "medium": "मध्यम",
+    "low": "निम्न"
   },
   "money": {
     "gpwCaption": "राशि PLN में (GPW नोशनल); साथ का USD संकेतक है (≈ 3.95 PLN प्रति USD, लाइव दर नहीं)।"
@@ -57,10 +60,10 @@
     "avgReturn": "औसत रिटर्न",
     "confidence": "विश्वास",
     "regime": {
-      "title": "Silnik Reżimu Rynkowego",
-      "mode": "Tryb",
-      "executionStyle": "Styl egzekucji",
-      "riskCap": "Limit ryzyka / trade"
+      "title": "लाइव मार्केट रिजीम इंजन",
+      "mode": "मोड",
+      "executionStyle": "एग्जीक्यूशन स्टाइल",
+      "riskCap": "रिस्क कैप / ट्रेड"
     },
     "entry": "Entry",
     "stopLoss": "Stop Loss",
@@ -76,11 +79,11 @@
     "unknownSetup": "अज्ञात सेटअप",
     "autonomousWatchlist": "Autonomous watchlist",
     "liveEngine": {
-      "label": "Silnik na żywo",
-      "polling": "Tryb polling",
-      "sseUnavailable": "Aktualizacje co 15s",
-      "lastUpdate": "Ostatnia: {{time}}",
-      "lastUpdateEmpty": "Ostatnia: --:--:--"
+      "label": "लाइव इंजन",
+      "polling": "पोलिंग मोड",
+      "sseUnavailable": "हर 15s अपडेट",
+      "lastUpdate": "अंतिम: {{time}}",
+      "lastUpdateEmpty": "अंतिम: --:--:--"
     },
     "liveWaiting": "Waiting for stream…",
     "liveStreamUpdate": "Live stream update received",
@@ -175,21 +178,21 @@
     "narrativeBodyFallback": "API ने कथा का मुख्य भाग नहीं लौटाया।",
     "narrativeRiskNoteFallback": "API ने जोखिम नोट नहीं लौटाया।",
     "narrativeConfidence": {
-      "HIGH": "Wysoki",
-      "MEDIUM": "Średni",
-      "LOW": "Niski"
+      "HIGH": "उच्च",
+      "MEDIUM": "मध्यम",
+      "LOW": "निम्न"
     },
     "mentor": {
-      "notFound": "Analysis unavailable"
+      "notFound": "विश्लेषण उपलब्ध नहीं"
     },
     "copilot": {
-      "title": "Decyzja AI Copilot",
+      "title": "AI Copilot निर्णय",
       "conviction": "Conviction",
       "invalidation": "Invalidation",
-      "invalidationBody": "Wyjdź, jeśli ruch sięgnie {{pct}}% od wejścia albo zmieni się reżim.",
+      "invalidationBody": "यदि कीमत एंट्री से {{pct}}% तक जाती है या रिजीम बदल जाता है तो बाहर निकलें।",
       "checkpoint": "Checkpoint",
-      "checkpointBody": "Oceń ponownie po zamknięciu sesji i przy świeżym wolumenie.",
-      "enter": "Wchodzę"
+      "checkpointBody": "सत्र बंद होने और नए वॉल्यूम प्रिंट के बाद फिर से मूल्यांकन करें।",
+      "enter": "एंटर करें"
     }
   },
   "reactions": {
@@ -506,10 +509,10 @@
     "errorSymbol": "कृपया टिकर दर्ज करें।"
   },
   "trackrecord": {
-    "title": "Anonimowy Track Record",
+    "title": "Anonymous Track Record",
     "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Wygeneruj mój Track Record",
-    "cardTitle": "Twój publiczny Track Record",
+    "generateButton": "Generate my Track Record",
+    "cardTitle": "Your public Track Record",
     "winRate": "Win rate",
     "totalTrades": "Total trades",
     "avgReturn": "Average return",
@@ -609,7 +612,7 @@
     "myFollowing": "मेरे फॉलो",
     "loadError": "मिरर डेटा लोड नहीं हो सका।",
     "actionError": "क्रिया विफल। फिर कोशिश करें।",
-    "settingsTitle": "Włącz Mirror Trading",
+    "settingsTitle": "Enable Mirror Trading",
     "settingsSubtitle": "दूसरों को आपका पेपर ट्रेडिंग प्रोफ़ाइल फॉलो करने दें। राजस्व हिस्सा भविष्य के बिलिंग के लिए (0–50%)।",
     "toggleLabel": "मिरर फॉलोअर स्वीकार करें",
     "revenueShare": "राजस्व हिस्सा",
@@ -655,53 +658,53 @@
     "skills": {
       "BASICS": {
         "name": "Basics",
-        "description": "Rozumiesz akcje i giełdę",
+        "description": "You understand how stocks and exchanges work.",
         "condition": "Always unlocked"
       },
       "SUPPORT_RESISTANCE": {
         "name": "Support & Resistance",
-        "description": "Rozumiesz support i resistance",
+        "description": "You understand support and resistance.",
         "condition": "At least 5 closed paper trades"
       },
       "RSI": {
         "name": "RSI",
-        "description": "Rozumiesz RSI",
+        "description": "You understand RSI.",
         "condition": "At least 5 closed paper trades"
       },
       "MACD": {
         "name": "MACD",
-        "description": "Rozumiesz MACD",
+        "description": "You understand MACD.",
         "condition": "At least 5 closed paper trades"
       },
       "FIBONACCI": {
         "name": "Fibonacci",
-        "description": "Rozumiesz poziomy Fibonacciego",
+        "description": "You understand Fibonacci levels.",
         "condition": "At least 10 closed paper trades"
       },
       "VOLUME": {
         "name": "Volume",
-        "description": "Rozumiesz wolumen",
+        "description": "You understand volume.",
         "condition": "At least 10 closed paper trades"
       },
       "RISK_MANAGEMENT": {
         "name": "Risk management",
-        "description": "Stosujesz position sizing",
-        "condition": "Position Size Calculator: min. 3 użycia"
+        "description": "You apply position sizing.",
+        "condition": "Position Size Calculator: at least 3 uses"
       },
       "BEHAVIORAL": {
         "name": "Behavioral",
-        "description": "Kontrolujesz emocje w tradingu",
+        "description": "You keep emotions in check while trading.",
         "condition": "At least 1 entry in Mistake Library"
       },
       "DIVERSIFICATION": {
         "name": "Diversification",
-        "description": "Rozumiesz dywersyfikację",
+        "description": "You understand diversification.",
         "condition": "At least 3 unique symbols in paper trades"
       },
       "STRATEGY": {
         "name": "Strategy",
-        "description": "Masz spójną strategię",
-        "condition": "Min. 20 transakcji i win rate > 40%"
+        "description": "You follow a coherent strategy.",
+        "condition": "Min. 20 trades and win rate > 40%"
       }
     }
   },

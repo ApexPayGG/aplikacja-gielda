@@ -40,7 +40,10 @@
     "sell": "Sell",
     "apiMockBadge": "Mock fallback active",
     "apiLiveBadge": "Live API",
-    "notAvailable": "n/a"
+    "notAvailable": "n/a",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
   },
   "money": {
     "gpwCaption": "Amounts in PLN (GPW notionals); USD shown alongside is indicative (≈ 3.95 PLN per USD, not a live FX feed)."
@@ -572,7 +575,7 @@
     "myFollowing": "My following",
     "loadError": "Could not load mirror data.",
     "actionError": "Action failed. Try again.",
-    "settingsTitle": "Włącz Mirror Trading",
+    "settingsTitle": "Enable Mirror Trading",
     "settingsSubtitle": "Allow others to follow your paper trading profile. Revenue share is stored for future billing (0–50%).",
     "toggleLabel": "Accept mirror followers",
     "revenueShare": "Revenue share",
@@ -666,10 +669,10 @@
     "errorSymbol": "Enter a ticker symbol."
   },
   "trackrecord": {
-    "title": "Anonimowy Track Record",
+    "title": "Anonymous Track Record",
     "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Wygeneruj mój Track Record",
-    "cardTitle": "Twój publiczny Track Record",
+    "generateButton": "Generate my Track Record",
+    "cardTitle": "Your public Track Record",
     "winRate": "Win rate",
     "totalTrades": "Total trades",
     "avgReturn": "Average return",
@@ -761,53 +764,53 @@
     "skills": {
       "BASICS": {
         "name": "Basics",
-        "description": "Rozumiesz akcje i giełdę",
+        "description": "You understand how stocks and exchanges work.",
         "condition": "Always unlocked"
       },
       "SUPPORT_RESISTANCE": {
         "name": "Support & Resistance",
-        "description": "Rozumiesz support i resistance",
+        "description": "You understand support and resistance.",
         "condition": "At least 5 closed paper trades"
       },
       "RSI": {
         "name": "RSI",
-        "description": "Rozumiesz RSI",
+        "description": "You understand RSI.",
         "condition": "At least 5 closed paper trades"
       },
       "MACD": {
         "name": "MACD",
-        "description": "Rozumiesz MACD",
+        "description": "You understand MACD.",
         "condition": "At least 5 closed paper trades"
       },
       "FIBONACCI": {
         "name": "Fibonacci",
-        "description": "Rozumiesz poziomy Fibonacciego",
+        "description": "You understand Fibonacci levels.",
         "condition": "At least 10 closed paper trades"
       },
       "VOLUME": {
         "name": "Volume",
-        "description": "Rozumiesz wolumen",
+        "description": "You understand volume.",
         "condition": "At least 10 closed paper trades"
       },
       "RISK_MANAGEMENT": {
         "name": "Risk management",
-        "description": "Stosujesz position sizing",
-        "condition": "Position Size Calculator: min. 3 użycia"
+        "description": "You apply position sizing.",
+        "condition": "Position Size Calculator: at least 3 uses"
       },
       "BEHAVIORAL": {
         "name": "Behavioral",
-        "description": "Kontrolujesz emocje w tradingu",
+        "description": "You keep emotions in check while trading.",
         "condition": "At least 1 entry in Mistake Library"
       },
       "DIVERSIFICATION": {
         "name": "Diversification",
-        "description": "Rozumiesz dywersyfikację",
+        "description": "You understand diversification.",
         "condition": "At least 3 unique symbols in paper trades"
       },
       "STRATEGY": {
         "name": "Strategy",
-        "description": "Masz spójną strategię",
-        "condition": "Min. 20 transakcji i win rate > 40%"
+        "description": "You follow a coherent strategy.",
+        "condition": "Min. 20 trades and win rate > 40%"
       }
     }
   },

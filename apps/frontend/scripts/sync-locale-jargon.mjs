@@ -1,8 +1,10 @@
 /**
  * For each non-PL locale: fill missing i18n keys from en, then apply jargon policy:
- * - English labels shared with pl (Win rate, Signal DNA, Mirror Trading, …)
- * - regimeDetail / signalType / transport always from en (English UI copy)
- * - copilot badges, marketRegime badges from pl (matches en for PRIME / Risk-on, etc.)
+ * - Shared English / industry strings from en (never from pl — avoids Polish leaking into hi/de/…)
+ * - regimeDetail / signalType / transport / copilotAction / confidenceCue / marketRegime from en
+ * - Scalar paths below: English jargon from en (never pl). Paths that must stay
+ *   locale-specific (e.g. hi regime/liveEngine/copilot title & enter) are omitted so
+ *   translators are not overwritten on each run.
  *
  * Run from repo: node apps/frontend/scripts/sync-locale-jargon.mjs
  */
@@ -71,19 +73,14 @@ function pruneToEnShape(node, enNode) {
   }
 }
 
-const pl = JSON.parse(fs.readFileSync(path.join(localesDir, "pl", "common.json"), "utf8"));
-
-const plSubtrees = [
-  ["signals", "copilotAction"],
-  ["signals", "narrativeConfidence"],
-  ["signals", "confidenceCue"],
-  ["signals", "marketRegime"],
-];
-
 const enSubtrees = [
   ["signals", "regimeDetail"],
   ["signals", "signalType"],
   ["signals", "transport"],
+  ["signals", "copilotAction"],
+  ["signals", "confidenceCue"],
+  ["signals", "marketRegime"],
+  ["skilltree", "skills"],
 ];
 
 const scalarPaths = [
@@ -98,22 +95,9 @@ const scalarPaths = [
   ["signals", "dna"],
   ["signals", "entry"],
   ["signals", "aiBreif"],
-  ["signals", "copilot", "title"],
   ["signals", "copilot", "conviction"],
   ["signals", "copilot", "invalidation"],
-  ["signals", "copilot", "invalidationBody"],
   ["signals", "copilot", "checkpoint"],
-  ["signals", "copilot", "checkpointBody"],
-  ["signals", "copilot", "enter"],
-  ["signals", "regime", "title"],
-  ["signals", "regime", "mode"],
-  ["signals", "regime", "executionStyle"],
-  ["signals", "regime", "riskCap"],
-  ["signals", "liveEngine", "label"],
-  ["signals", "liveEngine", "polling"],
-  ["signals", "liveEngine", "sseUnavailable"],
-  ["signals", "liveEngine", "lastUpdate"],
-  ["signals", "liveEngine", "lastUpdateEmpty"],
   ["signals", "trackRecordTitle"],
   ["signals", "trackWinRate"],
   ["signals", "trackMaxDd"],
@@ -168,58 +152,27 @@ const scalarPaths = [
 
 const langs = ["de", "es", "fr", "hi", "ja", "ko", "zh-TW"];
 
+const enSource = JSON.parse(fs.readFileSync(path.join(localesDir, "en", "common.json"), "utf8"));
+
 for (const lng of langs) {
-  const en = JSON.parse(fs.readFileSync(path.join(localesDir, "en", "common.json"), "utf8"));
   const filePath = path.join(localesDir, lng, "common.json");
   const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
-  deepMergeMissing(data, en);
-  if (data.signals && en.signals) {
-    pruneToEnShape(data.signals, en.signals);
-  }
-
-  for (const sub of plSubtrees) {
-    const v = getPath(pl, sub);
-    if (v !== undefined) {
-      setPath(data, sub, JSON.parse(JSON.stringify(v)));
-    }
+  deepMergeMissing(data, enSource);
+  if (data.signals && enSource.signals) {
+    pruneToEnShape(data.signals, enSource.signals);
   }
 
   for (const sub of enSubtrees) {
-    const v = getPath(en, sub);
+    const v = getPath(enSource, sub);
     if (v !== undefined) {
       setPath(data, sub, JSON.parse(JSON.stringify(v)));
     }
   }
 
   for (const pk of scalarPaths) {
-    const v = getPath(pl, pk);
+    const v = getPath(enSource, pk);
     if (v !== undefined) {
       setPath(data, pk, v);
-    }
-  }
-
-  if (pl.volatility?.tooltip && data.volatility) {
-    data.volatility.tooltip = JSON.parse(JSON.stringify(pl.volatility.tooltip));
-  }
-
-  const sm = data.skilltree?.skills;
-  const pm = pl.skilltree?.skills;
-  if (sm && pm) {
-    if (pm.SUPPORT_RESISTANCE?.name) {
-      sm.SUPPORT_RESISTANCE ??= {};
-      sm.SUPPORT_RESISTANCE.name = pm.SUPPORT_RESISTANCE.name;
-    }
-    if (pm.RISK_MANAGEMENT?.name) {
-      sm.RISK_MANAGEMENT ??= {};
-      sm.RISK_MANAGEMENT.name = pm.RISK_MANAGEMENT.name;
-    }
-    if (pm.RISK_MANAGEMENT?.condition) {
-      sm.RISK_MANAGEMENT ??= {};
-      sm.RISK_MANAGEMENT.condition = pm.RISK_MANAGEMENT.condition;
-    }
-    if (pm.STRATEGY?.condition) {
-      sm.STRATEGY ??= {};
-      sm.STRATEGY.condition = pm.STRATEGY.condition;
     }
   }
 
