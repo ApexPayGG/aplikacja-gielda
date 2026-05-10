@@ -13,6 +13,7 @@ import { MistakeLibraryPage } from "./pages/MistakeLibraryPage";
 import { PaperTradingPage } from "./pages/PaperTradingPage";
 import { PositionSizePage } from "./pages/PositionSizePage";
 import { PreMortemPage } from "./pages/PreMortemPage";
+import { ReverseScreenerPage } from "./pages/ReverseScreenerPage";
 import { ReplayModePage } from "./pages/ReplayModePage";
 import { StrategyDnaPage } from "./pages/StrategyDnaPage";
 import { TrackRecordPage } from "./pages/TrackRecordPage";
@@ -21,12 +22,14 @@ import { GlossaryPage } from "./pages/GlossaryPage";
 import { DigestPage } from "./pages/DigestPage";
 import { SkillTreePage } from "./pages/SkillTreePage";
 import { EarningsPredictorPage } from "./pages/EarningsPredictorPage";
+import { InsiderMirrorPage } from "./pages/InsiderMirrorPage";
 import { NewsHalfLifePage } from "./pages/NewsHalfLifePage";
 import { SignalsPage } from "./pages/SignalsPage";
 import { StressTestPage } from "./pages/StressTestPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { TaxOptimizerPage } from "./pages/TaxOptimizerPage";
 import { VolatilityHeatMapPage } from "./pages/VolatilityHeatMapPage";
+import { WalkForwardPage } from "./pages/WalkForwardPage";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 
 export default function App() {
@@ -48,6 +51,7 @@ export default function App() {
           <Route path="/alpha" element={<AlphaCalendarPage />} />
           <Route path="/position-size" element={<PositionSizePage />} />
           <Route path="/premortem" element={<PreMortemPage />} />
+          <Route path="/reverse-screener" element={<ReverseScreenerPage />} />
           <Route path="/replay" element={<ReplayModePage />} />
           <Route path="/strategy-dna" element={<StrategyDnaPage />} />
           <Route path="/track-record" element={<TrackRecordPage />} />
@@ -56,8 +60,10 @@ export default function App() {
           <Route path="/digest" element={<DigestPage />} />
           <Route path="/skill-tree" element={<SkillTreePage />} />
           <Route path="/earnings-predictor" element={<EarningsPredictorPage />} />
+          <Route path="/insider-mirror" element={<InsiderMirrorPage />} />
           <Route path="/news-halflife" element={<NewsHalfLifePage />} />
           <Route path="/volatility" element={<VolatilityHeatMapPage />} />
+          <Route path="/backtest" element={<WalkForwardPage />} />
           <Route path="/tax-optimizer" element={<TaxOptimizerPage />} />
           <Route path="/stress-test" element={<StressTestPage />} />
           <Route path="/concentration" element={<ConcentrationPage />} />

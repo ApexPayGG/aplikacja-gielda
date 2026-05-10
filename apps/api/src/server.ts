@@ -59,6 +59,7 @@ import { createAlphaJournalRouter } from "./routes/alphaJournal";
 import { createAlphaCalendarRouter } from "./routes/alphaCalendar";
 import { createSignalMemoryRouter } from "./routes/signalMemory";
 import { createSignalDnaRouter } from "./routes/signalDna";
+import { createReverseScreenerRouter } from "./routes/reversescreener";
 import { createPositionSizeRouter } from "./routes/positionSize";
 import { createStressTestRouter } from "./routes/stressTest";
 import { createConcentrationRouter } from "./routes/concentration";
@@ -78,6 +79,7 @@ import { createSkillTreeRouter } from "./routes/skilltree";
 import { createNewsHalfLifeRouter } from "./routes/newshalflife";
 import { createVolatilityRouter } from "./routes/volatility";
 import { createEarningsRouter } from "./routes/earnings";
+import { createInsiderRouter } from "./routes/insider";
 import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 
 function sleep(ms: number): Promise<void> {
@@ -182,6 +184,7 @@ export function createApp(): express.Express {
   app.use(createAlphaCalendarRouter());
   app.use(createSignalMemoryRouter());
   app.use(createSignalDnaRouter());
+  app.use(createReverseScreenerRouter());
   app.use(createBehavioralRouter());
   app.use(createEmotionalRouter());
   app.use(createPreMortemRouter());
@@ -190,6 +193,7 @@ export function createApp(): express.Express {
   app.use(createTrackRecordRouter());
   app.use(createSkillTreeRouter());
   app.use(createEarningsRouter());
+  app.use(createInsiderRouter());
   app.use(createNewsHalfLifeRouter());
   app.use(createCrowdWisdomRouter());
   app.use(createGlossaryRouter());

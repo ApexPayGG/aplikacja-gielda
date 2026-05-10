@@ -77,7 +77,8 @@ function getFeatures(technicalData: unknown): { rsi: number; volumeRatio: number
   };
 }
 
-function calcSimilarity(
+/** RSI / volume / ATR proximity + same-ticker bump — reused by Reverse Screener (ATR should be comparable scale, e.g. ATR/close). */
+export function calcSignalDnaSimilarity(
   current: { rsi: number; volumeRatio: number; atr: number; ticker: string },
   historical: { rsi: number; volumeRatio: number; atr: number; ticker: string },
 ): number {
@@ -159,7 +160,7 @@ export function createSignalDnaService(customDeps?: Partial<SignalDnaDeps>) {
       if (!histSignal) continue;
       if (histSignal.pattern_type !== setupType) continue;
       const histFeatures = getFeatures(histSignal.technical_data);
-      const similarity = calcSimilarity(
+      const similarity = calcSignalDnaSimilarity(
         { ...currentFeatures, ticker: current.ticker },
         { ...histFeatures, ticker: histSignal.ticker },
       );

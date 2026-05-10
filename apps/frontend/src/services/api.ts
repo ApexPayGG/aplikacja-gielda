@@ -210,6 +210,29 @@ export interface StrategyDnaResponse {
   hasEnoughData: boolean;
 }
 
+export type ReverseScreenerTrend = "up" | "down" | "flat";
+
+export interface ReverseScreenerCurrentSetup {
+  rsi: number;
+  volume: number;
+  priceChange: number;
+  trend: ReverseScreenerTrend;
+}
+
+export interface ReverseScreenerMatch {
+  symbol: string;
+  date: string;
+  similarity: number;
+  outcome5d: number;
+  outcome10d: number;
+}
+
+export interface ReverseScreenerFindResponse {
+  currentSetup: ReverseScreenerCurrentSetup;
+  matches: ReverseScreenerMatch[];
+  avgOutcome: number;
+}
+
 export type EarningsPredictionLabel = "BEAT" | "MISS" | "IN_LINE";
 
 export interface EarningsPredictionResponse {
@@ -293,6 +316,25 @@ export interface CrowdWisdomResponse {
   divergence: number;
   insight: string;
   signal: CrowdWisdomSignal;
+}
+
+export type InsiderAction = "BUY" | "SELL";
+
+export type InsiderSentiment = "BUY" | "SELL" | "NEUTRAL";
+
+export interface InsiderTransaction {
+  name: string;
+  role: string;
+  action: InsiderAction;
+  value: number;
+  date: string;
+}
+
+export interface InsiderMirrorResponse {
+  symbol: string;
+  transactions: InsiderTransaction[];
+  netSentiment: InsiderSentiment;
+  insight: string;
 }
 
 export interface GlossaryExplainResponse {
@@ -426,6 +468,14 @@ export async function getStrategyDna(userId: string): Promise<StrategyDnaRespons
   return data;
 }
 
+export async function findReverseScreenerSetups(body: {
+  symbol: string;
+  date?: string;
+}): Promise<ReverseScreenerFindResponse> {
+  const { data } = await api.post<ReverseScreenerFindResponse>("/reversescreener/find", body);
+  return data;
+}
+
 export async function getEarningsPrediction(symbol: string): Promise<EarningsPredictionResponse> {
   const { data } = await api.get<EarningsPredictionResponse>(
     `/earnings/predict/${encodeURIComponent(symbol)}`,
@@ -482,6 +532,11 @@ export async function sendDailyDigest(userId: string, lang: string): Promise<Dai
 
 export async function getCrowdWisdom(symbol: string): Promise<CrowdWisdomResponse> {
   const { data } = await api.get<CrowdWisdomResponse>(`/crowdwisdom/${encodeURIComponent(symbol)}`);
+  return data;
+}
+
+export async function getInsiderMirror(symbol: string): Promise<InsiderMirrorResponse> {
+  const { data } = await api.get<InsiderMirrorResponse>(`/insider/${encodeURIComponent(symbol)}`);
   return data;
 }
 
@@ -622,3 +677,26 @@ export const getDividendAlerts = (symbol: string, limit: number = 20) =>
 export const getSectorComparison = () =>
   api.get<SectorComparison>("/intelligence/dividend/comparison/sector");
 
+export type WalkForwardStrategy = "RSI_OVERSOLD" | "BREAKOUT" | "VOLUME_SPIKE";
+
+export interface WalkForwardBacktestResponse {
+  symbol: string;
+  strategy: WalkForwardStrategy;
+  months: number;
+  winRate: number;
+  avgReturn: number;
+  totalTrades: number;
+  maxDrawdown: number;
+  sharpeRatio: number;
+  equity: Array<{ date: string; value: number }>;
+  trades: Array<{ date: string; action: string; price: number; outcome: number }>;
+}
+
+export async function runWalkForwardBacktestApi(body: {
+  symbol: string;
+  strategy: WalkForwardStrategy;
+  months: number;
+}): Promise<WalkForwardBacktestResponse> {
+  const { data } = await api.post<WalkForwardBacktestResponse>("/backtest/run", body);
+  return data;
+}
