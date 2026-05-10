@@ -6,6 +6,7 @@
     "dividend": "Dywidenda",
     "dividendIntelligence": "Analiza Dywidend",
     "paperTrading": "Wirtualny Portfel",
+    "mirrorTrading": "Mirror Trading",
     "coach": "Coach",
     "mistakeLibrary": "Biblioteka b��d�w",
     "alphaCalendar": "Kalendarz Alpha",
@@ -57,6 +58,15 @@
     "headline": "Nagłówek",
     "riskNote": "Notatka o Ryzyku",
     "preMortemFromSetup": "Pre-Mortem (z tego setupu)"
+  },
+  "reactions": {
+    "title": "Komentarze",
+    "postComment": "Opublikuj komentarz",
+    "placeholder": "Notatka (max 500 znaków)…",
+    "charCount": "{{used}} / {{max}}",
+    "empty": "Brak komentarzy.",
+    "loading": "Ładowanie komentarzy…",
+    "posting": "Publikowanie…"
   },
   "dividend": {
     "title": "Radar Dywidend",
@@ -366,6 +376,28 @@
     "styleLabel": "Styl mentora",
     "styleSupportive": "Wspierający",
     "styleStrict": "Surowy"
+  },
+  "mirror": {
+    "title": "Mirror Trading",
+    "subtitle": "Śledź traderów, którzy włączyli udostępnianie mirror. Statystyki z zamkniętych transakcji paper.",
+    "topTraders": "Top traderzy",
+    "winRate": "Skuteczność",
+    "totalTrades": "Liczba transakcji",
+    "followers": "Obserwujący",
+    "follow": "Obserwuj",
+    "unfollow": "Przestań obserwować",
+    "myFollowing": "Moi obserwowani",
+    "loadError": "Nie udało się wczytać danych mirror.",
+    "actionError": "Operacja nie powiodła się. Spróbuj ponownie.",
+    "settingsTitle": "Włącz Mirror Trading",
+    "settingsSubtitle": "Pozwól innym śledzić Twój profil paper trading. Udział w przychodzie zapisujemy na przyszłe rozliczenia (0–50%).",
+    "toggleLabel": "Akceptuj obserwujących mirror",
+    "revenueShare": "Udział w przychodzie",
+    "revenueShareHint": "0–50%",
+    "saving": "Zapisywanie…",
+    "saved": "Zapisano",
+    "noTopTraders": "Nikt jeszcze nie włączył mirror trading.",
+    "itsYou": "To Ty"
   },
   "discord": {
     "title": "Discord Auto-Sync",

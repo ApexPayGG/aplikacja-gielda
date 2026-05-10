@@ -6,6 +6,7 @@ import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatQuoteAge } from "../utils/formatQuoteAge";
 import { GlossaryTooltip } from "../components/GlossaryTooltip";
+import { ReactionSection } from "../components/ReactionSection";
 
 type MarketCode = "US" | "PL" | "DE" | "JP";
 type SignalKind = "CRITICAL" | "STANDARD" | "RESEARCH";
@@ -81,6 +82,8 @@ const marketFlags: Record<MarketCode, string> = {
 };
 
 const GLOSSARY_TERMS = ["RSI", "MACD", "VWAP", "breakout", "oversold"] as const;
+
+const USER_ID = "demo-user";
 
 const mockSignals: SignalListItem[] = [
   {
@@ -1031,6 +1034,10 @@ export function SignalsPage() {
                   {detailError}
                 </div>
               )}
+
+              <div className="mt-8 border-t border-slate-800 pt-6">
+                <ReactionSection variant="signal" signalId={selectedSignal.id} userId={USER_ID} />
+              </div>
             </>
           )}
         </section>

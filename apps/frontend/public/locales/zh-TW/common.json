@@ -6,6 +6,7 @@
     "dividend": "股息",
     "dividendIntelligence": "股息智慧",
     "paperTrading": "模擬交易",
+    "mirrorTrading": "鏡像交易",
     "coach": "教練",
     "alphaCalendar": "Alpha 行事曆",
     "positionSize": "計算機",
@@ -62,6 +63,15 @@
     "headline": "標題",
     "riskNote": "風險提示",
     "preMortemFromSetup": "Pre-Mortem (from this setup)"
+  },
+  "reactions": {
+    "title": "留言",
+    "postComment": "發表留言",
+    "placeholder": "撰寫備註（最多 500 字）…",
+    "charCount": "{{used}} / {{max}}",
+    "empty": "尚無留言。",
+    "loading": "載入留言中…",
+    "posting": "發表中…"
   },
   "dividend": {
     "title": "股息雷達",
@@ -440,6 +450,28 @@
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
     "styleStrict": "Strict"
+  },
+  "mirror": {
+    "title": "鏡像交易",
+    "subtitle": "跟隨已開啟鏡像分享的交易者。數據來自已平倉的模擬交易。",
+    "topTraders": "頂尖交易者",
+    "winRate": "勝率",
+    "totalTrades": "總交易數",
+    "followers": "跟隨者",
+    "follow": "跟隨",
+    "unfollow": "取消跟隨",
+    "myFollowing": "我的跟隨",
+    "loadError": "無法載入鏡像資料。",
+    "actionError": "操作失敗，請再試一次。",
+    "settingsTitle": "啟用鏡像交易",
+    "settingsSubtitle": "允許他人跟隨您的模擬交易檔案。收益分成供未來結算用（0–50%）。",
+    "toggleLabel": "接受鏡像跟隨者",
+    "revenueShare": "收益分成",
+    "revenueShareHint": "0–50%",
+    "saving": "儲存中…",
+    "saved": "已儲存",
+    "noTopTraders": "尚無人啟用鏡像交易。",
+    "itsYou": "您"
   },
   "discord": {
     "title": "Discord Auto-Sync",

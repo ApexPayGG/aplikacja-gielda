@@ -64,6 +64,7 @@ import { createPositionSizeRouter } from "./routes/positionSize";
 import { createStressTestRouter } from "./routes/stressTest";
 import { createConcentrationRouter } from "./routes/concentration";
 import { createCorrelationRouter } from "./routes/correlation";
+import { createReactionsRouter } from "./routes/reactions";
 import { createTaxRouter } from "./routes/tax";
 import { createBehavioralRouter } from "./routes/behavioral";
 import { createPreMortemRouter } from "./routes/premortem";
@@ -71,6 +72,7 @@ import { createEmotionalRouter } from "./routes/emotional";
 import { createReplayRouter } from "./routes/replay";
 import { createStrategyDnaRouter } from "./routes/strategydna";
 import { createTrackRecordRouter } from "./routes/trackrecord";
+import { createMirrorRouter } from "./routes/mirror";
 import { createCrowdWisdomRouter } from "./routes/crowdwisdom";
 import { createGlossaryRouter } from "./routes/glossary";
 import { createDigestRouter } from "./routes/digest";
@@ -80,6 +82,7 @@ import { createNewsHalfLifeRouter } from "./routes/newshalflife";
 import { createVolatilityRouter } from "./routes/volatility";
 import { createEarningsRouter } from "./routes/earnings";
 import { createInsiderRouter } from "./routes/insider";
+import { createDividendCalcRouter } from "./routes/dividendcalc";
 import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 
 function sleep(ms: number): Promise<void> {
@@ -191,6 +194,7 @@ export function createApp(): express.Express {
   app.use(createReplayRouter());
   app.use(createStrategyDnaRouter());
   app.use(createTrackRecordRouter());
+  app.use(createMirrorRouter());
   app.use(createSkillTreeRouter());
   app.use(createEarningsRouter());
   app.use(createInsiderRouter());
@@ -200,10 +204,12 @@ export function createApp(): express.Express {
   app.use(createDigestRouter());
   app.use(createDiscordSyncRouter());
   app.use(createVolatilityRouter());
+  app.use(createDividendCalcRouter());
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));
   app.use("/api/concentration", createConcentrationRouter(prisma));
   app.use(createCorrelationRouter());
+  app.use(createReactionsRouter());
   app.use("/api/tax", createTaxRouter(prisma));
 
   app.get("/health", (_req: Request, res: Response) => {

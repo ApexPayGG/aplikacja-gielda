@@ -285,6 +285,8 @@ model Signal {
   expires_at     DateTime
   user_triggered Boolean  @default(false)
 
+  tradeReactions TradeReaction[]
+
   @@index([ticker, created_at])
   @@index([exchange, created_at])
   @@index([expires_at])
@@ -364,9 +366,27 @@ model PaperTrade {
   signalId     String?             @map("signal_id")
   marketRegime String?             @map("market_regime")
 
+  tradeReactions TradeReaction[]
+
   @@index([userId, status, entryAt])
   @@index([userId, exitAt])
   @@map("paper_trades")
+}
+
+model TradeReaction {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  tradeId   String?  @map("trade_id")
+  signalId  String?  @map("signal_id")
+  content   String   @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  paperTrade PaperTrade? @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  signal     Signal?     @relation(fields: [signalId], references: [id], onDelete: Cascade)
+
+  @@index([tradeId, createdAt])
+  @@index([signalId, createdAt])
+  @@map("trade_reactions")
 }
 
 model TrackRecord {
@@ -482,4 +502,27 @@ model AlphaWindow {
   @@index([ticker, createdAt])
   @@index([type, probabilityScore])
   @@map("alpha_windows")
+}
+
+model MirrorPermission {
+  id           String @id @default(cuid())
+  traderId     String @unique @map("trader_id")
+  enabled      Boolean @default(false)
+  revenueShare Float   @default(0) @map("revenue_share")
+  followers    Int     @default(0)
+
+  @@map("mirror_permissions")
+}
+
+model MirrorFollower {
+  id         String   @id @default(cuid())
+  followerId String   @map("follower_id")
+  traderId   String   @map("trader_id")
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@unique([followerId, traderId])
+  @@index([followerId])
+  @@index([traderId])
+  @@map("mirror_followers")
 }

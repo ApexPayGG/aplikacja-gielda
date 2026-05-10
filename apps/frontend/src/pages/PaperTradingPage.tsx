@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { FeedbackToastStack, type FeedbackToast } from "../components/FeedbackToastStack";
@@ -12,6 +12,7 @@ import {
 } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatQuoteAge } from "../utils/formatQuoteAge";
+import { ReactionSection } from "../components/ReactionSection";
 
 type Direction = "LONG" | "SHORT";
 type ExitAction = "HOLD" | "TIGHTEN_SL" | "SCALE_OUT" | "EXIT_NOW";
@@ -775,7 +776,8 @@ export function PaperTradingPage() {
                   {positionRows.map((row) => {
                     const signal = exitSignals[row.id];
                     return (
-                      <tr key={row.id} className="border-b border-slate-900/80">
+                      <Fragment key={row.id}>
+                      <tr className="border-b border-slate-900/80">
                         <td className="px-2 py-2 font-semibold text-white">{row.ticker}</td>
                         <td className={`px-2 py-2 ${row.direction === "LONG" ? "text-brand-green" : "text-brand-red"}`}>{row.direction === "LONG" ? t("paperTrading.long") : t("paperTrading.short")}</td>
                         <td className="px-2 py-2 font-mono">{formatMoney(row.entryPrice)}</td>
@@ -815,6 +817,12 @@ export function PaperTradingPage() {
                           </button>
                         </td>
                       </tr>
+                      <tr className="border-b border-slate-900/60 bg-slate-950/30">
+                        <td colSpan={10} className="px-2 py-2">
+                          <ReactionSection variant="trade" tradeId={row.id} userId={USER_ID} />
+                        </td>
+                      </tr>
+                      </Fragment>
                     );
                   })}
                 </tbody>
@@ -892,7 +900,8 @@ export function PaperTradingPage() {
                     const pnl = Number(row.pnl ?? 0);
                     const pnlPct = Number(row.pnlPct ?? 0);
                     return (
-                      <tr key={row.id} className="border-b border-slate-900/80">
+                      <Fragment key={row.id}>
+                      <tr className="border-b border-slate-900/80">
                         <td className="px-2 py-2 font-semibold text-white">{row.ticker}</td>
                         <td className={`px-2 py-2 ${row.direction === "LONG" ? "text-brand-green" : "text-brand-red"}`}>{row.direction === "LONG" ? t("paperTrading.long") : t("paperTrading.short")}</td>
                         <td className="px-2 py-2 font-mono">{formatMoney(row.entryPrice)}</td>
@@ -905,6 +914,12 @@ export function PaperTradingPage() {
                         </td>
                         <td className="px-2 py-2 text-xs text-slate-300">{durationText(row.entryAt, row.exitAt)}</td>
                       </tr>
+                      <tr className="border-b border-slate-900/60 bg-slate-950/30">
+                        <td colSpan={7} className="px-2 py-2">
+                          <ReactionSection variant="trade" tradeId={row.id} userId={USER_ID} />
+                        </td>
+                      </tr>
+                      </Fragment>
                     );
                   })}
                 </tbody>

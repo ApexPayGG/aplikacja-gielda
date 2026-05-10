@@ -6,6 +6,7 @@
     "dividend": "Dividende",
     "dividendIntelligence": "Dividenden-Intelligenz",
     "paperTrading": "Paper Trading",
+    "mirrorTrading": "Mirror Trading",
     "coach": "Coach",
     "mistakeLibrary": "Fehlerbibliothek",
     "alphaCalendar": "Alpha-Kalender",
@@ -62,6 +63,15 @@
     "headline": "Überschrift",
     "riskNote": "Risiko-Hinweis",
     "preMortemFromSetup": "Pre-Mortem (from this setup)"
+  },
+  "reactions": {
+    "title": "Kommentare",
+    "postComment": "Kommentar posten",
+    "placeholder": "Notiz (max. 500 Zeichen)…",
+    "charCount": "{{used}} / {{max}}",
+    "empty": "Noch keine Kommentare.",
+    "loading": "Kommentare werden geladen…",
+    "posting": "Wird gepostet…"
   },
   "dividend": {
     "title": "Dividenden-Radar",
@@ -440,6 +450,28 @@
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
     "styleStrict": "Strict"
+  },
+  "mirror": {
+    "title": "Mirror Trading",
+    "subtitle": "Folgen Sie Tradern mit aktivem Mirror-Sharing. Kennzahlen aus geschlossenen Paper-Trades.",
+    "topTraders": "Top-Trader",
+    "winRate": "Trefferquote",
+    "totalTrades": "Trades gesamt",
+    "followers": "Follower",
+    "follow": "Folgen",
+    "unfollow": "Entfolgen",
+    "myFollowing": "Meine Abos",
+    "loadError": "Mirror-Daten konnten nicht geladen werden.",
+    "actionError": "Aktion fehlgeschlagen. Bitte erneut versuchen.",
+    "settingsTitle": "Mirror Trading aktivieren",
+    "settingsSubtitle": "Erlauben Sie anderen, Ihr Paper-Trading-Profil zu folgen. Revenue-Share für künftige Abrechnung (0–50%).",
+    "toggleLabel": "Mirror-Follower akzeptieren",
+    "revenueShare": "Revenue Share",
+    "revenueShareHint": "0–50%",
+    "saving": "Speichern…",
+    "saved": "Gespeichert",
+    "noTopTraders": "Noch hat niemand Mirror Trading aktiviert.",
+    "itsYou": "Sie"
   },
   "discord": {
     "title": "Discord Auto-Sync",

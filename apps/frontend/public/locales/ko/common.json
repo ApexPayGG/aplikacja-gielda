@@ -6,6 +6,7 @@
     "dividend": "배당",
     "dividendIntelligence": "배당 인텔리전스",
     "paperTrading": "페이퍼 트레이딩",
+    "mirrorTrading": "미러 트레이딩",
     "coach": "코치",
     "alphaCalendar": "알파 캘린더",
     "positionSize": "계산기",
@@ -62,6 +63,15 @@
     "headline": "헤드라인",
     "riskNote": "리스크 노트",
     "preMortemFromSetup": "Pre-Mortem (from this setup)"
+  },
+  "reactions": {
+    "title": "댓글",
+    "postComment": "댓글 게시",
+    "placeholder": "메모 입력(최대 500자)…",
+    "charCount": "{{used}} / {{max}}",
+    "empty": "아직 댓글이 없습니다.",
+    "loading": "댓글 불러오는 중…",
+    "posting": "게시 중…"
   },
   "dividend": {
     "title": "배당 레이더",
@@ -440,6 +450,28 @@
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
     "styleStrict": "Strict"
+  },
+  "mirror": {
+    "title": "미러 트레이딩",
+    "subtitle": "미러 공유를 켠 트레이더를 팔로우하세요. 지표는 종료된 페이퍼 트레이드 기준입니다.",
+    "topTraders": "상위 트레이더",
+    "winRate": "승률",
+    "totalTrades": "총 거래 수",
+    "followers": "팔로워",
+    "follow": "팔로우",
+    "unfollow": "언팔로우",
+    "myFollowing": "내 팔로잉",
+    "loadError": "미러 데이터를 불러오지 못했습니다.",
+    "actionError": "작업에 실패했습니다. 다시 시도하세요.",
+    "settingsTitle": "미러 트레이딩 사용",
+    "settingsSubtitle": "다른 사람이 내 페이퍼 트레이딩 프로필을 팔로우하도록 허용합니다. 수익 배분은 향후 정산용(0–50%).",
+    "toggleLabel": "미러 팔로워 허용",
+    "revenueShare": "수익 배분",
+    "revenueShareHint": "0–50%",
+    "saving": "저장 중…",
+    "saved": "저장됨",
+    "noTopTraders": "아직 미러 트레이딩을 켠 트레이더가 없습니다.",
+    "itsYou": "나"
   },
   "discord": {
     "title": "Discord Auto-Sync",

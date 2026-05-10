@@ -482,6 +482,43 @@ export async function getDecisionReceipts(userId: string, take?: number): Promis
   return data;
 }
 
+export type TradeReactionItem = {
+  id: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+};
+
+export async function getTradeReactions(tradeId: string): Promise<TradeReactionItem[]> {
+  const { data } = await api.get<{ reactions: TradeReactionItem[] }>(
+    `/reactions/trade/${encodeURIComponent(tradeId)}`,
+  );
+  return Array.isArray(data.reactions) ? data.reactions : [];
+}
+
+export async function getSignalReactions(signalId: string): Promise<TradeReactionItem[]> {
+  const { data } = await api.get<{ reactions: TradeReactionItem[] }>(
+    `/reactions/signal/${encodeURIComponent(signalId)}`,
+  );
+  return Array.isArray(data.reactions) ? data.reactions : [];
+}
+
+export async function postTradeReaction(body: {
+  userId: string;
+  tradeId: string;
+  content: string;
+}): Promise<void> {
+  await api.post("/reactions/trade", body);
+}
+
+export async function postSignalReaction(body: {
+  userId: string;
+  signalId: string;
+  content: string;
+}): Promise<void> {
+  await api.post("/reactions/signal", body);
+}
+
 export async function getReplaySnapshot(
   symbol: string,
   date: string,
@@ -734,5 +771,34 @@ export async function runWalkForwardBacktestApi(body: {
   months: number;
 }): Promise<WalkForwardBacktestResponse> {
   const { data } = await api.post<WalkForwardBacktestResponse>("/backtest/run", body);
+  return data;
+}
+
+export interface DividendCompoundChartPoint {
+  year: number;
+  value: number;
+}
+
+export interface DividendCompoundSeries {
+  final: number;
+  chart: DividendCompoundChartPoint[];
+}
+
+export interface DividendCompoundResponse {
+  withReinvesting: DividendCompoundSeries;
+  withoutReinvesting: DividendCompoundSeries;
+  difference: number;
+}
+
+export async function calculateDividendCompound(body: {
+  initialAmount: number;
+  monthlyContribution: number;
+  dividendYield: number;
+  years: number;
+}): Promise<DividendCompoundResponse> {
+  const { data } = await api.post<DividendCompoundResponse>(
+    "/dividend/compound/calculate",
+    body,
+  );
   return data;
 }

@@ -6,6 +6,7 @@
     "dividend": "Dividende",
     "dividendIntelligence": "Intelligence Dividende",
     "paperTrading": "Paper Trading",
+    "mirrorTrading": "Mirror Trading",
     "coach": "Coach",
     "mistakeLibrary": "Bibliotheque d'erreurs",
     "alphaCalendar": "Calendrier Alpha",
@@ -62,6 +63,15 @@
     "headline": "Titre",
     "riskNote": "Note de Risque",
     "preMortemFromSetup": "Pre-Mortem (from this setup)"
+  },
+  "reactions": {
+    "title": "Commentaires",
+    "postComment": "Publier le commentaire",
+    "placeholder": "Note (500 caractères max)…",
+    "charCount": "{{used}} / {{max}}",
+    "empty": "Pas encore de commentaires.",
+    "loading": "Chargement des commentaires…",
+    "posting": "Publication…"
   },
   "dividend": {
     "title": "Radar Dividende",
@@ -440,6 +450,28 @@
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
     "styleStrict": "Strict"
+  },
+  "mirror": {
+    "title": "Mirror Trading",
+    "subtitle": "Suivez les traders ayant activé le mirror. Statistiques sur les trades paper clôturés.",
+    "topTraders": "Top traders",
+    "winRate": "Taux de réussite",
+    "totalTrades": "Nombre de trades",
+    "followers": "Abonnés",
+    "follow": "Suivre",
+    "unfollow": "Ne plus suivre",
+    "myFollowing": "Mes suivis",
+    "loadError": "Impossible de charger les données mirror.",
+    "actionError": "Action échouée. Réessayez.",
+    "settingsTitle": "Activer le Mirror Trading",
+    "settingsSubtitle": "Permettez à d’autres de suivre votre profil paper trading. Partage de revenus pour facturation future (0–50%).",
+    "toggleLabel": "Accepter les abonnés mirror",
+    "revenueShare": "Partage des revenus",
+    "revenueShareHint": "0–50%",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré",
+    "noTopTraders": "Personne n’a encore activé le mirror trading.",
+    "itsYou": "Vous"
   },
   "discord": {
     "title": "Discord Auto-Sync",

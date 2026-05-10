@@ -63,6 +63,15 @@
     "riskNote": "रिस्क नोट",
     "preMortemFromSetup": "Pre-Mortem (from this setup)"
   },
+  "reactions": {
+    "title": "टिप्पणियाँ",
+    "postComment": "टिप्पणी पोस्ट करें",
+    "placeholder": "नोट लिखें (अधिकतम 500 अक्षर)…",
+    "charCount": "{{used}} / {{max}}",
+    "empty": "अभी कोई टिप्पणी नहीं।",
+    "loading": "टिप्पणियाँ लोड हो रही हैं…",
+    "posting": "पोस्ट हो रहा है…"
+  },
   "dividend": {
     "title": "डिविडेंड रडार",
     "yield": "डिविडेंड यील्ड",
@@ -440,6 +449,28 @@
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
     "styleStrict": "Strict"
+  },
+  "mirror": {
+    "title": "मिरर ट्रेडिंग",
+    "subtitle": "जिन ट्रेडर्स ने मिरर शेयरिंग चालू की है, उन्हें फॉलो करें। आँकड़े बंद पेपर ट्रेड्स से।",
+    "topTraders": "शीर्ष ट्रेडर",
+    "winRate": "जीत दर",
+    "totalTrades": "कुल ट्रेड",
+    "followers": "फॉलोअर",
+    "follow": "फॉलो",
+    "unfollow": "अनफॉलो",
+    "myFollowing": "मेरे फॉलो",
+    "loadError": "मिरर डेटा लोड नहीं हो सका।",
+    "actionError": "क्रिया विफल। फिर कोशिश करें।",
+    "settingsTitle": "मिरर ट्रेडिंग चालू करें",
+    "settingsSubtitle": "दूसरों को आपका पेपर ट्रेडिंग प्रोफ़ाइल फॉलो करने दें। राजस्व हिस्सा भविष्य के बिलिंग के लिए (0–50%)।",
+    "toggleLabel": "मिरर फॉलोअर स्वीकार करें",
+    "revenueShare": "राजस्व हिस्सा",
+    "revenueShareHint": "0–50%",
+    "saving": "सेव हो रहा है…",
+    "saved": "सेव हो गया",
+    "noTopTraders": "अभी किसी ने मिरर ट्रेडिंग चालू नहीं की।",
+    "itsYou": "आप"
   },
   "discord": {
     "title": "Discord Auto-Sync",

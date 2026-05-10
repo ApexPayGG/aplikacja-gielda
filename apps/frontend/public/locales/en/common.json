@@ -6,6 +6,7 @@
     "dividend": "Dividend",
     "dividendIntelligence": "Dividend Intelligence",
     "paperTrading": "Paper Trading",
+    "mirrorTrading": "Mirror Trading",
     "coach": "Coach",
     "mistakeLibrary": "Mistake Library",
     "alphaCalendar": "Alpha Calendar",
@@ -57,6 +58,15 @@
     "headline": "Headline",
     "riskNote": "Risk Note",
     "preMortemFromSetup": "Pre-Mortem (from this setup)"
+  },
+  "reactions": {
+    "title": "Comments",
+    "postComment": "Post comment",
+    "placeholder": "Write a note (max 500 characters)…",
+    "charCount": "{{used}} / {{max}}",
+    "empty": "No comments yet.",
+    "loading": "Loading comments…",
+    "posting": "Posting…"
   },
   "dividend": {
     "title": "Dividend Radar",
@@ -376,6 +386,28 @@
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
     "styleStrict": "Strict"
+  },
+  "mirror": {
+    "title": "Mirror Trading",
+    "subtitle": "Follow traders who enabled mirror sharing. Stats come from closed paper trades.",
+    "topTraders": "Top traders",
+    "winRate": "Win rate",
+    "totalTrades": "Total trades",
+    "followers": "Followers",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "myFollowing": "My following",
+    "loadError": "Could not load mirror data.",
+    "actionError": "Action failed. Try again.",
+    "settingsTitle": "Enable Mirror Trading",
+    "settingsSubtitle": "Allow others to follow your paper trading profile. Revenue share is stored for future billing (0–50%).",
+    "toggleLabel": "Accept mirror followers",
+    "revenueShare": "Revenue share",
+    "revenueShareHint": "0–50%",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "noTopTraders": "No traders have enabled mirror trading yet.",
+    "itsYou": "You"
   },
   "discord": {
     "title": "Discord Auto-Sync",

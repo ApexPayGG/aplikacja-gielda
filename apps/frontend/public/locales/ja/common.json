@@ -6,6 +6,7 @@
     "dividend": "配当",
     "dividendIntelligence": "配当インテリジェンス",
     "paperTrading": "ペーパートレード",
+    "mirrorTrading": "ミラートレード",
     "coach": "コーチ",
     "alphaCalendar": "アルファカレンダー",
     "positionSize": "計算機",
@@ -62,6 +63,15 @@
     "headline": "見出し",
     "riskNote": "リスクメモ",
     "preMortemFromSetup": "Pre-Mortem (from this setup)"
+  },
+  "reactions": {
+    "title": "コメント",
+    "postComment": "コメントを投稿",
+    "placeholder": "メモを入力（最大500文字）…",
+    "charCount": "{{used}} / {{max}}",
+    "empty": "コメントはまだありません。",
+    "loading": "読み込み中…",
+    "posting": "投稿中…"
   },
   "dividend": {
     "title": "配当レーダー",
@@ -440,6 +450,28 @@
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
     "styleStrict": "Strict"
+  },
+  "mirror": {
+    "title": "ミラートレード",
+    "subtitle": "ミラー共有を有効にしたトレーダーをフォロー。統計は決済済みペーパートレード由来です。",
+    "topTraders": "トップトレーダー",
+    "winRate": "勝率",
+    "totalTrades": "総トレード数",
+    "followers": "フォロワー",
+    "follow": "フォロー",
+    "unfollow": "フォロー解除",
+    "myFollowing": "フォロー中",
+    "loadError": "ミラーデータを読み込めませんでした。",
+    "actionError": "操作に失敗しました。再試行してください。",
+    "settingsTitle": "ミラートレードを有効化",
+    "settingsSubtitle": "他ユーザーにペーパートレードプロフィールのフォローを許可。収益シェアは将来の課金用に保存（0〜50%）。",
+    "toggleLabel": "ミラーフォロワーを受け入れる",
+    "revenueShare": "収益シェア",
+    "revenueShareHint": "0〜50%",
+    "saving": "保存中…",
+    "saved": "保存しました",
+    "noTopTraders": "ミラートレードを有効にしたトレーダーはまだいません。",
+    "itsYou": "あなた"
   },
   "discord": {
     "title": "Discord Auto-Sync",
