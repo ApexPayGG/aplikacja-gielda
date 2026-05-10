@@ -67,6 +67,7 @@ import { createCorrelationRouter } from "./routes/correlation";
 import { createReactionsRouter } from "./routes/reactions";
 import { createTaxRouter } from "./routes/tax";
 import { createBehavioralRouter } from "./routes/behavioral";
+import { createPsycheRouter } from "./routes/psyche";
 import { createPreMortemRouter } from "./routes/premortem";
 import { createEmotionalRouter } from "./routes/emotional";
 import { createReplayRouter } from "./routes/replay";
@@ -189,6 +190,7 @@ export function createApp(): express.Express {
   app.use(createSignalDnaRouter());
   app.use(createReverseScreenerRouter());
   app.use(createBehavioralRouter());
+  app.use(createPsycheRouter());
   app.use(createEmotionalRouter());
   app.use(createPreMortemRouter());
   app.use(createReplayRouter());

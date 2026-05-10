@@ -526,3 +526,56 @@ model MirrorFollower {
   @@index([traderId])
   @@map("mirror_followers")
 }
+
+model TraderProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique @map("user_id")
+  topBiases      String[] @default([]) @map("top_biases")
+  tradingStyle   String?  @map("trading_style")
+  goodConditions String?  @map("good_conditions")
+  badConditions  String?  @map("bad_conditions")
+  growthScore    Int      @default(0) @map("growth_score")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("trader_profiles")
+}
+
+model DecisionLog {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  tradeId        String?  @map("trade_id")
+  symbol         String
+  action         String
+  mood           String?
+  reasoning      String?
+  planCompliance Boolean? @map("plan_compliance")
+  outcome        Float?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("decision_logs")
+}
+
+model TradingRule {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  rule      String
+  active    Boolean  @default(true)
+  breaches  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId, active])
+  @@map("trading_rules")
+}
+
+model RuleBreach {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  ruleId    String   @map("rule_id")
+  context   String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt])
+  @@index([ruleId])
+  @@map("rule_breaches")
+}

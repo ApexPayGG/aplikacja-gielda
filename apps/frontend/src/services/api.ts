@@ -177,6 +177,44 @@ export interface DecisionReceiptsResponse {
   receipts: DecisionReceipt[];
 }
 
+export interface TraderProfile {
+  id: string;
+  userId: string;
+  topBiases: string[];
+  tradingStyle: string | null;
+  goodConditions: string | null;
+  badConditions: string | null;
+  growthScore: number;
+  updatedAt: string;
+}
+
+export interface PsycheProfileResponse {
+  profile: TraderProfile | null;
+  hasProfile: boolean;
+}
+
+export interface PsycheDecisionLog {
+  id: string;
+  userId: string;
+  tradeId: string | null;
+  symbol: string;
+  action: string;
+  mood: string | null;
+  reasoning: string | null;
+  planCompliance: boolean | null;
+  outcome: number | null;
+  createdAt: string;
+}
+
+export interface PsycheTradingRule {
+  id: string;
+  userId: string;
+  rule: string;
+  active: boolean;
+  breaches: number;
+  createdAt: string;
+}
+
 export type ReplayAction = "BUY" | "SELL";
 
 export interface ReplaySnapshotResponse {
@@ -477,6 +515,56 @@ export async function postDecisionReceipt(body: {
 
 export async function getDecisionReceipts(userId: string, take?: number): Promise<DecisionReceiptsResponse> {
   const { data } = await api.get<DecisionReceiptsResponse>(`/paper/decision-receipts/${encodeURIComponent(userId)}`, {
+    params: take != null ? { take } : undefined,
+  });
+  return data;
+}
+
+export async function getPsycheProfile(userId: string): Promise<PsycheProfileResponse> {
+  const { data } = await api.get<PsycheProfileResponse>(`/psyche/profile/${encodeURIComponent(userId)}`);
+  return data;
+}
+
+export async function refreshPsycheProfile(userId: string): Promise<{ profile: TraderProfile }> {
+  const { data } = await api.post<{ profile: TraderProfile }>(`/psyche/profile/${encodeURIComponent(userId)}/refresh`);
+  return data;
+}
+
+export async function getPsycheRules(userId: string): Promise<{ rules: PsycheTradingRule[] }> {
+  const { data } = await api.get<{ rules: PsycheTradingRule[] }>(`/psyche/rules/${encodeURIComponent(userId)}`);
+  return data;
+}
+
+export async function createPsycheRule(userId: string, rule: string): Promise<{ rule: PsycheTradingRule }> {
+  const { data } = await api.post<{ rule: PsycheTradingRule }>(`/psyche/rules/${encodeURIComponent(userId)}`, {
+    rule,
+  });
+  return data;
+}
+
+export async function deletePsycheRule(ruleId: string, userId: string): Promise<{ deleted: boolean }> {
+  const { data } = await api.delete<{ deleted: boolean }>(`/psyche/rules/${encodeURIComponent(ruleId)}`, {
+    params: { userId },
+  });
+  return data;
+}
+
+export async function createPsycheDecisionLog(body: {
+  userId: string;
+  symbol: string;
+  action: string;
+  mood?: string | null;
+  reasoning?: string | null;
+  tradeId?: string | null;
+  planCompliance?: boolean | null;
+  outcome?: number | null;
+}): Promise<{ log: PsycheDecisionLog }> {
+  const { data } = await api.post<{ log: PsycheDecisionLog }>("/psyche/decision-log", body);
+  return data;
+}
+
+export async function getPsycheDecisionLogs(userId: string, take?: number): Promise<{ logs: PsycheDecisionLog[] }> {
+  const { data } = await api.get<{ logs: PsycheDecisionLog[] }>(`/psyche/decision-log/${encodeURIComponent(userId)}`, {
     params: take != null ? { take } : undefined,
   });
   return data;

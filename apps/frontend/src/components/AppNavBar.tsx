@@ -18,6 +18,7 @@ const portfolioLinks: { to: string; labelKey: string }[] = [
   { to: "/mirror-trading", labelKey: "nav.mirrorTrading" },
   { to: "/coach", labelKey: "nav.coach" },
   { to: "/mistake-library", labelKey: "nav.mistakeLibrary" },
+  { to: "/psyche-profile", labelKey: "nav.psycheProfile" },
   { to: "/stress-test", labelKey: "nav.stressTest" },
   { to: "/concentration", labelKey: "nav.concentration" },
 ];
@@ -44,6 +45,7 @@ function isPortfolioPath(pathname: string): boolean {
     pathname.startsWith("/mirror-trading") ||
     pathname.startsWith("/coach") ||
     pathname.startsWith("/mistake-library") ||
+    pathname.startsWith("/psyche-profile") ||
     pathname.startsWith("/stress-test") ||
     pathname.startsWith("/concentration")
   );

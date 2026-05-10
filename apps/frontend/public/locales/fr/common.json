@@ -23,7 +23,8 @@
     "crowdWisdom": "Crowd Wisdom",
     "glossary": "Glossary",
     "skillTree": "Skill Tree",
-    "volatility": "Volatility Heat Map"
+    "volatility": "Volatility Heat Map",
+    "psycheProfile": "My Psyche"
   },
   "common": {
     "search": "Rechercher",
@@ -633,5 +634,32 @@
     "chartTitle": "Valeur du portefeuille année par année",
     "axisYear": "Année",
     "tooltipYear": "Année {{year}}"
+  },
+  "psyche": {
+    "title": "Trader Psyche",
+    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
+    "refresh": "Refresh my profile",
+    "dnaTitle": "Trader DNA",
+    "growthScore": "Growth score",
+    "tradingStyle": "Trading style",
+    "topBiases": "Top biases",
+    "goodConditions": "Good conditions",
+    "badConditions": "Bad conditions",
+    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
+    "rulesTitle": "My trading rules",
+    "rulePlaceholder": "Add a rule",
+    "addRule": "Add rule",
+    "breaches": "Breaches",
+    "deleteRule": "Delete",
+    "decisionLogTitle": "Decision log (last 10)",
+    "colDate": "Date",
+    "colSymbol": "Symbol",
+    "colAction": "Action",
+    "colMood": "Mood",
+    "colCompliance": "Plan compliance",
+    "complianceYes": "Yes",
+    "complianceNo": "No",
+    "complianceUnknown": "—",
+    "emptyLogs": "No entries yet."
   }
 }

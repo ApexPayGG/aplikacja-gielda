@@ -23,7 +23,8 @@
     "crowdWisdom": "Mądrość Tłumu",
     "glossary": "Słownik",
     "skillTree": "Drzewko Umiejętności",
-    "volatility": "Mapa Zmienności"
+    "volatility": "Mapa Zmienności",
+    "psycheProfile": "Moja psychika"
   },
   "common": {
     "search": "Szukaj",
@@ -702,5 +703,32 @@
     "chartTitle": "Wartość portfela rok po roku",
     "axisYear": "Rok",
     "tooltipYear": "Rok {{year}}"
+  },
+  "psyche": {
+    "title": "Profil psychiki tradera",
+    "subtitle": "Twój behawioralny punkt odniesienia: DNA, reguły i dziennik decyzji.",
+    "refresh": "Odśwież mój profil",
+    "dnaTitle": "DNA tradera",
+    "growthScore": "Wskaźnik rozwoju",
+    "tradingStyle": "Styl tradingu",
+    "topBiases": "Top biasy",
+    "goodConditions": "Dobre warunki",
+    "badConditions": "Złe warunki",
+    "noProfile": "Brak profilu AI. Kliknij „Odśwież mój profil”, aby wygenerować go z ostatniej aktywności.",
+    "rulesTitle": "Moje zasady tradingu",
+    "rulePlaceholder": "Dodaj regułę",
+    "addRule": "Dodaj",
+    "breaches": "Naruszenia",
+    "deleteRule": "Usuń",
+    "decisionLogTitle": "Dziennik decyzji (ostatnie 10)",
+    "colDate": "Data",
+    "colSymbol": "Symbol",
+    "colAction": "Akcja",
+    "colMood": "Nastrój",
+    "colCompliance": "Zgodność z planem",
+    "complianceYes": "Tak",
+    "complianceNo": "Nie",
+    "complianceUnknown": "—",
+    "emptyLogs": "Brak wpisów."
   }
 }

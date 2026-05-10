@@ -11,6 +11,7 @@ import { DividendIntelligencePage } from "./pages/DividendIntelligencePage";
 import { Dividends } from "./pages/Dividends";
 import { Home } from "./pages/Home";
 import { MistakeLibraryPage } from "./pages/MistakeLibraryPage";
+import { PsycheProfilePage } from "./pages/PsycheProfilePage";
 import { PaperTradingPage } from "./pages/PaperTradingPage";
 import { PositionSizePage } from "./pages/PositionSizePage";
 import { PreMortemPage } from "./pages/PreMortemPage";
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/mirror-trading" element={<MirrorTradingPage />} />
           <Route path="/coach" element={<BehavioralCoachPage />} />
           <Route path="/mistake-library" element={<MistakeLibraryPage />} />
+          <Route path="/psyche-profile" element={<PsycheProfilePage />} />
           <Route path="/alpha" element={<AlphaCalendarPage />} />
           <Route path="/position-size" element={<PositionSizePage />} />
           <Route path="/premortem" element={<PreMortemPage />} />
