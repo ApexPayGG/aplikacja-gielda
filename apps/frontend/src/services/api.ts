@@ -210,6 +210,16 @@ export interface StrategyDnaResponse {
   hasEnoughData: boolean;
 }
 
+export type EarningsPredictionLabel = "BEAT" | "MISS" | "IN_LINE";
+
+export interface EarningsPredictionResponse {
+  symbol: string;
+  prediction: EarningsPredictionLabel;
+  confidence: number;
+  reasoning: string;
+  nextEarningsDate: string | null;
+}
+
 export interface TrackRecordGenerateResponse {
   publicHash: string;
   shareUrl: string;
@@ -413,6 +423,13 @@ export async function evaluateReplayDecision(
 
 export async function getStrategyDna(userId: string): Promise<StrategyDnaResponse> {
   const { data } = await api.get<StrategyDnaResponse>(`/strategydna/${encodeURIComponent(userId)}`);
+  return data;
+}
+
+export async function getEarningsPrediction(symbol: string): Promise<EarningsPredictionResponse> {
+  const { data } = await api.get<EarningsPredictionResponse>(
+    `/earnings/predict/${encodeURIComponent(symbol)}`,
+  );
   return data;
 }
 

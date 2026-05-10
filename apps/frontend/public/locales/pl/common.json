@@ -341,15 +341,12 @@
     "signalNeutral": "Neutralny"
   },
   "glossary": {
-    "title": "Słownik finansowy",
-    "subtitle": "Kliknij termin, aby zobaczyć proste wyjaśnienie dla inwestora detalicznego.",
+    "title": "Translate Financial English",
+    "subtitle": "Kliknij termin rynkowy, aby zobaczyć krótkie wyjaśnienie i praktyczny przykład.",
     "popularTerms": "Popularne terminy",
-    "explanation": "Wyjaśnienie",
-    "termLabel": "Termin",
-    "explanationLabel": "Wyjaśnienie",
+    "loading": "Ładowanie wyjaśnienia...",
     "exampleLabel": "Przykład",
-    "emptyState": "Wybierz termin z listy, aby zobaczyć wyjaśnienie.",
-    "tooltipError": "Nie udało się pobrać wyjaśnienia."
+    "selectPrompt": "Wybierz termin z listy, aby pobrać wyjaśnienie."
   },
   "mentor": {
     "toggleLabel": "Tryb Mentora",
@@ -440,13 +437,17 @@
       "SOROS": "Soros"
     }
   },
-  "glossary": {
-    "title": "Translate Financial English",
-    "subtitle": "Kliknij termin rynkowy, aby zobaczyć krótkie wyjaśnienie i praktyczny przykład.",
-    "popularTerms": "Popularne terminy",
-    "loading": "Ładowanie wyjaśnienia...",
-    "exampleLabel": "Przykład",
-    "selectPrompt": "Wybierz termin z listy, aby pobrać wyjaśnienie."
+  "earnings": {
+    "title": "Predyktor Niespodzianki Wynikowej",
+    "subtitle": "Oceń prawdopodobieństwo BEAT, MISS lub IN_LINE przed kolejnym raportem.",
+    "symbolPlaceholder": "Wpisz symbol (np. AAPL)",
+    "predictButton": "Przewiduj",
+    "validationSymbol": "Podaj poprawny symbol.",
+    "resultFor": "Predykcja dla",
+    "confidence": "Pewność",
+    "reasoning": "Uzasadnienie AI",
+    "nextDate": "Data kolejnych wyników",
+    "noDate": "Brak dostępnej daty"
   },
   "emotional": {
     "widgetTitle": "Stan emocjonalny",
@@ -520,38 +521,38 @@
     }
   },
   "volatility": {
-    "title": "Mapa Zmienności",
-    "subtitle": "Porównaj miesięczną zmienność w kolejnych latach dla wybranego symbolu.",
-    "searchPlaceholder": "Wpisz symbol (np. AAPL)",
-    "searchAction": "Pokaż mapę",
+    "title": "Volatility Heat Map",
+    "subtitle": "Compare monthly volatility across years for a selected symbol.",
+    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
+    "searchAction": "Load heat map",
     "symbol": "Symbol",
-    "year": "Rok",
-    "mostVolatileMonth": "Najbardziej zmienny miesiąc",
-    "leastVolatileMonth": "Najmniej zmienny miesiąc",
-    "noData": "Brak danych",
-    "legendTitle": "Legenda",
-    "legendLow": "Niska zmienność",
-    "legendHigh": "Wysoka zmienność",
+    "year": "Year",
+    "mostVolatileMonth": "Most volatile month",
+    "leastVolatileMonth": "Least volatile month",
+    "noData": "No data",
+    "legendTitle": "Legend",
+    "legendLow": "Low volatility",
+    "legendHigh": "High volatility",
     "months": {
-      "jan": "Sty",
-      "feb": "Lut",
+      "jan": "Jan",
+      "feb": "Feb",
       "mar": "Mar",
-      "apr": "Kwi",
-      "may": "Maj",
-      "jun": "Cze",
-      "jul": "Lip",
-      "aug": "Sie",
-      "sep": "Wrz",
-      "oct": "Paź",
-      "nov": "Lis",
-      "dec": "Gru"
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
     },
     "tooltip": {
-      "volatility": "Zmienność",
-      "avgReturn": "Śr. stopa zwrotu"
+      "volatility": "Volatility",
+      "avgReturn": "Avg return"
     },
     "errors": {
-      "symbolRequired": "Podaj symbol."
+      "symbolRequired": "Please enter a symbol."
     }
   },
   "newshalflife": {

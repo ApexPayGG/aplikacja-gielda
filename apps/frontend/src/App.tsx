@@ -20,6 +20,7 @@ import { CrowdWisdomPage } from "./pages/CrowdWisdomPage";
 import { GlossaryPage } from "./pages/GlossaryPage";
 import { DigestPage } from "./pages/DigestPage";
 import { SkillTreePage } from "./pages/SkillTreePage";
+import { EarningsPredictorPage } from "./pages/EarningsPredictorPage";
 import { NewsHalfLifePage } from "./pages/NewsHalfLifePage";
 import { SignalsPage } from "./pages/SignalsPage";
 import { StressTestPage } from "./pages/StressTestPage";
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="/glossary" element={<GlossaryPage />} />
           <Route path="/digest" element={<DigestPage />} />
           <Route path="/skill-tree" element={<SkillTreePage />} />
+          <Route path="/earnings-predictor" element={<EarningsPredictorPage />} />
           <Route path="/news-halflife" element={<NewsHalfLifePage />} />
           <Route path="/volatility" element={<VolatilityHeatMapPage />} />
           <Route path="/tax-optimizer" element={<TaxOptimizerPage />} />

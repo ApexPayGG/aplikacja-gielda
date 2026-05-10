@@ -341,15 +341,12 @@
     "signalNeutral": "Neutral"
   },
   "glossary": {
-    "title": "Financial Glossary",
-    "subtitle": "Click a term to get a simple explanation for retail investors.",
+    "title": "Translate Financial English",
+    "subtitle": "Click a market term to get a short explanation and practical example.",
     "popularTerms": "Popular terms",
-    "explanation": "Explanation",
-    "termLabel": "Term",
-    "explanationLabel": "Explanation",
+    "loading": "Loading explanation...",
     "exampleLabel": "Example",
-    "emptyState": "Select a term from the list to see an explanation.",
-    "tooltipError": "Could not load explanation."
+    "selectPrompt": "Select a term from the list to load its explanation."
   },
   "mentor": {
     "toggleLabel": "Mentor Mode",
@@ -440,13 +437,17 @@
       "SOROS": "Soros"
     }
   },
-  "glossary": {
-    "title": "Translate Financial English",
-    "subtitle": "Click a market term to get a short explanation and practical example.",
-    "popularTerms": "Popular terms",
-    "loading": "Loading explanation...",
-    "exampleLabel": "Example",
-    "selectPrompt": "Select a term from the list to load its explanation."
+  "earnings": {
+    "title": "Earnings Surprise Predictor",
+    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "predictButton": "Predict",
+    "validationSymbol": "Please provide a valid symbol.",
+    "resultFor": "Prediction for",
+    "confidence": "Confidence",
+    "reasoning": "AI reasoning",
+    "nextDate": "Next earnings date",
+    "noDate": "Date unavailable"
   },
   "emotional": {
     "widgetTitle": "Emotional state",

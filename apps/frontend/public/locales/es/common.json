@@ -272,15 +272,12 @@
     "signalNeutral": "Neutral"
   },
   "glossary": {
-    "title": "Financial Glossary",
-    "subtitle": "Click a term to get a simple explanation for retail investors.",
+    "title": "Translate Financial English",
+    "subtitle": "Click a market term to get a short explanation and practical example.",
     "popularTerms": "Popular terms",
-    "explanation": "Explanation",
-    "termLabel": "Term",
-    "explanationLabel": "Explanation",
+    "loading": "Loading explanation...",
     "exampleLabel": "Example",
-    "emptyState": "Select a term from the list to see an explanation.",
-    "tooltipError": "Could not load explanation."
+    "selectPrompt": "Select a term from the list to load its explanation."
   },
   "replay": {
     "title": "Replay Mode",
@@ -340,13 +337,17 @@
       "SOROS": "Soros"
     }
   },
-  "glossary": {
-    "title": "Translate Financial English",
-    "subtitle": "Click a market term to get a short explanation and practical example.",
-    "popularTerms": "Popular terms",
-    "loading": "Loading explanation...",
-    "exampleLabel": "Example",
-    "selectPrompt": "Select a term from the list to load its explanation."
+  "earnings": {
+    "title": "Earnings Surprise Predictor",
+    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "predictButton": "Predict",
+    "validationSymbol": "Please provide a valid symbol.",
+    "resultFor": "Prediction for",
+    "confidence": "Confidence",
+    "reasoning": "AI reasoning",
+    "nextDate": "Next earnings date",
+    "noDate": "Date unavailable"
   },
   "mentor": {
     "toggleLabel": "Mentor Mode",
@@ -398,16 +399,56 @@
     "newlyUnlockedLabel": "Recently unlocked:",
     "unlockedAt": "Unlocked: {{date}}",
     "skills": {
-      "BASICS": { "name": "Basics", "description": "Rozumiesz akcje i giełdę", "condition": "Always unlocked" },
-      "SUPPORT_RESISTANCE": { "name": "Support & Resistance", "description": "Rozumiesz support i resistance", "condition": "At least 5 closed paper trades" },
-      "RSI": { "name": "RSI", "description": "Rozumiesz RSI", "condition": "At least 5 closed paper trades" },
-      "MACD": { "name": "MACD", "description": "Rozumiesz MACD", "condition": "At least 5 closed paper trades" },
-      "FIBONACCI": { "name": "Fibonacci", "description": "Rozumiesz poziomy Fibonacciego", "condition": "At least 10 closed paper trades" },
-      "VOLUME": { "name": "Volume", "description": "Rozumiesz wolumen", "condition": "At least 10 closed paper trades" },
-      "RISK_MANAGEMENT": { "name": "Risk Management", "description": "Stosujesz position sizing", "condition": "Use Position Size Calculator at least 3 times" },
-      "BEHAVIORAL": { "name": "Behavioral", "description": "Kontrolujesz emocje w tradingu", "condition": "At least 1 entry in Mistake Library" },
-      "DIVERSIFICATION": { "name": "Diversification", "description": "Rozumiesz dywersyfikację", "condition": "At least 3 unique symbols in paper trades" },
-      "STRATEGY": { "name": "Strategy", "description": "Masz spójną strategię", "condition": "At least 20 trades and win rate over 40%" }
+      "BASICS": {
+        "name": "Basics",
+        "description": "Rozumiesz akcje i giełdę",
+        "condition": "Always unlocked"
+      },
+      "SUPPORT_RESISTANCE": {
+        "name": "Support & Resistance",
+        "description": "Rozumiesz support i resistance",
+        "condition": "At least 5 closed paper trades"
+      },
+      "RSI": {
+        "name": "RSI",
+        "description": "Rozumiesz RSI",
+        "condition": "At least 5 closed paper trades"
+      },
+      "MACD": {
+        "name": "MACD",
+        "description": "Rozumiesz MACD",
+        "condition": "At least 5 closed paper trades"
+      },
+      "FIBONACCI": {
+        "name": "Fibonacci",
+        "description": "Rozumiesz poziomy Fibonacciego",
+        "condition": "At least 10 closed paper trades"
+      },
+      "VOLUME": {
+        "name": "Volume",
+        "description": "Rozumiesz wolumen",
+        "condition": "At least 10 closed paper trades"
+      },
+      "RISK_MANAGEMENT": {
+        "name": "Risk Management",
+        "description": "Stosujesz position sizing",
+        "condition": "Use Position Size Calculator at least 3 times"
+      },
+      "BEHAVIORAL": {
+        "name": "Behavioral",
+        "description": "Kontrolujesz emocje w tradingu",
+        "condition": "At least 1 entry in Mistake Library"
+      },
+      "DIVERSIFICATION": {
+        "name": "Diversification",
+        "description": "Rozumiesz dywersyfikację",
+        "condition": "At least 3 unique symbols in paper trades"
+      },
+      "STRATEGY": {
+        "name": "Strategy",
+        "description": "Masz spójną strategię",
+        "condition": "At least 20 trades and win rate over 40%"
+      }
     }
   },
   "volatility": {

@@ -77,6 +77,7 @@ import { createDiscordSyncRouter } from "./routes/discordSync";
 import { createSkillTreeRouter } from "./routes/skilltree";
 import { createNewsHalfLifeRouter } from "./routes/newshalflife";
 import { createVolatilityRouter } from "./routes/volatility";
+import { createEarningsRouter } from "./routes/earnings";
 import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 
 function sleep(ms: number): Promise<void> {
@@ -188,6 +189,7 @@ export function createApp(): express.Express {
   app.use(createStrategyDnaRouter());
   app.use(createTrackRecordRouter());
   app.use(createSkillTreeRouter());
+  app.use(createEarningsRouter());
   app.use(createNewsHalfLifeRouter());
   app.use(createCrowdWisdomRouter());
   app.use(createGlossaryRouter());
