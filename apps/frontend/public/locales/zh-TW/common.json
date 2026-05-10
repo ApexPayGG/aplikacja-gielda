@@ -6,9 +6,9 @@
     "dividend": "股息",
     "dividendIntelligence": "股息智慧",
     "paperTrading": "模擬交易",
-    "mirrorTrading": "鏡像交易",
+    "mirrorTrading": "Mirror Trading",
     "coach": "教練",
-    "alphaCalendar": "Alpha 行事曆",
+    "alphaCalendar": "Alpha Calendar",
     "positionSize": "計算機",
     "stressTest": "壓力測試",
     "concentration": "集中度",
@@ -37,7 +37,10 @@
     "close": "關閉",
     "open": "開啟",
     "buy": "買入",
-    "sell": "賣出"
+    "sell": "賣出",
+    "apiMockBadge": "Mock fallback active",
+    "apiLiveBadge": "Live API",
+    "notAvailable": "n/a"
   },
   "money": {
     "gpwCaption": "金額為 PLN（GPW 名目）；旁邊的 USD 為參考（約 3.95 PLN 兌 1 USD，非即時匯率）。"
@@ -50,20 +53,144 @@
   "signals": {
     "title": "訊號",
     "riskScore": "風險分數",
-    "winRate": "勝率",
+    "winRate": "Win rate",
     "avgReturn": "平均報酬",
     "confidence": "信心",
-    "regime": "市場狀態",
-    "entry": "進場",
-    "stopLoss": "停損",
-    "takeProfit": "停利",
-    "aiBreif": "AI 摘要",
-    "dna": "訊號 DNA",
+    "regime": {
+      "title": "Silnik Reżimu Rynkowego",
+      "mode": "Tryb",
+      "executionStyle": "Styl egzekucji",
+      "riskCap": "Limit ryzyka / trade"
+    },
+    "entry": "Entry",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "aiBreif": "AI Brief",
+    "dna": "Signal DNA",
     "similarity": "相似度",
     "narrative": "敘事",
     "headline": "標題",
     "riskNote": "風險提示",
-    "preMortemFromSetup": "Pre-Mortem (from this setup)"
+    "preMortemFromSetup": "Pre-Mortem (from this setup)",
+    "noSignalSelected": "No signal selected.",
+    "unknownSetup": "未知的標的型態",
+    "autonomousWatchlist": "Autonomous watchlist",
+    "liveEngine": {
+      "label": "Silnik na żywo",
+      "polling": "Tryb polling",
+      "sseUnavailable": "Aktualizacje co 15s",
+      "lastUpdate": "Ostatnia: {{time}}",
+      "lastUpdateEmpty": "Ostatnia: --:--:--"
+    },
+    "liveWaiting": "Waiting for stream…",
+    "liveStreamUpdate": "Live stream update received",
+    "livePollingUpdate": "Polling update received",
+    "liveConnectedSse": "Connected to live stream",
+    "confidenceLabel": "Confidence: {{level}}",
+    "confidenceCue": {
+      "PRIME": "PRIME",
+      "STRONG": "STRONG",
+      "WATCH": "WATCH"
+    },
+    "regimeDetail": {
+      "TRENDING": {
+        "mode": "Trend acceleration",
+        "style": "Breakout continuation",
+        "riskCap": "1.25R"
+      },
+      "RISK_ON": {
+        "mode": "Pro-risk expansion",
+        "style": "Momentum basket",
+        "riskCap": "1.00R"
+      },
+      "RISK_OFF": {
+        "mode": "Capital defense",
+        "style": "Mean reversion only",
+        "riskCap": "0.50R"
+      },
+      "RANGING": {
+        "mode": "Neutral grid",
+        "style": "Range edges + quick exits",
+        "riskCap": "0.75R"
+      }
+    },
+    "marketRegime": {
+      "TRENDING": "Trending",
+      "RANGING": "Ranging",
+      "RISK_ON": "Risk-on",
+      "RISK_OFF": "Risk-off"
+    },
+    "signalType": {
+      "CRITICAL": "Critical",
+      "STANDARD": "Standard",
+      "RESEARCH": "Research"
+    },
+    "transport": {
+      "SSE": "SSE",
+      "POLLING": "Polling",
+      "OFFLINE": "Offline"
+    },
+    "copilotAction": {
+      "ENTER": "Enter",
+      "WAIT": "Wait",
+      "REDUCE": "Reduce"
+    },
+    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
+    "dnaWhySimilar": "為何相似：",
+    "dnaCounterpoint": "反面觀點：",
+    "dnaExplain": {
+      "high": {
+        "why": "價格結構與波動率型態幾乎一致。",
+        "counter": "總經背景不同；避免部位過大。"
+      },
+      "mid": {
+        "why": "動能輪廓與量能壓縮符合歷史勝出樣本。",
+        "counter": "若缺乏量能延續，訊號可能快速轉弱。"
+      },
+      "low": {
+        "why": "信心較低下的部分型態重疊。",
+        "counter": "僅作輔助依據，勿視為主要觸發條件。"
+      }
+    },
+    "discordEmbedTitle": "Discord embed preview",
+    "discordRisk": "Risk {{score}}/100",
+    "trackRecordTitle": "Track Record",
+    "trackWinRate": "Win rate",
+    "trackAvgReturn": "Avg. return",
+    "trackMaxDd": "Max DD",
+    "trackTotalSignals": "Total signals",
+    "executionTitle": "Battle-tested execution simulator",
+    "executionEntry": "Entry",
+    "executionStop": "Stop",
+    "executionTarget": "Target",
+    "executionRr": "R:R",
+    "executionExpectedValue": "Expected value",
+    "executionWorstCase": "Worst case",
+    "mockNarrative": {
+      "headline": "{{ticker}} — 型態：{{setup}}",
+      "body": "{{ticker}} 的動能輪廓與 {{regime}} 一致。價量結構在遵守 invalidation 位階的前提下，暗示有延續空間且下行風險受控。",
+      "riskNote": "等待 K 線收盤確認，並維持嚴格的停損紀律。"
+    },
+    "narrativeHeadlineFallback": "訊號敘事：{{ticker}}",
+    "narrativeBodyFallback": "API 未回傳敘事內文。",
+    "narrativeRiskNoteFallback": "API 未回傳風險備註。",
+    "narrativeConfidence": {
+      "HIGH": "Wysoki",
+      "MEDIUM": "Średni",
+      "LOW": "Niski"
+    },
+    "mentor": {
+      "notFound": "Analysis unavailable"
+    },
+    "copilot": {
+      "title": "Decyzja AI Copilot",
+      "conviction": "Przekonanie",
+      "invalidation": "Unieważnienie",
+      "invalidationBody": "Wyjdź, jeśli ruch sięgnie {{pct}}% od wejścia albo zmieni się reżim.",
+      "checkpoint": "Punkt kontrolny",
+      "checkpointBody": "Oceń ponownie po zamknięciu sesji i przy świeżym wolumenie.",
+      "enter": "Wchodzę"
+    }
   },
   "reactions": {
     "title": "留言",
@@ -87,18 +214,18 @@
     "risky": "高風險"
   },
   "paperTrading": {
-    "title": "模擬交易",
+    "title": "Paper Trading",
     "openPosition": "開啟倉位",
     "closePosition": "關閉倉位",
     "portfolio": "投資組合",
     "history": "交易歷史",
-    "pnl": "損益",
+    "pnl": "P&L",
     "direction": "方向",
     "quantity": "數量",
     "entryPrice": "進場價",
     "exitPrice": "出場價",
-    "long": "做多",
-    "short": "做空"
+    "long": "Long",
+    "short": "Short"
   },
   "coach": {
     "title": "行為教練",
@@ -109,8 +236,16 @@
     "noBiases": "未偵測到偏誤",
     "cutsWinners": "過早了結獲利",
     "holdsLosers": "虧損持有過久",
-    "overtrading": "過度交易",
-    "aiCoach": "AI 教練建議"
+    "overtrading": "Overtrading",
+    "aiCoach": "AI 教練建議",
+    "avgHoldWin": "平均持有（獲利）",
+    "avgHoldLoss": "平均持有（虧損）",
+    "biasCutsBody": "您平均約 {{winHours}} 小時就平掉獲利部位，但虧損會抱約 {{lossHours}} 小時。",
+    "biasHoldsBody": "平均虧損：{{lossPct}}%；虧損交易持有時間：{{lossHours}} 小時。",
+    "biasOverBody": "最近 24 小時內超過 {{maxTrades}} 筆交易。",
+    "aiDescriptionEmpty": "尚無 AI 教練內容。",
+    "chartAvgWin": "Avg. win %",
+    "chartAvgLoss": "Avg. loss %"
   },
   "cooldown": {
     "title": "連敗冷卻",
@@ -118,14 +253,23 @@
     "unlocksIn": "解鎖倒數"
   },
   "alpha": {
-    "title": "Alpha 行事曆",
+    "title": "Alpha Calendar",
     "windows": "機率視窗",
     "probability": "機率",
     "historicalReturn": "歷史報酬",
     "earningsCycle": "財報週期",
     "seasonal": "季節性",
     "sectorRotation": "產業輪動",
-    "regimeShift": "狀態轉換"
+    "regimeShift": "狀態轉換",
+    "subtitleNext48h": "接下來 48 小時",
+    "aiSummaryTitle": "AI 摘要",
+    "aiSummaryEmpty": "尚無 AI 摘要。",
+    "tickerLabel": "Ticker",
+    "tickerPlaceholder": "例如 AAPL",
+    "colStart": "開始",
+    "colEnd": "結束",
+    "colDescription": "說明",
+    "emptyTickerRows": "此代號沒有時間窗口。"
   },
   "positionSize": {
     "title": "部位大小計算機",
@@ -136,7 +280,7 @@
     "accountSize": "帳戶資金",
     "riskPercent": "最大風險 %（占資金）",
     "entry": "進場價",
-    "stop": "停損",
+    "stop": "Stop Loss",
     "conviction": "設定信心",
     "convictionLow": "低",
     "convictionMedium": "中",
@@ -199,7 +343,7 @@
     }
   },
   "correlation": {
-    "title": "Correlation Detector",
+    "title": "Correlation Scanner",
     "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
     "mainSymbol": "Main symbol",
     "portfolioSymbols": "Portfolio symbols (comma separated)",
@@ -213,7 +357,7 @@
     "warningLowRisk": "OK",
     "highRiskPairs": "High-risk pairs (> 0.7)",
     "noHighRiskPairs": "No high-risk pair detected.",
-    "aiInsight": "AI insight"
+    "aiInsight": "AI Insight"
   },
   "taxOptimizer": {
     "title": "稅務優化 PIT-38",
@@ -294,7 +438,7 @@
     "selectPrompt": "Select a term from the list to load its explanation."
   },
   "backtest": {
-    "title": "前進式回測",
+    "title": "Walk-Forward Backtest",
     "subtitle": "30 天視窗；訊號只用過去資料；結果為 5 個交易日後收盤價對進場價。",
     "symbol": "代號",
     "strategy": "策略",
@@ -306,13 +450,13 @@
     "months6": "6 個月",
     "months12": "12 個月",
     "monthsSuffix": "個月",
-    "runButton": "執行回測",
+    "runButton": "Run backtest",
     "resultsTitle": "結果",
-    "winRate": "勝率",
+    "winRate": "Win rate",
     "avgReturn": "平均報酬",
     "totalTrades": "總交易次數",
-    "maxDrawdown": "最大回撤",
-    "sharpeRatio": "夏普比率",
+    "maxDrawdown": "Max drawdown",
+    "sharpeRatio": "Sharpe ratio",
     "tradesTableTitle": "交易",
     "colDate": "日期",
     "colAction": "動作",
@@ -338,7 +482,7 @@
     "actualOutcome": "Actual outcome"
   },
   "reversescreener": {
-    "title": "反向篩選",
+    "title": "Reverse Screener",
     "subtitle": "將目前 OHLCV 型態與其他標的的相似歷史日比對（RSI、量能 vs 20 日均、單日報酬、趨勢、ATR/收盤 — Signal DNA 風格相似度）。",
     "symbolLabel": "代號",
     "symbolPlaceholder": "例：2330",
@@ -362,10 +506,10 @@
     "errorSymbol": "請輸入股票代號。"
   },
   "trackrecord": {
-    "title": "Anonymous Track Record",
+    "title": "Anonimowy Track Record",
     "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Generate my track record",
-    "cardTitle": "Your public track record",
+    "generateButton": "Wygeneruj mój Track Record",
+    "cardTitle": "Twój publiczny Track Record",
     "winRate": "Win rate",
     "totalTrades": "Total trades",
     "avgReturn": "Average return",
@@ -392,7 +536,7 @@
     "mainResultLabel": "Your style is",
     "primary": "Primary match",
     "secondary": "Secondary match",
-    "insightLabel": "AI insight",
+    "insightLabel": "AI Insight",
     "notEnoughData": "You need at least 20 closed trades.",
     "legends": {
       "BUFFETT": "Buffett",
@@ -422,7 +566,7 @@
     "searchButton": "Mirror insiders",
     "validationSymbol": "Please provide a valid symbol.",
     "resultFor": "Insider activity for",
-    "insight": "AI insight",
+    "insight": "AI Insight",
     "transactionsTitle": "Transactions (last 30 days, > $50k)",
     "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
     "colName": "Name",
@@ -450,13 +594,14 @@
     "disableAction": "Disable",
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
-    "styleStrict": "Strict"
+    "styleStrict": "Strict",
+    "guidanceUnavailable": "導師建議尚不可用（端點回傳 404）。"
   },
   "mirror": {
-    "title": "鏡像交易",
+    "title": "Mirror Trading",
     "subtitle": "跟隨已開啟鏡像分享的交易者。數據來自已平倉的模擬交易。",
     "topTraders": "頂尖交易者",
-    "winRate": "勝率",
+    "winRate": "Win rate",
     "totalTrades": "總交易數",
     "followers": "跟隨者",
     "follow": "跟隨",
@@ -464,7 +609,7 @@
     "myFollowing": "我的跟隨",
     "loadError": "無法載入鏡像資料。",
     "actionError": "操作失敗，請再試一次。",
-    "settingsTitle": "啟用鏡像交易",
+    "settingsTitle": "Włącz Mirror Trading",
     "settingsSubtitle": "允許他人跟隨您的模擬交易檔案。收益分成供未來結算用（0–50%）。",
     "toggleLabel": "接受鏡像跟隨者",
     "revenueShare": "收益分成",
@@ -539,9 +684,9 @@
         "condition": "At least 10 closed paper trades"
       },
       "RISK_MANAGEMENT": {
-        "name": "Risk Management",
+        "name": "Risk management",
         "description": "Stosujesz position sizing",
-        "condition": "Use Position Size Calculator at least 3 times"
+        "condition": "Position Size Calculator: min. 3 użycia"
       },
       "BEHAVIORAL": {
         "name": "Behavioral",
@@ -556,7 +701,7 @@
       "STRATEGY": {
         "name": "Strategy",
         "description": "Masz spójną strategię",
-        "condition": "At least 20 trades and win rate over 40%"
+        "condition": "Min. 20 transakcji i win rate > 40%"
       }
     }
   },
@@ -589,7 +734,7 @@
     },
     "tooltip": {
       "volatility": "Volatility",
-      "avgReturn": "Avg return"
+      "avgReturn": "Avg. return"
     },
     "errors": {
       "symbolRequired": "Please enter a symbol."
@@ -603,7 +748,7 @@
     "mostImpactful": "Most impactful news",
     "halfLifeDaysLabel": "Half-life: {{days}} days",
     "halfLifeDaysBadge": "{{days}} days",
-    "expired": "expired",
+    "expired": "Expired",
     "categoryLabel": "Category",
     "reasonLabel": "Reason",
     "remainingLabel": "Time left",
@@ -661,5 +806,74 @@
     "complianceNo": "No",
     "complianceUnknown": "—",
     "emptyLogs": "No entries yet."
+  },
+  "home": {
+    "title": "Companies",
+    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
+    "searchPlaceholder": "Search by name or symbol...",
+    "emptySelectSector": "Choose a sector or run a search to see companies.",
+    "emptySector": "No companies in this sector yet.",
+    "sectorLabel": "Sector"
+  },
+  "sector": {
+    "all": "All",
+    "technology": "Technology",
+    "financialServices": "Financial Services",
+    "healthcare": "Healthcare",
+    "consumerCyclical": "Consumer Cyclical",
+    "industrials": "Industrials",
+    "energy": "Energy",
+    "communicationServices": "Communication Services",
+    "consumerDefensive": "Consumer Defensive",
+    "utilities": "Utilities",
+    "realEstate": "Real Estate",
+    "basicMaterials": "Basic Materials"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
+    "companiesTitle": "Companies",
+    "companiesDesc": "Search and sector grid with logos.",
+    "signalsTitle": "Signals",
+    "signalsDesc": "Coming soon - screener and AI scores.",
+    "portfolioTitle": "Portfolio",
+    "portfolioDesc": "Coming soon - watchlists and alerts."
+  },
+  "dividendsPage": {
+    "title": "Dividend screening (MVP)",
+    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
+    "historyTitle": "Dividend history",
+    "symbol": "Symbol",
+    "yearsBack": "Years back",
+    "fetch": "Fetch",
+    "exDate": "Ex-date",
+    "payDate": "Pay date",
+    "amount": "Amount",
+    "yield": "Yield %",
+    "emptyHistory": "No rows yet - run seed or change filters.",
+    "screenerTitle": "Screener: dividend growth (CAGR)",
+    "minYears": "Min. years of history",
+    "minYield": "Min. yield %",
+    "refresh": "Refresh"
+  },
+  "company": {
+    "loading": "Loading company...",
+    "backHome": "<- Back home",
+    "backCompanies": "<- Companies",
+    "sector": "Sector",
+    "industry": "Industry",
+    "website": "Website",
+    "chartTitle": "Close - recent history",
+    "close": "Close",
+    "noQuoteHistory": "No quote history yet.",
+    "recentNews": "Recent news",
+    "noNews": "No news rows in database yet."
+  },
+  "dividendIntelligence": {
+    "title": "Dividend Intelligence",
+    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
+    "symbol": "Symbol",
+    "sectorPercentile": "Sector percentile",
+    "vsPeers": "(vs peers in sector)"
   }
 }

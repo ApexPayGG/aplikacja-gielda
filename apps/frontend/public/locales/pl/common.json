@@ -8,8 +8,8 @@
     "paperTrading": "Wirtualny Portfel",
     "mirrorTrading": "Mirror Trading",
     "coach": "Coach",
-    "mistakeLibrary": "Biblioteka b��d�w",
-    "alphaCalendar": "Kalendarz Alpha",
+    "mistakeLibrary": "Biblioteka błędów",
+    "alphaCalendar": "Alpha Calendar",
     "positionSize": "Kalkulator",
     "stressTest": "Test stresu",
     "concentration": "Koncentracja",
@@ -20,10 +20,10 @@
     "menu": "Menu",
     "premortem": "Pre-Mortem",
     "correlation": "Korelacja",
-    "crowdWisdom": "Mądrość Tłumu",
+    "crowdWisdom": "Crowd Wisdom",
     "glossary": "Słownik",
-    "skillTree": "Drzewko Umiejętności",
-    "volatility": "Mapa Zmienności",
+    "skillTree": "Skill Tree",
+    "volatility": "Volatility Heat Map",
     "psycheProfile": "Moja psychika"
   },
   "common": {
@@ -37,28 +37,155 @@
     "close": "Zamknij",
     "open": "Otwórz",
     "buy": "Kup",
-    "sell": "Sprzedaj"
+    "sell": "Sprzedaj",
+    "apiMockBadge": "Tryb demonstracyjny (mock)",
+    "apiLiveBadge": "API na żywo",
+    "notAvailable": "—"
   },
   "money": {
     "gpwCaption": "Kwoty w PLN (notional GPW); wartość w USD jest przybliżona (ok. 3,95 PLN za 1 USD, nie kurs live)."
   },
   "signals": {
     "title": "Sygnały",
-    "riskScore": "Ocena Ryzyka",
-    "winRate": "Skuteczność",
-    "avgReturn": "Śr. Zwrot",
+    "riskScore": "Ocena ryzyka",
+    "winRate": "Win rate",
+    "avgReturn": "Śr. zwrot",
     "confidence": "Pewność",
-    "regime": "Reżim Rynku",
-    "entry": "Wejście",
+    "regime": {
+      "title": "Silnik Reżimu Rynkowego",
+      "mode": "Tryb",
+      "executionStyle": "Styl egzekucji",
+      "riskCap": "Limit ryzyka / trade"
+    },
+    "mentor": {
+      "notFound": "Analiza mentora niedostępna"
+    },
+    "entry": "Entry",
     "stopLoss": "Stop Loss",
     "takeProfit": "Take Profit",
-    "aiBreif": "Brief AI",
-    "dna": "DNA Sygnału",
+    "aiBreif": "AI Brief",
+    "dna": "Signal DNA",
     "similarity": "Podobieństwo",
     "narrative": "Narracja",
     "headline": "Nagłówek",
-    "riskNote": "Notatka o Ryzyku",
-    "preMortemFromSetup": "Pre-Mortem (z tego setupu)"
+    "riskNote": "Notatka o ryzyku",
+    "preMortemFromSetup": "Pre-mortem z tego układu",
+    "noSignalSelected": "Nie wybrano sygnału.",
+    "unknownSetup": "Nieznany setup",
+    "autonomousWatchlist": "Autonomiczna lista obserwowanych",
+    "liveEngine": {
+      "label": "Silnik na żywo",
+      "polling": "Tryb polling",
+      "sseUnavailable": "Aktualizacje co 15s",
+      "lastUpdate": "Ostatnia: {{time}}",
+      "lastUpdateEmpty": "Ostatnia: --:--:--"
+    },
+    "liveWaiting": "Oczekiwanie na strumień…",
+    "liveStreamUpdate": "Otrzymano aktualizację ze strumienia",
+    "livePollingUpdate": "Otrzymano aktualizację (odpytywanie)",
+    "liveConnectedSse": "Połączono ze strumieniem na żywo",
+    "confidenceLabel": "Pewność: {{level}}",
+    "confidenceCue": {
+      "PRIME": "PRIME",
+      "STRONG": "STRONG",
+      "WATCH": "WATCH"
+    },
+    "regimeDetail": {
+      "TRENDING": {
+        "mode": "Przyspieszenie trendu",
+        "style": "Kontynuacja wybicia",
+        "riskCap": "1.25R"
+      },
+      "RISK_ON": {
+        "mode": "Ekspansja pro-ryzyko",
+        "style": "Momentum basket",
+        "riskCap": "1.00R"
+      },
+      "RISK_OFF": {
+        "mode": "Ochrona kapitału",
+        "style": "Tylko powroty do średniej",
+        "riskCap": "0.50R"
+      },
+      "RANGING": {
+        "mode": "Neutralna siatka",
+        "style": "Krawędzie zakresu, szybkie wyjścia",
+        "riskCap": "0.75R"
+      }
+    },
+    "marketRegime": {
+      "TRENDING": "Trending",
+      "RANGING": "Ranging",
+      "RISK_ON": "Risk-on",
+      "RISK_OFF": "Risk-off"
+    },
+    "signalType": {
+      "CRITICAL": "Critical",
+      "STANDARD": "Standard",
+      "RESEARCH": "Research"
+    },
+    "transport": {
+      "SSE": "SSE",
+      "POLLING": "Polling",
+      "OFFLINE": "Offline"
+    },
+    "copilot": {
+      "title": "Decyzja AI Copilot",
+      "conviction": "Przekonanie",
+      "invalidation": "Unieważnienie",
+      "invalidationBody": "Wyjdź, jeśli ruch sięgnie {{pct}}% od wejścia albo zmieni się reżim.",
+      "checkpoint": "Punkt kontrolny",
+      "checkpointBody": "Oceń ponownie po zamknięciu sesji i przy świeżym wolumenie.",
+      "enter": "Wchodzę"
+    },
+    "copilotAction": {
+      "ENTER": "Enter",
+      "WAIT": "Wait",
+      "REDUCE": "Reduce"
+    },
+    "copilotThesisFallback": "{{setup}} — spójne z reżimem {{regime}}",
+    "dnaWhySimilar": "Dlaczego podobnie:",
+    "dnaCounterpoint": "Kontrargument:",
+    "dnaExplain": {
+      "high": {
+        "why": "Struktura ceny i reżim zmienności są niemal identyczne.",
+        "counter": "Kontekst makro się różni; unikaj zbyt dużej pozycji."
+      },
+      "mid": {
+        "why": "Profil momentum i kompresja wolumenu pasują do historycznych wygranych.",
+        "counter": "Sygnał może szybko wyblaknąć bez kontynuacji wolumenu."
+      },
+      "low": {
+        "why": "Częściowe pokrycie układu przy niższej pewności.",
+        "counter": "Traktuj jako dowód wspierający, nie główny impuls."
+      }
+    },
+    "discordEmbedTitle": "Podgląd embedu Discord",
+    "discordRisk": "Ryzyko {{score}}/100",
+    "trackRecordTitle": "Track Record",
+    "trackWinRate": "Win rate",
+    "trackAvgReturn": "Śr. zwrot",
+    "trackMaxDd": "Max DD",
+    "trackTotalSignals": "Liczba sygnałów",
+    "executionTitle": "Symulator realizacji (historycznie testowany)",
+    "executionEntry": "Entry",
+    "executionStop": "Stop",
+    "executionTarget": "Target",
+    "executionRr": "R:R",
+    "executionExpectedValue": "Expected value",
+    "executionWorstCase": "Worst case",
+    "mockNarrative": {
+      "headline": "{{ticker}} — setup: {{setup}}",
+      "body": "Profil momentum dla {{ticker}} jest zgodny z reżimem {{regime}}. Zachowanie ceny i wolumenu sugeruje potencjał kontynuacji przy kontrolowanym ryzyku, o ile przestrzegany jest poziom invalidation.",
+      "riskNote": "Poczekaj na potwierdzenie zamknięcia świecy i utrzymuj ścisłą dyscyplinę stop loss."
+    },
+    "narrativeHeadlineFallback": "Narracja sygnału: {{ticker}}",
+    "narrativeBodyFallback": "API nie zwróciło treści narracji.",
+    "narrativeRiskNoteFallback": "API nie zwróciło notatki o ryzyku.",
+    "narrativeConfidence": {
+      "HIGH": "Wysoki",
+      "MEDIUM": "Średni",
+      "LOW": "Niski"
+    }
   },
   "reactions": {
     "title": "Komentarze",
@@ -75,7 +202,7 @@
     "health": "Ocena Kondycji",
     "years": "Lata Wzrostu",
     "exDate": "Dzień Ex",
-    "payoutRatio": "Payout Ratio",
+    "payoutRatio": "Wskaźnik wypłaty z zysku",
     "trend": "Trend",
     "safe": "Bezpieczna",
     "watch": "Obserwuj",
@@ -83,44 +210,61 @@
   },
   "paperTrading": {
     "title": "Paper Trading",
-    "openPosition": "Otwórz Pozycję",
-    "closePosition": "Zamknij Pozycję",
+    "openPosition": "Otwórz pozycję",
+    "closePosition": "Zamknij pozycję",
     "portfolio": "Portfel",
-    "history": "Historia Transakcji",
+    "history": "Historia transakcji",
     "pnl": "P&L",
     "direction": "Kierunek",
     "quantity": "Ilość",
-    "entryPrice": "Cena Wejścia",
-    "exitPrice": "Cena Wyjścia",
+    "entryPrice": "Cena wejścia",
+    "exitPrice": "Cena wyjścia",
     "long": "Long",
     "short": "Short"
   },
   "coach": {
-    "title": "Coach Behawioralny",
-    "traderProfile": "Profil Tradera",
-    "avgWin": "Śr. Zysk",
-    "avgLoss": "Śr. Strata",
-    "biases": "Wykryte Biasy",
-    "noBiases": "Brak wykrytych biasów",
-    "cutsWinners": "Ucinasz Zyski za Wcześnie",
-    "holdsLosers": "Trzymasz Straty za Długo",
+    "title": "Coach behawioralny",
+    "traderProfile": "Profil tradera",
+    "avgWin": "Śr. zysk",
+    "avgLoss": "Śr. strata",
+    "avgHoldWin": "Śr. czas trzymania zysku",
+    "avgHoldLoss": "Śr. czas trzymania straty",
+    "biases": "Wykryte tendencyjności",
+    "noBiases": "Brak typowych błędów behawioralnych",
+    "cutsWinners": "Za wcześnie zamykasz zyski",
+    "holdsLosers": "Za długo trzymasz straty",
     "overtrading": "Overtrading",
-    "aiCoach": "AI Coach mówi"
+    "aiCoach": "Komentarz coacha AI",
+    "biasCutsBody": "Zamykasz zyskowne pozycje średnio po {{winHours}} h, a straty utrzymujesz przez {{lossHours}} h.",
+    "biasHoldsBody": "Średnia strata: {{lossPct}}%, czas trzymania straty: {{lossHours}} h.",
+    "biasOverBody": "Więcej niż {{maxTrades}} transakcji w ostatnich 24 h.",
+    "aiDescriptionEmpty": "Brak treści od coacha AI.",
+    "chartAvgWin": "Avg. win %",
+    "chartAvgLoss": "Avg. loss %"
   },
   "cooldown": {
-    "title": "Cooldown po serii strat",
-    "inactive": "Brak aktywnego cooldownu",
+    "title": "Przerwa po serii strat",
+    "inactive": "Brak aktywnej przerwy",
     "unlocksIn": "Odblokowanie za"
   },
   "alpha": {
-    "title": "Kalendarz Alpha",
-    "windows": "Okna Probabilistyczne",
+    "title": "Alpha Calendar",
+    "windows": "Okna probabilistyczne",
     "probability": "Prawdopodobieństwo",
-    "historicalReturn": "Zwrot Historyczny",
-    "earningsCycle": "Cykl Wyników",
+    "historicalReturn": "Zwrot historyczny",
+    "earningsCycle": "Cykl wyników",
     "seasonal": "Sezonowość",
-    "sectorRotation": "Rotacja Sektorowa",
-    "regimeShift": "Zmiana Reżimu"
+    "sectorRotation": "Rotacja sektorowa",
+    "regimeShift": "Zmiana reżimu",
+    "subtitleNext48h": "Następne 48 h",
+    "aiSummaryTitle": "Podsumowanie AI",
+    "aiSummaryEmpty": "Brak podsumowania AI.",
+    "tickerLabel": "Ticker",
+    "tickerPlaceholder": "np. AAPL",
+    "colStart": "Początek",
+    "colEnd": "Koniec",
+    "colDescription": "Opis",
+    "emptyTickerRows": "Brak okien dla tego tickera."
   },
   "home": {
     "title": "Spółki",
@@ -205,7 +349,7 @@
     "accountSize": "Kapitał konta",
     "riskPercent": "Maks. ryzyko % kapitału",
     "entry": "Cena wejścia",
-    "stop": "Stop loss",
+    "stop": "Stop Loss",
     "conviction": "Pewność setupu",
     "convictionLow": "Niska",
     "convictionMedium": "Średnia",
@@ -252,7 +396,7 @@
     "currency": "Waluta wyświetlania",
     "scoreLabel": "Wynik dywersyfikacji (0–100)",
     "totalValue": "Łączna wartość portfela",
-    "positionCount": "Otwarte pozycje paper",
+    "positionCount": "Otwarte pozycje (paper)",
     "chartByStock": "Podział wg spółki",
     "chartBySector": "Podział wg sektora",
     "positionsTable": "Pozycje i wagi",
@@ -268,7 +412,7 @@
     }
   },
   "correlation": {
-    "title": "Wykrywacz Korelacji",
+    "title": "Correlation Scanner",
     "subtitle": "Sprawdź korelację Pearsona między główną spółką a portfelem.",
     "mainSymbol": "Główny symbol",
     "portfolioSymbols": "Symbole portfela (oddziel przecinkami)",
@@ -282,7 +426,7 @@
     "warningLowRisk": "OK",
     "highRiskPairs": "Pary wysokiego ryzyka (> 0.7)",
     "noHighRiskPairs": "Nie wykryto par wysokiego ryzyka.",
-    "aiInsight": "Insight AI"
+    "aiInsight": "AI Insight"
   },
   "taxOptimizer": {
     "title": "Optymalizator Podatkowy PIT-38",
@@ -309,37 +453,37 @@
     "disclaimer": "Wyniki mają charakter informacyjny. Skonsultuj z doradcą podatkowym."
   },
   "mistakes": {
-    "title": "Mistake Library",
-    "analyzeButton": "Analyze my mistakes",
-    "analyzing": "Analyzing...",
-    "emptyType": "No mistakes in this category yet.",
+    "title": "Biblioteka błędów",
+    "analyzeButton": "Przeanalizuj moje błędy",
+    "analyzing": "Analizowanie…",
+    "emptyType": "Brak błędów w tej kategorii.",
     "types": {
-      "EMOTIONAL": "EMOTIONAL",
-      "STRATEGY": "STRATEGY",
+      "EMOTIONAL": "EMOCJE",
+      "STRATEGY": "STRATEGIA",
       "TIMING": "TIMING"
     },
     "summary": {
-      "total": "Total",
-      "emotional": "Emotional",
-      "strategy": "Strategy",
+      "total": "Razem",
+      "emotional": "Emocje",
+      "strategy": "Strategia",
       "timing": "Timing"
     },
     "dnaRowLink": "DNA strategii",
-    "dnaContextLink": "Otwórz Strategy DNA z symbolami z błędów"
+    "dnaContextLink": "Otwórz DNA strategii dla symboli z błędów"
   },
   "premortem": {
     "title": "Pre-Mortem AI",
-    "subtitle": "Run downside scenario analysis before opening a trade.",
+    "subtitle": "Przeanalizuj scenariusz straty zanim otworzysz pozycję.",
     "symbol": "Symbol",
-    "entry": "Entry",
+    "entry": "Cena wejścia",
     "stopLoss": "Stop Loss",
     "takeProfit": "Take Profit",
-    "quantity": "Quantity",
-    "runButton": "Run Pre-Mortem",
-    "lossScenario": "Most likely loss scenario",
-    "marketRegime": "Market Regime",
-    "proceed": "Proceed anyway",
-    "cancel": "Cancel trade"
+    "quantity": "Ilość",
+    "runButton": "Uruchom Pre-Mortem",
+    "lossScenario": "Najbardziej prawdopodobny scenariusz straty",
+    "marketRegime": "Reżim rynku",
+    "proceed": "Kontynuuj mimo ostrzeżenia",
+    "cancel": "Anuluj transakcję"
   },
   "crowdwisdom": {
     "title": "Crowd Wisdom Inverter",
@@ -355,7 +499,7 @@
     "signalNeutral": "Neutralny"
   },
   "glossary": {
-    "title": "Translate Financial English",
+    "title": "Żargon giełdowy po angielsku",
     "subtitle": "Kliknij termin rynkowy, aby zobaczyć krótkie wyjaśnienie i praktyczny przykład.",
     "popularTerms": "Popularne terminy",
     "loading": "Ładowanie wyjaśnienia...",
@@ -370,19 +514,20 @@
     "loading": "Generowanie wskazówek mentora...",
     "riskCheckLabel": "Kontrola ryzyka",
     "settingsTitle": "Ustawienia trybu Mentora",
-    "settingsSubtitle": "Ustaw jak wsparcie AI mentora ma działać na stronie Signals.",
+    "settingsSubtitle": "Ustaw, jak wsparcie AI mentora ma działać na stronie Signals.",
     "currentStatus": "Aktualny status",
     "enableAction": "Włącz",
     "disableAction": "Wyłącz",
     "styleLabel": "Styl mentora",
     "styleSupportive": "Wspierający",
-    "styleStrict": "Surowy"
+    "styleStrict": "Surowy",
+    "guidanceUnavailable": "Wskazówki mentora są niedostępne (endpoint zwrócił 404)."
   },
   "mirror": {
     "title": "Mirror Trading",
     "subtitle": "Śledź traderów, którzy włączyli udostępnianie mirror. Statystyki z zamkniętych transakcji paper.",
-    "topTraders": "Top traderzy",
-    "winRate": "Skuteczność",
+    "topTraders": "Najlepsi traderzy",
+    "winRate": "Win rate",
     "totalTrades": "Liczba transakcji",
     "followers": "Obserwujący",
     "follow": "Obserwuj",
@@ -397,12 +542,12 @@
     "revenueShareHint": "0–50%",
     "saving": "Zapisywanie…",
     "saved": "Zapisano",
-    "noTopTraders": "Nikt jeszcze nie włączył mirror trading.",
+    "noTopTraders": "Nikt jeszcze nie włączył Mirror Trading.",
     "itsYou": "To Ty"
   },
   "discord": {
     "title": "Discord Auto-Sync",
-    "subtitle": "Wysyłaj automatyczne powiadomienia o otwieraniu i zamykaniu paper trade na Discord webhook.",
+    "subtitle": "Wysyłaj automatyczne powiadomienia o otwieraniu i zamykaniu transakcji paper na webhook Discorda.",
     "webhookLabel": "URL webhooka Discord",
     "webhookPlaceholder": "https://discord.com/api/webhooks/...",
     "saveButton": "Zapisz",
@@ -416,7 +561,7 @@
     "testError": "Nie udało się wysłać wiadomości testowej."
   },
   "backtest": {
-    "title": "Backtest Walk-Forward",
+    "title": "Walk-Forward Backtest",
     "subtitle": "Okna 30 dni; sygnały tylko z przeszłych świec; wynik = zamknięcie po 5 dniach handlu vs cena wejścia.",
     "symbol": "Symbol",
     "strategy": "Strategia",
@@ -428,13 +573,13 @@
     "months6": "6 miesięcy",
     "months12": "12 miesięcy",
     "monthsSuffix": "mies.",
-    "runButton": "Uruchom backtest",
+    "runButton": "Run backtest",
     "resultsTitle": "Wyniki",
-    "winRate": "Skuteczność",
+    "winRate": "Win rate",
     "avgReturn": "Śr. zwrot",
     "totalTrades": "Liczba transakcji",
-    "maxDrawdown": "Maks. obsunięcie",
-    "sharpeRatio": "Współczynnik Sharpe'a",
+    "maxDrawdown": "Max drawdown",
+    "sharpeRatio": "Sharpe ratio",
     "tradesTableTitle": "Transakcje",
     "colDate": "Data",
     "colAction": "Akcja",
@@ -457,7 +602,7 @@
     "price": "Cena",
     "evaluate": "Oceń decyzję",
     "score": "Ocena",
-    "actualOutcome": "Faktyczny outcome"
+    "actualOutcome": "Faktyczny rezultat"
   },
   "reversescreener": {
     "title": "Reverse Screener",
@@ -486,47 +631,47 @@
   "trackrecord": {
     "title": "Anonimowy Track Record",
     "subtitle": "Wygeneruj publiczne, anonimowe podsumowanie zamkniętych transakcji paper trading.",
-    "generateButton": "Generate my track record",
-    "cardTitle": "Twój publiczny track record",
-    "winRate": "Skuteczność",
+    "generateButton": "Wygeneruj mój Track Record",
+    "cardTitle": "Twój publiczny Track Record",
+    "winRate": "Win rate",
     "totalTrades": "Liczba transakcji",
     "avgReturn": "Średni zwrot",
     "bestTradePct": "Najlepsza transakcja",
     "worstTradePct": "Najgorsza transakcja",
     "generatedAt": "Wygenerowano",
     "shareLinkLabel": "Link publiczny",
-    "copyButton": "Copy share link",
+    "copyButton": "Kopiuj link do udostępnienia",
     "copyFailed": "Nie udało się skopiować linku.",
     "copied": "Skopiowano link"
   },
   "digest": {
-    "title": "Dzienny Digest",
+    "title": "Daily Digest",
     "subtitle": "Wygeneruj codzienne podsumowanie AI i wyślij testowy email.",
-    "previewButton": "Preview my digest",
-    "sendButton": "Send test email",
+    "previewButton": "Podgląd digestu",
+    "sendButton": "Wyślij testowy e-mail",
     "cardDateLabel": "Data digestu",
     "emptyState": "Kliknij podgląd, aby wygenerować dzisiejszy digest.",
     "emailSent": "Wysłano testowy email dla {{date}}."
   },
   "strategydna": {
-    "title": "Dopasowanie DNA Strategii",
-    "subtitle": "AI porownuje Twoj styl paper tradingu z legendami inwestowania.",
-    "mainResultLabel": "Twoj styl to",
-    "primary": "Glowny match",
-    "secondary": "Drugorzędny match",
-    "insightLabel": "Insight AI",
-    "notEnoughData": "Potrzebujesz min 20 zamknietych transakcji",
+    "title": "Strategy DNA Match",
+    "subtitle": "AI porównuje Twój styl paper tradingu z legendami inwestowania.",
+    "mainResultLabel": "Twój styl to",
+    "primary": "Główne dopasowanie",
+    "secondary": "Dopasowanie drugorzędne",
+    "insightLabel": "AI Insight",
+    "notEnoughData": "Potrzebujesz co najmniej 20 zamkniętych transakcji.",
     "legends": {
       "BUFFETT": "Buffett",
       "LYNCH": "Lynch",
       "GREENBLATT": "Greenblatt",
       "SOROS": "Soros"
     },
-    "fromMistakesTitle": "Kontekst z Mistake Library",
+    "fromMistakesTitle": "Kontekst z biblioteki błędów",
     "fromMistakesBody": "Przeszedłeś tu z listy błędów. Symbole: {{symbols}}. Porównaj profil DNA z tym, gdzie pojawiają się straty."
   },
   "earnings": {
-    "title": "Predyktor Niespodzianki Wynikowej",
+    "title": "Earnings Surprise Predictor",
     "subtitle": "Oceń prawdopodobieństwo BEAT, MISS lub IN_LINE przed kolejnym raportem.",
     "symbolPlaceholder": "Wpisz symbol (np. AAPL)",
     "predictButton": "Przewiduj",
@@ -538,13 +683,13 @@
     "noDate": "Brak dostępnej daty"
   },
   "insider": {
-    "title": "Lustro Insiderów",
+    "title": "Insider Mirror",
     "subtitle": "Śledź ostatnie zakupy i sprzedaże akcji przez insiderów spółki.",
     "symbolPlaceholder": "Wpisz symbol (np. AAPL)",
     "searchButton": "Pokaż insiderów",
     "validationSymbol": "Podaj poprawny symbol.",
     "resultFor": "Aktywność insiderów dla",
-    "insight": "Insight AI",
+    "insight": "AI Insight",
     "transactionsTitle": "Transakcje (ostatnie 30 dni, > 50 tys. USD)",
     "emptyTransactions": "Brak kwalifikujących się transakcji insiderów z ostatnich 30 dni.",
     "colName": "Imię",
@@ -569,10 +714,10 @@
     }
   },
   "skilltree": {
-    "title": "Drzewko Umiejętności",
+    "title": "Skill Tree",
     "subtitle": "Odblokowuj kolejne umiejętności tradingowe wraz z aktywnością.",
     "progressLabel": "Odblokowano {{unlocked}}/{{total}} umiejętności",
-    "checkProgress": "Check progress",
+    "checkProgress": "Sprawdź postęp",
     "celebrationTitle": "Nowe umiejętności odblokowane!",
     "newlyUnlockedLabel": "Nowo odblokowane:",
     "unlockedAt": "Odblokowano: {{date}}",
@@ -585,83 +730,83 @@
       "SUPPORT_RESISTANCE": {
         "name": "Support & Resistance",
         "description": "Rozumiesz support i resistance",
-        "condition": "Min. 5 zamkniętych paper trades"
+        "condition": "Min. 5 zamkniętych transakcji paper"
       },
       "RSI": {
         "name": "RSI",
         "description": "Rozumiesz RSI",
-        "condition": "Min. 5 zamkniętych paper trades"
+        "condition": "Min. 5 zamkniętych transakcji paper"
       },
       "MACD": {
         "name": "MACD",
         "description": "Rozumiesz MACD",
-        "condition": "Min. 5 zamkniętych paper trades"
+        "condition": "Min. 5 zamkniętych transakcji paper"
       },
       "FIBONACCI": {
         "name": "Fibonacci",
         "description": "Rozumiesz poziomy Fibonacciego",
-        "condition": "Min. 10 zamkniętych paper trades"
+        "condition": "Min. 10 zamkniętych transakcji paper"
       },
       "VOLUME": {
         "name": "Wolumen",
         "description": "Rozumiesz wolumen",
-        "condition": "Min. 10 zamkniętych paper trades"
+        "condition": "Min. 10 zamkniętych transakcji paper"
       },
       "RISK_MANAGEMENT": {
-        "name": "Risk Management",
+        "name": "Risk management",
         "description": "Stosujesz position sizing",
-        "condition": "Position Size Calculator min. 3 użycia"
+        "condition": "Position Size Calculator: min. 3 użycia"
       },
       "BEHAVIORAL": {
         "name": "Behawioralne",
         "description": "Kontrolujesz emocje w tradingu",
-        "condition": "Min. 1 wpis w Mistake Library"
+        "condition": "Min. 1 wpis w bibliotece błędów"
       },
       "DIVERSIFICATION": {
         "name": "Dywersyfikacja",
         "description": "Rozumiesz dywersyfikację",
-        "condition": "Min. 3 różne symbole w paper trades"
+        "condition": "Min. 3 różne symbole w transakcjach paper"
       },
       "STRATEGY": {
         "name": "Strategia",
         "description": "Masz spójną strategię",
-        "condition": "Min. 20 trades i win rate > 40%"
+        "condition": "Min. 20 transakcji i win rate > 40%"
       }
     }
   },
   "volatility": {
     "title": "Volatility Heat Map",
-    "subtitle": "Compare monthly volatility across years for a selected symbol.",
-    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchAction": "Load heat map",
+    "subtitle": "Porównaj miesięczną zmienność w kolejnych latach dla wybranego symbolu.",
+    "searchPlaceholder": "Wpisz symbol (np. AAPL)",
+    "searchAction": "Wczytaj mapę",
     "symbol": "Symbol",
-    "year": "Year",
-    "mostVolatileMonth": "Most volatile month",
-    "leastVolatileMonth": "Least volatile month",
-    "noData": "No data",
-    "legendTitle": "Legend",
-    "legendLow": "Low volatility",
-    "legendHigh": "High volatility",
+    "year": "Rok",
+    "mostVolatileMonth": "Najbardziej zmienny miesiąc",
+    "leastVolatileMonth": "Najmniej zmienny miesiąc",
+    "noData": "Brak danych",
+    "legendTitle": "Legenda",
+    "legendLow": "Niska zmienność",
+    "legendHigh": "Wysoka zmienność",
     "months": {
-      "jan": "Jan",
-      "feb": "Feb",
+      "jan": "Sty",
+      "feb": "Lut",
       "mar": "Mar",
-      "apr": "Apr",
-      "may": "May",
-      "jun": "Jun",
-      "jul": "Jul",
-      "aug": "Aug",
-      "sep": "Sep",
-      "oct": "Oct",
-      "nov": "Nov",
-      "dec": "Dec"
+      "apr": "Kwi",
+      "may": "Maj",
+      "jun": "Cze",
+      "jul": "Lip",
+      "aug": "Sie",
+      "sep": "Wrz",
+      "oct": "Paź",
+      "nov": "Lis",
+      "dec": "Gru"
     },
     "tooltip": {
       "volatility": "Volatility",
-      "avgReturn": "Avg return"
+      "avgReturn": "Avg. return"
     },
     "errors": {
-      "symbolRequired": "Please enter a symbol."
+      "symbolRequired": "Podaj symbol."
     }
   },
   "newshalflife": {
@@ -672,7 +817,7 @@
     "mostImpactful": "Najważniejszy news",
     "halfLifeDaysLabel": "Half-life: {{days}} dni",
     "halfLifeDaysBadge": "{{days}} dni",
-    "expired": "expired",
+    "expired": "Expired",
     "categoryLabel": "Kategoria",
     "reasonLabel": "Powód",
     "remainingLabel": "Pozostały czas",
@@ -708,10 +853,10 @@
     "title": "Profil psychiki tradera",
     "subtitle": "Twój behawioralny punkt odniesienia: DNA, reguły i dziennik decyzji.",
     "refresh": "Odśwież mój profil",
-    "dnaTitle": "DNA tradera",
+    "dnaTitle": "Trader DNA",
     "growthScore": "Wskaźnik rozwoju",
     "tradingStyle": "Styl tradingu",
-    "topBiases": "Top biasy",
+    "topBiases": "Top biases",
     "goodConditions": "Dobre warunki",
     "badConditions": "Złe warunki",
     "noProfile": "Brak profilu AI. Kliknij „Odśwież mój profil”, aby wygenerować go z ostatniej aktywności.",

@@ -7,7 +7,7 @@
     "dividendIntelligence": "डिविडेंड इंटेलिजेंस",
     "paperTrading": "पेपर ट्रेडिंग",
     "coach": "कोच",
-    "alphaCalendar": "अल्फा कैलेंडर",
+    "alphaCalendar": "Alpha Calendar",
     "positionSize": "कैलकुलेटर",
     "stressTest": "स्ट्रेस टेस्ट",
     "concentration": "केंद्रीकरण",
@@ -23,7 +23,8 @@
     "glossary": "Glossary",
     "skillTree": "Skill Tree",
     "volatility": "Volatility Heat Map",
-    "psycheProfile": "My Psyche"
+    "psycheProfile": "My Psyche",
+    "mirrorTrading": "Mirror Trading"
   },
   "common": {
     "search": "खोजें",
@@ -36,7 +37,10 @@
     "close": "बंद करें",
     "open": "खोलें",
     "buy": "खरीदें",
-    "sell": "बेचें"
+    "sell": "बेचें",
+    "apiMockBadge": "Mock fallback active",
+    "apiLiveBadge": "Live API",
+    "notAvailable": "n/a"
   },
   "money": {
     "gpwCaption": "राशि PLN में (GPW नोशनल); साथ का USD संकेतक है (≈ 3.95 PLN प्रति USD, लाइव दर नहीं)।"
@@ -49,20 +53,144 @@
   "signals": {
     "title": "सिग्नल्स",
     "riskScore": "रिस्क स्कोर",
-    "winRate": "विन रेट",
+    "winRate": "Win rate",
     "avgReturn": "औसत रिटर्न",
     "confidence": "विश्वास",
-    "regime": "मार्केट रेजीम",
-    "entry": "एंट्री",
-    "stopLoss": "स्टॉप लॉस",
-    "takeProfit": "टेक प्रॉफिट",
-    "aiBreif": "AI ब्रीफ",
-    "dna": "सिग्नल DNA",
+    "regime": {
+      "title": "Silnik Reżimu Rynkowego",
+      "mode": "Tryb",
+      "executionStyle": "Styl egzekucji",
+      "riskCap": "Limit ryzyka / trade"
+    },
+    "entry": "Entry",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "aiBreif": "AI Brief",
+    "dna": "Signal DNA",
     "similarity": "समानता",
     "narrative": "नैरेटिव",
     "headline": "हेडलाइन",
     "riskNote": "रिस्क नोट",
-    "preMortemFromSetup": "Pre-Mortem (from this setup)"
+    "preMortemFromSetup": "Pre-Mortem (from this setup)",
+    "noSignalSelected": "No signal selected.",
+    "unknownSetup": "अज्ञात सेटअप",
+    "autonomousWatchlist": "Autonomous watchlist",
+    "liveEngine": {
+      "label": "Silnik na żywo",
+      "polling": "Tryb polling",
+      "sseUnavailable": "Aktualizacje co 15s",
+      "lastUpdate": "Ostatnia: {{time}}",
+      "lastUpdateEmpty": "Ostatnia: --:--:--"
+    },
+    "liveWaiting": "Waiting for stream…",
+    "liveStreamUpdate": "Live stream update received",
+    "livePollingUpdate": "Polling update received",
+    "liveConnectedSse": "Connected to live stream",
+    "confidenceLabel": "Confidence: {{level}}",
+    "confidenceCue": {
+      "PRIME": "PRIME",
+      "STRONG": "STRONG",
+      "WATCH": "WATCH"
+    },
+    "regimeDetail": {
+      "TRENDING": {
+        "mode": "Trend acceleration",
+        "style": "Breakout continuation",
+        "riskCap": "1.25R"
+      },
+      "RISK_ON": {
+        "mode": "Pro-risk expansion",
+        "style": "Momentum basket",
+        "riskCap": "1.00R"
+      },
+      "RISK_OFF": {
+        "mode": "Capital defense",
+        "style": "Mean reversion only",
+        "riskCap": "0.50R"
+      },
+      "RANGING": {
+        "mode": "Neutral grid",
+        "style": "Range edges + quick exits",
+        "riskCap": "0.75R"
+      }
+    },
+    "marketRegime": {
+      "TRENDING": "Trending",
+      "RANGING": "Ranging",
+      "RISK_ON": "Risk-on",
+      "RISK_OFF": "Risk-off"
+    },
+    "signalType": {
+      "CRITICAL": "Critical",
+      "STANDARD": "Standard",
+      "RESEARCH": "Research"
+    },
+    "transport": {
+      "SSE": "SSE",
+      "POLLING": "Polling",
+      "OFFLINE": "Offline"
+    },
+    "copilotAction": {
+      "ENTER": "Enter",
+      "WAIT": "Wait",
+      "REDUCE": "Reduce"
+    },
+    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
+    "dnaWhySimilar": "क्यों समान:",
+    "dnaCounterpoint": "विरोधाभास:",
+    "dnaExplain": {
+      "high": {
+        "why": "मूल्य संरचना और अस्थिरता शासन लगभग समान हैं।",
+        "counter": "मैक्रो संदर्भ भिन्न है; अत्यधिक बड़ी स्थिति से बचें।"
+      },
+      "mid": {
+        "why": "मोमेंटम प्रोफ़ाइल और वॉल्यूम संपीड़न ऐतिहासिक विजेताओं से मेल खाते हैं।",
+        "counter": "फॉलो-थ्रू वॉल्यूम के बिना संकेत जल्दी कमज़ोर हो सकता है।"
+      },
+      "low": {
+        "why": "कम विश्वास के साथ आंशिक सेटअप ओवरलैप।",
+        "counter": "सहायक साक्ष्य मानें, प्राथमिक ट्रिगर नहीं।"
+      }
+    },
+    "discordEmbedTitle": "Discord embed preview",
+    "discordRisk": "Risk {{score}}/100",
+    "trackRecordTitle": "Track Record",
+    "trackWinRate": "Win rate",
+    "trackAvgReturn": "Avg. return",
+    "trackMaxDd": "Max DD",
+    "trackTotalSignals": "Total signals",
+    "executionTitle": "Battle-tested execution simulator",
+    "executionEntry": "Entry",
+    "executionStop": "Stop",
+    "executionTarget": "Target",
+    "executionRr": "R:R",
+    "executionExpectedValue": "Expected value",
+    "executionWorstCase": "Worst case",
+    "mockNarrative": {
+      "headline": "{{ticker}} — सेटअप: {{setup}}",
+      "body": "{{ticker}} का momentum प्रोफ़ाइल {{regime}} से मेल खाता है। यदि invalidation स्तर का सम्मान हो तो कीमत और वॉल्यूम नियंत्रित नकारात्मक पक्ष के साथ जारी रहने की संभावना दर्शाते हैं।",
+      "riskNote": "कैंडल क्लोज़ की पुष्टि की प्रतीक्षा करें और स्टॉप अनुशासन सख्त रखें।"
+    },
+    "narrativeHeadlineFallback": "सिग्नल कथा: {{ticker}}",
+    "narrativeBodyFallback": "API ने कथा का मुख्य भाग नहीं लौटाया।",
+    "narrativeRiskNoteFallback": "API ने जोखिम नोट नहीं लौटाया।",
+    "narrativeConfidence": {
+      "HIGH": "Wysoki",
+      "MEDIUM": "Średni",
+      "LOW": "Niski"
+    },
+    "mentor": {
+      "notFound": "Analysis unavailable"
+    },
+    "copilot": {
+      "title": "Decyzja AI Copilot",
+      "conviction": "Przekonanie",
+      "invalidation": "Unieważnienie",
+      "invalidationBody": "Wyjdź, jeśli ruch sięgnie {{pct}}% od wejścia albo zmieni się reżim.",
+      "checkpoint": "Punkt kontrolny",
+      "checkpointBody": "Oceń ponownie po zamknięciu sesji i przy świeżym wolumenie.",
+      "enter": "Wchodzę"
+    }
   },
   "reactions": {
     "title": "टिप्पणियाँ",
@@ -86,7 +214,7 @@
     "risky": "जोखिमपूर्ण"
   },
   "paperTrading": {
-    "title": "पेपर ट्रेडिंग",
+    "title": "Paper Trading",
     "openPosition": "पोज़िशन खोलें",
     "closePosition": "पोज़िशन बंद करें",
     "portfolio": "पोर्टफोलियो",
@@ -96,8 +224,8 @@
     "quantity": "मात्रा",
     "entryPrice": "एंट्री प्राइस",
     "exitPrice": "एग्ज़िट प्राइस",
-    "long": "लॉन्ग",
-    "short": "शॉर्ट"
+    "long": "Long",
+    "short": "Short"
   },
   "coach": {
     "title": "व्यवहारिक कोच",
@@ -108,8 +236,16 @@
     "noBiases": "कोई बायस नहीं मिला",
     "cutsWinners": "मुनाफ़ा जल्दी काटते हैं",
     "holdsLosers": "घाटे वाली पोज़िशन ज़्यादा देर रखते हैं",
-    "overtrading": "ओवरट्रेडिंग",
-    "aiCoach": "AI कोच कहता है"
+    "overtrading": "Overtrading",
+    "aiCoach": "AI कोच कहता है",
+    "avgHoldWin": "औसत होल्ड (विजेता)",
+    "avgHoldLoss": "औसत होल्ड (हारे हुए)",
+    "biasCutsBody": "आप औसतन ~{{winHours}} घंटे में विजेता बंद करते हैं, पर हार ~{{lossHours}} घंटे तक पकड़े रहते हैं।",
+    "biasHoldsBody": "औसत नुकसान: {{lossPct}}%; हार वाले ट्रेड में समय: {{lossHours}} घंटे।",
+    "biasOverBody": "पिछले 24 घंटों में {{maxTrades}} से अधिक ट्रेड।",
+    "aiDescriptionEmpty": "AI कोच सामग्री अभी तक नहीं है।",
+    "chartAvgWin": "Avg. win %",
+    "chartAvgLoss": "Avg. loss %"
   },
   "cooldown": {
     "title": "हार की श्रृंखला Cool-Down",
@@ -117,14 +253,23 @@
     "unlocksIn": "अनलॉक होगा"
   },
   "alpha": {
-    "title": "अल्फा कैलेंडर",
+    "title": "Alpha Calendar",
     "windows": "प्रायिकता विंडोज़",
     "probability": "प्रायिकता",
     "historicalReturn": "ऐतिहासिक रिटर्न",
     "earningsCycle": "अर्निंग्स साइकिल",
     "seasonal": "सीज़नल",
     "sectorRotation": "सेक्टर रोटेशन",
-    "regimeShift": "रेजीम शिफ्ट"
+    "regimeShift": "रेजीम शिफ्ट",
+    "subtitleNext48h": "अगले 48 घंटे",
+    "aiSummaryTitle": "AI सारांश",
+    "aiSummaryEmpty": "कोई AI सारांश उपलब्ध नहीं।",
+    "tickerLabel": "Ticker",
+    "tickerPlaceholder": "जैसे AAPL",
+    "colStart": "शुरुआत",
+    "colEnd": "समाप्ति",
+    "colDescription": "विवरण",
+    "emptyTickerRows": "इस टिकर के लिए कोई विंडो नहीं।"
   },
   "positionSize": {
     "title": "पोज़िशन साइज़ कैलकुलेटर",
@@ -135,7 +280,7 @@
     "accountSize": "खाते का आकार",
     "riskPercent": "अधिकतम जोखिम % पूंजी",
     "entry": "प्रवेश मूल्य",
-    "stop": "स्टॉप लॉस",
+    "stop": "Stop Loss",
     "conviction": "सेटअप विश्वास",
     "convictionLow": "कम",
     "convictionMedium": "मध्यम",
@@ -198,7 +343,7 @@
     }
   },
   "correlation": {
-    "title": "Correlation Detector",
+    "title": "Correlation Scanner",
     "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
     "mainSymbol": "Main symbol",
     "portfolioSymbols": "Portfolio symbols (comma separated)",
@@ -212,7 +357,7 @@
     "warningLowRisk": "OK",
     "highRiskPairs": "High-risk pairs (> 0.7)",
     "noHighRiskPairs": "No high-risk pair detected.",
-    "aiInsight": "AI insight"
+    "aiInsight": "AI Insight"
   },
   "taxOptimizer": {
     "title": "कर अनुकूलन PIT-38",
@@ -293,7 +438,7 @@
     "selectPrompt": "Select a term from the list to load its explanation."
   },
   "backtest": {
-    "title": "वॉक-फ़ॉरवर्ड बैकटेस्ट",
+    "title": "Walk-Forward Backtest",
     "subtitle": "30-दिन की खिड़कियाँ; सिग्नल केवल अतीत के डेटा से; परिणाम = 5 ट्रेडिंग दिनों बाद बंद vs प्रवेश।",
     "symbol": "प्रतीक",
     "strategy": "रणनीति",
@@ -305,13 +450,13 @@
     "months6": "6 महीने",
     "months12": "12 महीने",
     "monthsSuffix": "महीने",
-    "runButton": "बैकटेस्ट चलाएँ",
+    "runButton": "Run backtest",
     "resultsTitle": "परिणाम",
-    "winRate": "जीत दर",
+    "winRate": "Win rate",
     "avgReturn": "औसत रिटर्न",
     "totalTrades": "कुल ट्रेड",
-    "maxDrawdown": "अधिकतम ड्रॉडाउन",
-    "sharpeRatio": "शार्प अनुपात",
+    "maxDrawdown": "Max drawdown",
+    "sharpeRatio": "Sharpe ratio",
     "tradesTableTitle": "ट्रेड",
     "colDate": "तारीख",
     "colAction": "कार्रवाई",
@@ -337,7 +482,7 @@
     "actualOutcome": "Actual outcome"
   },
   "reversescreener": {
-    "title": "रिवर्स स्क्रीनर",
+    "title": "Reverse Screener",
     "subtitle": "वर्तमान OHLCV सेटअप को अन्य टिकरों के समान ऐतिहासिक दिनों से मिलाएँ (RSI, 20d औसत बनाम वॉल्यूम, 1d रिटर्न, ट्रेंड, ATR/क्लोज़ — Signal DNA जैसी समानता)।",
     "symbolLabel": "टिकर",
     "symbolPlaceholder": "उदा. RELIANCE",
@@ -361,10 +506,10 @@
     "errorSymbol": "कृपया टिकर दर्ज करें।"
   },
   "trackrecord": {
-    "title": "Anonymous Track Record",
+    "title": "Anonimowy Track Record",
     "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Generate my track record",
-    "cardTitle": "Your public track record",
+    "generateButton": "Wygeneruj mój Track Record",
+    "cardTitle": "Twój publiczny Track Record",
     "winRate": "Win rate",
     "totalTrades": "Total trades",
     "avgReturn": "Average return",
@@ -391,7 +536,7 @@
     "mainResultLabel": "Your style is",
     "primary": "Primary match",
     "secondary": "Secondary match",
-    "insightLabel": "AI insight",
+    "insightLabel": "AI Insight",
     "notEnoughData": "You need at least 20 closed trades.",
     "legends": {
       "BUFFETT": "Buffett",
@@ -421,7 +566,7 @@
     "searchButton": "Mirror insiders",
     "validationSymbol": "Please provide a valid symbol.",
     "resultFor": "Insider activity for",
-    "insight": "AI insight",
+    "insight": "AI Insight",
     "transactionsTitle": "Transactions (last 30 days, > $50k)",
     "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
     "colName": "Name",
@@ -449,13 +594,14 @@
     "disableAction": "Disable",
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
-    "styleStrict": "Strict"
+    "styleStrict": "Strict",
+    "guidanceUnavailable": "मेंटर मार्गदर्शन अभी उपलब्ध नहीं है (एंडपॉइंट ने 404 लौटाया)।"
   },
   "mirror": {
-    "title": "मिरर ट्रेडिंग",
+    "title": "Mirror Trading",
     "subtitle": "जिन ट्रेडर्स ने मिरर शेयरिंग चालू की है, उन्हें फॉलो करें। आँकड़े बंद पेपर ट्रेड्स से।",
     "topTraders": "शीर्ष ट्रेडर",
-    "winRate": "जीत दर",
+    "winRate": "Win rate",
     "totalTrades": "कुल ट्रेड",
     "followers": "फॉलोअर",
     "follow": "फॉलो",
@@ -463,7 +609,7 @@
     "myFollowing": "मेरे फॉलो",
     "loadError": "मिरर डेटा लोड नहीं हो सका।",
     "actionError": "क्रिया विफल। फिर कोशिश करें।",
-    "settingsTitle": "मिरर ट्रेडिंग चालू करें",
+    "settingsTitle": "Włącz Mirror Trading",
     "settingsSubtitle": "दूसरों को आपका पेपर ट्रेडिंग प्रोफ़ाइल फॉलो करने दें। राजस्व हिस्सा भविष्य के बिलिंग के लिए (0–50%)।",
     "toggleLabel": "मिरर फॉलोअर स्वीकार करें",
     "revenueShare": "राजस्व हिस्सा",
@@ -538,9 +684,9 @@
         "condition": "At least 10 closed paper trades"
       },
       "RISK_MANAGEMENT": {
-        "name": "Risk Management",
+        "name": "Risk management",
         "description": "Stosujesz position sizing",
-        "condition": "Use Position Size Calculator at least 3 times"
+        "condition": "Position Size Calculator: min. 3 użycia"
       },
       "BEHAVIORAL": {
         "name": "Behavioral",
@@ -555,7 +701,7 @@
       "STRATEGY": {
         "name": "Strategy",
         "description": "Masz spójną strategię",
-        "condition": "At least 20 trades and win rate over 40%"
+        "condition": "Min. 20 transakcji i win rate > 40%"
       }
     }
   },
@@ -588,7 +734,7 @@
     },
     "tooltip": {
       "volatility": "Volatility",
-      "avgReturn": "Avg return"
+      "avgReturn": "Avg. return"
     },
     "errors": {
       "symbolRequired": "Please enter a symbol."
@@ -602,7 +748,7 @@
     "mostImpactful": "Most impactful news",
     "halfLifeDaysLabel": "Half-life: {{days}} days",
     "halfLifeDaysBadge": "{{days}} days",
-    "expired": "expired",
+    "expired": "Expired",
     "categoryLabel": "Category",
     "reasonLabel": "Reason",
     "remainingLabel": "Time left",
@@ -660,5 +806,74 @@
     "complianceNo": "No",
     "complianceUnknown": "—",
     "emptyLogs": "No entries yet."
+  },
+  "home": {
+    "title": "Companies",
+    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
+    "searchPlaceholder": "Search by name or symbol...",
+    "emptySelectSector": "Choose a sector or run a search to see companies.",
+    "emptySector": "No companies in this sector yet.",
+    "sectorLabel": "Sector"
+  },
+  "sector": {
+    "all": "All",
+    "technology": "Technology",
+    "financialServices": "Financial Services",
+    "healthcare": "Healthcare",
+    "consumerCyclical": "Consumer Cyclical",
+    "industrials": "Industrials",
+    "energy": "Energy",
+    "communicationServices": "Communication Services",
+    "consumerDefensive": "Consumer Defensive",
+    "utilities": "Utilities",
+    "realEstate": "Real Estate",
+    "basicMaterials": "Basic Materials"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
+    "companiesTitle": "Companies",
+    "companiesDesc": "Search and sector grid with logos.",
+    "signalsTitle": "Signals",
+    "signalsDesc": "Coming soon - screener and AI scores.",
+    "portfolioTitle": "Portfolio",
+    "portfolioDesc": "Coming soon - watchlists and alerts."
+  },
+  "dividendsPage": {
+    "title": "Dividend screening (MVP)",
+    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
+    "historyTitle": "Dividend history",
+    "symbol": "Symbol",
+    "yearsBack": "Years back",
+    "fetch": "Fetch",
+    "exDate": "Ex-date",
+    "payDate": "Pay date",
+    "amount": "Amount",
+    "yield": "Yield %",
+    "emptyHistory": "No rows yet - run seed or change filters.",
+    "screenerTitle": "Screener: dividend growth (CAGR)",
+    "minYears": "Min. years of history",
+    "minYield": "Min. yield %",
+    "refresh": "Refresh"
+  },
+  "company": {
+    "loading": "Loading company...",
+    "backHome": "<- Back home",
+    "backCompanies": "<- Companies",
+    "sector": "Sector",
+    "industry": "Industry",
+    "website": "Website",
+    "chartTitle": "Close - recent history",
+    "close": "Close",
+    "noQuoteHistory": "No quote history yet.",
+    "recentNews": "Recent news",
+    "noNews": "No news rows in database yet."
+  },
+  "dividendIntelligence": {
+    "title": "Dividend Intelligence",
+    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
+    "symbol": "Symbol",
+    "sectorPercentile": "Sector percentile",
+    "vsPeers": "(vs peers in sector)"
   }
 }

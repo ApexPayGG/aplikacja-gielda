@@ -6,9 +6,9 @@
     "dividend": "配当",
     "dividendIntelligence": "配当インテリジェンス",
     "paperTrading": "ペーパートレード",
-    "mirrorTrading": "ミラートレード",
+    "mirrorTrading": "Mirror Trading",
     "coach": "コーチ",
-    "alphaCalendar": "アルファカレンダー",
+    "alphaCalendar": "Alpha Calendar",
     "positionSize": "計算機",
     "stressTest": "ストレステスト",
     "concentration": "集中度",
@@ -37,7 +37,10 @@
     "close": "閉じる",
     "open": "開く",
     "buy": "買い",
-    "sell": "売り"
+    "sell": "売り",
+    "apiMockBadge": "Mock fallback active",
+    "apiLiveBadge": "Live API",
+    "notAvailable": "n/a"
   },
   "money": {
     "gpwCaption": "金額はPLN（GPW想定）。横のUSDは目安です（約3.95 PLN = 1 USD、ライブ為替ではありません）。"
@@ -50,20 +53,144 @@
   "signals": {
     "title": "シグナル",
     "riskScore": "リスクスコア",
-    "winRate": "勝率",
+    "winRate": "Win rate",
     "avgReturn": "平均リターン",
     "confidence": "信頼度",
-    "regime": "市場レジーム",
-    "entry": "エントリー",
-    "stopLoss": "ストップロス",
-    "takeProfit": "利確",
-    "aiBreif": "AIブリーフ",
-    "dna": "シグナルDNA",
+    "regime": {
+      "title": "Silnik Reżimu Rynkowego",
+      "mode": "Tryb",
+      "executionStyle": "Styl egzekucji",
+      "riskCap": "Limit ryzyka / trade"
+    },
+    "entry": "Entry",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "aiBreif": "AI Brief",
+    "dna": "Signal DNA",
     "similarity": "類似度",
     "narrative": "ナラティブ",
     "headline": "見出し",
     "riskNote": "リスクメモ",
-    "preMortemFromSetup": "Pre-Mortem (from this setup)"
+    "preMortemFromSetup": "Pre-Mortem (from this setup)",
+    "noSignalSelected": "No signal selected.",
+    "unknownSetup": "不明なセットアップ",
+    "autonomousWatchlist": "Autonomous watchlist",
+    "liveEngine": {
+      "label": "Silnik na żywo",
+      "polling": "Tryb polling",
+      "sseUnavailable": "Aktualizacje co 15s",
+      "lastUpdate": "Ostatnia: {{time}}",
+      "lastUpdateEmpty": "Ostatnia: --:--:--"
+    },
+    "liveWaiting": "Waiting for stream…",
+    "liveStreamUpdate": "Live stream update received",
+    "livePollingUpdate": "Polling update received",
+    "liveConnectedSse": "Connected to live stream",
+    "confidenceLabel": "Confidence: {{level}}",
+    "confidenceCue": {
+      "PRIME": "PRIME",
+      "STRONG": "STRONG",
+      "WATCH": "WATCH"
+    },
+    "regimeDetail": {
+      "TRENDING": {
+        "mode": "Trend acceleration",
+        "style": "Breakout continuation",
+        "riskCap": "1.25R"
+      },
+      "RISK_ON": {
+        "mode": "Pro-risk expansion",
+        "style": "Momentum basket",
+        "riskCap": "1.00R"
+      },
+      "RISK_OFF": {
+        "mode": "Capital defense",
+        "style": "Mean reversion only",
+        "riskCap": "0.50R"
+      },
+      "RANGING": {
+        "mode": "Neutral grid",
+        "style": "Range edges + quick exits",
+        "riskCap": "0.75R"
+      }
+    },
+    "marketRegime": {
+      "TRENDING": "Trending",
+      "RANGING": "Ranging",
+      "RISK_ON": "Risk-on",
+      "RISK_OFF": "Risk-off"
+    },
+    "signalType": {
+      "CRITICAL": "Critical",
+      "STANDARD": "Standard",
+      "RESEARCH": "Research"
+    },
+    "transport": {
+      "SSE": "SSE",
+      "POLLING": "Polling",
+      "OFFLINE": "Offline"
+    },
+    "copilotAction": {
+      "ENTER": "Enter",
+      "WAIT": "Wait",
+      "REDUCE": "Reduce"
+    },
+    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
+    "dnaWhySimilar": "類似の理由:",
+    "dnaCounterpoint": "留意点:",
+    "dnaExplain": {
+      "high": {
+        "why": "価格構造とボラティリティ・レジームがほぼ同一です。",
+        "counter": "マクロ環境は異なります。過大なポジションは避けてください。"
+      },
+      "mid": {
+        "why": "モメンタムと出来高の圧縮が過去の勝ちパターンと一致します。",
+        "counter": "継続的な出来高がなければシグナルはすぐ弱まる可能性があります。"
+      },
+      "low": {
+        "why": "信頼度がやや低い部分的重なりです。",
+        "counter": "補助的な根拠として扱い、主トリガーとしないでください。"
+      }
+    },
+    "discordEmbedTitle": "Discord embed preview",
+    "discordRisk": "Risk {{score}}/100",
+    "trackRecordTitle": "Track Record",
+    "trackWinRate": "Win rate",
+    "trackAvgReturn": "Avg. return",
+    "trackMaxDd": "Max DD",
+    "trackTotalSignals": "Total signals",
+    "executionTitle": "Battle-tested execution simulator",
+    "executionEntry": "Entry",
+    "executionStop": "Stop",
+    "executionTarget": "Target",
+    "executionRr": "R:R",
+    "executionExpectedValue": "Expected value",
+    "executionWorstCase": "Worst case",
+    "mockNarrative": {
+      "headline": "{{ticker}} — セットアップ: {{setup}}",
+      "body": "{{ticker}} のモメンタムは {{regime}} と整合します。価格と出来高は、invalidation レベルが守られれば抑制された下振れリスクで継続余地を示唆します。",
+      "riskNote": "ローソク足の確定を待ち、ストップの規律を厳守してください。"
+    },
+    "narrativeHeadlineFallback": "シグナル叙述: {{ticker}}",
+    "narrativeBodyFallback": "API から叙述本文が返されませんでした。",
+    "narrativeRiskNoteFallback": "API からリスクノートが返されませんでした。",
+    "narrativeConfidence": {
+      "HIGH": "Wysoki",
+      "MEDIUM": "Średni",
+      "LOW": "Niski"
+    },
+    "mentor": {
+      "notFound": "Analysis unavailable"
+    },
+    "copilot": {
+      "title": "Decyzja AI Copilot",
+      "conviction": "Przekonanie",
+      "invalidation": "Unieważnienie",
+      "invalidationBody": "Wyjdź, jeśli ruch sięgnie {{pct}}% od wejścia albo zmieni się reżim.",
+      "checkpoint": "Punkt kontrolny",
+      "checkpointBody": "Oceń ponownie po zamknięciu sesji i przy świeżym wolumenie.",
+      "enter": "Wchodzę"
+    }
   },
   "reactions": {
     "title": "コメント",
@@ -87,18 +214,18 @@
     "risky": "リスク高"
   },
   "paperTrading": {
-    "title": "ペーパートレード",
+    "title": "Paper Trading",
     "openPosition": "ポジションを開く",
     "closePosition": "ポジションを閉じる",
     "portfolio": "ポートフォリオ",
     "history": "取引履歴",
-    "pnl": "損益",
+    "pnl": "P&L",
     "direction": "方向",
     "quantity": "数量",
     "entryPrice": "エントリー価格",
     "exitPrice": "決済価格",
-    "long": "ロング",
-    "short": "ショート"
+    "long": "Long",
+    "short": "Short"
   },
   "coach": {
     "title": "行動コーチ",
@@ -109,8 +236,16 @@
     "noBiases": "バイアスは検出されませんでした",
     "cutsWinners": "利益確定が早すぎる",
     "holdsLosers": "損失を長く保持しすぎる",
-    "overtrading": "オーバートレード",
-    "aiCoach": "AIコーチのコメント"
+    "overtrading": "Overtrading",
+    "aiCoach": "AIコーチのコメント",
+    "avgHoldWin": "平均保有（利益）",
+    "avgHoldLoss": "平均保有（損失）",
+    "biasCutsBody": "利益は平均約{{winHours}}時間で決済していますが、損失は約{{lossHours}}時間保有しています。",
+    "biasHoldsBody": "平均損失: {{lossPct}}%; 損失トレードの保有: {{lossHours}}時間。",
+    "biasOverBody": "過去24時間に{{maxTrades}}件を超える取引があります。",
+    "aiDescriptionEmpty": "AIコーチの解説はまだありません。",
+    "chartAvgWin": "Avg. win %",
+    "chartAvgLoss": "Avg. loss %"
   },
   "cooldown": {
     "title": "連続損失クールダウン",
@@ -118,14 +253,23 @@
     "unlocksIn": "解除まで"
   },
   "alpha": {
-    "title": "アルファカレンダー",
+    "title": "Alpha Calendar",
     "windows": "確率ウィンドウ",
     "probability": "確率",
     "historicalReturn": "過去リターン",
     "earningsCycle": "決算サイクル",
     "seasonal": "季節性",
     "sectorRotation": "セクターローテーション",
-    "regimeShift": "レジームシフト"
+    "regimeShift": "レジームシフト",
+    "subtitleNext48h": "今後48時間",
+    "aiSummaryTitle": "AIサマリー",
+    "aiSummaryEmpty": "AIサマリーはありません。",
+    "tickerLabel": "Ticker",
+    "tickerPlaceholder": "例: AAPL",
+    "colStart": "開始",
+    "colEnd": "終了",
+    "colDescription": "説明",
+    "emptyTickerRows": "このティッカーのウィンドウはありません。"
   },
   "positionSize": {
     "title": "ポジションサイズ計算機",
@@ -136,7 +280,7 @@
     "accountSize": "口座資金",
     "riskPercent": "最大リスク %（資金比）",
     "entry": "エントリー価格",
-    "stop": "ストップロス",
+    "stop": "Stop Loss",
     "conviction": "セットアップの確信度",
     "convictionLow": "低",
     "convictionMedium": "中",
@@ -199,7 +343,7 @@
     }
   },
   "correlation": {
-    "title": "Correlation Detector",
+    "title": "Correlation Scanner",
     "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
     "mainSymbol": "Main symbol",
     "portfolioSymbols": "Portfolio symbols (comma separated)",
@@ -213,7 +357,7 @@
     "warningLowRisk": "OK",
     "highRiskPairs": "High-risk pairs (> 0.7)",
     "noHighRiskPairs": "No high-risk pair detected.",
-    "aiInsight": "AI insight"
+    "aiInsight": "AI Insight"
   },
   "taxOptimizer": {
     "title": "税務最適化 PIT-38",
@@ -294,7 +438,7 @@
     "selectPrompt": "Select a term from the list to load its explanation."
   },
   "backtest": {
-    "title": "ウォークフォワード・バックテスト",
+    "title": "Walk-Forward Backtest",
     "subtitle": "30日ウィンドウ。シグナルは過去データのみ。成果は5営業日後の終値とエントリー比較。",
     "symbol": "銘柄",
     "strategy": "戦略",
@@ -306,13 +450,13 @@
     "months6": "6か月",
     "months12": "12か月",
     "monthsSuffix": "か月",
-    "runButton": "バックテスト実行",
+    "runButton": "Run backtest",
     "resultsTitle": "結果",
-    "winRate": "勝率",
+    "winRate": "Win rate",
     "avgReturn": "平均リターン",
     "totalTrades": "取引数",
-    "maxDrawdown": "最大DD",
-    "sharpeRatio": "シャープレシオ",
+    "maxDrawdown": "Max drawdown",
+    "sharpeRatio": "Sharpe ratio",
     "tradesTableTitle": "取引一覧",
     "colDate": "日付",
     "colAction": "売買",
@@ -338,7 +482,7 @@
     "actualOutcome": "Actual outcome"
   },
   "reversescreener": {
-    "title": "リバーススクリーナー",
+    "title": "Reverse Screener",
     "subtitle": "現在のOHLCVセットアップを他銘柄の類似した過去日と照合（RSI・20日平均比ボリューム・1日リターン・トレンド・ATR/終値 — Signal DNA風の類似度）。",
     "symbolLabel": "ティッカー",
     "symbolPlaceholder": "例: 7203",
@@ -362,10 +506,10 @@
     "errorSymbol": "ティッカーを入力してください。"
   },
   "trackrecord": {
-    "title": "Anonymous Track Record",
+    "title": "Anonimowy Track Record",
     "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Generate my track record",
-    "cardTitle": "Your public track record",
+    "generateButton": "Wygeneruj mój Track Record",
+    "cardTitle": "Twój publiczny Track Record",
     "winRate": "Win rate",
     "totalTrades": "Total trades",
     "avgReturn": "Average return",
@@ -392,7 +536,7 @@
     "mainResultLabel": "Your style is",
     "primary": "Primary match",
     "secondary": "Secondary match",
-    "insightLabel": "AI insight",
+    "insightLabel": "AI Insight",
     "notEnoughData": "You need at least 20 closed trades.",
     "legends": {
       "BUFFETT": "Buffett",
@@ -422,7 +566,7 @@
     "searchButton": "Mirror insiders",
     "validationSymbol": "Please provide a valid symbol.",
     "resultFor": "Insider activity for",
-    "insight": "AI insight",
+    "insight": "AI Insight",
     "transactionsTitle": "Transactions (last 30 days, > $50k)",
     "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
     "colName": "Name",
@@ -450,13 +594,14 @@
     "disableAction": "Disable",
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
-    "styleStrict": "Strict"
+    "styleStrict": "Strict",
+    "guidanceUnavailable": "メンターのガイダンスはまだ利用できません（エンドポイントが 404 を返しました）。"
   },
   "mirror": {
-    "title": "ミラートレード",
+    "title": "Mirror Trading",
     "subtitle": "ミラー共有を有効にしたトレーダーをフォロー。統計は決済済みペーパートレード由来です。",
     "topTraders": "トップトレーダー",
-    "winRate": "勝率",
+    "winRate": "Win rate",
     "totalTrades": "総トレード数",
     "followers": "フォロワー",
     "follow": "フォロー",
@@ -464,7 +609,7 @@
     "myFollowing": "フォロー中",
     "loadError": "ミラーデータを読み込めませんでした。",
     "actionError": "操作に失敗しました。再試行してください。",
-    "settingsTitle": "ミラートレードを有効化",
+    "settingsTitle": "Włącz Mirror Trading",
     "settingsSubtitle": "他ユーザーにペーパートレードプロフィールのフォローを許可。収益シェアは将来の課金用に保存（0〜50%）。",
     "toggleLabel": "ミラーフォロワーを受け入れる",
     "revenueShare": "収益シェア",
@@ -539,9 +684,9 @@
         "condition": "At least 10 closed paper trades"
       },
       "RISK_MANAGEMENT": {
-        "name": "Risk Management",
+        "name": "Risk management",
         "description": "Stosujesz position sizing",
-        "condition": "Use Position Size Calculator at least 3 times"
+        "condition": "Position Size Calculator: min. 3 użycia"
       },
       "BEHAVIORAL": {
         "name": "Behavioral",
@@ -556,7 +701,7 @@
       "STRATEGY": {
         "name": "Strategy",
         "description": "Masz spójną strategię",
-        "condition": "At least 20 trades and win rate over 40%"
+        "condition": "Min. 20 transakcji i win rate > 40%"
       }
     }
   },
@@ -589,7 +734,7 @@
     },
     "tooltip": {
       "volatility": "Volatility",
-      "avgReturn": "Avg return"
+      "avgReturn": "Avg. return"
     },
     "errors": {
       "symbolRequired": "Please enter a symbol."
@@ -603,7 +748,7 @@
     "mostImpactful": "Most impactful news",
     "halfLifeDaysLabel": "Half-life: {{days}} days",
     "halfLifeDaysBadge": "{{days}} days",
-    "expired": "expired",
+    "expired": "Expired",
     "categoryLabel": "Category",
     "reasonLabel": "Reason",
     "remainingLabel": "Time left",
@@ -661,5 +806,74 @@
     "complianceNo": "No",
     "complianceUnknown": "—",
     "emptyLogs": "No entries yet."
+  },
+  "home": {
+    "title": "Companies",
+    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
+    "searchPlaceholder": "Search by name or symbol...",
+    "emptySelectSector": "Choose a sector or run a search to see companies.",
+    "emptySector": "No companies in this sector yet.",
+    "sectorLabel": "Sector"
+  },
+  "sector": {
+    "all": "All",
+    "technology": "Technology",
+    "financialServices": "Financial Services",
+    "healthcare": "Healthcare",
+    "consumerCyclical": "Consumer Cyclical",
+    "industrials": "Industrials",
+    "energy": "Energy",
+    "communicationServices": "Communication Services",
+    "consumerDefensive": "Consumer Defensive",
+    "utilities": "Utilities",
+    "realEstate": "Real Estate",
+    "basicMaterials": "Basic Materials"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
+    "companiesTitle": "Companies",
+    "companiesDesc": "Search and sector grid with logos.",
+    "signalsTitle": "Signals",
+    "signalsDesc": "Coming soon - screener and AI scores.",
+    "portfolioTitle": "Portfolio",
+    "portfolioDesc": "Coming soon - watchlists and alerts."
+  },
+  "dividendsPage": {
+    "title": "Dividend screening (MVP)",
+    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
+    "historyTitle": "Dividend history",
+    "symbol": "Symbol",
+    "yearsBack": "Years back",
+    "fetch": "Fetch",
+    "exDate": "Ex-date",
+    "payDate": "Pay date",
+    "amount": "Amount",
+    "yield": "Yield %",
+    "emptyHistory": "No rows yet - run seed or change filters.",
+    "screenerTitle": "Screener: dividend growth (CAGR)",
+    "minYears": "Min. years of history",
+    "minYield": "Min. yield %",
+    "refresh": "Refresh"
+  },
+  "company": {
+    "loading": "Loading company...",
+    "backHome": "<- Back home",
+    "backCompanies": "<- Companies",
+    "sector": "Sector",
+    "industry": "Industry",
+    "website": "Website",
+    "chartTitle": "Close - recent history",
+    "close": "Close",
+    "noQuoteHistory": "No quote history yet.",
+    "recentNews": "Recent news",
+    "noNews": "No news rows in database yet."
+  },
+  "dividendIntelligence": {
+    "title": "Dividend Intelligence",
+    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
+    "symbol": "Symbol",
+    "sectorPercentile": "Sector percentile",
+    "vsPeers": "(vs peers in sector)"
   }
 }

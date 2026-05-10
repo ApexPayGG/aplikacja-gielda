@@ -9,7 +9,7 @@
     "mirrorTrading": "Mirror Trading",
     "coach": "Coach",
     "mistakeLibrary": "Fehlerbibliothek",
-    "alphaCalendar": "Alpha-Kalender",
+    "alphaCalendar": "Alpha Calendar",
     "positionSize": "Rechner",
     "stressTest": "Stresstest",
     "concentration": "Konzentration",
@@ -37,7 +37,10 @@
     "close": "Schließen",
     "open": "Öffnen",
     "buy": "Kaufen",
-    "sell": "Verkaufen"
+    "sell": "Verkaufen",
+    "apiMockBadge": "Mock fallback active",
+    "apiLiveBadge": "Live API",
+    "notAvailable": "n/a"
   },
   "money": {
     "gpwCaption": "Beträge in PLN (GPW-Notional); USD daneben ist indikativ (ca. 3,95 PLN pro USD, kein Live-Kurs)."
@@ -50,20 +53,144 @@
   "signals": {
     "title": "Signale",
     "riskScore": "Risikowert",
-    "winRate": "Trefferquote",
+    "winRate": "Win rate",
     "avgReturn": "Ø Rendite",
     "confidence": "Konfidenz",
-    "regime": "Marktregime",
-    "entry": "Einstieg",
-    "stopLoss": "Stop-Loss",
-    "takeProfit": "Take-Profit",
-    "aiBreif": "KI-Überblick",
-    "dna": "Signal-DNA",
+    "regime": {
+      "title": "Silnik Reżimu Rynkowego",
+      "mode": "Tryb",
+      "executionStyle": "Styl egzekucji",
+      "riskCap": "Limit ryzyka / trade"
+    },
+    "entry": "Entry",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "aiBreif": "AI Brief",
+    "dna": "Signal DNA",
     "similarity": "Ähnlichkeit",
     "narrative": "Narrativ",
     "headline": "Überschrift",
     "riskNote": "Risiko-Hinweis",
-    "preMortemFromSetup": "Pre-Mortem (from this setup)"
+    "preMortemFromSetup": "Pre-Mortem (from this setup)",
+    "noSignalSelected": "No signal selected.",
+    "unknownSetup": "Unbekanntes Setup",
+    "autonomousWatchlist": "Autonomous watchlist",
+    "liveEngine": {
+      "label": "Silnik na żywo",
+      "polling": "Tryb polling",
+      "sseUnavailable": "Aktualizacje co 15s",
+      "lastUpdate": "Ostatnia: {{time}}",
+      "lastUpdateEmpty": "Ostatnia: --:--:--"
+    },
+    "liveWaiting": "Waiting for stream…",
+    "liveStreamUpdate": "Live stream update received",
+    "livePollingUpdate": "Polling update received",
+    "liveConnectedSse": "Connected to live stream",
+    "confidenceLabel": "Confidence: {{level}}",
+    "confidenceCue": {
+      "PRIME": "PRIME",
+      "STRONG": "STRONG",
+      "WATCH": "WATCH"
+    },
+    "regimeDetail": {
+      "TRENDING": {
+        "mode": "Trend acceleration",
+        "style": "Breakout continuation",
+        "riskCap": "1.25R"
+      },
+      "RISK_ON": {
+        "mode": "Pro-risk expansion",
+        "style": "Momentum basket",
+        "riskCap": "1.00R"
+      },
+      "RISK_OFF": {
+        "mode": "Capital defense",
+        "style": "Mean reversion only",
+        "riskCap": "0.50R"
+      },
+      "RANGING": {
+        "mode": "Neutral grid",
+        "style": "Range edges + quick exits",
+        "riskCap": "0.75R"
+      }
+    },
+    "marketRegime": {
+      "TRENDING": "Trending",
+      "RANGING": "Ranging",
+      "RISK_ON": "Risk-on",
+      "RISK_OFF": "Risk-off"
+    },
+    "signalType": {
+      "CRITICAL": "Critical",
+      "STANDARD": "Standard",
+      "RESEARCH": "Research"
+    },
+    "transport": {
+      "SSE": "SSE",
+      "POLLING": "Polling",
+      "OFFLINE": "Offline"
+    },
+    "copilotAction": {
+      "ENTER": "Enter",
+      "WAIT": "Wait",
+      "REDUCE": "Reduce"
+    },
+    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
+    "dnaWhySimilar": "Warum ähnlich:",
+    "dnaCounterpoint": "Kontrapunkt:",
+    "dnaExplain": {
+      "high": {
+        "why": "Preisstruktur und Volatilitätsregime sind nahezu identisch.",
+        "counter": "Der Makro-Kontext weicht ab; vermeide eine übergroße Position."
+      },
+      "mid": {
+        "why": "Momentum-Profil und Volumenkompression passen zu historischen Gewinnern.",
+        "counter": "Ohne Volumen-Follow-through kann das Signal schnell verblassen."
+      },
+      "low": {
+        "why": "Teilweise Setup-Überlappung bei geringerer Signalqualität.",
+        "counter": "Als stützende Evidenz behandeln, nicht als primären Auslöser."
+      }
+    },
+    "discordEmbedTitle": "Discord embed preview",
+    "discordRisk": "Risk {{score}}/100",
+    "trackRecordTitle": "Track Record",
+    "trackWinRate": "Win rate",
+    "trackAvgReturn": "Avg. return",
+    "trackMaxDd": "Max DD",
+    "trackTotalSignals": "Total signals",
+    "executionTitle": "Battle-tested execution simulator",
+    "executionEntry": "Entry",
+    "executionStop": "Stop",
+    "executionTarget": "Target",
+    "executionRr": "R:R",
+    "executionExpectedValue": "Expected value",
+    "executionWorstCase": "Worst case",
+    "mockNarrative": {
+      "headline": "{{ticker}} – Setup: {{setup}}",
+      "body": "Das Momentum-Profil für {{ticker}} passt zum Regime {{regime}}. Kurs- und Volumenverhalten deuten auf Fortsetzungspotenzial hin, sofern das Invalidations-Level respektiert wird.",
+      "riskNote": "Warte auf die Bestätigung durch den Kerzenschluss und halte eine strikte Stop-Disziplin ein."
+    },
+    "narrativeHeadlineFallback": "Signal-Narrativ: {{ticker}}",
+    "narrativeBodyFallback": "Die API hat keinen Narrativ-Text zurückgegeben.",
+    "narrativeRiskNoteFallback": "Die API hat keine Risikonote zurückgegeben.",
+    "narrativeConfidence": {
+      "HIGH": "Wysoki",
+      "MEDIUM": "Średni",
+      "LOW": "Niski"
+    },
+    "mentor": {
+      "notFound": "Analysis unavailable"
+    },
+    "copilot": {
+      "title": "Decyzja AI Copilot",
+      "conviction": "Przekonanie",
+      "invalidation": "Unieważnienie",
+      "invalidationBody": "Wyjdź, jeśli ruch sięgnie {{pct}}% od wejścia albo zmieni się reżim.",
+      "checkpoint": "Punkt kontrolny",
+      "checkpointBody": "Oceń ponownie po zamknięciu sesji i przy świeżym wolumenie.",
+      "enter": "Wchodzę"
+    }
   },
   "reactions": {
     "title": "Kommentare",
@@ -110,7 +237,15 @@
     "cutsWinners": "Gewinne zu früh begrenzt",
     "holdsLosers": "Verluste zu lange gehalten",
     "overtrading": "Overtrading",
-    "aiCoach": "KI-Coach sagt"
+    "aiCoach": "KI-Coach sagt",
+    "avgHoldWin": "Ø Haltedauer (Gewinner)",
+    "avgHoldLoss": "Ø Haltedauer (Verlierer)",
+    "biasCutsBody": "Du schließt Gewinner nach durchschnittlich {{winHours}} h, hältst Verluste jedoch {{lossHours}} h.",
+    "biasHoldsBody": "Ø Verlust: {{lossPct}}%; Haltedauer in Verlusttrades: {{lossHours}} h.",
+    "biasOverBody": "Mehr als {{maxTrades}} Trades in den letzten 24 Stunden.",
+    "aiDescriptionEmpty": "Noch kein KI-Coach-Inhalt.",
+    "chartAvgWin": "Avg. win %",
+    "chartAvgLoss": "Avg. loss %"
   },
   "cooldown": {
     "title": "Verlustserie Cool-Down",
@@ -118,14 +253,23 @@
     "unlocksIn": "Freigabe in"
   },
   "alpha": {
-    "title": "Alpha-Kalender",
+    "title": "Alpha Calendar",
     "windows": "Wahrscheinlichkeitsfenster",
     "probability": "Wahrscheinlichkeit",
     "historicalReturn": "Historische Rendite",
     "earningsCycle": "Earnings-Zyklus",
     "seasonal": "Saisonal",
     "sectorRotation": "Sektorrotation",
-    "regimeShift": "Regimewechsel"
+    "regimeShift": "Regimewechsel",
+    "subtitleNext48h": "Nächste 48 Std",
+    "aiSummaryTitle": "KI-Zusammenfassung",
+    "aiSummaryEmpty": "Keine KI-Zusammenfassung verfügbar.",
+    "tickerLabel": "Ticker",
+    "tickerPlaceholder": "z. B. AAPL",
+    "colStart": "Beginn",
+    "colEnd": "Ende",
+    "colDescription": "Beschreibung",
+    "emptyTickerRows": "Keine Fenster für diesen Ticker."
   },
   "positionSize": {
     "title": "Positionsgrößen-Rechner",
@@ -136,7 +280,7 @@
     "accountSize": "Kontogröße",
     "riskPercent": "Max. Risiko % des Kapitals",
     "entry": "Einstiegspreis",
-    "stop": "Stop-Loss",
+    "stop": "Stop Loss",
     "conviction": "Setup-Überzeugung",
     "convictionLow": "Niedrig",
     "convictionMedium": "Mittel",
@@ -199,7 +343,7 @@
     }
   },
   "correlation": {
-    "title": "Correlation Detector",
+    "title": "Correlation Scanner",
     "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
     "mainSymbol": "Main symbol",
     "portfolioSymbols": "Portfolio symbols (comma separated)",
@@ -213,7 +357,7 @@
     "warningLowRisk": "OK",
     "highRiskPairs": "High-risk pairs (> 0.7)",
     "noHighRiskPairs": "No high-risk pair detected.",
-    "aiInsight": "AI insight"
+    "aiInsight": "AI Insight"
   },
   "taxOptimizer": {
     "title": "Steuer-Optimierer PIT-38",
@@ -294,7 +438,7 @@
     "selectPrompt": "Select a term from the list to load its explanation."
   },
   "backtest": {
-    "title": "Walk-Forward-Backtest",
+    "title": "Walk-Forward Backtest",
     "subtitle": "30-Tage-Fenster; Signale nur aus Vergangenheitsdaten; Ergebnis = Schlusskurs nach 5 Handelstagen vs. Einstieg.",
     "symbol": "Symbol",
     "strategy": "Strategie",
@@ -306,13 +450,13 @@
     "months6": "6 Monate",
     "months12": "12 Monate",
     "monthsSuffix": "Monate",
-    "runButton": "Backtest starten",
+    "runButton": "Run backtest",
     "resultsTitle": "Ergebnisse",
-    "winRate": "Trefferquote",
+    "winRate": "Win rate",
     "avgReturn": "Ø Rendite",
     "totalTrades": "Trades gesamt",
-    "maxDrawdown": "Max. Drawdown",
-    "sharpeRatio": "Sharpe-Ratio",
+    "maxDrawdown": "Max drawdown",
+    "sharpeRatio": "Sharpe ratio",
     "tradesTableTitle": "Trades",
     "colDate": "Datum",
     "colAction": "Aktion",
@@ -362,10 +506,10 @@
     "errorSymbol": "Bitte Ticker eingeben."
   },
   "trackrecord": {
-    "title": "Anonymous Track Record",
+    "title": "Anonimowy Track Record",
     "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Generate my track record",
-    "cardTitle": "Your public track record",
+    "generateButton": "Wygeneruj mój Track Record",
+    "cardTitle": "Twój publiczny Track Record",
     "winRate": "Win rate",
     "totalTrades": "Total trades",
     "avgReturn": "Average return",
@@ -392,7 +536,7 @@
     "mainResultLabel": "Your style is",
     "primary": "Primary match",
     "secondary": "Secondary match",
-    "insightLabel": "AI insight",
+    "insightLabel": "AI Insight",
     "notEnoughData": "You need at least 20 closed trades.",
     "legends": {
       "BUFFETT": "Buffett",
@@ -422,7 +566,7 @@
     "searchButton": "Mirror insiders",
     "validationSymbol": "Please provide a valid symbol.",
     "resultFor": "Insider activity for",
-    "insight": "AI insight",
+    "insight": "AI Insight",
     "transactionsTitle": "Transactions (last 30 days, > $50k)",
     "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
     "colName": "Name",
@@ -450,13 +594,14 @@
     "disableAction": "Disable",
     "styleLabel": "Mentor style",
     "styleSupportive": "Supportive",
-    "styleStrict": "Strict"
+    "styleStrict": "Strict",
+    "guidanceUnavailable": "Mentoren-Hinweise sind noch nicht verfügbar (404 vom Endpunkt)."
   },
   "mirror": {
     "title": "Mirror Trading",
     "subtitle": "Folgen Sie Tradern mit aktivem Mirror-Sharing. Kennzahlen aus geschlossenen Paper-Trades.",
     "topTraders": "Top-Trader",
-    "winRate": "Trefferquote",
+    "winRate": "Win rate",
     "totalTrades": "Trades gesamt",
     "followers": "Follower",
     "follow": "Folgen",
@@ -464,7 +609,7 @@
     "myFollowing": "Meine Abos",
     "loadError": "Mirror-Daten konnten nicht geladen werden.",
     "actionError": "Aktion fehlgeschlagen. Bitte erneut versuchen.",
-    "settingsTitle": "Mirror Trading aktivieren",
+    "settingsTitle": "Włącz Mirror Trading",
     "settingsSubtitle": "Erlauben Sie anderen, Ihr Paper-Trading-Profil zu folgen. Revenue-Share für künftige Abrechnung (0–50%).",
     "toggleLabel": "Mirror-Follower akzeptieren",
     "revenueShare": "Revenue Share",
@@ -539,9 +684,9 @@
         "condition": "At least 10 closed paper trades"
       },
       "RISK_MANAGEMENT": {
-        "name": "Risk Management",
+        "name": "Risk management",
         "description": "Stosujesz position sizing",
-        "condition": "Use Position Size Calculator at least 3 times"
+        "condition": "Position Size Calculator: min. 3 użycia"
       },
       "BEHAVIORAL": {
         "name": "Behavioral",
@@ -556,7 +701,7 @@
       "STRATEGY": {
         "name": "Strategy",
         "description": "Masz spójną strategię",
-        "condition": "At least 20 trades and win rate over 40%"
+        "condition": "Min. 20 transakcji i win rate > 40%"
       }
     }
   },
@@ -589,7 +734,7 @@
     },
     "tooltip": {
       "volatility": "Volatility",
-      "avgReturn": "Avg return"
+      "avgReturn": "Avg. return"
     },
     "errors": {
       "symbolRequired": "Please enter a symbol."
@@ -603,7 +748,7 @@
     "mostImpactful": "Most impactful news",
     "halfLifeDaysLabel": "Half-life: {{days}} days",
     "halfLifeDaysBadge": "{{days}} days",
-    "expired": "expired",
+    "expired": "Expired",
     "categoryLabel": "Category",
     "reasonLabel": "Reason",
     "remainingLabel": "Time left",
@@ -661,5 +806,74 @@
     "complianceNo": "No",
     "complianceUnknown": "—",
     "emptyLogs": "No entries yet."
+  },
+  "home": {
+    "title": "Companies",
+    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
+    "searchPlaceholder": "Search by name or symbol...",
+    "emptySelectSector": "Choose a sector or run a search to see companies.",
+    "emptySector": "No companies in this sector yet.",
+    "sectorLabel": "Sector"
+  },
+  "sector": {
+    "all": "All",
+    "technology": "Technology",
+    "financialServices": "Financial Services",
+    "healthcare": "Healthcare",
+    "consumerCyclical": "Consumer Cyclical",
+    "industrials": "Industrials",
+    "energy": "Energy",
+    "communicationServices": "Communication Services",
+    "consumerDefensive": "Consumer Defensive",
+    "utilities": "Utilities",
+    "realEstate": "Real Estate",
+    "basicMaterials": "Basic Materials"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
+    "companiesTitle": "Companies",
+    "companiesDesc": "Search and sector grid with logos.",
+    "signalsTitle": "Signals",
+    "signalsDesc": "Coming soon - screener and AI scores.",
+    "portfolioTitle": "Portfolio",
+    "portfolioDesc": "Coming soon - watchlists and alerts."
+  },
+  "dividendsPage": {
+    "title": "Dividend screening (MVP)",
+    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
+    "historyTitle": "Dividend history",
+    "symbol": "Symbol",
+    "yearsBack": "Years back",
+    "fetch": "Fetch",
+    "exDate": "Ex-date",
+    "payDate": "Pay date",
+    "amount": "Amount",
+    "yield": "Yield %",
+    "emptyHistory": "No rows yet - run seed or change filters.",
+    "screenerTitle": "Screener: dividend growth (CAGR)",
+    "minYears": "Min. years of history",
+    "minYield": "Min. yield %",
+    "refresh": "Refresh"
+  },
+  "company": {
+    "loading": "Loading company...",
+    "backHome": "<- Back home",
+    "backCompanies": "<- Companies",
+    "sector": "Sector",
+    "industry": "Industry",
+    "website": "Website",
+    "chartTitle": "Close - recent history",
+    "close": "Close",
+    "noQuoteHistory": "No quote history yet.",
+    "recentNews": "Recent news",
+    "noNews": "No news rows in database yet."
+  },
+  "dividendIntelligence": {
+    "title": "Dividend Intelligence",
+    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
+    "symbol": "Symbol",
+    "sectorPercentile": "Sector percentile",
+    "vsPeers": "(vs peers in sector)"
   }
 }

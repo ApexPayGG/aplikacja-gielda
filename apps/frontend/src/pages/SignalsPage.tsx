@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { api } from "../services/api";
@@ -7,6 +8,7 @@ import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatQuoteAge } from "../utils/formatQuoteAge";
 import { GlossaryTooltip } from "../components/GlossaryTooltip";
 import { ReactionSection } from "../components/ReactionSection";
+import { resolveUiLocaleForCopy } from "../i18n";
 
 type MarketCode = "US" | "PL" | "DE" | "JP";
 type SignalKind = "CRITICAL" | "STANDARD" | "RESEARCH";
@@ -52,9 +54,10 @@ type LiveTransport = "SSE" | "POLLING" | "OFFLINE";
 type CopilotPlan = {
   action: "ENTER" | "WAIT" | "REDUCE";
   conviction: number;
-  thesis: string;
-  invalidation: string;
-  nextCheckpoint: string;
+  thesisHeadline: string | null;
+  thesisSetup: string;
+  thesisRegimeKey: MarketRegime;
+  invalidationPct: string;
 };
 
 type ExecutionPlan = {
@@ -163,12 +166,19 @@ const mockSignals: SignalListItem[] = [
   },
 ];
 
-const mockNarrative = (signal: SignalListItem): NarrativeData => ({
-  headline: `${signal.ticker} setup: ${signal.setupType}`,
-  body: `Momentum profile for ${signal.ticker} aligns with ${signal.marketRegime}. Price and volume action suggest continuation potential with controlled downside if invalidation level is respected.`,
-  riskNote: "Wait for candle close confirmation and keep strict stop discipline.",
-  confidence: signal.riskScore >= 80 ? "HIGH" : signal.riskScore >= 60 ? "MEDIUM" : "LOW",
-});
+function buildMockNarrative(signal: SignalListItem, t: TFunction): NarrativeData {
+  const regimeLabel = t(`signals.marketRegime.${signal.marketRegime}`);
+  return {
+    headline: t("signals.mockNarrative.headline", { ticker: signal.ticker, setup: signal.setupType }),
+    body: t("signals.mockNarrative.body", {
+      ticker: signal.ticker,
+      setup: signal.setupType,
+      regime: regimeLabel,
+    }),
+    riskNote: t("signals.mockNarrative.riskNote"),
+    confidence: signal.riskScore >= 80 ? "HIGH" : signal.riskScore >= 60 ? "MEDIUM" : "LOW",
+  };
+}
 
 const mockDna = (signal: SignalListItem): DnaData => ({
   matches: [
@@ -180,6 +190,64 @@ const mockDna = (signal: SignalListItem): DnaData => ({
 
 function isEndpointMissing(e: unknown): boolean {
   return axios.isAxiosError(e) && e.response?.status === 404;
+}
+
+/** True when UI locale should keep API English narrative as-is. */
+function prefersEnglishNarrativeLocale(locale: string): boolean {
+  const base = (locale.split("-")[0] ?? "en").toLowerCase();
+  return base === "en";
+}
+
+/**
+ * Detects legacy bundled English demo copy from API (wording variants) so we can swap in i18n.
+ */
+function looksLikeBundledEnglishDemoNarrative(_headline: string, body: string, riskNote: string): boolean {
+  const norm = (s: string) => s.replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
+  const b = norm(body);
+  const r = norm(riskNote);
+  if (b.includes("momentum profile for") && b.includes("aligns with") && b.includes("invalidation")) return true;
+  if (b.includes("price and volume action") && b.includes("continuation potential") && b.includes("invalidation")) return true;
+  if (r.includes("wait for candle close") && r.includes("stop discipline")) return true;
+  return false;
+}
+
+function localizeBundledNarrativeIfNeeded(
+  signal: SignalListItem,
+  locale: string,
+  headline: string,
+  body: string,
+  riskNote: string,
+  confidence: NarrativeConfidence,
+  t: TFunction,
+): NarrativeData {
+  if (prefersEnglishNarrativeLocale(locale) || !looksLikeBundledEnglishDemoNarrative(headline, body, riskNote)) {
+    return { headline, body, riskNote, confidence };
+  }
+  const localized = buildMockNarrative(signal, t);
+  return { ...localized, confidence };
+}
+
+function mentorEndpointLikelyMissing(e: unknown): boolean {
+  if (isEndpointMissing(e)) return true;
+  if (!axios.isAxiosError(e)) return false;
+  const status = e.response?.status;
+  if (status === 404) return true;
+  const data = e.response?.data;
+  if (data && typeof data === "object" && "error" in data) {
+    const err = (data as { error?: unknown }).error;
+    if (typeof err === "string" && /not\s*found/i.test(err.trim())) return true;
+  }
+  const msg = (e.message ?? "").toLowerCase();
+  if (msg.includes("status code 404") || msg.includes(" 404") || /\b404\b/.test(msg)) return true;
+  if (msg.includes("not found")) return true;
+  return false;
+}
+
+function mentorUserFacingError(error: unknown, t: TFunction): string {
+  if (mentorEndpointLikelyMissing(error)) return t("signals.mentor.notFound");
+  const raw = apiErrorMessage(error).trim();
+  if (/not\s*found/i.test(raw)) return t("signals.mentor.notFound");
+  return raw;
 }
 
 function clampPercent(v: number): number {
@@ -205,7 +273,7 @@ function regimeBadgeClass(regime: MarketRegime): string {
   return "bg-brand-red/15 text-brand-red";
 }
 
-function parseSignal(raw: unknown): SignalListItem | null {
+function parseSignal(raw: unknown, t: TFunction): SignalListItem | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   const id = String(r.id ?? "").trim();
@@ -227,7 +295,7 @@ function parseSignal(raw: unknown): SignalListItem | null {
     ticker,
     market,
     riskScore: Number(r.riskScore ?? r.score ?? 0) || 0,
-    setupType: String(r.setupType ?? r.setup ?? "Unknown setup"),
+    setupType: String(r.setupType ?? r.setup ?? "").trim() || t("signals.unknownSetup"),
     marketRegime,
     changePct: Number(r.changePct ?? r.changePercent ?? 0) || 0,
     signalType,
@@ -266,17 +334,18 @@ function mergeSignals(prev: SignalListItem[], incoming: SignalListItem[]): Signa
   return rankSignals([...map.values()]);
 }
 
-function regimeProtocol(regime: MarketRegime): { mode: string; style: string; riskCap: string; color: string } {
+function regimeProtocol(regime: MarketRegime, t: TFunction): { mode: string; style: string; riskCap: string; color: string } {
+  const prefix = `signals.regimeDetail.${regime}`;
   if (regime === "TRENDING") {
-    return { mode: "Trend Acceleration", style: "Breakout continuation", riskCap: "1.25R", color: "text-brand-green" };
+    return { mode: t(`${prefix}.mode`), style: t(`${prefix}.style`), riskCap: t(`${prefix}.riskCap`), color: "text-brand-green" };
   }
   if (regime === "RISK_ON") {
-    return { mode: "Pro-Risk Expansion", style: "Momentum basket", riskCap: "1.00R", color: "text-brand-blue" };
+    return { mode: t(`${prefix}.mode`), style: t(`${prefix}.style`), riskCap: t(`${prefix}.riskCap`), color: "text-brand-blue" };
   }
   if (regime === "RISK_OFF") {
-    return { mode: "Capital Defense", style: "Mean-reversion only", riskCap: "0.50R", color: "text-brand-red" };
+    return { mode: t(`${prefix}.mode`), style: t(`${prefix}.style`), riskCap: t(`${prefix}.riskCap`), color: "text-brand-red" };
   }
-  return { mode: "Neutral Grid", style: "Range edges + quick exits", riskCap: "0.75R", color: "text-slate-300" };
+  return { mode: t(`${prefix}.mode`), style: t(`${prefix}.style`), riskCap: t(`${prefix}.riskCap`), color: "text-slate-300" };
 }
 
 function buildCopilotPlan(signal: SignalListItem, narrative: NarrativeData | null): CopilotPlan {
@@ -286,9 +355,10 @@ function buildCopilotPlan(signal: SignalListItem, narrative: NarrativeData | nul
   return {
     action,
     conviction,
-    thesis: narrative?.headline ?? `${signal.setupType} aligned with ${signal.marketRegime}`,
-    invalidation: `Exit if move reaches ${signal.maxDrawdown.toFixed(1)}% from entry or regime flips.`,
-    nextCheckpoint: "Re-evaluate after next session close and fresh volume print.",
+    thesisHeadline: narrative?.headline ?? null,
+    thesisSetup: signal.setupType,
+    thesisRegimeKey: signal.marketRegime,
+    invalidationPct: signal.maxDrawdown.toFixed(1),
   };
 }
 
@@ -330,22 +400,11 @@ function confidenceCueClass(level: ConfidenceCue): string {
   return "bg-brand-amber/18 text-brand-amber border border-brand-amber/35";
 }
 
-function dnaRationale(match: DnaMatch): { why: string; counter: string } {
-  if (match.similarityPct >= 90) {
-    return {
-      why: "Price structure and volatility regime are near-identical.",
-      counter: "Macro context differs; avoid oversized position.",
-    };
-  }
-  if (match.similarityPct >= 85) {
-    return {
-      why: "Momentum profile and volume compression match historical winners.",
-      counter: "Signal can decay quickly without follow-through volume.",
-    };
-  }
+function dnaRationale(match: DnaMatch, t: TFunction): { why: string; counter: string } {
+  const tier = match.similarityPct >= 90 ? "high" : match.similarityPct >= 85 ? "mid" : "low";
   return {
-    why: "Partial setup overlap with lower confidence.",
-    counter: "Treat as supporting evidence, not primary trigger.",
+    why: t(`signals.dnaExplain.${tier}.why`),
+    counter: t(`signals.dnaExplain.${tier}.counter`),
   };
 }
 
@@ -378,7 +437,7 @@ function readMentorStyle(): MentorStyle {
 }
 
 export function SignalsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation("common");
   const [signals, setSignals] = useState<SignalListItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [narrative, setNarrative] = useState<NarrativeData | null>(null);
@@ -388,7 +447,7 @@ export function SignalsPage() {
   const [listError, setListError] = useState<string | null>(null);
   const [detailError, setDetailError] = useState<string | null>(null);
   const [liveTransport, setLiveTransport] = useState<LiveTransport>("OFFLINE");
-  const [liveNote, setLiveNote] = useState<string>("Waiting for stream...");
+  const [liveNote, setLiveNote] = useState<string>("");
   const [lastLiveAt, setLastLiveAt] = useState<string | null>(null);
   const [hotSignalIds, setHotSignalIds] = useState<string[]>([]);
   const [mentorModeEnabled, setMentorModeEnabled] = useState<boolean>(() => readMentorModeEnabled());
@@ -411,8 +470,8 @@ export function SignalsPage() {
   );
   const watchlist = useMemo(() => buildWatchlist(signals), [signals]);
   const regime = useMemo(
-    () => (selectedSignal ? regimeProtocol(selectedSignal.marketRegime) : null),
-    [selectedSignal],
+    () => (selectedSignal ? regimeProtocol(selectedSignal.marketRegime, t) : null),
+    [selectedSignal, t, i18n.language, i18n.resolvedLanguage],
   );
 
   const [liveQuoteBadge, setLiveQuoteBadge] = useState<{ updatedAt: string; source?: string } | null>(null);
@@ -468,7 +527,7 @@ export function SignalsPage() {
       try {
         const { data } = await api.get<Record<string, unknown>>("/signals", { params: { limit: 20 } });
         const rows = unpackSignalRows(data)
-          .map(parseSignal)
+          .map((row) => parseSignal(row, t))
           .filter((row): row is SignalListItem => row !== null);
         if (!cancelled) {
           if (rows.length === 0) {
@@ -498,13 +557,15 @@ export function SignalsPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     let cancelled = false;
     let eventSource: EventSource | null = null;
     let pollTimer: ReturnType<typeof setInterval> | null = null;
     let clearHotTimer: ReturnType<typeof setTimeout> | null = null;
+
+    setLiveNote(t("signals.liveWaiting"));
 
     const markLiveUpdate = (ids: string[], note: string) => {
       if (cancelled || ids.length === 0) return;
@@ -521,19 +582,19 @@ export function SignalsPage() {
       setSelectedId((prev) => prev ?? rows[0]?.id ?? null);
       markLiveUpdate(
         rows.map((r) => r.id),
-        source === "SSE" ? "Live stream update received" : "Polling update received",
+        source === "SSE" ? t("signals.liveStreamUpdate") : t("signals.livePollingUpdate"),
       );
     };
 
     const startPolling = () => {
       if (cancelled || pollTimer) return;
       setLiveTransport("POLLING");
-      setLiveNote("SSE unavailable — polling every 15s");
+      setLiveNote(t("signals.liveEngine.sseUnavailable"));
       const pull = async () => {
         try {
           const { data } = await api.get<Record<string, unknown>>("/signals", { params: { limit: 20 } });
           const rows = unpackSignalRows(data)
-            .map(parseSignal)
+            .map((row) => parseSignal(row, t))
             .filter((row): row is SignalListItem => row !== null);
           applyRows(rows, "POLLING");
         } catch {
@@ -558,14 +619,14 @@ export function SignalsPage() {
       eventSource.onopen = () => {
         if (cancelled) return;
         setLiveTransport("SSE");
-        setLiveNote("Connected to live stream");
+        setLiveNote(t("signals.liveConnectedSse"));
       };
       eventSource.onmessage = (event) => {
         if (cancelled) return;
         try {
           const payload = JSON.parse(event.data) as unknown;
           const rows = (Array.isArray(payload) ? payload : unpackSignalRows(payload))
-            .map(parseSignal)
+            .map((row) => parseSignal(row, t))
             .filter((row): row is SignalListItem => row !== null);
           applyRows(rows, "SSE");
         } catch {
@@ -588,7 +649,13 @@ export function SignalsPage() {
       if (pollTimer) clearInterval(pollTimer);
       if (clearHotTimer) clearTimeout(clearHotTimer);
     };
-  }, []);
+  }, [t, i18n.language, i18n.resolvedLanguage]);
+
+  useEffect(() => {
+    if (liveTransport === "POLLING") setLiveNote(t("signals.liveEngine.sseUnavailable"));
+    else if (liveTransport === "SSE") setLiveNote(t("signals.liveConnectedSse"));
+    else if (liveTransport === "OFFLINE") setLiveNote(t("signals.liveWaiting"));
+  }, [i18n.language, i18n.resolvedLanguage, liveTransport, t]);
 
   useEffect(() => {
     if (!selectedSignal) {
@@ -601,6 +668,8 @@ export function SignalsPage() {
     async function loadDetail(): Promise<void> {
       setLoadingDetail(true);
       setDetailError(null);
+      const uiLocale = resolveUiLocaleForCopy(i18n);
+      const copyT = i18n.getFixedT(uiLocale, "common");
       try {
         const [narrativeRes, dnaRes] = await Promise.all([
           api.get<Record<string, unknown>>(`/signals/${signal.id}/narrative`),
@@ -612,12 +681,12 @@ export function SignalsPage() {
         const confidence: NarrativeConfidence = ["HIGH", "MEDIUM", "LOW"].includes(confidenceRaw)
           ? confidenceRaw
           : "MEDIUM";
-        setNarrative({
-          headline: String(narrativeRaw.headline ?? `${signal.ticker} signal narrative`),
-          body: String(narrativeRaw.body ?? "No narrative body provided by API."),
-          riskNote: String(narrativeRaw.riskNote ?? narrativeRaw.risk ?? "No risk note provided."),
-          confidence,
-        });
+        const headline = String(
+          narrativeRaw.headline ?? copyT("signals.narrativeHeadlineFallback", { ticker: signal.ticker }),
+        );
+        const body = String(narrativeRaw.body ?? copyT("signals.narrativeBodyFallback"));
+        const riskNote = String(narrativeRaw.riskNote ?? narrativeRaw.risk ?? copyT("signals.narrativeRiskNoteFallback"));
+        setNarrative(localizeBundledNarrativeIfNeeded(signal, uiLocale, headline, body, riskNote, confidence, copyT));
         const dnaRaw = dnaRes.data;
         const matchesInput = Array.isArray(dnaRaw.matches) ? dnaRaw.matches : [];
         const matches = matchesInput
@@ -637,11 +706,11 @@ export function SignalsPage() {
       } catch (e) {
         if (cancelled) return;
         if (isEndpointMissing(e)) {
-          setNarrative(mockNarrative(signal));
+          setNarrative(buildMockNarrative(signal, copyT));
           setDna(mockDna(signal));
         } else {
           setDetailError(apiErrorMessage(e));
-          setNarrative(mockNarrative(signal));
+          setNarrative(buildMockNarrative(signal, copyT));
           setDna(mockDna(signal));
         }
       } finally {
@@ -652,7 +721,36 @@ export function SignalsPage() {
     return () => {
       cancelled = true;
     };
-  }, [selectedSignal]);
+  }, [selectedSignal, t, i18n.language, i18n.resolvedLanguage]);
+
+  useEffect(() => {
+    if (!selectedSignal || !narrative) return;
+    const uiLocale = resolveUiLocaleForCopy(i18n);
+    const copyT = i18n.getFixedT(uiLocale, "common");
+    const next = localizeBundledNarrativeIfNeeded(
+      selectedSignal,
+      uiLocale,
+      narrative.headline,
+      narrative.body,
+      narrative.riskNote,
+      narrative.confidence,
+      copyT,
+    );
+    if (
+      next.headline === narrative.headline &&
+      next.body === narrative.body &&
+      next.riskNote === narrative.riskNote
+    ) {
+      return;
+    }
+    setNarrative(next);
+  }, [
+    selectedSignal,
+    narrative,
+    i18n.language,
+    i18n.resolvedLanguage,
+    t,
+  ]);
 
   useEffect(() => {
     if (!mentorModeEnabled || !selectedSignal) {
@@ -675,7 +773,7 @@ export function SignalsPage() {
           riskScore: selectedSignal.riskScore,
           marketRegime: selectedSignal.marketRegime,
           mentorStyle,
-          lang: "en",
+          lang: resolveUiLocaleForCopy(i18n).slice(0, 2) || "en",
         });
         if (!cancelled) {
           setMentorGuidance(data);
@@ -683,7 +781,7 @@ export function SignalsPage() {
       } catch (error) {
         if (cancelled) return;
         setMentorGuidance(null);
-        setMentorError(apiErrorMessage(error));
+        setMentorError(mentorUserFacingError(error, t));
       } finally {
         if (!cancelled) setMentorLoading(false);
       }
@@ -693,7 +791,7 @@ export function SignalsPage() {
     return () => {
       cancelled = true;
     };
-  }, [mentorModeEnabled, mentorStyle, selectedSignal]);
+  }, [mentorModeEnabled, mentorStyle, selectedSignal, i18n.language, i18n.resolvedLanguage, t]);
 
   return (
     <div className="min-h-screen bg-brand-bg text-slate-100">
@@ -724,7 +822,7 @@ export function SignalsPage() {
           </p>
           <div className="neo-panel rounded-xl p-3 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Live Engine</span>
+              <span className="text-slate-400">{t("signals.liveEngine.label")}</span>
               <div className="flex items-center gap-2">
                 {liveTransport !== "OFFLINE" && <span className="live-dot" />}
                 <span
@@ -736,13 +834,17 @@ export function SignalsPage() {
                         : "bg-slate-700/40 text-slate-300"
                   }`}
                 >
-                  {liveTransport}
+                  {liveTransport === "POLLING"
+                    ? t("signals.liveEngine.polling")
+                    : t(`signals.transport.${liveTransport}`)}
                 </span>
               </div>
             </div>
             <p className="mt-2 text-slate-300">{liveNote}</p>
             <p className="mt-1 font-mono text-slate-500">
-              {lastLiveAt ? `last: ${new Date(lastLiveAt).toLocaleTimeString()}` : "last: --:--:--"}
+              {lastLiveAt
+                ? t("signals.liveEngine.lastUpdate", { time: new Date(lastLiveAt).toLocaleTimeString() })
+                : t("signals.liveEngine.lastUpdateEmpty")}
             </p>
           </div>
           {loadingList &&
@@ -779,19 +881,21 @@ export function SignalsPage() {
                       </div>
                       <div className="mt-1 text-xs text-slate-400">{renderGlossaryTerms(signal.setupType)}</div>
                       <span className={`mt-2 inline-flex rounded px-2 py-0.5 text-[10px] font-semibold tracking-wide ${confidenceCueClass(cue)}`}>
-                        {cue}
+                        {t(`signals.confidenceCue.${cue}`)}
                       </span>
                     </div>
                     <div className={`font-mono text-2xl font-bold ${riskScoreColor(signal.riskScore)}`}>{Math.round(signal.riskScore)}</div>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
-                    <span className={`rounded px-2 py-1 ${regimeBadgeClass(signal.marketRegime)}`}>{signal.marketRegime}</span>
+                    <span className={`rounded px-2 py-1 ${regimeBadgeClass(signal.marketRegime)}`}>
+                      {t(`signals.marketRegime.${signal.marketRegime}`)}
+                    </span>
                     <span className={`${signal.changePct >= 0 ? "text-brand-green" : "text-brand-red"} font-mono`}>
                       {signal.changePct >= 0 ? "+" : ""}
                       {signal.changePct.toFixed(2)}%
                     </span>
                     <span className={`ml-auto rounded px-2 py-1 font-semibold ${typeBadgeClass(signal.signalType)}`}>
-                      {signal.signalType}
+                      {t(`signals.signalType.${signal.signalType}`)}
                     </span>
                   </div>
                 </button>
@@ -799,7 +903,7 @@ export function SignalsPage() {
             })}
           {!loadingList && watchlist.length > 0 && (
             <div className="neo-panel rounded-xl p-3">
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-blue">Autonomous Watchlist</h3>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-blue">{t("signals.autonomousWatchlist")}</h3>
               <div className="space-y-2">
                 {watchlist.map((w) => (
                   <div key={`watch-${w.id}`} className="flex items-center justify-between text-xs">
@@ -815,7 +919,7 @@ export function SignalsPage() {
         </aside>
 
         <section className="neo-panel neo-panel-accent min-w-0 flex-1 rounded-xl p-5">
-          {!selectedSignal && !loadingList && <div className="text-slate-400">No signal selected.</div>}
+          {!selectedSignal && !loadingList && <div className="text-slate-400">{t("signals.noSignalSelected")}</div>}
           {selectedSignal && (
             <>
               <header className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-slate-800 pb-4">
@@ -838,7 +942,7 @@ export function SignalsPage() {
                   <span
                     className={`mt-2 inline-flex rounded px-2 py-1 text-xs font-semibold tracking-wide ${confidenceCueClass(confidenceCue(selectedSignal))}`}
                   >
-                    Confidence: {confidenceCue(selectedSignal)}
+                    {t("signals.confidenceLabel", { level: t(`signals.confidenceCue.${confidenceCue(selectedSignal)}`) })}
                   </span>
                 </div>
                 <div className="text-right font-mono">
@@ -879,11 +983,11 @@ export function SignalsPage() {
 
               {regime && (
                 <article className="neo-panel mb-5 rounded-lg p-4">
-                  <h3 className="mb-2 text-lg font-semibold text-white">Live Market Regime Engine</h3>
+                  <h3 className="mb-2 text-lg font-semibold text-white">{t("signals.regime.title")}</h3>
                   <div className="grid gap-3 md:grid-cols-3">
-                    <MiniInfo label="Mode" value={regime.mode} valueClass={regime.color} />
-                    <MiniInfo label="Execution Style" value={regime.style} />
-                    <MiniInfo label="Risk Cap / Trade" value={regime.riskCap} />
+                    <MiniInfo label={t("signals.regime.mode")} value={regime.mode} valueClass={regime.color} />
+                    <MiniInfo label={t("signals.regime.executionStyle")} value={regime.style} />
+                    <MiniInfo label={t("signals.regime.riskCap")} value={regime.riskCap} />
                   </div>
                 </article>
               )}
@@ -931,22 +1035,36 @@ export function SignalsPage() {
                   {copilot && (
                     <article className="neo-panel neo-panel-accent rounded-lg p-4">
                       <div className="mb-3 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-white">AI Copilot Decision</h3>
+                        <h3 className="text-lg font-semibold text-white">{t("signals.copilot.title")}</h3>
                         <span className="rounded bg-brand-green/15 px-2 py-1 text-xs font-semibold text-brand-green">
-                          {copilot.action}
+                          {copilot.action === "ENTER"
+                            ? t("signals.copilot.enter")
+                            : t(`signals.copilotAction.${copilot.action}`)}
                         </span>
                       </div>
-                      <p className="text-sm text-slate-300">{copilot.thesis}</p>
+                      <p className="text-sm text-slate-300">
+                        {copilot.thesisHeadline?.trim()
+                          ? copilot.thesisHeadline
+                          : t("signals.copilotThesisFallback", {
+                              setup: copilot.thesisSetup,
+                              regime: t(`signals.marketRegime.${copilot.thesisRegimeKey}`),
+                            })}
+                      </p>
                       <div className="mt-3">
                         <TrackMetric
-                          label="Conviction"
+                          label={t("signals.copilot.conviction")}
                           valueText={`${copilot.conviction}%`}
                           barPercent={copilot.conviction}
                           colorClass="bg-brand-green"
                         />
                       </div>
-                      <p className="mt-2 text-xs text-slate-400">Invalidation: {copilot.invalidation}</p>
-                      <p className="mt-1 text-xs text-slate-400">Checkpoint: {copilot.nextCheckpoint}</p>
+                      <p className="mt-2 text-xs text-slate-400">
+                        {t("signals.copilot.invalidation")}:{" "}
+                        {t("signals.copilot.invalidationBody", { pct: copilot.invalidationPct })}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-400">
+                        {t("signals.copilot.checkpoint")}: {t("signals.copilot.checkpointBody")}
+                      </p>
                     </article>
                   )}
 
@@ -954,7 +1072,7 @@ export function SignalsPage() {
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <h3 className="text-lg font-semibold text-white">{t("signals.narrative")}</h3>
                       <span className="rounded bg-brand-blue/15 px-2 py-1 text-xs font-semibold text-brand-blue">
-                        {narrative.confidence}
+                        {t(`signals.narrativeConfidence.${narrative.confidence}`)}
                       </span>
                     </div>
                     <h4 className="text-2xl font-semibold text-white">{narrative.headline}</h4>
@@ -966,7 +1084,7 @@ export function SignalsPage() {
                     <h3 className="mb-3 text-lg font-semibold text-white">{t("signals.dna")}</h3>
                     <div className="space-y-2">
                       {dna.matches.slice(0, 3).map((match) => {
-                        const explanation = dnaRationale(match);
+                        const explanation = dnaRationale(match, t);
                         return (
                           <div key={match.id} className="rounded-md border border-slate-800 bg-[#060d18]/70 px-3 py-3">
                             <div className="flex items-center justify-between">
@@ -978,8 +1096,12 @@ export function SignalsPage() {
                                 {match.outcome}
                               </div>
                             </div>
-                            <p className="mt-2 text-xs text-slate-300">Why similar: {explanation.why}</p>
-                            <p className="mt-1 text-xs text-brand-red">Counterpoint: {explanation.counter}</p>
+                            <p className="mt-2 text-xs text-slate-300">
+                              {t("signals.dnaWhySimilar")} {explanation.why}
+                            </p>
+                            <p className="mt-1 text-xs text-brand-red">
+                              {t("signals.dnaCounterpoint")} {explanation.counter}
+                            </p>
                           </div>
                         );
                       })}
@@ -987,7 +1109,7 @@ export function SignalsPage() {
                   </article>
 
                   <article className="neo-panel rounded-lg p-4">
-                    <h3 className="mb-3 text-lg font-semibold text-white">Discord Embed Preview</h3>
+                    <h3 className="mb-3 text-lg font-semibold text-white">{t("signals.discordEmbedTitle")}</h3>
                     <div className="rounded border border-brand-blue/30 bg-brand-bg/70 p-4 spot-glow">
                       <div className="text-sm text-brand-blue">
                         {selectedSignal.ticker} • {renderGlossaryTerms(selectedSignal.setupType)}
@@ -995,35 +1117,61 @@ export function SignalsPage() {
                       <div className="mt-2 text-xl font-semibold text-white">{narrative.headline}</div>
                       <p className="mt-2 text-sm text-slate-300">{narrative.body}</p>
                       <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                        <span className="rounded bg-slate-800 px-2 py-1 text-slate-200">Risk {Math.round(selectedSignal.riskScore)}/100</span>
-                        <span className="rounded bg-slate-800 px-2 py-1 text-slate-200">{selectedSignal.marketRegime}</span>
-                        <span className="rounded bg-slate-800 px-2 py-1 text-slate-200">{selectedSignal.signalType}</span>
+                        <span className="rounded bg-slate-800 px-2 py-1 text-slate-200">
+                          {t("signals.discordRisk", { score: Math.round(selectedSignal.riskScore) })}
+                        </span>
+                        <span className="rounded bg-slate-800 px-2 py-1 text-slate-200">
+                          {t(`signals.marketRegime.${selectedSignal.marketRegime}`)}
+                        </span>
+                        <span className="rounded bg-slate-800 px-2 py-1 text-slate-200">
+                          {t(`signals.signalType.${selectedSignal.signalType}`)}
+                        </span>
                       </div>
                     </div>
                   </article>
 
                   <article className="neo-panel rounded-lg p-4">
-                    <h3 className="mb-3 text-lg font-semibold text-white">Track Record</h3>
-                    <TrackMetric label="Win rate" valueText={`${selectedSignal.winRate.toFixed(1)}%`} barPercent={clampPercent(selectedSignal.winRate)} colorClass="bg-brand-green" />
-                    <TrackMetric label="Avg return" valueText={`${selectedSignal.avgReturn >= 0 ? "+" : ""}${selectedSignal.avgReturn.toFixed(2)}%`} barPercent={clampPercent((selectedSignal.avgReturn + 10) * 5)} colorClass="bg-brand-blue" />
-                    <TrackMetric label="Max DD" valueText={`${selectedSignal.maxDrawdown.toFixed(2)}%`} barPercent={clampPercent(100 - Math.abs(selectedSignal.maxDrawdown) * 8)} colorClass="bg-brand-red" />
-                    <TrackMetric label="Total signals" valueText={selectedSignal.totalSignals.toString()} barPercent={clampPercent((selectedSignal.totalSignals / 100) * 100)} colorClass="bg-slate-400" />
+                    <h3 className="mb-3 text-lg font-semibold text-white">{t("signals.trackRecordTitle")}</h3>
+                    <TrackMetric
+                      label={t("signals.trackWinRate")}
+                      valueText={`${selectedSignal.winRate.toFixed(1)}%`}
+                      barPercent={clampPercent(selectedSignal.winRate)}
+                      colorClass="bg-brand-green"
+                    />
+                    <TrackMetric
+                      label={t("signals.trackAvgReturn")}
+                      valueText={`${selectedSignal.avgReturn >= 0 ? "+" : ""}${selectedSignal.avgReturn.toFixed(2)}%`}
+                      barPercent={clampPercent((selectedSignal.avgReturn + 10) * 5)}
+                      colorClass="bg-brand-blue"
+                    />
+                    <TrackMetric
+                      label={t("signals.trackMaxDd")}
+                      valueText={`${selectedSignal.maxDrawdown.toFixed(2)}%`}
+                      barPercent={clampPercent(100 - Math.abs(selectedSignal.maxDrawdown) * 8)}
+                      colorClass="bg-brand-red"
+                    />
+                    <TrackMetric
+                      label={t("signals.trackTotalSignals")}
+                      valueText={selectedSignal.totalSignals.toString()}
+                      barPercent={clampPercent((selectedSignal.totalSignals / 100) * 100)}
+                      colorClass="bg-slate-400"
+                    />
                   </article>
 
                   {execution && (
                     <article className="neo-panel rounded-lg p-4">
-                      <h3 className="mb-3 text-lg font-semibold text-white">Battle-Tested Execution Simulator</h3>
+                      <h3 className="mb-3 text-lg font-semibold text-white">{t("signals.executionTitle")}</h3>
                       <div className="grid gap-3 md:grid-cols-3">
-                        <MiniInfo label="Entry" value={`$${execution.entry.toFixed(2)}`} valueClass="font-mono text-white" />
-                        <MiniInfo label="Stop" value={`$${execution.stop.toFixed(2)}`} valueClass="font-mono text-brand-red" />
-                        <MiniInfo label="Target" value={`$${execution.target.toFixed(2)}`} valueClass="font-mono text-brand-green" />
-                        <MiniInfo label="R:R" value={`${execution.rr.toFixed(2)}R`} valueClass="font-mono text-brand-blue" />
+                        <MiniInfo label={t("signals.executionEntry")} value={`$${execution.entry.toFixed(2)}`} valueClass="font-mono text-white" />
+                        <MiniInfo label={t("signals.executionStop")} value={`$${execution.stop.toFixed(2)}`} valueClass="font-mono text-brand-red" />
+                        <MiniInfo label={t("signals.executionTarget")} value={`$${execution.target.toFixed(2)}`} valueClass="font-mono text-brand-green" />
+                        <MiniInfo label={t("signals.executionRr")} value={`${execution.rr.toFixed(2)}R`} valueClass="font-mono text-brand-blue" />
                         <MiniInfo
-                          label="Expected Value"
+                          label={t("signals.executionExpectedValue")}
                           value={`${execution.expectedValuePct >= 0 ? "+" : ""}${execution.expectedValuePct.toFixed(2)}%`}
                           valueClass={`font-mono ${execution.expectedValuePct >= 0 ? "text-brand-green" : "text-brand-red"}`}
                         />
-                        <MiniInfo label="Worst Case" value={`${execution.worstCasePct.toFixed(2)}%`} valueClass="font-mono text-brand-red" />
+                        <MiniInfo label={t("signals.executionWorstCase")} value={`${execution.worstCasePct.toFixed(2)}%`} valueClass="font-mono text-brand-red" />
                       </div>
                     </article>
                   )}
