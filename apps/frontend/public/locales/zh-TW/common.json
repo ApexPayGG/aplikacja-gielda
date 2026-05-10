@@ -15,7 +15,8 @@
     "markets": "市場",
     "portfolio": "投組",
     "tools": "工具",
-    "menu": "選單"
+    "menu": "選單",
+    "mistakeLibrary": "Mistake Library"
   },
   "common": {
     "search": "搜尋",
@@ -202,5 +203,22 @@
     "colPnl": "損益",
     "colPct": "%",
     "disclaimer": "結果僅供參考，請諮詢合格稅務顧問。"
+  },
+  "mistakes": {
+    "title": "Mistake Library",
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "emptyType": "No mistakes in this category yet.",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    },
+    "summary": {
+      "total": "Total",
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing"
+    }
   }
 }

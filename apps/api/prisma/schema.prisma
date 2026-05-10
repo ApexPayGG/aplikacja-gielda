@@ -373,6 +373,21 @@ model BehavioralSnapshot {
   @@map("behavioral_snapshots")
 }
 
+model MistakeLibrary {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  tradeId     String   @map("trade_id")
+  symbol      String
+  pnl         Float
+  type        String
+  explanation String
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt])
+  @@index([tradeId])
+  @@map("mistake_library")
+}
+
 model ExitSignal {
   id        String      @id @default(cuid())
   tradeId   String      @map("trade_id")

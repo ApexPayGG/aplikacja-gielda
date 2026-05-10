@@ -15,7 +15,8 @@
     "markets": "마켓",
     "portfolio": "포트폴리오",
     "tools": "도구",
-    "menu": "메뉴"
+    "menu": "메뉴",
+    "mistakeLibrary": "Mistake Library"
   },
   "common": {
     "search": "검색",
@@ -202,5 +203,22 @@
     "colPnl": "손익",
     "colPct": "%",
     "disclaimer": "참고용입니다. 세무 전문가와 상담하세요."
+  },
+  "mistakes": {
+    "title": "Mistake Library",
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "emptyType": "No mistakes in this category yet.",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    },
+    "summary": {
+      "total": "Total",
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing"
+    }
   }
 }

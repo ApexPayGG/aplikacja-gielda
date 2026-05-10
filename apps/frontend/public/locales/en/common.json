@@ -7,6 +7,7 @@
     "dividendIntelligence": "Dividend Intelligence",
     "paperTrading": "Paper Trading",
     "coach": "Coach",
+    "mistakeLibrary": "Mistake Library",
     "alphaCalendar": "Alpha Calendar",
     "positionSize": "Calculator",
     "stressTest": "Stress test",
@@ -271,5 +272,22 @@
     "colPnl": "P&L",
     "colPct": "%",
     "disclaimer": "Results are for information only. Consult a qualified tax advisor."
+  },
+  "mistakes": {
+    "title": "Mistake Library",
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "emptyType": "No mistakes in this category yet.",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    },
+    "summary": {
+      "total": "Total",
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing"
+    }
   }
 }

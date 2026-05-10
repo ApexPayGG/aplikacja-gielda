@@ -8,6 +8,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { DividendIntelligencePage } from "./pages/DividendIntelligencePage";
 import { Dividends } from "./pages/Dividends";
 import { Home } from "./pages/Home";
+import { MistakeLibraryPage } from "./pages/MistakeLibraryPage";
 import { PaperTradingPage } from "./pages/PaperTradingPage";
 import { PositionSizePage } from "./pages/PositionSizePage";
 import { SignalsPage } from "./pages/SignalsPage";
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/dividend/intelligence" element={<DividendIntelligencePage />} />
           <Route path="/paper-trading" element={<PaperTradingPage />} />
           <Route path="/coach" element={<BehavioralCoachPage />} />
+          <Route path="/mistake-library" element={<MistakeLibraryPage />} />
           <Route path="/alpha" element={<AlphaCalendarPage />} />
           <Route path="/position-size" element={<PositionSizePage />} />
           <Route path="/tax-optimizer" element={<TaxOptimizerPage />} />

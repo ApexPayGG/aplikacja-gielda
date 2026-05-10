@@ -107,6 +107,27 @@ export interface BehavioralCooldownResponse {
   message: string;
 }
 
+export type MistakeType = "EMOTIONAL" | "STRATEGY" | "TIMING";
+
+export interface MistakeLibraryItem {
+  id: string;
+  symbol: string;
+  pnl: number;
+  type: MistakeType;
+  explanation: string;
+  createdAt: string;
+}
+
+export interface MistakeLibraryResponse {
+  mistakes: MistakeLibraryItem[];
+  summary: {
+    total: number;
+    emotional: number;
+    strategy: number;
+    timing: number;
+  };
+}
+
 export async function searchCompanies(query: string, limit = 20): Promise<Company[]> {
   const { data } = await api.get<SearchResponse>("/companies/search", {
     params: { q: query, limit },
@@ -147,6 +168,16 @@ export async function getNews(symbol: string, limit = 10): Promise<NewsRow[]> {
 
 export async function getBehavioralCooldown(userId: string): Promise<BehavioralCooldownResponse> {
   const { data } = await api.get<BehavioralCooldownResponse>(`/behavioral/cooldown/${encodeURIComponent(userId)}`);
+  return data;
+}
+
+export async function getBehavioralMistakes(userId: string): Promise<MistakeLibraryResponse> {
+  const { data } = await api.get<MistakeLibraryResponse>(`/behavioral/mistakes/${encodeURIComponent(userId)}`);
+  return data;
+}
+
+export async function analyzeBehavioralMistakes(userId: string): Promise<{ analyzed: number }> {
+  const { data } = await api.post<{ analyzed: number }>(`/behavioral/mistakes/${encodeURIComponent(userId)}/analyze`);
   return data;
 }
 

@@ -15,7 +15,8 @@
     "markets": "बाज़ार",
     "portfolio": "पोर्टफोलियो",
     "tools": "उपकरण",
-    "menu": "मेनू"
+    "menu": "मेनू",
+    "mistakeLibrary": "Mistake Library"
   },
   "common": {
     "search": "खोजें",
@@ -202,5 +203,22 @@
     "colPnl": "P&L",
     "colPct": "%",
     "disclaimer": "परिणाम केवल सूचनात्मक हैं। कर सलाहकार से परामर्श करें।"
+  },
+  "mistakes": {
+    "title": "Mistake Library",
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "emptyType": "No mistakes in this category yet.",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    },
+    "summary": {
+      "total": "Total",
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing"
+    }
   }
 }

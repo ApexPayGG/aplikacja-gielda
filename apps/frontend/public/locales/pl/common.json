@@ -7,6 +7,7 @@
     "dividendIntelligence": "Analiza Dywidend",
     "paperTrading": "Wirtualny Portfel",
     "coach": "Coach",
+    "mistakeLibrary": "Biblioteka b��d�w",
     "alphaCalendar": "Kalendarz Alpha",
     "positionSize": "Kalkulator",
     "stressTest": "Test stresu",
@@ -271,5 +272,22 @@
     "colPnl": "P&L",
     "colPct": "%",
     "disclaimer": "Wyniki mają charakter informacyjny. Skonsultuj z doradcą podatkowym."
+  },
+  "mistakes": {
+    "title": "Mistake Library",
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "emptyType": "No mistakes in this category yet.",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    },
+    "summary": {
+      "total": "Total",
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing"
+    }
   }
 }

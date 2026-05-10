@@ -15,7 +15,8 @@
     "markets": "マーケット",
     "portfolio": "ポートフォリオ",
     "tools": "ツール",
-    "menu": "メニュー"
+    "menu": "メニュー",
+    "mistakeLibrary": "Mistake Library"
   },
   "common": {
     "search": "検索",
@@ -202,5 +203,22 @@
     "colPnl": "損益",
     "colPct": "%",
     "disclaimer": "結果は参考情報です。税務アドバイザーにご相談ください。"
+  },
+  "mistakes": {
+    "title": "Mistake Library",
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "emptyType": "No mistakes in this category yet.",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    },
+    "summary": {
+      "total": "Total",
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing"
+    }
   }
 }
