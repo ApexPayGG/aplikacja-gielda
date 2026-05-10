@@ -344,6 +344,21 @@
     "styleSupportive": "Supportive",
     "styleStrict": "Strict"
   },
+  "discord": {
+    "title": "Discord Auto-Sync",
+    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
+    "webhookLabel": "Discord webhook URL",
+    "webhookPlaceholder": "https://discord.com/api/webhooks/...",
+    "saveButton": "Save",
+    "testButton": "Test webhook",
+    "active": "Webhook active",
+    "inactive": "Webhook inactive",
+    "loadError": "Failed to load webhook settings.",
+    "saveSuccess": "Webhook saved.",
+    "saveError": "Failed to save webhook.",
+    "testSuccess": "Test message sent.",
+    "testError": "Failed to send test message."
+  },
   "emotional": {
     "widgetTitle": "Emotional state",
     "alertTitle": "Break recommended",

@@ -19,7 +19,8 @@
     "menu": "Menu",
     "premortem": "Pre-Mortem",
     "crowdWisdom": "Mądrość Tłumu",
-    "glossary": "Słownik"
+    "glossary": "Słownik",
+    "skillTree": "Drzewko Umiejętności"
   },
   "common": {
     "search": "Szukaj",
@@ -347,6 +348,21 @@
     "styleSupportive": "Wspierający",
     "styleStrict": "Surowy"
   },
+  "discord": {
+    "title": "Discord Auto-Sync",
+    "subtitle": "Wysyłaj automatyczne powiadomienia o otwieraniu i zamykaniu paper trade na Discord webhook.",
+    "webhookLabel": "URL webhooka Discord",
+    "webhookPlaceholder": "https://discord.com/api/webhooks/...",
+    "saveButton": "Zapisz",
+    "testButton": "Test webhooka",
+    "active": "Webhook aktywny",
+    "inactive": "Webhook nieaktywny",
+    "loadError": "Nie udało się wczytać ustawień webhooka.",
+    "saveSuccess": "Webhook zapisany.",
+    "saveError": "Nie udało się zapisać webhooka.",
+    "testSuccess": "Wysłano wiadomość testową.",
+    "testError": "Nie udało się wysłać wiadomości testowej."
+  },
   "replay": {
     "title": "Replay Mode",
     "subtitle": "Przećwicz decyzję tradingową na danych historycznych i sprawdź ocenę AI.",
@@ -421,6 +437,67 @@
       "LOW": "Niski",
       "MEDIUM": "Średni",
       "HIGH": "Wysoki"
+    }
+  },
+  "skilltree": {
+    "title": "Drzewko Umiejętności",
+    "subtitle": "Odblokowuj kolejne umiejętności tradingowe wraz z aktywnością.",
+    "progressLabel": "Odblokowano {{unlocked}}/{{total}} umiejętności",
+    "checkProgress": "Check progress",
+    "celebrationTitle": "Nowe umiejętności odblokowane!",
+    "newlyUnlockedLabel": "Nowo odblokowane:",
+    "unlockedAt": "Odblokowano: {{date}}",
+    "skills": {
+      "BASICS": {
+        "name": "Podstawy",
+        "description": "Rozumiesz akcje i giełdę",
+        "condition": "Zawsze odblokowane"
+      },
+      "SUPPORT_RESISTANCE": {
+        "name": "Support & Resistance",
+        "description": "Rozumiesz support i resistance",
+        "condition": "Min. 5 zamkniętych paper trades"
+      },
+      "RSI": {
+        "name": "RSI",
+        "description": "Rozumiesz RSI",
+        "condition": "Min. 5 zamkniętych paper trades"
+      },
+      "MACD": {
+        "name": "MACD",
+        "description": "Rozumiesz MACD",
+        "condition": "Min. 5 zamkniętych paper trades"
+      },
+      "FIBONACCI": {
+        "name": "Fibonacci",
+        "description": "Rozumiesz poziomy Fibonacciego",
+        "condition": "Min. 10 zamkniętych paper trades"
+      },
+      "VOLUME": {
+        "name": "Wolumen",
+        "description": "Rozumiesz wolumen",
+        "condition": "Min. 10 zamkniętych paper trades"
+      },
+      "RISK_MANAGEMENT": {
+        "name": "Risk Management",
+        "description": "Stosujesz position sizing",
+        "condition": "Position Size Calculator min. 3 użycia"
+      },
+      "BEHAVIORAL": {
+        "name": "Behawioralne",
+        "description": "Kontrolujesz emocje w tradingu",
+        "condition": "Min. 1 wpis w Mistake Library"
+      },
+      "DIVERSIFICATION": {
+        "name": "Dywersyfikacja",
+        "description": "Rozumiesz dywersyfikację",
+        "condition": "Min. 3 różne symbole w paper trades"
+      },
+      "STRATEGY": {
+        "name": "Strategia",
+        "description": "Masz spójną strategię",
+        "condition": "Min. 20 trades i win rate > 40%"
+      }
     }
   }
 }

@@ -72,6 +72,8 @@ import { createTrackRecordRouter } from "./routes/trackrecord";
 import { createCrowdWisdomRouter } from "./routes/crowdwisdom";
 import { createGlossaryRouter } from "./routes/glossary";
 import { createDigestRouter } from "./routes/digest";
+import { createDiscordSyncRouter } from "./routes/discordSync";
+import { createSkillTreeRouter } from "./routes/skilltree";
 import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 
 function sleep(ms: number): Promise<void> {
@@ -182,9 +184,11 @@ export function createApp(): express.Express {
   app.use(createReplayRouter());
   app.use(createStrategyDnaRouter());
   app.use(createTrackRecordRouter());
+  app.use(createSkillTreeRouter());
   app.use(createCrowdWisdomRouter());
   app.use(createGlossaryRouter());
   app.use(createDigestRouter());
+  app.use(createDiscordSyncRouter());
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));
   app.use("/api/concentration", createConcentrationRouter(prisma));

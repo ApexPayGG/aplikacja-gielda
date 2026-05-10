@@ -338,6 +338,16 @@ model PortfolioSnapshot {
   @@index([userId, date])
 }
 
+model UserSettings {
+  id             String  @id @default(cuid())
+  userId         String  @unique
+  discordWebhook String?
+  mentorMode     Boolean @default(false)
+  digestEmail    String?
+
+  @@map("user_settings")
+}
+
 model PaperTrade {
   id           String              @id @default(cuid())
   userId       String              @map("user_id")
@@ -372,6 +382,17 @@ model TrackRecord {
 
   @@index([userId, generatedAt])
   @@map("track_records")
+}
+
+model SkillProgress {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  skillId    String   @map("skill_id")
+  unlockedAt DateTime @default(now()) @map("unlocked_at")
+
+  @@unique([userId, skillId])
+  @@index([userId, unlockedAt])
+  @@map("skill_progress")
 }
 
 model BehavioralSnapshot {

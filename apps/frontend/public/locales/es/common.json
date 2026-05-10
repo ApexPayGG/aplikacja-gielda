@@ -19,7 +19,8 @@
     "menu": "Menú",
     "premortem": "Pre-Mortem",
     "crowdWisdom": "Crowd Wisdom",
-    "glossary": "Glossary"
+    "glossary": "Glossary",
+    "skillTree": "Skill Tree"
   },
   "common": {
     "search": "Buscar",
@@ -344,6 +345,21 @@
     "styleSupportive": "Supportive",
     "styleStrict": "Strict"
   },
+  "discord": {
+    "title": "Discord Auto-Sync",
+    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
+    "webhookLabel": "Discord webhook URL",
+    "webhookPlaceholder": "https://discord.com/api/webhooks/...",
+    "saveButton": "Save",
+    "testButton": "Test webhook",
+    "active": "Webhook active",
+    "inactive": "Webhook inactive",
+    "loadError": "Failed to load webhook settings.",
+    "saveSuccess": "Webhook saved.",
+    "saveError": "Failed to save webhook.",
+    "testSuccess": "Test message sent.",
+    "testError": "Failed to send test message."
+  },
   "emotional": {
     "widgetTitle": "Emotional state",
     "alertTitle": "Break recommended",
@@ -352,6 +368,27 @@
       "LOW": "Low",
       "MEDIUM": "Medium",
       "HIGH": "High"
+    }
+  },
+  "skilltree": {
+    "title": "Skill Tree",
+    "subtitle": "Unlock trading skills as your activity grows.",
+    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
+    "checkProgress": "Check progress",
+    "celebrationTitle": "New skills unlocked!",
+    "newlyUnlockedLabel": "Recently unlocked:",
+    "unlockedAt": "Unlocked: {{date}}",
+    "skills": {
+      "BASICS": { "name": "Basics", "description": "Rozumiesz akcje i giełdę", "condition": "Always unlocked" },
+      "SUPPORT_RESISTANCE": { "name": "Support & Resistance", "description": "Rozumiesz support i resistance", "condition": "At least 5 closed paper trades" },
+      "RSI": { "name": "RSI", "description": "Rozumiesz RSI", "condition": "At least 5 closed paper trades" },
+      "MACD": { "name": "MACD", "description": "Rozumiesz MACD", "condition": "At least 5 closed paper trades" },
+      "FIBONACCI": { "name": "Fibonacci", "description": "Rozumiesz poziomy Fibonacciego", "condition": "At least 10 closed paper trades" },
+      "VOLUME": { "name": "Volume", "description": "Rozumiesz wolumen", "condition": "At least 10 closed paper trades" },
+      "RISK_MANAGEMENT": { "name": "Risk Management", "description": "Stosujesz position sizing", "condition": "Use Position Size Calculator at least 3 times" },
+      "BEHAVIORAL": { "name": "Behavioral", "description": "Kontrolujesz emocje w tradingu", "condition": "At least 1 entry in Mistake Library" },
+      "DIVERSIFICATION": { "name": "Diversification", "description": "Rozumiesz dywersyfikację", "condition": "At least 3 unique symbols in paper trades" },
+      "STRATEGY": { "name": "Strategy", "description": "Masz spójną strategię", "condition": "At least 20 trades and win rate over 40%" }
     }
   }
 }
