@@ -499,6 +499,27 @@
     "nextDate": "Data kolejnych wyników",
     "noDate": "Brak dostępnej daty"
   },
+  "insider": {
+    "title": "Lustro Insiderów",
+    "subtitle": "Śledź ostatnie zakupy i sprzedaże akcji przez insiderów spółki.",
+    "symbolPlaceholder": "Wpisz symbol (np. AAPL)",
+    "searchButton": "Pokaż insiderów",
+    "validationSymbol": "Podaj poprawny symbol.",
+    "resultFor": "Aktywność insiderów dla",
+    "insight": "Insight AI",
+    "transactionsTitle": "Transakcje (ostatnie 30 dni, > 50 tys. USD)",
+    "emptyTransactions": "Brak kwalifikujących się transakcji insiderów z ostatnich 30 dni.",
+    "colName": "Imię",
+    "colRole": "Rola",
+    "colAction": "Akcja",
+    "colValue": "Wartość",
+    "colDate": "Data",
+    "actionBuy": "KUP",
+    "actionSell": "SPRZEDAJ",
+    "sentimentBuy": "Przewaga zakupów",
+    "sentimentSell": "Przewaga sprzedaży",
+    "sentimentNeutral": "Neutralna"
+  },
   "emotional": {
     "widgetTitle": "Stan emocjonalny",
     "alertTitle": "Przerwa zalecana",

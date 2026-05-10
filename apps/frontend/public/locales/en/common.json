@@ -499,6 +499,27 @@
     "nextDate": "Next earnings date",
     "noDate": "Date unavailable"
   },
+  "insider": {
+    "title": "Insider Mirror",
+    "subtitle": "Track recent buying and selling by company insiders.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "searchButton": "Mirror insiders",
+    "validationSymbol": "Please provide a valid symbol.",
+    "resultFor": "Insider activity for",
+    "insight": "AI insight",
+    "transactionsTitle": "Transactions (last 30 days, > $50k)",
+    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
+    "colName": "Name",
+    "colRole": "Role",
+    "colAction": "Action",
+    "colValue": "Value",
+    "colDate": "Date",
+    "actionBuy": "BUY",
+    "actionSell": "SELL",
+    "sentimentBuy": "Net buying",
+    "sentimentSell": "Net selling",
+    "sentimentNeutral": "Neutral"
+  },
   "emotional": {
     "widgetTitle": "Emotional state",
     "alertTitle": "Break recommended",

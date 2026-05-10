@@ -1,9 +1,20 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import { prisma } from "../db/index";
+import {
+  runWalkForwardBacktest,
+  type WalkForwardStrategy,
+} from "../modules/backtest/walkForwardModule";
 
 const PATTERN_WHITELIST = new Set(["breakout", "support_bounce", "macd_cross", "bollinger"]);
 const EXCHANGE_WHITELIST = new Set(["GPW", "NYSE"]);
+
+const WALK_FORWARD_STRATEGIES = new Set<WalkForwardStrategy>([
+  "RSI_OVERSOLD",
+  "BREAKOUT",
+  "VOLUME_SPIKE",
+]);
+const WALK_FORWARD_MONTHS = new Set([3, 6, 12]);
 
 interface TradeResult {
   date: string;
@@ -41,6 +52,42 @@ function stdDev(values: number[]): number {
 
 export function createBacktestRouter(): Router {
   const router = Router();
+
+  router.post("/api/backtest/run", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = req.body as {
+        symbol?: unknown;
+        strategy?: unknown;
+        months?: unknown;
+      };
+      const symbol = String(body.symbol ?? "").trim();
+      const strategyRaw = String(body.strategy ?? "").trim();
+      const months = parseInt(String(body.months ?? ""), 10);
+
+      if (!symbol) {
+        res.status(400).json({ error: "Missing symbol" });
+        return;
+      }
+      if (!WALK_FORWARD_STRATEGIES.has(strategyRaw as WalkForwardStrategy)) {
+        res.status(400).json({ error: "Invalid strategy. Use RSI_OVERSOLD | BREAKOUT | VOLUME_SPIKE" });
+        return;
+      }
+      const strategy = strategyRaw as WalkForwardStrategy;
+      if (!Number.isFinite(months) || !WALK_FORWARD_MONTHS.has(months)) {
+        res.status(400).json({ error: "Invalid months. Allowed: 3 | 6 | 12" });
+        return;
+      }
+
+      const result = await runWalkForwardBacktest(prisma, {
+        symbol,
+        strategy,
+        months,
+      });
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
 
   router.post("/api/backtest", async (req: Request, res: Response, next: NextFunction) => {
     try {
