@@ -62,6 +62,7 @@ import { createSignalDnaRouter } from "./routes/signalDna";
 import { createPositionSizeRouter } from "./routes/positionSize";
 import { createStressTestRouter } from "./routes/stressTest";
 import { createConcentrationRouter } from "./routes/concentration";
+import { createCorrelationRouter } from "./routes/correlation";
 import { createTaxRouter } from "./routes/tax";
 import { createBehavioralRouter } from "./routes/behavioral";
 import { createPreMortemRouter } from "./routes/premortem";
@@ -74,6 +75,8 @@ import { createGlossaryRouter } from "./routes/glossary";
 import { createDigestRouter } from "./routes/digest";
 import { createDiscordSyncRouter } from "./routes/discordSync";
 import { createSkillTreeRouter } from "./routes/skilltree";
+import { createNewsHalfLifeRouter } from "./routes/newshalflife";
+import { createVolatilityRouter } from "./routes/volatility";
 import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 
 function sleep(ms: number): Promise<void> {
@@ -185,13 +188,16 @@ export function createApp(): express.Express {
   app.use(createStrategyDnaRouter());
   app.use(createTrackRecordRouter());
   app.use(createSkillTreeRouter());
+  app.use(createNewsHalfLifeRouter());
   app.use(createCrowdWisdomRouter());
   app.use(createGlossaryRouter());
   app.use(createDigestRouter());
   app.use(createDiscordSyncRouter());
+  app.use(createVolatilityRouter());
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));
   app.use("/api/concentration", createConcentrationRouter(prisma));
+  app.use(createCorrelationRouter());
   app.use("/api/tax", createTaxRouter(prisma));
 
   app.get("/health", (_req: Request, res: Response) => {

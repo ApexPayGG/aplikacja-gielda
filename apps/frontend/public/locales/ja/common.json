@@ -18,9 +18,11 @@
     "menu": "メニュー",
     "mistakeLibrary": "Mistake Library",
     "premortem": "Pre-Mortem",
+    "correlation": "相関",
     "crowdWisdom": "Crowd Wisdom",
     "glossary": "Glossary",
-    "skillTree": "Skill Tree"
+    "skillTree": "Skill Tree",
+    "volatility": "Volatility Heat Map"
   },
   "common": {
     "search": "検索",
@@ -183,6 +185,23 @@
       "SINGLE_SECTOR": "セクター {{sector}} が {{weight}}%（推奨上限 {{maxSector}}%）。",
       "TOP_HEAVY": "上位3銘柄が {{top3Share}}% を占めています。"
     }
+  },
+  "correlation": {
+    "title": "Correlation Detector",
+    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
+    "mainSymbol": "Main symbol",
+    "portfolioSymbols": "Portfolio symbols (comma separated)",
+    "analyze": "Analyze correlation",
+    "validation": "Provide a main symbol and at least one portfolio symbol.",
+    "tableTitle": "Correlation results",
+    "colSymbol": "Symbol",
+    "colCorrelation": "Correlation",
+    "colWarning": "Warning",
+    "warningHighRisk": "High risk",
+    "warningLowRisk": "OK",
+    "highRiskPairs": "High-risk pairs (> 0.7)",
+    "noHighRiskPairs": "No high-risk pair detected.",
+    "aiInsight": "AI insight"
   },
   "taxOptimizer": {
     "title": "税務最適化 PIT-38",
@@ -390,5 +409,54 @@
       "DIVERSIFICATION": { "name": "Diversification", "description": "Rozumiesz dywersyfikację", "condition": "At least 3 unique symbols in paper trades" },
       "STRATEGY": { "name": "Strategy", "description": "Masz spójną strategię", "condition": "At least 20 trades and win rate over 40%" }
     }
+  },
+  "volatility": {
+    "title": "Volatility Heat Map",
+    "subtitle": "Compare monthly volatility across years for a selected symbol.",
+    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
+    "searchAction": "Load heat map",
+    "symbol": "Symbol",
+    "year": "Year",
+    "mostVolatileMonth": "Most volatile month",
+    "leastVolatileMonth": "Least volatile month",
+    "noData": "No data",
+    "legendTitle": "Legend",
+    "legendLow": "Low volatility",
+    "legendHigh": "High volatility",
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "tooltip": {
+      "volatility": "Volatility",
+      "avgReturn": "Avg return"
+    },
+    "errors": {
+      "symbolRequired": "Please enter a symbol."
+    }
+  },
+  "newshalflife": {
+    "title": "News Half-Life Score",
+    "subtitle": "Estimate how quickly each news item loses impact on price.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "searchButton": "Analyze news",
+    "mostImpactful": "Most impactful news",
+    "halfLifeDaysLabel": "Half-life: {{days}} days",
+    "halfLifeDaysBadge": "{{days}} days",
+    "expired": "expired",
+    "categoryLabel": "Category",
+    "reasonLabel": "Reason",
+    "remainingLabel": "Time left",
+    "empty": "No recent news found for this symbol."
   }
 }

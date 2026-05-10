@@ -88,6 +88,21 @@ export interface NewsListResponse {
   data: NewsRow[];
 }
 
+export interface NewsHalfLifeItem {
+  headline: string;
+  date: string;
+  halfLifeDays: number;
+  expiresAt: string;
+  reason: string;
+  category: string;
+}
+
+export interface NewsHalfLifeResponse {
+  symbol: string;
+  news: NewsHalfLifeItem[];
+  mostImpactful: { headline: string; halfLifeDays: number } | null;
+}
+
 export interface BriefSection {
   lang: string;
   body: string;
@@ -240,6 +255,20 @@ export interface SkillTreeCheckResponse {
   newlyUnlocked: SkillTreeSkillId[];
 }
 
+export interface VolatilityHeatmapEntry {
+  year: number;
+  month: number;
+  volatility: number;
+  avgReturn: number;
+}
+
+export interface VolatilityHeatmapResponse {
+  symbol: string;
+  heatmap: VolatilityHeatmapEntry[];
+  mostVolatileMonth: string;
+  leastVolatileMonth: string;
+}
+
 export interface DailyDigestResponse {
   digest: string;
   date: string;
@@ -261,6 +290,24 @@ export interface GlossaryExplainResponse {
   explanation: string;
   example: string;
   cached: boolean;
+}
+
+export interface CorrelationResultRow {
+  symbol: string;
+  correlation: number;
+  warning: boolean;
+}
+
+export interface CorrelationHighRiskPair {
+  a: string;
+  b: string;
+  correlation: number;
+}
+
+export interface CorrelationAnalyzeResponse {
+  correlations: CorrelationResultRow[];
+  highRiskPairs: CorrelationHighRiskPair[];
+  insight: string;
 }
 
 export type MistakeType = "EMOTIONAL" | "STRATEGY" | "TIMING";
@@ -320,6 +367,11 @@ export async function getNews(symbol: string, limit = 10): Promise<NewsRow[]> {
     params: { limit },
   });
   return data.data;
+}
+
+export async function getNewsHalfLife(symbol: string): Promise<NewsHalfLifeResponse> {
+  const { data } = await api.get<NewsHalfLifeResponse>(`/news/halflife/${encodeURIComponent(symbol)}`);
+  return data;
 }
 
 export async function getBehavioralCooldown(userId: string): Promise<BehavioralCooldownResponse> {
@@ -390,6 +442,13 @@ export async function checkSkillTree(userId: string): Promise<SkillTreeCheckResp
   return data;
 }
 
+export async function getVolatilityHeatmap(symbol: string): Promise<VolatilityHeatmapResponse> {
+  const { data } = await api.get<VolatilityHeatmapResponse>(
+    `/volatility/heatmap/${encodeURIComponent(symbol)}`,
+  );
+  return data;
+}
+
 export async function previewDailyDigest(userId: string, lang: string): Promise<DailyDigestResponse> {
   const { data } = await api.get<DailyDigestResponse>(`/digest/preview/${encodeURIComponent(userId)}`, {
     params: { lang },
@@ -413,6 +472,14 @@ export async function explainGlossaryTerm(term: string, lang: string): Promise<G
   const { data } = await api.get<GlossaryExplainResponse>("/glossary/explain", {
     params: { term, lang },
   });
+  return data;
+}
+
+export async function analyzeCorrelation(body: {
+  symbol: string;
+  portfolio: string[];
+}): Promise<CorrelationAnalyzeResponse> {
+  const { data } = await api.post<CorrelationAnalyzeResponse>("/correlation/analyze", body);
   return data;
 }
 

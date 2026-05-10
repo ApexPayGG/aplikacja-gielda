@@ -18,9 +18,11 @@
     "tools": "Narzędzia",
     "menu": "Menu",
     "premortem": "Pre-Mortem",
+    "correlation": "Korelacja",
     "crowdWisdom": "Mądrość Tłumu",
     "glossary": "Słownik",
-    "skillTree": "Drzewko Umiejętności"
+    "skillTree": "Drzewko Umiejętności",
+    "volatility": "Mapa Zmienności"
   },
   "common": {
     "search": "Szukaj",
@@ -252,6 +254,23 @@
       "SINGLE_SECTOR": "Sektor {{sector}} stanowi {{weight}}% portfela. Zalecane max {{maxSector}}%.",
       "TOP_HEAVY": "Top 3 spółki stanowią {{top3Share}}% portfela."
     }
+  },
+  "correlation": {
+    "title": "Wykrywacz Korelacji",
+    "subtitle": "Sprawdź korelację Pearsona między główną spółką a portfelem.",
+    "mainSymbol": "Główny symbol",
+    "portfolioSymbols": "Symbole portfela (oddziel przecinkami)",
+    "analyze": "Analizuj korelację",
+    "validation": "Podaj główny symbol i co najmniej jeden symbol portfela.",
+    "tableTitle": "Wyniki korelacji",
+    "colSymbol": "Symbol",
+    "colCorrelation": "Korelacja",
+    "colWarning": "Ostrzeżenie",
+    "warningHighRisk": "Wysokie ryzyko",
+    "warningLowRisk": "OK",
+    "highRiskPairs": "Pary wysokiego ryzyka (> 0.7)",
+    "noHighRiskPairs": "Nie wykryto par wysokiego ryzyka.",
+    "aiInsight": "Insight AI"
   },
   "taxOptimizer": {
     "title": "Optymalizator Podatkowy PIT-38",
@@ -499,5 +518,54 @@
         "condition": "Min. 20 trades i win rate > 40%"
       }
     }
+  },
+  "volatility": {
+    "title": "Mapa Zmienności",
+    "subtitle": "Porównaj miesięczną zmienność w kolejnych latach dla wybranego symbolu.",
+    "searchPlaceholder": "Wpisz symbol (np. AAPL)",
+    "searchAction": "Pokaż mapę",
+    "symbol": "Symbol",
+    "year": "Rok",
+    "mostVolatileMonth": "Najbardziej zmienny miesiąc",
+    "leastVolatileMonth": "Najmniej zmienny miesiąc",
+    "noData": "Brak danych",
+    "legendTitle": "Legenda",
+    "legendLow": "Niska zmienność",
+    "legendHigh": "Wysoka zmienność",
+    "months": {
+      "jan": "Sty",
+      "feb": "Lut",
+      "mar": "Mar",
+      "apr": "Kwi",
+      "may": "Maj",
+      "jun": "Cze",
+      "jul": "Lip",
+      "aug": "Sie",
+      "sep": "Wrz",
+      "oct": "Paź",
+      "nov": "Lis",
+      "dec": "Gru"
+    },
+    "tooltip": {
+      "volatility": "Zmienność",
+      "avgReturn": "Śr. stopa zwrotu"
+    },
+    "errors": {
+      "symbolRequired": "Podaj symbol."
+    }
+  },
+  "newshalflife": {
+    "title": "News Half-Life Score",
+    "subtitle": "Oszacuj, jak szybko wpływ newsów na cenę wygasa.",
+    "symbolPlaceholder": "Wpisz symbol (np. AAPL)",
+    "searchButton": "Analizuj newsy",
+    "mostImpactful": "Najważniejszy news",
+    "halfLifeDaysLabel": "Half-life: {{days}} dni",
+    "halfLifeDaysBadge": "{{days}} dni",
+    "expired": "expired",
+    "categoryLabel": "Kategoria",
+    "reasonLabel": "Powód",
+    "remainingLabel": "Pozostały czas",
+    "empty": "Brak ostatnich newsów dla tego symbolu."
   }
 }
