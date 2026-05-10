@@ -93,6 +93,11 @@
     "overtrading": "過度交易",
     "aiCoach": "AI 教練建議"
   },
+  "cooldown": {
+    "title": "連敗冷卻",
+    "inactive": "目前沒有啟用冷卻",
+    "unlocksIn": "解鎖倒數"
+  },
   "alpha": {
     "title": "Alpha 行事曆",
     "windows": "機率視窗",

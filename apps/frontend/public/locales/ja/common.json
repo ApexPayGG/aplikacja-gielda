@@ -93,6 +93,11 @@
     "overtrading": "オーバートレード",
     "aiCoach": "AIコーチのコメント"
   },
+  "cooldown": {
+    "title": "連続損失クールダウン",
+    "inactive": "クールダウンは有効ではありません",
+    "unlocksIn": "解除まで"
+  },
   "alpha": {
     "title": "アルファカレンダー",
     "windows": "確率ウィンドウ",

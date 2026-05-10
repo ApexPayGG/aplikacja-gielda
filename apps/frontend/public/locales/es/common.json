@@ -93,6 +93,11 @@
     "overtrading": "Sobreoperación",
     "aiCoach": "El Coach IA dice"
   },
+  "cooldown": {
+    "title": "Enfriamiento por racha de pérdidas",
+    "inactive": "No hay enfriamiento activo",
+    "unlocksIn": "Se desbloquea en"
+  },
   "alpha": {
     "title": "Calendario Alpha",
     "windows": "Ventanas de Probabilidad",

@@ -93,6 +93,11 @@
     "overtrading": "Overtrading",
     "aiCoach": "KI-Coach sagt"
   },
+  "cooldown": {
+    "title": "Verlustserie Cool-Down",
+    "inactive": "Kein aktiver Cool-Down",
+    "unlocksIn": "Freigabe in"
+  },
   "alpha": {
     "title": "Alpha-Kalender",
     "windows": "Wahrscheinlichkeitsfenster",

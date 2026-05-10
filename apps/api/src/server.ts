@@ -63,6 +63,7 @@ import { createPositionSizeRouter } from "./routes/positionSize";
 import { createStressTestRouter } from "./routes/stressTest";
 import { createConcentrationRouter } from "./routes/concentration";
 import { createTaxRouter } from "./routes/tax";
+import { createBehavioralRouter } from "./routes/behavioral";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -134,6 +135,7 @@ export function createApp(): express.Express {
   app.use(createAlphaCalendarRouter());
   app.use(createSignalMemoryRouter());
   app.use(createSignalDnaRouter());
+  app.use(createBehavioralRouter());
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));
   app.use("/api/concentration", createConcentrationRouter(prisma));

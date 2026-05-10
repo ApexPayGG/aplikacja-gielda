@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useTranslation } from "react-i18next";
-import { api } from "../services/api";
+import { api, getBehavioralCooldown, type BehavioralCooldownResponse } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 type Bias = "CUTS_WINNERS_EARLY" | "HOLDS_LOSERS_TOO_LONG" | "OVERTRADING";
@@ -29,6 +29,16 @@ type SnapshotHistoryPoint = {
 };
 
 const USER_ID = "demo-user";
+
+function formatCountdown(unlocksAt: string, nowTs: number): string {
+  const target = new Date(unlocksAt).getTime();
+  if (!Number.isFinite(target)) return "00:00";
+  const remainingMs = Math.max(0, target - nowTs);
+  const totalSeconds = Math.floor(remainingMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
 
 const mockCoach: CoachResponse = {
   snapshot: {
@@ -115,6 +125,9 @@ export function BehavioralCoachPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [usingMock, setUsingMock] = useState(false);
+  const [cooldown, setCooldown] = useState<BehavioralCooldownResponse | null>(null);
+  const [cooldownError, setCooldownError] = useState<string | null>(null);
+  const [nowTs, setNowTs] = useState(() => Date.now());
 
   useEffect(() => {
     let cancelled = false;
@@ -160,6 +173,34 @@ export function BehavioralCoachPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => setNowTs(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadCooldown(): Promise<void> {
+      try {
+        const data = await getBehavioralCooldown(USER_ID);
+        if (cancelled) return;
+        setCooldown(data);
+        setCooldownError(null);
+      } catch (e) {
+        if (cancelled) return;
+        setCooldownError(apiErrorMessage(e));
+      }
+    }
+    void loadCooldown();
+    const poll = setInterval(() => {
+      void loadCooldown();
+    }, 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(poll);
+    };
+  }, []);
+
   const snapshot = coach?.snapshot;
   const biases = useMemo(() => snapshot?.biases ?? [], [snapshot?.biases]);
 
@@ -172,6 +213,26 @@ export function BehavioralCoachPage() {
             {usingMock ? "Mock fallback active" : "Live API"}
           </span>
         </header>
+
+        <section className="space-y-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">{t("cooldown.title")}</h2>
+          {cooldown?.active ? (
+            <div className="rounded-lg border border-brand-red/50 bg-brand-red/15 p-4 text-red-100">
+              <p className="font-medium">{cooldown.message}</p>
+              {cooldown.unlocksAt ? (
+                <p className="mt-2 text-sm">
+                  {t("cooldown.unlocksIn")}{" "}
+                  <span className="font-mono font-semibold text-white">{formatCountdown(cooldown.unlocksAt, nowTs)}</span>
+                </p>
+              ) : null}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-brand-green/40 bg-brand-green/10 p-4 text-brand-green">
+              {t("cooldown.inactive", { defaultValue: "No cooldown active" })}
+            </div>
+          )}
+          {cooldownError ? <p className="text-xs text-brand-red">{cooldownError}</p> : null}
+        </section>
 
         {error && <div className="rounded border border-brand-red/30 bg-brand-red/10 p-3 text-sm text-brand-red">{error}</div>}
 

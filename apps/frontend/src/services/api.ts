@@ -100,6 +100,13 @@ export interface AnalysisResponse {
   sections?: BriefSection[];
 }
 
+export interface BehavioralCooldownResponse {
+  active: boolean;
+  lossStreak: number;
+  unlocksAt: string | null;
+  message: string;
+}
+
 export async function searchCompanies(query: string, limit = 20): Promise<Company[]> {
   const { data } = await api.get<SearchResponse>("/companies/search", {
     params: { q: query, limit },
@@ -136,6 +143,11 @@ export async function getNews(symbol: string, limit = 10): Promise<NewsRow[]> {
     params: { limit },
   });
   return data.data;
+}
+
+export async function getBehavioralCooldown(userId: string): Promise<BehavioralCooldownResponse> {
+  const { data } = await api.get<BehavioralCooldownResponse>(`/behavioral/cooldown/${encodeURIComponent(userId)}`);
+  return data;
 }
 
 export async function getCompanyBrief(symbol: string, lang: string): Promise<AnalysisResponse> {

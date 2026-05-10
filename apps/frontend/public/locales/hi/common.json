@@ -93,6 +93,11 @@
     "overtrading": "ओवरट्रेडिंग",
     "aiCoach": "AI कोच कहता है"
   },
+  "cooldown": {
+    "title": "हार की श्रृंखला Cool-Down",
+    "inactive": "कोई सक्रिय Cool-Down नहीं",
+    "unlocksIn": "अनलॉक होगा"
+  },
   "alpha": {
     "title": "अल्फा कैलेंडर",
     "windows": "प्रायिकता विंडोज़",

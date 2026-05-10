@@ -93,6 +93,11 @@
     "overtrading": "과잉매매",
     "aiCoach": "AI 코치의 조언"
   },
+  "cooldown": {
+    "title": "연속 손실 쿨다운",
+    "inactive": "활성화된 쿨다운이 없습니다",
+    "unlocksIn": "해제까지"
+  },
   "alpha": {
     "title": "알파 캘린더",
     "windows": "확률 윈도우",

@@ -93,6 +93,11 @@
     "overtrading": "Surtrading",
     "aiCoach": "Le Coach IA dit"
   },
+  "cooldown": {
+    "title": "Pause après série de pertes",
+    "inactive": "Aucune pause active",
+    "unlocksIn": "Déverrouillage dans"
+  },
   "alpha": {
     "title": "Calendrier Alpha",
     "windows": "Fenêtres de Probabilité",

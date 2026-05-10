@@ -88,6 +88,11 @@
     "overtrading": "Overtrading",
     "aiCoach": "AI Coach mówi"
   },
+  "cooldown": {
+    "title": "Cooldown po serii strat",
+    "inactive": "Brak aktywnego cooldownu",
+    "unlocksIn": "Odblokowanie za"
+  },
   "alpha": {
     "title": "Kalendarz Alpha",
     "windows": "Okna Probabilistyczne",

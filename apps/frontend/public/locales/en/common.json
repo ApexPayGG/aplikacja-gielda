@@ -88,6 +88,11 @@
     "overtrading": "Overtrading",
     "aiCoach": "AI Coach says"
   },
+  "cooldown": {
+    "title": "Loss Streak Cool-Down",
+    "inactive": "No cooldown active",
+    "unlocksIn": "Unlocks in"
+  },
   "alpha": {
     "title": "Alpha Calendar",
     "windows": "Probability Windows",
