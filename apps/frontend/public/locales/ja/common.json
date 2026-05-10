@@ -328,6 +328,22 @@
     "exampleLabel": "Example",
     "selectPrompt": "Select a term from the list to load its explanation."
   },
+  "mentor": {
+    "toggleLabel": "Mentor Mode",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "panelTitle": "AI Mentor",
+    "loading": "Generating mentor guidance...",
+    "riskCheckLabel": "Risk check",
+    "settingsTitle": "Mentor Mode Settings",
+    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
+    "currentStatus": "Current status",
+    "enableAction": "Enable",
+    "disableAction": "Disable",
+    "styleLabel": "Mentor style",
+    "styleSupportive": "Supportive",
+    "styleStrict": "Strict"
+  },
   "emotional": {
     "widgetTitle": "Emotional state",
     "alertTitle": "Break recommended",

@@ -331,6 +331,22 @@
     "emptyState": "Select a term from the list to see an explanation.",
     "tooltipError": "Could not load explanation."
   },
+  "mentor": {
+    "toggleLabel": "Mentor Mode",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "panelTitle": "AI Mentor",
+    "loading": "Generating mentor guidance...",
+    "riskCheckLabel": "Risk check",
+    "settingsTitle": "Mentor Mode Settings",
+    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
+    "currentStatus": "Current status",
+    "enableAction": "Enable",
+    "disableAction": "Disable",
+    "styleLabel": "Mentor style",
+    "styleSupportive": "Supportive",
+    "styleStrict": "Strict"
+  },
   "replay": {
     "title": "Replay Mode",
     "subtitle": "Practice trading decisions on historical data and get AI feedback.",

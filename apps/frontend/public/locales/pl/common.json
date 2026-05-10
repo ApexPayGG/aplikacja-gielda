@@ -331,6 +331,22 @@
     "emptyState": "Wybierz termin z listy, aby zobaczyć wyjaśnienie.",
     "tooltipError": "Nie udało się pobrać wyjaśnienia."
   },
+  "mentor": {
+    "toggleLabel": "Tryb Mentora",
+    "enabled": "Włączony",
+    "disabled": "Wyłączony",
+    "panelTitle": "AI Mentor",
+    "loading": "Generowanie wskazówek mentora...",
+    "riskCheckLabel": "Kontrola ryzyka",
+    "settingsTitle": "Ustawienia trybu Mentora",
+    "settingsSubtitle": "Ustaw jak wsparcie AI mentora ma działać na stronie Signals.",
+    "currentStatus": "Aktualny status",
+    "enableAction": "Włącz",
+    "disableAction": "Wyłącz",
+    "styleLabel": "Styl mentora",
+    "styleSupportive": "Wspierający",
+    "styleStrict": "Surowy"
+  },
   "replay": {
     "title": "Replay Mode",
     "subtitle": "Przećwicz decyzję tradingową na danych historycznych i sprawdź ocenę AI.",

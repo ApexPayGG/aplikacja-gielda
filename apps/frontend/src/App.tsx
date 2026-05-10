@@ -20,6 +20,7 @@ import { GlossaryPage } from "./pages/GlossaryPage";
 import { DigestPage } from "./pages/DigestPage";
 import { SignalsPage } from "./pages/SignalsPage";
 import { StressTestPage } from "./pages/StressTestPage";
+import { SettingsPage } from "./pages/SettingsPage";
 import { TaxOptimizerPage } from "./pages/TaxOptimizerPage";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/tax-optimizer" element={<TaxOptimizerPage />} />
           <Route path="/stress-test" element={<StressTestPage />} />
           <Route path="/concentration" element={<ConcentrationPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
           <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
           <Route path="/company/:symbol" element={<CompanyDetail />} />

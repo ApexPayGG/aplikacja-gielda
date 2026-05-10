@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { GlossaryTooltip } from "../components/GlossaryTooltip";
-import { GlossaryTooltip } from "../components/GlossaryTooltip";
 
 type MarketCode = "US" | "PL" | "DE" | "JP";
 type SignalKind = "CRITICAL" | "STANDARD" | "RESEARCH";
@@ -65,6 +64,12 @@ type ExecutionPlan = {
 };
 
 type ConfidenceCue = "PRIME" | "STRONG" | "WATCH";
+type MentorStyle = "supportive" | "strict";
+type MentorGuidance = {
+  title: string;
+  guidance: string;
+  riskCheck: string;
+};
 
 const marketFlags: Record<MarketCode, string> = {
   US: "🇺🇸",
@@ -356,6 +361,17 @@ function renderGlossaryTerms(input: string): ReactNode {
   });
 }
 
+function readMentorModeEnabled(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem("mentorModeEnabled") === "true";
+}
+
+function readMentorStyle(): MentorStyle {
+  if (typeof window === "undefined") return "supportive";
+  const stored = window.localStorage.getItem("mentorStyle");
+  return stored === "strict" ? "strict" : "supportive";
+}
+
 export function SignalsPage() {
   const { t } = useTranslation();
   const [signals, setSignals] = useState<SignalListItem[]>([]);
@@ -370,6 +386,11 @@ export function SignalsPage() {
   const [liveNote, setLiveNote] = useState<string>("Waiting for stream...");
   const [lastLiveAt, setLastLiveAt] = useState<string | null>(null);
   const [hotSignalIds, setHotSignalIds] = useState<string[]>([]);
+  const [mentorModeEnabled, setMentorModeEnabled] = useState<boolean>(() => readMentorModeEnabled());
+  const [mentorStyle, setMentorStyle] = useState<MentorStyle>(() => readMentorStyle());
+  const [mentorLoading, setMentorLoading] = useState(false);
+  const [mentorError, setMentorError] = useState<string | null>(null);
+  const [mentorGuidance, setMentorGuidance] = useState<MentorGuidance | null>(null);
 
   const selectedSignal = useMemo(
     () => signals.find((s) => s.id === selectedId) ?? null,
@@ -388,6 +409,15 @@ export function SignalsPage() {
     () => (selectedSignal ? regimeProtocol(selectedSignal.marketRegime) : null),
     [selectedSignal],
   );
+
+  useEffect(() => {
+    const syncSettings = () => {
+      setMentorModeEnabled(readMentorModeEnabled());
+      setMentorStyle(readMentorStyle());
+    };
+    window.addEventListener("storage", syncSettings);
+    return () => window.removeEventListener("storage", syncSettings);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -583,11 +613,66 @@ export function SignalsPage() {
     };
   }, [selectedSignal]);
 
+  useEffect(() => {
+    if (!mentorModeEnabled || !selectedSignal) {
+      setMentorGuidance(null);
+      setMentorError(null);
+      setMentorLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadMentorGuidance(): Promise<void> {
+      setMentorLoading(true);
+      setMentorError(null);
+      try {
+        const { data } = await api.post<MentorGuidance>("/mentor/guidance", {
+          ticker: selectedSignal.ticker,
+          setupType: selectedSignal.setupType,
+          riskScore: selectedSignal.riskScore,
+          marketRegime: selectedSignal.marketRegime,
+          mentorStyle,
+          lang: "en",
+        });
+        if (!cancelled) {
+          setMentorGuidance(data);
+        }
+      } catch (error) {
+        if (cancelled) return;
+        setMentorGuidance(null);
+        setMentorError(apiErrorMessage(error));
+      } finally {
+        if (!cancelled) setMentorLoading(false);
+      }
+    }
+
+    void loadMentorGuidance();
+    return () => {
+      cancelled = true;
+    };
+  }, [mentorModeEnabled, mentorStyle, selectedSignal]);
+
   return (
     <div className="min-h-screen bg-brand-bg text-slate-100">
       <div className="mx-auto flex max-w-7xl gap-4 px-4 py-6">
         <aside className="w-[320px] shrink-0 space-y-3">
           <h1 className="text-xl font-semibold text-white">{t("signals.title")}</h1>
+          <button
+            type="button"
+            onClick={() => {
+              const next = !mentorModeEnabled;
+              setMentorModeEnabled(next);
+              window.localStorage.setItem("mentorModeEnabled", String(next));
+            }}
+            className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition ${
+              mentorModeEnabled
+                ? "border-brand-green/70 bg-brand-green/10 text-brand-green"
+                : "border-slate-700 bg-slate-900/70 text-slate-300 hover:border-brand-blue/50"
+            }`}
+          >
+            {t("mentor.toggleLabel")}: {mentorModeEnabled ? t("mentor.enabled") : t("mentor.disabled")}
+          </button>
           <p className="text-[11px] leading-5 text-slate-400">
             <GlossaryTooltip term="RSI">RSI</GlossaryTooltip> ·{" "}
             <GlossaryTooltip term="MACD">MACD</GlossaryTooltip> ·{" "}
@@ -756,6 +841,30 @@ export function SignalsPage() {
 
               {!loadingDetail && narrative && dna && (
                 <div className="space-y-5">
+                  {mentorModeEnabled && (
+                    <article className="neo-panel rounded-lg border border-brand-green/35 p-4">
+                      <div className="mb-2 flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-brand-green">{t("mentor.panelTitle")}</h3>
+                        <span className="rounded bg-brand-green/15 px-2 py-1 text-xs text-brand-green">
+                          {mentorStyle === "strict" ? t("mentor.styleStrict") : t("mentor.styleSupportive")}
+                        </span>
+                      </div>
+                      {mentorLoading ? <p className="text-sm text-slate-300">{t("mentor.loading")}</p> : null}
+                      {!mentorLoading && mentorError ? (
+                        <p className="text-sm text-brand-red">{mentorError}</p>
+                      ) : null}
+                      {!mentorLoading && !mentorError && mentorGuidance ? (
+                        <div className="space-y-2 text-sm text-slate-200">
+                          <p className="font-semibold text-white">{mentorGuidance.title}</p>
+                          <p>{mentorGuidance.guidance}</p>
+                          <p className="text-brand-green">
+                            {t("mentor.riskCheckLabel")}: {mentorGuidance.riskCheck}
+                          </p>
+                        </div>
+                      ) : null}
+                    </article>
+                  )}
+
                   {copilot && (
                     <article className="neo-panel neo-panel-accent rounded-lg p-4">
                       <div className="mb-3 flex items-center justify-between">
