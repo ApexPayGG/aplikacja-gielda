@@ -92,23 +92,23 @@
     },
     "regimeDetail": {
       "TRENDING": {
-        "mode": "Przyspieszenie trendu",
-        "style": "Kontynuacja wybicia",
+        "mode": "Trend acceleration",
+        "style": "Breakout continuation",
         "riskCap": "1.25R"
       },
       "RISK_ON": {
-        "mode": "Ekspansja pro-ryzyko",
+        "mode": "Pro-risk expansion",
         "style": "Momentum basket",
         "riskCap": "1.00R"
       },
       "RISK_OFF": {
-        "mode": "Ochrona kapitału",
-        "style": "Tylko powroty do średniej",
+        "mode": "Capital defense",
+        "style": "Mean reversion only",
         "riskCap": "0.50R"
       },
       "RANGING": {
-        "mode": "Neutralna siatka",
-        "style": "Krawędzie zakresu, szybkie wyjścia",
+        "mode": "Neutral grid",
+        "style": "Range edges + quick exits",
         "riskCap": "0.75R"
       }
     },
@@ -130,10 +130,10 @@
     },
     "copilot": {
       "title": "Decyzja AI Copilot",
-      "conviction": "Przekonanie",
-      "invalidation": "Unieważnienie",
+      "conviction": "Conviction",
+      "invalidation": "Invalidation",
       "invalidationBody": "Wyjdź, jeśli ruch sięgnie {{pct}}% od wejścia albo zmieni się reżim.",
-      "checkpoint": "Punkt kontrolny",
+      "checkpoint": "Checkpoint",
       "checkpointBody": "Oceń ponownie po zamknięciu sesji i przy świeżym wolumenie.",
       "enter": "Wchodzę"
     },
