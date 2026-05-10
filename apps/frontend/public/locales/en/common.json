@@ -55,7 +55,8 @@
     "similarity": "Similarity",
     "narrative": "Narrative",
     "headline": "Headline",
-    "riskNote": "Risk Note"
+    "riskNote": "Risk Note",
+    "preMortemFromSetup": "Pre-Mortem (from this setup)"
   },
   "dividend": {
     "title": "Dividend Radar",
@@ -311,7 +312,9 @@
       "emotional": "Emotional",
       "strategy": "Strategy",
       "timing": "Timing"
-    }
+    },
+    "dnaRowLink": "Strategy DNA",
+    "dnaContextLink": "Open Strategy DNA with these symbols"
   },
   "premortem": {
     "title": "Pre-Mortem AI",
@@ -326,6 +329,16 @@
     "marketRegime": "Market Regime",
     "proceed": "Proceed anyway",
     "cancel": "Cancel trade"
+  },
+  "pearls": {
+    "quoteFreshness": "Quote freshness",
+    "quoteChip": "{{age}} old · {{source}}",
+    "decisionTrailTitle": "Decision trail",
+    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
+    "receiptProceed": "Pre-Mortem → opened anyway",
+    "receiptLoss": "Closed at a loss",
+    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
+    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
   },
   "crowdwisdom": {
     "title": "Crowd Wisdom Inverter",
@@ -485,7 +498,9 @@
       "LYNCH": "Lynch",
       "GREENBLATT": "Greenblatt",
       "SOROS": "Soros"
-    }
+    },
+    "fromMistakesTitle": "Context from Mistake Library",
+    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster."
   },
   "earnings": {
     "title": "Earnings Surprise Predictor",

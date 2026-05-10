@@ -60,7 +60,8 @@
     "similarity": "유사도",
     "narrative": "내러티브",
     "headline": "헤드라인",
-    "riskNote": "리스크 노트"
+    "riskNote": "리스크 노트",
+    "preMortemFromSetup": "Pre-Mortem (from this setup)"
   },
   "dividend": {
     "title": "배당 레이더",
@@ -242,7 +243,9 @@
       "emotional": "Emotional",
       "strategy": "Strategy",
       "timing": "Timing"
-    }
+    },
+    "dnaRowLink": "Strategy DNA",
+    "dnaContextLink": "Open Strategy DNA with these symbols"
   },
   "premortem": {
     "title": "Pre-Mortem AI",
@@ -385,7 +388,9 @@
       "LYNCH": "Lynch",
       "GREENBLATT": "Greenblatt",
       "SOROS": "Soros"
-    }
+    },
+    "fromMistakesTitle": "Context from Mistake Library",
+    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster."
   },
   "earnings": {
     "title": "Earnings Surprise Predictor",
@@ -570,5 +575,15 @@
     "reasonLabel": "Reason",
     "remainingLabel": "Time left",
     "empty": "No recent news found for this symbol."
+  },
+  "pearls": {
+    "quoteFreshness": "Quote freshness",
+    "quoteChip": "{{age}} old · {{source}}",
+    "decisionTrailTitle": "Decision trail",
+    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
+    "receiptProceed": "Pre-Mortem → opened anyway",
+    "receiptLoss": "Closed at a loss",
+    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
+    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
   }
 }

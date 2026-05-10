@@ -159,6 +159,24 @@ export interface PreMortemResponse {
   marketRegime: string;
 }
 
+export type DecisionReceiptKind = "PROCEED_PREMORTEM" | "CLOSED_LOSS";
+
+export type DecisionReceiptPayload = Record<string, unknown>;
+
+export interface DecisionReceipt {
+  id: string;
+  userId: string;
+  paperTradeId: string | null;
+  kind: DecisionReceiptKind;
+  symbol: string;
+  payload: DecisionReceiptPayload;
+  createdAt: string;
+}
+
+export interface DecisionReceiptsResponse {
+  receipts: DecisionReceipt[];
+}
+
 export type ReplayAction = "BUY" | "SELL";
 
 export interface ReplaySnapshotResponse {
@@ -443,6 +461,24 @@ export async function getEmotionalStatus(userId: string): Promise<EmotionalStatu
 
 export async function runPreMortem(input: PreMortemInput): Promise<PreMortemResponse> {
   const { data } = await api.post<PreMortemResponse>("/premortem/analyze", input);
+  return data;
+}
+
+export async function postDecisionReceipt(body: {
+  userId: string;
+  paperTradeId: string;
+  kind: DecisionReceiptKind;
+  symbol: string;
+  payload: DecisionReceiptPayload;
+}): Promise<DecisionReceipt> {
+  const { data } = await api.post<DecisionReceipt>("/paper/decision-receipt", body);
+  return data;
+}
+
+export async function getDecisionReceipts(userId: string, take?: number): Promise<DecisionReceiptsResponse> {
+  const { data } = await api.get<DecisionReceiptsResponse>(`/paper/decision-receipts/${encodeURIComponent(userId)}`, {
+    params: take != null ? { take } : undefined,
+  });
   return data;
 }
 

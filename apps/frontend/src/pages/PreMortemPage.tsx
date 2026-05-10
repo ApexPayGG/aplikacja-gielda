@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { runPreMortem, type PreMortemResponse } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -8,6 +9,7 @@ const PLN_PER_USD = 3.95;
 
 export function PreMortemPage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState({
     symbol: "",
     entry: "",
@@ -18,6 +20,26 @@ export function PreMortemPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PreMortemResponse | null>(null);
+  const [prefillNote, setPrefillNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    const symbol = searchParams.get("symbol");
+    const entry = searchParams.get("entry");
+    const stopLoss = searchParams.get("stopLoss");
+    const takeProfit = searchParams.get("takeProfit");
+    const quantity = searchParams.get("quantity");
+    const regime = searchParams.get("regime");
+    if (symbol || entry || stopLoss || takeProfit || quantity) {
+      setForm((prev) => ({
+        symbol: symbol?.trim().toUpperCase() || prev.symbol,
+        entry: entry != null && entry !== "" ? entry : prev.entry,
+        stopLoss: stopLoss != null && stopLoss !== "" ? stopLoss : prev.stopLoss,
+        takeProfit: takeProfit != null && takeProfit !== "" ? takeProfit : prev.takeProfit,
+        quantity: quantity != null && quantity !== "" ? quantity : prev.quantity,
+      }));
+    }
+    setPrefillNote(regime ? t("pearls.premortemPrefilledRegime", { regime }) : null);
+  }, [searchParams, t]);
 
   async function onSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
@@ -44,6 +66,12 @@ export function PreMortemPage() {
     <div className="mx-auto max-w-4xl px-4 py-10">
       <h1 className="mb-2 text-3xl font-bold text-white">{t("premortem.title")}</h1>
       <p className="mb-6 text-sm text-slate-400">{t("premortem.subtitle")}</p>
+
+      {prefillNote ? (
+        <div className="mb-4 rounded-lg border border-brand-blue/40 bg-brand-blue/10 px-4 py-3 text-sm text-slate-200">
+          {prefillNote}
+        </div>
+      ) : null}
 
       <form onSubmit={onSubmit} className="neo-panel rounded-xl p-5">
         <div className="grid gap-3 md:grid-cols-2">

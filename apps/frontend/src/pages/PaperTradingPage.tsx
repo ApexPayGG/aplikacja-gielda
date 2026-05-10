@@ -2,8 +2,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { FeedbackToastStack, type FeedbackToast } from "../components/FeedbackToastStack";
-import { api, runPreMortem, type PreMortemResponse } from "../services/api";
+import {
+  api,
+  getDecisionReceipts,
+  postDecisionReceipt,
+  runPreMortem,
+  type DecisionReceipt,
+  type PreMortemResponse,
+} from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { formatQuoteAge } from "../utils/formatQuoteAge";
 
 type Direction = "LONG" | "SHORT";
 type ExitAction = "HOLD" | "TIGHTEN_SL" | "SCALE_OUT" | "EXIT_NOW";
@@ -56,6 +64,8 @@ type PositionRow = PaperTrade & {
   currentPrice: number;
   pnl: number;
   pnlPct: number;
+  quoteUpdatedAt?: string;
+  quoteSource?: string;
 };
 
 const USER_ID = "demo-user";
@@ -241,6 +251,8 @@ export function PaperTradingPage() {
   });
   const [preMortemResult, setPreMortemResult] = useState<PreMortemResponse | null>(null);
   const [runningPreMortem, setRunningPreMortem] = useState(false);
+  const [receipts, setReceipts] = useState<DecisionReceipt[]>([]);
+  const [nowMs, setNowMs] = useState(() => Date.now());
 
   const pushToast = useCallback((tone: FeedbackToast["tone"], title: string, message?: string) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -250,10 +262,20 @@ export function PaperTradingPage() {
     }, 3400);
   }, []);
 
+  const loadReceipts = useCallback(async () => {
+    try {
+      const { receipts: next } = await getDecisionReceipts(USER_ID, 40);
+      setReceipts(next);
+    } catch {
+      setReceipts([]);
+    }
+  }, []);
+
   const loadData = useCallback(async () => {
     setError(null);
     setLoadingPortfolio(true);
     setLoadingHistory(true);
+    void loadReceipts();
     let openPositions: PaperTrade[] = [];
     let portfolioFallback = false;
     let historyFallback = false;
@@ -294,16 +316,23 @@ export function PaperTradingPage() {
     }
 
     const priceMap = new Map<string, number>();
+    const quoteMeta = new Map<string, { updatedAt?: string; source?: string }>();
     await Promise.all(
       openPositions.map(async (trade) => {
         try {
-          const { data } = await api.get<{ quote?: { price?: string | number } }>("/quotes/latest", {
+          const { data } = await api.get<{
+            quote?: { price?: string | number; updatedAt?: string; source?: string };
+          }>("/quotes/latest", {
             params: { ticker: trade.ticker },
           });
           const raw = data.quote?.price;
           const price = Number(raw);
           if (Number.isFinite(price) && price > 0) {
             priceMap.set(trade.id, price);
+            quoteMeta.set(trade.id, {
+              updatedAt: data.quote?.updatedAt,
+              source: data.quote?.source,
+            });
             return;
           }
           priceMap.set(trade.id, trade.entryPrice);
@@ -316,7 +345,15 @@ export function PaperTradingPage() {
     const nextRows: PositionRow[] = openPositions.map((trade) => {
       const currentPrice = priceMap.get(trade.id) ?? trade.entryPrice;
       const { pnl, pnlPct } = computeUnrealized(trade, currentPrice);
-      return { ...trade, currentPrice, pnl, pnlPct };
+      const meta = quoteMeta.get(trade.id);
+      return {
+        ...trade,
+        currentPrice,
+        pnl,
+        pnlPct,
+        quoteUpdatedAt: meta?.updatedAt,
+        quoteSource: meta?.source,
+      };
     });
     setPositionRows(nextRows);
 
@@ -343,7 +380,7 @@ export function PaperTradingPage() {
     );
     setExitSignals(nextExitSignals);
     setUsingMock(portfolioFallback || historyFallback);
-  }, []);
+  }, [loadReceipts]);
 
   useEffect(() => {
     void loadData();
@@ -356,12 +393,22 @@ export function PaperTradingPage() {
     return () => clearInterval(timer);
   }, [loadData]);
 
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 10_000);
+    return () => window.clearInterval(id);
+  }, []);
+
   const totalUnrealized = useMemo(
     () => positionRows.reduce((acc, row) => acc + row.pnl, 0),
     [positionRows],
   );
 
-  const openTradeNow = async (payload: { ticker: string; entryPrice: number; quantity: number; direction: Direction }) => {
+  const openTradeNow = async (
+    payload: { ticker: string; entryPrice: number; quantity: number; direction: Direction },
+    premortemSnapshot?: { result: PreMortemResponse; form: typeof preMortemForm },
+  ) => {
     const ticker = payload.ticker.trim().toUpperCase();
     const entryPrice = payload.entryPrice;
     const quantity = payload.quantity;
@@ -373,13 +420,37 @@ export function PaperTradingPage() {
     setSubmittingOpen(true);
     setError(null);
     try {
-      await api.post("/paper/trade/open", {
+      const { data: trade } = await api.post<PaperTrade>("/paper/trade/open", {
         userId: USER_ID,
         ticker,
         direction: payload.direction,
         entryPrice,
         quantity,
       });
+      if (premortemSnapshot && trade?.id) {
+        const { result, form } = premortemSnapshot;
+        try {
+          await postDecisionReceipt({
+            userId: USER_ID,
+            paperTradeId: trade.id,
+            kind: "PROCEED_PREMORTEM",
+            symbol: ticker,
+            payload: {
+              scenario: result.scenario,
+              probability: result.probability,
+              maxLoss: result.maxLoss,
+              marketRegime: result.marketRegime,
+              plannedEntry: Number(form.entry),
+              plannedStop: Number(form.stopLoss),
+              plannedTakeProfit: Number(form.takeProfit),
+              quantity: Number(form.quantity),
+            },
+          });
+          await loadReceipts();
+        } catch {
+          /* receipt is best-effort */
+        }
+      }
       setForm((prev) => ({ ...prev, ticker: "", entryPrice: "", stopLoss: "", takeProfit: "" }));
       await loadData();
       pushToast("success", "Pozycja otwarta", `${ticker} • ${payload.direction} • ${quantity}`);
@@ -486,7 +557,9 @@ export function PaperTradingPage() {
     const ticker = preMortemForm.symbol.trim().toUpperCase();
     const entryPrice = Number(preMortemForm.entry);
     const quantity = Number(preMortemForm.quantity);
-    await openTradeNow({ ticker, entryPrice, quantity, direction: form.direction });
+    const snapshot =
+      preMortemResult != null ? { result: preMortemResult, form: { ...preMortemForm } } : undefined;
+    await openTradeNow({ ticker, entryPrice, quantity, direction: form.direction }, snapshot);
     setPreMortemOpen(false);
   }
 
@@ -501,7 +574,25 @@ export function PaperTradingPage() {
       if (!Number.isFinite(exitPrice) || exitPrice <= 0) {
         throw new Error("Nie udało się pobrać aktualnej ceny.");
       }
-      await api.post("/paper/trade/close", { tradeId: trade.id, exitPrice });
+      const { data: closed } = await api.post<PaperTrade>("/paper/trade/close", { tradeId: trade.id, exitPrice });
+      if (closed.pnl != null && closed.pnl < 0 && closed.id) {
+        try {
+          await postDecisionReceipt({
+            userId: USER_ID,
+            paperTradeId: closed.id,
+            kind: "CLOSED_LOSS",
+            symbol: closed.ticker,
+            payload: {
+              pnl: closed.pnl,
+              pnlPct: closed.pnlPct ?? 0,
+              exitPrice,
+            },
+          });
+          await loadReceipts();
+        } catch {
+          /* best-effort */
+        }
+      }
       await loadData();
       pushToast("success", "Pozycja zamknięta", `${trade.ticker} @ ${formatMoney(exitPrice)}`);
     } catch (e) {
@@ -665,6 +756,7 @@ export function PaperTradingPage() {
                     <th className="px-2 py-2">{t("paperTrading.direction")}</th>
                     <th className="px-2 py-2">{t("paperTrading.entryPrice")}</th>
                     <th className="px-2 py-2">Current Price</th>
+                    <th className="px-2 py-2">{t("pearls.quoteFreshness")}</th>
                     <th className="px-2 py-2">{t("paperTrading.pnl")}</th>
                     <th className="px-2 py-2">PnL%</th>
                     <th className="px-2 py-2">Czas otwarcia</th>
@@ -675,7 +767,7 @@ export function PaperTradingPage() {
                 <tbody>
                   {positionRows.length === 0 && (
                     <tr>
-                      <td colSpan={9} className="px-2 py-6 text-center text-slate-500">
+                      <td colSpan={10} className="px-2 py-6 text-center text-slate-500">
                         Brak aktywnych pozycji.
                       </td>
                     </tr>
@@ -688,6 +780,18 @@ export function PaperTradingPage() {
                         <td className={`px-2 py-2 ${row.direction === "LONG" ? "text-brand-green" : "text-brand-red"}`}>{row.direction === "LONG" ? t("paperTrading.long") : t("paperTrading.short")}</td>
                         <td className="px-2 py-2 font-mono">{formatMoney(row.entryPrice)}</td>
                         <td className="px-2 py-2 font-mono">{formatMoney(row.currentPrice)}</td>
+                        <td className="px-2 py-2 text-xs text-slate-400">
+                          {row.quoteUpdatedAt ? (
+                            <span title={row.quoteUpdatedAt}>
+                              {t("pearls.quoteChip", {
+                                age: formatQuoteAge(row.quoteUpdatedAt, nowMs),
+                                source: row.quoteSource ?? "—",
+                              })}
+                            </span>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
                         <td className={`px-2 py-2 font-mono ${pnlClass(row.pnl)} ${row.pnl >= 0 ? "pnl-glow-positive" : "pnl-glow-negative"}`}>
                           {formatMoney(row.pnl)}
                         </td>
@@ -716,6 +820,45 @@ export function PaperTradingPage() {
                 </tbody>
               </table>
             </div>
+          )}
+        </section>
+
+        <section className="neo-panel rounded-xl p-4">
+          <h2 className="mb-3 text-lg font-semibold text-white">{t("pearls.decisionTrailTitle")}</h2>
+          {receipts.length === 0 ? (
+            <p className="text-sm text-slate-500">{t("pearls.decisionTrailEmpty")}</p>
+          ) : (
+            <ul className="space-y-2 text-sm text-slate-200">
+              {receipts.map((r) => {
+                const pl = r.payload as Record<string, unknown>;
+                const isProceed = r.kind === "PROCEED_PREMORTEM";
+                return (
+                  <li key={r.id} className="rounded-lg border border-slate-800 bg-brand-bg/60 px-3 py-2">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                      <span>{new Date(r.createdAt).toLocaleString()}</span>
+                      <span className="font-mono text-white">{r.symbol}</span>
+                      <span className="rounded bg-slate-800 px-2 py-0.5 text-slate-200">
+                        {isProceed ? t("pearls.receiptProceed") : t("pearls.receiptLoss")}
+                      </span>
+                    </div>
+                    {isProceed ? (
+                      <p className="mt-1 text-slate-300">
+                        {String(pl.scenario ?? "").slice(0, 160)}
+                        {String(pl.scenario ?? "").length > 160 ? "…" : ""}{" "}
+                        <span className="text-brand-amber">({Number(pl.probability ?? 0)}%)</span>
+                      </p>
+                    ) : (
+                      <p className="mt-1 text-slate-300">
+                        {t("pearls.receiptLossDetail", {
+                          pnl: Number(pl.pnl ?? 0).toFixed(2),
+                          pct: Number(pl.pnlPct ?? 0).toFixed(2),
+                        })}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </section>
 

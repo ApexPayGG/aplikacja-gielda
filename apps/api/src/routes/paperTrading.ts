@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
+import type { Prisma } from "@prisma/client";
 import {
   closeTrade,
   getCoachSnapshot,
@@ -7,6 +8,11 @@ import {
   getTradeHistory,
   openTrade,
 } from "../modules/paperTrading/paperTradingModule";
+import {
+  createDecisionReceipt,
+  DECISION_RECEIPT_KIND,
+  listDecisionReceipts,
+} from "../modules/paperTrading/decisionReceiptModule";
 import { sendDiscordClose, sendDiscordOpen } from "../modules/discord/autoSyncModule";
 
 export function createPaperTradingRouter(): Router {
@@ -105,6 +111,65 @@ export function createPaperTradingRouter(): Router {
       if (!userId) return res.status(400).json({ error: "Missing userId" });
       const coach = await getCoachSnapshot(userId);
       res.json(coach);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.post("/api/paper/decision-receipt", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = req.body as Record<string, unknown>;
+      const userId = String(body.userId ?? "").trim();
+      const kind = String(body.kind ?? "").trim();
+      const symbol = String(body.symbol ?? "").trim();
+      const paperTradeId = body.paperTradeId != null && body.paperTradeId !== "" ? String(body.paperTradeId) : null;
+      const payload = body.payload;
+
+      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      if (kind !== DECISION_RECEIPT_KIND.PROCEED_PREMORTEM && kind !== DECISION_RECEIPT_KIND.CLOSED_LOSS) {
+        return res.status(400).json({ error: "Invalid kind" });
+      }
+      if (!symbol) return res.status(400).json({ error: "Missing symbol" });
+      if (payload === undefined || payload === null || typeof payload !== "object") {
+        return res.status(400).json({ error: "payload must be a JSON object" });
+      }
+      if (kind === DECISION_RECEIPT_KIND.PROCEED_PREMORTEM && !paperTradeId) {
+        return res.status(400).json({ error: "paperTradeId required for PROCEED_PREMORTEM" });
+      }
+      if (kind === DECISION_RECEIPT_KIND.CLOSED_LOSS && !paperTradeId) {
+        return res.status(400).json({ error: "paperTradeId required for CLOSED_LOSS" });
+      }
+
+      const row = await createDecisionReceipt({
+        userId,
+        paperTradeId,
+        kind,
+        symbol,
+        payload: payload as Prisma.InputJsonValue,
+      });
+      res.status(201).json(row);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.get("/api/paper/decision-receipts/:userId", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = String(req.params.userId ?? "").trim();
+      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const take = Math.min(100, Math.max(1, parseInt(String(req.query.take ?? "40"), 10) || 40));
+      const receipts = await listDecisionReceipts(userId, take);
+      res.json({
+        receipts: receipts.map((r) => ({
+          id: r.id,
+          userId: r.userId,
+          paperTradeId: r.paperTradeId,
+          kind: r.kind,
+          symbol: r.symbol,
+          payload: r.payload,
+          createdAt: r.createdAt.toISOString(),
+        })),
+      });
     } catch (error) {
       next(error);
     }

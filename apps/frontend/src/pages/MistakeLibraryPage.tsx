@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
   analyzeBehavioralMistakes,
   getBehavioralMistakes,
@@ -64,6 +65,14 @@ export function MistakeLibraryPage() {
     return byType;
   }, [items]);
 
+  const mistakeSymbols = useMemo(() => {
+    const set = new Set<string>();
+    for (const item of items) {
+      set.add(item.symbol);
+    }
+    return [...set];
+  }, [items]);
+
   async function onAnalyzeClick(): Promise<void> {
     setAnalyzing(true);
     setError(null);
@@ -81,7 +90,16 @@ export function MistakeLibraryPage() {
     <div className="mx-auto max-w-6xl px-4 py-10">
       <header className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <h1 className="text-3xl font-bold text-white">{t("mistakes.title")}</h1>
-        <button
+        <div className="flex flex-wrap items-center gap-2">
+          {mistakeSymbols.length > 0 ? (
+            <Link
+              to={`/strategy-dna?from=mistakes&symbols=${encodeURIComponent(mistakeSymbols.join(","))}`}
+              className="rounded-lg border border-brand-blue/50 bg-brand-blue/15 px-3 py-2 text-sm font-semibold text-brand-blue transition hover:bg-brand-blue/25"
+            >
+              {t("mistakes.dnaContextLink")}
+            </Link>
+          ) : null}
+          <button
           type="button"
           onClick={() => void onAnalyzeClick()}
           disabled={analyzing}
@@ -89,6 +107,7 @@ export function MistakeLibraryPage() {
         >
           {analyzing ? t("mistakes.analyzing") : t("mistakes.analyzeButton")}
         </button>
+        </div>
       </header>
 
       {error ? <p className="mb-4 text-sm text-brand-red">{error}</p> : null}
@@ -129,6 +148,12 @@ export function MistakeLibraryPage() {
                         <span className="font-semibold text-white">{item.symbol}</span>
                         <span className="font-mono text-brand-red">{formatSignedPct(item.pnl)}</span>
                         <span className="text-slate-500">{new Date(item.createdAt).toLocaleString()}</span>
+                        <Link
+                          to={`/strategy-dna?from=mistakes&symbol=${encodeURIComponent(item.symbol)}`}
+                          className="ml-auto text-xs font-semibold text-brand-blue hover:underline"
+                        >
+                          {t("mistakes.dnaRowLink")}
+                        </Link>
                       </div>
                       <p className="mt-1 text-sm text-slate-300">{item.explanation}</p>
                     </li>

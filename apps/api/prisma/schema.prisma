@@ -424,6 +424,20 @@ model MistakeLibrary {
   @@map("mistake_library")
 }
 
+/// Immutable audit entries: e.g. proceeding after Pre-Mortem, or closing at a loss.
+model DecisionReceipt {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  paperTradeId String?  @map("paper_trade_id")
+  kind         String
+  symbol       String
+  payload      Json
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt])
+  @@map("decision_receipts")
+}
+
 model EmotionalEvent {
   id              String   @id @default(cuid())
   userId          String   @map("user_id")

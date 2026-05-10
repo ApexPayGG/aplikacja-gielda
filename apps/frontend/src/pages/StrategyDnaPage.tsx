@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { getStrategyDna, type StrategyDnaResponse } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -15,9 +16,21 @@ function pct(value: number): string {
 
 export function StrategyDnaPage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [data, setData] = useState<StrategyDnaResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const fromMistakes = searchParams.get("from") === "mistakes";
+  const highlightSymbols = useMemo(() => {
+    const one = searchParams.get("symbol")?.trim().toUpperCase();
+    if (one) return [one];
+    const raw = searchParams.get("symbols") ?? "";
+    return raw
+      .split(",")
+      .map((s) => s.trim().toUpperCase())
+      .filter(Boolean);
+  }, [searchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,6 +61,13 @@ export function StrategyDnaPage() {
         <h1 className="text-3xl font-bold text-white">{t("strategydna.title")}</h1>
         <p className="mt-1 text-sm text-slate-400">{t("strategydna.subtitle")}</p>
       </header>
+
+      {fromMistakes && highlightSymbols.length > 0 ? (
+        <div className="mb-6 rounded-lg border border-brand-amber/40 bg-brand-amber/10 px-4 py-3 text-sm text-slate-100">
+          <p className="font-semibold text-brand-amber">{t("strategydna.fromMistakesTitle")}</p>
+          <p className="mt-1 text-slate-200">{t("strategydna.fromMistakesBody", { symbols: highlightSymbols.join(", ") })}</p>
+        </div>
+      ) : null}
 
       {loading && <p className="text-slate-400">{t("common.loading")}</p>}
       {error && <p className="text-sm text-brand-red">{error}</p>}

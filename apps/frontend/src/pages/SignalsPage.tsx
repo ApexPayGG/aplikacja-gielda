@@ -1,8 +1,10 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { formatQuoteAge } from "../utils/formatQuoteAge";
 import { GlossaryTooltip } from "../components/GlossaryTooltip";
 
 type MarketCode = "US" | "PL" | "DE" | "JP";
@@ -410,6 +412,42 @@ export function SignalsPage() {
     [selectedSignal],
   );
 
+  const [liveQuoteBadge, setLiveQuoteBadge] = useState<{ updatedAt: string; source?: string } | null>(null);
+  const [quoteNowMs, setQuoteNowMs] = useState(() => Date.now());
+
+  useEffect(() => {
+    const id = window.setInterval(() => setQuoteNowMs(Date.now()), 10_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!selectedSignal) {
+      setLiveQuoteBadge(null);
+      return () => {
+        cancelled = true;
+      };
+    }
+    void (async () => {
+      try {
+        const { data } = await api.get<{ quote?: { updatedAt?: string; source?: string } }>("/quotes/latest", {
+          params: { ticker: selectedSignal.ticker },
+        });
+        if (cancelled) return;
+        if (data.quote?.updatedAt) {
+          setLiveQuoteBadge({ updatedAt: data.quote.updatedAt, source: data.quote.source });
+        } else {
+          setLiveQuoteBadge(null);
+        }
+      } catch {
+        if (!cancelled) setLiveQuoteBadge(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedSignal]);
+
   useEffect(() => {
     const syncSettings = () => {
       setMentorModeEnabled(readMentorModeEnabled());
@@ -806,6 +844,27 @@ export function SignalsPage() {
                     {selectedSignal.changePct >= 0 ? "+" : ""}
                     {selectedSignal.changePct.toFixed(2)}%
                   </div>
+                  <Link
+                    to={`/premortem?${new URLSearchParams({
+                      symbol: selectedSignal.ticker,
+                      entry: selectedSignal.price.toFixed(2),
+                      stopLoss: (selectedSignal.price * 0.98).toFixed(2),
+                      takeProfit: (selectedSignal.price * 1.03).toFixed(2),
+                      quantity: "1",
+                      regime: selectedSignal.marketRegime,
+                    }).toString()}`}
+                    className="mt-2 inline-block text-xs font-semibold text-brand-blue hover:underline"
+                  >
+                    {t("signals.preMortemFromSetup")}
+                  </Link>
+                  {liveQuoteBadge ? (
+                    <div className="mt-1 text-xs text-slate-400">
+                      {t("pearls.quoteChip", {
+                        age: formatQuoteAge(liveQuoteBadge.updatedAt, quoteNowMs),
+                        source: liveQuoteBadge.source ?? "—",
+                      })}
+                    </div>
+                  ) : null}
                 </div>
               </header>
 

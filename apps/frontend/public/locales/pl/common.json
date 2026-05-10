@@ -55,7 +55,8 @@
     "similarity": "Podobieństwo",
     "narrative": "Narracja",
     "headline": "Nagłówek",
-    "riskNote": "Notatka o Ryzyku"
+    "riskNote": "Notatka o Ryzyku",
+    "preMortemFromSetup": "Pre-Mortem (z tego setupu)"
   },
   "dividend": {
     "title": "Radar Dywidend",
@@ -311,7 +312,9 @@
       "emotional": "Emotional",
       "strategy": "Strategy",
       "timing": "Timing"
-    }
+    },
+    "dnaRowLink": "DNA strategii",
+    "dnaContextLink": "Otwórz Strategy DNA z symbolami z błędów"
   },
   "premortem": {
     "title": "Pre-Mortem AI",
@@ -485,7 +488,9 @@
       "LYNCH": "Lynch",
       "GREENBLATT": "Greenblatt",
       "SOROS": "Soros"
-    }
+    },
+    "fromMistakesTitle": "Kontekst z Mistake Library",
+    "fromMistakesBody": "Przeszedłeś tu z listy błędów. Symbole: {{symbols}}. Porównaj profil DNA z tym, gdzie pojawiają się straty."
   },
   "earnings": {
     "title": "Predyktor Niespodzianki Wynikowej",
@@ -639,5 +644,15 @@
     "reasonLabel": "Powód",
     "remainingLabel": "Pozostały czas",
     "empty": "Brak ostatnich newsów dla tego symbolu."
+  },
+  "pearls": {
+    "quoteFreshness": "Świeżość notowania",
+    "quoteChip": "{{age}} temu · {{source}}",
+    "decisionTrailTitle": "Ślad decyzji",
+    "decisionTrailEmpty": "Brak zapisanych decyzji. Wejście po Pre-Mortem albo zamknięcie straty tworzy wpis.",
+    "receiptProceed": "Pre-Mortem → otwarto mimo ostrzeżenia",
+    "receiptLoss": "Zamknięcie ze stratą",
+    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
+    "premortemPrefilledRegime": "Formularz uzupełniony z Sygnałów. Wskazówka reżimu: {{regime}} (zweryfikuj poziomy przed realnym tradem)."
   }
 }

@@ -78,6 +78,7 @@ function serializeLiveQuote(row: {
     close: row.close?.toString() ?? null,
     volume: row.volume != null ? row.volume.toString() : null,
     vwap: row.vwap?.toString() ?? null,
+    source: "live_quotes",
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
