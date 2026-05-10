@@ -232,13 +232,6 @@ export interface GlossaryExplainResponse {
   cached: boolean;
 }
 
-export interface GlossaryExplainResponse {
-  term: string;
-  explanation: string;
-  example: string;
-  cached: boolean;
-}
-
 export type MistakeType = "EMOTIONAL" | "STRATEGY" | "TIMING";
 
 export interface MistakeLibraryItem {
@@ -370,13 +363,6 @@ export async function sendDailyDigest(userId: string, lang: string): Promise<Dai
 
 export async function getCrowdWisdom(symbol: string): Promise<CrowdWisdomResponse> {
   const { data } = await api.get<CrowdWisdomResponse>(`/crowdwisdom/${encodeURIComponent(symbol)}`);
-  return data;
-}
-
-export async function explainGlossaryTerm(term: string, lang: string): Promise<GlossaryExplainResponse> {
-  const { data } = await api.get<GlossaryExplainResponse>("/glossary/explain", {
-    params: { term, lang },
-  });
   return data;
 }
 
