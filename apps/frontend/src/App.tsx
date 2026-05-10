@@ -12,14 +12,17 @@ import { MistakeLibraryPage } from "./pages/MistakeLibraryPage";
 import { PaperTradingPage } from "./pages/PaperTradingPage";
 import { PositionSizePage } from "./pages/PositionSizePage";
 import { PreMortemPage } from "./pages/PreMortemPage";
+import { ReplayModePage } from "./pages/ReplayModePage";
 import { SignalsPage } from "./pages/SignalsPage";
 import { StressTestPage } from "./pages/StressTestPage";
 import { TaxOptimizerPage } from "./pages/TaxOptimizerPage";
+import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 
 export default function App() {
   return (
     <div className="app-shell min-h-screen">
       <AppNavBar />
+      <EmotionalStateWidget />
 
       <main className="relative z-10">
         <Routes>
@@ -34,6 +37,7 @@ export default function App() {
           <Route path="/alpha" element={<AlphaCalendarPage />} />
           <Route path="/position-size" element={<PositionSizePage />} />
           <Route path="/premortem" element={<PreMortemPage />} />
+          <Route path="/replay" element={<ReplayModePage />} />
           <Route path="/tax-optimizer" element={<TaxOptimizerPage />} />
           <Route path="/stress-test" element={<StressTestPage />} />
           <Route path="/concentration" element={<ConcentrationPage />} />

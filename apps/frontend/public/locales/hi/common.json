@@ -235,5 +235,33 @@
     "marketRegime": "Market Regime",
     "proceed": "Proceed anyway",
     "cancel": "Cancel trade"
+  },
+  "replay": {
+    "title": "Replay Mode",
+    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
+    "step1Title": "Step 1: choose company and date",
+    "step2Title": "Step 2: market snapshot",
+    "step3Title": "Step 3: make your decision",
+    "step4Title": "Step 4: AI result",
+    "symbol": "Company",
+    "date": "Historical date",
+    "loadSnapshot": "Load snapshot",
+    "priceChange5d": "Change after 5 days",
+    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
+    "action": "Direction",
+    "price": "Price",
+    "evaluate": "Evaluate decision",
+    "score": "Score",
+    "actualOutcome": "Actual outcome"
+  },
+  "emotional": {
+    "widgetTitle": "Emotional state",
+    "alertTitle": "Break recommended",
+    "lastChecked": "Last checked",
+    "level": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High"
+    }
   }
 }

@@ -107,6 +107,27 @@ export interface BehavioralCooldownResponse {
   message: string;
 }
 
+export type EmotionalLevel = "LOW" | "MEDIUM" | "HIGH";
+
+export interface EmotionalTrackInput {
+  userId: string;
+  clickRate: number;
+  tradeFrequency: number;
+  avgDecisionTime: number;
+}
+
+export interface EmotionalTrackResponse {
+  stressDetected: boolean;
+  suggestion: string | null;
+  level: EmotionalLevel;
+}
+
+export interface EmotionalStatusResponse {
+  currentLevel: EmotionalLevel;
+  suggestion: string | null;
+  lastChecked: string | null;
+}
+
 export interface PreMortemInput {
   symbol: string;
   entry: number;
@@ -121,6 +142,33 @@ export interface PreMortemResponse {
   probability: number;
   maxLoss: number;
   marketRegime: string;
+}
+
+export type ReplayAction = "BUY" | "SELL";
+
+export interface ReplaySnapshotResponse {
+  symbol: string;
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  priceChange5d: number;
+}
+
+export interface ReplayEvaluateBody {
+  userId: string;
+  symbol: string;
+  date: string;
+  action: ReplayAction;
+  price: number;
+}
+
+export interface ReplayEvaluateResponse {
+  score: number;
+  explanation: string;
+  actualOutcome: number;
 }
 
 export type MistakeType = "EMOTIONAL" | "STRATEGY" | "TIMING";
@@ -187,8 +235,35 @@ export async function getBehavioralCooldown(userId: string): Promise<BehavioralC
   return data;
 }
 
+export async function trackEmotionalState(input: EmotionalTrackInput): Promise<EmotionalTrackResponse> {
+  const { data } = await api.post<EmotionalTrackResponse>("/emotional/track", input);
+  return data;
+}
+
+export async function getEmotionalStatus(userId: string): Promise<EmotionalStatusResponse> {
+  const { data } = await api.get<EmotionalStatusResponse>(`/emotional/status/${encodeURIComponent(userId)}`);
+  return data;
+}
+
 export async function runPreMortem(input: PreMortemInput): Promise<PreMortemResponse> {
   const { data } = await api.post<PreMortemResponse>("/premortem/analyze", input);
+  return data;
+}
+
+export async function getReplaySnapshot(
+  symbol: string,
+  date: string,
+): Promise<ReplaySnapshotResponse> {
+  const { data } = await api.get<ReplaySnapshotResponse>("/replay/snapshot", {
+    params: { symbol, date },
+  });
+  return data;
+}
+
+export async function evaluateReplayDecision(
+  body: ReplayEvaluateBody,
+): Promise<ReplayEvaluateResponse> {
+  const { data } = await api.post<ReplayEvaluateResponse>("/replay/evaluate", body);
   return data;
 }
 

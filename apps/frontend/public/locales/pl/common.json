@@ -304,5 +304,33 @@
     "marketRegime": "Market Regime",
     "proceed": "Proceed anyway",
     "cancel": "Cancel trade"
+  },
+  "replay": {
+    "title": "Replay Mode",
+    "subtitle": "Przećwicz decyzję tradingową na danych historycznych i sprawdź ocenę AI.",
+    "step1Title": "Krok 1: wybierz spółkę i datę",
+    "step2Title": "Krok 2: snapshot rynku",
+    "step3Title": "Krok 3: podejmij decyzję",
+    "step4Title": "Krok 4: wynik AI",
+    "symbol": "Spółka",
+    "date": "Data historyczna",
+    "loadSnapshot": "Pobierz snapshot",
+    "priceChange5d": "Zmiana po 5 dniach",
+    "contextHint": "Widoczny snapshot odzwierciedla dane rynkowe dokładnie z wybranego dnia.",
+    "action": "Kierunek",
+    "price": "Cena",
+    "evaluate": "Oceń decyzję",
+    "score": "Ocena",
+    "actualOutcome": "Faktyczny outcome"
+  },
+  "emotional": {
+    "widgetTitle": "Stan emocjonalny",
+    "alertTitle": "Przerwa zalecana",
+    "lastChecked": "Ostatni pomiar",
+    "level": {
+      "LOW": "Niski",
+      "MEDIUM": "Średni",
+      "HIGH": "Wysoki"
+    }
   }
 }
