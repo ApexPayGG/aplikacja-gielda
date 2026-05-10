@@ -18,6 +18,7 @@ import { TrackRecordPage } from "./pages/TrackRecordPage";
 import { CrowdWisdomPage } from "./pages/CrowdWisdomPage";
 import { GlossaryPage } from "./pages/GlossaryPage";
 import { DigestPage } from "./pages/DigestPage";
+import { SkillTreePage } from "./pages/SkillTreePage";
 import { SignalsPage } from "./pages/SignalsPage";
 import { StressTestPage } from "./pages/StressTestPage";
 import { SettingsPage } from "./pages/SettingsPage";
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/crowd-wisdom" element={<CrowdWisdomPage />} />
           <Route path="/glossary" element={<GlossaryPage />} />
           <Route path="/digest" element={<DigestPage />} />
+          <Route path="/skill-tree" element={<SkillTreePage />} />
           <Route path="/tax-optimizer" element={<TaxOptimizerPage />} />
           <Route path="/stress-test" element={<StressTestPage />} />
           <Route path="/concentration" element={<ConcentrationPage />} />

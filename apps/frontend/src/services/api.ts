@@ -209,6 +209,37 @@ export interface TrackRecordPublicResponse {
   generatedAt: string;
 }
 
+export type SkillTreeSkillId =
+  | "BASICS"
+  | "SUPPORT_RESISTANCE"
+  | "RSI"
+  | "MACD"
+  | "FIBONACCI"
+  | "VOLUME"
+  | "RISK_MANAGEMENT"
+  | "BEHAVIORAL"
+  | "DIVERSIFICATION"
+  | "STRATEGY";
+
+export interface SkillTreeSkill {
+  id: SkillTreeSkillId;
+  name: string;
+  description: string;
+  unlockCondition: string;
+  unlocked: boolean;
+  unlockedAt: string | null;
+}
+
+export interface SkillTreeResponse {
+  skills: SkillTreeSkill[];
+  totalUnlocked: number;
+  totalSkills: number;
+}
+
+export interface SkillTreeCheckResponse {
+  newlyUnlocked: SkillTreeSkillId[];
+}
+
 export interface DailyDigestResponse {
   digest: string;
   date: string;
@@ -343,6 +374,18 @@ export async function generateTrackRecord(userId: string): Promise<TrackRecordGe
 export async function getPublicTrackRecord(hash: string): Promise<TrackRecordPublicResponse> {
   const { data } = await api.get<TrackRecordPublicResponse>(
     `/trackrecord/public/${encodeURIComponent(hash)}`,
+  );
+  return data;
+}
+
+export async function getSkillTree(userId: string): Promise<SkillTreeResponse> {
+  const { data } = await api.get<SkillTreeResponse>(`/skilltree/${encodeURIComponent(userId)}`);
+  return data;
+}
+
+export async function checkSkillTree(userId: string): Promise<SkillTreeCheckResponse> {
+  const { data } = await api.post<SkillTreeCheckResponse>(
+    `/skilltree/${encodeURIComponent(userId)}/check`,
   );
   return data;
 }

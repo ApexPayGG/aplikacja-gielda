@@ -26,6 +26,7 @@ const toolsLinks: { to: string; labelKey: string }[] = [
   { to: "/premortem", labelKey: "nav.premortem" },
   { to: "/crowd-wisdom", labelKey: "nav.crowdWisdom" },
   { to: "/glossary", labelKey: "nav.glossary" },
+  { to: "/skill-tree", labelKey: "nav.skillTree" },
   { to: "/tax-optimizer", labelKey: "nav.taxOptimizer" },
 ];
 
@@ -49,6 +50,7 @@ function isToolsPath(pathname: string): boolean {
     pathname.startsWith("/premortem") ||
     pathname.startsWith("/crowd-wisdom") ||
     pathname.startsWith("/glossary") ||
+    pathname.startsWith("/skill-tree") ||
     pathname.startsWith("/tax-optimizer")
   );
 }
