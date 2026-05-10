@@ -6,6 +6,7 @@ import { CompanyDetail } from "./pages/CompanyDetail";
 import { ConcentrationPage } from "./pages/ConcentrationPage";
 import { CorrelationPage } from "./pages/CorrelationPage";
 import { Dashboard } from "./pages/Dashboard";
+import { DividendCompoundPage } from "./pages/DividendCompoundPage";
 import { DividendIntelligencePage } from "./pages/DividendIntelligencePage";
 import { Dividends } from "./pages/Dividends";
 import { Home } from "./pages/Home";
@@ -27,6 +28,7 @@ import { NewsHalfLifePage } from "./pages/NewsHalfLifePage";
 import { SignalsPage } from "./pages/SignalsPage";
 import { StressTestPage } from "./pages/StressTestPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { MirrorTradingPage } from "./pages/MirrorTradingPage";
 import { TaxOptimizerPage } from "./pages/TaxOptimizerPage";
 import { VolatilityHeatMapPage } from "./pages/VolatilityHeatMapPage";
 import { WalkForwardPage } from "./pages/WalkForwardPage";
@@ -46,6 +48,7 @@ export default function App() {
           <Route path="/dividend" element={<Dividends />} />
           <Route path="/dividend/intelligence" element={<DividendIntelligencePage />} />
           <Route path="/paper-trading" element={<PaperTradingPage />} />
+          <Route path="/mirror-trading" element={<MirrorTradingPage />} />
           <Route path="/coach" element={<BehavioralCoachPage />} />
           <Route path="/mistake-library" element={<MistakeLibraryPage />} />
           <Route path="/alpha" element={<AlphaCalendarPage />} />
@@ -68,6 +71,7 @@ export default function App() {
           <Route path="/stress-test" element={<StressTestPage />} />
           <Route path="/concentration" element={<ConcentrationPage />} />
           <Route path="/correlation" element={<CorrelationPage />} />
+          <Route path="/dividend-compound" element={<DividendCompoundPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
           <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />

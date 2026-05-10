@@ -686,5 +686,21 @@
     "receiptLoss": "Zamknięcie ze stratą",
     "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
     "premortemPrefilledRegime": "Formularz uzupełniony z Sygnałów. Wskazówka reżimu: {{regime}} (zweryfikuj poziomy przed realnym tradem)."
+  },
+  "dividendcompound": {
+    "title": "Kalkulator Procentu Składanego z Dywidend",
+    "subtitle": "Symuluj wzrost portfela z reinwestycją dywidend i bez.",
+    "initialAmount": "Kapitał początkowy (PLN)",
+    "monthlyContribution": "Wpłata miesięczna (PLN)",
+    "dividendYield": "Stopa dywidendy (%)",
+    "years": "Horyzont (lata)",
+    "yearsValue": "{{count}} lat",
+    "calculate": "Oblicz",
+    "withReinvesting": "Z reinwestowaniem",
+    "withoutReinvesting": "Bez reinwestowania",
+    "difference": "Różnica (efekt procentu składanego)",
+    "chartTitle": "Wartość portfela rok po roku",
+    "axisYear": "Rok",
+    "tooltipYear": "Rok {{year}}"
   }
 }

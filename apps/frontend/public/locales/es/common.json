@@ -617,5 +617,21 @@
     "receiptLoss": "Closed at a loss",
     "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
     "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
+  },
+  "dividendcompound": {
+    "title": "Calculadora de Interés Compuesto de Dividendos",
+    "subtitle": "Simula el crecimiento de tu cartera con y sin reinversión de dividendos.",
+    "initialAmount": "Capital inicial (PLN)",
+    "monthlyContribution": "Aportación mensual (PLN)",
+    "dividendYield": "Rentabilidad por dividendo (%)",
+    "years": "Horizonte (años)",
+    "yearsValue": "{{count}} años",
+    "calculate": "Calcular",
+    "withReinvesting": "Con reinversión",
+    "withoutReinvesting": "Sin reinversión",
+    "difference": "Diferencia (efecto compuesto)",
+    "chartTitle": "Valor de la cartera año a año",
+    "axisYear": "Año",
+    "tooltipYear": "Año {{year}}"
   }
 }

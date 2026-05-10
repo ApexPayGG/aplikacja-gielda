@@ -37,6 +37,13 @@ export function SettingsPage() {
   const [discordNotice, setDiscordNotice] = useState<string | null>(null);
   const [discordError, setDiscordError] = useState<string | null>(null);
 
+  const [mirrorEnabled, setMirrorEnabled] = useState(false);
+  const [mirrorRevenue, setMirrorRevenue] = useState(10);
+  const [mirrorLoading, setMirrorLoading] = useState(true);
+  const [mirrorSaving, setMirrorSaving] = useState(false);
+  const [mirrorNotice, setMirrorNotice] = useState<string | null>(null);
+  const [mirrorError, setMirrorError] = useState<string | null>(null);
+
   const statusLabel = useMemo(
     () => (mentorEnabled ? t("mentor.enabled") : t("mentor.disabled")),
     [mentorEnabled, t],
@@ -71,6 +78,45 @@ export function SettingsPage() {
     };
     void loadWebhook();
   }, [t, userId]);
+
+  useEffect(() => {
+    const loadMirror = async () => {
+      setMirrorLoading(true);
+      setMirrorError(null);
+      try {
+        const { data } = await api.get<{ enabled: boolean; revenueShare: number }>(
+          `/mirror/permission/${encodeURIComponent(userId)}`,
+        );
+        setMirrorEnabled(Boolean(data.enabled));
+        setMirrorRevenue(Math.min(50, Math.max(0, Number(data.revenueShare) || 0)));
+      } catch {
+        setMirrorError(t("mirror.loadError"));
+      } finally {
+        setMirrorLoading(false);
+      }
+    };
+    void loadMirror();
+  }, [t, userId]);
+
+  async function persistMirror(nextEnabled: boolean, nextRevenue: number): Promise<void> {
+    const revenue = Math.min(50, Math.max(0, nextRevenue));
+    setMirrorSaving(true);
+    setMirrorNotice(null);
+    setMirrorError(null);
+    try {
+      const { data } = await api.post<{ enabled: boolean; revenueShare: number }>(
+        `/mirror/enable/${encodeURIComponent(userId)}`,
+        { revenueShare: revenue, enabled: nextEnabled },
+      );
+      setMirrorEnabled(data.enabled);
+      setMirrorRevenue(Math.min(50, Math.max(0, data.revenueShare)));
+      setMirrorNotice(t("mirror.saved"));
+    } catch {
+      setMirrorError(t("mirror.actionError"));
+    } finally {
+      setMirrorSaving(false);
+    }
+  }
 
   async function saveDiscordWebhook(): Promise<void> {
     const nextWebhook = discordWebhookUrl.trim();
@@ -173,6 +219,71 @@ export function SettingsPage() {
 
           {discordNotice ? <p className="text-sm text-brand-green">{discordNotice}</p> : null}
           {discordError ? <p className="text-sm text-brand-red">{discordError}</p> : null}
+        </section>
+
+        <section className="neo-panel space-y-4 rounded-xl p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-white">{t("mirror.settingsTitle")}</h2>
+              <p className="text-sm text-slate-400">{t("mirror.settingsSubtitle")}</p>
+            </div>
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                mirrorEnabled
+                  ? "border border-brand-green/60 bg-brand-green/10 text-brand-green"
+                  : "border border-slate-700 bg-slate-900/70 text-slate-300"
+              }`}
+            >
+              {mirrorEnabled ? t("mentor.enabled") : t("mentor.disabled")}
+            </span>
+          </div>
+
+          {mirrorLoading ? (
+            <p className="text-sm text-slate-400">{t("common.loading")}</p>
+          ) : (
+            <>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-slate-300">{t("mirror.toggleLabel")}</p>
+                <button
+                  type="button"
+                  disabled={mirrorSaving}
+                  onClick={() => void persistMirror(!mirrorEnabled, mirrorRevenue)}
+                  className={`rounded-lg border px-4 py-2 text-sm transition ${
+                    mirrorEnabled
+                      ? "border-brand-green/70 bg-brand-green/10 text-brand-green"
+                      : "border-slate-700 bg-slate-900/70 text-slate-300 hover:border-brand-blue/50"
+                  }`}
+                >
+                  {mirrorSaving ? t("mirror.saving") : mirrorEnabled ? t("mentor.disableAction") : t("mentor.enableAction")}
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-300">{t("mirror.revenueShare")}</span>
+                  <span className="font-mono text-brand-blue">{mirrorRevenue}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={50}
+                  step={1}
+                  value={mirrorRevenue}
+                  disabled={mirrorSaving}
+                  onChange={(e) => setMirrorRevenue(Number(e.target.value))}
+                  onPointerUp={(e) => {
+                    const v = Number((e.target as HTMLInputElement).value);
+                    void persistMirror(mirrorEnabled, v);
+                  }}
+                  className="w-full accent-brand-blue"
+                />
+                <p className="text-xs text-slate-500">{t("mirror.revenueShareHint")}</p>
+              </div>
+            </>
+          )}
+
+          {mirrorNotice ? <p className="text-sm text-brand-green">{mirrorNotice}</p> : null}
+          {mirrorError ? <p className="text-sm text-brand-red">{mirrorError}</p> : null}
         </section>
 
         <section className="neo-panel space-y-4 rounded-xl p-5">

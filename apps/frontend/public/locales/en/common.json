@@ -686,5 +686,21 @@
     "reasonLabel": "Reason",
     "remainingLabel": "Time left",
     "empty": "No recent news found for this symbol."
+  },
+  "dividendcompound": {
+    "title": "Dividend Compound Calculator",
+    "subtitle": "Simulate portfolio growth with dividend reinvestment vs cash payout.",
+    "initialAmount": "Initial amount (PLN)",
+    "monthlyContribution": "Monthly contribution (PLN)",
+    "dividendYield": "Dividend yield (%)",
+    "years": "Time period (years)",
+    "yearsValue": "{{count}} years",
+    "calculate": "Calculate",
+    "withReinvesting": "With reinvesting",
+    "withoutReinvesting": "Without reinvesting",
+    "difference": "Difference (compound bonus)",
+    "chartTitle": "Portfolio value year by year",
+    "axisYear": "Year",
+    "tooltipYear": "Year {{year}}"
   }
 }

@@ -617,5 +617,21 @@
     "receiptLoss": "Closed at a loss",
     "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
     "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
+  },
+  "dividendcompound": {
+    "title": "股息複利計算機",
+    "subtitle": "模擬有無再投資股息的投資組合成長。",
+    "initialAmount": "初始金額 (PLN)",
+    "monthlyContribution": "每月投入 (PLN)",
+    "dividendYield": "股息殖利率 (%)",
+    "years": "期間 (年)",
+    "yearsValue": "{{count}} 年",
+    "calculate": "計算",
+    "withReinvesting": "再投資",
+    "withoutReinvesting": "不再投資",
+    "difference": "差額 (複利效果)",
+    "chartTitle": "逐年投資組合價值",
+    "axisYear": "年份",
+    "tooltipYear": "第 {{year}} 年"
   }
 }

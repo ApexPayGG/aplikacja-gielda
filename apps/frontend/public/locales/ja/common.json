@@ -617,5 +617,21 @@
     "receiptLoss": "Closed at a loss",
     "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
     "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
+  },
+  "dividendcompound": {
+    "title": "配当複利計算機",
+    "subtitle": "配当再投資ありとなしのポートフォリオ成長をシミュレーション。",
+    "initialAmount": "初期金額 (PLN)",
+    "monthlyContribution": "毎月の積立 (PLN)",
+    "dividendYield": "配当利回り (%)",
+    "years": "期間 (年)",
+    "yearsValue": "{{count}} 年",
+    "calculate": "計算",
+    "withReinvesting": "再投資あり",
+    "withoutReinvesting": "再投資なし",
+    "difference": "差額 (複利効果)",
+    "chartTitle": "年ごとのポートフォリオ価値",
+    "axisYear": "年",
+    "tooltipYear": "{{year}} 年目"
   }
 }

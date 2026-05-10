@@ -617,5 +617,21 @@
     "receiptLoss": "Closed at a loss",
     "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
     "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
+  },
+  "dividendcompound": {
+    "title": "Dividenden-Zinseszinsrechner",
+    "subtitle": "Simuliere das Portfoliowachstum mit und ohne Reinvestition der Dividenden.",
+    "initialAmount": "Startkapital (PLN)",
+    "monthlyContribution": "Monatliche Einzahlung (PLN)",
+    "dividendYield": "Dividendenrendite (%)",
+    "years": "Anlagedauer (Jahre)",
+    "yearsValue": "{{count}} Jahre",
+    "calculate": "Berechnen",
+    "withReinvesting": "Mit Reinvestition",
+    "withoutReinvesting": "Ohne Reinvestition",
+    "difference": "Differenz (Zinseszins-Bonus)",
+    "chartTitle": "Portfoliowert Jahr für Jahr",
+    "axisYear": "Jahr",
+    "tooltipYear": "Jahr {{year}}"
   }
 }

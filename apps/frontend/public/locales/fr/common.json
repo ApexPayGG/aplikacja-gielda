@@ -617,5 +617,21 @@
     "receiptLoss": "Closed at a loss",
     "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
     "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
+  },
+  "dividendcompound": {
+    "title": "Calculateur d'Intérêts Composés sur Dividendes",
+    "subtitle": "Simulez la croissance du portefeuille avec et sans réinvestissement des dividendes.",
+    "initialAmount": "Capital initial (PLN)",
+    "monthlyContribution": "Versement mensuel (PLN)",
+    "dividendYield": "Rendement du dividende (%)",
+    "years": "Horizon (années)",
+    "yearsValue": "{{count}} ans",
+    "calculate": "Calculer",
+    "withReinvesting": "Avec réinvestissement",
+    "withoutReinvesting": "Sans réinvestissement",
+    "difference": "Différence (bonus composé)",
+    "chartTitle": "Valeur du portefeuille année par année",
+    "axisYear": "Année",
+    "tooltipYear": "Année {{year}}"
   }
 }

@@ -617,5 +617,21 @@
     "receiptLoss": "Closed at a loss",
     "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
     "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
+  },
+  "dividendcompound": {
+    "title": "배당 복리 계산기",
+    "subtitle": "배당 재투자 여부에 따른 포트폴리오 성장을 시뮬레이션합니다.",
+    "initialAmount": "초기 금액 (PLN)",
+    "monthlyContribution": "월 적립금 (PLN)",
+    "dividendYield": "배당 수익률 (%)",
+    "years": "기간 (년)",
+    "yearsValue": "{{count}}년",
+    "calculate": "계산",
+    "withReinvesting": "재투자 포함",
+    "withoutReinvesting": "재투자 미포함",
+    "difference": "차이 (복리 효과)",
+    "chartTitle": "연도별 포트폴리오 가치",
+    "axisYear": "연도",
+    "tooltipYear": "{{year}}년차"
   }
 }

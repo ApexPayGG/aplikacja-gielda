@@ -616,5 +616,21 @@
     "receiptLoss": "Closed at a loss",
     "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
     "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
+  },
+  "dividendcompound": {
+    "title": "लाभांश चक्रवृद्धि कैलकुलेटर",
+    "subtitle": "लाभांश पुनर्निवेश के साथ बनाम बिना पोर्टफोलियो वृद्धि का अनुकरण करें।",
+    "initialAmount": "प्रारंभिक राशि (PLN)",
+    "monthlyContribution": "मासिक योगदान (PLN)",
+    "dividendYield": "लाभांश यील्ड (%)",
+    "years": "अवधि (वर्ष)",
+    "yearsValue": "{{count}} वर्ष",
+    "calculate": "गणना करें",
+    "withReinvesting": "पुनर्निवेश के साथ",
+    "withoutReinvesting": "पुनर्निवेश के बिना",
+    "difference": "अंतर (चक्रवृद्धि बोनस)",
+    "chartTitle": "वर्ष दर वर्ष पोर्टफोलियो मूल्य",
+    "axisYear": "वर्ष",
+    "tooltipYear": "वर्ष {{year}}"
   }
 }

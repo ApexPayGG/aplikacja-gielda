@@ -15,6 +15,7 @@ const marketsLinks: { to: string; labelKey: string }[] = [
 
 const portfolioLinks: { to: string; labelKey: string }[] = [
   { to: "/paper-trading", labelKey: "nav.paperTrading" },
+  { to: "/mirror-trading", labelKey: "nav.mirrorTrading" },
   { to: "/coach", labelKey: "nav.coach" },
   { to: "/mistake-library", labelKey: "nav.mistakeLibrary" },
   { to: "/stress-test", labelKey: "nav.stressTest" },
@@ -27,6 +28,7 @@ const toolsLinks: { to: string; labelKey: string }[] = [
   { to: "/correlation", labelKey: "nav.correlation" },
   { to: "/volatility", labelKey: "nav.volatility" },
   { to: "/crowd-wisdom", labelKey: "nav.crowdWisdom" },
+  { to: "/dividend-compound", labelKey: "nav.dividendCompound" },
   { to: "/glossary", labelKey: "nav.glossary" },
   { to: "/skill-tree", labelKey: "nav.skillTree" },
   { to: "/tax-optimizer", labelKey: "nav.taxOptimizer" },
@@ -39,6 +41,7 @@ function isMarketsPath(pathname: string): boolean {
 function isPortfolioPath(pathname: string): boolean {
   return (
     pathname.startsWith("/paper-trading") ||
+    pathname.startsWith("/mirror-trading") ||
     pathname.startsWith("/coach") ||
     pathname.startsWith("/mistake-library") ||
     pathname.startsWith("/stress-test") ||
@@ -53,6 +56,7 @@ function isToolsPath(pathname: string): boolean {
     pathname.startsWith("/correlation") ||
     pathname.startsWith("/volatility") ||
     pathname.startsWith("/crowd-wisdom") ||
+    pathname.startsWith("/dividend-compound") ||
     pathname.startsWith("/glossary") ||
     pathname.startsWith("/skill-tree") ||
     pathname.startsWith("/tax-optimizer")
