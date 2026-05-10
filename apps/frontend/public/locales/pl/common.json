@@ -365,6 +365,15 @@
     "copyFailed": "Nie udało się skopiować linku.",
     "copied": "Skopiowano link"
   },
+  "digest": {
+    "title": "Dzienny Digest",
+    "subtitle": "Wygeneruj codzienne podsumowanie AI i wyślij testowy email.",
+    "previewButton": "Preview my digest",
+    "sendButton": "Send test email",
+    "cardDateLabel": "Data digestu",
+    "emptyState": "Kliknij podgląd, aby wygenerować dzisiejszy digest.",
+    "emailSent": "Wysłano testowy email dla {{date}}."
+  },
   "strategydna": {
     "title": "Dopasowanie DNA Strategii",
     "subtitle": "AI porownuje Twoj styl paper tradingu z legendami inwestowania.",
