@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { GlossaryTooltip } from "../components/GlossaryTooltip";
+import { GlossaryTooltip } from "../components/GlossaryTooltip";
 
 type MarketCode = "US" | "PL" | "DE" | "JP";
 type SignalKind = "CRITICAL" | "STANDARD" | "RESEARCH";
@@ -70,6 +72,8 @@ const marketFlags: Record<MarketCode, string> = {
   DE: "🇩🇪",
   JP: "🇯🇵",
 };
+
+const GLOSSARY_TERMS = ["RSI", "MACD", "VWAP", "breakout", "oversold"] as const;
 
 const mockSignals: SignalListItem[] = [
   {
@@ -335,6 +339,23 @@ function dnaRationale(match: DnaMatch): { why: string; counter: string } {
   };
 }
 
+function renderGlossaryTerms(input: string): ReactNode {
+  const escapedTerms = GLOSSARY_TERMS.map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const regex = new RegExp(`\\b(${escapedTerms.join("|")})\\b`, "gi");
+  const parts = input.split(regex);
+  return parts.map((part, index) => {
+    const matched = GLOSSARY_TERMS.find((term) => term.toLowerCase() === part.toLowerCase());
+    if (!matched) {
+      return <span key={`txt-${index}`}>{part}</span>;
+    }
+    return (
+      <GlossaryTooltip key={`term-${matched}-${index}`} term={matched}>
+        {part}
+      </GlossaryTooltip>
+    );
+  });
+}
+
 export function SignalsPage() {
   const { t } = useTranslation();
   const [signals, setSignals] = useState<SignalListItem[]>([]);
@@ -567,6 +588,13 @@ export function SignalsPage() {
       <div className="mx-auto flex max-w-7xl gap-4 px-4 py-6">
         <aside className="w-[320px] shrink-0 space-y-3">
           <h1 className="text-xl font-semibold text-white">{t("signals.title")}</h1>
+          <p className="text-[11px] leading-5 text-slate-400">
+            <GlossaryTooltip term="RSI">RSI</GlossaryTooltip> ·{" "}
+            <GlossaryTooltip term="MACD">MACD</GlossaryTooltip> ·{" "}
+            <GlossaryTooltip term="VWAP">VWAP</GlossaryTooltip> ·{" "}
+            <GlossaryTooltip term="breakout">breakout</GlossaryTooltip> ·{" "}
+            <GlossaryTooltip term="oversold">oversold</GlossaryTooltip>
+          </p>
           <div className="neo-panel rounded-xl p-3 text-xs">
             <div className="flex items-center justify-between">
               <span className="text-slate-400">Live Engine</span>
@@ -622,7 +650,7 @@ export function SignalsPage() {
                       <div className="text-base font-semibold text-white">
                         {signal.ticker} <span className="text-slate-400">{signal.market}</span> {marketFlags[signal.market]}
                       </div>
-                      <div className="mt-1 text-xs text-slate-400">{signal.setupType}</div>
+                      <div className="mt-1 text-xs text-slate-400">{renderGlossaryTerms(signal.setupType)}</div>
                       <span className={`mt-2 inline-flex rounded px-2 py-0.5 text-[10px] font-semibold tracking-wide ${confidenceCueClass(cue)}`}>
                         {cue}
                       </span>
@@ -668,7 +696,18 @@ export function SignalsPage() {
                   <h2 className="text-3xl font-bold text-white">
                     {selectedSignal.ticker} <span className="text-sm text-slate-400">{selectedSignal.market}</span>
                   </h2>
-                  <p className="mt-1 text-sm text-slate-400">{selectedSignal.setupType}</p>
+                  <p className="mt-1 text-sm text-slate-400">{renderGlossaryTerms(selectedSignal.setupType)}</p>
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-300">
+                    <GlossaryTooltip term="RSI">RSI</GlossaryTooltip>
+                    <span>•</span>
+                    <GlossaryTooltip term="MACD">MACD</GlossaryTooltip>
+                    <span>•</span>
+                    <GlossaryTooltip term="VWAP">VWAP</GlossaryTooltip>
+                    <span>•</span>
+                    <GlossaryTooltip term="breakout">breakout</GlossaryTooltip>
+                    <span>•</span>
+                    <GlossaryTooltip term="oversold">oversold</GlossaryTooltip>
+                  </div>
                   <span
                     className={`mt-2 inline-flex rounded px-2 py-1 text-xs font-semibold tracking-wide ${confidenceCueClass(confidenceCue(selectedSignal))}`}
                   >
@@ -778,7 +817,9 @@ export function SignalsPage() {
                   <article className="neo-panel rounded-lg p-4">
                     <h3 className="mb-3 text-lg font-semibold text-white">Discord Embed Preview</h3>
                     <div className="rounded border border-brand-blue/30 bg-brand-bg/70 p-4 spot-glow">
-                      <div className="text-sm text-brand-blue">{selectedSignal.ticker} • {selectedSignal.setupType}</div>
+                      <div className="text-sm text-brand-blue">
+                        {selectedSignal.ticker} • {renderGlossaryTerms(selectedSignal.setupType)}
+                      </div>
                       <div className="mt-2 text-xl font-semibold text-white">{narrative.headline}</div>
                       <p className="mt-2 text-sm text-slate-300">{narrative.body}</p>
                       <div className="mt-3 flex flex-wrap gap-2 text-xs">

@@ -16,6 +16,8 @@ import { ReplayModePage } from "./pages/ReplayModePage";
 import { StrategyDnaPage } from "./pages/StrategyDnaPage";
 import { TrackRecordPage } from "./pages/TrackRecordPage";
 import { CrowdWisdomPage } from "./pages/CrowdWisdomPage";
+import { GlossaryPage } from "./pages/GlossaryPage";
+import { DigestPage } from "./pages/DigestPage";
 import { SignalsPage } from "./pages/SignalsPage";
 import { StressTestPage } from "./pages/StressTestPage";
 import { TaxOptimizerPage } from "./pages/TaxOptimizerPage";
@@ -44,6 +46,8 @@ export default function App() {
           <Route path="/strategy-dna" element={<StrategyDnaPage />} />
           <Route path="/track-record" element={<TrackRecordPage />} />
           <Route path="/crowd-wisdom" element={<CrowdWisdomPage />} />
+          <Route path="/glossary" element={<GlossaryPage />} />
+          <Route path="/digest" element={<DigestPage />} />
           <Route path="/tax-optimizer" element={<TaxOptimizerPage />} />
           <Route path="/stress-test" element={<StressTestPage />} />
           <Route path="/concentration" element={<ConcentrationPage />} />

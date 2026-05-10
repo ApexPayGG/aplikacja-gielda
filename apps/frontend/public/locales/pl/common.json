@@ -18,7 +18,8 @@
     "tools": "Narzędzia",
     "menu": "Menu",
     "premortem": "Pre-Mortem",
-    "crowdWisdom": "Mądrość Tłumu"
+    "crowdWisdom": "Mądrość Tłumu",
+    "glossary": "Słownik"
   },
   "common": {
     "search": "Szukaj",
@@ -319,6 +320,17 @@
     "signalSell": "Kontrariański Sprzedaj",
     "signalNeutral": "Neutralny"
   },
+  "glossary": {
+    "title": "Słownik finansowy",
+    "subtitle": "Kliknij termin, aby zobaczyć proste wyjaśnienie dla inwestora detalicznego.",
+    "popularTerms": "Popularne terminy",
+    "explanation": "Wyjaśnienie",
+    "termLabel": "Termin",
+    "explanationLabel": "Wyjaśnienie",
+    "exampleLabel": "Przykład",
+    "emptyState": "Wybierz termin z listy, aby zobaczyć wyjaśnienie.",
+    "tooltipError": "Nie udało się pobrać wyjaśnienia."
+  },
   "replay": {
     "title": "Replay Mode",
     "subtitle": "Przećwicz decyzję tradingową na danych historycznych i sprawdź ocenę AI.",
@@ -336,6 +348,45 @@
     "evaluate": "Oceń decyzję",
     "score": "Ocena",
     "actualOutcome": "Faktyczny outcome"
+  },
+  "trackrecord": {
+    "title": "Anonimowy Track Record",
+    "subtitle": "Wygeneruj publiczne, anonimowe podsumowanie zamkniętych transakcji paper trading.",
+    "generateButton": "Generate my track record",
+    "cardTitle": "Twój publiczny track record",
+    "winRate": "Skuteczność",
+    "totalTrades": "Liczba transakcji",
+    "avgReturn": "Średni zwrot",
+    "bestTradePct": "Najlepsza transakcja",
+    "worstTradePct": "Najgorsza transakcja",
+    "generatedAt": "Wygenerowano",
+    "shareLinkLabel": "Link publiczny",
+    "copyButton": "Copy share link",
+    "copyFailed": "Nie udało się skopiować linku.",
+    "copied": "Skopiowano link"
+  },
+  "strategydna": {
+    "title": "Dopasowanie DNA Strategii",
+    "subtitle": "AI porownuje Twoj styl paper tradingu z legendami inwestowania.",
+    "mainResultLabel": "Twoj styl to",
+    "primary": "Glowny match",
+    "secondary": "Drugorzędny match",
+    "insightLabel": "Insight AI",
+    "notEnoughData": "Potrzebujesz min 20 zamknietych transakcji",
+    "legends": {
+      "BUFFETT": "Buffett",
+      "LYNCH": "Lynch",
+      "GREENBLATT": "Greenblatt",
+      "SOROS": "Soros"
+    }
+  },
+  "glossary": {
+    "title": "Translate Financial English",
+    "subtitle": "Kliknij termin rynkowy, aby zobaczyć krótkie wyjaśnienie i praktyczny przykład.",
+    "popularTerms": "Popularne terminy",
+    "loading": "Ładowanie wyjaśnienia...",
+    "exampleLabel": "Przykład",
+    "selectPrompt": "Wybierz termin z listy, aby pobrać wyjaśnienie."
   },
   "emotional": {
     "widgetTitle": "Stan emocjonalny",

@@ -209,6 +209,11 @@ export interface TrackRecordPublicResponse {
   generatedAt: string;
 }
 
+export interface DailyDigestResponse {
+  digest: string;
+  date: string;
+}
+
 export type CrowdWisdomSignal = "CONTRARIAN_BUY" | "CONTRARIAN_SELL" | "NEUTRAL";
 
 export interface CrowdWisdomResponse {
@@ -218,6 +223,20 @@ export interface CrowdWisdomResponse {
   divergence: number;
   insight: string;
   signal: CrowdWisdomSignal;
+}
+
+export interface GlossaryExplainResponse {
+  term: string;
+  explanation: string;
+  example: string;
+  cached: boolean;
+}
+
+export interface GlossaryExplainResponse {
+  term: string;
+  explanation: string;
+  example: string;
+  cached: boolean;
 }
 
 export type MistakeType = "EMOTIONAL" | "STRATEGY" | "TIMING";
@@ -335,8 +354,36 @@ export async function getPublicTrackRecord(hash: string): Promise<TrackRecordPub
   return data;
 }
 
+export async function previewDailyDigest(userId: string, lang: string): Promise<DailyDigestResponse> {
+  const { data } = await api.get<DailyDigestResponse>(`/digest/preview/${encodeURIComponent(userId)}`, {
+    params: { lang },
+  });
+  return data;
+}
+
+export async function sendDailyDigest(userId: string, lang: string): Promise<DailyDigestResponse> {
+  const { data } = await api.post<DailyDigestResponse>(`/digest/send/${encodeURIComponent(userId)}`, undefined, {
+    params: { lang },
+  });
+  return data;
+}
+
 export async function getCrowdWisdom(symbol: string): Promise<CrowdWisdomResponse> {
   const { data } = await api.get<CrowdWisdomResponse>(`/crowdwisdom/${encodeURIComponent(symbol)}`);
+  return data;
+}
+
+export async function explainGlossaryTerm(term: string, lang: string): Promise<GlossaryExplainResponse> {
+  const { data } = await api.get<GlossaryExplainResponse>("/glossary/explain", {
+    params: { term, lang },
+  });
+  return data;
+}
+
+export async function explainGlossaryTerm(term: string, lang: string): Promise<GlossaryExplainResponse> {
+  const { data } = await api.get<GlossaryExplainResponse>("/glossary/explain", {
+    params: { term, lang },
+  });
   return data;
 }
 

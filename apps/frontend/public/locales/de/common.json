@@ -18,7 +18,8 @@
     "tools": "Tools",
     "menu": "Menü",
     "premortem": "Pre-Mortem",
-    "crowdWisdom": "Crowd Wisdom"
+    "crowdWisdom": "Crowd Wisdom",
+    "glossary": "Glossary"
   },
   "common": {
     "search": "Suchen",
@@ -250,6 +251,17 @@
     "signalSell": "Contrarian Sell",
     "signalNeutral": "Neutral"
   },
+  "glossary": {
+    "title": "Financial Glossary",
+    "subtitle": "Click a term to get a simple explanation for retail investors.",
+    "popularTerms": "Popular terms",
+    "explanation": "Explanation",
+    "termLabel": "Term",
+    "explanationLabel": "Explanation",
+    "exampleLabel": "Example",
+    "emptyState": "Select a term from the list to see an explanation.",
+    "tooltipError": "Could not load explanation."
+  },
   "replay": {
     "title": "Replay Mode",
     "subtitle": "Practice trading decisions on historical data and get AI feedback.",
@@ -267,6 +279,54 @@
     "evaluate": "Evaluate decision",
     "score": "Score",
     "actualOutcome": "Actual outcome"
+  },
+  "trackrecord": {
+    "title": "Anonymous Track Record",
+    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
+    "generateButton": "Generate my track record",
+    "cardTitle": "Your public track record",
+    "winRate": "Win rate",
+    "totalTrades": "Total trades",
+    "avgReturn": "Average return",
+    "bestTradePct": "Best trade",
+    "worstTradePct": "Worst trade",
+    "generatedAt": "Generated at",
+    "shareLinkLabel": "Public link",
+    "copyButton": "Copy share link",
+    "copyFailed": "Failed to copy share link.",
+    "copied": "Link copied"
+  },
+  "digest": {
+    "title": "Daily Digest",
+    "subtitle": "Generate your AI market recap and send a test email instantly.",
+    "previewButton": "Preview my digest",
+    "sendButton": "Send test email",
+    "cardDateLabel": "Digest date",
+    "emptyState": "Click preview to generate today's digest.",
+    "emailSent": "Test email sent for {{date}}."
+  },
+  "strategydna": {
+    "title": "Strategy DNA Match",
+    "subtitle": "AI compares your paper trading style with legendary investors.",
+    "mainResultLabel": "Your style is",
+    "primary": "Primary match",
+    "secondary": "Secondary match",
+    "insightLabel": "AI insight",
+    "notEnoughData": "You need at least 20 closed trades.",
+    "legends": {
+      "BUFFETT": "Buffett",
+      "LYNCH": "Lynch",
+      "GREENBLATT": "Greenblatt",
+      "SOROS": "Soros"
+    }
+  },
+  "glossary": {
+    "title": "Translate Financial English",
+    "subtitle": "Click a market term to get a short explanation and practical example.",
+    "popularTerms": "Popular terms",
+    "loading": "Loading explanation...",
+    "exampleLabel": "Example",
+    "selectPrompt": "Select a term from the list to load its explanation."
   },
   "emotional": {
     "widgetTitle": "Emotional state",

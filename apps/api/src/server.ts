@@ -67,10 +67,47 @@ import { createBehavioralRouter } from "./routes/behavioral";
 import { createPreMortemRouter } from "./routes/premortem";
 import { createEmotionalRouter } from "./routes/emotional";
 import { createReplayRouter } from "./routes/replay";
+import { createStrategyDnaRouter } from "./routes/strategydna";
+import { createTrackRecordRouter } from "./routes/trackrecord";
 import { createCrowdWisdomRouter } from "./routes/crowdwisdom";
+import { createGlossaryRouter } from "./routes/glossary";
+import { createDigestRouter } from "./routes/digest";
+import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+function msUntilNextUtcEight(now = new Date()): number {
+  const next = new Date(now);
+  next.setUTCHours(8, 0, 0, 0);
+  if (next.getTime() <= now.getTime()) {
+    next.setUTCDate(next.getUTCDate() + 1);
+  }
+  return Math.max(0, next.getTime() - now.getTime());
+}
+
+function scheduleDailyDigestJob(): void {
+  const run = async () => {
+    try {
+      const result = await sendDailyDigests();
+      console.log(`[digest] sendDailyDigests done sent=${result.sent} failed=${result.failed}`);
+    } catch (error) {
+      console.error("[digest] sendDailyDigests failed", error);
+    } finally {
+      setTimeout(() => {
+        void run();
+      }, 24 * 60 * 60 * 1000);
+    }
+  };
+
+  const initialDelayMs = msUntilNextUtcEight();
+  console.log(
+    `[digest] Daily digest cron armed for 08:00 UTC (starts in ${Math.round(initialDelayMs / 1000)}s)`,
+  );
+  setTimeout(() => {
+    void run();
+  }, initialDelayMs);
 }
 
 function isDatabaseUnavailable(err: unknown): boolean {
@@ -143,7 +180,11 @@ export function createApp(): express.Express {
   app.use(createEmotionalRouter());
   app.use(createPreMortemRouter());
   app.use(createReplayRouter());
+  app.use(createStrategyDnaRouter());
+  app.use(createTrackRecordRouter());
   app.use(createCrowdWisdomRouter());
+  app.use(createGlossaryRouter());
+  app.use(createDigestRouter());
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));
   app.use("/api/concentration", createConcentrationRouter(prisma));
@@ -591,6 +632,7 @@ export function createApp(): express.Express {
 export async function startServer(port?: number): Promise<void> {
   const app = createApp();
   const p = port ?? parseInt(process.env.PORT ?? "3000", 10);
+  scheduleDailyDigestJob();
   await new Promise<void>((resolve, reject) => {
     const server = app.listen(p, () => {
       console.log(`HTTP listening on :${p}`);
