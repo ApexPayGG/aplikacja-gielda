@@ -67,6 +67,7 @@ import { createBehavioralRouter } from "./routes/behavioral";
 import { createPreMortemRouter } from "./routes/premortem";
 import { createEmotionalRouter } from "./routes/emotional";
 import { createReplayRouter } from "./routes/replay";
+import { createCrowdWisdomRouter } from "./routes/crowdwisdom";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -142,6 +143,7 @@ export function createApp(): express.Express {
   app.use(createEmotionalRouter());
   app.use(createPreMortemRouter());
   app.use(createReplayRouter());
+  app.use(createCrowdWisdomRouter());
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));
   app.use("/api/concentration", createConcentrationRouter(prisma));

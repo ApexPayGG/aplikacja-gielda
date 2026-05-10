@@ -17,7 +17,8 @@
     "portfolio": "Portfel",
     "tools": "Narzędzia",
     "menu": "Menu",
-    "premortem": "Pre-Mortem"
+    "premortem": "Pre-Mortem",
+    "crowdWisdom": "Mądrość Tłumu"
   },
   "common": {
     "search": "Szukaj",
@@ -304,6 +305,19 @@
     "marketRegime": "Market Regime",
     "proceed": "Proceed anyway",
     "cancel": "Cancel trade"
+  },
+  "crowdwisdom": {
+    "title": "Crowd Wisdom Inverter",
+    "subtitle": "Porównaj nastroje retail z aktywnością insiderów i znajdź kontrariański sygnał.",
+    "symbol": "Symbol",
+    "analyze": "Analizuj",
+    "retailSentiment": "Sentyment Retail",
+    "insiderActivity": "Aktywność Insiderów",
+    "result": "Sygnał",
+    "divergence": "Dywergencja (insider - retail)",
+    "signalBuy": "Kontrariański Kupuj",
+    "signalSell": "Kontrariański Sprzedaj",
+    "signalNeutral": "Neutralny"
   },
   "replay": {
     "title": "Replay Mode",

@@ -13,6 +13,7 @@ import { PaperTradingPage } from "./pages/PaperTradingPage";
 import { PositionSizePage } from "./pages/PositionSizePage";
 import { PreMortemPage } from "./pages/PreMortemPage";
 import { ReplayModePage } from "./pages/ReplayModePage";
+import { CrowdWisdomPage } from "./pages/CrowdWisdomPage";
 import { SignalsPage } from "./pages/SignalsPage";
 import { StressTestPage } from "./pages/StressTestPage";
 import { TaxOptimizerPage } from "./pages/TaxOptimizerPage";
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/position-size" element={<PositionSizePage />} />
           <Route path="/premortem" element={<PreMortemPage />} />
           <Route path="/replay" element={<ReplayModePage />} />
+          <Route path="/crowd-wisdom" element={<CrowdWisdomPage />} />
           <Route path="/tax-optimizer" element={<TaxOptimizerPage />} />
           <Route path="/stress-test" element={<StressTestPage />} />
           <Route path="/concentration" element={<ConcentrationPage />} />

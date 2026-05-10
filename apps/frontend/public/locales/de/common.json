@@ -17,7 +17,8 @@
     "portfolio": "Portfolio",
     "tools": "Tools",
     "menu": "Menü",
-    "premortem": "Pre-Mortem"
+    "premortem": "Pre-Mortem",
+    "crowdWisdom": "Crowd Wisdom"
   },
   "common": {
     "search": "Suchen",
@@ -235,6 +236,19 @@
     "marketRegime": "Market Regime",
     "proceed": "Proceed anyway",
     "cancel": "Cancel trade"
+  },
+  "crowdwisdom": {
+    "title": "Crowd Wisdom Inverter",
+    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
+    "symbol": "Symbol",
+    "analyze": "Analyze",
+    "retailSentiment": "Retail Sentiment",
+    "insiderActivity": "Insider Activity",
+    "result": "Signal",
+    "divergence": "Divergence (insider - retail)",
+    "signalBuy": "Contrarian Buy",
+    "signalSell": "Contrarian Sell",
+    "signalNeutral": "Neutral"
   },
   "replay": {
     "title": "Replay Mode",

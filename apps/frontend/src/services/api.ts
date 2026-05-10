@@ -171,6 +171,17 @@ export interface ReplayEvaluateResponse {
   actualOutcome: number;
 }
 
+export type CrowdWisdomSignal = "CONTRARIAN_BUY" | "CONTRARIAN_SELL" | "NEUTRAL";
+
+export interface CrowdWisdomResponse {
+  symbol: string;
+  retailBullish: number;
+  insiderBuying: number;
+  divergence: number;
+  insight: string;
+  signal: CrowdWisdomSignal;
+}
+
 export type MistakeType = "EMOTIONAL" | "STRATEGY" | "TIMING";
 
 export interface MistakeLibraryItem {
@@ -264,6 +275,11 @@ export async function evaluateReplayDecision(
   body: ReplayEvaluateBody,
 ): Promise<ReplayEvaluateResponse> {
   const { data } = await api.post<ReplayEvaluateResponse>("/replay/evaluate", body);
+  return data;
+}
+
+export async function getCrowdWisdom(symbol: string): Promise<CrowdWisdomResponse> {
+  const { data } = await api.get<CrowdWisdomResponse>(`/crowdwisdom/${encodeURIComponent(symbol)}`);
   return data;
 }
 
