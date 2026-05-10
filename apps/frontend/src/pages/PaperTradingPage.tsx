@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { FeedbackToastStack, type FeedbackToast } from "../components/FeedbackToastStack";
-import { api } from "../services/api";
+import { api, runPreMortem, type PreMortemResponse } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 type Direction = "LONG" | "SHORT";
@@ -12,6 +12,8 @@ type OpenTradeForm = {
   ticker: string;
   direction: Direction;
   entryPrice: string;
+  stopLoss: string;
+  takeProfit: string;
   quantity: string;
 };
 
@@ -57,6 +59,7 @@ type PositionRow = PaperTrade & {
 };
 
 const USER_ID = "demo-user";
+const PLN_PER_USD = 3.95;
 
 const mockPortfolio: PortfolioResponse = {
   openPositions: [
@@ -213,6 +216,8 @@ export function PaperTradingPage() {
     ticker: "",
     direction: "LONG",
     entryPrice: "",
+    stopLoss: "",
+    takeProfit: "",
     quantity: "1",
   });
   const [portfolio, setPortfolio] = useState<PortfolioResponse | null>(null);
@@ -226,6 +231,16 @@ export function PaperTradingPage() {
   const [error, setError] = useState<string | null>(null);
   const [usingMock, setUsingMock] = useState(false);
   const [toasts, setToasts] = useState<FeedbackToast[]>([]);
+  const [preMortemOpen, setPreMortemOpen] = useState(false);
+  const [preMortemForm, setPreMortemForm] = useState({
+    symbol: "",
+    entry: "",
+    stopLoss: "",
+    takeProfit: "",
+    quantity: "",
+  });
+  const [preMortemResult, setPreMortemResult] = useState<PreMortemResponse | null>(null);
+  const [runningPreMortem, setRunningPreMortem] = useState(false);
 
   const pushToast = useCallback((tone: FeedbackToast["tone"], title: string, message?: string) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -346,11 +361,10 @@ export function PaperTradingPage() {
     [positionRows],
   );
 
-  const onOpenTrade = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const ticker = form.ticker.trim().toUpperCase();
-    const entryPrice = Number(form.entryPrice);
-    const quantity = Number(form.quantity);
+  const openTradeNow = async (payload: { ticker: string; entryPrice: number; quantity: number; direction: Direction }) => {
+    const ticker = payload.ticker.trim().toUpperCase();
+    const entryPrice = payload.entryPrice;
+    const quantity = payload.quantity;
     if (!ticker || !Number.isFinite(entryPrice) || entryPrice <= 0 || !Number.isFinite(quantity) || quantity <= 0) {
       setError("Uzupełnij poprawnie: ticker, entry price i quantity > 0.");
       pushToast("error", "Nieprawidłowe dane wejściowe", "Sprawdź ticker, cenę wejścia i ilość.");
@@ -362,20 +376,20 @@ export function PaperTradingPage() {
       await api.post("/paper/trade/open", {
         userId: USER_ID,
         ticker,
-        direction: form.direction,
+        direction: payload.direction,
         entryPrice,
         quantity,
       });
-      setForm((prev) => ({ ...prev, ticker: "", entryPrice: "" }));
+      setForm((prev) => ({ ...prev, ticker: "", entryPrice: "", stopLoss: "", takeProfit: "" }));
       await loadData();
-      pushToast("success", "Pozycja otwarta", `${ticker} • ${form.direction} • ${quantity}`);
+      pushToast("success", "Pozycja otwarta", `${ticker} • ${payload.direction} • ${quantity}`);
     } catch (e) {
       if (isFallbackError(e)) {
         const fallbackTrade: PaperTrade = {
           id: `mock-open-${Date.now()}`,
           userId: USER_ID,
           ticker,
-          direction: form.direction,
+          direction: payload.direction,
           entryPrice,
           quantity,
           entryAt: new Date().toISOString(),
@@ -397,6 +411,84 @@ export function PaperTradingPage() {
       setSubmittingOpen(false);
     }
   };
+
+  const onOpenTrade = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const ticker = form.ticker.trim().toUpperCase();
+    const entryPrice = Number(form.entryPrice);
+    const quantity = Number(form.quantity);
+    const stopLoss = Number(form.stopLoss);
+    const takeProfit = Number(form.takeProfit);
+    if (
+      !ticker ||
+      !Number.isFinite(entryPrice) ||
+      entryPrice <= 0 ||
+      !Number.isFinite(quantity) ||
+      quantity <= 0 ||
+      !Number.isFinite(stopLoss) ||
+      !Number.isFinite(takeProfit)
+    ) {
+      setError("Uzupełnij poprawnie: ticker, entry/stop/take price i quantity > 0.");
+      pushToast("error", "Nieprawidłowe dane wejściowe", "Wprowadź także stop loss i take profit.");
+      return;
+    }
+
+    setPreMortemForm({
+      symbol: ticker,
+      entry: String(entryPrice),
+      stopLoss: String(stopLoss),
+      takeProfit: String(takeProfit),
+      quantity: String(quantity),
+    });
+    setPreMortemResult(null);
+    setPreMortemOpen(true);
+  };
+
+  async function onRunPreMortem(): Promise<void> {
+    const entry = Number(preMortemForm.entry);
+    const stopLoss = Number(preMortemForm.stopLoss);
+    const takeProfit = Number(preMortemForm.takeProfit);
+    const quantity = Number(preMortemForm.quantity);
+    if (
+      !preMortemForm.symbol ||
+      !Number.isFinite(entry) ||
+      !Number.isFinite(stopLoss) ||
+      !Number.isFinite(takeProfit) ||
+      !Number.isFinite(quantity) ||
+      quantity <= 0
+    ) {
+      setError("Uzupełnij poprawnie dane Pre-Mortem.");
+      return;
+    }
+
+    setRunningPreMortem(true);
+    setError(null);
+    try {
+      const result = await runPreMortem({
+        symbol: preMortemForm.symbol.trim().toUpperCase(),
+        entry,
+        stopLoss,
+        takeProfit,
+        quantity,
+        userId: USER_ID,
+      });
+      setPreMortemResult(result);
+    } catch (e) {
+      const message = apiErrorMessage(e);
+      setError(message);
+      pushToast("error", "Pre-Mortem failed", message);
+    } finally {
+      setRunningPreMortem(false);
+    }
+  }
+
+  async function onProceedAnyway(): Promise<void> {
+    const ticker = preMortemForm.symbol.trim().toUpperCase();
+    const entryPrice = Number(preMortemForm.entry);
+    const quantity = Number(preMortemForm.quantity);
+    await openTradeNow({ ticker, entryPrice, quantity, direction: form.direction });
+    setPreMortemOpen(false);
+  }
 
   const onCloseTrade = async (trade: PositionRow) => {
     setClosingTradeId(trade.id);
@@ -457,7 +549,7 @@ export function PaperTradingPage() {
 
         <section className="neo-panel neo-panel-accent rounded-xl p-4">
           <h2 className="mb-4 text-lg font-semibold text-white">{t("paperTrading.openPosition")}</h2>
-          <form onSubmit={onOpenTrade} className="grid gap-3 md:grid-cols-4">
+          <form onSubmit={onOpenTrade} className="grid gap-3 md:grid-cols-6">
             <label className="flex flex-col gap-1 text-sm">
               <span className="text-slate-400">Ticker</span>
               <input
@@ -502,6 +594,32 @@ export function PaperTradingPage() {
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
+              <span className="text-slate-400">{t("premortem.stopLoss")}</span>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                value={form.stopLoss}
+                onChange={(e) => setForm((prev) => ({ ...prev, stopLoss: e.target.value }))}
+                placeholder="95.00"
+              />
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="text-slate-400">{t("premortem.takeProfit")}</span>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                value={form.takeProfit}
+                onChange={(e) => setForm((prev) => ({ ...prev, takeProfit: e.target.value }))}
+                placeholder="115.00"
+              />
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
               <span className="text-slate-400">{t("paperTrading.quantity")}</span>
               <input
                 type="number"
@@ -514,7 +632,7 @@ export function PaperTradingPage() {
               />
             </label>
 
-            <div className="md:col-span-4">
+            <div className="md:col-span-6">
               <button
                 type="submit"
                 disabled={submittingOpen}
@@ -652,6 +770,107 @@ export function PaperTradingPage() {
           )}
         </section>
       </div>
+
+      {preMortemOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-2xl rounded-xl border border-brand-border bg-brand-bg p-5 shadow-2xl">
+            <h3 className="mb-4 text-lg font-bold text-white">🎯 PRE-MORTEM ANALYSIS</h3>
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="text-slate-400">{t("premortem.symbol")}</span>
+                <input
+                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  value={preMortemForm.symbol}
+                  onChange={(e) => setPreMortemForm((prev) => ({ ...prev, symbol: e.target.value.toUpperCase() }))}
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="text-slate-400">{t("premortem.quantity")}</span>
+                <input
+                  type="number"
+                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  value={preMortemForm.quantity}
+                  onChange={(e) => setPreMortemForm((prev) => ({ ...prev, quantity: e.target.value }))}
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="text-slate-400">{t("premortem.entry")}</span>
+                <input
+                  type="number"
+                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  value={preMortemForm.entry}
+                  onChange={(e) => setPreMortemForm((prev) => ({ ...prev, entry: e.target.value }))}
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="text-slate-400">{t("premortem.stopLoss")}</span>
+                <input
+                  type="number"
+                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  value={preMortemForm.stopLoss}
+                  onChange={(e) => setPreMortemForm((prev) => ({ ...prev, stopLoss: e.target.value }))}
+                />
+              </label>
+              <label className="md:col-span-2 flex flex-col gap-1 text-sm">
+                <span className="text-slate-400">{t("premortem.takeProfit")}</span>
+                <input
+                  type="number"
+                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  value={preMortemForm.takeProfit}
+                  onChange={(e) => setPreMortemForm((prev) => ({ ...prev, takeProfit: e.target.value }))}
+                />
+              </label>
+            </div>
+
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => void onRunPreMortem()}
+                disabled={runningPreMortem}
+                className="rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue/85 disabled:opacity-60"
+              >
+                {runningPreMortem ? t("common.loading") : t("premortem.runButton")}
+              </button>
+            </div>
+
+            {preMortemResult ? (
+              <div className="mt-4 rounded-lg border border-brand-red/40 bg-brand-red/10 p-4">
+                <p className="text-sm font-semibold text-brand-red">{t("premortem.lossScenario")}</p>
+                <p className="mt-1 text-sm text-red-100">{preMortemResult.scenario}</p>
+                <div className="mt-3 flex flex-wrap gap-2 text-sm">
+                  <span className="rounded bg-brand-amber/20 px-2 py-1 font-semibold text-brand-amber">
+                    {preMortemResult.probability}% chance
+                  </span>
+                  <span className="rounded bg-slate-700/50 px-2 py-1 text-slate-200">
+                    {Math.abs(preMortemResult.maxLoss).toFixed(2)} PLN (~{(Math.abs(preMortemResult.maxLoss) / PLN_PER_USD).toFixed(2)} USD)
+                  </span>
+                  <span className="rounded bg-slate-700/50 px-2 py-1 text-slate-300">
+                    {t("premortem.marketRegime")}: {preMortemResult.marketRegime}
+                  </span>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="mt-5 flex gap-2">
+              <button
+                type="button"
+                onClick={() => void onProceedAnyway()}
+                disabled={!preMortemResult || submittingOpen}
+                className="rounded bg-brand-green px-4 py-2 text-sm font-semibold text-white hover:bg-brand-green/85 disabled:opacity-50"
+              >
+                {t("premortem.proceed")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreMortemOpen(false)}
+                className="rounded border border-brand-border px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800/50"
+              >
+                {t("premortem.cancel")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

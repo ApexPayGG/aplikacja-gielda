@@ -16,7 +16,8 @@
     "markets": "Mercados",
     "portfolio": "Cartera",
     "tools": "Herramientas",
-    "menu": "Menú"
+    "menu": "Menú",
+    "premortem": "Pre-Mortem"
   },
   "common": {
     "search": "Buscar",
@@ -220,5 +221,19 @@
       "strategy": "Strategy",
       "timing": "Timing"
     }
+  },
+  "premortem": {
+    "title": "Pre-Mortem AI",
+    "subtitle": "Run downside scenario analysis before opening a trade.",
+    "symbol": "Symbol",
+    "entry": "Entry",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "quantity": "Quantity",
+    "runButton": "Run Pre-Mortem",
+    "lossScenario": "Most likely loss scenario",
+    "marketRegime": "Market Regime",
+    "proceed": "Proceed anyway",
+    "cancel": "Cancel trade"
   }
 }

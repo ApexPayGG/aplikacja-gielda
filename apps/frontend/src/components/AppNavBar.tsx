@@ -23,6 +23,7 @@ const portfolioLinks: { to: string; labelKey: string }[] = [
 
 const toolsLinks: { to: string; labelKey: string }[] = [
   { to: "/position-size", labelKey: "nav.positionSize" },
+  { to: "/premortem", labelKey: "nav.premortem" },
   { to: "/tax-optimizer", labelKey: "nav.taxOptimizer" },
 ];
 
@@ -41,7 +42,7 @@ function isPortfolioPath(pathname: string): boolean {
 }
 
 function isToolsPath(pathname: string): boolean {
-  return pathname.startsWith("/position-size") || pathname.startsWith("/tax-optimizer");
+  return pathname.startsWith("/position-size") || pathname.startsWith("/premortem") || pathname.startsWith("/tax-optimizer");
 }
 
 function navLinkClass(isActive: boolean): string {

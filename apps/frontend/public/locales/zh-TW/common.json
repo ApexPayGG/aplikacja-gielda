@@ -16,7 +16,8 @@
     "portfolio": "投組",
     "tools": "工具",
     "menu": "選單",
-    "mistakeLibrary": "Mistake Library"
+    "mistakeLibrary": "Mistake Library",
+    "premortem": "Pre-Mortem"
   },
   "common": {
     "search": "搜尋",
@@ -220,5 +221,19 @@
       "strategy": "Strategy",
       "timing": "Timing"
     }
+  },
+  "premortem": {
+    "title": "Pre-Mortem AI",
+    "subtitle": "Run downside scenario analysis before opening a trade.",
+    "symbol": "Symbol",
+    "entry": "Entry",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "quantity": "Quantity",
+    "runButton": "Run Pre-Mortem",
+    "lossScenario": "Most likely loss scenario",
+    "marketRegime": "Market Regime",
+    "proceed": "Proceed anyway",
+    "cancel": "Cancel trade"
   }
 }

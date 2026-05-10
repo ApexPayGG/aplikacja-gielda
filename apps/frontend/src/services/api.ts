@@ -107,6 +107,22 @@ export interface BehavioralCooldownResponse {
   message: string;
 }
 
+export interface PreMortemInput {
+  symbol: string;
+  entry: number;
+  stopLoss: number;
+  takeProfit: number;
+  quantity: number;
+  userId: string;
+}
+
+export interface PreMortemResponse {
+  scenario: string;
+  probability: number;
+  maxLoss: number;
+  marketRegime: string;
+}
+
 export type MistakeType = "EMOTIONAL" | "STRATEGY" | "TIMING";
 
 export interface MistakeLibraryItem {
@@ -168,6 +184,11 @@ export async function getNews(symbol: string, limit = 10): Promise<NewsRow[]> {
 
 export async function getBehavioralCooldown(userId: string): Promise<BehavioralCooldownResponse> {
   const { data } = await api.get<BehavioralCooldownResponse>(`/behavioral/cooldown/${encodeURIComponent(userId)}`);
+  return data;
+}
+
+export async function runPreMortem(input: PreMortemInput): Promise<PreMortemResponse> {
+  const { data } = await api.post<PreMortemResponse>("/premortem/analyze", input);
   return data;
 }
 

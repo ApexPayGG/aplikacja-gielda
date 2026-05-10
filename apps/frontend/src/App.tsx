@@ -11,6 +11,7 @@ import { Home } from "./pages/Home";
 import { MistakeLibraryPage } from "./pages/MistakeLibraryPage";
 import { PaperTradingPage } from "./pages/PaperTradingPage";
 import { PositionSizePage } from "./pages/PositionSizePage";
+import { PreMortemPage } from "./pages/PreMortemPage";
 import { SignalsPage } from "./pages/SignalsPage";
 import { StressTestPage } from "./pages/StressTestPage";
 import { TaxOptimizerPage } from "./pages/TaxOptimizerPage";
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/mistake-library" element={<MistakeLibraryPage />} />
           <Route path="/alpha" element={<AlphaCalendarPage />} />
           <Route path="/position-size" element={<PositionSizePage />} />
+          <Route path="/premortem" element={<PreMortemPage />} />
           <Route path="/tax-optimizer" element={<TaxOptimizerPage />} />
           <Route path="/stress-test" element={<StressTestPage />} />
           <Route path="/concentration" element={<ConcentrationPage />} />
