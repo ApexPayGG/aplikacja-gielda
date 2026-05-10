@@ -24,6 +24,8 @@ const portfolioLinks: { to: string; labelKey: string }[] = [
 const toolsLinks: { to: string; labelKey: string }[] = [
   { to: "/position-size", labelKey: "nav.positionSize" },
   { to: "/premortem", labelKey: "nav.premortem" },
+  { to: "/correlation", labelKey: "nav.correlation" },
+  { to: "/volatility", labelKey: "nav.volatility" },
   { to: "/crowd-wisdom", labelKey: "nav.crowdWisdom" },
   { to: "/glossary", labelKey: "nav.glossary" },
   { to: "/skill-tree", labelKey: "nav.skillTree" },
@@ -48,6 +50,8 @@ function isToolsPath(pathname: string): boolean {
   return (
     pathname.startsWith("/position-size") ||
     pathname.startsWith("/premortem") ||
+    pathname.startsWith("/correlation") ||
+    pathname.startsWith("/volatility") ||
     pathname.startsWith("/crowd-wisdom") ||
     pathname.startsWith("/glossary") ||
     pathname.startsWith("/skill-tree") ||
