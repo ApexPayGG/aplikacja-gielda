@@ -8,6 +8,7 @@
     "scheduler": "tsx src/scheduler.ts",
     "job:fetch-quotes": "tsx src/jobs/fetchPolygonQuotesOnce.ts",
     "seed:companies": "tsx src/scripts/seedCompanies.ts",
+    "import:eodhd": "tsx src/scripts/importEodhd.ts",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed",
