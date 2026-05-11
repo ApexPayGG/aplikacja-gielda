@@ -10,7 +10,7 @@ interface Props {
 export function DividendGrowthTable({ rows, loading, error }: Props) {
   const { t } = useTranslation();
   if (loading) {
-    return <p className="text-sm text-slate-400">{t("dividendsPage.screenerLoading", { defaultValue: "Loading screener…" })}</p>;
+    return <p className="text-sm text-slate-400">{t("common.loading")}</p>;
   }
   if (error) {
     return <p className="text-sm text-red-400">{error}</p>;
@@ -18,7 +18,7 @@ export function DividendGrowthTable({ rows, loading, error }: Props) {
   if (rows.length === 0) {
     return (
       <p className="text-sm text-slate-500">
-        {t("dividendsPage.screenerEmpty", { defaultValue: "No results for selected filters." })}
+        {t("dividend.noData", { defaultValue: "No data" })}
       </p>
     );
   }
@@ -28,12 +28,12 @@ export function DividendGrowthTable({ rows, loading, error }: Props) {
       <table className="min-w-full text-left text-sm text-slate-300">
         <thead className="bg-surface-elevated text-xs uppercase text-slate-400">
           <tr>
-            <th className="px-4 py-3">{t("dividendsPage.symbol", { defaultValue: "Symbol" })}</th>
-            <th className="px-4 py-3">{t("dividendsPage.tableYear", { defaultValue: "Year" })}</th>
-            <th className="px-4 py-3">{t("dividendsPage.tableAnnualDividend", { defaultValue: "Annual dividend" })}</th>
-            <th className="px-4 py-3">{t("dividendsPage.tableGrowthYoy", { defaultValue: "Growth YoY %" })}</th>
-            <th className="px-4 py-3">CAGR 5Y %</th>
-            <th className="px-4 py-3">Yield %</th>
+            <th className="px-4 py-3">{t("dividend.colSymbol", { defaultValue: "Symbol" })}</th>
+            <th className="px-4 py-3">{t("dividend.colYear", { defaultValue: "Year" })}</th>
+            <th className="px-4 py-3">{t("dividend.colAnnual", { defaultValue: "Annual dividend" })}</th>
+            <th className="px-4 py-3">{t("dividend.colGrowth", { defaultValue: "Growth YoY %" })}</th>
+            <th className="px-4 py-3">{t("dividend.colCagr", { defaultValue: "CAGR 5Y %" })}</th>
+            <th className="px-4 py-3">{t("dividend.colYield", { defaultValue: "Yield %" })}</th>
           </tr>
         </thead>
         <tbody>
