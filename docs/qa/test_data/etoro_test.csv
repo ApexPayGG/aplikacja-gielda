@@ -1,0 +1,4 @@
+created_at,external_user_id,event_name,status,amount_usd,currency,first_deposit,campaign_id
+2026-05-11T11:45:00Z,ETORO_USR_001,signup,confirmed,100.00,USD,500.00,abc123def456
+2026-05-10T07:20:00Z,ETORO_USR_002,ftd,confirmed,150.00,USD,1000.00,xyz789ghi012
+2026-05-09T16:05:00Z,ETORO_USR_003,signup,confirmed,80.00,USD,250.00,

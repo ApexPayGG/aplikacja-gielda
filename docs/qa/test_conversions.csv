@@ -1,0 +1,4 @@
+external_user_id,conversion_type,conversion_date,commission_amount,commission_currency,ftd_amount,click_id_ref
+USR_001,signup,2026-05-11,100.00,EUR,500.00,abc123def456
+USR_002,ftd,2026-05-10,150.00,EUR,1000.00,xyz789ghi012
+USR_003,signup,2026-05-09,80.00,EUR,250.00,

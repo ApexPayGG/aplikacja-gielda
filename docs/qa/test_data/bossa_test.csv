@@ -1,0 +1,4 @@
+date,user_id,goal,state,payout_pln,currency,first_deposit_pln,cid
+11.05.2026,BOSSA_USR_001,signup,confirmed,100.00,PLN,500.00,abc123def456
+10.05.2026,BOSSA_USR_002,ftd,confirmed,150.00,PLN,1000.00,xyz789ghi012
+09.05.2026,BOSSA_USR_003,signup,confirmed,80.00,PLN,250.00,

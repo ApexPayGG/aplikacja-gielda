@@ -1,0 +1,4 @@
+conversion_time,client_id,event_type,status,commission_eur,currency,deposit_amount,click_id_ref
+2026-05-11T10:15:00Z,XTB_USR_001,signup,confirmed,100.00,EUR,500.00,abc123def456
+2026-05-10T18:30:00Z,XTB_USR_002,ftd,confirmed,150.00,EUR,1000.00,xyz789ghi012
+2026-05-09T09:00:00Z,XTB_USR_003,signup,confirmed,80.00,EUR,250.00,

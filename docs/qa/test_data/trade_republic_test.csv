@@ -1,0 +1,4 @@
+conversion_date,customer_ref,type,status,commission,currency,first_deposit,clickid
+2026-05-11,TR_USR_001,signup,confirmed,100.00,EUR,500.00,abc123def456
+2026-05-10,TR_USR_002,ftd,confirmed,150.00,EUR,1000.00,xyz789ghi012
+2026-05-09,TR_USR_003,signup,confirmed,80.00,EUR,250.00,

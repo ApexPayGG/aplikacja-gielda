@@ -68,13 +68,21 @@ function parseCsv(content: string): CsvRow[] {
 
 function parseDecimal(raw: string | undefined): number | null {
   if (!raw) return null;
-  const normalized = raw.replace(",", ".").trim();
+  const normalized = raw.replace(",", ".").replace(/[^\d.-]/g, "").trim();
   const value = Number(normalized);
   return Number.isFinite(value) ? value : null;
 }
 
 function parseDate(raw: string | undefined): Date | null {
   if (!raw) return null;
+  const trimmed = raw.trim();
+  const ddmmyyyy = /^(\d{2})\.(\d{2})\.(\d{4})$/;
+  const m = trimmed.match(ddmmyyyy);
+  if (m) {
+    const [, dd, mm, yyyy] = m;
+    const date = new Date(`${yyyy}-${mm}-${dd}T00:00:00Z`);
+    if (!Number.isNaN(date.getTime())) return date;
+  }
   const date = new Date(raw);
   if (Number.isNaN(date.getTime())) return null;
   return date;
@@ -89,20 +97,91 @@ function readFirst(row: CsvRow, keys: string[]): string {
 }
 
 function normalizeBrokerRecord(brokerSlug: string, row: CsvRow): NormalizedConversion {
-  const clickIdRef = readFirst(row, ["click_id", "cid", "clickid", "campaign_id"]) || null;
+  if (!brokerSlug) throw new Error("Missing broker slug");
+
+  // Broker-specific adapters for realistic CSV exports.
+  if (brokerSlug === "xtb") {
+    return {
+      clickIdRef: readFirst(row, ["click_id_ref", "click_id", "cid", "subid"]) || null,
+      externalUserId: readFirst(row, ["external_user_id", "client_id", "user_id"]) || null,
+      conversionType:
+        (readFirst(row, ["conversion_type", "event_type", "event", "goal"]) || "ftd").toLowerCase(),
+      conversionStatus:
+        (readFirst(row, ["conversion_status", "status", "state"]) || "confirmed").toLowerCase(),
+      commissionAmount: parseDecimal(
+        readFirst(row, ["commission_amount", "commission_eur", "commission", "payout"]),
+      ),
+      currency: readFirst(row, ["commission_currency", "currency"]) || "EUR",
+      ftdAmount: parseDecimal(readFirst(row, ["ftd_amount", "deposit_amount", "first_deposit"])),
+      conversionDate:
+        parseDate(readFirst(row, ["conversion_date", "date", "conversion_time", "created_at"])) ??
+        new Date(),
+    };
+  }
+
+  if (brokerSlug === "bossa") {
+    return {
+      clickIdRef: readFirst(row, ["click_id_ref", "cid", "click_id", "campaign_id"]) || null,
+      externalUserId: readFirst(row, ["external_user_id", "user_id", "client_id"]) || null,
+      conversionType:
+        (readFirst(row, ["conversion_type", "goal", "type", "event"]) || "ftd").toLowerCase(),
+      conversionStatus:
+        (readFirst(row, ["conversion_status", "state", "status"]) || "confirmed").toLowerCase(),
+      commissionAmount: parseDecimal(
+        readFirst(row, ["commission_amount", "payout_pln", "commission", "amount"]),
+      ),
+      currency: readFirst(row, ["commission_currency", "currency"]) || "PLN",
+      ftdAmount: parseDecimal(readFirst(row, ["ftd_amount", "first_deposit_pln", "deposit"])),
+      conversionDate:
+        parseDate(readFirst(row, ["conversion_date", "date", "created_at"])) ?? new Date(),
+    };
+  }
+
+  if (brokerSlug === "etoro") {
+    return {
+      clickIdRef: readFirst(row, ["click_id_ref", "campaign_id", "click_id", "cid"]) || null,
+      externalUserId: readFirst(row, ["external_user_id", "user_id", "client_id"]) || null,
+      conversionType:
+        (readFirst(row, ["conversion_type", "event", "event_name", "type"]) || "ftd").toLowerCase(),
+      conversionStatus:
+        (readFirst(row, ["conversion_status", "status", "state"]) || "confirmed").toLowerCase(),
+      commissionAmount: parseDecimal(
+        readFirst(row, ["commission_amount", "amount_usd", "commission", "payout"]),
+      ),
+      currency: readFirst(row, ["commission_currency", "currency"]) || "USD",
+      ftdAmount: parseDecimal(readFirst(row, ["ftd_amount", "first_deposit", "deposit"])),
+      conversionDate:
+        parseDate(readFirst(row, ["conversion_date", "created_at", "date"])) ?? new Date(),
+    };
+  }
+
+  if (brokerSlug === "trade_republic") {
+    return {
+      clickIdRef: readFirst(row, ["click_id_ref", "clickid", "click_id", "cid"]) || null,
+      externalUserId: readFirst(row, ["external_user_id", "customer_ref", "user_id"]) || null,
+      conversionType:
+        (readFirst(row, ["conversion_type", "type", "event"]) || "ftd").toLowerCase(),
+      conversionStatus:
+        (readFirst(row, ["conversion_status", "status", "state"]) || "confirmed").toLowerCase(),
+      commissionAmount: parseDecimal(
+        readFirst(row, ["commission_amount", "commission", "amount", "payout"]),
+      ),
+      currency: readFirst(row, ["commission_currency", "currency"]) || "EUR",
+      ftdAmount: parseDecimal(readFirst(row, ["ftd_amount", "first_deposit", "deposit"])),
+      conversionDate: parseDate(readFirst(row, ["conversion_date", "date", "created_at"])) ?? new Date(),
+    };
+  }
+
+  // Generic fallback parser.
+  const clickIdRef = readFirst(row, ["click_id_ref", "click_id", "cid", "clickid", "campaign_id"]) || null;
   const externalUserId = readFirst(row, ["external_user_id", "user_id", "client_id"]) || null;
   const conversionType = readFirst(row, ["conversion_type", "type", "event", "goal"]) || "ftd";
-  const conversionStatus =
-    readFirst(row, ["conversion_status", "status", "state"]) || "confirmed";
-  const commissionAmount = parseDecimal(
-    readFirst(row, ["commission_amount", "commission", "payout", "amount"]),
-  );
+  const conversionStatus = readFirst(row, ["conversion_status", "status", "state"]) || "confirmed";
+  const commissionAmount = parseDecimal(readFirst(row, ["commission_amount", "commission", "payout", "amount"]));
   const currency = readFirst(row, ["commission_currency", "currency"]) || "EUR";
   const ftdAmount = parseDecimal(readFirst(row, ["ftd_amount", "deposit", "first_deposit"]));
-  const conversionDate =
-    parseDate(readFirst(row, ["conversion_date", "date", "created_at"])) ?? new Date();
+  const conversionDate = parseDate(readFirst(row, ["conversion_date", "date", "created_at"])) ?? new Date();
 
-  if (!brokerSlug) throw new Error("Missing broker slug");
   return {
     clickIdRef,
     externalUserId,
