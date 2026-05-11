@@ -25,6 +25,129 @@ const MOCK_COMPANIES = [
   { symbol: "MMM", name: "3M", sector: "Industrials", industry: "Conglomerate" },
 ] as const;
 
+const AFFILIATE_BROKER_SEED = [
+  {
+    slug: "xtb",
+    displayName: "XTB",
+    logoUrl: "https://stock-ai.pro/assets/brokers/xtb.svg",
+    partnerId: "{REGISTER_AT_https://xtb.com/pl/partners}",
+    affiliateProgramUrl: "https://www.xtb.com/pl/partners",
+    baseUrl: "https://www.xtb.com/pl/?utm_source=stockai&p={partner_id}&cid={click_id}",
+    tickerUrlTemplate:
+      "https://www.xtb.com/pl/oferta/akcje/{country}/{ticker}?p={partner_id}&cid={click_id}",
+    clickIdParam: "cid",
+    attributionMethod: "click_id",
+    supportedCountries: ["PL", "DE", "FR", "ES", "IT", "RO", "CZ", "SK", "HU"],
+    supportedMarkets: ["GPW", "US", "XETRA", "EURONEXT", "LSE"],
+    primaryLanguage: "pl",
+    commissionModel: "cpa",
+    commissionCpaAmount: "100.00",
+    commissionRevsharePct: null,
+    commissionCurrency: "EUR",
+    conversionTracking: "manual_csv",
+    apiEndpoint: null,
+    webhookSecret: null,
+    isActive: false,
+    priority: 10,
+    legalDisclaimer: {
+      pl: "Otrzymujemy prowizję od brokera za każde nowe konto. Nie wpływa to na nasze rekomendacje.",
+      en: "We receive a broker commission for each new account. This does not affect our recommendations.",
+    },
+    riskWarning: {
+      pl: "78% rachunków inwestorów detalicznych traci pieniądze podczas handlu CFD u tego dostawcy.",
+      en: "78% of retail investor accounts lose money when trading CFDs with this provider.",
+    },
+  },
+  {
+    slug: "bossa",
+    displayName: "Bossa",
+    logoUrl: "https://stock-ai.pro/assets/brokers/bossa.svg",
+    partnerId: "{REGISTER_AT_https://bossa.pl/program-partnerski}",
+    affiliateProgramUrl: "https://bossa.pl/program-partnerski",
+    baseUrl: "https://bossa.pl/?utm_source=stockai&p={partner_id}&cid={click_id}",
+    tickerUrlTemplate: null,
+    clickIdParam: "cid",
+    attributionMethod: "click_id",
+    supportedCountries: ["PL"],
+    supportedMarkets: ["GPW", "US"],
+    primaryLanguage: "pl",
+    commissionModel: "cpa",
+    commissionCpaAmount: "80.00",
+    commissionRevsharePct: null,
+    commissionCurrency: "PLN",
+    conversionTracking: "manual_csv",
+    apiEndpoint: null,
+    webhookSecret: null,
+    isActive: false,
+    priority: 20,
+    legalDisclaimer: {
+      pl: "Otrzymujemy prowizję od brokera za każde nowe konto. Nie wpływa to na nasze rekomendacje.",
+      en: "We receive a broker commission for each new account. This does not affect our recommendations.",
+    },
+    riskWarning: null,
+  },
+  {
+    slug: "etoro",
+    displayName: "eToro",
+    logoUrl: "https://stock-ai.pro/assets/brokers/etoro.svg",
+    partnerId: "{REGISTER_AT_https://www.etoro.com/partners}",
+    affiliateProgramUrl: "https://www.etoro.com/partners",
+    baseUrl:
+      "https://www.etoro.com/?utm_source=stockai&utm_medium=affiliate&utm_campaign={click_id}&aid={partner_id}",
+    tickerUrlTemplate: "https://www.etoro.com/markets/{ticker}?aid={partner_id}&utm_campaign={click_id}",
+    clickIdParam: "utm_campaign",
+    attributionMethod: "click_id",
+    supportedCountries: ["PL", "DE", "FR", "ES", "IT", "NL", "GB", "US", "AU", "JP", "KR"],
+    supportedMarkets: ["US", "EU", "CRYPTO", "FOREX"],
+    primaryLanguage: "en",
+    commissionModel: "cpa",
+    commissionCpaAmount: "120.00",
+    commissionRevsharePct: null,
+    commissionCurrency: "USD",
+    conversionTracking: "webhook",
+    apiEndpoint: null,
+    webhookSecret: null,
+    isActive: false,
+    priority: 30,
+    legalDisclaimer: {
+      pl: "Otrzymujemy prowizję od brokera za każde nowe konto. Nie wpływa to na nasze rekomendacje.",
+      en: "We receive a broker commission for each new account. This does not affect our recommendations.",
+    },
+    riskWarning: {
+      pl: "CFD są złożonymi instrumentami i wiążą się z dużym ryzykiem szybkiej utraty pieniędzy z powodu dźwigni finansowej.",
+      en: "CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage.",
+    },
+  },
+  {
+    slug: "trade_republic",
+    displayName: "Trade Republic",
+    logoUrl: "https://stock-ai.pro/assets/brokers/trade_republic.svg",
+    partnerId: "{REGISTER_AT_https://traderepublic.com/partners}",
+    affiliateProgramUrl: "https://traderepublic.com/partners",
+    baseUrl: "https://traderepublic.com/?utm_source=stockai&partner={partner_id}&cid={click_id}",
+    tickerUrlTemplate: null,
+    clickIdParam: "cid",
+    attributionMethod: "click_id",
+    supportedCountries: ["DE", "AT", "FR", "ES", "IT", "NL", "BE", "IE", "PT"],
+    supportedMarkets: ["XETRA", "US", "EURONEXT"],
+    primaryLanguage: "de",
+    commissionModel: "cpa",
+    commissionCpaAmount: "80.00",
+    commissionRevsharePct: null,
+    commissionCurrency: "EUR",
+    conversionTracking: "manual_csv",
+    apiEndpoint: null,
+    webhookSecret: null,
+    isActive: false,
+    priority: 40,
+    legalDisclaimer: {
+      pl: "Otrzymujemy prowizję od brokera za każde nowe konto. Nie wpływa to na nasze rekomendacje.",
+      en: "We receive a broker commission for each new account. This does not affect our recommendations.",
+    },
+    riskWarning: null,
+  },
+] as const;
+
 /** Bazowy szablon rocznej dywidendy na akcję (8 lat). */
 const BASE_ANNUAL_DPS = [0.52, 0.58, 0.65, 0.73, 0.82, 0.92, 1.02, 1.12];
 
@@ -189,6 +312,61 @@ async function seedDividendIntelligencePhase105(): Promise<void> {
 }
 
 async function main() {
+  for (const broker of AFFILIATE_BROKER_SEED) {
+    await prisma.affiliateBroker.upsert({
+      where: { slug: broker.slug },
+      create: {
+        slug: broker.slug,
+        displayName: broker.displayName,
+        logoUrl: broker.logoUrl,
+        partnerId: broker.partnerId,
+        affiliateProgramUrl: broker.affiliateProgramUrl,
+        baseUrl: broker.baseUrl,
+        tickerUrlTemplate: broker.tickerUrlTemplate,
+        clickIdParam: broker.clickIdParam,
+        attributionMethod: broker.attributionMethod,
+        supportedCountries: [...broker.supportedCountries],
+        supportedMarkets: [...broker.supportedMarkets],
+        primaryLanguage: broker.primaryLanguage,
+        commissionModel: broker.commissionModel,
+        commissionCpaAmount: broker.commissionCpaAmount,
+        commissionRevsharePct: broker.commissionRevsharePct,
+        commissionCurrency: broker.commissionCurrency,
+        conversionTracking: broker.conversionTracking,
+        apiEndpoint: broker.apiEndpoint,
+        webhookSecret: broker.webhookSecret,
+        isActive: broker.isActive,
+        priority: broker.priority,
+        legalDisclaimer: broker.legalDisclaimer,
+        riskWarning: broker.riskWarning,
+      },
+      update: {
+        displayName: broker.displayName,
+        logoUrl: broker.logoUrl,
+        partnerId: broker.partnerId,
+        affiliateProgramUrl: broker.affiliateProgramUrl,
+        baseUrl: broker.baseUrl,
+        tickerUrlTemplate: broker.tickerUrlTemplate,
+        clickIdParam: broker.clickIdParam,
+        attributionMethod: broker.attributionMethod,
+        supportedCountries: [...broker.supportedCountries],
+        supportedMarkets: [...broker.supportedMarkets],
+        primaryLanguage: broker.primaryLanguage,
+        commissionModel: broker.commissionModel,
+        commissionCpaAmount: broker.commissionCpaAmount,
+        commissionRevsharePct: broker.commissionRevsharePct,
+        commissionCurrency: broker.commissionCurrency,
+        conversionTracking: broker.conversionTracking,
+        apiEndpoint: broker.apiEndpoint,
+        webhookSecret: broker.webhookSecret,
+        isActive: broker.isActive,
+        priority: broker.priority,
+        legalDisclaimer: broker.legalDisclaimer,
+        riskWarning: broker.riskWarning,
+      },
+    });
+  }
+
   for (const c of MOCK_COMPANIES) {
     await prisma.company.upsert({
       where: { symbol: c.symbol },
@@ -257,6 +435,7 @@ async function main() {
   }
 
   await seedDividendIntelligencePhase105();
+  console.log(`Affiliate brokers seed OK: ${AFFILIATE_BROKER_SEED.length} rows (is_active=false).`);
 }
 
 main()

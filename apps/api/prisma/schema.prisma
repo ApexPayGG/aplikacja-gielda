@@ -61,6 +61,8 @@ model User {
   createdAt           DateTime            @default(now()) @map("created_at")
   virtual_trades      VirtualTrade[]
   portfolio_snapshots PortfolioSnapshot[]
+  affiliateClicks     AffiliateClick[]
+  affiliateConversions AffiliateConversion[]
 
   @@map("users")
 }
@@ -351,6 +353,120 @@ model UserSettings {
   alpacaMode     String? @default("paper")
 
   @@map("user_settings")
+}
+
+model AffiliateBroker {
+  id                    String   @id @default(cuid())
+  slug                  String   @unique
+  displayName           String   @map("display_name")
+  logoUrl               String?  @map("logo_url")
+  partnerId             String   @map("partner_id")
+  affiliateProgramUrl   String?  @map("affiliate_program_url")
+  baseUrl               String   @map("base_url")
+  tickerUrlTemplate     String?  @map("ticker_url_template")
+  clickIdParam          String   @default("cid") @map("click_id_param")
+  attributionMethod     String   @map("attribution_method")
+  supportedCountries    String[] @default([]) @map("supported_countries")
+  supportedMarkets      String[] @default([]) @map("supported_markets")
+  primaryLanguage       String?  @map("primary_language")
+  commissionModel       String   @map("commission_model")
+  commissionCpaAmount   Decimal? @map("commission_cpa_amount") @db.Decimal(10, 2)
+  commissionRevsharePct Decimal? @map("commission_revshare_pct") @db.Decimal(5, 2)
+  commissionCurrency    String   @default("EUR") @map("commission_currency")
+  conversionTracking    String?  @map("conversion_tracking")
+  apiEndpoint           String?  @map("api_endpoint")
+  webhookSecret         String?  @map("webhook_secret")
+  isActive              Boolean  @default(true) @map("is_active")
+  priority              Int      @default(100)
+  legalDisclaimer       Json?    @map("legal_disclaimer")
+  riskWarning           Json?    @map("risk_warning")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  clicks      AffiliateClick[]
+  conversions AffiliateConversion[]
+  payouts     AffiliatePayout[]
+
+  @@map("affiliate_brokers")
+}
+
+model AffiliateClick {
+  id           String   @id @default(cuid())
+  clickId      String   @unique @map("click_id")
+  userId       String?  @map("user_id")
+  brokerId     String   @map("broker_id")
+  sourcePage   String?  @map("source_page")
+  sourceTicker String?  @map("source_ticker")
+  sourceSignalId String? @map("source_signal_id")
+  contextData  Json?    @map("context_data")
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent")
+  countryCode  String?  @map("country_code")
+  language     String?
+  deviceType   String?  @map("device_type")
+  utmSource    String?  @map("utm_source")
+  utmMedium    String?  @map("utm_medium")
+  utmCampaign  String?  @map("utm_campaign")
+  redirectUrl  String   @map("redirect_url")
+  clickedAt    DateTime @default(now()) @map("clicked_at")
+
+  broker            AffiliateBroker        @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  user              User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  conversionRefs    AffiliateConversion[]  @relation("AffiliateConversionClickRef")
+  conversionMatches AffiliateConversion[]  @relation("AffiliateConversionMatchedClick")
+
+  @@index([userId], map: "idx_affiliate_clicks_user")
+  @@index([brokerId], map: "idx_affiliate_clicks_broker")
+  @@index([clickedAt], map: "idx_affiliate_clicks_clicked_at")
+  @@index([sourceTicker], map: "idx_affiliate_clicks_source_ticker")
+  @@map("affiliate_clicks")
+}
+
+model AffiliateConversion {
+  id                    String    @id @default(cuid())
+  clickIdRef            String?   @map("click_id_ref")
+  brokerId              String    @map("broker_id")
+  userId                String?   @map("user_id")
+  externalUserId        String?   @map("external_user_id")
+  conversionType        String    @map("conversion_type")
+  conversionStatus      String    @map("conversion_status")
+  commissionAmount      Decimal?  @map("commission_amount") @db.Decimal(10, 2)
+  commissionCurrency    String?   @map("commission_currency")
+  ftdAmount             Decimal?  @map("ftd_amount") @db.Decimal(12, 2)
+  attributionWindowDays Int?      @map("attribution_window_days")
+  matchedClickId        String?   @map("matched_click_id")
+  conversionDate        DateTime  @map("conversion_date") @db.Date
+  recordedAt            DateTime  @default(now()) @map("recorded_at")
+  paidAt                DateTime? @map("paid_at")
+  rawBrokerData         Json?     @map("raw_broker_data")
+
+  broker      AffiliateBroker @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  user        User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  clickByRef  AffiliateClick? @relation("AffiliateConversionClickRef", fields: [clickIdRef], references: [clickId], onDelete: SetNull)
+  clickById   AffiliateClick? @relation("AffiliateConversionMatchedClick", fields: [matchedClickId], references: [id], onDelete: SetNull)
+
+  @@index([brokerId, conversionDate], map: "idx_affiliate_conversions_broker_date")
+  @@index([conversionStatus], map: "idx_affiliate_conversions_status")
+  @@map("affiliate_conversions")
+}
+
+model AffiliatePayout {
+  id                String    @id @default(cuid())
+  brokerId          String    @map("broker_id")
+  payoutPeriodStart DateTime  @map("payout_period_start") @db.Date
+  payoutPeriodEnd   DateTime  @map("payout_period_end") @db.Date
+  totalAmount       Decimal   @map("total_amount") @db.Decimal(12, 2)
+  currency          String?
+  conversionCount   Int?      @map("conversion_count")
+  status            String    @default("pending")
+  paidAt            DateTime? @map("paid_at")
+  referenceNumber   String?   @map("reference_number")
+  notes             String?
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  broker AffiliateBroker @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@map("affiliate_payouts")
 }
 
 model PaperTrade {
