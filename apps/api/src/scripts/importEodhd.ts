@@ -217,6 +217,11 @@ async function importFundamentalsForSymbol(symbol: string, token: string): Promi
         : {}),
     },
   });
+  await prisma.$executeRawUnsafe(
+    'UPDATE "companies" SET "exchange" = $1 WHERE "symbol" = $2',
+    "WAR",
+    symbol.toUpperCase(),
+  );
 
   if (marketCap !== null) await upsertFundamental(symbol, "market_cap", marketCap, 0);
   if (pe !== null) await upsertFundamental(symbol, "pe", pe, 0);

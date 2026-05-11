@@ -1,0 +1,2 @@
+ALTER TABLE "companies"
+ADD COLUMN "exchange" TEXT NOT NULL DEFAULT 'US';

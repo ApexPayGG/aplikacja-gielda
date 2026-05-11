@@ -102,6 +102,11 @@ async function main(): Promise<void> {
         description: `Market=${company.market}; Country=${company.country}; Currency=${company.currency}`,
       },
     });
+    await prisma.$executeRawUnsafe(
+      'UPDATE "companies" SET "exchange" = $1 WHERE "symbol" = $2',
+      company.market,
+      company.symbol,
+    );
     if (existing) {
       updated += 1;
     } else {

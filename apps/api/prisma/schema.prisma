@@ -70,6 +70,7 @@ model User {
 model Company {
   symbol      String   @id
   name        String
+  exchange    String   @default("US")
   sector      String
   industry    String
   logoUrl     String?
