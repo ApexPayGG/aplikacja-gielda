@@ -84,6 +84,7 @@ import { createVolatilityRouter } from "./routes/volatility";
 import { createEarningsRouter } from "./routes/earnings";
 import { createInsiderRouter } from "./routes/insider";
 import { createDividendCalcRouter } from "./routes/dividendcalc";
+import { createAlpacaRouter } from "./routes/alpaca";
 import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 
 function sleep(ms: number): Promise<void> {
@@ -207,6 +208,7 @@ export function createApp(): express.Express {
   app.use(createDiscordSyncRouter());
   app.use(createVolatilityRouter());
   app.use(createDividendCalcRouter());
+  app.use(createAlpacaRouter());
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));
   app.use("/api/concentration", createConcentrationRouter(prisma));

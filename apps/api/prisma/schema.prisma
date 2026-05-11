@@ -346,6 +346,9 @@ model UserSettings {
   discordWebhook String?
   mentorMode     Boolean @default(false)
   digestEmail    String?
+  alpacaApiKey   String?
+  alpacaApiSecret String?
+  alpacaMode     String? @default("paper")
 
   @@map("user_settings")
 }

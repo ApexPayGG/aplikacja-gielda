@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
+import { getAlpacaAccount, getAlpacaSettings, saveAlpacaSettings } from "../services/api";
 
 type MentorStyle = "supportive" | "strict";
 const DEFAULT_USER_ID = "demo-user";
@@ -43,6 +44,13 @@ export function SettingsPage() {
   const [mirrorSaving, setMirrorSaving] = useState(false);
   const [mirrorNotice, setMirrorNotice] = useState<string | null>(null);
   const [mirrorError, setMirrorError] = useState<string | null>(null);
+  const [alpacaApiKey, setAlpacaApiKey] = useState("");
+  const [alpacaApiSecret, setAlpacaApiSecret] = useState("");
+  const [alpacaMode, setAlpacaMode] = useState<"paper" | "live">("paper");
+  const [alpacaStatus, setAlpacaStatus] = useState<string | null>(null);
+  const [alpacaError, setAlpacaError] = useState<string | null>(null);
+  const [alpacaSaving, setAlpacaSaving] = useState(false);
+  const [alpacaTesting, setAlpacaTesting] = useState(false);
 
   const statusLabel = useMemo(
     () => (mentorEnabled ? t("mentor.enabled") : t("mentor.disabled")),
@@ -77,6 +85,21 @@ export function SettingsPage() {
       }
     };
     void loadWebhook();
+  }, [t, userId]);
+
+  useEffect(() => {
+    const loadAlpaca = async () => {
+      setAlpacaError(null);
+      try {
+        const data = await getAlpacaSettings(userId);
+        setAlpacaApiKey(data.alpacaApiKey || "");
+        setAlpacaApiSecret(data.alpacaApiSecret || "");
+        setAlpacaMode(data.alpacaMode || "paper");
+      } catch {
+        setAlpacaError(t("alpaca.settingsLoadError", { defaultValue: "Failed to load Alpaca settings." }));
+      }
+    };
+    void loadAlpaca();
   }, [t, userId]);
 
   useEffect(() => {
@@ -165,11 +188,106 @@ export function SettingsPage() {
     }
   }
 
+  async function saveAlpaca(): Promise<void> {
+    setAlpacaSaving(true);
+    setAlpacaError(null);
+    setAlpacaStatus(null);
+    try {
+      await saveAlpacaSettings({ userId, alpacaApiKey, alpacaApiSecret, alpacaMode });
+      setAlpacaStatus(t("alpaca.settingsSaved", { defaultValue: "Saved" }));
+    } catch {
+      setAlpacaError(t("alpaca.settingsSaveError", { defaultValue: "Failed to save Alpaca settings." }));
+    } finally {
+      setAlpacaSaving(false);
+    }
+  }
+
+  async function testAlpacaConnection(): Promise<void> {
+    setAlpacaTesting(true);
+    setAlpacaError(null);
+    setAlpacaStatus(null);
+    try {
+      await getAlpacaAccount(userId);
+      setAlpacaStatus(t("alpaca.connected", { defaultValue: "Connected" }));
+    } catch {
+      setAlpacaError(t("alpaca.connectionError", { defaultValue: "Connection error" }));
+    } finally {
+      setAlpacaTesting(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-brand-bg px-4 py-8 text-slate-100">
       <div className="mx-auto max-w-3xl space-y-6">
         <h1 className="mb-2 text-3xl font-bold text-white">{t("mentor.settingsTitle")}</h1>
         <p className="mb-6 text-sm text-slate-400">{t("mentor.settingsSubtitle")}</p>
+
+        <section className="neo-panel space-y-4 rounded-xl p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-white">{t("alpaca.settingsTitle", { defaultValue: "Alpaca" })}</h2>
+              <p className="text-sm text-slate-400">
+                {t("alpaca.settingsSubtitle", {
+                  defaultValue: "Connect Alpaca API keys and choose account mode.",
+                })}
+              </p>
+            </div>
+          </div>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-slate-300">{t("alpaca.apiKey", { defaultValue: "API Key" })}</span>
+            <input
+              value={alpacaApiKey}
+              onChange={(e) => setAlpacaApiKey(e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-white outline-none transition focus:border-brand-blue/60"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-slate-300">{t("alpaca.apiSecret", { defaultValue: "API Secret" })}</span>
+            <input
+              value={alpacaApiSecret}
+              onChange={(e) => setAlpacaApiSecret(e.target.value)}
+              type="password"
+              className="rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-white outline-none transition focus:border-brand-blue/60"
+            />
+          </label>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-slate-300">{t("alpaca.mode", { defaultValue: "Mode" })}</span>
+            <button
+              type="button"
+              onClick={() => setAlpacaMode("paper")}
+              className={`rounded px-3 py-1 ${alpacaMode === "paper" ? "bg-brand-green/20 text-brand-green" : "bg-slate-800 text-slate-300"}`}
+            >
+              {t("alpaca.modePaper", { defaultValue: "PAPER" })}
+            </button>
+            <button
+              type="button"
+              onClick={() => setAlpacaMode("live")}
+              className={`rounded px-3 py-1 ${alpacaMode === "live" ? "bg-brand-blue/20 text-brand-blue" : "bg-slate-800 text-slate-300"}`}
+            >
+              {t("alpaca.modeLive", { defaultValue: "LIVE" })}
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => void saveAlpaca()}
+              disabled={alpacaSaving}
+              className="rounded-lg border border-brand-blue/60 bg-brand-blue/10 px-4 py-2 text-sm text-brand-blue transition hover:bg-brand-blue/20 disabled:opacity-60"
+            >
+              {alpacaSaving ? t("common.loading") : t("common.save")}
+            </button>
+            <button
+              type="button"
+              onClick={() => void testAlpacaConnection()}
+              disabled={alpacaTesting}
+              className="rounded-lg border border-brand-green/60 bg-brand-green/10 px-4 py-2 text-sm text-brand-green transition hover:bg-brand-green/20 disabled:opacity-60"
+            >
+              {alpacaTesting ? t("common.loading") : t("alpaca.testConnection", { defaultValue: "Test connection" })}
+            </button>
+          </div>
+          {alpacaStatus ? <p className="text-sm text-brand-green">{alpacaStatus}</p> : null}
+          {alpacaError ? <p className="text-sm text-brand-red">{alpacaError}</p> : null}
+        </section>
 
         <section className="neo-panel space-y-4 rounded-xl p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">

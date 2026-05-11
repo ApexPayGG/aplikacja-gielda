@@ -900,3 +900,88 @@ export async function calculateDividendCompound(body: {
   );
   return data;
 }
+
+export type AlpacaOrderSide = "buy" | "sell";
+export type AlpacaOrderType = "market" | "limit";
+
+export interface AlpacaAccountResponse {
+  account: Record<string, unknown>;
+  mode: "paper" | "live";
+}
+
+export interface AlpacaPositionsResponse {
+  positions: Record<string, unknown>[];
+}
+
+export interface AlpacaOrdersResponse {
+  orders: Record<string, unknown>[];
+}
+
+export interface AlpacaPortfolioHistoryResponse {
+  equity: number[];
+  timestamps: number[];
+}
+
+export async function getAlpacaAccount(userId: string): Promise<AlpacaAccountResponse> {
+  const { data } = await api.get<AlpacaAccountResponse>("/alpaca/account", { params: { userId } });
+  return data;
+}
+
+export async function getAlpacaPositions(userId: string): Promise<AlpacaPositionsResponse> {
+  const { data } = await api.get<AlpacaPositionsResponse>("/alpaca/positions", { params: { userId } });
+  return data;
+}
+
+export async function getAlpacaOrders(userId: string, status = "all"): Promise<AlpacaOrdersResponse> {
+  const { data } = await api.get<AlpacaOrdersResponse>("/alpaca/orders", { params: { userId, status } });
+  return data;
+}
+
+export async function placeAlpacaOrder(body: {
+  userId: string;
+  symbol: string;
+  qty: number;
+  side: AlpacaOrderSide;
+  type: AlpacaOrderType;
+  limitPrice?: number;
+}): Promise<{ order: Record<string, unknown> }> {
+  const { data } = await api.post<{ order: Record<string, unknown> }>("/alpaca/orders", body);
+  return data;
+}
+
+export async function cancelAlpacaOrder(userId: string, orderId: string): Promise<{ cancelled: boolean }> {
+  const { data } = await api.delete<{ cancelled: boolean }>(`/alpaca/orders/${encodeURIComponent(orderId)}`, {
+    params: { userId },
+  });
+  return data;
+}
+
+export async function getAlpacaPortfolioHistory(userId: string): Promise<AlpacaPortfolioHistoryResponse> {
+  const { data } = await api.get<AlpacaPortfolioHistoryResponse>("/alpaca/portfolio/history", {
+    params: { userId },
+  });
+  return data;
+}
+
+export async function getAlpacaSettings(userId: string): Promise<{
+  alpacaApiKey: string;
+  alpacaApiSecret: string;
+  alpacaMode: "paper" | "live";
+}> {
+  const { data } = await api.get<{
+    alpacaApiKey: string;
+    alpacaApiSecret: string;
+    alpacaMode: "paper" | "live";
+  }>(`/alpaca/settings/${encodeURIComponent(userId)}`);
+  return data;
+}
+
+export async function saveAlpacaSettings(body: {
+  userId: string;
+  alpacaApiKey: string;
+  alpacaApiSecret: string;
+  alpacaMode: "paper" | "live";
+}): Promise<{ saved: boolean }> {
+  const { data } = await api.post<{ saved: boolean }>("/alpaca/settings", body);
+  return data;
+}

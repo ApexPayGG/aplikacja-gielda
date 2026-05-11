@@ -15,6 +15,7 @@ const marketsLinks: { to: string; labelKey: string }[] = [
 
 const portfolioLinks: { to: string; labelKey: string }[] = [
   { to: "/paper-trading", labelKey: "nav.paperTrading" },
+  { to: "/alpaca", labelKey: "nav.alpacaTrading" },
   { to: "/mirror-trading", labelKey: "nav.mirrorTrading" },
   { to: "/coach", labelKey: "nav.coach" },
   { to: "/mistake-library", labelKey: "nav.mistakeLibrary" },
@@ -42,6 +43,7 @@ function isMarketsPath(pathname: string): boolean {
 function isPortfolioPath(pathname: string): boolean {
   return (
     pathname.startsWith("/paper-trading") ||
+    pathname.startsWith("/alpaca") ||
     pathname.startsWith("/mirror-trading") ||
     pathname.startsWith("/coach") ||
     pathname.startsWith("/mistake-library") ||
