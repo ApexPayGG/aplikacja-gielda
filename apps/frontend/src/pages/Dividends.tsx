@@ -62,7 +62,8 @@ export function Dividends() {
           {t("dividendsPage.subtitle", {
             defaultValue: "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
           })}{" "}
-          <code className="text-accent">npm run db:seed</code> w <code>apps/api</code>.
+          <code className="text-accent">npm run db:seed</code> {t("dividendsPage.dataLocation", { defaultValue: "in" })}{" "}
+          <code>apps/api</code>.
         </p>
       </header>
 

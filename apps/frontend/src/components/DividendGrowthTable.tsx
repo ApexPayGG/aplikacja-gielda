@@ -1,4 +1,5 @@
 import type { DividendGrowthRow } from "../services/api";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   rows: DividendGrowthRow[];
@@ -7,14 +8,19 @@ interface Props {
 }
 
 export function DividendGrowthTable({ rows, loading, error }: Props) {
+  const { t } = useTranslation();
   if (loading) {
-    return <p className="text-sm text-slate-400">Ładowanie screenera…</p>;
+    return <p className="text-sm text-slate-400">{t("dividendsPage.screenerLoading", { defaultValue: "Loading screener…" })}</p>;
   }
   if (error) {
     return <p className="text-sm text-red-400">{error}</p>;
   }
   if (rows.length === 0) {
-    return <p className="text-sm text-slate-500">Brak wyników dla podanych filtrów.</p>;
+    return (
+      <p className="text-sm text-slate-500">
+        {t("dividendsPage.screenerEmpty", { defaultValue: "No results for selected filters." })}
+      </p>
+    );
   }
 
   return (
@@ -22,10 +28,10 @@ export function DividendGrowthTable({ rows, loading, error }: Props) {
       <table className="min-w-full text-left text-sm text-slate-300">
         <thead className="bg-surface-elevated text-xs uppercase text-slate-400">
           <tr>
-            <th className="px-4 py-3">Symbol</th>
-            <th className="px-4 py-3">Rok</th>
-            <th className="px-4 py-3">Dywidenda roczna</th>
-            <th className="px-4 py-3">Wzrost YoY %</th>
+            <th className="px-4 py-3">{t("dividendsPage.symbol", { defaultValue: "Symbol" })}</th>
+            <th className="px-4 py-3">{t("dividendsPage.tableYear", { defaultValue: "Year" })}</th>
+            <th className="px-4 py-3">{t("dividendsPage.tableAnnualDividend", { defaultValue: "Annual dividend" })}</th>
+            <th className="px-4 py-3">{t("dividendsPage.tableGrowthYoy", { defaultValue: "Growth YoY %" })}</th>
             <th className="px-4 py-3">CAGR 5Y %</th>
             <th className="px-4 py-3">Yield %</th>
           </tr>
