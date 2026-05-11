@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import express from "express";
+import cron from "node-cron";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -87,6 +88,9 @@ import { createDividendCalcRouter } from "./routes/dividendcalc";
 import { createAlpacaRouter } from "./routes/alpaca";
 import { createAffiliateRouter } from "./routes/affiliate";
 import { createAdminAffiliateRouter } from "./routes/adminAffiliate";
+import { createHistoricalTwinsRouter } from "./routes/historicaltwins";
+import { createPremiumCompanyRouter } from "./routes/premiumCompany";
+import { runSnapshotJob } from "./modules/historicaltwins/snapshotJob";
 import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 
 function sleep(ms: number): Promise<void> {
@@ -123,6 +127,25 @@ function scheduleDailyDigestJob(): void {
   setTimeout(() => {
     void run();
   }, initialDelayMs);
+}
+
+function scheduleHistoricalTwinSnapshotJob(): void {
+  console.log("[historicaltwins] Quarterly snapshot cron armed for 06:00 UTC on quarter starts");
+  cron.schedule(
+    "0 6 1 1,4,7,10 *",
+    () => {
+      void runSnapshotJob(prisma)
+        .then((result) => {
+          console.log(
+            `[historicaltwins] snapshot done scanned=${result.scanned} stored=${result.stored} skipped=${result.skipped}`,
+          );
+        })
+        .catch((error) => {
+          console.error("[historicaltwins] snapshot run failed", error);
+        });
+    },
+    { timezone: "UTC" },
+  );
 }
 
 function isDatabaseUnavailable(err: unknown): boolean {
@@ -213,6 +236,8 @@ export function createApp(): express.Express {
   app.use(createAlpacaRouter());
   app.use(createAffiliateRouter());
   app.use(createAdminAffiliateRouter());
+  app.use(createPremiumCompanyRouter(prisma));
+  app.use(createHistoricalTwinsRouter(prisma));
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));
   app.use("/api/concentration", createConcentrationRouter(prisma));
@@ -663,6 +688,7 @@ export async function startServer(port?: number): Promise<void> {
   const app = createApp();
   const p = port ?? parseInt(process.env.PORT ?? "3000", 10);
   scheduleDailyDigestJob();
+  scheduleHistoricalTwinSnapshotJob();
   await new Promise<void>((resolve, reject) => {
     const server = app.listen(p, () => {
       console.log(`HTTP listening on :${p}`);

@@ -184,6 +184,7 @@ model StockSetupHistory {
   outcome5d      Float?
   outcome20d     Float?
   outcome60d     Float?
+  embedding      Unsupported("vector(9)")?
   createdAt      DateTime @default(now())
 
   @@unique([symbol, snapshotDate])

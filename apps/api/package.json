@@ -21,6 +21,7 @@
     "fundamentals:test:s1": "tsx scripts/test-eodhd-fundamentals-s1.ts",
     "sustainability:test:s2": "tsx scripts/test-sustainability-s2.ts",
     "sustainability:populate:s3": "tsx scripts/populate-sustainability-s3.ts",
+    "premium:sync-setups": "tsx scripts/sync-stock-setups-history.ts",
     "test:sustainability": "node --import tsx/esm --test src/services/__tests__/dividendSustainabilityMath.test.ts",
     "test:scan-signals:integration": "node --import tsx/esm --test src/jobs/__tests__/scanSignals.integration.test.ts",
     "redis:flushdb": "tsx scripts/redis-flushdb.ts",
@@ -45,6 +46,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.21.2",
     "ioredis": "^5.4.2",
+    "node-cron": "^4.2.1",
     "node-telegram-bot-api": "^0.66.0",
     "pino": "^9.14.0",
     "tsx": "^4.7.0"
