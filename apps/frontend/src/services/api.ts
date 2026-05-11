@@ -922,6 +922,23 @@ export interface AlpacaPortfolioHistoryResponse {
   timestamps: number[];
 }
 
+export interface AffiliateBrokerItem {
+  slug: string;
+  displayName: string;
+  logoUrl: string | null;
+  supportedMarkets: string[];
+  legalDisclaimer: Record<string, unknown> | null;
+  riskWarning: Record<string, unknown> | null;
+  priority: number;
+}
+
+export interface AffiliateBrokersResponse {
+  country: string | null;
+  market: string | null;
+  defaultBroker: AffiliateBrokerItem | null;
+  brokers: AffiliateBrokerItem[];
+}
+
 export async function getAlpacaAccount(userId: string): Promise<AlpacaAccountResponse> {
   const { data } = await api.get<AlpacaAccountResponse>("/alpaca/account", { params: { userId } });
   return data;
@@ -959,6 +976,16 @@ export async function cancelAlpacaOrder(userId: string, orderId: string): Promis
 export async function getAlpacaPortfolioHistory(userId: string): Promise<AlpacaPortfolioHistoryResponse> {
   const { data } = await api.get<AlpacaPortfolioHistoryResponse>("/alpaca/portfolio/history", {
     params: { userId },
+  });
+  return data;
+}
+
+export async function getAffiliateBrokers(params?: {
+  country?: string;
+  market?: string;
+}): Promise<AffiliateBrokersResponse> {
+  const { data } = await api.get<AffiliateBrokersResponse>("/affiliate/brokers", {
+    params,
   });
   return data;
 }

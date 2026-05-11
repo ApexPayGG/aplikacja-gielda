@@ -911,6 +911,25 @@
     "complianceUnknown": "—",
     "emptyLogs": "Brak wpisów."
   },
+  "affiliate": {
+    "disclosure": {
+      "short": "Otrzymujemy prowizję od brokera za nowe konta. Nie wpływa to na nasze rekomendacje.",
+      "title": "Transparentność StockAI Pro",
+      "full": "Gdy otwierasz konto przez polecanego brokera, StockAI Pro może otrzymać prowizję afiliacyjną. To pomaga finansować rozwój produktu i darmowy plan. Nasze rekomendacje opierają się na danych i Twoim profilu, a nie na stawkach partnerów.",
+      "cfd_warning": "{{pct}}% rachunków inwestorów detalicznych traci pieniądze podczas handlu CFD u tego dostawcy."
+    },
+    "cta": {
+      "buy_through": "Kup {{ticker}} przez {{broker}}",
+      "open_account": "Otwórz konto w {{broker}}",
+      "other_options": "Inne opcje ({{count}})"
+    },
+    "modal": {
+      "title": "Wybierz brokera",
+      "subtitle": "Każdy broker poniżej obsługuje ten instrument. Wybierz zgodnie ze swoimi preferencjami.",
+      "select": "Wybierz",
+      "close": "Zamknij"
+    }
+  },
   "alpaca": {
     "title": "Alpaca Trading",
     "connectBanner": "Connect your Alpaca account in Settings",

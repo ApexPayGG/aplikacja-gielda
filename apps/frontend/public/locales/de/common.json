@@ -895,6 +895,25 @@
     "sectorPercentile": "Sector percentile",
     "vsPeers": "(vs peers in sector)"
   },
+  "affiliate": {
+    "disclosure": {
+      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
+      "title": "StockAI Pro transparency",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider."
+    },
+    "cta": {
+      "buy_through": "Buy {{ticker}} via {{broker}}",
+      "open_account": "Open account with {{broker}}",
+      "other_options": "Other options ({{count}})"
+    },
+    "modal": {
+      "title": "Choose a broker",
+      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "select": "Select",
+      "close": "Close"
+    }
+  },
   "alpaca": {
     "title": "Alpaca Trading",
     "connectBanner": "Connect your Alpaca account in Settings",

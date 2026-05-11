@@ -8,6 +8,7 @@ import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatQuoteAge } from "../utils/formatQuoteAge";
 import { GlossaryTooltip } from "../components/GlossaryTooltip";
 import { ReactionSection } from "../components/ReactionSection";
+import { BrokerCTAButton } from "../components/affiliate/BrokerCTAButton";
 import { resolveUiLocaleForCopy } from "../i18n";
 
 type MarketCode = "US" | "PL" | "DE" | "JP";
@@ -964,6 +965,16 @@ export function SignalsPage() {
                   >
                     {t("signals.preMortemFromSetup")}
                   </Link>
+                  <div className="mt-2">
+                    <BrokerCTAButton
+                      ticker={selectedSignal.ticker}
+                      signalId={selectedSignal.id}
+                      sourcePage="signals"
+                      market={selectedSignal.market}
+                      size="small"
+                      variant="secondary"
+                    />
+                  </div>
                   {liveQuoteBadge ? (
                     <div className="mt-1 text-xs text-slate-400">
                       {t("pearls.quoteChip", {

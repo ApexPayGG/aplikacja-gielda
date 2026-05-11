@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { AnalysisBrief } from "../components/AnalysisBrief";
+import { BrokerCTAButton } from "../components/affiliate/BrokerCTAButton";
 import { Chart } from "../components/Chart";
 import type { AnalysisResponse, Company, NewsRow, QuoteRow } from "../services/api";
 import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
@@ -158,6 +159,14 @@ export function CompanyDetail() {
 
       <div className="mb-10">
         <Chart quotes={quotes} title={t("company.chartTitle", { defaultValue: "Close - recent history" })} />
+        <div className="mt-4">
+          <BrokerCTAButton
+            ticker={company.symbol}
+            sourcePage="company_detail"
+            size="medium"
+            variant="primary"
+          />
+        </div>
       </div>
 
       <div className="mb-10">
