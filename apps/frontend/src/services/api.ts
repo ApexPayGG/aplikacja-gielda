@@ -1132,3 +1132,134 @@ export async function calculateTax(body: {
   const { data } = await api.post<TaxCalculateResponse>("/tax/calculate", body);
   return data;
 }
+
+export type PremiumVerdictResponse = {
+  ticker: string;
+  score: number;
+  label: string;
+  components: Record<string, unknown>;
+  prices: {
+    current: number;
+    entryLow: number;
+    entryHigh: number;
+    target12m: number;
+    stopLoss: number;
+    riskReward: number;
+  };
+  horizonMonths: number;
+  computedAt: string;
+};
+
+export type PremiumPersonalFitResponse = {
+  ticker: string;
+  marketScore: number;
+  personalScore: number;
+  delta: number;
+  matches: Array<{ dimension: string; value: string; score: number; max: number }>;
+  mismatches: Array<{
+    dimension: string;
+    severity: string;
+    explanation: string;
+    threshold?: string;
+    data?: Record<string, unknown>;
+  }>;
+  suggestedActions: Array<Record<string, unknown>>;
+};
+
+export type PremiumStoryResponse = {
+  ticker: string;
+  acts: Array<{
+    act: number;
+    title: string;
+    narrative?: string;
+    key_numbers?: Array<{ label: string; value: string }>;
+    scenarios?: Array<{
+      name: "BULL" | "BASE" | "BEAR";
+      probability: number;
+      narrative: string;
+      target_price: number;
+      target_pct: number;
+    }>;
+  }>;
+  synthesis?: string;
+  generated_at: string;
+  language: string;
+};
+
+export type PremiumTwinsResponse = {
+  ticker: string;
+  current_setup: Record<string, unknown>;
+  twins: Array<{
+    ticker: string;
+    date_of_match: string;
+    match_score: number;
+    common_attributes?: Array<{ dimension: string; current: string | number | boolean; twin: string | number | boolean }>;
+    outcome_5y: {
+      total_return_pct: number;
+      max_drawdown_pct: number;
+      volatility_annualized: number;
+      notable_events?: string[];
+    };
+    lesson: string;
+  }>;
+  statistics: {
+    bullish_outcomes: number;
+    flat_outcomes: number;
+    bearish_outcomes: number;
+    avg_5y_return: number;
+  };
+  ai_synthesis: string;
+};
+
+export type PremiumCatchResponse = {
+  ticker: string;
+  bull_case: { title: string; narrative: string; supporting_facts?: Array<{ fact: string; source?: string }> };
+  bear_case: { title: string; narrative: string; supporting_facts?: Array<{ fact: string; source?: string }> };
+  dirty_truth: null | {
+    title: string;
+    one_liner: string;
+    details: string;
+    severity: "high" | "medium" | "low";
+    evidence_link: string;
+    category: string;
+  };
+  pre_mortem_context: { auto_filled_prompts: string[] };
+  final_actions: Array<Record<string, unknown>>;
+};
+
+export async function getPremiumVerdict(ticker: string): Promise<PremiumVerdictResponse> {
+  const { data } = await api.get<PremiumVerdictResponse>(`/v1/company/${encodeURIComponent(ticker)}/verdict`);
+  return data;
+}
+
+export async function getPremiumPersonalFit(
+  ticker: string,
+  userId: string,
+): Promise<PremiumPersonalFitResponse> {
+  const { data } = await api.get<PremiumPersonalFitResponse>(
+    `/v1/company/${encodeURIComponent(ticker)}/personal-fit`,
+    { params: { userId } },
+  );
+  return data;
+}
+
+export async function getPremiumStory(
+  ticker: string,
+  language = "en",
+  experienceLevel: "beginner" | "intermediate" | "advanced" = "intermediate",
+): Promise<PremiumStoryResponse> {
+  const { data } = await api.get<PremiumStoryResponse>(`/v1/company/${encodeURIComponent(ticker)}/story`, {
+    params: { language, experienceLevel },
+  });
+  return data;
+}
+
+export async function getPremiumTwins(ticker: string): Promise<PremiumTwinsResponse> {
+  const { data } = await api.get<PremiumTwinsResponse>(`/v1/company/${encodeURIComponent(ticker)}/twins`);
+  return data;
+}
+
+export async function getPremiumCatch(ticker: string): Promise<PremiumCatchResponse> {
+  const { data } = await api.get<PremiumCatchResponse>(`/v1/company/${encodeURIComponent(ticker)}/catch`);
+  return data;
+}

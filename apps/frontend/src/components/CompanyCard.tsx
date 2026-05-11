@@ -9,7 +9,7 @@ type Props = {
 export function CompanyCard({ company }: Props) {
   return (
     <Link
-      to={`/company/${encodeURIComponent(company.symbol)}`}
+      to={`/company/${encodeURIComponent(company.symbol)}/premium`}
       className="group flex flex-col overflow-hidden rounded-2xl border border-surface-border bg-surface-elevated transition hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5"
     >
       <div className="flex h-28 items-center justify-center bg-slate-900/80 p-4">

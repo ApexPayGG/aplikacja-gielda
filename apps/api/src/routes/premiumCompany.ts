@@ -49,7 +49,9 @@ type DirtyTruthCandidate = {
   score: number;
 };
 
-async function detectDirtyTruth(prisma: PrismaClient, ticker: string): Promise<DirtyTruthCandidate | null> {
+type PublicDirtyTruth = Omit<DirtyTruthCandidate, "score">;
+
+async function detectDirtyTruth(prisma: PrismaClient, ticker: string): Promise<PublicDirtyTruth | null> {
   const symbol = ticker.toUpperCase();
   const [fundRows, annualRev, annualFcf] = await Promise.all([
     prisma.fundamental.findMany({

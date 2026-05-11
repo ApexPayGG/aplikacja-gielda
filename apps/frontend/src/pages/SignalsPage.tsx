@@ -907,11 +907,19 @@ export function SignalsPage() {
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-blue">{t("signals.autonomousWatchlist")}</h3>
               <div className="space-y-2">
                 {watchlist.map((w) => (
-                  <div key={`watch-${w.id}`} className="flex items-center justify-between text-xs">
+                  <div key={`watch-${w.id}`} className="flex items-center justify-between gap-2 text-xs">
                     <span className="text-slate-200">
                       {w.ticker} {marketFlags[w.market]}
                     </span>
-                    <span className={`font-mono ${riskScoreColor(w.riskScore)}`}>{Math.round(w.riskScore)}</span>
+                    <div className="flex items-center gap-2">
+                      <span className={`font-mono ${riskScoreColor(w.riskScore)}`}>{Math.round(w.riskScore)}</span>
+                      <Link
+                        to={`/company/${encodeURIComponent(w.ticker)}/premium`}
+                        className="rounded border border-brand-blue/40 bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-blue"
+                      >
+                        Premium
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -964,6 +972,12 @@ export function SignalsPage() {
                     className="mt-2 inline-block text-xs font-semibold text-brand-blue hover:underline"
                   >
                     {t("signals.preMortemFromSetup")}
+                  </Link>
+                  <Link
+                    to={`/company/${encodeURIComponent(selectedSignal.ticker)}/premium`}
+                    className="mt-2 block text-xs font-semibold text-brand-blue hover:underline"
+                  >
+                    Full analysis →
                   </Link>
                   <div className="mt-2">
                     <BrokerCTAButton

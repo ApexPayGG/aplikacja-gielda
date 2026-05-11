@@ -35,6 +35,7 @@ import { VolatilityHeatMapPage } from "./pages/VolatilityHeatMapPage";
 import { WalkForwardPage } from "./pages/WalkForwardPage";
 import { AlpacaDashboardPage } from "./pages/AlpacaDashboardPage";
 import { AdminAffiliatePage } from "./pages/AdminAffiliatePage";
+import { PremiumCompanyAnalysis } from "./pages/PremiumCompanyAnalysis";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 
 export default function App() {
@@ -82,6 +83,7 @@ export default function App() {
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
           <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
           <Route path="/company/:symbol" element={<CompanyDetail />} />
+          <Route path="/company/:symbol/premium" element={<PremiumCompanyAnalysis />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

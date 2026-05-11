@@ -23,6 +23,20 @@ export const REDIS_TTL_SEC = {
   SECTOR_DIVIDEND_COMPARISON: 86_400,
   /** GET /api/ai/dividend/sustainability/:symbol — snapshot z DB */
   SUSTAINABILITY_DIVIDEND: 86_400,
+  /** Premium analysis screen 1 verdict */
+  PREMIUM_VERDICT: 3_600,
+  /** Premium analysis screen 2 personal fit per user */
+  PREMIUM_PERSONAL_FIT: 3_600,
+  /** Premium analysis story act 1 */
+  PREMIUM_STORY_ACT1: 30 * 86_400,
+  /** Premium analysis story act 2 */
+  PREMIUM_STORY_ACT2: 86_400,
+  /** Premium analysis story act 3 */
+  PREMIUM_STORY_ACT3: 7 * 86_400,
+  /** Premium analysis twins */
+  PREMIUM_TWINS: 7 * 86_400,
+  /** Premium analysis catch */
+  PREMIUM_CATCH: 86_400,
 } as const;
 
 const KEY_PREFIX = "cache:v1";
@@ -54,6 +68,14 @@ export const redisKeys = {
   sectorDividendComparison: () => `${KEY_PREFIX}:sector:dividend:comparison`,
   sustainabilityDividend: (symbol: string) =>
     `${KEY_PREFIX}:sustainability:dividend:${symbol.trim().toUpperCase()}`,
+  premiumVerdict: (symbol: string) => `${KEY_PREFIX}:premium:verdict:${symbol.trim().toUpperCase()}`,
+  premiumPersonalFit: (symbol: string, userId: string) =>
+    `${KEY_PREFIX}:premium:personal-fit:${symbol.trim().toUpperCase()}:${shortHash(userId)}`,
+  premiumStoryAct: (symbol: string, act: 1 | 2 | 3, lang: string, level: string) =>
+    `${KEY_PREFIX}:premium:story:${symbol.trim().toUpperCase()}:act${act}:${shortHash(`${lang}\0${level}`)}`,
+  premiumTwins: (symbol: string, limit: number, minMatch: number) =>
+    `${KEY_PREFIX}:premium:twins:${symbol.trim().toUpperCase()}:l${limit}:m${minMatch}`,
+  premiumCatch: (symbol: string) => `${KEY_PREFIX}:premium:catch:${symbol.trim().toUpperCase()}`,
 } as const;
 
 export function isRedisConfigured(): boolean {

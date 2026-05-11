@@ -159,13 +159,19 @@ export function CompanyDetail() {
 
       <div className="mb-10">
         <Chart quotes={quotes} title={t("company.chartTitle", { defaultValue: "Close - recent history" })} />
-        <div className="mt-4">
+        <div className="mt-4 flex flex-wrap items-center gap-3">
           <BrokerCTAButton
             ticker={company.symbol}
             sourcePage="company_detail"
             size="medium"
             variant="primary"
           />
+          <Link
+            to={`/company/${encodeURIComponent(company.symbol)}/premium`}
+            className="rounded-lg border border-brand-blue/60 bg-brand-blue/10 px-4 py-2 text-sm font-medium text-brand-blue transition hover:bg-brand-blue/20"
+          >
+            Open Premium Analysis
+          </Link>
         </div>
       </div>
 
