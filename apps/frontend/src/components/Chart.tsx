@@ -16,9 +16,12 @@ type Props = {
 };
 
 export function Chart({ quotes, title = "Close (latest window)" }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const data = quotes.map((q) => ({
-    t: new Date(q.timestamp).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+    t: new Date(q.timestamp).toLocaleDateString(i18n.resolvedLanguage || "en", {
+      day: "numeric",
+      month: "short",
+    }),
     close: Number(q.close),
   }));
 

@@ -179,7 +179,12 @@ export function CompanyDetail() {
                 {n.title}
               </a>
               <p className="mt-1 text-xs text-slate-500">
-                {new Date(n.timestamp).toLocaleString()} · {n.source}
+                {new Date(n.timestamp).toLocaleDateString(i18n.resolvedLanguage || "en", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}{" "}
+                · {n.source}
               </p>
             </li>
           ))}
