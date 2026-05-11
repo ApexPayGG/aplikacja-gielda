@@ -318,7 +318,7 @@
   "company": {
     "loading": "Ładowanie spółki...",
     "backHome": "<- Powrót",
-    "backCompanies": "<- Spółki",
+    "backToCompanies": "← Spółki",
     "sector": "Sektor",
     "industry": "Branża",
     "website": "Strona WWW",

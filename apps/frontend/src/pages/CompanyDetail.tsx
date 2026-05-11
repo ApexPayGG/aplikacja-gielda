@@ -8,10 +8,26 @@ import type { AnalysisResponse, Company, NewsRow, QuoteRow } from "../services/a
 import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
+function formatMarketCap(value: number, currency: string, locale: string): string {
+  const amountFmt = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (value >= 1_000_000_000) return `${amountFmt.format(value / 1_000_000_000)} mld ${currency}`;
+  if (value >= 1_000_000) return `${amountFmt.format(value / 1_000_000)} mln ${currency}`;
+  return `${new Intl.NumberFormat(locale).format(value)} ${currency}`;
+}
+
+function formatCompanyDescription(description: string, locale: string): string {
+  return description.replace(/MarketCap=(\d+(?:\.\d+)?);\s*Currency=([A-Z]{3})/g, (_m, rawValue, currency) => {
+    const parsed = Number(rawValue);
+    if (!Number.isFinite(parsed)) return `${rawValue} ${currency}`;
+    return formatMarketCap(parsed, currency, locale);
+  });
+}
+
 export function CompanyDetail() {
   const { t, i18n } = useTranslation();
   const { symbol = "" } = useParams();
   const sym = decodeURIComponent(symbol).toUpperCase();
+  const currentLang = i18n.resolvedLanguage || i18n.language || "en";
 
   const [company, setCompany] = useState<Company | null>(null);
   const [quotes, setQuotes] = useState<QuoteRow[]>([]);
@@ -57,7 +73,7 @@ export function CompanyDetail() {
       setAnalysisLoading(true);
       setAnalysisError(null);
       try {
-        const a = await getCompanyBrief(sym, i18n.language);
+        const a = await getCompanyBrief(sym, currentLang);
         if (!cancelled) setAnalysis(a);
       } catch (e) {
         if (!cancelled) setAnalysisError(apiErrorMessage(e));
@@ -68,7 +84,7 @@ export function CompanyDetail() {
     return () => {
       cancelled = true;
     };
-  }, [sym, i18n.language]);
+  }, [sym, currentLang]);
 
   if (loading && !company) {
     return (
@@ -92,7 +108,7 @@ export function CompanyDetail() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <Link to="/" className="mb-6 inline-block text-sm text-accent-muted hover:underline">
-        {t("company.backCompanies", { defaultValue: "<- Companies" })}
+        {t("company.backToCompanies", { defaultValue: "← Companies" })}
       </Link>
 
       <div className="mb-10 flex flex-col gap-8 md:flex-row md:items-start">
@@ -100,7 +116,7 @@ export function CompanyDetail() {
           {company.logoUrl ? (
             <img src={company.logoUrl} alt="" className="max-h-full max-w-full object-contain" />
           ) : (
-            <span className="text-4xl font-bold text-slate-600">{company.symbol.slice(0, 2)}</span>
+            <span className="text-4xl font-bold text-slate-600">{company.symbol.slice(0, 3)}</span>
           )}
         </div>
         <div className="min-w-0 flex-1">
@@ -133,7 +149,9 @@ export function CompanyDetail() {
             )}
           </dl>
           {company.description && (
-            <p className="mt-4 text-sm leading-relaxed text-slate-400">{company.description}</p>
+            <p className="mt-4 text-sm leading-relaxed text-slate-400">
+              {formatCompanyDescription(company.description, currentLang)}
+            </p>
           )}
         </div>
       </div>

@@ -862,7 +862,7 @@
   "company": {
     "loading": "Loading company...",
     "backHome": "<- Back home",
-    "backCompanies": "<- Companies",
+    "backToCompanies": "← 公司",
     "sector": "Sector",
     "industry": "Industry",
     "website": "Website",

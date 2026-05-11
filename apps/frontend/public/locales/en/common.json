@@ -321,7 +321,7 @@
   "company": {
     "loading": "Loading company...",
     "backHome": "<- Back home",
-    "backCompanies": "<- Companies",
+    "backToCompanies": "← Companies",
     "sector": "Sector",
     "industry": "Industry",
     "website": "Website",

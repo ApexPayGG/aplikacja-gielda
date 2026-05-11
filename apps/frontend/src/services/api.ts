@@ -728,17 +728,27 @@ export async function analyzeBehavioralMistakes(userId: string): Promise<{ analy
 
 export async function getCompanyBrief(symbol: string, lang: string): Promise<AnalysisResponse> {
   try {
-    const { data } = await api.get<AnalysisResponse>(`/companies/${encodeURIComponent(symbol)}/brief`, {
+    const { data } = await api.get<AnalysisResponse>(`/brief/${encodeURIComponent(symbol)}`, {
       params: { lang },
     });
     return data;
   } catch (error) {
     if (error instanceof AxiosError && error.response?.status === 404) {
-      // Backward compatibility for API versions that don't expose /companies/:symbol/brief yet.
-      const { data } = await api.get<AnalysisResponse>(`/analysis/${encodeURIComponent(symbol)}`, {
-        params: { lang },
-      });
-      return data;
+      try {
+        // Backward compatibility for API versions that still expose /companies/:symbol/brief.
+        const { data } = await api.get<AnalysisResponse>(`/companies/${encodeURIComponent(symbol)}/brief`, {
+          params: { lang },
+        });
+        return data;
+      } catch (fallbackError) {
+        if (fallbackError instanceof AxiosError && fallbackError.response?.status === 404) {
+          const { data } = await api.get<AnalysisResponse>(`/analysis/${encodeURIComponent(symbol)}`, {
+            params: { lang },
+          });
+          return data;
+        }
+        throw fallbackError;
+      }
     }
     throw error;
   }
