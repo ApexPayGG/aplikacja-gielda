@@ -34,6 +34,7 @@ import { TaxOptimizerPage } from "./pages/TaxOptimizerPage";
 import { VolatilityHeatMapPage } from "./pages/VolatilityHeatMapPage";
 import { WalkForwardPage } from "./pages/WalkForwardPage";
 import { AlpacaDashboardPage } from "./pages/AlpacaDashboardPage";
+import { AdminAffiliatePage } from "./pages/AdminAffiliatePage";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 
 export default function App() {
@@ -77,6 +78,7 @@ export default function App() {
           <Route path="/dividend-compound" element={<DividendCompoundPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/alpaca" element={<AlpacaDashboardPage />} />
+          <Route path="/admin/affiliate" element={<AdminAffiliatePage />} />
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
           <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
           <Route path="/company/:symbol" element={<CompanyDetail />} />

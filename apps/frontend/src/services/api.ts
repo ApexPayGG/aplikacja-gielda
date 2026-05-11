@@ -939,6 +939,37 @@ export interface AffiliateBrokersResponse {
   brokers: AffiliateBrokerItem[];
 }
 
+export interface AdminAffiliateBrokerPayload {
+  slug: string;
+  displayName: string;
+  logoUrl?: string | null;
+  partnerId: string;
+  affiliateProgramUrl?: string | null;
+  baseUrl: string;
+  tickerUrlTemplate?: string | null;
+  clickIdParam?: string;
+  attributionMethod: string;
+  supportedCountries: string[];
+  supportedMarkets: string[];
+  primaryLanguage?: string | null;
+  commissionModel: string;
+  commissionCpaAmount?: number | null;
+  commissionRevsharePct?: number | null;
+  commissionCurrency: string;
+  conversionTracking?: string | null;
+  apiEndpoint?: string | null;
+  webhookSecret?: string | null;
+  isActive: boolean;
+  priority: number;
+  legalDisclaimer?: Record<string, unknown> | null;
+  riskWarning?: Record<string, unknown> | null;
+}
+
+export interface AdminAffiliateBrokerResponse {
+  brokers?: AdminAffiliateBrokerPayload[];
+  broker?: AdminAffiliateBrokerPayload;
+}
+
 export async function getAlpacaAccount(userId: string): Promise<AlpacaAccountResponse> {
   const { data } = await api.get<AlpacaAccountResponse>("/alpaca/account", { params: { userId } });
   return data;
@@ -988,6 +1019,53 @@ export async function getAffiliateBrokers(params?: {
     params,
   });
   return data;
+}
+
+export async function getAdminAffiliateBrokers(): Promise<AdminAffiliateBrokerPayload[]> {
+  const { data } = await api.get<AdminAffiliateBrokerResponse>("/admin/affiliate/brokers");
+  return data.brokers ?? [];
+}
+
+export async function createAdminAffiliateBroker(
+  body: AdminAffiliateBrokerPayload,
+): Promise<AdminAffiliateBrokerPayload> {
+  const { data } = await api.post<AdminAffiliateBrokerResponse>("/admin/affiliate/brokers", body);
+  if (!data.broker) throw new Error("Broker not returned");
+  return data.broker;
+}
+
+export async function updateAdminAffiliateBroker(
+  slug: string,
+  body: Partial<AdminAffiliateBrokerPayload>,
+): Promise<AdminAffiliateBrokerPayload> {
+  const { data } = await api.patch<AdminAffiliateBrokerResponse>(
+    `/admin/affiliate/brokers/${encodeURIComponent(slug)}`,
+    body,
+  );
+  if (!data.broker) throw new Error("Broker not returned");
+  return data.broker;
+}
+
+export async function deleteAdminAffiliateBroker(slug: string): Promise<void> {
+  await api.delete(`/admin/affiliate/brokers/${encodeURIComponent(slug)}`);
+}
+
+export async function importAdminAffiliateCsv(body: {
+  brokerSlug: string;
+  csvContent: string;
+}): Promise<{
+  imported: number;
+  matched: number;
+  unmatched: number;
+  errors: Array<{ row: number; error: string }>;
+}> {
+  const { data } = await api.post("/admin/affiliate/import-csv", body);
+  return data as {
+    imported: number;
+    matched: number;
+    unmatched: number;
+    errors: Array<{ row: number; error: string }>;
+  };
 }
 
 export async function getAlpacaSettings(userId: string): Promise<{

@@ -34,6 +34,7 @@ const toolsLinks: { to: string; labelKey: string }[] = [
   { to: "/glossary", labelKey: "nav.glossary" },
   { to: "/skill-tree", labelKey: "nav.skillTree" },
   { to: "/tax-optimizer", labelKey: "nav.taxOptimizer" },
+  { to: "/admin/affiliate", labelKey: "nav.adminAffiliate" },
 ];
 
 function isMarketsPath(pathname: string): boolean {
@@ -63,7 +64,8 @@ function isToolsPath(pathname: string): boolean {
     pathname.startsWith("/dividend-compound") ||
     pathname.startsWith("/glossary") ||
     pathname.startsWith("/skill-tree") ||
-    pathname.startsWith("/tax-optimizer")
+    pathname.startsWith("/tax-optimizer") ||
+    pathname.startsWith("/admin/affiliate")
   );
 }
 
