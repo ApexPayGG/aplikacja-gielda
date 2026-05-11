@@ -379,8 +379,16 @@
     "noHighRiskPairs": "No high-risk pair detected.",
     "aiInsight": "AI Insight"
   },
+  "tax": {
+    "title": "Tax Optimizer",
+    "selectCountry": "Select your tax country",
+    "changeCountry": "Change",
+    "noTax": "No capital gains tax on listed stocks",
+    "customRate": "Custom tax rate (%)",
+    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor."
+  },
   "taxOptimizer": {
-    "title": "कर अनुकूलन PIT-38",
+    "title": "Tax Optimizer",
     "year": "कर वर्ष",
     "grossGains": "सकल लाभ",
     "losses": "हानि",

@@ -39,12 +39,13 @@ async function resolveCredentials(userId?: string): Promise<AlpacaCredentials | 
         alpacaApiKey: string | null;
         alpacaApiSecret: string | null;
         alpacaMode: string | null;
+        taxCountry: string | null;
       }
     | null = null;
   if (trimmedUserId) {
     userSettings = await prisma.userSettings.findUnique({
       where: { userId: trimmedUserId },
-      select: { alpacaApiKey: true, alpacaApiSecret: true, alpacaMode: true },
+      select: { alpacaApiKey: true, alpacaApiSecret: true, alpacaMode: true, taxCountry: true },
     });
   }
 
@@ -87,12 +88,13 @@ export function createAlpacaRouter(): Router {
       if (!userId) return res.status(400).json({ error: "Missing userId" });
       const row = await prisma.userSettings.findUnique({
         where: { userId },
-        select: { alpacaApiKey: true, alpacaApiSecret: true, alpacaMode: true },
+        select: { alpacaApiKey: true, alpacaApiSecret: true, alpacaMode: true, taxCountry: true },
       });
       res.json({
-        alpacaApiKey: row?.alpacaApiKey ?? "",
-        alpacaApiSecret: row?.alpacaApiSecret ?? "",
-        alpacaMode: normalizeMode(row?.alpacaMode ?? process.env.ALPACA_MODE ?? "paper"),
+        alpacaApiKey: row?.alpacaApiKey ?? null,
+        alpacaApiSecret: row?.alpacaApiSecret ?? null,
+        alpacaMode: row?.alpacaMode ? normalizeMode(row.alpacaMode) : null,
+        taxCountry: row?.taxCountry ?? null,
       });
     } catch (error) {
       next(error);
@@ -104,13 +106,30 @@ export function createAlpacaRouter(): Router {
       const body = req.body as Record<string, unknown>;
       const userId = String(body.userId ?? "").trim();
       if (!userId) return res.status(400).json({ error: "Missing userId" });
-      const alpacaApiKey = String(body.alpacaApiKey ?? "").trim();
-      const alpacaApiSecret = String(body.alpacaApiSecret ?? "").trim();
-      const alpacaMode = normalizeMode(body.alpacaMode ?? "paper");
+      const hasApiKey = Object.prototype.hasOwnProperty.call(body, "alpacaApiKey");
+      const hasApiSecret = Object.prototype.hasOwnProperty.call(body, "alpacaApiSecret");
+      const hasMode = Object.prototype.hasOwnProperty.call(body, "alpacaMode");
+      const hasTaxCountry = Object.prototype.hasOwnProperty.call(body, "taxCountry");
+
+      const alpacaApiKey = hasApiKey ? String(body.alpacaApiKey ?? "").trim() : undefined;
+      const alpacaApiSecret = hasApiSecret ? String(body.alpacaApiSecret ?? "").trim() : undefined;
+      const alpacaMode = hasMode ? normalizeMode(body.alpacaMode) : undefined;
+      const taxCountry = hasTaxCountry ? String(body.taxCountry ?? "").trim().toUpperCase() || "PL" : undefined;
       await prisma.userSettings.upsert({
         where: { userId },
-        create: { userId, alpacaApiKey, alpacaApiSecret, alpacaMode },
-        update: { alpacaApiKey, alpacaApiSecret, alpacaMode },
+        create: {
+          userId,
+          alpacaApiKey: alpacaApiKey ?? "",
+          alpacaApiSecret: alpacaApiSecret ?? "",
+          alpacaMode: alpacaMode ?? "paper",
+          taxCountry: taxCountry ?? "PL",
+        },
+        update: {
+          ...(alpacaApiKey !== undefined ? { alpacaApiKey } : {}),
+          ...(alpacaApiSecret !== undefined ? { alpacaApiSecret } : {}),
+          ...(alpacaMode !== undefined ? { alpacaMode } : {}),
+          ...(taxCountry !== undefined ? { taxCountry } : {}),
+        },
       });
       res.json({ saved: true });
     } catch (error) {

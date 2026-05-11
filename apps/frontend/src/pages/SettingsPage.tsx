@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { TAX_COUNTRY_FLAGS } from "../constants/taxCountries";
 import { api } from "../services/api";
-import { getAlpacaAccount, getAlpacaSettings, saveAlpacaSettings } from "../services/api";
+import { getAlpacaAccount, getAlpacaSettings, getTaxSystems, saveAlpacaSettings, type TaxSystemItem } from "../services/api";
 
 type MentorStyle = "supportive" | "strict";
 const DEFAULT_USER_ID = "demo-user";
@@ -47,6 +48,8 @@ export function SettingsPage() {
   const [alpacaApiKey, setAlpacaApiKey] = useState("");
   const [alpacaApiSecret, setAlpacaApiSecret] = useState("");
   const [alpacaMode, setAlpacaMode] = useState<"paper" | "live">("paper");
+  const [taxCountry, setTaxCountry] = useState("PL");
+  const [taxSystems, setTaxSystems] = useState<TaxSystemItem[]>([]);
   const [alpacaStatus, setAlpacaStatus] = useState<string | null>(null);
   const [alpacaError, setAlpacaError] = useState<string | null>(null);
   const [alpacaSaving, setAlpacaSaving] = useState(false);
@@ -91,10 +94,12 @@ export function SettingsPage() {
     const loadAlpaca = async () => {
       setAlpacaError(null);
       try {
-        const data = await getAlpacaSettings(userId);
-        setAlpacaApiKey(data.alpacaApiKey || "");
-        setAlpacaApiSecret(data.alpacaApiSecret || "");
-        setAlpacaMode(data.alpacaMode || "paper");
+        const [settings, systems] = await Promise.all([getAlpacaSettings(userId), getTaxSystems()]);
+        setAlpacaApiKey(settings.alpacaApiKey || "");
+        setAlpacaApiSecret(settings.alpacaApiSecret || "");
+        setAlpacaMode(settings.alpacaMode || "paper");
+        setTaxCountry(settings.taxCountry || "PL");
+        setTaxSystems(systems);
       } catch {
         setAlpacaError(t("alpaca.settingsLoadError", { defaultValue: "Failed to load Alpaca settings." }));
       }
@@ -216,6 +221,20 @@ export function SettingsPage() {
     }
   }
 
+  async function saveTaxResidency(): Promise<void> {
+    setAlpacaSaving(true);
+    setAlpacaError(null);
+    setAlpacaStatus(null);
+    try {
+      await saveAlpacaSettings({ userId, taxCountry });
+      setAlpacaStatus(t("alpaca.settingsSaved", { defaultValue: "Saved" }));
+    } catch {
+      setAlpacaError(t("alpaca.settingsSaveError", { defaultValue: "Failed to save Alpaca settings." }));
+    } finally {
+      setAlpacaSaving(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-brand-bg px-4 py-8 text-slate-100">
       <div className="mx-auto max-w-3xl space-y-6">
@@ -287,6 +306,37 @@ export function SettingsPage() {
           </div>
           {alpacaStatus ? <p className="text-sm text-brand-green">{alpacaStatus}</p> : null}
           {alpacaError ? <p className="text-sm text-brand-red">{alpacaError}</p> : null}
+        </section>
+
+        <section className="neo-panel space-y-4 rounded-xl p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-white">Tax Residency</h2>
+              <p className="text-sm text-slate-400">{t("tax.selectCountry")}</p>
+            </div>
+          </div>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-slate-300">{t("tax.selectCountry")}</span>
+            <select
+              value={taxCountry}
+              onChange={(e) => setTaxCountry(String(e.target.value).toUpperCase())}
+              className="rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-white outline-none transition focus:border-brand-blue/60"
+            >
+              {taxSystems.map((entry) => (
+                <option key={entry.code} value={entry.code}>
+                  {`${TAX_COUNTRY_FLAGS[entry.code] ?? ""} ${entry.name}`}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            onClick={() => void saveTaxResidency()}
+            disabled={alpacaSaving}
+            className="rounded-lg border border-brand-blue/60 bg-brand-blue/10 px-4 py-2 text-sm text-brand-blue transition hover:bg-brand-blue/20 disabled:opacity-60"
+          >
+            {alpacaSaving ? t("common.loading") : t("common.save")}
+          </button>
         </section>
 
         <section className="neo-panel space-y-4 rounded-xl p-5">

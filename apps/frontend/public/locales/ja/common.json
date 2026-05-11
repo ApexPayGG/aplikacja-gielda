@@ -379,8 +379,16 @@
     "noHighRiskPairs": "No high-risk pair detected.",
     "aiInsight": "AI Insight"
   },
+  "tax": {
+    "title": "Tax Optimizer",
+    "selectCountry": "Select your tax country",
+    "changeCountry": "Change",
+    "noTax": "No capital gains tax on listed stocks",
+    "customRate": "Custom tax rate (%)",
+    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor."
+  },
   "taxOptimizer": {
-    "title": "税務最適化 PIT-38",
+    "title": "Tax Optimizer",
     "year": "課税年度",
     "grossGains": "総利益",
     "losses": "損失",

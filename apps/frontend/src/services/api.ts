@@ -970,6 +970,30 @@ export interface AdminAffiliateBrokerResponse {
   broker?: AdminAffiliateBrokerPayload;
 }
 
+export interface TaxSystemItem {
+  code: string;
+  name: string;
+  currency: string;
+  cgt: { rate: number | null; name: string; note?: string };
+  form: string;
+  note?: string;
+}
+
+export interface TaxCalculateResponse {
+  grossGains: number;
+  losses: number;
+  netIncome: number;
+  taxRate: number;
+  taxDue: number;
+  taxName: string;
+  form: string;
+  note?: string;
+  currency: string;
+  country: string;
+  countryName: string;
+  trades: Array<{ ticker: string; openDate: string; closeDate: string; pnl: number; pnlPct: number }>;
+}
+
 export async function getAlpacaAccount(userId: string): Promise<AlpacaAccountResponse> {
   const { data } = await api.get<AlpacaAccountResponse>("/alpaca/account", { params: { userId } });
   return data;
@@ -1069,24 +1093,42 @@ export async function importAdminAffiliateCsv(body: {
 }
 
 export async function getAlpacaSettings(userId: string): Promise<{
-  alpacaApiKey: string;
-  alpacaApiSecret: string;
-  alpacaMode: "paper" | "live";
+  alpacaApiKey: string | null;
+  alpacaApiSecret: string | null;
+  alpacaMode: "paper" | "live" | null;
+  taxCountry: string | null;
 }> {
   const { data } = await api.get<{
-    alpacaApiKey: string;
-    alpacaApiSecret: string;
-    alpacaMode: "paper" | "live";
+    alpacaApiKey: string | null;
+    alpacaApiSecret: string | null;
+    alpacaMode: "paper" | "live" | null;
+    taxCountry: string | null;
   }>(`/alpaca/settings/${encodeURIComponent(userId)}`);
   return data;
 }
 
 export async function saveAlpacaSettings(body: {
   userId: string;
-  alpacaApiKey: string;
-  alpacaApiSecret: string;
-  alpacaMode: "paper" | "live";
+  alpacaApiKey?: string;
+  alpacaApiSecret?: string;
+  alpacaMode?: "paper" | "live";
+  taxCountry?: string;
 }): Promise<{ saved: boolean }> {
   const { data } = await api.post<{ saved: boolean }>("/alpaca/settings", body);
+  return data;
+}
+
+export async function getTaxSystems(): Promise<TaxSystemItem[]> {
+  const { data } = await api.get<{ systems: TaxSystemItem[] }>("/tax/systems");
+  return Array.isArray(data.systems) ? data.systems : [];
+}
+
+export async function calculateTax(body: {
+  userId: string;
+  country: string;
+  customRate?: number;
+  trades?: Array<{ ticker: string; openDate: string; closeDate: string; pnl: number; pnlPct: number }>;
+}): Promise<TaxCalculateResponse> {
+  const { data } = await api.post<TaxCalculateResponse>("/tax/calculate", body);
   return data;
 }

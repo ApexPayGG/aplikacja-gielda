@@ -464,8 +464,16 @@
     "noHighRiskPairs": "Nie wykryto par wysokiego ryzyka.",
     "aiInsight": "AI Insight"
   },
+  "tax": {
+    "title": "Tax Optimizer",
+    "selectCountry": "Select your tax country",
+    "changeCountry": "Change",
+    "noTax": "No capital gains tax on listed stocks",
+    "customRate": "Custom tax rate (%)",
+    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor."
+  },
   "taxOptimizer": {
-    "title": "Optymalizator Podatkowy PIT-38",
+    "title": "Tax Optimizer",
     "year": "Rok rozliczeniowy",
     "grossGains": "Zyski brutto",
     "losses": "Straty",
