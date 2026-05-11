@@ -171,6 +171,25 @@ model Fundamental {
   @@map("fundamentals")
 }
 
+/// Premium Company Analysis — historical setup snapshots for twin matching.
+model StockSetupHistory {
+  id             String   @id @default(cuid())
+  symbol         String
+  snapshotDate   DateTime
+  priceClose     Float?
+  priceChange5d  Float?
+  priceChange20d Float?
+  volumeRatio    Float?
+  rsi14          Float?
+  outcome5d      Float?
+  outcome20d     Float?
+  outcome60d     Float?
+  createdAt      DateTime @default(now())
+
+  @@unique([symbol, snapshotDate])
+  @@map("stock_setups_history")
+}
+
 model Dividend {
   id        String   @id @default(cuid())
   symbol    String   @db.VarChar(10)
