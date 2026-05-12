@@ -67,7 +67,21 @@ async function resolveCanonicalSymbol(prisma: PrismaClient, inputTicker: string)
     orderBy: { symbol: "asc" },
     select: { symbol: true },
   });
-  return byBase?.symbol ?? null;
+  if (byBase?.symbol) return byBase.symbol;
+
+  const quoteExact = await prisma.quote.findFirst({
+    where: { symbol: requested },
+    orderBy: { timestamp: "desc" },
+    select: { symbol: true },
+  });
+  if (quoteExact?.symbol) return quoteExact.symbol;
+
+  const quoteByBase = await prisma.quote.findFirst({
+    where: { OR: [{ symbol: base }, { symbol: { startsWith: `${base}.` } }] },
+    orderBy: { timestamp: "desc" },
+    select: { symbol: true },
+  });
+  return quoteByBase?.symbol ?? null;
 }
 
 async function detectDirtyTruth(prisma: PrismaClient, ticker: string): Promise<PublicDirtyTruth | null> {
@@ -207,10 +221,10 @@ async function buildVerdict(prisma: PrismaClient, ticker: string) {
     })
     .catch(() => null);
 
-  if (!company || !latestQuote) return null;
-  const sectorPeers = company.sector
+  if (!latestQuote) return null;
+  const sectorPeers = company?.sector
     ? await prisma.company.findMany({
-        where: { sector: company.sector },
+        where: { sector: company?.sector },
         select: { symbol: true },
         take: 15,
       }).catch(() => [])
