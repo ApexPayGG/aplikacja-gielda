@@ -203,32 +203,33 @@ async function detectDirtyTruth(prisma: PrismaClient, ticker: string): Promise<P
 
 async function buildVerdict(prisma: PrismaClient, ticker: string) {
   const symbol = ticker.toUpperCase();
-  const [company, latestQuote, quoteHistory] = await Promise.all([
-    prisma.company.findUnique({ where: { symbol } }),
-    prisma.quote.findFirst({ where: { symbol }, orderBy: { timestamp: "desc" } }),
-    prisma.quote.findMany({
-      where: { symbol },
-      orderBy: { timestamp: "desc" },
-      take: 365,
-      select: { close: true, timestamp: true },
-    }),
-  ]);
-  const latestRsi = await prisma.technicalIndicator
-    .findFirst({
-      where: { symbol, indicator: "RSI" },
-      orderBy: { timestamp: "desc" },
-      select: { value: true },
-    })
-    .catch(() => null);
+  try {
+    const [company, latestQuote, quoteHistory] = await Promise.all([
+      prisma.company.findUnique({ where: { symbol } }),
+      prisma.quote.findFirst({ where: { symbol }, orderBy: { timestamp: "desc" } }),
+      prisma.quote.findMany({
+        where: { symbol },
+        orderBy: { timestamp: "desc" },
+        take: 365,
+        select: { close: true, timestamp: true },
+      }),
+    ]);
+    const latestRsi = await prisma.technicalIndicator
+      .findFirst({
+        where: { symbol, indicator: "RSI" },
+        orderBy: { timestamp: "desc" },
+        select: { value: true },
+      })
+      .catch(() => null);
 
-  if (!latestQuote) return null;
-  const sectorPeers = company?.sector
-    ? await prisma.company.findMany({
-        where: { sector: company?.sector },
-        select: { symbol: true },
-        take: 15,
-      }).catch(() => [])
-    : [];
+    if (!latestQuote) return null;
+    const sectorPeers = company?.sector
+      ? await prisma.company.findMany({
+          where: { sector: company?.sector },
+          select: { symbol: true },
+          take: 15,
+        }).catch(() => [])
+      : [];
 
   const current = Number(latestQuote.close);
   const closes = quoteHistory.map((row) => Number(row.close)).filter(Number.isFinite);
@@ -355,22 +356,61 @@ async function buildVerdict(prisma: PrismaClient, ticker: string) {
   const risk = current - stopLoss;
   const riskReward = risk > 0 ? reward / risk : 0;
 
+    return {
+      ticker: symbol,
+      score,
+      label,
+      components: {
+        valuation: { score: round2(valuationScore), raw: { pe: round2(pe), peSector, peHistory5y } },
+        financial: { score: round2(financialScore), raw: { debt: round2(debt), fcf: round2(fcf), marginTrend: "stable" } },
+        growth: { score: round2(growthScore), raw: { revYoY: round2(revYoY), epsYoY: round2(epsYoY), sustainability: "medium" } },
+        technical: { score: round2(technicalScore), raw: { rsi: round2(rsi), ma200: round2(current * 0.96), distFrom52wHigh: round2(distFrom52wHigh) } },
+        analyst: { score: round2(analystScore), raw: { buy: 23, hold: 8, sell: 2, avgTarget: round2(target12m) } },
+        bonus: { score: round2(bonusScore), raw: { catalysts: ["earnings", "buyback"], insiderBuys: 0 } },
+      },
+      prices: {
+        current: round2(current),
+        entryLow: round2(entryLow),
+        entryHigh: round2(entryHigh),
+        target12m: round2(target12m),
+        stopLoss: round2(stopLoss),
+        riskReward: round2(riskReward),
+      },
+      horizonMonths: 12,
+      computedAt: new Date().toISOString(),
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function buildVerdictFromLatestQuote(prisma: PrismaClient, ticker: string) {
+  const symbol = ticker.toUpperCase();
+  const latestQuote = await prisma.quote
+    .findFirst({ where: { symbol }, orderBy: { timestamp: "desc" }, select: { close: true } })
+    .catch(() => null);
+  if (!latestQuote) return null;
+  const current = Number(latestQuote.close);
+  const score = 55;
+  const target12m = current * 1.1;
+  const stopLoss = current * 0.9;
+  const riskReward = (target12m - current) / Math.max(0.0001, current - stopLoss);
   return {
     ticker: symbol,
     score,
-    label,
+    label: labelForScore(score),
     components: {
-      valuation: { score: round2(valuationScore), raw: { pe: round2(pe), peSector, peHistory5y } },
-      financial: { score: round2(financialScore), raw: { debt: round2(debt), fcf: round2(fcf), marginTrend: "stable" } },
-      growth: { score: round2(growthScore), raw: { revYoY: round2(revYoY), epsYoY: round2(epsYoY), sustainability: "medium" } },
-      technical: { score: round2(technicalScore), raw: { rsi: round2(rsi), ma200: round2(current * 0.96), distFrom52wHigh: round2(distFrom52wHigh) } },
-      analyst: { score: round2(analystScore), raw: { buy: 23, hold: 8, sell: 2, avgTarget: round2(target12m) } },
-      bonus: { score: round2(bonusScore), raw: { catalysts: ["earnings", "buyback"], insiderBuys: 0 } },
+      valuation: { score: 11, raw: { mode: "fallback_quote_only" } },
+      financial: { score: 11, raw: { mode: "fallback_quote_only" } },
+      growth: { score: 11, raw: { mode: "fallback_quote_only" } },
+      technical: { score: 11, raw: { mode: "fallback_quote_only" } },
+      analyst: { score: 6, raw: { mode: "fallback_quote_only" } },
+      bonus: { score: 5, raw: { mode: "fallback_quote_only" } },
     },
     prices: {
       current: round2(current),
-      entryLow: round2(entryLow),
-      entryHigh: round2(entryHigh),
+      entryLow: round2(current),
+      entryHigh: round2(current * 1.03),
       target12m: round2(target12m),
       stopLoss: round2(stopLoss),
       riskReward: round2(riskReward),
@@ -392,7 +432,7 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       if (cached) return res.json(cached);
       const canonicalSymbol = await resolveCanonicalSymbol(prisma, ticker);
       if (!canonicalSymbol) return res.status(404).json({ error: "Ticker not found" });
-      const data = await buildVerdict(prisma, canonicalSymbol);
+      const data = (await buildVerdict(prisma, canonicalSymbol)) ?? (await buildVerdictFromLatestQuote(prisma, canonicalSymbol));
       if (!data) return res.status(404).json({ error: "Ticker not found" });
       await cacheJsonSet(cacheKey, data, REDIS_TTL_SEC.PREMIUM_VERDICT);
       res.json(data);
@@ -411,7 +451,9 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       if (cached) return res.json(cached);
       const canonicalSymbol = await resolveCanonicalSymbol(prisma, ticker);
       if (!canonicalSymbol) return res.status(404).json({ error: "Ticker not found" });
-      const verdict = await buildVerdict(prisma, canonicalSymbol);
+      const verdict =
+        (await buildVerdict(prisma, canonicalSymbol)) ??
+        (await buildVerdictFromLatestQuote(prisma, canonicalSymbol));
       if (!verdict) return res.status(404).json({ error: "Ticker not found" });
 
       const [profile, closedTrades, openTrades, company, rules] = await Promise.all([
@@ -538,7 +580,9 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       if (!ticker) return res.status(400).json({ error: "Missing ticker" });
       const canonicalSymbol = await resolveCanonicalSymbol(prisma, ticker);
       if (!canonicalSymbol) return res.status(404).json({ error: "Ticker not found" });
-      const verdict = await buildVerdict(prisma, canonicalSymbol);
+      const verdict =
+        (await buildVerdict(prisma, canonicalSymbol)) ??
+        (await buildVerdictFromLatestQuote(prisma, canonicalSymbol));
       if (!verdict) return res.status(404).json({ error: "Ticker not found" });
       const language = String(req.query.language ?? "en");
       const experienceLevel = String(req.query.experienceLevel ?? "intermediate");
