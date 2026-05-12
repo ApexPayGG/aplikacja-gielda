@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "dlq_events" (
     "status" TEXT NOT NULL,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    CONSTRAINT "dlq_events_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "dlq_events_pkey" PRIMARY KEY ("id", "created_at")
 );
 
 -- CreateIndex
