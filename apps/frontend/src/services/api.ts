@@ -1246,20 +1246,53 @@ export type PremiumCatchResponse = {
   final_actions: Array<Record<string, unknown>>;
 };
 
+function premiumTickerCandidates(ticker: string): string[] {
+  const normalized = ticker.trim().toUpperCase();
+  if (!normalized) return [];
+  const base = normalized.split(".")[0]?.trim() ?? normalized;
+  const out = [normalized];
+  if (!out.includes(base)) out.push(base);
+  const us = `${base}.US`;
+  if (!out.includes(us)) out.push(us);
+  return out;
+}
+
+async function getPremiumWithTickerFallback<T>(
+  ticker: string,
+  requestForTicker: (candidate: string) => Promise<T>,
+): Promise<T> {
+  const candidates = premiumTickerCandidates(ticker);
+  let lastError: unknown = null;
+  for (const candidate of candidates) {
+    try {
+      return await requestForTicker(candidate);
+    } catch (error) {
+      const status = error instanceof AxiosError ? error.response?.status : undefined;
+      if (status !== 404) throw error;
+      lastError = error;
+    }
+  }
+  throw lastError ?? new Error("Premium endpoint not found");
+}
+
 export async function getPremiumVerdict(ticker: string): Promise<PremiumVerdictResponse> {
-  const { data } = await api.get<PremiumVerdictResponse>(`/v1/company/${encodeURIComponent(ticker)}/verdict`);
-  return data;
+  return getPremiumWithTickerFallback(ticker, async (candidate) => {
+    const { data } = await api.get<PremiumVerdictResponse>(`/v1/company/${encodeURIComponent(candidate)}/verdict`);
+    return data;
+  });
 }
 
 export async function getPremiumPersonalFit(
   ticker: string,
   userId: string,
 ): Promise<PremiumPersonalFitResponse> {
-  const { data } = await api.get<PremiumPersonalFitResponse>(
-    `/v1/company/${encodeURIComponent(ticker)}/personal-fit`,
-    { params: { userId } },
-  );
-  return data;
+  return getPremiumWithTickerFallback(ticker, async (candidate) => {
+    const { data } = await api.get<PremiumPersonalFitResponse>(
+      `/v1/company/${encodeURIComponent(candidate)}/personal-fit`,
+      { params: { userId } },
+    );
+    return data;
+  });
 }
 
 export async function getPremiumStory(
@@ -1267,18 +1300,24 @@ export async function getPremiumStory(
   language = "en",
   experienceLevel: "beginner" | "intermediate" | "advanced" = "intermediate",
 ): Promise<PremiumStoryResponse> {
-  const { data } = await api.get<PremiumStoryResponse>(`/v1/company/${encodeURIComponent(ticker)}/story`, {
-    params: { language, experienceLevel },
+  return getPremiumWithTickerFallback(ticker, async (candidate) => {
+    const { data } = await api.get<PremiumStoryResponse>(`/v1/company/${encodeURIComponent(candidate)}/story`, {
+      params: { language, experienceLevel },
+    });
+    return data;
   });
-  return data;
 }
 
 export async function getPremiumTwins(ticker: string): Promise<PremiumTwinsResponse> {
-  const { data } = await api.get<PremiumTwinsResponse>(`/v1/company/${encodeURIComponent(ticker)}/twins`);
-  return data;
+  return getPremiumWithTickerFallback(ticker, async (candidate) => {
+    const { data } = await api.get<PremiumTwinsResponse>(`/v1/company/${encodeURIComponent(candidate)}/twins`);
+    return data;
+  });
 }
 
 export async function getPremiumCatch(ticker: string): Promise<PremiumCatchResponse> {
-  const { data } = await api.get<PremiumCatchResponse>(`/v1/company/${encodeURIComponent(ticker)}/catch`);
-  return data;
+  return getPremiumWithTickerFallback(ticker, async (candidate) => {
+    const { data } = await api.get<PremiumCatchResponse>(`/v1/company/${encodeURIComponent(candidate)}/catch`);
+    return data;
+  });
 }
