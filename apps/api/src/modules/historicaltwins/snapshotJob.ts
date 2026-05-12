@@ -55,12 +55,21 @@ function toQuoteSamples(
 ): QuoteSample[] {
   return rows
     .map((row) => {
+      if (
+        row.close == null ||
+        row.high == null ||
+        row.low == null ||
+        row.volume == null
+      ) {
+        return null;
+      }
       const close = Number(row.close);
       const high = Number(row.high);
       const low = Number(row.low);
       const volume = Number(row.volume);
       return { close, high, low, volume };
     })
+    .filter((row): row is QuoteSample => row !== null)
     .filter(
       (row) =>
         Number.isFinite(row.close) &&
@@ -254,11 +263,25 @@ export async function runSnapshotJob(prisma: PrismaClient): Promise<SnapshotJobR
       continue;
     }
 
+    const hasInvalidFeature =
+      !Number.isFinite(features.priceClose) ||
+      !Number.isFinite(features.priceChange5d) ||
+      !Number.isFinite(features.priceChange20d) ||
+      !Number.isFinite(features.volumeRatio) ||
+      !Number.isFinite(features.rsi14) ||
+      features.embedding.length !== 9 ||
+      features.embedding.some((value) => !Number.isFinite(value));
+    if (hasInvalidFeature) {
+      skipped += 1;
+      continue;
+    }
+
     const vectorLiteral = embeddingToVectorLiteral(features.embedding);
-    await prisma.$executeRawUnsafe(
+    const inserted = await prisma.$executeRawUnsafe(
       `
         INSERT INTO stock_setups_history (
           id,
+          ticker,
           symbol,
           snapshot_date,
           price_close,
@@ -269,18 +292,11 @@ export async function runSnapshotJob(prisma: PrismaClient): Promise<SnapshotJobR
           embedding,
           created_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::vector, NOW())
-        ON CONFLICT (symbol, snapshot_date)
-        DO UPDATE SET
-          price_close = EXCLUDED.price_close,
-          price_change_5d = EXCLUDED.price_change_5d,
-          price_change_20d = EXCLUDED.price_change_20d,
-          volume_ratio = EXCLUDED.volume_ratio,
-          rsi_14 = EXCLUDED.rsi_14,
-          embedding = EXCLUDED.embedding,
-          created_at = NOW()
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::vector, NOW())
+        ON CONFLICT DO NOTHING
       `,
       randomUUID(),
+      symbol,
       symbol,
       snapshotDate,
       features.priceClose,
@@ -290,7 +306,8 @@ export async function runSnapshotJob(prisma: PrismaClient): Promise<SnapshotJobR
       features.rsi14,
       vectorLiteral,
     );
-    stored += 1;
+    stored += Number(inserted) > 0 ? 1 : 0;
+    if (Number(inserted) <= 0) skipped += 1;
   }
 
   await backfillOutcomes(prisma);
