@@ -13,7 +13,6 @@ import { prisma } from "./db/index";
 import {
   getCompaniesBySector,
   getCompanyBySymbol,
-  searchCompanies,
   upsertCompany,
 } from "./db/company-queries";
 import {
@@ -92,6 +91,7 @@ import { createHistoricalTwinsRouter } from "./routes/historicaltwins";
 import { createPremiumCompanyRouter } from "./routes/premiumCompany";
 import { runSnapshotJob } from "./modules/historicaltwins/snapshotJob";
 import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
+import { importCompanyOnDemand, searchCompaniesOnDemand } from "./modules/companies/companySearchModule";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -323,17 +323,29 @@ export function createApp(): express.Express {
     try {
       const q = String(req.query.q ?? "").trim();
       if (!q) return res.status(400).json({ error: "Missing query parameter q" });
-      const limit = Math.min(50, Math.max(1, parseInt(String(req.query.limit ?? "20"), 10) || 20));
-      const cacheKey = redisKeys.companySearch(q, limit);
-      const cached = await cacheJsonGet<{ query: string; count: number; data: unknown[] }>(cacheKey);
+      const cacheKey = redisKeys.companySearch(q, 10);
+      const cached = await cacheJsonGet<{ results: unknown[]; source: "database" | "eodhd" }>(cacheKey);
       if (cached !== null) {
         res.json(cached);
         return;
       }
-      const rows = await searchCompanies(q, limit);
-      const payload = { query: q, count: rows.length, data: rows };
+      const payload = await searchCompaniesOnDemand(q);
       await cacheJsonSet(cacheKey, payload, REDIS_TTL_SEC.SEARCH);
       res.json(payload);
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.get("/api/companies/search/import", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const symbol = String(req.query.symbol ?? "").trim();
+      const exchange = String(req.query.exchange ?? "").trim();
+      if (!symbol || !exchange) {
+        return res.status(400).json({ error: "Missing query params: symbol, exchange" });
+      }
+      const result = await importCompanyOnDemand({ symbol, exchange });
+      res.json(result);
     } catch (e) {
       next(e);
     }

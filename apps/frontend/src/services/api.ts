@@ -40,9 +40,17 @@ export interface Company {
 }
 
 export interface SearchResponse {
-  query: string;
-  count: number;
-  data: Company[];
+  source?: "database" | "eodhd";
+  results?: Array<{
+    symbol: string;
+    name: string;
+    exchange?: string;
+    currency?: string | null;
+    type?: string | null;
+  }>;
+  query?: string;
+  count?: number;
+  data?: Company[];
 }
 
 export interface SectorListResponse {
@@ -443,7 +451,18 @@ export async function searchCompanies(query: string, limit = 20): Promise<Compan
   const { data } = await api.get<SearchResponse>("/companies/search", {
     params: { q: query, limit },
   });
-  return data.data;
+  if (Array.isArray(data.data)) return data.data;
+  if (!Array.isArray(data.results)) return [];
+  return data.results.map((row) => ({
+    symbol: row.symbol,
+    name: row.name,
+    sector: "Unknown",
+    industry: "Unknown",
+    logoUrl: null,
+    description: row.exchange ? `Exchange=${row.exchange}${row.currency ? `; Currency=${row.currency}` : ""}` : null,
+    webUrl: null,
+    createdAt: new Date().toISOString(),
+  }));
 }
 
 export async function getCompanyBySector(

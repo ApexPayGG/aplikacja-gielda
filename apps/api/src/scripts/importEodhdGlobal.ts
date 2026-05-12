@@ -81,7 +81,7 @@ const EXCHANGES: ExchangeConfig[] = [
   },
   {
     exchange: "TSE",
-    suffix: ".TSE",
+    suffix: ".T",
     companies: [
       { symbol: "7203", name: "Toyota Motor Corp." },
       { symbol: "6758", name: "Sony Group Corp." },
@@ -92,24 +92,13 @@ const EXCHANGES: ExchangeConfig[] = [
   },
   {
     exchange: "NSE",
-    suffix: ".NSE",
-    companies: [
-      { symbol: "RELIANCE", name: "Reliance Industries Ltd." },
-      { symbol: "TCS", name: "Tata Consultancy Services Ltd." },
-      { symbol: "HDFCBANK", name: "HDFC Bank Ltd." },
-      { symbol: "INFY", name: "Infosys Ltd." },
-      { symbol: "ICICIBANK", name: "ICICI Bank Ltd." },
-    ],
-  },
-  {
-    exchange: "BSE",
     suffix: ".BSE",
     companies: [
-      { symbol: "RELIANCE", name: "Reliance Industries Ltd." },
-      { symbol: "TCS", name: "Tata Consultancy Services Ltd." },
-      { symbol: "HDFCBANK", name: "HDFC Bank Ltd." },
-      { symbol: "INFY", name: "Infosys Ltd." },
-      { symbol: "ICICIBANK", name: "ICICI Bank Ltd." },
+      { symbol: "500325", name: "Reliance Industries Ltd." },
+      { symbol: "532540", name: "Tata Consultancy Services Ltd." },
+      { symbol: "500180", name: "HDFC Bank Ltd." },
+      { symbol: "500209", name: "Infosys Ltd." },
+      { symbol: "532174", name: "ICICI Bank Ltd." },
     ],
   },
   {
