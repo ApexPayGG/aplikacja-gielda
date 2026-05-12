@@ -51,6 +51,25 @@ type DirtyTruthCandidate = {
 
 type PublicDirtyTruth = Omit<DirtyTruthCandidate, "score">;
 
+async function resolveCanonicalSymbol(prisma: PrismaClient, inputTicker: string): Promise<string | null> {
+  const requested = inputTicker.trim().toUpperCase();
+  if (!requested) return null;
+  const base = requested.split(".")[0]?.trim() ?? requested;
+
+  const exact = await prisma.company.findUnique({
+    where: { symbol: requested },
+    select: { symbol: true },
+  });
+  if (exact?.symbol) return exact.symbol;
+
+  const byBase = await prisma.company.findFirst({
+    where: { OR: [{ symbol: base }, { symbol: { startsWith: `${base}.` } }] },
+    orderBy: { symbol: "asc" },
+    select: { symbol: true },
+  });
+  return byBase?.symbol ?? null;
+}
+
 async function detectDirtyTruth(prisma: PrismaClient, ticker: string): Promise<PublicDirtyTruth | null> {
   const symbol = ticker.toUpperCase();
   const [fundRows, annualRev, annualFcf] = await Promise.all([
@@ -331,7 +350,9 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       const cacheKey = redisKeys.premiumVerdict(ticker);
       const cached = await cacheJsonGet<Awaited<ReturnType<typeof buildVerdict>>>(cacheKey);
       if (cached) return res.json(cached);
-      const data = await buildVerdict(prisma, ticker);
+      const canonicalSymbol = await resolveCanonicalSymbol(prisma, ticker);
+      if (!canonicalSymbol) return res.status(404).json({ error: "Ticker not found" });
+      const data = await buildVerdict(prisma, canonicalSymbol);
       if (!data) return res.status(404).json({ error: "Ticker not found" });
       await cacheJsonSet(cacheKey, data, REDIS_TTL_SEC.PREMIUM_VERDICT);
       res.json(data);
@@ -348,7 +369,9 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       const cacheKey = redisKeys.premiumPersonalFit(ticker, userId);
       const cached = await cacheJsonGet<Record<string, unknown>>(cacheKey);
       if (cached) return res.json(cached);
-      const verdict = await buildVerdict(prisma, ticker);
+      const canonicalSymbol = await resolveCanonicalSymbol(prisma, ticker);
+      if (!canonicalSymbol) return res.status(404).json({ error: "Ticker not found" });
+      const verdict = await buildVerdict(prisma, canonicalSymbol);
       if (!verdict) return res.status(404).json({ error: "Ticker not found" });
 
       const [profile, closedTrades, openTrades, company, rules] = await Promise.all([
@@ -359,7 +382,7 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
           take: 100,
         }),
         prisma.paperTrade.findMany({ where: { userId, status: "OPEN" }, take: 100 }),
-        prisma.company.findUnique({ where: { symbol: ticker } }),
+        prisma.company.findUnique({ where: { symbol: canonicalSymbol } }),
         prisma.tradingRule.findMany({ where: { userId, active: true }, take: 5 }),
       ]);
 
@@ -471,7 +494,9 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
     try {
       const ticker = String(req.params.ticker ?? "").trim().toUpperCase();
       if (!ticker) return res.status(400).json({ error: "Missing ticker" });
-      const verdict = await buildVerdict(prisma, ticker);
+      const canonicalSymbol = await resolveCanonicalSymbol(prisma, ticker);
+      if (!canonicalSymbol) return res.status(404).json({ error: "Ticker not found" });
+      const verdict = await buildVerdict(prisma, canonicalSymbol);
       if (!verdict) return res.status(404).json({ error: "Ticker not found" });
       const language = String(req.query.language ?? "en");
       const experienceLevel = String(req.query.experienceLevel ?? "intermediate");
@@ -554,12 +579,14 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
     try {
       const ticker = String(req.params.ticker ?? "").trim().toUpperCase();
       if (!ticker) return res.status(400).json({ error: "Missing ticker" });
+      const canonicalSymbol = await resolveCanonicalSymbol(prisma, ticker);
+      if (!canonicalSymbol) return res.status(404).json({ error: "Ticker not found" });
       const limit = Math.min(10, Math.max(1, Number.parseInt(String(req.query.limit ?? "3"), 10) || 3));
       const minMatch = Math.min(100, Math.max(0, Number.parseInt(String(req.query.min_match ?? "60"), 10) || 60));
       const cacheKey = redisKeys.premiumTwins(ticker, limit, minMatch);
       const cached = await cacheJsonGet<Record<string, unknown>>(cacheKey);
       if (cached) return res.json(cached);
-      const twinData = await findHistoricalTwins(prisma, ticker, limit, minMatch);
+      const twinData = await findHistoricalTwins(prisma, canonicalSymbol, limit, minMatch);
 
       const payload = {
         ticker,
@@ -580,10 +607,12 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
     try {
       const ticker = String(req.params.ticker ?? "").trim().toUpperCase();
       if (!ticker) return res.status(400).json({ error: "Missing ticker" });
+      const canonicalSymbol = await resolveCanonicalSymbol(prisma, ticker);
+      if (!canonicalSymbol) return res.status(404).json({ error: "Ticker not found" });
       const cacheKey = redisKeys.premiumCatch(ticker);
       const cached = await cacheJsonGet<Record<string, unknown>>(cacheKey);
       if (cached) return res.json(cached);
-      const dirtyTruth = await detectDirtyTruth(prisma, ticker);
+      const dirtyTruth = await detectDirtyTruth(prisma, canonicalSymbol);
       const baseBull = `${ticker} keeps compounding through resilient cashflow, disciplined capital returns, and product ecosystem lock-in.`;
       const baseBear = `${ticker} faces execution risk in the next product cycle and valuation compression if growth slows further.`;
       const aiCatch = await generateCatchAi({
