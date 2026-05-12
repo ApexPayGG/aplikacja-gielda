@@ -221,6 +221,23 @@ function exitBadgeClass(action: ExitAction): string {
   return "animate-pulse bg-brand-red/20 text-brand-red";
 }
 
+type QuoteFreshnessTone = "FRESH" | "DELAYED" | "STALE";
+
+function quoteFreshnessTone(updatedAt?: string, nowMs = Date.now()): QuoteFreshnessTone {
+  const parsed = parseDate(updatedAt);
+  if (!parsed) return "STALE";
+  const ageMs = Math.max(0, nowMs - parsed.getTime());
+  if (ageMs <= 60_000) return "FRESH";
+  if (ageMs <= 15 * 60_000) return "DELAYED";
+  return "STALE";
+}
+
+function quoteFreshnessToneClass(tone: QuoteFreshnessTone): string {
+  if (tone === "FRESH") return "border border-brand-green/45 bg-brand-green/10 text-brand-green";
+  if (tone === "DELAYED") return "border border-brand-blue/40 bg-brand-blue/10 text-brand-blue";
+  return "border border-brand-red/40 bg-brand-red/10 text-brand-red";
+}
+
 export function PaperTradingPage() {
   const { t } = useTranslation();
   const [form, setForm] = useState<OpenTradeForm>({
@@ -405,6 +422,27 @@ export function PaperTradingPage() {
     () => positionRows.reduce((acc, row) => acc + row.pnl, 0),
     [positionRows],
   );
+
+  const decisionSummary = useMemo(() => {
+    const proceed = receipts.filter((r) => r.kind === "PROCEED_PREMORTEM").length;
+    const losses = receipts.filter((r) => r.kind === "CLOSED_LOSS").length;
+    const total = proceed + losses;
+    const proceedRate = total > 0 ? (proceed / total) * 100 : 0;
+
+    const worstLoss = receipts
+      .filter((r) => r.kind === "CLOSED_LOSS")
+      .map((r) => {
+        const payload = r.payload as Record<string, unknown>;
+        const pnl = Number(payload.pnl ?? 0);
+        return {
+          symbol: r.symbol,
+          pnl,
+        };
+      })
+      .sort((a, b) => a.pnl - b.pnl)[0] ?? null;
+
+    return { proceed, losses, total, proceedRate, worstLoss };
+  }, [receipts]);
 
   const openTradeNow = async (
     payload: { ticker: string; entryPrice: number; quantity: number; direction: Direction },
@@ -775,6 +813,7 @@ export function PaperTradingPage() {
                   )}
                   {positionRows.map((row) => {
                     const signal = exitSignals[row.id];
+                    const freshnessTone = quoteFreshnessTone(row.quoteUpdatedAt, nowMs);
                     return (
                       <Fragment key={row.id}>
                       <tr className="border-b border-slate-900/80">
@@ -784,7 +823,7 @@ export function PaperTradingPage() {
                         <td className="px-2 py-2 font-mono">{formatMoney(row.currentPrice)}</td>
                         <td className="px-2 py-2 text-xs text-slate-400">
                           {row.quoteUpdatedAt ? (
-                            <span title={row.quoteUpdatedAt}>
+                            <span title={row.quoteUpdatedAt} className={`inline-flex rounded px-2 py-1 ${quoteFreshnessToneClass(freshnessTone)}`}>
                               {t("pearls.quoteChip", {
                                 age: formatQuoteAge(row.quoteUpdatedAt, nowMs),
                                 source: row.quoteSource ?? "—",
@@ -833,6 +872,30 @@ export function PaperTradingPage() {
 
         <section className="neo-panel rounded-xl p-4">
           <h2 className="mb-3 text-lg font-semibold text-white">{t("pearls.decisionTrailTitle")}</h2>
+          <div className="mb-3 grid gap-2 md:grid-cols-3">
+            <div className="rounded border border-slate-800 bg-brand-bg/60 px-3 py-2">
+              <div className="text-[11px] uppercase tracking-wide text-slate-500">
+                {t("pearls.summaryTotal", { defaultValue: "Recorded decisions" })}
+              </div>
+              <div className="mt-1 font-mono text-lg text-white">{decisionSummary.total}</div>
+            </div>
+            <div className="rounded border border-slate-800 bg-brand-bg/60 px-3 py-2">
+              <div className="text-[11px] uppercase tracking-wide text-slate-500">
+                {t("pearls.summaryProceedRate", { defaultValue: "Pre-Mortem proceed rate" })}
+              </div>
+              <div className="mt-1 font-mono text-lg text-brand-blue">{decisionSummary.proceedRate.toFixed(1)}%</div>
+            </div>
+            <div className="rounded border border-slate-800 bg-brand-bg/60 px-3 py-2">
+              <div className="text-[11px] uppercase tracking-wide text-slate-500">
+                {t("pearls.summaryWorstLoss", { defaultValue: "Largest realized loss" })}
+              </div>
+              <div className="mt-1 font-mono text-lg text-brand-red">
+                {decisionSummary.worstLoss
+                  ? `${decisionSummary.worstLoss.symbol} ${decisionSummary.worstLoss.pnl.toFixed(2)}`
+                  : t("common.notAvailable")}
+              </div>
+            </div>
+          </div>
           {receipts.length === 0 ? (
             <p className="text-sm text-slate-500">{t("pearls.decisionTrailEmpty")}</p>
           ) : (
