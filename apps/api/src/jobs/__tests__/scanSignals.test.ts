@@ -28,6 +28,7 @@ describe("scanSignals job", () => {
               .slice()
               .reverse()
               .map((bar) => ({
+                symbol: "AAPL.US",
                 timestamp: new Date(bar.timestamp),
                 open: bar.open,
                 high: bar.high,
@@ -35,6 +36,9 @@ describe("scanSignals job", () => {
                 close: bar.close,
                 volume: BigInt(bar.volume),
               })),
+        },
+        company: {
+          findFirst: async () => ({ exchange: "US" }),
         },
         signal: {
           create: async ({ data }: { data: Record<string, unknown> }) => {
@@ -60,6 +64,70 @@ describe("scanSignals job", () => {
       } as never,
     });
 
+    assert.equal(result.processed, 1);
+    assert.equal(result.signals_created, 1);
+    assert.equal(result.alerts_queued, 1);
+    assert.equal(createdSignals.length, 1);
+    assert.equal(queuedProcessSignals.length, 1);
+    assert.equal(queuedProcessSignals[0]?.name, "process:signal");
+  });
+
+  it("falls back to exchange suffix when exact ticker has no quotes", async () => {
+    const createdSignals: Array<Record<string, unknown>> = [];
+    const queuedProcessSignals: Array<{ name: string; payload: unknown }> = [];
+    const bars = buildBars(30);
+    let quoteFindManyCalls = 0;
+
+    const result = await runScanSignalsJob({
+      db: {
+        quote: {
+          findMany: async ({ where }: { where?: { symbol?: string } }) => {
+            quoteFindManyCalls += 1;
+            if (where?.symbol === "AAPL.US") {
+              return bars
+                .slice()
+                .reverse()
+                .map((bar) => ({
+                  symbol: "AAPL.US",
+                  timestamp: new Date(bar.timestamp),
+                  open: bar.open,
+                  high: bar.high,
+                  low: bar.low,
+                  close: bar.close,
+                  volume: BigInt(bar.volume),
+                }));
+            }
+            return [];
+          },
+        },
+        company: {
+          findFirst: async () => ({ exchange: "US" }),
+        },
+        signal: {
+          create: async ({ data }: { data: Record<string, unknown> }) => {
+            createdSignals.push(data);
+            return { id: "sig_2", ...data };
+          },
+        },
+      } as never,
+      cache: {
+        get: async () => null,
+        setex: async () => "OK",
+      },
+      loadTopTickers: async () => ["AAPL"],
+      fetchAnalyze: async () => ({
+        anomalies: [{ type: "volume_spike" }],
+        patterns: [{ type: "bull_flag" }],
+      }),
+      processSignalQueue: {
+        add: async (name: string, payload: unknown) => {
+          queuedProcessSignals.push({ name, payload });
+          return {} as never;
+        },
+      } as never,
+    });
+
+    assert.ok(quoteFindManyCalls >= 2);
     assert.equal(result.processed, 1);
     assert.equal(result.signals_created, 1);
     assert.equal(result.alerts_queued, 1);

@@ -37,6 +37,16 @@ interface DetectedSignalLike {
   confidence?: number;
 }
 
+type QuoteRow = {
+  symbol?: string;
+  timestamp: Date;
+  open: unknown;
+  high: unknown;
+  low: unknown;
+  close: unknown;
+  volume: bigint;
+};
+
 export interface ScanSignalsDeps {
   db: typeof prisma;
   cache: Pick<ReturnType<typeof getCacheRedis>, "get" | "setex">;
@@ -67,6 +77,73 @@ function normalizeBars(rows: Array<{ timestamp: Date; open: unknown; high: unkno
 function calculateConfidence(anomaliesCount: number, patternsCount: number): number {
   const raw = 45 + anomaliesCount * 12 + patternsCount * 18;
   return Math.min(99, Math.max(50, raw));
+}
+
+function tickerBase(input: string): string {
+  const normalized = input.trim().toUpperCase();
+  const base = normalized.split(".")[0] ?? normalized;
+  return base.trim();
+}
+
+function normalizeExchangeSuffix(exchange: string | null | undefined): string | null {
+  if (!exchange) return null;
+  const cleaned = exchange.trim().replace(/^\.+/, "").toUpperCase();
+  return cleaned.length > 0 ? cleaned : null;
+}
+
+function quoteSelect() {
+  return { timestamp: true, open: true, high: true, low: true, close: true, volume: true, symbol: true } as const;
+}
+
+async function fetchQuotesForTicker(
+  deps: ScanSignalsDeps,
+  ticker: string,
+): Promise<QuoteRow[]> {
+  const normalizedTicker = ticker.trim().toUpperCase();
+  const base = tickerBase(normalizedTicker);
+  if (!base) return [];
+
+  // Primary query: exact symbol, plain base symbol, and any suffix variant.
+  const primaryRows = await deps.db.quote.findMany({
+    where: {
+      OR: [
+        { symbol: normalizedTicker },
+        { symbol: base },
+        { symbol: { startsWith: `${base}.` } },
+      ],
+    },
+    orderBy: { timestamp: "desc" },
+    take: 30,
+    select: quoteSelect(),
+  });
+  if (primaryRows.length > 0) return primaryRows as QuoteRow[];
+
+  // Fallback: try symbol + exchange suffix from companies table.
+  const companyAccessor = (deps.db as unknown as { company?: { findFirst?: Function } }).company;
+  const companyRow = companyAccessor?.findFirst
+    ? (await companyAccessor.findFirst({
+        where: {
+          OR: [
+            { symbol: normalizedTicker },
+            { symbol: base },
+            { symbol: { startsWith: `${base}.` } },
+          ],
+        },
+        select: { exchange: true },
+      })) as { exchange?: string | null } | null
+    : null;
+  const suffix = normalizeExchangeSuffix(companyRow?.exchange);
+  if (!suffix) return [];
+  const fallbackSymbol = `${base}.${suffix}`;
+  if (fallbackSymbol === normalizedTicker) return [];
+
+  const fallbackRows = await deps.db.quote.findMany({
+    where: { symbol: fallbackSymbol },
+    orderBy: { timestamp: "desc" },
+    take: 30,
+    select: quoteSelect(),
+  });
+  return fallbackRows as QuoteRow[];
 }
 
 function resolveConfidence(
@@ -168,12 +245,7 @@ export async function runScanSignalsJob(depsInput?: Partial<ScanSignalsDeps>): P
   for (const ticker of tickers) {
     out.processed += 1;
     try {
-      const rows = await deps.db.quote.findMany({
-        where: { symbol: ticker.toUpperCase() },
-        orderBy: { timestamp: "desc" },
-        take: 30,
-        select: { timestamp: true, open: true, high: true, low: true, close: true, volume: true },
-      });
+      const rows = await fetchQuotesForTicker(deps, ticker);
       if (rows.length < 10) {
         scanSignalsLogger.info({ msg: "skip_not_enough_bars", ticker, bars: rows.length });
         continue;
