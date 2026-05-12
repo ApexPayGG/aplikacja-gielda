@@ -241,16 +241,36 @@ export async function runScanSignalsJob(depsInput?: Partial<ScanSignalsDeps>): P
   };
   const out: ScanSignalsResult = { processed: 0, signals_created: 0, alerts_queued: 0 };
   const tickers = await getTopTickersFromCacheOrDb(deps, 30);
+  const quoteRowsByTicker = new Map<string, QuoteRow[]>();
+  const eligibleTickers: string[] = [];
 
   for (const ticker of tickers) {
     out.processed += 1;
     try {
       const rows = await fetchQuotesForTicker(deps, ticker);
+      if (rows.length === 0) {
+        scanSignalsLogger.info({ msg: "skip_no_quotes", ticker });
+        continue;
+      }
       if (rows.length < 10) {
         scanSignalsLogger.info({ msg: "skip_not_enough_bars", ticker, bars: rows.length });
         continue;
       }
+      quoteRowsByTicker.set(ticker, rows);
+      eligibleTickers.push(ticker);
+    } catch (error) {
+      scanSignalsLogger.error({
+        msg: "scan_failed_for_ticker",
+        ticker,
+        err: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
 
+  for (const ticker of eligibleTickers) {
+    try {
+      const rows = quoteRowsByTicker.get(ticker);
+      if (!rows || rows.length < 10) continue;
       const bars = normalizeBars(rows);
       const scanResult = await deps.fetchAnalyze({ ticker, bars });
       const anomalies = Array.isArray(scanResult.anomalies) ? scanResult.anomalies : [];
@@ -294,7 +314,7 @@ export async function runScanSignalsJob(depsInput?: Partial<ScanSignalsDeps>): P
       });
     } catch (error) {
       scanSignalsLogger.error({
-        msg: "scan_failed_for_ticker",
+        msg: "analyze_failed_for_ticker",
         ticker,
         err: error instanceof Error ? error.message : String(error),
       });
