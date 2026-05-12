@@ -73,25 +73,31 @@ async function resolveCanonicalSymbol(prisma: PrismaClient, inputTicker: string)
 async function detectDirtyTruth(prisma: PrismaClient, ticker: string): Promise<PublicDirtyTruth | null> {
   const symbol = ticker.toUpperCase();
   const [fundRows, annualRev, annualFcf] = await Promise.all([
-    prisma.fundamental.findMany({
-      where: {
-        symbol,
-        metric: { in: ["net_debt_to_ebitda", "shares_outstanding", "receivables_to_revenue"] },
-      },
-      orderBy: [{ metric: "asc" }, { year: "desc" }],
-    }),
-    prisma.fundamental.findMany({
-      where: { symbol, metric: "revenue", year: { gt: 0 } },
-      orderBy: { year: "desc" },
-      take: 4,
-      select: { year: true, value: true },
-    }),
-    prisma.fundamental.findMany({
-      where: { symbol, metric: "fcf", year: { gt: 0 } },
-      orderBy: { year: "desc" },
-      take: 4,
-      select: { year: true, value: true },
-    }),
+    prisma.fundamental
+      .findMany({
+        where: {
+          symbol,
+          metric: { in: ["net_debt_to_ebitda", "shares_outstanding", "receivables_to_revenue"] },
+        },
+        orderBy: [{ metric: "asc" }, { year: "desc" }],
+      })
+      .catch(() => []),
+    prisma.fundamental
+      .findMany({
+        where: { symbol, metric: "revenue", year: { gt: 0 } },
+        orderBy: { year: "desc" },
+        take: 4,
+        select: { year: true, value: true },
+      })
+      .catch(() => []),
+    prisma.fundamental
+      .findMany({
+        where: { symbol, metric: "fcf", year: { gt: 0 } },
+        orderBy: { year: "desc" },
+        take: 4,
+        select: { year: true, value: true },
+      })
+      .catch(() => []),
   ]);
 
   const byMetric = new Map<string, number[]>();
@@ -183,7 +189,7 @@ async function detectDirtyTruth(prisma: PrismaClient, ticker: string): Promise<P
 
 async function buildVerdict(prisma: PrismaClient, ticker: string) {
   const symbol = ticker.toUpperCase();
-  const [company, latestQuote, quoteHistory, latestRsi] = await Promise.all([
+  const [company, latestQuote, quoteHistory] = await Promise.all([
     prisma.company.findUnique({ where: { symbol } }),
     prisma.quote.findFirst({ where: { symbol }, orderBy: { timestamp: "desc" } }),
     prisma.quote.findMany({
@@ -192,12 +198,14 @@ async function buildVerdict(prisma: PrismaClient, ticker: string) {
       take: 365,
       select: { close: true, timestamp: true },
     }),
-    prisma.technicalIndicator.findFirst({
+  ]);
+  const latestRsi = await prisma.technicalIndicator
+    .findFirst({
       where: { symbol, indicator: "RSI" },
       orderBy: { timestamp: "desc" },
       select: { value: true },
-    }),
-  ]);
+    })
+    .catch(() => null);
 
   if (!company || !latestQuote) return null;
   const sectorPeers = company.sector
@@ -205,7 +213,7 @@ async function buildVerdict(prisma: PrismaClient, ticker: string) {
         where: { sector: company.sector },
         select: { symbol: true },
         take: 15,
-      })
+      }).catch(() => [])
     : [];
 
   const current = Number(latestQuote.close);
@@ -221,23 +229,29 @@ async function buildVerdict(prisma: PrismaClient, ticker: string) {
   const distFrom52wHigh = highest52w > 0 ? ((highest52w - current) / highest52w) * 100 : 0;
   const rsi = latestRsi ? Number(latestRsi.value) : 50;
 
-  const epsTtm = await prisma.fundamental.findFirst({
-    where: { symbol, metric: "eps_ttm", year: 0 },
-    orderBy: { lastUpdated: "desc" },
-    select: { value: true },
-  });
+  const epsTtm = await prisma.fundamental
+    .findFirst({
+      where: { symbol, metric: "eps_ttm", year: 0 },
+      orderBy: { lastUpdated: "desc" },
+      select: { value: true },
+    })
+    .catch(() => null);
   const pe = epsTtm ? current / Math.max(Number(epsTtm.value), 0.01) : 24;
   const peerSymbols = Array.from(new Set(sectorPeers.map((row) => row.symbol))).filter((s) => s !== symbol);
-  const peerEps = await prisma.fundamental.findMany({
-    where: { symbol: { in: peerSymbols }, metric: "eps_ttm", year: 0 },
-    select: { symbol: true, value: true },
-  });
-  const peerLatestQuotes = await prisma.quote.findMany({
-    where: { symbol: { in: peerSymbols } },
-    orderBy: { timestamp: "desc" },
-    take: Math.max(peerSymbols.length, 1) * 3,
-    select: { symbol: true, close: true },
-  });
+  const peerEps = await prisma.fundamental
+    .findMany({
+      where: { symbol: { in: peerSymbols }, metric: "eps_ttm", year: 0 },
+      select: { symbol: true, value: true },
+    })
+    .catch(() => []);
+  const peerLatestQuotes = await prisma.quote
+    .findMany({
+      where: { symbol: { in: peerSymbols } },
+      orderBy: { timestamp: "desc" },
+      take: Math.max(peerSymbols.length, 1) * 3,
+      select: { symbol: true, close: true },
+    })
+    .catch(() => []);
   const peerQuoteMap = new Map<string, number>();
   for (const row of peerLatestQuotes) {
     if (!peerQuoteMap.has(row.symbol)) peerQuoteMap.set(row.symbol, Number(row.close));
@@ -254,37 +268,49 @@ async function buildVerdict(prisma: PrismaClient, ticker: string) {
   const peHistory5y = 24;
 
   const valuationScore = clamp(20 - Math.abs(pe / peSector - 1) * 12 - Math.abs(pe / peHistory5y - 1) * 8, 0, 20);
-  const debtMetric = await prisma.fundamental.findFirst({
-    where: { symbol, metric: "net_debt_to_ebitda" },
-    orderBy: { year: "desc" },
-    select: { value: true },
-  });
-  const fcfMetric = await prisma.fundamental.findFirst({
-    where: { symbol, metric: "fcf" },
-    orderBy: { year: "desc" },
-    select: { value: true },
-  });
-  const revNow = await prisma.fundamental.findFirst({
-    where: { symbol, metric: "revenue" },
-    orderBy: { year: "desc" },
-    select: { year: true, value: true },
-  });
+  const debtMetric = await prisma.fundamental
+    .findFirst({
+      where: { symbol, metric: "net_debt_to_ebitda" },
+      orderBy: { year: "desc" },
+      select: { value: true },
+    })
+    .catch(() => null);
+  const fcfMetric = await prisma.fundamental
+    .findFirst({
+      where: { symbol, metric: "fcf" },
+      orderBy: { year: "desc" },
+      select: { value: true },
+    })
+    .catch(() => null);
+  const revNow = await prisma.fundamental
+    .findFirst({
+      where: { symbol, metric: "revenue" },
+      orderBy: { year: "desc" },
+      select: { year: true, value: true },
+    })
+    .catch(() => null);
   const revPrev = revNow
-    ? await prisma.fundamental.findFirst({
-        where: { symbol, metric: "revenue", year: revNow.year - 1 },
-        select: { value: true },
-      })
+    ? await prisma.fundamental
+        .findFirst({
+          where: { symbol, metric: "revenue", year: revNow.year - 1 },
+          select: { value: true },
+        })
+        .catch(() => null)
     : null;
-  const epsNow = await prisma.fundamental.findFirst({
-    where: { symbol, metric: "eps" },
-    orderBy: { year: "desc" },
-    select: { year: true, value: true },
-  });
+  const epsNow = await prisma.fundamental
+    .findFirst({
+      where: { symbol, metric: "eps" },
+      orderBy: { year: "desc" },
+      select: { year: true, value: true },
+    })
+    .catch(() => null);
   const epsPrev = epsNow
-    ? await prisma.fundamental.findFirst({
-        where: { symbol, metric: "eps", year: epsNow.year - 1 },
-        select: { value: true },
-      })
+    ? await prisma.fundamental
+        .findFirst({
+          where: { symbol, metric: "eps", year: epsNow.year - 1 },
+          select: { value: true },
+        })
+        .catch(() => null)
     : null;
 
   const debt = debtMetric ? Number(debtMetric.value) : 1.1;
@@ -375,15 +401,17 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       if (!verdict) return res.status(404).json({ error: "Ticker not found" });
 
       const [profile, closedTrades, openTrades, company, rules] = await Promise.all([
-        prisma.traderProfile.findUnique({ where: { userId } }),
-        prisma.paperTrade.findMany({
-          where: { userId, status: "CLOSED" },
-          orderBy: { exitAt: "desc" },
-          take: 100,
-        }),
-        prisma.paperTrade.findMany({ where: { userId, status: "OPEN" }, take: 100 }),
-        prisma.company.findUnique({ where: { symbol: canonicalSymbol } }),
-        prisma.tradingRule.findMany({ where: { userId, active: true }, take: 5 }),
+        prisma.traderProfile.findUnique({ where: { userId } }).catch(() => null),
+        prisma.paperTrade
+          .findMany({
+            where: { userId, status: "CLOSED" },
+            orderBy: { exitAt: "desc" },
+            take: 100,
+          })
+          .catch(() => []),
+        prisma.paperTrade.findMany({ where: { userId, status: "OPEN" }, take: 100 }).catch(() => []),
+        prisma.company.findUnique({ where: { symbol: canonicalSymbol } }).catch(() => null),
+        prisma.tradingRule.findMany({ where: { userId, active: true }, take: 5 }).catch(() => []),
       ]);
 
       const currentSector = company?.sector ?? "Unknown";
