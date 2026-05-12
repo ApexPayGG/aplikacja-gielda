@@ -23,6 +23,12 @@ import { registerExitMonitorJob, scheduleExitMonitor } from "./modules/exitIntel
 import { registerAlphaCalendarJob, scheduleDailyAlphaCalendar } from "./modules/alphaCalendar/alphaCalendar";
 import { registerPortfolioSnapshots, scheduleDailyPortfolioSnapshotsJob } from "./jobs/portfolioSnapshots";
 import { registerFetchPolygonQuotes } from "./jobs/fetchPolygonQuotes";
+import {
+  registerEodhdGlobalImport,
+  registerEodhdGpwImport,
+  scheduleDailyEodhdGlobalImportJob,
+  scheduleDailyEodhdGpwImportJob,
+} from "./jobs/eodhdImports";
 
 const QUEUE_NAME = "market-scrape";
 const SYMBOLS = ["AAPL", "GOOGL", "MSFT"] as const;
@@ -111,6 +117,10 @@ export async function startScheduler(): Promise<void> {
   const portfolioWorkerConn = createRedisConnection();
   const fetchQuotesConn = createRedisConnection();
   const fetchQuotesWorkerConn = createRedisConnection();
+  const eodhdGpwConn = createRedisConnection();
+  const eodhdGpwWorkerConn = createRedisConnection();
+  const eodhdGlobalConn = createRedisConnection();
+  const eodhdGlobalWorkerConn = createRedisConnection();
 
   const queue = new Queue(QUEUE_NAME, { connection });
   const worker = new Worker(QUEUE_NAME, () => runHourlyJob(), { connection: duplicate });
@@ -183,6 +193,30 @@ export async function startScheduler(): Promise<void> {
   });
   await scheduleDailyFundamentalJob(fundQueue);
 
+  const { queue: eodhdGpwQueue, worker: eodhdGpwWorker } = registerEodhdGpwImport(
+    eodhdGpwConn,
+    eodhdGpwWorkerConn,
+  );
+  eodhdGpwWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] eodhd gpw import job ${job?.id} failed`, err);
+  });
+  eodhdGpwWorker.on("completed", (job) => {
+    console.log(`[scheduler] eodhd gpw import job ${job.id} completed`);
+  });
+  await scheduleDailyEodhdGpwImportJob(eodhdGpwQueue);
+
+  const { queue: eodhdGlobalQueue, worker: eodhdGlobalWorker } = registerEodhdGlobalImport(
+    eodhdGlobalConn,
+    eodhdGlobalWorkerConn,
+  );
+  eodhdGlobalWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] eodhd global import job ${job?.id} failed`, err);
+  });
+  eodhdGlobalWorker.on("completed", (job) => {
+    console.log(`[scheduler] eodhd global import job ${job.id} completed`);
+  });
+  await scheduleDailyEodhdGlobalImportJob(eodhdGlobalQueue);
+
   const { queue: scanQueue, worker: scanWorker } = registerScanSignals(scanConn, scanWorkerConn);
   scanWorker.on("failed", (job, err) => {
     console.error(`[scheduler] signals scan job ${job?.id} failed`, err);
@@ -240,6 +274,8 @@ export async function startScheduler(): Promise<void> {
   console.log("[scheduler] Dividend module ex-date alerts: daily @ 08:00 UTC (queue dividend-module-alerts)");
   console.log("[scheduler] Portfolio snapshots: daily @ 17:00 UTC (queue portfolio-snapshots)");
   console.log("[scheduler] Fundamentals (EODHD): daily @ 03:00 UTC (queue fundamental-sync)");
+  console.log("[scheduler] EODHD GPW import: daily @ 01:30 UTC (queue eodhd-import-gpw)");
+  console.log("[scheduler] EODHD global import: daily @ 02:00 UTC (queue eodhd-import-global)");
   console.log("[scheduler] Scan signals: every 5 minutes (queue scan-signals)");
   console.log("[scheduler] Discord signal alerts: dispatch + batch flush every 1 minute");
   console.log("[scheduler] Exit intelligence monitor: every 15 minutes (queue exit-monitor)");
