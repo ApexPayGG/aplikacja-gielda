@@ -36,6 +36,32 @@ const EODHD_BASE = "https://eodhd.com/api";
 
 const EXCHANGES: ExchangeConfig[] = [
   {
+    exchange: "US",
+    suffix: ".US",
+    companies: [
+      { symbol: "AAPL", name: "Apple Inc." },
+      { symbol: "MSFT", name: "Microsoft Corporation" },
+      { symbol: "GOOGL", name: "Alphabet Inc. Class A" },
+      { symbol: "AMZN", name: "Amazon.com, Inc." },
+      { symbol: "NVDA", name: "NVIDIA Corporation" },
+      { symbol: "META", name: "Meta Platforms, Inc." },
+      { symbol: "TSLA", name: "Tesla, Inc." },
+      { symbol: "BRK-B", name: "Berkshire Hathaway Inc. Class B" },
+      { symbol: "JPM", name: "JPMorgan Chase & Co." },
+      { symbol: "JNJ", name: "Johnson & Johnson" },
+      { symbol: "V", name: "Visa Inc." },
+      { symbol: "PG", name: "The Procter & Gamble Company" },
+      { symbol: "XOM", name: "Exxon Mobil Corporation" },
+      { symbol: "MA", name: "Mastercard Incorporated" },
+      { symbol: "HD", name: "The Home Depot, Inc." },
+      { symbol: "CVX", name: "Chevron Corporation" },
+      { symbol: "ABBV", name: "AbbVie Inc." },
+      { symbol: "MRK", name: "Merck & Co., Inc." },
+      { symbol: "PEP", name: "PepsiCo, Inc." },
+      { symbol: "KO", name: "The Coca-Cola Company" },
+    ],
+  },
+  {
     exchange: "LSE",
     suffix: ".LSE",
     companies: [
