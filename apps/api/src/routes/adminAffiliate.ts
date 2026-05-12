@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { Router } from "express";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db/index";
@@ -235,6 +236,156 @@ export function createAdminAffiliateRouter(): Router {
       res.status(400).json({ error: message });
     }
   });
+
+  router.post("/api/v1/admin/affiliate/import-csv", async (req: Request, res: Response) => {
+    try {
+      const body = req.body as Record<string, unknown>;
+      const brokerSlug = String(body.brokerSlug ?? "").trim().toLowerCase();
+      const csvContent = String(body.csvContent ?? "");
+      if (!brokerSlug || !csvContent.trim()) {
+        return res.status(400).json({ error: "Missing brokerSlug or csvContent" });
+      }
+      const result: ConversionImportResult = await conversionImportService.importFromCSV(
+        brokerSlug,
+        csvContent,
+      );
+      res.json(result);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Import failed";
+      res.status(400).json({ error: message });
+    }
+  });
+
+  const dashboardHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const periodRaw = String(req.query.period ?? "last_30d").trim().toLowerCase();
+      const periodDays =
+        periodRaw === "today" ? 1 : periodRaw === "last_7d" ? 7 : periodRaw === "all-time" ? null : 30;
+      const since = periodDays == null ? null : new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000);
+      const clickWhere = since ? { clickedAt: { gte: since } } : {};
+      const convWhere = since ? { recordedAt: { gte: since } } : {};
+
+      const [clicks, conversions, byBroker, byCountry, bySource] = await Promise.all([
+        prisma.affiliateClick.count({ where: clickWhere }),
+        prisma.affiliateConversion.findMany({
+          where: convWhere,
+          select: { conversionType: true, commissionAmount: true },
+        }),
+        prisma.affiliateConversion.groupBy({
+          by: ["brokerId"],
+          where: convWhere,
+          _count: { _all: true },
+          _sum: { commissionAmount: true },
+        }),
+        prisma.affiliateClick.groupBy({
+          by: ["countryCode"],
+          where: clickWhere,
+          _count: { _all: true },
+        }),
+        prisma.affiliateClick.groupBy({
+          by: ["sourcePage"],
+          where: clickWhere,
+          _count: { _all: true },
+        }),
+      ]);
+
+      const brokerMap = new Map(
+        (
+          await prisma.affiliateBroker.findMany({
+            select: { id: true, slug: true, displayName: true },
+          })
+        ).map((b) => [b.id, b]),
+      );
+      const totalCommission = conversions.reduce((acc, c) => acc + Number(c.commissionAmount ?? 0), 0);
+      const signups = conversions.filter((c) => c.conversionType === "signup").length;
+      const ftds = conversions.filter((c) => c.conversionType === "ftd").length;
+
+      res.json({
+        period: periodRaw,
+        total_clicks: clicks,
+        total_conversions: conversions.length,
+        total_commission: Math.round(totalCommission * 100) / 100,
+        conversion_rate: clicks > 0 ? Math.round((conversions.length / clicks) * 10000) / 100 : 0,
+        conversion_funnel: { clicks, signups, ftds, paid: conversions.length },
+        by_broker: byBroker.map((row) => ({
+          broker_id: row.brokerId,
+          slug: brokerMap.get(row.brokerId)?.slug ?? null,
+          display_name: brokerMap.get(row.brokerId)?.displayName ?? null,
+          conversions: row._count._all,
+          commission: Math.round(Number(row._sum.commissionAmount ?? 0) * 100) / 100,
+        })),
+        by_country: byCountry.map((row) => ({ country: row.countryCode ?? "unknown", clicks: row._count._all })),
+        by_source_page: bySource.map((row) => ({ page: row.sourcePage ?? "unknown", clicks: row._count._all })),
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  router.get("/api/admin/affiliate/dashboard", dashboardHandler);
+  router.get("/api/v1/admin/affiliate/dashboard", dashboardHandler);
+
+  const webhookHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const brokerSlug = String(req.params.brokerSlug ?? "").trim().toLowerCase();
+      if (!brokerSlug) return res.status(400).json({ error: "Missing brokerSlug" });
+      const broker = await prisma.affiliateBroker.findUnique({ where: { slug: brokerSlug } });
+      if (!broker) return res.status(404).json({ error: "Broker not found" });
+
+      const incomingSig = String(req.headers["x-signature"] ?? "");
+      if (!broker.webhookSecret || !incomingSig) {
+        return res.status(401).json({ error: "Unauthorized webhook" });
+      }
+      const rawPayload = JSON.stringify(req.body ?? {});
+      const expected = createHmac("sha256", broker.webhookSecret).update(rawPayload).digest("hex");
+      const received = incomingSig.replace(/^sha256=/i, "");
+      const ok =
+        expected.length === received.length &&
+        timingSafeEqual(Buffer.from(expected, "utf8"), Buffer.from(received, "utf8"));
+      if (!ok) return res.status(401).json({ error: "Unauthorized webhook" });
+
+      const payload = req.body as Record<string, unknown>;
+      const clickIdRef = String(payload.click_id_ref ?? payload.clickIdRef ?? payload.cid ?? "").trim() || null;
+      const conversionType = String(payload.conversion_type ?? payload.conversionType ?? "ftd")
+        .trim()
+        .toLowerCase();
+      const commissionAmount = payload.commission_amount != null ? Number(payload.commission_amount) : null;
+      const commissionCurrency = String(payload.commission_currency ?? "EUR")
+        .trim()
+        .toUpperCase();
+      const conversionDateRaw = String(payload.conversion_date ?? payload.date ?? "");
+      const conversionDate = conversionDateRaw ? new Date(conversionDateRaw) : new Date();
+      const matchedClick = clickIdRef
+        ? await prisma.affiliateClick.findUnique({ where: { clickId: clickIdRef } })
+        : null;
+      await prisma.affiliateConversion.create({
+        data: {
+          clickIdRef,
+          brokerId: broker.id,
+          userId: matchedClick?.userId ?? null,
+          externalUserId: String(payload.external_user_id ?? payload.user_id ?? "").trim() || null,
+          conversionType,
+          conversionStatus: "confirmed",
+          commissionAmount: Number.isFinite(Number(commissionAmount)) ? Number(commissionAmount) : null,
+          commissionCurrency: commissionCurrency || null,
+          ftdAmount: payload.ftd_amount != null ? Number(payload.ftd_amount) : null,
+          attributionWindowDays:
+            matchedClick && Number.isFinite(conversionDate.getTime())
+              ? Math.max(0, Math.floor((conversionDate.getTime() - matchedClick.clickedAt.getTime()) / (24 * 60 * 60 * 1000)))
+              : null,
+          matchedClickId: matchedClick?.id ?? null,
+          conversionDate: Number.isFinite(conversionDate.getTime()) ? conversionDate : new Date(),
+          rawBrokerData: payload,
+        },
+      });
+      res.json({ ok: true });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  router.post("/api/webhooks/affiliate/:brokerSlug", webhookHandler);
+  router.post("/api/v1/webhooks/affiliate/:brokerSlug", webhookHandler);
 
   return router;
 }

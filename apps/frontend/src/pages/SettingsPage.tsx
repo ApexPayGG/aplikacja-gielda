@@ -54,6 +54,13 @@ export function SettingsPage() {
   const [alpacaError, setAlpacaError] = useState<string | null>(null);
   const [alpacaSaving, setAlpacaSaving] = useState(false);
   const [alpacaTesting, setAlpacaTesting] = useState(false);
+  const [affiliateImpact, setAffiliateImpact] = useState<{
+    clicks: number;
+    openedAccounts: number;
+    supportAmount: number;
+    periodDays: number;
+  } | null>(null);
+  const [affiliateImpactError, setAffiliateImpactError] = useState<string | null>(null);
 
   const statusLabel = useMemo(
     () => (mentorEnabled ? t("mentor.enabled") : t("mentor.disabled")),
@@ -88,6 +95,24 @@ export function SettingsPage() {
       }
     };
     void loadWebhook();
+  }, [t, userId]);
+
+  useEffect(() => {
+    const loadAffiliateImpact = async () => {
+      setAffiliateImpactError(null);
+      try {
+        const { data } = await api.get<{
+          clicks: number;
+          openedAccounts: number;
+          supportAmount: number;
+          periodDays: number;
+        }>("/affiliate/my-impact", { params: { userId, periodDays: 30 } });
+        setAffiliateImpact(data);
+      } catch {
+        setAffiliateImpactError(t("affiliate.impact.loadError", { defaultValue: "Failed to load impact." }));
+      }
+    };
+    void loadAffiliateImpact();
   }, [t, userId]);
 
   useEffect(() => {
@@ -452,6 +477,41 @@ export function SettingsPage() {
 
           {mirrorNotice ? <p className="text-sm text-brand-green">{mirrorNotice}</p> : null}
           {mirrorError ? <p className="text-sm text-brand-red">{mirrorError}</p> : null}
+        </section>
+
+        <section className="neo-panel space-y-4 rounded-xl p-5">
+          <div>
+            <h2 className="text-lg font-semibold text-white">
+              {t("affiliate.impact.title", { defaultValue: "My impact" })}
+            </h2>
+            <p className="text-sm text-slate-400">
+              {t("affiliate.impact.subtitle", {
+                defaultValue: "Your trust supports StockAI development.",
+              })}
+            </p>
+          </div>
+          {affiliateImpact ? (
+            <div className="grid gap-2 text-sm text-slate-200">
+              <p>
+                {t("affiliate.impact.clicks", { defaultValue: "Broker clicks (30d): {{count}}", count: affiliateImpact.clicks })}
+              </p>
+              <p>
+                {t("affiliate.impact.accounts", {
+                  defaultValue: "Opened accounts (30d): {{count}}",
+                  count: affiliateImpact.openedAccounts,
+                })}
+              </p>
+              <p>
+                {t("affiliate.impact.support", {
+                  defaultValue: "Estimated support (30d): ~{{amount}}",
+                  amount: affiliateImpact.supportAmount.toFixed(2),
+                })}
+              </p>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-400">{t("common.loading")}</p>
+          )}
+          {affiliateImpactError ? <p className="text-sm text-brand-red">{affiliateImpactError}</p> : null}
         </section>
 
         <section className="neo-panel space-y-4 rounded-xl p-5">

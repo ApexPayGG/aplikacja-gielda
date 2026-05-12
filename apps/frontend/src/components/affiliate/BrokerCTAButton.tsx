@@ -56,6 +56,7 @@ export function BrokerCTAButton({
   const [brokers, setBrokers] = useState<AffiliateBrokerItem[]>([]);
   const [defaultBroker, setDefaultBroker] = useState<AffiliateBrokerItem | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -84,6 +85,24 @@ export function BrokerCTAButton({
   );
 
   const handleRedirect = (brokerSlug: string) => {
+    const seenKey = "affiliateDisclosureSeen";
+    const seen = typeof window !== "undefined" ? window.localStorage.getItem(seenKey) === "true" : true;
+    if (!seen) {
+      setShowOnboarding(true);
+      return;
+    }
+    const url = buildRedirectUrl({
+      brokerSlug,
+      ticker,
+      sourcePage,
+      signalId,
+    });
+    window.location.assign(url);
+  };
+
+  const handleRedirectConfirmed = (brokerSlug: string) => {
+    if (typeof window !== "undefined") window.localStorage.setItem("affiliateDisclosureSeen", "true");
+    setShowOnboarding(false);
     const url = buildRedirectUrl({
       brokerSlug,
       ticker,
@@ -161,6 +180,51 @@ export function BrokerCTAButton({
             </div>
             <div className="mt-4">
               <DisclosureNote broker={defaultBroker} variant="full" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showOnboarding && (
+        <div className="fixed inset-0 z-[60] grid place-items-center bg-black/70 p-4">
+          <div className="w-full max-w-md rounded-xl border border-surface-border bg-brand-bg p-5">
+            <h3 className="text-lg font-semibold text-white">
+              {t("affiliate.onboarding.title", { defaultValue: "How this works" })}
+            </h3>
+            <p className="mt-2 text-sm text-slate-300">
+              {t("affiliate.onboarding.body", {
+                defaultValue:
+                  "We redirect you to the selected broker to open an account and execute the trade. We may receive a commission from the broker, never from you.",
+              })}
+            </p>
+            <ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-slate-400">
+              <li>{t("affiliate.onboarding.point_data", { defaultValue: "Your data stays with you." })}</li>
+              <li>
+                {t("affiliate.onboarding.point_commission", {
+                  defaultValue: "StockAI earns broker commission only.",
+                })}
+              </li>
+              <li>
+                {t("affiliate.onboarding.point_change", {
+                  defaultValue: "You can choose a different broker any time.",
+                })}
+              </li>
+            </ul>
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => handleRedirectConfirmed(defaultBroker.slug)}
+                className="rounded-lg bg-brand-green px-3 py-2 text-sm font-semibold text-black"
+              >
+                {t("affiliate.onboarding.confirm", { defaultValue: "I understand, continue" })}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowOnboarding(false)}
+                className="rounded-lg border border-surface-border px-3 py-2 text-sm text-slate-300"
+              >
+                {t("affiliate.onboarding.cancel", { defaultValue: "Cancel" })}
+              </button>
             </div>
           </div>
         </div>

@@ -20,7 +20,7 @@ export function createAffiliateRouter(): Router {
   const router = Router();
   const clickTrackingService = new ClickTrackingService();
 
-  router.get("/api/affiliate/redirect", async (req: Request, res: Response, next: NextFunction) => {
+  const redirectHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const broker = String(req.query.broker ?? "").trim().toLowerCase();
       if (!broker) return res.status(400).json({ error: "Missing broker" });
@@ -48,9 +48,12 @@ export function createAffiliateRouter(): Router {
       }
       next(error);
     }
-  });
+  };
 
-  router.get("/api/affiliate/brokers", async (req: Request, res: Response, next: NextFunction) => {
+  router.get("/api/affiliate/redirect", redirectHandler);
+  router.get("/api/v1/affiliate/redirect", redirectHandler);
+
+  const brokersHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const market = String(req.query.market ?? "").trim().toUpperCase() || undefined;
       let country = String(req.query.country ?? "").trim().toUpperCase() || null;
@@ -84,6 +87,39 @@ export function createAffiliateRouter(): Router {
 
       const defaultBroker = brokers[0] ?? null;
       res.json({ country, market: market ?? null, defaultBroker, brokers });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  router.get("/api/affiliate/brokers", brokersHandler);
+  router.get("/api/v1/affiliate/brokers", brokersHandler);
+
+  router.get("/api/affiliate/my-impact", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = String(req.query.userId ?? "").trim();
+      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const periodDays = Math.max(1, Math.min(365, Number.parseInt(String(req.query.periodDays ?? "30"), 10) || 30));
+      const since = new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000);
+
+      const [clicks, conversions] = await Promise.all([
+        prisma.affiliateClick.count({ where: { userId, clickedAt: { gte: since } } }),
+        prisma.affiliateConversion.findMany({
+          where: { userId, recordedAt: { gte: since } },
+          select: { commissionAmount: true, conversionType: true },
+        }),
+      ]);
+
+      const openedAccounts = conversions.filter((c) => c.conversionType === "signup" || c.conversionType === "ftd").length;
+      const supportAmount = conversions.reduce((acc, c) => acc + Number(c.commissionAmount ?? 0), 0);
+
+      res.json({
+        userId,
+        periodDays,
+        clicks,
+        openedAccounts,
+        supportAmount: Math.round(supportAmount * 100) / 100,
+      });
     } catch (error) {
       next(error);
     }
