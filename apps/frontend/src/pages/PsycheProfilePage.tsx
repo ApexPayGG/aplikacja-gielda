@@ -13,7 +13,7 @@ import {
 } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
-const USER_ID = "demo-user";
+const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
 const EXAMPLE_RULES = [
   "Max 2 transakcje dziennie",

@@ -9,7 +9,7 @@ import {
 } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
-const USER_ID = "demo-user";
+const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 const TOTAL_SKILLS = 10;
 
 function formatDate(value: string | null, locale: string): string {

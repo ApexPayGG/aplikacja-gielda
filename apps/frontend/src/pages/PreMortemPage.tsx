@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { runPreMortem, type PreMortemResponse } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
-const USER_ID = "demo-user";
+const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 const PLN_PER_USD = 3.95;
 
 export function PreMortemPage() {

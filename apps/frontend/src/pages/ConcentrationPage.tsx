@@ -4,7 +4,7 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recha
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
-const USER_ID = "demo-user";
+const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
 const PIE_COLORS = [
   "rgb(0 242 255)",

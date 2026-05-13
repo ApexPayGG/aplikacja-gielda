@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
-const USER_ID = "demo-user";
+const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
 type Currency = "PLN" | "USD";
 

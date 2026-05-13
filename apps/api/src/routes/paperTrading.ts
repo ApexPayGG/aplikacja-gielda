@@ -14,24 +14,27 @@ import {
   listDecisionReceipts,
 } from "../modules/paperTrading/decisionReceiptModule";
 import { sendDiscordClose, sendDiscordOpen } from "../modules/discord/autoSyncModule";
+import { getAuthenticatedUserId, requireAuth } from "../modules/auth/authMiddleware";
 
 export function createPaperTradingRouter(): Router {
   const router = Router();
+  router.use(requireAuth);
 
   router.post("/api/paper/trade/open", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { userId, ticker, direction, entryPrice, quantity, signalId, stopLoss, takeProfit } = req.body as Record<
+      const userId = getAuthenticatedUserId(req);
+      const { ticker, direction, entryPrice, quantity, signalId, stopLoss, takeProfit } = req.body as Record<
         string,
         unknown
       >;
-      if (!userId || !ticker || !direction || entryPrice === undefined || quantity === undefined) {
-        return res.status(400).json({ error: "Missing required fields: userId, ticker, direction, entryPrice, quantity" });
+      if (!ticker || !direction || entryPrice === undefined || quantity === undefined) {
+        return res.status(400).json({ error: "Missing required fields: ticker, direction, entryPrice, quantity" });
       }
       if (direction !== "LONG" && direction !== "SHORT") {
         return res.status(400).json({ error: "direction must be LONG or SHORT" });
       }
       const trade = await openTrade(
-        String(userId),
+        userId,
         String(ticker),
         direction,
         Number(entryPrice),
@@ -42,7 +45,7 @@ export function createPaperTradingRouter(): Router {
       const tp = Number(takeProfit);
       try {
         await sendDiscordOpen({
-          userId: String(userId),
+          userId,
           symbol: trade.ticker,
           price: trade.entryPrice,
           stopLoss: Number.isFinite(sl) ? sl : null,
@@ -85,8 +88,7 @@ export function createPaperTradingRouter(): Router {
 
   router.get("/api/paper/portfolio/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = String(req.params.userId ?? "").trim();
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const userId = getAuthenticatedUserId(req);
       const data = await getPortfolio(userId);
       res.json(data);
     } catch (error) {
@@ -96,8 +98,7 @@ export function createPaperTradingRouter(): Router {
 
   router.get("/api/paper/history/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = String(req.params.userId ?? "").trim();
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const userId = getAuthenticatedUserId(req);
       const data = await getTradeHistory(userId);
       res.json({ count: data.length, data });
     } catch (error) {
@@ -107,8 +108,7 @@ export function createPaperTradingRouter(): Router {
 
   router.get("/api/paper/coach/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = String(req.params.userId ?? "").trim();
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const userId = getAuthenticatedUserId(req);
       const coach = await getCoachSnapshot(userId);
       res.json(coach);
     } catch (error) {
@@ -119,13 +119,12 @@ export function createPaperTradingRouter(): Router {
   router.post("/api/paper/decision-receipt", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const body = req.body as Record<string, unknown>;
-      const userId = String(body.userId ?? "").trim();
+      const userId = getAuthenticatedUserId(req);
       const kind = String(body.kind ?? "").trim();
       const symbol = String(body.symbol ?? "").trim();
       const paperTradeId = body.paperTradeId != null && body.paperTradeId !== "" ? String(body.paperTradeId) : null;
       const payload = body.payload;
 
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
       if (kind !== DECISION_RECEIPT_KIND.PROCEED_PREMORTEM && kind !== DECISION_RECEIPT_KIND.CLOSED_LOSS) {
         return res.status(400).json({ error: "Invalid kind" });
       }
@@ -155,8 +154,7 @@ export function createPaperTradingRouter(): Router {
 
   router.get("/api/paper/decision-receipts/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = String(req.params.userId ?? "").trim();
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const userId = getAuthenticatedUserId(req);
       const take = Math.min(100, Math.max(1, parseInt(String(req.query.take ?? "40"), 10) || 40));
       const receipts = await listDecisionReceipts(userId, take);
       res.json({

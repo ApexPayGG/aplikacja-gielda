@@ -10,7 +10,7 @@ import {
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const SYMBOL_OPTIONS = ["PKN", "KGH", "PKO", "PZU", "PEO", "LPP", "CDR"];
-const USER_ID = "demo-user";
+const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
 function formatPrice(value: number): string {
   return Number.isFinite(value) ? value.toFixed(2) : "0.00";

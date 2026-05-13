@@ -26,9 +26,9 @@ function readTier(): Tier {
 }
 
 function readUserId(): string {
-  if (typeof window === "undefined") return "demo-user";
+  if (typeof window === "undefined") return "";
   const raw = window.localStorage.getItem("userId");
-  return raw && raw.trim() ? raw.trim() : "demo-user";
+  return raw && raw.trim() ? raw.trim() : "";
 }
 
 function monthBucket(): string {

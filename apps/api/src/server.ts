@@ -92,6 +92,7 @@ import { createAffiliateRouter } from "./routes/affiliate";
 import { createAdminAffiliateRouter } from "./routes/adminAffiliate";
 import { createHistoricalTwinsRouter } from "./routes/historicaltwins";
 import { createPremiumCompanyRouter } from "./routes/premiumCompany";
+import { createAuthRouter } from "./routes/auth";
 import { runSnapshotJob } from "./modules/historicaltwins/snapshotJob";
 import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 import { importCompanyOnDemand, searchCompaniesOnDemand } from "./modules/companies/companySearchModule";
@@ -205,6 +206,7 @@ export function createApp(): express.Express {
   );
 
   app.use(express.json({ limit: "1mb" }));
+  app.use(createAuthRouter());
   app.use(createCopilotRouter());
   app.use(createDividendsRouter());
   app.use(createDividendRouter());

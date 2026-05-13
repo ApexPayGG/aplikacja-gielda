@@ -14,8 +14,8 @@ import {
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 function readUserId(): string {
-  if (typeof window === "undefined") return "demo-user";
-  return window.localStorage.getItem("userId")?.trim() || "demo-user";
+  if (typeof window === "undefined") return "";
+  return window.localStorage.getItem("userId")?.trim() || "";
 }
 
 function asNumber(v: unknown): number {

@@ -6,7 +6,7 @@ import { api } from "../services/api";
 import { getAlpacaAccount, getAlpacaSettings, getTaxSystems, saveAlpacaSettings, type TaxSystemItem } from "../services/api";
 
 type MentorStyle = "supportive" | "strict";
-const DEFAULT_USER_ID = "demo-user";
+const DEFAULT_USER_ID = "";
 
 function readStoredBoolean(key: string, fallback: boolean): boolean {
   if (typeof window === "undefined") return fallback;

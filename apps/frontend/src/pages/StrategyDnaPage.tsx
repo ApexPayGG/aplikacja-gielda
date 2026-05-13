@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { getStrategyDna, type StrategyDnaResponse } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
-const USER_ID = "demo-user";
+const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
 function legendLabel(name: StrategyDnaResponse["primary"]["name"], t: (key: string) => string): string {
   return t(`strategydna.legends.${name}`);

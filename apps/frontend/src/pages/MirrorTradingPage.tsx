@@ -4,8 +4,8 @@ import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 function readUserId(): string {
-  if (typeof window === "undefined") return "demo-user";
-  return window.localStorage.getItem("userId")?.trim() || "demo-user";
+  if (typeof window === "undefined") return "";
+  return window.localStorage.getItem("userId")?.trim() || "";
 }
 
 type TopTrader = {

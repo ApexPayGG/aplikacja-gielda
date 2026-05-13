@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
 import { createDailyCheckIn, getDailyCheckInToday, type DailyCheckInRiskLevel } from "../services/api";
 
-const USER_ID_FALLBACK = "demo-user";
+const USER_ID_FALLBACK = "";
 const MOOD_EMOJIS = ["😞", "😕", "😐", "🙂", "😄"] as const;
 const RISK_LEVELS: DailyCheckInRiskLevel[] = ["LOW", "MEDIUM", "HIGH"];
 
@@ -14,7 +15,8 @@ function readUserId(): string {
 
 export function DailyCheckInWidget() {
   const { t } = useTranslation();
-  const userId = useMemo(() => readUserId(), []);
+  const { user } = useAuth();
+  const userId = useMemo(() => user?.id ?? readUserId(), [user?.id]);
 
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);

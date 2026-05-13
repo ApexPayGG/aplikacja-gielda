@@ -2,6 +2,7 @@ import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { FeedbackToastStack, type FeedbackToast } from "../components/FeedbackToastStack";
+import { useAuth } from "../context/AuthContext";
 import {
   api,
   createPostTradeReflection,
@@ -72,16 +73,16 @@ type PositionRow = PaperTrade & {
   quoteSource?: string;
 };
 
-const USER_ID = "demo-user";
 const PLN_PER_USD = 3.95;
 const REFLECTION_MODAL_DURATION_SEC = 30;
 const REFLECTION_INSIGHT_DURATION_MS = 3000;
+const MOCK_USER_ID = "mock-user";
 
 const mockPortfolio: PortfolioResponse = {
   openPositions: [
     {
       id: "pt-open-1",
-      userId: USER_ID,
+      userId: MOCK_USER_ID,
       ticker: "AAPL",
       direction: "LONG",
       entryPrice: 186.25,
@@ -91,7 +92,7 @@ const mockPortfolio: PortfolioResponse = {
     },
     {
       id: "pt-open-2",
-      userId: USER_ID,
+      userId: MOCK_USER_ID,
       ticker: "MSFT",
       direction: "SHORT",
       entryPrice: 432.5,
@@ -108,7 +109,7 @@ const mockHistory: HistoryResponse = {
   data: [
     {
       id: "pt-h-1",
-      userId: USER_ID,
+      userId: MOCK_USER_ID,
       ticker: "NVDA",
       direction: "LONG",
       entryPrice: 915,
@@ -122,7 +123,7 @@ const mockHistory: HistoryResponse = {
     },
     {
       id: "pt-h-2",
-      userId: USER_ID,
+      userId: MOCK_USER_ID,
       ticker: "TSLA",
       direction: "SHORT",
       entryPrice: 181,
@@ -136,7 +137,7 @@ const mockHistory: HistoryResponse = {
     },
     {
       id: "pt-h-3",
-      userId: USER_ID,
+      userId: MOCK_USER_ID,
       ticker: "PKN",
       direction: "LONG",
       entryPrice: 67.8,
@@ -249,6 +250,8 @@ function emotionLabel(t: (key: string) => string, emotion: ReflectionEmotion): s
 
 export function PaperTradingPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const USER_ID = user?.id ?? "";
   const [form, setForm] = useState<OpenTradeForm>({
     ticker: "",
     direction: "LONG",

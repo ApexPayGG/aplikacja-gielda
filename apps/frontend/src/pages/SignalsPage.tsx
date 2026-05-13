@@ -87,7 +87,7 @@ const marketFlags: Record<MarketCode, string> = {
 
 const GLOSSARY_TERMS = ["RSI", "MACD", "VWAP", "breakout", "oversold"] as const;
 
-const USER_ID = "demo-user";
+const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
 const mockSignals: SignalListItem[] = [
   {

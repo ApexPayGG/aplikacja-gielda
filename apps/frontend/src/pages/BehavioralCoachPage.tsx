@@ -4,6 +4,7 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 import { useTranslation } from "react-i18next";
 import { api, getBehavioralCooldown, type BehavioralCooldownResponse } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { useAuth } from "../context/AuthContext";
 
 type Bias = "CUTS_WINNERS_EARLY" | "HOLDS_LOSERS_TOO_LONG" | "OVERTRADING";
 
@@ -28,7 +29,7 @@ type SnapshotHistoryPoint = {
   avgLossPct: number;
 };
 
-const USER_ID = "demo-user";
+const MOCK_USER_ID = "mock-user";
 
 function formatCountdown(unlocksAt: string, nowTs: number): string {
   const target = new Date(unlocksAt).getTime();
@@ -42,7 +43,7 @@ function formatCountdown(unlocksAt: string, nowTs: number): string {
 
 const mockCoach: CoachResponse = {
   snapshot: {
-    userId: USER_ID,
+    userId: MOCK_USER_ID,
     biases: ["CUTS_WINNERS_EARLY", "OVERTRADING"],
     avgWinPct: 4.2,
     avgLossPct: -3.6,
@@ -93,8 +94,10 @@ function BiasCard(props: { bias: Bias; avgWinHours: number; avgLossHours: number
       <div className="rounded-lg border border-orange-400/50 bg-orange-500/10 p-4">
         <h3 className="text-sm font-semibold text-orange-200">✂️ {t("coach.cutsWinners")}</h3>
         <p className="mt-2 text-sm text-slate-300">
-          Zamykasz zyskowne pozycje średnio po <span className="font-mono">{props.avgWinHours.toFixed(1)} h</span>, ale trzymasz straty
-          przez <span className="font-mono"> {props.avgLossHours.toFixed(1)} h</span>.
+          {t("coach.biasCutsBody", {
+            winHours: props.avgWinHours.toFixed(1),
+            lossHours: props.avgLossHours.toFixed(1),
+          })}
         </p>
       </div>
     );
@@ -104,8 +107,10 @@ function BiasCard(props: { bias: Bias; avgWinHours: number; avgLossHours: number
       <div className="rounded-lg border border-brand-red/50 bg-brand-red/10 p-4">
         <h3 className="text-sm font-semibold text-[#ff9d9d]">⏳ {t("coach.holdsLosers")}</h3>
         <p className="mt-2 text-sm text-slate-300">
-          Średnia strata: <span className="font-mono">{props.avgLossPct.toFixed(2)}%</span>, czas trzymania:{" "}
-          <span className="font-mono">{props.avgLossHours.toFixed(1)} h</span>.
+          {t("coach.biasHoldsBody", {
+            lossPct: props.avgLossPct.toFixed(2),
+            lossHours: props.avgLossHours.toFixed(1),
+          })}
         </p>
       </div>
     );
@@ -113,13 +118,15 @@ function BiasCard(props: { bias: Bias; avgWinHours: number; avgLossHours: number
   return (
     <div className="rounded-lg border border-yellow-400/50 bg-yellow-500/10 p-4">
       <h3 className="text-sm font-semibold text-yellow-200">⚡ {t("coach.overtrading")}</h3>
-      <p className="mt-2 text-sm text-slate-300">Więcej niż 3 trades w ostatnich 24h.</p>
+      <p className="mt-2 text-sm text-slate-300">{t("coach.biasOverBody", { maxTrades: 3 })}</p>
     </div>
   );
 }
 
 export function BehavioralCoachPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const USER_ID = user?.id ?? MOCK_USER_ID;
   const [coach, setCoach] = useState<CoachResponse | null>(null);
   const [history, setHistory] = useState<SnapshotHistoryPoint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -139,7 +146,7 @@ export function BehavioralCoachPage() {
         if (cancelled) return;
         const response = {
           snapshot: data.snapshot,
-          aiDescription: String(data.aiDescription ?? "Brak opisu AI coacha."),
+          aiDescription: String(data.aiDescription ?? ""),
         };
         setCoach(response);
 
@@ -210,7 +217,7 @@ export function BehavioralCoachPage() {
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight text-white">{t("coach.traderProfile")}</h1>
           <span className={`rounded px-3 py-1 text-xs ${usingMock ? "bg-orange-500/20 text-orange-200" : "bg-slate-700/40 text-slate-300"}`}>
-            {usingMock ? "Mock fallback active" : "Live API"}
+            {usingMock ? t("common.apiMockBadge") : t("common.apiLiveBadge")}
           </span>
         </header>
 
@@ -228,7 +235,7 @@ export function BehavioralCoachPage() {
             </div>
           ) : (
             <div className="rounded-lg border border-brand-green/40 bg-brand-green/10 p-4 text-brand-green">
-              {t("cooldown.inactive", { defaultValue: "No cooldown active" })}
+              {t("cooldown.inactive")}
             </div>
           )}
           {cooldownError ? <p className="text-xs text-brand-red">{cooldownError}</p> : null}
@@ -249,12 +256,12 @@ export function BehavioralCoachPage() {
                 <StatBox label={t("coach.avgWin")} value={`${snapshot?.avgWinPct.toFixed(2) ?? "0.00"}%`} colorClass="text-brand-green" />
                 <StatBox label={t("coach.avgLoss")} value={`${snapshot?.avgLossPct.toFixed(2) ?? "0.00"}%`} colorClass="text-brand-red" />
                 <StatBox
-                  label={t("coach.avgHoldWin", { defaultValue: "Avg Hold Win" })}
+                  label={t("coach.avgHoldWin")}
                   value={`${snapshot?.avgHoldingWinHours.toFixed(1) ?? "0.0"} h`}
                   colorClass="text-brand-blue"
                 />
                 <StatBox
-                  label={t("coach.avgHoldLoss", { defaultValue: "Avg Hold Loss" })}
+                  label={t("coach.avgHoldLoss")}
                   value={`${snapshot?.avgHoldingLossHours.toFixed(1) ?? "0.0"} h`}
                   colorClass="text-orange-300"
                 />
@@ -278,7 +285,7 @@ export function BehavioralCoachPage() {
               <div className="mt-5 rounded-lg border border-brand-blue/35 bg-brand-blue/10 p-4">
                 <h3 className="text-base font-semibold text-brand-blue">💬 {t("coach.aiCoach")}:</h3>
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-200">
-                  {coach?.aiDescription ?? "Brak treści od AI Coacha."}
+                  {coach?.aiDescription?.trim() ? coach.aiDescription : t("coach.aiDescriptionEmpty")}
                 </p>
               </div>
             </>
@@ -303,8 +310,8 @@ export function BehavioralCoachPage() {
                       color: "#e2e8f0",
                     }}
                   />
-                  <Line type="monotone" dataKey="avgWinPct" stroke="rgb(0 200 122)" strokeWidth={2.5} dot={false} name="Avg Win %" />
-                  <Line type="monotone" dataKey="avgLossPct" stroke="rgb(255 74 74)" strokeWidth={2.5} dot={false} name="Avg Loss %" />
+                  <Line type="monotone" dataKey="avgWinPct" stroke="rgb(0 200 122)" strokeWidth={2.5} dot={false} name={t("coach.chartAvgWin")} />
+                  <Line type="monotone" dataKey="avgLossPct" stroke="rgb(255 74 74)" strokeWidth={2.5} dot={false} name={t("coach.chartAvgLoss")} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

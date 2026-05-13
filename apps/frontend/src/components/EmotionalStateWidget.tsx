@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
 import {
   getEmotionalStatus,
   trackEmotionalState,
@@ -7,7 +8,7 @@ import {
 } from "../services/api";
 
 const PULSE_MS = 60_000;
-const USER_ID_FALLBACK = "demo-user";
+const USER_ID_FALLBACK = "";
 
 function parseUserId(): string {
   const stored = globalThis.localStorage?.getItem("userId")?.trim();
@@ -40,7 +41,8 @@ function levelColor(level: EmotionalLevel): string {
 
 export function EmotionalStateWidget() {
   const { t } = useTranslation();
-  const userIdRef = useRef(parseUserId());
+  const { user } = useAuth();
+  const userIdRef = useRef(user?.id ?? parseUserId());
   const clickCountRef = useRef(0);
   const tradeTimestampsRef = useRef<number[]>([]);
   const decisionStartRef = useRef<number | null>(null);
@@ -58,6 +60,10 @@ export function EmotionalStateWidget() {
       mountedRef.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    userIdRef.current = user?.id ?? parseUserId();
+  }, [user?.id]);
 
   useEffect(() => {
     const clickListener = (event: MouseEvent) => {

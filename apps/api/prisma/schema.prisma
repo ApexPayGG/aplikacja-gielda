@@ -57,11 +57,16 @@ enum AlphaWindowType {
 }
 
 model User {
-  id                  String              @id @default(cuid())
-  createdAt           DateTime            @default(now()) @map("created_at")
-  virtual_trades      VirtualTrade[]
-  portfolio_snapshots PortfolioSnapshot[]
-  affiliateClicks     AffiliateClick[]
+  id                   String               @id @default(cuid())
+  email                String               @unique
+  passwordHash         String               @map("password_hash")
+  name                 String?
+  tier                 String               @default("FREE")
+  createdAt            DateTime             @default(now()) @map("created_at")
+  lastLoginAt          DateTime?            @map("last_login_at")
+  virtual_trades       VirtualTrade[]
+  portfolio_snapshots  PortfolioSnapshot[]
+  affiliateClicks      AffiliateClick[]
   affiliateConversions AffiliateConversion[]
 
   @@map("users")

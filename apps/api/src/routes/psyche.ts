@@ -10,14 +10,15 @@ import {
   seedDefaultTradingRules,
   updateTraderProfile,
 } from "../modules/psyche/psycheProfileModule";
+import { getAuthenticatedUserId, requireAuth } from "../modules/auth/authMiddleware";
 
 export function createPsycheRouter(): Router {
   const router = Router();
+  router.use(requireAuth);
 
   router.get("/api/psyche/profile/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = String(req.params.userId ?? "").trim();
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const userId = getAuthenticatedUserId(req);
       const data = await getTraderProfile(userId);
       res.json(data);
     } catch (e) {
@@ -27,8 +28,7 @@ export function createPsycheRouter(): Router {
 
   router.post("/api/psyche/profile/:userId/refresh", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = String(req.params.userId ?? "").trim();
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const userId = getAuthenticatedUserId(req);
       const profile = await updateTraderProfile(userId);
       res.json({ profile });
     } catch (e) {
@@ -38,8 +38,7 @@ export function createPsycheRouter(): Router {
 
   router.get("/api/psyche/rules/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = String(req.params.userId ?? "").trim();
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const userId = getAuthenticatedUserId(req);
       await seedDefaultTradingRules(userId);
       const rules = await listTradingRules(userId);
       res.json({ rules });
@@ -50,8 +49,7 @@ export function createPsycheRouter(): Router {
 
   router.post("/api/psyche/rules/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = String(req.params.userId ?? "").trim();
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const userId = getAuthenticatedUserId(req);
       const body = req.body as Record<string, unknown>;
       const rule = String(body.rule ?? "").trim();
       if (!rule) return res.status(400).json({ error: "Missing rule" });
@@ -65,9 +63,8 @@ export function createPsycheRouter(): Router {
   router.delete("/api/psyche/rules/:ruleId", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const ruleId = String(req.params.ruleId ?? "").trim();
-      const userId = String(req.query.userId ?? "").trim();
+      const userId = getAuthenticatedUserId(req);
       if (!ruleId) return res.status(400).json({ error: "Missing ruleId" });
-      if (!userId) return res.status(400).json({ error: "Missing userId query param" });
       const deleted = await deleteTradingRule(userId, ruleId);
       res.json({ deleted });
     } catch (e) {
@@ -78,10 +75,9 @@ export function createPsycheRouter(): Router {
   router.post("/api/psyche/decision-log", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const body = req.body as Record<string, unknown>;
-      const userId = String(body.userId ?? "").trim();
+      const userId = getAuthenticatedUserId(req);
       const symbol = String(body.symbol ?? "").trim();
       const action = String(body.action ?? "").trim();
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
       if (!symbol) return res.status(400).json({ error: "Missing symbol" });
       if (!action) return res.status(400).json({ error: "Missing action" });
 
@@ -111,8 +107,7 @@ export function createPsycheRouter(): Router {
 
   router.get("/api/psyche/decision-log/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = String(req.params.userId ?? "").trim();
-      if (!userId) return res.status(400).json({ error: "Missing userId" });
+      const userId = getAuthenticatedUserId(req);
       const take = Math.min(100, Math.max(1, parseInt(String(req.query.take ?? "50"), 10) || 50));
       const logs = await listDecisionLogs(userId, take);
       res.json({ logs });

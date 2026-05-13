@@ -12,7 +12,7 @@ import {
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatCurrency } from "../utils/money";
 
-const DEFAULT_USER_ID = "demo-user";
+const DEFAULT_USER_ID = "";
 
 function readUserId(): string {
   if (typeof window === "undefined") return DEFAULT_USER_ID;

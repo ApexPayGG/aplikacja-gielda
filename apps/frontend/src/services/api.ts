@@ -1,6 +1,10 @@
 import axios, { AxiosError } from "axios";
 import type { DividendAlertsResponse, DividendIntelligence, SectorComparison } from "../types/dividend";
 
+const AUTH_TOKEN_STORAGE_KEY = "auth_token";
+const AUTH_USER_ID_STORAGE_KEY = "userId";
+const LEGACY_DEMO_USER_ID = "demo-user";
+
 /** Dev proxy uses `VITE_API_BASE=/api`. If env is only origin (no `/api`), append it so paths like `/position-size/calculate` resolve correctly. */
 function normalizeApiBase(raw: string | undefined): string {
   const fallback = "http://localhost:3000/api";
@@ -22,10 +26,61 @@ function normalizeApiBase(raw: string | undefined): string {
 
 const baseURL = normalizeApiBase(import.meta.env.VITE_API_BASE as string | undefined);
 
+function readAuthToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(AUTH_TOKEN_STORAGE_KEY);
+}
+
+function readUserId(): string | null {
+  if (typeof window === "undefined") return null;
+  const id = window.localStorage.getItem(AUTH_USER_ID_STORAGE_KEY)?.trim();
+  return id || null;
+}
+
+function replaceLegacyUserId(value: unknown, userId: string): unknown {
+  if (typeof value === "string") {
+    return value === LEGACY_DEMO_USER_ID ? userId : value.replaceAll(`/${LEGACY_DEMO_USER_ID}`, `/${userId}`);
+  }
+  if (Array.isArray(value)) {
+    return value.map((x) => replaceLegacyUserId(x, userId));
+  }
+  if (value && typeof value === "object") {
+    const next: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      next[k] = replaceLegacyUserId(v, userId);
+    }
+    return next;
+  }
+  return value;
+}
+
 export const api = axios.create({
   baseURL,
   headers: { Accept: "application/json" },
   timeout: 60_000,
+});
+
+api.interceptors.request.use((config) => {
+  const token = readAuthToken();
+  if (token) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  const userId = readUserId();
+  if (userId) {
+    if (typeof config.url === "string") {
+      config.url = replaceLegacyUserId(config.url, userId) as string;
+    }
+    if (config.params != null) {
+      config.params = replaceLegacyUserId(config.params, userId);
+    }
+    if (config.data != null) {
+      config.data = replaceLegacyUserId(config.data, userId);
+    }
+  }
+
+  return config;
 });
 
 export interface Company {
