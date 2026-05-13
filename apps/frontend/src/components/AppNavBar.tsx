@@ -20,6 +20,7 @@ const portfolioLinks: { to: string; labelKey: string }[] = [
   { to: "/coach", labelKey: "nav.coach" },
   { to: "/mistake-library", labelKey: "nav.mistakeLibrary" },
   { to: "/psyche-profile", labelKey: "nav.psycheProfile" },
+  { to: "/weekly-review", labelKey: "nav.weeklyReview" },
   { to: "/stress-test", labelKey: "nav.stressTest" },
   { to: "/concentration", labelKey: "nav.concentration" },
 ];
@@ -49,6 +50,7 @@ function isPortfolioPath(pathname: string): boolean {
     pathname.startsWith("/coach") ||
     pathname.startsWith("/mistake-library") ||
     pathname.startsWith("/psyche-profile") ||
+    pathname.startsWith("/weekly-review") ||
     pathname.startsWith("/stress-test") ||
     pathname.startsWith("/concentration")
   );

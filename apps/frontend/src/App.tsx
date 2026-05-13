@@ -36,6 +36,7 @@ import { WalkForwardPage } from "./pages/WalkForwardPage";
 import { AlpacaDashboardPage } from "./pages/AlpacaDashboardPage";
 import { AdminAffiliatePage } from "./pages/AdminAffiliatePage";
 import { PremiumCompanyAnalysis } from "./pages/PremiumCompanyAnalysis";
+import { WeeklyReviewPage } from "./pages/WeeklyReviewPage";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 
 export default function App() {
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/coach" element={<BehavioralCoachPage />} />
           <Route path="/mistake-library" element={<MistakeLibraryPage />} />
           <Route path="/psyche-profile" element={<PsycheProfilePage />} />
+          <Route path="/weekly-review" element={<WeeklyReviewPage />} />
           <Route path="/alpha" element={<AlphaCalendarPage />} />
           <Route path="/position-size" element={<PositionSizePage />} />
           <Route path="/premortem" element={<PreMortemPage />} />
