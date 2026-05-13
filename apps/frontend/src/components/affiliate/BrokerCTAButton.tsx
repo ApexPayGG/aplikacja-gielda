@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, getAffiliateBrokers, type AffiliateBrokerItem } from "../../services/api";
 import { apiErrorMessage } from "../../utils/apiErrorMessage";
@@ -7,11 +7,21 @@ import { DisclosureNote } from "./DisclosureNote";
 type BrokerCTAButtonProps = {
   ticker?: string;
   signalId?: string;
-  sourcePage: "company_detail" | "signals" | "premium_analysis" | "watchlist";
+  sourcePage:
+    | "company_detail"
+    | "signals"
+    | "premium_analysis"
+    | "watchlist"
+    | "alpaca_dashboard"
+    | "settings";
   market?: string;
   size?: "small" | "medium" | "large";
   variant?: "primary" | "secondary";
   className?: string;
+  brokerSlug?: string;
+  label?: string;
+  icon?: ReactNode;
+  showDisclosure?: boolean;
 };
 
 function sizeClass(size: BrokerCTAButtonProps["size"]): string {
@@ -51,6 +61,10 @@ export function BrokerCTAButton({
   size = "medium",
   variant = "primary",
   className = "",
+  brokerSlug,
+  label,
+  icon,
+  showDisclosure = true,
 }: BrokerCTAButtonProps) {
   const { t } = useTranslation("common");
   const [brokers, setBrokers] = useState<AffiliateBrokerItem[]>([]);
@@ -78,7 +92,14 @@ export function BrokerCTAButton({
     };
   }, [market]);
 
-  const hasOptions = (brokers?.length ?? 0) > 1;
+  const selectedBroker = useMemo(() => {
+    if (!defaultBroker) return null;
+    if (!brokerSlug) return defaultBroker;
+    const normalizedSlug = brokerSlug.trim().toLowerCase();
+    return brokers.find((broker) => broker.slug.trim().toLowerCase() === normalizedSlug) ?? null;
+  }, [brokerSlug, brokers, defaultBroker]);
+
+  const hasOptions = !brokerSlug && (brokers?.length ?? 0) > 1;
   const wrapperClass = useMemo(
     () => `${className} flex flex-col gap-2`,
     [className],
@@ -112,20 +133,22 @@ export function BrokerCTAButton({
     window.location.assign(url);
   };
 
-  if (error || !defaultBroker) return null;
+  if (error || !selectedBroker) return null;
 
   return (
     <div className={wrapperClass}>
       <button
         type="button"
-        onClick={() => handleRedirect(defaultBroker.slug)}
+        onClick={() => handleRedirect(selectedBroker.slug)}
         className={`inline-flex items-center justify-center rounded-lg font-semibold transition ${sizeClass(size)} ${variantClass(variant)}`}
       >
-        {t("affiliate.cta.buy_through", {
-          ticker: ticker || "",
-          broker: defaultBroker.displayName,
-          defaultValue: "Buy {{ticker}} via {{broker}}",
-        })}
+        {icon ? <span className="mr-2 inline-flex items-center">{icon}</span> : null}
+        {label ??
+          t("affiliate.cta.buy_through", {
+            ticker: ticker || "",
+            broker: selectedBroker.displayName,
+            defaultValue: "Buy {{ticker}} via {{broker}}",
+          })}
       </button>
 
       {hasOptions && (
@@ -141,7 +164,7 @@ export function BrokerCTAButton({
         </button>
       )}
 
-      <DisclosureNote broker={defaultBroker} variant="inline" />
+      {showDisclosure ? <DisclosureNote broker={selectedBroker} variant="inline" /> : null}
 
       {showModal && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4">
@@ -179,7 +202,7 @@ export function BrokerCTAButton({
               ))}
             </div>
             <div className="mt-4">
-              <DisclosureNote broker={defaultBroker} variant="full" />
+              <DisclosureNote broker={selectedBroker} variant="full" />
             </div>
           </div>
         </div>
@@ -213,7 +236,7 @@ export function BrokerCTAButton({
             <div className="mt-4 flex gap-2">
               <button
                 type="button"
-                onClick={() => handleRedirectConfirmed(defaultBroker.slug)}
+                onClick={() => handleRedirectConfirmed(selectedBroker.slug)}
                 className="rounded-lg bg-brand-green px-3 py-2 text-sm font-semibold text-black"
               >
                 {t("affiliate.onboarding.confirm", { defaultValue: "I understand, continue" })}

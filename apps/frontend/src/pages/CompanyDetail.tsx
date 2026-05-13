@@ -24,6 +24,29 @@ function formatCompanyDescription(description: string, locale: string): string {
   });
 }
 
+function toEtoroMarket(exchangeRaw?: string | null): "US" | "EU" | null {
+  const exchange = String(exchangeRaw ?? "").trim().toUpperCase();
+  if (!exchange) return null;
+  if (exchange === "US" || exchange === "NYSE" || exchange === "NASDAQ" || exchange === "AMEX") return "US";
+  const euExchanges = new Set([
+    "LSE",
+    "XETRA",
+    "FRA",
+    "PA",
+    "AS",
+    "MI",
+    "MC",
+    "SW",
+    "VIE",
+    "BR",
+    "ST",
+    "HE",
+    "DE",
+    "EU",
+  ]);
+  return euExchanges.has(exchange) ? "EU" : null;
+}
+
 export function CompanyDetail() {
   const { t, i18n } = useTranslation();
   const { symbol = "" } = useParams();
@@ -38,6 +61,7 @@ export function CompanyDetail() {
   const [analysisLoading, setAnalysisLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const etoroMarket = toEtoroMarket(company?.exchange);
 
   useEffect(() => {
     if (!sym) return;
@@ -123,6 +147,35 @@ export function CompanyDetail() {
         <div className="min-w-0 flex-1">
           <h1 className="text-3xl font-bold text-white">{company.name}</h1>
           <p className="mt-1 font-mono text-sm text-slate-500">{company.symbol}</p>
+          {etoroMarket && (
+            <section className="mt-4 rounded-xl border border-brand-green/30 bg-brand-green/5 p-4">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-green">
+                {t("etoro.company.title", { defaultValue: "Trade this stock" })}
+              </h2>
+              <div className="mt-3">
+                <BrokerCTAButton
+                  ticker={company.symbol}
+                  sourcePage="company_detail"
+                  market={etoroMarket}
+                  brokerSlug="etoro"
+                  size="medium"
+                  variant="primary"
+                  label={t("etoro.company.button", { defaultValue: "Open account on eToro" })}
+                  showDisclosure={false}
+                  icon={
+                    <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-white px-2 text-xs font-bold text-[#00c853]">
+                      eToro
+                    </span>
+                  }
+                />
+                <p className="mt-2 text-xs text-slate-300">
+                  {t("etoro.company.disclaimer", {
+                    defaultValue: "CFDs involve risk. 76% of retail accounts lose money.",
+                  })}
+                </p>
+              </div>
+            </section>
+          )}
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
             <div>
               <dt className="text-slate-500">{t("company.sector", { defaultValue: "Sector" })}</dt>

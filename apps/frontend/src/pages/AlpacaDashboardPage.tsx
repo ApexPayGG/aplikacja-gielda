@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { BrokerCTAButton } from "../components/affiliate/BrokerCTAButton";
 import {
   api,
   cancelAlpacaOrder,
@@ -140,9 +141,27 @@ export function AlpacaDashboardPage() {
       <h1 className="text-3xl font-bold text-white">{t("alpaca.title", { defaultValue: "Alpaca Trading" })}</h1>
       {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
       {notConfigured && (
-        <div className="mt-4 rounded-lg border border-amber-400/50 bg-amber-500/10 p-4 text-amber-200">
-          {t("alpaca.connectBanner", { defaultValue: "Connect your Alpaca account in Settings" })}
-        </div>
+        <>
+          <div className="mt-4 rounded-lg border border-amber-400/50 bg-amber-500/10 p-4 text-amber-200">
+            {t("alpaca.connectBanner", { defaultValue: "Connect your Alpaca account in Settings" })}
+          </div>
+          <div className="mt-3 rounded-lg border border-brand-green/40 bg-brand-green/10 p-4">
+            <p className="text-sm text-brand-green">
+              {t("etoro.alpaca.banner", {
+                defaultValue: "Don't have a US broker? Try eToro — trade stocks commission-free",
+              })}
+            </p>
+            <BrokerCTAButton
+              sourcePage="alpaca_dashboard"
+              brokerSlug="etoro"
+              label={t("etoro.alpaca.button", { defaultValue: "Try eToro" })}
+              size="small"
+              variant="primary"
+              showDisclosure={false}
+              className="mt-3"
+            />
+          </div>
+        </>
       )}
 
       <section className="mt-6 rounded-xl border border-surface-border bg-surface-elevated/60 p-5">

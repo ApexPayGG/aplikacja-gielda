@@ -25,6 +25,7 @@
     "skillTree": "Skill Tree",
     "volatility": "Volatility Heat Map",
     "psycheProfile": "My Psyche",
+    "weeklyReview": "Weekly Review",
     "alpacaTrading": "Alpaca 交易",
     "adminAffiliate": "Admin Affiliate"
   },
@@ -923,6 +924,24 @@
       "close": "Close"
     }
   },
+  "etoro": {
+    "company": {
+      "title": "Trade this stock",
+      "button": "Open account on eToro",
+      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money."
+    },
+    "alpaca": {
+      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
+      "button": "Try eToro"
+    },
+    "settings": {
+      "sectionTitle": "Recommended Brokers",
+      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
+      "cardTitle": "eToro",
+      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
+      "button": "Learn more & open account"
+    }
+  },
   "alpaca": {
     "title": "Alpaca Trading",
     "connectBanner": "Connect your Alpaca account in Settings",
@@ -975,6 +994,52 @@
       "LOW": "LOW",
       "MEDIUM": "MEDIUM",
       "HIGH": "HIGH"
+    }
+  },
+  "reflection": {
+    "title": "Post-Trade Reflection",
+    "subtitle": "Close {{symbol}} and capture one quick reflection.",
+    "timer": "{{seconds}}s",
+    "followedPlan": "I traded according to my plan",
+    "yes": "Yes",
+    "no": "No",
+    "emotion": "Emotion",
+    "lesson": "What did I learn?",
+    "lessonPlaceholder": "Optional (max 100 characters)",
+    "saveAndClose": "Save & Close",
+    "skip": "Skip",
+    "aiTitle": "AI Insight",
+    "saveError": "Reflection was not saved.",
+    "emotions": {
+      "FRUSTRATION": "😤 Frustration",
+      "FEAR": "😰 Fear",
+      "CONFIDENT": "😊 Confident",
+      "NEUTRAL": "😐 Neutral",
+      "GREEDY": "🤑 Greedy"
+    }
+  },
+  "weekly": {
+    "title": "Weekly Review",
+    "subtitle": "Review your discipline and close the week with an AI growth letter.",
+    "submit": "Submit week",
+    "submitting": "Submitting...",
+    "generating": "Generating your letter...",
+    "aiLetterTitle": "Your AI Growth Letter",
+    "aiLetterEmpty": "No letter yet for this week.",
+    "historyTitle": "Last 8 weeks",
+    "emptyHistory": "No weekly reviews yet.",
+    "growthScore": "Growth score",
+    "weekOf": "Week of",
+    "questions": {
+      "q1": "Did you trade according to your rules?",
+      "q2": "Was there any overtrading or revenge trading moment?",
+      "q3": "How do you rate your stop-loss discipline?",
+      "q4": "What was your biggest lesson this week?",
+      "q5": "What will you do differently next week?"
+    },
+    "placeholders": {
+      "q4": "Describe your key lesson...",
+      "q5": "Describe your commitment for next week..."
     }
   }
 }

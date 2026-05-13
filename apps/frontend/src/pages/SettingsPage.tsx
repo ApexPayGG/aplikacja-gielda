@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { BrokerCTAButton } from "../components/affiliate/BrokerCTAButton";
 import { TAX_COUNTRY_FLAGS } from "../constants/taxCountries";
 import { api } from "../services/api";
 import { getAlpacaAccount, getAlpacaSettings, getTaxSystems, saveAlpacaSettings, type TaxSystemItem } from "../services/api";
@@ -512,6 +513,44 @@ export function SettingsPage() {
             <p className="text-sm text-slate-400">{t("common.loading")}</p>
           )}
           {affiliateImpactError ? <p className="text-sm text-brand-red">{affiliateImpactError}</p> : null}
+        </section>
+
+        <section className="neo-panel space-y-4 rounded-xl p-5">
+          <div>
+            <h2 className="text-lg font-semibold text-white">
+              {t("etoro.settings.sectionTitle", { defaultValue: "Recommended Brokers" })}
+            </h2>
+            <p className="text-sm text-slate-400">
+              {t("etoro.settings.sectionSubtitle", {
+                defaultValue: "Explore trusted brokers integrated with StockAI affiliate tracking.",
+              })}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-brand-green/30 bg-brand-green/5 p-4">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-white px-2 text-xs font-bold text-[#00c853]">
+                eToro
+              </span>
+              <div>
+                <p className="font-semibold text-white">{t("etoro.settings.cardTitle", { defaultValue: "eToro" })}</p>
+                <p className="text-sm text-slate-300">
+                  {t("etoro.settings.cardDescription", {
+                    defaultValue: "Multi-asset broker with a simple account opening flow and stock access.",
+                  })}
+                </p>
+              </div>
+            </div>
+            <BrokerCTAButton
+              sourcePage="settings"
+              brokerSlug="etoro"
+              label={t("etoro.settings.button", { defaultValue: "Learn more & open account" })}
+              size="small"
+              variant="primary"
+              showDisclosure={false}
+              className="mt-4"
+            />
+          </div>
         </section>
 
         <section className="neo-panel space-y-4 rounded-xl p-5">
