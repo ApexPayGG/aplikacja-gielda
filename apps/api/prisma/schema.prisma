@@ -728,6 +728,7 @@ model DailyCheckIn {
   mood      Int
   plan      String?
   riskLevel String?  @map("risk_level")
+  aiMessage String?  @map("ai_message")
   createdAt DateTime @default(now()) @map("created_at")
 
   @@index([userId, createdAt(sort: Desc)])

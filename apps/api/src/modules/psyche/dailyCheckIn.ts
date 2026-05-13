@@ -11,6 +11,7 @@ export type DailyCheckInDto = {
   mood: number;
   plan: string | null;
   riskLevel: string | null;
+  aiMessage: string | null;
   createdAt: string;
 };
 
@@ -34,6 +35,7 @@ function serialize(row: {
   mood: number;
   plan: string | null;
   riskLevel: string | null;
+  aiMessage: string | null;
   createdAt: Date;
 }): DailyCheckInDto {
   return {
@@ -42,6 +44,7 @@ function serialize(row: {
     mood: row.mood,
     plan: row.plan,
     riskLevel: row.riskLevel,
+    aiMessage: row.aiMessage,
     createdAt: row.createdAt.toISOString(),
   };
 }
@@ -103,7 +106,7 @@ async function buildAiMessage(input: {
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   if (!apiKey) return defaultEncouragement(input.mood);
 
-  const prompt = `Trader mood: ${input.mood}/5, plan: '${input.plan ?? ""}', risk appetite: ${input.riskLevel ?? "N/A"}.
+  const prompt = `Trader mood: ${input.mood}/5, plan: '${input.plan ?? ""}', risk: ${input.riskLevel ?? "N/A"}.
 Write one encouraging sentence (max 15 words) for their trading day.
 Return JSON only: {"message":"..."}`;
 
@@ -154,22 +157,27 @@ export async function createDailyCheckInIfMissing(input: CreateDailyCheckInInput
 
   const existing = await getTodayDailyCheckIn(userId);
   if (existing) {
+    if (existing.aiMessage) {
+      return { checkin: existing, aiMessage: existing.aiMessage, created: false };
+    }
     const aiMessage = await buildAiMessage({ mood: existing.mood, plan: existing.plan, riskLevel: existing.riskLevel });
-    return { checkin: existing, aiMessage, created: false };
+    const updated = await prisma.dailyCheckIn.update({
+      where: { id: existing.id },
+      data: { aiMessage },
+    });
+    return { checkin: serialize(updated), aiMessage, created: false };
   }
-
+  const aiMessage = await buildAiMessage({ mood, plan, riskLevel });
   const row = await prisma.dailyCheckIn.create({
     data: {
       userId,
       mood,
       plan,
       riskLevel,
+      aiMessage,
     },
   });
-
-  const checkin = serialize(row);
-  const aiMessage = await buildAiMessage({ mood: checkin.mood, plan: checkin.plan, riskLevel: checkin.riskLevel });
-  return { checkin, aiMessage, created: true };
+  return { checkin: serialize(row), aiMessage, created: true };
 }
 
 export async function getDailyCheckInHistory(userId: string, days = 30): Promise<{

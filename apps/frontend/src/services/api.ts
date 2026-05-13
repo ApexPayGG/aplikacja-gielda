@@ -233,6 +233,7 @@ export interface DailyCheckIn {
   mood: number;
   plan: string | null;
   riskLevel: DailyCheckInRiskLevel | null;
+  aiMessage: string | null;
   createdAt: string;
 }
 
