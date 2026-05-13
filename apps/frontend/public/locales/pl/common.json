@@ -45,6 +45,22 @@
     "apiLiveBadge": "API na żywo",
     "notAvailable": "—"
   },
+  "auth": {
+    "loginTitle": "Logowanie",
+    "registerTitle": "Rejestracja",
+    "nameOptional": "Imię (opcjonalnie)",
+    "email": "Email",
+    "password": "Hasło",
+    "passwordMin": "Hasło (min. 8 znaków)",
+    "loginButton": "Zaloguj",
+    "loginLoading": "Logowanie...",
+    "registerButton": "Utwórz konto",
+    "registerLoading": "Rejestracja...",
+    "noAccount": "Nie masz konta? Zarejestruj się",
+    "registerLink": "Nie masz konta? Zarejestruj się",
+    "haveAccount": "Masz już konto? Zaloguj się",
+    "loginLink": "Masz już konto? Zaloguj się"
+  },
   "money": {
     "gpwCaption": "Kwoty w PLN (notional GPW); wartość w USD jest przybliżona (ok. 3,95 PLN za 1 USD, nie kurs live)."
   },

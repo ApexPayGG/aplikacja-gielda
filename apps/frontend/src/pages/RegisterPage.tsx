@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function RegisterPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { register } = useAuth();
   const [name, setName] = useState("");
@@ -29,9 +31,9 @@ export function RegisterPage() {
   return (
     <div className="mx-auto flex min-h-screen max-w-md items-center px-4">
       <form onSubmit={onSubmit} className="neo-panel w-full space-y-4 rounded-xl p-6">
-        <h1 className="text-2xl font-bold text-white">Rejestracja</h1>
+        <h1 className="text-2xl font-bold text-white">{t("auth.registerTitle", { defaultValue: "Rejestracja" })}</h1>
         <label className="block space-y-1 text-sm text-slate-300">
-          <span>Imie (opcjonalnie)</span>
+          <span>{t("auth.nameOptional", { defaultValue: "Imię (opcjonalnie)" })}</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -39,7 +41,7 @@ export function RegisterPage() {
           />
         </label>
         <label className="block space-y-1 text-sm text-slate-300">
-          <span>Email</span>
+          <span>{t("auth.email", { defaultValue: "Email" })}</span>
           <input
             type="email"
             required
@@ -49,7 +51,7 @@ export function RegisterPage() {
           />
         </label>
         <label className="block space-y-1 text-sm text-slate-300">
-          <span>Haslo (min. 8 znakow)</span>
+          <span>{t("auth.passwordMin", { defaultValue: "Hasło (min. 8 znaków)" })}</span>
           <input
             type="password"
             required
@@ -65,12 +67,13 @@ export function RegisterPage() {
           disabled={loading}
           className="w-full rounded bg-brand-green px-4 py-2 font-semibold text-brand-bg disabled:opacity-60"
         >
-          {loading ? "Rejestracja..." : "Utworz konto"}
+          {loading
+            ? t("auth.registerLoading", { defaultValue: "Rejestracja..." })
+            : t("auth.registerButton", { defaultValue: "Utwórz konto" })}
         </button>
         <p className="text-sm text-slate-400">
-          Masz juz konto?{" "}
           <Link to="/login" className="text-brand-blue">
-            Zaloguj sie
+            {t("auth.loginLink", { defaultValue: "Masz już konto? Zaloguj się" })}
           </Link>
         </p>
       </form>
