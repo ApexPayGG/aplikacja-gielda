@@ -734,3 +734,30 @@ model DailyCheckIn {
   @@index([userId, createdAt(sort: Desc)])
   @@map("daily_check_ins")
 }
+
+model PostTradeReflection {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  tradeId      String   @unique @map("trade_id")
+  followedPlan Boolean  @map("followed_plan")
+  emotion      String?
+  lesson       String?
+  aiInsight    String?  @map("ai_insight")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("post_trade_reflections")
+}
+
+model WeeklyReview {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  weekStart   DateTime @map("week_start")
+  answers     Json
+  aiLetter    String?  @map("ai_letter")
+  growthScore Int?     @map("growth_score")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, weekStart])
+  @@index([userId, weekStart(sort: Desc)])
+  @@map("weekly_reviews")
+}

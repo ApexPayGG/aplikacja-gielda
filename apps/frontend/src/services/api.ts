@@ -237,6 +237,35 @@ export interface DailyCheckIn {
   createdAt: string;
 }
 
+export interface PostTradeReflection {
+  id: string;
+  userId: string;
+  tradeId: string;
+  followedPlan: boolean;
+  emotion: string | null;
+  lesson: string | null;
+  aiInsight: string | null;
+  createdAt: string;
+}
+
+export interface WeeklyReviewAnswers {
+  q1: number;
+  q2: number;
+  q3: number;
+  q4: string;
+  q5: string;
+}
+
+export interface WeeklyReview {
+  id: string;
+  userId: string;
+  weekStart: string;
+  answers: WeeklyReviewAnswers;
+  aiLetter: string | null;
+  growthScore: number | null;
+  createdAt: string;
+}
+
 export type ReplayAction = "BUY" | "SELL";
 
 export interface ReplaySnapshotResponse {
@@ -631,6 +660,59 @@ export async function getDailyCheckInHistory(
     `/checkin/history/${encodeURIComponent(userId)}`,
     { params: { days } },
   );
+  return data;
+}
+
+export async function createPostTradeReflection(body: {
+  userId: string;
+  tradeId: string;
+  followedPlan: boolean;
+  emotion?: string | null;
+  lesson?: string | null;
+}): Promise<{ reflection: PostTradeReflection; aiInsight: string }> {
+  const { data } = await api.post<{ reflection: PostTradeReflection; aiInsight: string }>("/reflection", body);
+  return data;
+}
+
+export async function getPostTradeReflections(
+  userId: string,
+  limit = 10,
+): Promise<{ reflections: PostTradeReflection[] }> {
+  const { data } = await api.get<{ reflections: PostTradeReflection[] }>(
+    `/reflection/${encodeURIComponent(userId)}`,
+    { params: { limit } },
+  );
+  return data;
+}
+
+export async function getCurrentWeeklyReview(
+  userId: string,
+): Promise<{ review: WeeklyReview | null; hasReview: boolean }> {
+  const { data } = await api.get<{ review: WeeklyReview | null; hasReview: boolean }>(
+    `/weekly/current/${encodeURIComponent(userId)}`,
+  );
+  return data;
+}
+
+export async function createWeeklyReview(body: {
+  userId: string;
+  q1: number;
+  q2: number;
+  q3: number;
+  q4: string;
+  q5: string;
+}): Promise<{ review: WeeklyReview; letter: string }> {
+  const { data } = await api.post<{ review: WeeklyReview; letter: string }>("/weekly", body);
+  return data;
+}
+
+export async function getWeeklyReviewHistory(
+  userId: string,
+  weeks = 8,
+): Promise<{ reviews: WeeklyReview[] }> {
+  const { data } = await api.get<{ reviews: WeeklyReview[] }>(`/weekly/history/${encodeURIComponent(userId)}`, {
+    params: { weeks },
+  });
   return data;
 }
 

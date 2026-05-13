@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { FeedbackToastStack, type FeedbackToast } from "../components/FeedbackToastStack";
 import {
   api,
+  createPostTradeReflection,
   getDecisionReceipts,
   postDecisionReceipt,
   runPreMortem,
@@ -61,6 +62,8 @@ type ExitSignal = {
   aiAdvice: string;
 };
 
+type ReflectionEmotion = "FRUSTRATION" | "FEAR" | "CONFIDENT" | "NEUTRAL" | "GREEDY";
+
 type PositionRow = PaperTrade & {
   currentPrice: number;
   pnl: number;
@@ -71,6 +74,8 @@ type PositionRow = PaperTrade & {
 
 const USER_ID = "demo-user";
 const PLN_PER_USD = 3.95;
+const REFLECTION_MODAL_DURATION_SEC = 30;
+const REFLECTION_INSIGHT_DURATION_MS = 3000;
 
 const mockPortfolio: PortfolioResponse = {
   openPositions: [
@@ -238,6 +243,10 @@ function quoteFreshnessToneClass(tone: QuoteFreshnessTone): string {
   return "border border-brand-red/40 bg-brand-red/10 text-brand-red";
 }
 
+function emotionLabel(t: (key: string) => string, emotion: ReflectionEmotion): string {
+  return t(`reflection.emotions.${emotion}`);
+}
+
 export function PaperTradingPage() {
   const { t } = useTranslation();
   const [form, setForm] = useState<OpenTradeForm>({
@@ -271,6 +280,13 @@ export function PaperTradingPage() {
   const [runningPreMortem, setRunningPreMortem] = useState(false);
   const [receipts, setReceipts] = useState<DecisionReceipt[]>([]);
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const [reflectionTrade, setReflectionTrade] = useState<PositionRow | null>(null);
+  const [reflectionSubmitting, setReflectionSubmitting] = useState(false);
+  const [reflectionTimerSec, setReflectionTimerSec] = useState(REFLECTION_MODAL_DURATION_SEC);
+  const [reflectionFollowedPlan, setReflectionFollowedPlan] = useState(true);
+  const [reflectionEmotion, setReflectionEmotion] = useState<ReflectionEmotion>("NEUTRAL");
+  const [reflectionLesson, setReflectionLesson] = useState("");
+  const [reflectionInsight, setReflectionInsight] = useState<string | null>(null);
 
   const pushToast = useCallback((tone: FeedbackToast["tone"], title: string, message?: string) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -417,6 +433,33 @@ export function PaperTradingPage() {
     }, 10_000);
     return () => window.clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    if (!reflectionTrade) return;
+    setReflectionTimerSec(REFLECTION_MODAL_DURATION_SEC);
+    const id = window.setInterval(() => {
+      setReflectionTimerSec((prev) => {
+        if (prev <= 1) {
+          window.clearInterval(id);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [reflectionTrade]);
+
+  useEffect(() => {
+    if (!reflectionTrade) return;
+    if (reflectionTimerSec > 0) return;
+    void closeTradeWithoutReflection();
+  }, [reflectionTimerSec, reflectionTrade]);
+
+  useEffect(() => {
+    if (!reflectionInsight) return;
+    const id = window.setTimeout(() => setReflectionInsight(null), REFLECTION_INSIGHT_DURATION_MS);
+    return () => window.clearTimeout(id);
+  }, [reflectionInsight]);
 
   const totalUnrealized = useMemo(
     () => positionRows.reduce((acc, row) => acc + row.pnl, 0),
@@ -602,8 +645,35 @@ export function PaperTradingPage() {
     setPreMortemOpen(false);
   }
 
-  const onCloseTrade = async (trade: PositionRow) => {
+  const openReflectionModal = (trade: PositionRow) => {
+    setReflectionFollowedPlan(true);
+    setReflectionEmotion("NEUTRAL");
+    setReflectionLesson("");
+    setReflectionTimerSec(REFLECTION_MODAL_DURATION_SEC);
+    setReflectionTrade(trade);
+  };
+
+  async function closeTradeWithoutReflection(): Promise<void> {
+    if (!reflectionTrade || reflectionSubmitting) return;
+    await executeCloseTrade(reflectionTrade, null);
+  }
+
+  async function closeTradeWithReflection(): Promise<void> {
+    if (!reflectionTrade || reflectionSubmitting) return;
+    const lesson = reflectionLesson.trim().slice(0, 100);
+    await executeCloseTrade(reflectionTrade, {
+      followedPlan: reflectionFollowedPlan,
+      emotion: reflectionEmotion,
+      lesson: lesson.length > 0 ? lesson : null,
+    });
+  }
+
+  async function executeCloseTrade(
+    trade: PositionRow,
+    reflection: { followedPlan: boolean; emotion: ReflectionEmotion; lesson: string | null } | null,
+  ): Promise<void> {
     setClosingTradeId(trade.id);
+    setReflectionSubmitting(true);
     setError(null);
     try {
       const quoteRes = await api.get<{ quote?: { price?: string | number } }>("/quotes/latest", {
@@ -630,6 +700,22 @@ export function PaperTradingPage() {
           await loadReceipts();
         } catch {
           /* best-effort */
+        }
+      }
+      if (reflection && closed.id) {
+        try {
+          const reflectionResult = await createPostTradeReflection({
+            userId: USER_ID,
+            tradeId: closed.id,
+            followedPlan: reflection.followedPlan,
+            emotion: reflection.emotion,
+            lesson: reflection.lesson,
+          });
+          if (reflectionResult.aiInsight) {
+            setReflectionInsight(reflectionResult.aiInsight);
+          }
+        } catch (reflectionError) {
+          pushToast("error", t("reflection.saveError"), apiErrorMessage(reflectionError));
         }
       }
       await loadData();
@@ -661,8 +747,10 @@ export function PaperTradingPage() {
       }
     } finally {
       setClosingTradeId(null);
+      setReflectionSubmitting(false);
+      setReflectionTrade(null);
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-brand-bg text-slate-100">
@@ -676,6 +764,12 @@ export function PaperTradingPage() {
 
         {error && <div className="rounded border border-brand-red/30 bg-brand-red/10 p-3 text-sm text-brand-red">{error}</div>}
         <FeedbackToastStack toasts={toasts} />
+        {reflectionInsight ? (
+          <div className="rounded border border-brand-blue/40 bg-brand-blue/15 p-3 text-sm text-brand-blue">
+            <p className="font-semibold">{t("reflection.aiTitle")}</p>
+            <p className="mt-1 text-blue-100">{reflectionInsight}</p>
+          </div>
+        ) : null}
 
         <section className="neo-panel neo-panel-accent rounded-xl p-4">
           <h2 className="mb-4 text-lg font-semibold text-white">{t("paperTrading.openPosition")}</h2>
@@ -849,7 +943,7 @@ export function PaperTradingPage() {
                           <button
                             type="button"
                             disabled={closingTradeId === row.id}
-                            onClick={() => void onCloseTrade(row)}
+                            onClick={() => openReflectionModal(row)}
                             className="interactive-tilt rounded bg-brand-red/20 px-3 py-1 text-xs font-semibold text-brand-red hover:bg-brand-red/30 disabled:opacity-60"
                           >
                             {closingTradeId === row.id ? t("common.loading") : t("paperTrading.closePosition")}
@@ -991,6 +1085,94 @@ export function PaperTradingPage() {
           )}
         </section>
       </div>
+
+      {reflectionTrade ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-lg rounded-xl border border-brand-border bg-brand-bg p-5 shadow-2xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-white">{t("reflection.title")}</h3>
+              <span className="rounded bg-slate-800 px-2 py-1 text-xs text-slate-300">
+                {t("reflection.timer", { seconds: reflectionTimerSec })}
+              </span>
+            </div>
+            <p className="mb-4 text-sm text-slate-300">
+              {t("reflection.subtitle", { symbol: reflectionTrade.ticker })}
+            </p>
+
+            <div className="space-y-3">
+              <div>
+                <p className="mb-2 text-sm text-slate-300">{t("reflection.followedPlan")}</p>
+                <div className="flex overflow-hidden rounded border border-brand-border">
+                  <button
+                    type="button"
+                    onClick={() => setReflectionFollowedPlan(true)}
+                    className={`flex-1 px-3 py-2 text-sm ${
+                      reflectionFollowedPlan ? "bg-brand-green/20 text-brand-green" : "bg-brand-bg text-slate-300"
+                    }`}
+                  >
+                    {t("reflection.yes")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReflectionFollowedPlan(false)}
+                    className={`flex-1 px-3 py-2 text-sm ${
+                      !reflectionFollowedPlan ? "bg-brand-red/20 text-brand-red" : "bg-brand-bg text-slate-300"
+                    }`}
+                  >
+                    {t("reflection.no")}
+                  </button>
+                </div>
+              </div>
+
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="text-slate-300">{t("reflection.emotion")}</span>
+                <select
+                  value={reflectionEmotion}
+                  onChange={(e) => setReflectionEmotion(e.target.value as ReflectionEmotion)}
+                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                >
+                  <option value="FRUSTRATION">{emotionLabel(t, "FRUSTRATION")}</option>
+                  <option value="FEAR">{emotionLabel(t, "FEAR")}</option>
+                  <option value="CONFIDENT">{emotionLabel(t, "CONFIDENT")}</option>
+                  <option value="NEUTRAL">{emotionLabel(t, "NEUTRAL")}</option>
+                  <option value="GREEDY">{emotionLabel(t, "GREEDY")}</option>
+                </select>
+              </label>
+
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="text-slate-300">{t("reflection.lesson")}</span>
+                <textarea
+                  value={reflectionLesson}
+                  maxLength={100}
+                  onChange={(e) => setReflectionLesson(e.target.value.slice(0, 100))}
+                  placeholder={t("reflection.lessonPlaceholder")}
+                  className="min-h-[88px] rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                />
+                <span className="text-xs text-slate-500">{reflectionLesson.length}/100</span>
+              </label>
+            </div>
+
+            <div className="mt-5 flex gap-2">
+              <button
+                type="button"
+                onClick={() => void closeTradeWithReflection()}
+                disabled={reflectionSubmitting}
+                className="rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue/85 disabled:opacity-60"
+              >
+                {reflectionSubmitting ? t("common.loading") : t("reflection.saveAndClose")}
+              </button>
+              <button
+                type="button"
+                onClick={() => void closeTradeWithoutReflection()}
+                disabled={reflectionSubmitting}
+                className="rounded border border-brand-border px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800/50 disabled:opacity-60"
+              >
+                {t("reflection.skip")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {preMortemOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
