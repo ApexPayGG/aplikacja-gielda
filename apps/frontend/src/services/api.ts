@@ -1278,7 +1278,7 @@ async function getPremiumWithTickerFallback<T>(
 
 export async function getPremiumVerdict(ticker: string): Promise<PremiumVerdictResponse> {
   return getPremiumWithTickerFallback(ticker, async (candidate) => {
-    const { data } = await api.get<PremiumVerdictResponse>(`/v1/company/${encodeURIComponent(candidate)}/verdict`);
+    const { data } = await api.get<PremiumVerdictResponse>(`/premium/${encodeURIComponent(candidate)}/verdict`);
     return data;
   });
 }
@@ -1289,7 +1289,7 @@ export async function getPremiumPersonalFit(
 ): Promise<PremiumPersonalFitResponse> {
   return getPremiumWithTickerFallback(ticker, async (candidate) => {
     const { data } = await api.get<PremiumPersonalFitResponse>(
-      `/v1/company/${encodeURIComponent(candidate)}/personal-fit`,
+      `/premium/${encodeURIComponent(candidate)}/personal-fit`,
       { params: { userId } },
     );
     return data;
@@ -1302,7 +1302,7 @@ export async function getPremiumStory(
   experienceLevel: "beginner" | "intermediate" | "advanced" = "intermediate",
 ): Promise<PremiumStoryResponse> {
   return getPremiumWithTickerFallback(ticker, async (candidate) => {
-    const { data } = await api.get<PremiumStoryResponse>(`/v1/company/${encodeURIComponent(candidate)}/story`, {
+    const { data } = await api.get<PremiumStoryResponse>(`/premium/${encodeURIComponent(candidate)}/story`, {
       params: { language, experienceLevel },
     });
     return data;
@@ -1311,14 +1311,14 @@ export async function getPremiumStory(
 
 export async function getPremiumTwins(ticker: string): Promise<PremiumTwinsResponse> {
   return getPremiumWithTickerFallback(ticker, async (candidate) => {
-    const { data } = await api.get<PremiumTwinsResponse>(`/v1/company/${encodeURIComponent(candidate)}/twins`);
+    const { data } = await api.get<PremiumTwinsResponse>(`/premium/${encodeURIComponent(candidate)}/twins`);
     return data;
   });
 }
 
 export async function getPremiumCatch(ticker: string): Promise<PremiumCatchResponse> {
   return getPremiumWithTickerFallback(ticker, async (candidate) => {
-    const { data } = await api.get<PremiumCatchResponse>(`/v1/company/${encodeURIComponent(candidate)}/catch`);
+    const { data } = await api.get<PremiumCatchResponse>(`/premium/${encodeURIComponent(candidate)}/catch`);
     return data;
   });
 }

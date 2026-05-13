@@ -236,7 +236,8 @@ export function createApp(): express.Express {
   app.use(createAlpacaRouter());
   app.use(createAffiliateRouter());
   app.use(createAdminAffiliateRouter());
-  app.use(createPremiumCompanyRouter(prisma));
+  const premiumRouter = createPremiumCompanyRouter(prisma);
+  app.use("/api/premium", premiumRouter);
   app.use(createHistoricalTwinsRouter(prisma));
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));

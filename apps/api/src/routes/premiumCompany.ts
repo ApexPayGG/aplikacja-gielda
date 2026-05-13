@@ -423,7 +423,7 @@ async function buildVerdictFromLatestQuote(prisma: PrismaClient, ticker: string)
 export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
   const router = Router();
 
-  router.get("/api/v1/company/:ticker/verdict", async (req: Request, res: Response, next: NextFunction) => {
+  router.get("/:ticker/verdict", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const ticker = String(req.params.ticker ?? "").trim().toUpperCase();
       if (!ticker) return res.status(400).json({ error: "Missing ticker" });
@@ -441,7 +441,7 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
     }
   });
 
-  router.get("/api/v1/company/:ticker/personal-fit", async (req: Request, res: Response, next: NextFunction) => {
+  router.get("/:ticker/personal-fit", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const ticker = String(req.params.ticker ?? "").trim().toUpperCase();
       const userId = String(req.query.userId ?? "demo-user").trim();
@@ -574,7 +574,7 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
     }
   });
 
-  router.get("/api/v1/company/:ticker/story", async (req: Request, res: Response, next: NextFunction) => {
+  router.get("/:ticker/story", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const ticker = String(req.params.ticker ?? "").trim().toUpperCase();
       if (!ticker) return res.status(400).json({ error: "Missing ticker" });
@@ -661,7 +661,7 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
     }
   });
 
-  router.get("/api/v1/company/:ticker/twins", async (req: Request, res: Response, next: NextFunction) => {
+  router.get("/:ticker/twins", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const ticker = String(req.params.ticker ?? "").trim().toUpperCase();
       if (!ticker) return res.status(400).json({ error: "Missing ticker" });
@@ -689,7 +689,7 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
     }
   });
 
-  router.get("/api/v1/company/:ticker/catch", async (req: Request, res: Response, next: NextFunction) => {
+  router.get("/:ticker/catch", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const ticker = String(req.params.ticker ?? "").trim().toUpperCase();
       if (!ticker) return res.status(400).json({ error: "Missing ticker" });
