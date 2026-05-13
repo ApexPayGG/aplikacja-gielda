@@ -9,6 +9,7 @@ type Props = {
 
 export function CompanyCard({ company }: Props) {
   const [logoFailed, setLogoFailed] = useState(false);
+  const logoSrc = company.logoUrl ?? undefined;
   const showLogo = Boolean(company.logoUrl) && !logoFailed;
 
   return (
@@ -19,7 +20,7 @@ export function CompanyCard({ company }: Props) {
       <div className="flex h-28 items-center justify-center bg-slate-900/80 p-4">
         {showLogo ? (
           <img
-            src={company.logoUrl}
+            src={logoSrc}
             alt=""
             className="max-h-16 max-w-full object-contain"
             loading="lazy"
@@ -32,7 +33,7 @@ export function CompanyCard({ company }: Props) {
       <div className="flex flex-1 flex-col gap-1 p-4">
         <div className="flex items-center gap-2">
           {showLogo ? (
-            <img src={company.logoUrl ?? ""} alt="" className="h-5 w-5 rounded object-contain" loading="lazy" onError={() => setLogoFailed(true)} />
+            <img src={logoSrc} alt="" className="h-5 w-5 rounded object-contain" loading="lazy" onError={() => setLogoFailed(true)} />
           ) : (
             <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-slate-800 text-[10px] font-semibold text-slate-300">
               {company.symbol.slice(0, 1)}
