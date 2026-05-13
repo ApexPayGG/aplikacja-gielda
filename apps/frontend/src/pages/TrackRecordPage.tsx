@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import {
   generateTrackRecord,
   getPublicTrackRecord,
@@ -11,15 +12,43 @@ const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
 export function TrackRecordPage() {
   const { t } = useTranslation();
+  const { hash } = useParams<{ hash?: string }>();
+  const isPublicView = Boolean(hash);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [publicHash, setPublicHash] = useState<string | null>(null);
   const [metrics, setMetrics] = useState<TrackRecordPublicResponse | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const shareUrl = publicHash ? `stock-ai.pro/track-record/public/${publicHash}` : null;
+  const effectiveHash = hash ?? publicHash;
+  const shareUrl = effectiveHash ? `stock-ai.pro/track-record/public/${effectiveHash}` : null;
+
+  useEffect(() => {
+    if (!hash) return;
+    let active = true;
+    setLoading(true);
+    setError(null);
+    setPublicHash(hash);
+    void getPublicTrackRecord(hash)
+      .then((data) => {
+        if (!active) return;
+        setMetrics(data);
+      })
+      .catch((e) => {
+        if (!active) return;
+        setMetrics(null);
+        setError(apiErrorMessage(e));
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [hash]);
 
   async function onGenerate() {
+    if (isPublicView) return;
     setLoading(true);
     setError(null);
     setCopied(false);
@@ -62,16 +91,18 @@ export function TrackRecordPage() {
           </div>
         ) : null}
 
-        <section className="neo-panel rounded-xl p-4">
-          <button
-            type="button"
-            onClick={onGenerate}
-            disabled={loading}
-            className="rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue/85 disabled:opacity-60"
-          >
-            {loading ? t("common.loading") : t("trackrecord.generateButton")}
-          </button>
-        </section>
+        {!isPublicView ? (
+          <section className="neo-panel rounded-xl p-4">
+            <button
+              type="button"
+              onClick={onGenerate}
+              disabled={loading}
+              className="rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue/85 disabled:opacity-60"
+            >
+              {loading ? t("common.loading") : t("trackrecord.generateButton")}
+            </button>
+          </section>
+        ) : null}
 
         {metrics && shareUrl ? (
           <section className="neo-panel rounded-xl p-4">

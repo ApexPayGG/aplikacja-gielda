@@ -44,70 +44,76 @@ import { AdminAffiliatePage } from "./pages/AdminAffiliatePage";
 import { PremiumCompanyAnalysis } from "./pages/PremiumCompanyAnalysis";
 import { WeeklyReviewPage } from "./pages/WeeklyReviewPage";
 
-function RequireAuth({ children }: { children: ReactNode }) {
-  const { user, isLoading } = useAuth();
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  const { token, isLoading } = useAuth();
   if (isLoading) {
     return <div className="mx-auto flex min-h-screen items-center justify-center text-slate-300">Loading...</div>;
   }
-  if (!user) {
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
 }
 
 export default function App() {
-  const { user } = useAuth();
+  const { token } = useAuth();
 
   return (
     <div className="app-shell min-h-screen">
-      {user ? <AppNavBar /> : null}
-      {user ? <EmotionalStateWidget /> : null}
+      {token ? <AppNavBar /> : null}
+      {token ? <EmotionalStateWidget /> : null}
 
       <main className="relative z-10">
         <Routes>
-          <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
-          <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage />} />
-          <Route path="/" element={<RequireAuth><LandingPage /></RequireAuth>} />
-          <Route path="/companies" element={<RequireAuth><Home /></RequireAuth>} />
-          <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-          <Route path="/signals" element={<RequireAuth><SignalsPage /></RequireAuth>} />
-          <Route path="/dividend" element={<RequireAuth><Dividends /></RequireAuth>} />
-          <Route path="/dividend/intelligence" element={<RequireAuth><DividendIntelligencePage /></RequireAuth>} />
-          <Route path="/paper-trading" element={<RequireAuth><PaperTradingPage /></RequireAuth>} />
-          <Route path="/mirror-trading" element={<RequireAuth><MirrorTradingPage /></RequireAuth>} />
-          <Route path="/coach" element={<RequireAuth><BehavioralCoachPage /></RequireAuth>} />
-          <Route path="/mistake-library" element={<RequireAuth><MistakeLibraryPage /></RequireAuth>} />
-          <Route path="/psyche-profile" element={<RequireAuth><PsycheProfilePage /></RequireAuth>} />
-          <Route path="/weekly-review" element={<RequireAuth><WeeklyReviewPage /></RequireAuth>} />
-          <Route path="/alpha" element={<RequireAuth><AlphaCalendarPage /></RequireAuth>} />
-          <Route path="/position-size" element={<RequireAuth><PositionSizePage /></RequireAuth>} />
-          <Route path="/premortem" element={<RequireAuth><PreMortemPage /></RequireAuth>} />
-          <Route path="/reverse-screener" element={<RequireAuth><ReverseScreenerPage /></RequireAuth>} />
-          <Route path="/replay" element={<RequireAuth><ReplayModePage /></RequireAuth>} />
-          <Route path="/strategy-dna" element={<RequireAuth><StrategyDnaPage /></RequireAuth>} />
-          <Route path="/track-record" element={<RequireAuth><TrackRecordPage /></RequireAuth>} />
-          <Route path="/crowd-wisdom" element={<RequireAuth><CrowdWisdomPage /></RequireAuth>} />
-          <Route path="/glossary" element={<RequireAuth><GlossaryPage /></RequireAuth>} />
-          <Route path="/digest" element={<RequireAuth><DigestPage /></RequireAuth>} />
-          <Route path="/skill-tree" element={<RequireAuth><SkillTreePage /></RequireAuth>} />
-          <Route path="/earnings-predictor" element={<RequireAuth><EarningsPredictorPage /></RequireAuth>} />
-          <Route path="/insider-mirror" element={<RequireAuth><InsiderMirrorPage /></RequireAuth>} />
-          <Route path="/news-halflife" element={<RequireAuth><NewsHalfLifePage /></RequireAuth>} />
-          <Route path="/volatility" element={<RequireAuth><VolatilityHeatMapPage /></RequireAuth>} />
-          <Route path="/backtest" element={<RequireAuth><WalkForwardPage /></RequireAuth>} />
-          <Route path="/tax-optimizer" element={<RequireAuth><TaxOptimizerPage /></RequireAuth>} />
-          <Route path="/stress-test" element={<RequireAuth><StressTestPage /></RequireAuth>} />
-          <Route path="/concentration" element={<RequireAuth><ConcentrationPage /></RequireAuth>} />
-          <Route path="/correlation" element={<RequireAuth><CorrelationPage /></RequireAuth>} />
-          <Route path="/dividend-compound" element={<RequireAuth><DividendCompoundPage /></RequireAuth>} />
-          <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
-          <Route path="/alpaca" element={<RequireAuth><AlpacaDashboardPage /></RequireAuth>} />
-          <Route path="/admin/affiliate" element={<RequireAuth><AdminAffiliatePage /></RequireAuth>} />
+          <Route path="/login" element={token ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+          <Route path="/register" element={token ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
+
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/companies" element={<Home />} />
+          <Route path="/company/:symbol" element={<CompanyDetail />} />
+          <Route path="/signals" element={<SignalsPage />} />
+          <Route path="/glossary" element={<GlossaryPage />} />
+          <Route path="/track-record/public/:hash" element={<TrackRecordPage />} />
+
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/paper-trading" element={<ProtectedRoute><PaperTradingPage /></ProtectedRoute>} />
+          <Route path="/behavioral-coach" element={<ProtectedRoute><BehavioralCoachPage /></ProtectedRoute>} />
+          <Route path="/coach" element={<Navigate to="/behavioral-coach" replace />} />
+          <Route path="/psyche-profile" element={<ProtectedRoute><PsycheProfilePage /></ProtectedRoute>} />
+          <Route path="/weekly-review" element={<ProtectedRoute><WeeklyReviewPage /></ProtectedRoute>} />
+          <Route path="/alpaca" element={<ProtectedRoute><AlpacaDashboardPage /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+          <Route path="/mistake-library" element={<ProtectedRoute><MistakeLibraryPage /></ProtectedRoute>} />
+          <Route path="/skill-tree" element={<ProtectedRoute><SkillTreePage /></ProtectedRoute>} />
+          <Route path="/mirror-trading" element={<ProtectedRoute><MirrorTradingPage /></ProtectedRoute>} />
+          <Route path="/digest" element={<ProtectedRoute><DigestPage /></ProtectedRoute>} />
+          <Route path="/position-size" element={<ProtectedRoute><PositionSizePage /></ProtectedRoute>} />
+          <Route path="/stress-test" element={<ProtectedRoute><StressTestPage /></ProtectedRoute>} />
+          <Route path="/concentration" element={<ProtectedRoute><ConcentrationPage /></ProtectedRoute>} />
+          <Route path="/tax-optimizer" element={<ProtectedRoute><TaxOptimizerPage /></ProtectedRoute>} />
+          <Route path="/premortem" element={<ProtectedRoute><PreMortemPage /></ProtectedRoute>} />
+          <Route path="/strategy-dna" element={<ProtectedRoute><StrategyDnaPage /></ProtectedRoute>} />
+          <Route path="/track-record" element={<ProtectedRoute><TrackRecordPage /></ProtectedRoute>} />
+          <Route path="/replay" element={<ProtectedRoute><ReplayModePage /></ProtectedRoute>} />
+          <Route path="/backtest" element={<ProtectedRoute><WalkForwardPage /></ProtectedRoute>} />
+          <Route path="/earnings-predictor" element={<ProtectedRoute><EarningsPredictorPage /></ProtectedRoute>} />
+          <Route path="/insider-mirror" element={<ProtectedRoute><InsiderMirrorPage /></ProtectedRoute>} />
+          <Route path="/reverse-screener" element={<ProtectedRoute><ReverseScreenerPage /></ProtectedRoute>} />
+          <Route path="/correlation" element={<ProtectedRoute><CorrelationPage /></ProtectedRoute>} />
+          <Route path="/volatility" element={<ProtectedRoute><VolatilityHeatMapPage /></ProtectedRoute>} />
+          <Route path="/news-halflife" element={<ProtectedRoute><NewsHalfLifePage /></ProtectedRoute>} />
+          <Route path="/crowd-wisdom" element={<ProtectedRoute><CrowdWisdomPage /></ProtectedRoute>} />
+          <Route path="/dividend-compound" element={<ProtectedRoute><DividendCompoundPage /></ProtectedRoute>} />
+          <Route path="/alpha-calendar" element={<ProtectedRoute><AlphaCalendarPage /></ProtectedRoute>} />
+          <Route path="/alpha" element={<Navigate to="/alpha-calendar" replace />} />
+
+          <Route path="/dividend" element={<ProtectedRoute><Dividends /></ProtectedRoute>} />
+          <Route path="/dividend/intelligence" element={<ProtectedRoute><DividendIntelligencePage /></ProtectedRoute>} />
+          <Route path="/admin/affiliate" element={<ProtectedRoute><AdminAffiliatePage /></ProtectedRoute>} />
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
           <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
-          <Route path="/company/:symbol" element={<RequireAuth><CompanyDetail /></RequireAuth>} />
-          <Route path="/company/:symbol/premium" element={<RequireAuth><PremiumCompanyAnalysis /></RequireAuth>} />
-          <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
+          <Route path="/company/:symbol/premium" element={<ProtectedRoute><PremiumCompanyAnalysis /></ProtectedRoute>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>
