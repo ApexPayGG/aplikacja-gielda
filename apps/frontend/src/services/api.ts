@@ -31,6 +31,7 @@ export const api = axios.create({
 export interface Company {
   symbol: string;
   name: string;
+  exchange?: string | null;
   sector: string;
   industry: string;
   logoUrl: string | null;
@@ -468,6 +469,7 @@ export async function searchCompanies(query: string, limit = 20): Promise<Compan
   return data.results.map((row) => ({
     symbol: row.symbol,
     name: row.name,
+    exchange: row.exchange ?? null,
     sector: "Unknown",
     industry: "Unknown",
     logoUrl: row.logoUrl ?? null,

@@ -1,5 +1,5 @@
 import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Company } from "../services/api";
 
@@ -9,8 +9,19 @@ type Props = {
 
 export function CompanyCard({ company }: Props) {
   const [logoFailed, setLogoFailed] = useState(false);
-  const logoSrc = company.logoUrl ?? undefined;
-  const showLogo = Boolean(company.logoUrl) && !logoFailed;
+  const logoSrc = useMemo(() => {
+    const symbol = String(company.symbol ?? "").trim().toUpperCase();
+    if (!symbol) return undefined;
+
+    const [baseSymbol, exchangeFromSymbol] = symbol.split(".");
+    const exchange = String(company.exchange ?? exchangeFromSymbol ?? "US")
+      .trim()
+      .toUpperCase();
+    if (!baseSymbol || !exchange) return undefined;
+
+    return `https://eodhd.com/img/logos/${encodeURIComponent(exchange)}/${encodeURIComponent(baseSymbol)}.png`;
+  }, [company.exchange, company.symbol]);
+  const showLogo = Boolean(logoSrc) && !logoFailed;
 
   return (
     <Link
@@ -21,7 +32,7 @@ export function CompanyCard({ company }: Props) {
         {showLogo ? (
           <img
             src={logoSrc}
-            alt=""
+            alt={`${company.name} logo`}
             className="max-h-16 max-w-full object-contain"
             loading="lazy"
             onError={() => setLogoFailed(true)}
@@ -33,7 +44,13 @@ export function CompanyCard({ company }: Props) {
       <div className="flex flex-1 flex-col gap-1 p-4">
         <div className="flex items-center gap-2">
           {showLogo ? (
-            <img src={logoSrc} alt="" className="h-5 w-5 rounded object-contain" loading="lazy" onError={() => setLogoFailed(true)} />
+            <img
+              src={logoSrc}
+              alt={`${company.name} logo`}
+              className="h-5 w-5 rounded object-contain"
+              loading="lazy"
+              onError={() => setLogoFailed(true)}
+            />
           ) : (
             <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-slate-800 text-[10px] font-semibold text-slate-300">
               {company.symbol.slice(0, 1)}

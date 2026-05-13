@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TAX_COUNTRY_FLAGS } from "../constants/taxCountries";
+import { TAX_COUNTRY_ENGLISH_NAMES, TAX_COUNTRY_FLAGS } from "../constants/taxCountries";
 import {
   calculateTax,
   getAlpacaSettings,
@@ -109,7 +109,8 @@ export function TaxOptimizerPage() {
   }, [country, t, userId]);
 
   const taxName = data?.taxName ?? currentSystem?.cgt.name ?? "CGT";
-  const countryName = data?.countryName ?? currentSystem?.name ?? country;
+  const titleCountryCode = (data?.country ?? country).toUpperCase();
+  const countryName = TAX_COUNTRY_ENGLISH_NAMES[titleCountryCode] ?? titleCountryCode;
   const zeroTax = data?.taxRate === 0;
   const showUsNote = country === "US";
 

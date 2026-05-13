@@ -62,7 +62,10 @@ function buildToDate(): string {
 }
 
 function toExchangeTicker(symbol: string): string {
-  return `${symbol.trim().toUpperCase()}.WAR`;
+  const normalized = symbol.trim().toUpperCase();
+  if (!normalized) return normalized;
+  if (normalized.includes(".")) return normalized;
+  return `${normalized}.WAR`;
 }
 
 function normalizeLogoUrl(value: unknown): string | null {
@@ -88,6 +91,20 @@ async function fetchJson<T>(url: string): Promise<T> {
 }
 
 async function loadGpwCompanies(): Promise<CompanyPick[]> {
+  const fromExchange = await prisma.company.findMany({
+    where: { exchange: "WAR" },
+    select: { symbol: true, name: true },
+    orderBy: { symbol: "asc" },
+  });
+  if (fromExchange.length > 0) return fromExchange;
+
+  const fromSymbolSuffix = await prisma.company.findMany({
+    where: { symbol: { endsWith: ".WAR" } },
+    select: { symbol: true, name: true },
+    orderBy: { symbol: "asc" },
+  });
+  if (fromSymbolSuffix.length > 0) return fromSymbolSuffix;
+
   try {
     const fromMarketColumn = await prisma.$queryRawUnsafe<CompanyPick[]>(
       "SELECT symbol, name FROM companies WHERE market = 'GPW' ORDER BY symbol ASC",
@@ -111,6 +128,7 @@ async function loadGpwCompanies(): Promise<CompanyPick[]> {
 
 async function importQuotesForSymbol(symbol: string, token: string, from: string, to: string): Promise<number> {
   const eodTicker = toExchangeTicker(symbol);
+  const dbSymbol = symbol.trim().toUpperCase();
   const params = new URLSearchParams({
     from,
     to,
@@ -142,13 +160,13 @@ async function importQuotesForSymbol(symbol: string, token: string, from: string
     await prisma.quote.upsert({
       where: {
         symbol_timestamp_source: {
-          symbol: symbol.toUpperCase(),
+          symbol: dbSymbol,
           timestamp: ts,
           source: SOURCE,
         },
       },
       create: {
-        symbol: symbol.toUpperCase(),
+        symbol: dbSymbol,
         timestamp: ts,
         open,
         high,
@@ -172,6 +190,7 @@ async function importQuotesForSymbol(symbol: string, token: string, from: string
 
 async function importFundamentalsForSymbol(symbol: string, token: string): Promise<void> {
   const eodTicker = toExchangeTicker(symbol);
+  const dbSymbol = symbol.trim().toUpperCase();
   const params = new URLSearchParams({
     api_token: token,
     fmt: "json",
@@ -213,7 +232,7 @@ async function importFundamentalsForSymbol(symbol: string, token: string): Promi
   const fundamentalsSummary = descriptionParts.join("; ");
 
   await prisma.company.update({
-    where: { symbol: symbol.toUpperCase() },
+    where: { symbol: dbSymbol },
     data: {
       ...(name ? { name } : {}),
       ...(sector ? { sector } : {}),
@@ -231,18 +250,18 @@ async function importFundamentalsForSymbol(symbol: string, token: string): Promi
   await prisma.$executeRawUnsafe(
     'UPDATE "companies" SET "exchange" = $1 WHERE "symbol" = $2',
     "WAR",
-    symbol.toUpperCase(),
+    dbSymbol,
   );
 
-  if (marketCap !== null) await upsertFundamental(symbol, "market_cap", marketCap, 0);
-  if (pe !== null) await upsertFundamental(symbol, "pe", pe, 0);
-  if (pb !== null) await upsertFundamental(symbol, "pb", pb, 0);
-  if (ps !== null) await upsertFundamental(symbol, "ps", ps, 0);
-  if (evEbitda !== null) await upsertFundamental(symbol, "ev_ebitda", evEbitda, 0);
-  if (eps !== null) await upsertFundamental(symbol, "eps", eps, 0);
-  if (epsEstimate !== null) await upsertFundamental(symbol, "eps_estimate", epsEstimate, 0);
-  if (revenueGrowth !== null) await upsertFundamental(symbol, "revenue_growth", revenueGrowth, 0);
-  if (dividendYield !== null) await upsertFundamental(symbol, "dividend_yield", dividendYield, 0);
+  if (marketCap !== null) await upsertFundamental(dbSymbol, "market_cap", marketCap, 0);
+  if (pe !== null) await upsertFundamental(dbSymbol, "pe", pe, 0);
+  if (pb !== null) await upsertFundamental(dbSymbol, "pb", pb, 0);
+  if (ps !== null) await upsertFundamental(dbSymbol, "ps", ps, 0);
+  if (evEbitda !== null) await upsertFundamental(dbSymbol, "ev_ebitda", evEbitda, 0);
+  if (eps !== null) await upsertFundamental(dbSymbol, "eps", eps, 0);
+  if (epsEstimate !== null) await upsertFundamental(dbSymbol, "eps_estimate", epsEstimate, 0);
+  if (revenueGrowth !== null) await upsertFundamental(dbSymbol, "revenue_growth", revenueGrowth, 0);
+  if (dividendYield !== null) await upsertFundamental(dbSymbol, "dividend_yield", dividendYield, 0);
 }
 
 async function main(): Promise<void> {

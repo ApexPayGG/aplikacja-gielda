@@ -11,3 +11,17 @@ export const TAX_COUNTRY_FLAGS: Record<string, string> = {
   IN: "🇮🇳",
   CUSTOM: "🏳️",
 };
+
+export const TAX_COUNTRY_ENGLISH_NAMES: Record<string, string> = {
+  PL: "Poland",
+  DE: "Germany",
+  FR: "France",
+  ES: "Spain",
+  GB: "United Kingdom",
+  US: "United States",
+  JP: "Japan",
+  KR: "South Korea",
+  TW: "Taiwan",
+  IN: "India",
+  CUSTOM: "Custom",
+};
