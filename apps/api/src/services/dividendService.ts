@@ -75,6 +75,23 @@ export interface GrowthScreenerItem {
   latestYield: number | null;
 }
 
+function computeYoYGrowth(rowsAsc: Array<{ totalAmount: number }>): number | null {
+  if (rowsAsc.length < 2) return null;
+  const latest = Number(rowsAsc[rowsAsc.length - 1]?.totalAmount ?? Number.NaN);
+  const prev = Number(rowsAsc[rowsAsc.length - 2]?.totalAmount ?? Number.NaN);
+  if (!Number.isFinite(latest) || !Number.isFinite(prev) || prev <= 0) return null;
+  return ((latest - prev) / prev) * 100;
+}
+
+function computeCagr(rowsAsc: Array<{ totalAmount: number }>, requiredYears: number): number | null {
+  if (rowsAsc.length < requiredYears) return null;
+  const latest = Number(rowsAsc[rowsAsc.length - 1]?.totalAmount ?? Number.NaN);
+  const base = Number(rowsAsc[rowsAsc.length - requiredYears]?.totalAmount ?? Number.NaN);
+  const periods = requiredYears - 1;
+  if (!Number.isFinite(latest) || !Number.isFinite(base) || base <= 0 || latest <= 0 || periods <= 0) return null;
+  return (Math.pow(latest / base, 1 / periods) - 1) * 100;
+}
+
 export async function searchGrowthScreener(filters: GrowthScreenerFilters): Promise<{
   items: GrowthScreenerItem[];
   total: number;
@@ -101,13 +118,22 @@ export async function searchGrowthScreener(filters: GrowthScreenerFilters): Prom
     bySymbol.set(h.symbol, list);
   }
 
-  const dividends = await prisma.dividend.findMany({
-    orderBy: [{ symbol: "asc" }, { exDate: "desc" }],
-  });
-  const latestYieldBySymbol = new Map<string, number | null>();
-  for (const d of dividends) {
-    if (!latestYieldBySymbol.has(d.symbol)) {
-      latestYieldBySymbol.set(d.symbol, d.yield ?? null);
+  const symbols = [...bySymbol.keys()];
+  const latestQuotes = symbols.length
+    ? await prisma.quote.findMany({
+        where: {
+          symbol: {
+            in: symbols,
+          },
+        },
+        orderBy: [{ symbol: "asc" }, { timestamp: "desc" }],
+        select: { symbol: true, close: true },
+      })
+    : [];
+  const latestCloseBySymbol = new Map<string, number | null>();
+  for (const q of latestQuotes) {
+    if (!latestCloseBySymbol.has(q.symbol)) {
+      latestCloseBySymbol.set(q.symbol, Number(q.close));
     }
   }
 
@@ -122,7 +148,15 @@ export async function searchGrowthScreener(filters: GrowthScreenerFilters): Prom
       continue;
     }
     const ly = rows[rows.length - 1];
-    const yld = latestYieldBySymbol.get(symbol) ?? null;
+    const yoy = computeYoYGrowth(rows);
+    const cagr5Y = computeCagr(rows, 5);
+    const cagr10Y = computeCagr(rows, 10);
+    const latestClose = latestCloseBySymbol.get(symbol) ?? null;
+    const latestAmount = Number(ly?.totalAmount ?? Number.NaN);
+    const yld =
+      latestClose !== null && Number.isFinite(latestClose) && latestClose > 0 && Number.isFinite(latestAmount)
+        ? (latestAmount / latestClose) * 100
+        : null;
     if (yld === null) {
       symbolsWithUnknownYield++;
     }
@@ -136,9 +170,9 @@ export async function searchGrowthScreener(filters: GrowthScreenerFilters): Prom
       symbol,
       latestYear: ly.year,
       totalAmount: ly.totalAmount,
-      growthYoY: ly.growthYoY,
-      cagr5Y: ly.cagr5Y,
-      cagr10Y: ly.cagr10Y,
+      growthYoY: yoy,
+      cagr5Y,
+      cagr10Y,
       latestYield: yld,
     });
   }
