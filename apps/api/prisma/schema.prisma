@@ -721,3 +721,15 @@ model RuleBreach {
   @@index([ruleId])
   @@map("rule_breaches")
 }
+
+model DailyCheckIn {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  mood      Int
+  plan      String?
+  riskLevel String?  @map("risk_level")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("daily_check_ins")
+}

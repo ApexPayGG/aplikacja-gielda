@@ -68,6 +68,7 @@ import { createReactionsRouter } from "./routes/reactions";
 import { createTaxRouter } from "./routes/tax";
 import { createBehavioralRouter } from "./routes/behavioral";
 import { createPsycheRouter } from "./routes/psyche";
+import { createDailyCheckinRouter } from "./routes/dailyCheckin";
 import { createPreMortemRouter } from "./routes/premortem";
 import { createEmotionalRouter } from "./routes/emotional";
 import { createReplayRouter } from "./routes/replay";
@@ -217,6 +218,7 @@ export function createApp(): express.Express {
   app.use(createReverseScreenerRouter());
   app.use(createBehavioralRouter());
   app.use(createPsycheRouter());
+  app.use(createDailyCheckinRouter());
   app.use(createEmotionalRouter());
   app.use(createPreMortemRouter());
   app.use(createReplayRouter());

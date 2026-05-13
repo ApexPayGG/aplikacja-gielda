@@ -983,5 +983,20 @@
     "settingsSaveError": "Failed to save Alpaca settings.",
     "connected": "Connected",
     "connectionError": "Connection error"
+  },
+  "checkin": {
+    "title": "Daily Check-In",
+    "subtitle": "Set your mindset before the market opens.",
+    "moodLabel": "Mood",
+    "planLabel": "What is your plan today?",
+    "planPlaceholder": "Optional...",
+    "submit": "Start trading day",
+    "submitting": "Saving...",
+    "error": "Could not save check-in. Please try again.",
+    "risk": {
+      "LOW": "LOW",
+      "MEDIUM": "MEDIUM",
+      "HIGH": "HIGH"
+    }
   }
 }

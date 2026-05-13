@@ -224,6 +224,17 @@ export interface PsycheTradingRule {
   createdAt: string;
 }
 
+export type DailyCheckInRiskLevel = "LOW" | "MEDIUM" | "HIGH";
+
+export interface DailyCheckIn {
+  id: string;
+  userId: string;
+  mood: number;
+  plan: string | null;
+  riskLevel: DailyCheckInRiskLevel | null;
+  createdAt: string;
+}
+
 export type ReplayAction = "BUY" | "SELL";
 
 export interface ReplaySnapshotResponse {
@@ -587,6 +598,36 @@ export async function getPsycheDecisionLogs(userId: string, take?: number): Prom
   const { data } = await api.get<{ logs: PsycheDecisionLog[] }>(`/psyche/decision-log/${encodeURIComponent(userId)}`, {
     params: take != null ? { take } : undefined,
   });
+  return data;
+}
+
+export async function getDailyCheckInToday(
+  userId: string,
+): Promise<{ checkin: DailyCheckIn | null; hasCheckedIn: boolean }> {
+  const { data } = await api.get<{ checkin: DailyCheckIn | null; hasCheckedIn: boolean }>(
+    `/checkin/today/${encodeURIComponent(userId)}`,
+  );
+  return data;
+}
+
+export async function createDailyCheckIn(body: {
+  userId: string;
+  mood: number;
+  plan?: string;
+  riskLevel?: DailyCheckInRiskLevel;
+}): Promise<{ checkin: DailyCheckIn; aiMessage: string }> {
+  const { data } = await api.post<{ checkin: DailyCheckIn; aiMessage: string }>("/checkin", body);
+  return data;
+}
+
+export async function getDailyCheckInHistory(
+  userId: string,
+  days = 30,
+): Promise<{ checkins: DailyCheckIn[]; avgMood: number }> {
+  const { data } = await api.get<{ checkins: DailyCheckIn[]; avgMood: number }>(
+    `/checkin/history/${encodeURIComponent(userId)}`,
+    { params: { days } },
+  );
   return data;
 }
 
