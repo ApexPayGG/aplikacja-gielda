@@ -24,6 +24,7 @@ export type CompanySearchResultItem = {
   exchange: string;
   currency: string | null;
   type: string | null;
+  logoUrl?: string | null;
 };
 
 export type CompanySearchResponse = {
@@ -58,6 +59,15 @@ function toStr(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const v = value.trim();
   return v ? v : null;
+}
+
+function normalizeLogoUrl(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = value.trim();
+  if (!raw) return null;
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (raw.startsWith("/")) return `https://eodhd.com${raw}`;
+  return `https://eodhd.com/${raw.replace(/^\/+/, "")}`;
 }
 
 function buildFromDate(days: number): string {
@@ -119,6 +129,7 @@ function mapDbRowsToSearch(rows: Awaited<ReturnType<typeof searchCompanies>>): C
       ).toUpperCase(),
     currency: row.description?.match(/Currency=([^;]+)/i)?.[1]?.trim() ?? null,
     type: "stock",
+    logoUrl: row.logoUrl ?? null,
   }));
 }
 
@@ -222,6 +233,7 @@ async function importFundamentals(
   const industry = toStr(general.Industry) ?? "Unknown";
   const currency = toStr(general.CurrencyCode ?? highlights.CurrencySymbol);
   const country = toStr(general.CountryName);
+  const logoUrl = normalizeLogoUrl(general.LogoURL ?? general.Logo);
   const marketCap = toNum(highlights.MarketCapitalization);
 
   const descriptionParts = [`Market=GLOBAL`, `Exchange=${exchange}`];
@@ -236,6 +248,7 @@ async function importFundamentals(
       sector,
       industry,
       description: descriptionParts.join("; "),
+      ...(logoUrl ? { logoUrl } : {}),
     },
   });
   await setCompanyExchange(canonicalTicker, exchange);

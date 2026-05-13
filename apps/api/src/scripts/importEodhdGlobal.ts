@@ -217,6 +217,15 @@ function toEodTicker(symbol: string, suffix: string): string {
   return `${symbol.trim().toUpperCase()}${suffix}`;
 }
 
+function normalizeLogoUrl(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = value.trim();
+  if (!raw) return null;
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (raw.startsWith("/")) return `https://eodhd.com${raw}`;
+  return `https://eodhd.com/${raw.replace(/^\/+/, "")}`;
+}
+
 function isErrorPayload(value: unknown): value is { error?: string } {
   return Boolean(value) && typeof value === "object" && "error" in (value as Record<string, unknown>);
 }
@@ -360,6 +369,7 @@ async function importFundamentalsForTicker(
     (typeof highlights.CurrencySymbol === "string" && highlights.CurrencySymbol.trim()) ||
     null;
   const country = typeof general.CountryName === "string" && general.CountryName.trim() ? general.CountryName.trim() : null;
+  const logoUrl = normalizeLogoUrl(general.LogoURL ?? general.Logo);
 
   const marketCap = toNum(highlights.MarketCapitalization);
   const pe = toNum(valuation.TrailingPE) ?? toNum(highlights.PERatio);
@@ -383,6 +393,7 @@ async function importFundamentalsForTicker(
       sector,
       industry,
       description: descriptionParts.join("; "),
+      ...(logoUrl ? { logoUrl } : {}),
     },
   });
   await prisma.$executeRawUnsafe(

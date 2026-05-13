@@ -47,6 +47,7 @@ export interface SearchResponse {
     exchange?: string;
     currency?: string | null;
     type?: string | null;
+    logoUrl?: string | null;
   }>;
   query?: string;
   count?: number;
@@ -458,7 +459,7 @@ export async function searchCompanies(query: string, limit = 20): Promise<Compan
     name: row.name,
     sector: "Unknown",
     industry: "Unknown",
-    logoUrl: null,
+    logoUrl: row.logoUrl ?? null,
     description: row.exchange ? `Exchange=${row.exchange}${row.currency ? `; Currency=${row.currency}` : ""}` : null,
     webUrl: null,
     createdAt: new Date().toISOString(),

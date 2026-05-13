@@ -65,6 +65,15 @@ function toExchangeTicker(symbol: string): string {
   return `${symbol.trim().toUpperCase()}.WAR`;
 }
 
+function normalizeLogoUrl(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = value.trim();
+  if (!raw) return null;
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (raw.startsWith("/")) return `https://eodhd.com${raw}`;
+  return `https://eodhd.com/${raw.replace(/^\/+/, "")}`;
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
   const text = await res.text();
@@ -186,6 +195,7 @@ async function importFundamentalsForSymbol(symbol: string, token: string): Promi
     (typeof general.CurrencyCode === "string" && general.CurrencyCode.trim()) ||
     (typeof highlights.CurrencySymbol === "string" && highlights.CurrencySymbol.trim()) ||
     null;
+  const logoUrl = normalizeLogoUrl(general.LogoURL ?? general.Logo);
 
   const marketCap = toNum(highlights.MarketCapitalization);
   const pe = toNum(valuation.TrailingPE) ?? toNum(highlights.PERatio);
@@ -208,6 +218,7 @@ async function importFundamentalsForSymbol(symbol: string, token: string): Promi
       ...(name ? { name } : {}),
       ...(sector ? { sector } : {}),
       ...(industry ? { industry } : {}),
+      ...(logoUrl ? { logoUrl } : {}),
       ...(fundamentalsSummary
         ? {
             description: {
