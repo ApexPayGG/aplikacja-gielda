@@ -1060,5 +1060,93 @@
       "q4": "Opisz najważniejszą lekcję...",
       "q5": "Opisz konkretne zobowiązanie na kolejny tydzień..."
     }
+  },
+  "landing": {
+    "hero": {
+      "title": "Not a better trading tool. A better investor.",
+      "subtitle": "AI research + behavioral coaching + broker gateway. 12 exchanges, 9 languages.",
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "See how it works",
+      "widgetTitle": "Live market pulse",
+      "widgetLive": "Live"
+    },
+    "problem": {
+      "title": "Why investors get stuck",
+      "cards": {
+        "apps": {
+          "title": "You use 5-6 apps",
+          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity."
+        },
+        "emotions": {
+          "title": "Emotions cost you money",
+          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes."
+        },
+        "memory": {
+          "title": "No one remembers your mistakes",
+          "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
+        }
+      }
+    },
+    "solution": {
+      "title": "One platform built for investor growth",
+      "features": {
+        "signalAnalysis": "AI Signal Analysis",
+        "behavioralCoach": "Behavioral Coach",
+        "traderPsycheProfile": "Trader Psyche Profile",
+        "globalMarkets": "12 Global Markets",
+        "brokerIntegration": "Broker Integration",
+        "languages": "9 Languages"
+      }
+    },
+    "socialProof": {
+      "title": "Join 1,000+ investors across Europe",
+      "subtitle": "Early access community growing every week.",
+      "betaTester": "Beta tester",
+      "testimonials": [
+        {
+          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
+          "author": "Kasia, Warsaw"
+        },
+        {
+          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
+          "author": "Lukas, Berlin"
+        },
+        {
+          "quote": "The broker gateway plus AI context saves me time every single session.",
+          "author": "Clara, Madrid"
+        }
+      ]
+    },
+    "pricing": {
+      "title": "Simple pricing",
+      "tiers": {
+        "free": {
+          "name": "Free",
+          "price": "$0/mo",
+          "body": "Basic features to start building consistency.",
+          "features": ["Core dashboard", "Basic AI signals", "Community access"],
+          "cta": "Start free"
+        },
+        "pro": {
+          "name": "Pro",
+          "price": "$29/mo",
+          "body": "Full access for active investors.",
+          "features": ["All AI modules", "Behavioral coaching", "Trader psyche profile"],
+          "cta": "Choose Pro"
+        },
+        "proPlus": {
+          "name": "Pro+",
+          "price": "$79/mo",
+          "body": "For power users and automation workflows.",
+          "features": ["Everything in Pro", "API access", "Broker integration"],
+          "cta": "Choose Pro+"
+        }
+      }
+    },
+    "footerCta": {
+      "title": "Start your free account today",
+      "button": "Create free account",
+      "disclaimer": "Educational product. Not financial advice. Investing involves risk."
+    }
   }
 }
