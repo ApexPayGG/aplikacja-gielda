@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
+import { requireAuth } from "../modules/auth/authMiddleware";
 import {
   createPostTradeReflection,
   getPostTradeReflections,
@@ -12,6 +13,7 @@ type ReflectionService = {
 
 export function createPostTradeReflectionRouter(service?: Partial<ReflectionService>): Router {
   const router = Router();
+  router.use("/api/reflection", requireAuth);
   const createReflection = service?.createPostTradeReflection ?? createPostTradeReflection;
   const listReflections = service?.getPostTradeReflections ?? getPostTradeReflections;
 

@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { Router } from "express";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db/index";
+import { requireAuth } from "../modules/auth/authMiddleware";
 import {
   ConversionImportService,
   type ConversionImportResult,
@@ -79,6 +80,8 @@ function parseBrokerWriteInput(body: BrokerWriteBody) {
 export function createAdminAffiliateRouter(): Router {
   const router = Router();
   const conversionImportService = new ConversionImportService();
+  router.use("/api/admin", requireAuth);
+  router.use("/api/v1/admin", requireAuth);
 
   router.get("/api/admin/affiliate/brokers", async (_req: Request, res: Response, next: NextFunction) => {
     try {

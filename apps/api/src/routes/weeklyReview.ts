@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
+import { requireAuth } from "../modules/auth/authMiddleware";
 import {
   createWeeklyReview,
   getCurrentWeeklyReview,
@@ -19,6 +20,7 @@ export function createWeeklyReviewRouter(depsInput?: Partial<WeeklyReviewRouteDe
     getHistoryFn: depsInput?.getHistoryFn ?? getWeeklyReviewHistory,
   };
   const router = Router();
+  router.use("/api/weekly", requireAuth);
 
   router.get("/api/weekly/current/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {

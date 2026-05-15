@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import { prisma } from "../db/index";
+import { requireAuth } from "../modules/auth/authMiddleware";
 import { ClickTrackingService } from "../services/affiliate/ClickTrackingService";
 import { extractClientIp, getCountryFromIp } from "../services/affiliate/geoIpService";
 
@@ -95,6 +96,7 @@ export function createAffiliateRouter(): Router {
   router.get("/api/affiliate/brokers", brokersHandler);
   router.get("/api/v1/affiliate/brokers", brokersHandler);
 
+  router.use("/api/affiliate/my-impact", requireAuth);
   router.get("/api/affiliate/my-impact", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = String(req.query.userId ?? "").trim();

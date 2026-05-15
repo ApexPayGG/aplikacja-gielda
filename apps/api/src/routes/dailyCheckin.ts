@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
+import { requireAuth } from "../modules/auth/authMiddleware";
 import {
   createDailyCheckInIfMissing,
   getDailyCheckInHistory,
@@ -8,6 +9,7 @@ import {
 
 export function createDailyCheckinRouter(): Router {
   const router = Router();
+  router.use("/api/checkin", requireAuth);
 
   router.get("/api/checkin/today/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {

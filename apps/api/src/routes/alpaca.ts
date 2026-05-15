@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import { prisma } from "../db/index";
+import { requireAuth } from "../modules/auth/authMiddleware";
 import {
   cancelOrder,
   getAccount,
@@ -81,6 +82,7 @@ async function ensureAlpacaConfigured(
 
 export function createAlpacaRouter(): Router {
   const router = Router();
+  router.use("/api/alpaca", requireAuth);
 
   router.get("/api/alpaca/settings/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {
