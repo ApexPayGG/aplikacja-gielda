@@ -136,6 +136,15 @@ export interface QuoteHistoryResponse {
   data: QuoteRow[];
 }
 
+export interface LiveQuoteResponse {
+  quote: {
+    ticker: string;
+    price: string;
+    open: string | null;
+    updatedAt: string;
+  };
+}
+
 export interface NewsRow {
   id: string;
   symbol: string;
@@ -584,6 +593,13 @@ export async function getCompanyDetail(symbol: string): Promise<Company> {
 export async function getQuoteHistory(symbol: string, days = 30): Promise<QuoteHistoryResponse> {
   const { data } = await api.get<QuoteHistoryResponse>(`/quotes/${encodeURIComponent(symbol)}/history`, {
     params: { days },
+  });
+  return data;
+}
+
+export async function getLatestLiveQuote(ticker: string): Promise<LiveQuoteResponse> {
+  const { data } = await api.get<LiveQuoteResponse>("/quotes/latest", {
+    params: { ticker: ticker.trim().toUpperCase() },
   });
   return data;
 }
