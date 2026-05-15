@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getLatestQuoteBySymbol } from "../services/api";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const problemCards = [
   { icon: "🧩", titleKey: "landing.problem.cards.apps.title", bodyKey: "landing.problem.cards.apps.body" },
@@ -175,6 +176,7 @@ export function LandingPage() {
             <img src="/logo.png" alt="StockAI Pro" className="h-8 w-40 object-cover object-center" />
           </Link>
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <Link
               to="/login"
               className="rounded-lg border border-brand-border/70 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-brand-blue hover:text-white"

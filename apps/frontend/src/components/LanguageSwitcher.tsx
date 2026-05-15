@@ -2,20 +2,21 @@ import { useTranslation } from "react-i18next";
 
 type LangOption = {
   code: string;
+  shortCode: string;
   label: string;
   flag: string;
 };
 
 const options: LangOption[] = [
-  { code: "pl", label: "Polski", flag: "🇵🇱" },
-  { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
-  { code: "es", label: "Español", flag: "🇪🇸" },
-  { code: "ja", label: "日本語", flag: "🇯🇵" },
-  { code: "hi", label: "हिन्दी", flag: "🇮🇳" },
-  { code: "ko", label: "한국어", flag: "🇰🇷" },
-  { code: "zh-TW", label: "繁體中文", flag: "🇹🇼" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
+  { code: "pl", shortCode: "PL", label: "Polski", flag: "🇵🇱" },
+  { code: "en", shortCode: "EN", label: "English", flag: "🇬🇧" },
+  { code: "de", shortCode: "DE", label: "Deutsch", flag: "🇩🇪" },
+  { code: "es", shortCode: "ES", label: "Español", flag: "🇪🇸" },
+  { code: "ja", shortCode: "JA", label: "日本語", flag: "🇯🇵" },
+  { code: "hi", shortCode: "HI", label: "हिन्दी", flag: "🇮🇳" },
+  { code: "ko", shortCode: "KO", label: "한국어", flag: "🇰🇷" },
+  { code: "zh-TW", shortCode: "ZH-TW", label: "繁體中文", flag: "🇹🇼" },
+  { code: "fr", shortCode: "FR", label: "Français", flag: "🇫🇷" },
 ];
 
 export default function LanguageSwitcher() {
@@ -38,7 +39,7 @@ export default function LanguageSwitcher() {
       >
         {options.map((opt) => (
           <option key={opt.code} value={opt.code}>
-            {opt.flag} {opt.label}
+            {opt.flag} {opt.shortCode} - {opt.label}
           </option>
         ))}
       </select>
