@@ -68,7 +68,7 @@ export default function App() {
           <Route path="/login" element={token ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
           <Route path="/register" element={token ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
 
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
           <Route path="/companies" element={<Home />} />
           <Route path="/company/:symbol" element={<CompanyDetail />} />
           <Route path="/signals" element={<SignalsPage />} />
