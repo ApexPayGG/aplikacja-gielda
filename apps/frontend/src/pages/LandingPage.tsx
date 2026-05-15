@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getLatestLiveQuote } from "../services/api";
+import { getLatestLiveQuote, getTopLiveQuotes } from "../services/api";
 
 const problemCards = [
   { icon: "🧩", titleKey: "landing.problem.cards.apps.title", bodyKey: "landing.problem.cards.apps.body" },
@@ -97,8 +97,25 @@ export function LandingPage() {
     let active = true;
     async function loadQuotes(): Promise<void> {
       setQuotesLoading(true);
+      const fallbackRows = new Map<string, { price: number | null; open: number | null }>();
+      let tickersToLoad: string[] = [...HERO_TICKERS];
+      try {
+        const top = await getTopLiveQuotes(10);
+        if (Array.isArray(top.quotes) && top.quotes.length > 0) {
+          tickersToLoad = top.quotes.map((row) => row.ticker);
+          for (const row of top.quotes) {
+            fallbackRows.set(row.ticker, {
+              price: toNumber(row.price),
+              open: toNumber(row.open),
+            });
+          }
+        }
+      } catch {
+        // Keep default tickers when top quotes are unavailable.
+      }
+
       const rows = await Promise.all(
-        HERO_TICKERS.map(async (ticker): Promise<HeroQuote> => {
+        tickersToLoad.map(async (ticker): Promise<HeroQuote> => {
           try {
             const { quote } = await getLatestLiveQuote(ticker);
             const price = toNumber(quote.price);
@@ -107,7 +124,12 @@ export function LandingPage() {
               price !== null && open !== null && open > 0 ? ((price - open) / open) * 100 : null;
             return { ticker, price, changePct };
           } catch {
-            return { ticker, price: null, changePct: null };
+            const fallback = fallbackRows.get(ticker);
+            const price = fallback?.price ?? null;
+            const open = fallback?.open ?? null;
+            const changePct =
+              price !== null && open !== null && open > 0 ? ((price - open) / open) * 100 : null;
+            return { ticker, price, changePct };
           }
         }),
       );

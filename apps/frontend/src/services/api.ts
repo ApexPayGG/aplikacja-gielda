@@ -145,6 +145,17 @@ export interface LiveQuoteResponse {
   };
 }
 
+export interface TopLiveQuotesResponse {
+  limit: number;
+  count: number;
+  quotes: Array<{
+    ticker: string;
+    price: string;
+    open: string | null;
+    updatedAt: string;
+  }>;
+}
+
 export interface NewsRow {
   id: string;
   symbol: string;
@@ -600,6 +611,13 @@ export async function getQuoteHistory(symbol: string, days = 30): Promise<QuoteH
 export async function getLatestLiveQuote(ticker: string): Promise<LiveQuoteResponse> {
   const { data } = await api.get<LiveQuoteResponse>("/quotes/latest", {
     params: { ticker: ticker.trim().toUpperCase() },
+  });
+  return data;
+}
+
+export async function getTopLiveQuotes(limit = 10): Promise<TopLiveQuotesResponse> {
+  const { data } = await api.get<TopLiveQuotesResponse>("/quotes/top", {
+    params: { limit },
   });
   return data;
 }
