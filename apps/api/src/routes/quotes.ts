@@ -90,6 +90,7 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
   const getClientIp = deps?.getClientIp ?? defaultClientIp;
 
   const router = Router();
+  // Public endpoints: do not attach auth middleware here.
 
   router.use(async (req: Request, res: Response, next: NextFunction) => {
     const ip = getClientIp(req);

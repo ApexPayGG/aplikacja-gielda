@@ -106,6 +106,13 @@ describe("quotes routes", () => {
     assert.equal(body.quote.price, "150.25");
   });
 
+  it("GET /api/quotes/latest stays public with invalid auth header", async () => {
+    const res = await fetch(`${baseUrl}/api/quotes/latest?ticker=AAPL`, {
+      headers: { Authorization: "Bearer invalid-token" },
+    });
+    assert.equal(res.status, 200);
+  });
+
   it("GET /api/quotes/latest validates ticker", async () => {
     const res = await fetch(`${baseUrl}/api/quotes/latest?ticker=!!`);
     assert.equal(res.status, 400);
@@ -117,5 +124,12 @@ describe("quotes routes", () => {
     const body = (await res.json()) as { count: number; quotes: Array<{ ticker: string }> };
     assert.equal(body.count, 1);
     assert.equal(body.quotes[0].ticker, "MSFT");
+  });
+
+  it("GET /api/quotes/top stays public with invalid auth header", async () => {
+    const res = await fetch(`${baseUrl}/api/quotes/top?limit=5`, {
+      headers: { Authorization: "Bearer invalid-token" },
+    });
+    assert.equal(res.status, 200);
   });
 });
