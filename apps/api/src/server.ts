@@ -200,8 +200,13 @@ export function createApp(): express.Express {
 
   app.use(
     cors({
-      origin: ["http://localhost:5173", "http://localhost:5174"],
-      credentials: false,
+      origin: [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "https://stock-ai.pro",
+        "https://www.stock-ai.pro",
+      ],
+      credentials: true,
     }),
   );
 
