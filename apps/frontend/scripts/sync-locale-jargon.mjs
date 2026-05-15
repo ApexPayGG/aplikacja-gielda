@@ -150,6 +150,24 @@ const scalarPaths = [
   ["premortem", "takeProfit"],
 ];
 
+/**
+ * Keep landing copy in each locale in sync with EN key shape:
+ * - Add missing keys automatically
+ * - Preserve existing translated values
+ */
+function mergeLandingMissing(localeData, enData) {
+  if (!localeData || typeof localeData !== "object") return;
+  if (!enData || typeof enData !== "object") return;
+  const localeLanding = localeData.landing;
+  const enLanding = enData.landing;
+  if (!enLanding || typeof enLanding !== "object") return;
+  if (!localeLanding || typeof localeLanding !== "object") {
+    localeData.landing = JSON.parse(JSON.stringify(enLanding));
+    return;
+  }
+  deepMergeMissing(localeData.landing, enLanding);
+}
+
 const langs = ["de", "es", "fr", "hi", "ja", "ko", "zh-TW"];
 
 const enSource = JSON.parse(fs.readFileSync(path.join(localesDir, "en", "common.json"), "utf8"));
@@ -158,6 +176,7 @@ for (const lng of langs) {
   const filePath = path.join(localesDir, lng, "common.json");
   const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
   deepMergeMissing(data, enSource);
+  mergeLandingMissing(data, enSource);
   if (data.signals && enSource.signals) {
     pruneToEnShape(data.signals, enSource.signals);
   }

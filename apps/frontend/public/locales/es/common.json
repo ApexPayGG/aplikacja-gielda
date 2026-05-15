@@ -791,7 +791,10 @@
     "receiptProceed": "Pre-Mortem → opened anyway",
     "receiptLoss": "Closed at a loss",
     "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
-    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
+    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
+    "summaryTotal": "Recorded decisions",
+    "summaryProceedRate": "Pre-Mortem proceed rate",
+    "summaryWorstLoss": "Largest realized loss"
   },
   "dividendcompound": {
     "title": "Calculadora de Interés Compuesto de Dividendos",
@@ -883,7 +886,26 @@
     "screenerTitle": "Screener: dividend growth (CAGR)",
     "minYears": "Min. years of history",
     "minYield": "Min. yield %",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "dataLocation": "in",
+    "screenerLoading": "Loading screener…",
+    "screenerEmpty": "No results for selected filters.",
+    "tableYear": "Year",
+    "tableAnnualDividend": "Annual dividend",
+    "tableGrowthYoy": "Growth YoY %",
+    "taxTitle": "Dividend tax (PIT 19%)",
+    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
+    "taxShares": "Number of shares",
+    "taxReferencePrice": "Price (reference)",
+    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
+    "taxYieldAlternative": "Alternative: annual yield % (optional)",
+    "taxYieldPlaceholder": "e.g. 2.5",
+    "taxCalculating": "Calculating…",
+    "taxCalculate": "Calculate",
+    "taxMethod": "Method",
+    "taxGrossDividend": "Gross dividend",
+    "taxRateLabel": "Tax ({{rate}}%)",
+    "taxNet": "Net"
   },
   "company": {
     "loading": "Loading company...",
@@ -1104,21 +1126,33 @@
           "name": "Free",
           "price": "$0/mo",
           "body": "Basic features to start building consistency.",
-          "features": ["Core dashboard", "Basic AI signals", "Community access"],
+          "features": [
+            "Core dashboard",
+            "Basic AI signals",
+            "Community access"
+          ],
           "cta": "Start free"
         },
         "pro": {
           "name": "Pro",
           "price": "$29/mo",
           "body": "Full access for active investors.",
-          "features": ["All AI modules", "Behavioral coaching", "Trader psyche profile"],
+          "features": [
+            "All AI modules",
+            "Behavioral coaching",
+            "Trader psyche profile"
+          ],
           "cta": "Choose Pro"
         },
         "proPlus": {
           "name": "Pro+",
           "price": "$79/mo",
           "body": "For power users and automation workflows.",
-          "features": ["Everything in Pro", "API access", "Broker integration"],
+          "features": [
+            "Everything in Pro",
+            "API access",
+            "Broker integration"
+          ],
           "cta": "Choose Pro+"
         }
       }

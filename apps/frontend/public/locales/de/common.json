@@ -791,7 +791,10 @@
     "receiptProceed": "Pre-Mortem → opened anyway",
     "receiptLoss": "Closed at a loss",
     "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
-    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading)."
+    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
+    "summaryTotal": "Recorded decisions",
+    "summaryProceedRate": "Pre-Mortem proceed rate",
+    "summaryWorstLoss": "Largest realized loss"
   },
   "dividendcompound": {
     "title": "Dividenden-Zinseszinsrechner",
@@ -883,7 +886,26 @@
     "screenerTitle": "Screener: dividend growth (CAGR)",
     "minYears": "Min. years of history",
     "minYield": "Min. yield %",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "dataLocation": "in",
+    "screenerLoading": "Loading screener…",
+    "screenerEmpty": "No results for selected filters.",
+    "tableYear": "Year",
+    "tableAnnualDividend": "Annual dividend",
+    "tableGrowthYoy": "Growth YoY %",
+    "taxTitle": "Dividend tax (PIT 19%)",
+    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
+    "taxShares": "Number of shares",
+    "taxReferencePrice": "Price (reference)",
+    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
+    "taxYieldAlternative": "Alternative: annual yield % (optional)",
+    "taxYieldPlaceholder": "e.g. 2.5",
+    "taxCalculating": "Calculating…",
+    "taxCalculate": "Calculate",
+    "taxMethod": "Method",
+    "taxGrossDividend": "Gross dividend",
+    "taxRateLabel": "Tax ({{rate}}%)",
+    "taxNet": "Net"
   },
   "company": {
     "loading": "Loading company...",
@@ -1044,89 +1066,101 @@
   },
   "landing": {
     "hero": {
-      "title": "Not a better trading tool. A better investor.",
-      "subtitle": "AI research + behavioral coaching + broker gateway. 12 exchanges, 9 languages.",
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
-      "widgetTitle": "Live market pulse",
+      "title": "Kein besseres Trading-Tool. Ein besserer Investor.",
+      "subtitle": "KI-Research + Verhaltenscoaching + Broker-Gateway. 12 Börsen, 9 Sprachen.",
+      "ctaPrimary": "Kostenlos starten",
+      "ctaSecondary": "So funktioniert es",
+      "widgetTitle": "Live-Marktpuls",
       "widgetLive": "Live"
     },
     "problem": {
-      "title": "Why investors get stuck",
+      "title": "Warum Investoren stecken bleiben",
       "cards": {
         "apps": {
-          "title": "You use 5-6 apps",
-          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity."
+          "title": "Du nutzt 5-6 Apps",
+          "body": "Screener in einem Tab, Journal in einem anderen, Broker woanders. Ständiges Wechseln zerstört Klarheit."
         },
         "emotions": {
-          "title": "Emotions cost you money",
-          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes."
+          "title": "Emotionen kosten dich Geld",
+          "body": "Angst, Gier und FOMO übersteuern deinen Plan, wenn die Volatilität steigt."
         },
         "memory": {
-          "title": "No one remembers your mistakes",
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
+          "title": "Niemand merkt sich deine Fehler",
+          "body": "Ohne Feedback-Schleife wiederholen sich dieselben teuren Muster von Trade zu Trade."
         }
       }
     },
     "solution": {
-      "title": "One platform built for investor growth",
+      "title": "Eine Plattform für deinen Anlegerfortschritt",
       "features": {
-        "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": "Behavioral Coach",
-        "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": "12 Global Markets",
-        "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages"
+        "signalAnalysis": "KI-Signalanalyse",
+        "behavioralCoach": "Verhaltenscoach",
+        "traderPsycheProfile": "Trader-Psychologieprofil",
+        "globalMarkets": "12 globale Märkte",
+        "brokerIntegration": "Broker-Integration",
+        "languages": "9 Sprachen"
       }
     },
     "socialProof": {
-      "title": "Join our early access community",
-      "subtitle": "Early access community growing every week.",
+      "title": "Werde Teil unserer Early-Access-Community",
+      "subtitle": "Die Early-Access-Community wächst jede Woche.",
       "testimonials": [
         {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
+          "quote": "Früher bin ich zwischen Apps gesprungen. Jetzt habe ich einen Prozess vom Signal bis zur Reflexion.",
           "author": "Kasia, Warsaw"
         },
         {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
+          "quote": "Verhaltensimpulse haben mir geholfen, mit Revenge Trading aufzuhören. Meine Risikodisziplin ist endlich real.",
           "author": "Lukas, Berlin"
         },
         {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
+          "quote": "Das Broker-Gateway plus KI-Kontext spart mir in jeder Session Zeit.",
           "author": "Clara, Madrid"
         }
       ]
     },
     "pricing": {
-      "title": "Simple pricing",
+      "title": "Einfache Preise",
       "tiers": {
         "free": {
           "name": "Free",
           "price": "$0/mo",
-          "body": "Basic features to start building consistency.",
-          "features": ["Core dashboard", "Basic AI signals", "Community access"],
-          "cta": "Start free"
+          "body": "Grundfunktionen, um mit konsequentem Handeln zu starten.",
+          "features": [
+            "Kern-Dashboard",
+            "Basis-KI-Signale",
+            "Community-Zugang"
+          ],
+          "cta": "Kostenlos starten"
         },
         "pro": {
           "name": "Pro",
           "price": "$29/mo",
-          "body": "Full access for active investors.",
-          "features": ["All AI modules", "Behavioral coaching", "Trader psyche profile"],
-          "cta": "Choose Pro"
+          "body": "Voller Zugriff für aktive Investoren.",
+          "features": [
+            "Alle KI-Module",
+            "Verhaltenscoaching",
+            "Trader-Psychologieprofil"
+          ],
+          "cta": "Pro wählen"
         },
         "proPlus": {
           "name": "Pro+",
           "price": "$79/mo",
-          "body": "For power users and automation workflows.",
-          "features": ["Everything in Pro", "API access", "Broker integration"],
-          "cta": "Choose Pro+"
+          "body": "Für Power-User und Automatisierungs-Workflows.",
+          "features": [
+            "Alles aus Pro",
+            "API-Zugang",
+            "Broker-Integration"
+          ],
+          "cta": "Pro+ wählen"
         }
       }
     },
     "footerCta": {
-      "title": "Start your free account today",
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk."
+      "title": "Starte heute dein kostenloses Konto",
+      "button": "Kostenloses Konto erstellen",
+      "disclaimer": "Bildungsprodukt. Keine Finanzberatung. Investieren ist mit Risiken verbunden."
     }
   }
 }
