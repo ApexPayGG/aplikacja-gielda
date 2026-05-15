@@ -51,6 +51,13 @@ const testimonials = [
 
 export function LandingPage() {
   const { t } = useTranslation();
+  const pricingFeatures = (featuresKey: string): string[] => {
+    const translated = t(featuresKey, { returnObjects: true });
+    if (Array.isArray(translated)) {
+      return translated.filter((item): item is string => typeof item === "string");
+    }
+    return [];
+  };
 
   return (
     <div className="relative overflow-hidden">
@@ -169,7 +176,7 @@ export function LandingPage() {
                 <p className="mt-2 text-3xl font-bold text-brand-amber">{t(tier.priceKey)}</p>
                 <p className="mt-3 text-sm text-slate-300">{t(tier.bodyKey)}</p>
                 <ul className="mt-5 space-y-2 text-sm text-slate-200">
-                  {(t(tier.featuresKey, { returnObjects: true }) as string[]).map((item) => (
+                  {pricingFeatures(tier.featuresKey).map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <span className="mt-0.5 text-brand-green">✓</span>
                       <span>{item}</span>
