@@ -181,13 +181,13 @@ export function LandingPage() {
               to="/login"
               className="rounded-lg border border-brand-border/70 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-brand-blue hover:text-white"
             >
-              Login
+              {t("auth.loginButton", { defaultValue: "Login" })}
             </Link>
             <Link
               to="/register"
               className="rounded-lg bg-brand-amber px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-brand-amber/90"
             >
-              Register
+              {t("auth.registerButton", { defaultValue: "Register" })}
             </Link>
           </div>
         </div>

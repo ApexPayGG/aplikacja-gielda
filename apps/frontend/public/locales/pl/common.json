@@ -1079,89 +1079,89 @@
   },
   "landing": {
     "hero": {
-      "title": "Not a better trading tool. A better investor.",
-      "subtitle": "AI research + behavioral coaching + broker gateway. 12 exchanges, 9 languages.",
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
-      "widgetTitle": "Live market pulse",
-      "widgetLive": "Live"
+      "title": "Nie lepsze narzędzie tradingowe. Lepszy inwestor.",
+      "subtitle": "Research AI + coaching behawioralny + bramka brokerska. 12 giełd, 9 języków.",
+      "ctaPrimary": "Zacznij za darmo",
+      "ctaSecondary": "Zobacz jak to działa",
+      "widgetTitle": "Puls rynku na żywo",
+      "widgetLive": "Na żywo"
     },
     "problem": {
-      "title": "Why investors get stuck",
+      "title": "Dlaczego inwestorzy się blokują",
       "cards": {
         "apps": {
-          "title": "You use 5-6 apps",
-          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity."
+          "title": "Korzystasz z 5-6 aplikacji",
+          "body": "Screener w jednej karcie, dziennik w drugiej, broker gdzie indziej. Przełączanie kontekstu zabija klarowność."
         },
         "emotions": {
-          "title": "Emotions cost you money",
-          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes."
+          "title": "Emocje kosztują Cię pieniądze",
+          "body": "Strach, chciwość i FOMO po cichu nadpisują plan, gdy rośnie zmienność."
         },
         "memory": {
-          "title": "No one remembers your mistakes",
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
+          "title": "Nikt nie pamięta Twoich błędów",
+          "body": "Bez pętli feedbacku te same kosztowne schematy powtarzają się transakcja po transakcji."
         }
       }
     },
     "solution": {
-      "title": "One platform built for investor growth",
+      "title": "Jedna platforma zbudowana pod rozwój inwestora",
       "features": {
-        "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": "Behavioral Coach",
-        "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": "12 Global Markets",
-        "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages"
+        "signalAnalysis": "Analiza sygnałów AI",
+        "behavioralCoach": "Coach behawioralny",
+        "traderPsycheProfile": "Profil psychiki tradera",
+        "globalMarkets": "12 globalnych rynków",
+        "brokerIntegration": "Integracja z brokerami",
+        "languages": "9 języków"
       }
     },
     "socialProof": {
-      "title": "Join our early access community",
-      "subtitle": "Early access community growing every week.",
+      "title": "Dołącz do naszej społeczności early access",
+      "subtitle": "Społeczność early access rośnie z tygodnia na tydzień.",
       "testimonials": [
         {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
+          "quote": "Kiedyś skakałam między aplikacjami. Teraz realizuję jeden proces od sygnału do refleksji.",
           "author": "Kasia, Warsaw"
         },
         {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
+          "quote": "Behawioralne podpowiedzi pomogły mi skończyć z revenge tradingiem. Moja dyscyplina ryzyka wreszcie jest realna.",
           "author": "Lukas, Berlin"
         },
         {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
+          "quote": "Bramka brokerska i kontekst AI oszczędzają mi czas podczas każdej sesji.",
           "author": "Clara, Madrid"
         }
       ]
     },
     "pricing": {
-      "title": "Simple pricing",
+      "title": "Prosty cennik",
       "tiers": {
         "free": {
           "name": "Free",
           "price": "$0/mo",
-          "body": "Basic features to start building consistency.",
-          "features": ["Core dashboard", "Basic AI signals", "Community access"],
-          "cta": "Start free"
+          "body": "Podstawowe funkcje, żeby zacząć budować konsekwencję.",
+          "features": ["Główny dashboard", "Podstawowe sygnały AI", "Dostęp do społeczności"],
+          "cta": "Zacznij za darmo"
         },
         "pro": {
           "name": "Pro",
           "price": "$29/mo",
-          "body": "Full access for active investors.",
-          "features": ["All AI modules", "Behavioral coaching", "Trader psyche profile"],
-          "cta": "Choose Pro"
+          "body": "Pełny dostęp dla aktywnych inwestorów.",
+          "features": ["Wszystkie moduły AI", "Coaching behawioralny", "Profil psychiki tradera"],
+          "cta": "Wybierz Pro"
         },
         "proPlus": {
           "name": "Pro+",
           "price": "$79/mo",
-          "body": "For power users and automation workflows.",
-          "features": ["Everything in Pro", "API access", "Broker integration"],
-          "cta": "Choose Pro+"
+          "body": "Dla power userów i workflow automatyzacji.",
+          "features": ["Wszystko z Pro", "Dostęp do API", "Integracja brokerska"],
+          "cta": "Wybierz Pro+"
         }
       }
     },
     "footerCta": {
-      "title": "Start your free account today",
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk."
+      "title": "Załóż darmowe konto już dziś",
+      "button": "Utwórz darmowe konto",
+      "disclaimer": "Produkt edukacyjny. To nie jest porada inwestycyjna. Inwestowanie wiąże się z ryzykiem."
     }
   }
 }
