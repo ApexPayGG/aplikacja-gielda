@@ -162,6 +162,13 @@ export interface TopLiveQuotesResponse {
   }>;
 }
 
+export interface LatestSymbolQuoteResponse {
+  symbol: string;
+  open: string;
+  close: string;
+  timestamp: string;
+}
+
 export interface NewsRow {
   id: string;
   symbol: string;
@@ -625,6 +632,11 @@ export async function getTopLiveQuotes(limit = 10): Promise<TopLiveQuotesRespons
   const { data } = await publicApi.get<TopLiveQuotesResponse>("/quotes/top", {
     params: { limit },
   });
+  return data;
+}
+
+export async function getLatestQuoteBySymbol(symbol: string): Promise<LatestSymbolQuoteResponse> {
+  const { data } = await publicApi.get<LatestSymbolQuoteResponse>(`/quotes/${encodeURIComponent(symbol)}`);
   return data;
 }
 
