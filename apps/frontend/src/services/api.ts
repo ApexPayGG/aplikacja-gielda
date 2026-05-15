@@ -60,6 +60,12 @@ export const api = axios.create({
   timeout: 60_000,
 });
 
+const publicApi = axios.create({
+  baseURL,
+  headers: { Accept: "application/json" },
+  timeout: 60_000,
+});
+
 api.interceptors.request.use((config) => {
   const token = readAuthToken();
   if (token) {
@@ -609,14 +615,14 @@ export async function getQuoteHistory(symbol: string, days = 30): Promise<QuoteH
 }
 
 export async function getLatestLiveQuote(ticker: string): Promise<LiveQuoteResponse> {
-  const { data } = await api.get<LiveQuoteResponse>("/quotes/latest", {
+  const { data } = await publicApi.get<LiveQuoteResponse>("/quotes/latest", {
     params: { ticker: ticker.trim().toUpperCase() },
   });
   return data;
 }
 
 export async function getTopLiveQuotes(limit = 10): Promise<TopLiveQuotesResponse> {
-  const { data } = await api.get<TopLiveQuotesResponse>("/quotes/top", {
+  const { data } = await publicApi.get<TopLiveQuotesResponse>("/quotes/top", {
     params: { limit },
   });
   return data;
