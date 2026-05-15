@@ -35,8 +35,19 @@ class InMemoryRateStore {
 describe("quotes routes", () => {
   let server: ReturnType<express.Express["listen"]> | null = null;
   let baseUrl = "";
-
-  const findFirst = mock.fn(async () => ({
+  let liveLatestRow: {
+    id: bigint;
+    ticker: string;
+    price: Prisma.Decimal;
+    open: Prisma.Decimal | null;
+    high: Prisma.Decimal | null;
+    low: Prisma.Decimal | null;
+    close: Prisma.Decimal | null;
+    volume: bigint | null;
+    vwap: Prisma.Decimal | null;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null = {
     id: BigInt(1),
     ticker: "AAPL",
     price: new Prisma.Decimal("150.25"),
@@ -48,30 +59,61 @@ describe("quotes routes", () => {
     vwap: new Prisma.Decimal("149.90"),
     createdAt: new Date("2026-05-07T10:00:00.000Z"),
     updatedAt: new Date("2026-05-07T10:00:00.000Z"),
-  }));
+  };
+  let historicalLatestRow: {
+    id: bigint;
+    symbol: string;
+    open: Prisma.Decimal;
+    high: Prisma.Decimal;
+    low: Prisma.Decimal;
+    close: Prisma.Decimal;
+    volume: bigint;
+    timestamp: Date;
+  } | null = null;
+  let queryRawResponses: unknown[] = [];
 
-  const queryRaw = mock.fn(async () => [
-    {
-      id: BigInt(2),
-      ticker: "MSFT",
-      price: new Prisma.Decimal("300.00"),
-      open: null,
-      high: null,
-      low: null,
-      close: null,
-      volume: BigInt(5000),
-      vwap: null,
-      created_at: new Date("2026-05-07T11:00:00.000Z"),
-      updated_at: new Date("2026-05-07T11:00:00.000Z"),
-    },
-  ]);
+  const findFirst = mock.fn(async () => liveLatestRow);
+  const historicalFindFirst = mock.fn(async () => historicalLatestRow);
+  const queryRaw = mock.fn(async () => queryRawResponses.shift() ?? []);
 
   beforeEach(async () => {
+    liveLatestRow = {
+      id: BigInt(1),
+      ticker: "AAPL",
+      price: new Prisma.Decimal("150.25"),
+      open: new Prisma.Decimal("149.00"),
+      high: new Prisma.Decimal("151.00"),
+      low: new Prisma.Decimal("148.50"),
+      close: new Prisma.Decimal("150.25"),
+      volume: BigInt(1_000_000),
+      vwap: new Prisma.Decimal("149.90"),
+      createdAt: new Date("2026-05-07T10:00:00.000Z"),
+      updatedAt: new Date("2026-05-07T10:00:00.000Z"),
+    };
+    historicalLatestRow = null;
+    queryRawResponses = [
+      [
+        {
+          id: BigInt(2),
+          ticker: "MSFT",
+          price: new Prisma.Decimal("300.00"),
+          open: null,
+          high: null,
+          low: null,
+          close: null,
+          volume: BigInt(5000),
+          vwap: null,
+          created_at: new Date("2026-05-07T11:00:00.000Z"),
+          updated_at: new Date("2026-05-07T11:00:00.000Z"),
+        },
+      ],
+    ];
     const app = express();
     app.use(
       createQuotesRouter({
         db: {
           liveQuote: { findFirst, findMany: mock.fn(async () => []) },
+          quote: { findFirst: historicalFindFirst },
           $queryRaw: queryRaw,
         } as never,
         rateStore: new InMemoryRateStore() as never,
@@ -118,6 +160,26 @@ describe("quotes routes", () => {
     assert.equal(res.status, 400);
   });
 
+  it("GET /api/quotes/latest falls back to historical quote", async () => {
+    liveLatestRow = null;
+    historicalLatestRow = {
+      id: BigInt(10),
+      symbol: "AAPL",
+      open: new Prisma.Decimal("178.00"),
+      high: new Prisma.Decimal("181.00"),
+      low: new Prisma.Decimal("177.00"),
+      close: new Prisma.Decimal("180.50"),
+      volume: BigInt(2500000),
+      timestamp: new Date("2026-05-06T00:00:00.000Z"),
+    };
+    const res = await fetch(`${baseUrl}/api/quotes/latest?ticker=AAPL`);
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { quote: { ticker: string; price: string; source: string } };
+    assert.equal(body.quote.ticker, "AAPL");
+    assert.equal(body.quote.price, "180.5");
+    assert.equal(body.quote.source, "quotes_fallback");
+  });
+
   it("GET /api/quotes/top returns ranked rows", async () => {
     const res = await fetch(`${baseUrl}/api/quotes/top?limit=5`);
     assert.equal(res.status, 200);
@@ -131,5 +193,29 @@ describe("quotes routes", () => {
       headers: { Authorization: "Bearer invalid-token" },
     });
     assert.equal(res.status, 200);
+  });
+
+  it("GET /api/quotes/top falls back to historical quotes when live is empty", async () => {
+    queryRawResponses = [
+      [],
+      [
+        {
+          id: BigInt(11),
+          symbol: "AAPL",
+          open: new Prisma.Decimal("178.00"),
+          high: new Prisma.Decimal("181.00"),
+          low: new Prisma.Decimal("177.00"),
+          close: new Prisma.Decimal("180.50"),
+          volume: BigInt(2500000),
+          timestamp: new Date("2026-05-06T00:00:00.000Z"),
+        },
+      ],
+    ];
+    const res = await fetch(`${baseUrl}/api/quotes/top?limit=5`);
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { count: number; quotes: Array<{ ticker: string; source: string }> };
+    assert.equal(body.count, 1);
+    assert.equal(body.quotes[0].ticker, "AAPL");
+    assert.equal(body.quotes[0].source, "quotes_fallback");
   });
 });

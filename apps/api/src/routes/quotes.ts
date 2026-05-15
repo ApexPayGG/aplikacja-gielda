@@ -7,6 +7,21 @@ import { getCacheRedis } from "../redis";
 
 const QUOTES_RATE_LIMIT = 50;
 const QUOTES_RATE_WINDOW_SEC = 60;
+const POPULAR_TOP_TICKERS = [
+  "AAPL",
+  "MSFT",
+  "GOOGL",
+  "AMZN",
+  "NVDA",
+  "META",
+  "TSLA",
+  "V",
+  "JPM",
+  "JNJ",
+  "XOM",
+  "PG",
+  "KO",
+] as const;
 
 type RedisRateStore = Pick<ReturnType<typeof getCacheRedis>, "incr" | "expire" | "ttl">;
 
@@ -84,6 +99,43 @@ function serializeLiveQuote(row: {
   };
 }
 
+function quoteSymbolCandidates(ticker: string): string[] {
+  const normalized = ticker.trim().toUpperCase();
+  if (!normalized) return [];
+  const out = [normalized];
+  const base = normalized.split(".")[0]?.trim() ?? normalized;
+  if (base && !out.includes(base)) out.push(base);
+  const us = `${base}.US`;
+  if (base && !out.includes(us)) out.push(us);
+  return out;
+}
+
+function serializeHistoricalQuoteFallback(row: {
+  id: bigint;
+  symbol: string;
+  open: Prisma.Decimal;
+  high: Prisma.Decimal;
+  low: Prisma.Decimal;
+  close: Prisma.Decimal;
+  volume: bigint;
+  timestamp: Date;
+}) {
+  return {
+    id: row.id.toString(),
+    ticker: row.symbol,
+    price: row.close.toString(),
+    open: row.open.toString(),
+    high: row.high.toString(),
+    low: row.low.toString(),
+    close: row.close.toString(),
+    volume: row.volume.toString(),
+    vwap: null,
+    source: "quotes_fallback",
+    createdAt: row.timestamp.toISOString(),
+    updatedAt: row.timestamp.toISOString(),
+  };
+}
+
 export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
   const db = deps?.db ?? prisma;
   const rateStore = deps?.rateStore ?? getCacheRedis();
@@ -113,8 +165,17 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
         where: { ticker },
         orderBy: { createdAt: "desc" },
       });
-      if (!row) return res.status(404).json({ error: "No live quote for ticker" });
-      res.json({ quote: serializeLiveQuote(row) });
+      if (row) {
+        res.json({ quote: serializeLiveQuote(row) });
+        return;
+      }
+
+      const fallback = await db.quote.findFirst({
+        where: { symbol: { in: quoteSymbolCandidates(ticker) } },
+        orderBy: [{ timestamp: "desc" }, { id: "desc" }],
+      });
+      if (!fallback) return res.status(404).json({ error: "No quote found for ticker" });
+      res.json({ quote: serializeHistoricalQuoteFallback(fallback) });
     } catch (e) {
       next(e);
     }
@@ -180,7 +241,7 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
         ORDER BY "volume" DESC NULLS LAST
         LIMIT ${limit}
       `);
-      const mapped = rows.map((r) =>
+      let mapped = rows.map((r) =>
         serializeLiveQuote({
           id: r.id,
           ticker: r.ticker,
@@ -195,6 +256,40 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
           updatedAt: r.updated_at,
         }),
       );
+
+      if (mapped.length === 0) {
+        const popularCandidates = Array.from(
+          new Set(POPULAR_TOP_TICKERS.flatMap((ticker) => quoteSymbolCandidates(ticker))),
+        );
+        const fallbackRows = await db.$queryRaw<
+          Array<{
+            id: bigint;
+            symbol: string;
+            open: Prisma.Decimal;
+            high: Prisma.Decimal;
+            low: Prisma.Decimal;
+            close: Prisma.Decimal;
+            volume: bigint;
+            timestamp: Date;
+          }>
+        >(Prisma.sql`
+          SELECT DISTINCT ON ("symbol")
+            "id",
+            "symbol",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "timestamp"
+          FROM "quotes"
+          WHERE "symbol" IN (${Prisma.join(popularCandidates)})
+          ORDER BY "symbol", "timestamp" DESC, "id" DESC
+          LIMIT ${limit}
+        `);
+        mapped = fallbackRows.map((row) => serializeHistoricalQuoteFallback(row));
+      }
+
       res.json({ limit, count: mapped.length, quotes: mapped });
     } catch (e) {
       quotesLogger.error({ err: e }, "top quotes query failed");
