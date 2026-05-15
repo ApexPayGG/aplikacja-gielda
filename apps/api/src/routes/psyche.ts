@@ -14,7 +14,7 @@ import { getAuthenticatedUserId, requireAuth } from "../modules/auth/authMiddlew
 
 export function createPsycheRouter(): Router {
   const router = Router();
-  router.use(requireAuth);
+  router.use("/api/psyche", requireAuth);
 
   router.get("/api/psyche/profile/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {

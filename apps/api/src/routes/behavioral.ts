@@ -6,7 +6,7 @@ import { getAuthenticatedUserId, requireAuth } from "../modules/auth/authMiddlew
 
 export function createBehavioralRouter(): Router {
   const router = Router();
-  router.use(requireAuth);
+  router.use("/api/behavioral", requireAuth);
 
   router.get("/api/behavioral/cooldown/:userId", async (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -18,7 +18,7 @@ import { getAuthenticatedUserId, requireAuth } from "../modules/auth/authMiddlew
 
 export function createPaperTradingRouter(): Router {
   const router = Router();
-  router.use(requireAuth);
+  router.use("/api/paper", requireAuth);
 
   router.post("/api/paper/trade/open", async (req: Request, res: Response, next: NextFunction) => {
     try {
