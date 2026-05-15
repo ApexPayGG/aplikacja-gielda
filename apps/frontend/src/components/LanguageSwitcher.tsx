@@ -30,11 +30,11 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm">{active?.flag ?? "🇬🇧"}</span>
+    <div className="flex items-center">
       <select
         value={value}
         onChange={(e) => void handleChange(e.target.value)}
+        aria-label="Language selector"
         className="interactive-tilt rounded border border-brand-border/80 bg-brand-bg px-2 py-1 text-xs text-slate-200 outline-none focus:border-brand-blue"
       >
         {options.map((opt) => (
