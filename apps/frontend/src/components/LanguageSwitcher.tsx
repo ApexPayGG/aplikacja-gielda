@@ -39,7 +39,7 @@ export default function LanguageSwitcher() {
       >
         {options.map((opt) => (
           <option key={opt.code} value={opt.code}>
-            {opt.flag} {opt.shortCode} - {opt.label}
+            {opt.flag} {opt.label}
           </option>
         ))}
       </select>
