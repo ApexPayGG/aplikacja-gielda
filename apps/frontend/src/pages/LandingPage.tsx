@@ -59,6 +59,8 @@ type HeroQuote = {
   changePct: number | null;
 };
 
+const HERO_QUOTES_CACHE_KEY = "landing.heroQuotes.v1";
+
 function toNumber(value: string | null | undefined): number | null {
   if (value == null) return null;
   const parsed = Number(value);
@@ -68,6 +70,39 @@ function toNumber(value: string | null | undefined): number | null {
 function changeClass(changePct: number | null): string {
   if (changePct == null) return "text-slate-400";
   return changePct >= 0 ? "text-emerald-300" : "text-red-300";
+}
+
+function isValidHeroQuoteArray(value: unknown): value is HeroQuote[] {
+  if (!Array.isArray(value)) return false;
+  return value.every((row) => {
+    if (!row || typeof row !== "object") return false;
+    const candidate = row as Partial<HeroQuote>;
+    const isTickerValid = typeof candidate.ticker === "string" && candidate.ticker.length > 0;
+    const isPriceValid = candidate.price == null || typeof candidate.price === "number";
+    const isChangeValid = candidate.changePct == null || typeof candidate.changePct === "number";
+    return isTickerValid && isPriceValid && isChangeValid;
+  });
+}
+
+function readCachedHeroQuotes(): HeroQuote[] | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(HERO_QUOTES_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as unknown;
+    return isValidHeroQuoteArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedHeroQuotes(rows: HeroQuote[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(HERO_QUOTES_CACHE_KEY, JSON.stringify(rows));
+  } catch {
+    // Ignore storage write errors (private mode/full storage).
+  }
 }
 
 export function LandingPage() {
@@ -95,6 +130,12 @@ export function LandingPage() {
 
   useEffect(() => {
     let active = true;
+    const cached = readCachedHeroQuotes();
+    if (cached && cached.length > 0) {
+      setQuotes(cached);
+      setQuotesLoading(false);
+    }
+
     async function loadQuotes(): Promise<void> {
       setQuotesLoading(true);
       const rows = await Promise.all(
@@ -113,6 +154,9 @@ export function LandingPage() {
       );
       if (!active) return;
       setQuotes(rows);
+      if (rows.some((row) => row.price !== null || row.changePct !== null)) {
+        writeCachedHeroQuotes(rows);
+      }
       setQuotesLoading(false);
     }
     void loadQuotes();
