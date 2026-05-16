@@ -14,6 +14,8 @@ import type {
   PremiumTwinsResponse,
   PremiumVerdictResponse,
 } from "../services/api";
+import { createStripeCheckoutSession } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 type Tier = "FREE" | "PRO" | "PRO_PLUS";
 
@@ -61,10 +63,12 @@ function readTrackedTickers(key: string): string[] {
 export function PremiumCompanyAnalysis() {
   const { symbol = "" } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const ticker = decodeURIComponent(symbol).toUpperCase();
   const [userTier] = useState<Tier>(() => readTier());
   const [userId] = useState<string>(() => readUserId());
   const [monthlyCount, setMonthlyCount] = useState(0);
+  const [isUpgrading, setIsUpgrading] = useState(false);
   const {
     currentScreen,
     navigateToScreen,
@@ -123,6 +127,25 @@ export function PremiumCompanyAnalysis() {
 
   const isScreenLocked = lockedFrom != null && currentScreen >= lockedFrom;
   const showUpgradeBlock = overLimit || isScreenLocked;
+
+  const handleUpgrade = async (): Promise<void> => {
+    const currentUserId = user?.id ?? userId;
+    if (!currentUserId) {
+      navigate("/login");
+      return;
+    }
+    setIsUpgrading(true);
+    try {
+      const { url } = await createStripeCheckoutSession({
+        userId: currentUserId,
+        plan: "pro",
+        billing: "monthly",
+      });
+      window.location.href = url;
+    } catch {
+      setIsUpgrading(false);
+    }
+  };
 
   const currentScreenBody = (
     <>
@@ -197,9 +220,11 @@ export function PremiumCompanyAnalysis() {
               </p>
               <button
                 type="button"
+                onClick={() => void handleUpgrade()}
+                disabled={isUpgrading}
                 className="mt-4 rounded-lg border border-brand-amber/50 bg-brand-amber/20 px-4 py-2 text-sm text-brand-amber"
               >
-                Upgrade to Pro
+                {isUpgrading ? "Redirecting..." : "Upgrade to Pro"}
               </button>
             </div>
           </section>
