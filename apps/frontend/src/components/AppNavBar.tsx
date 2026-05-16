@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Bars3Icon, ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useAuth } from "../context/AuthContext";
 
 type DropdownId = "markets" | "portfolio" | "tools";
 
@@ -83,6 +84,12 @@ function triggerClass(active: boolean): string {
   }`;
 }
 
+function shortenIdentity(value: string, maxLen = 20): string {
+  const normalized = value.trim();
+  if (normalized.length <= maxLen) return normalized;
+  return `${normalized.slice(0, maxLen - 1)}…`;
+}
+
 type DesktopDropdownProps = {
   id: DropdownId;
   labelKey: string;
@@ -154,6 +161,8 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
 
 export function AppNavBar() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<DropdownId | null>(null);
@@ -166,6 +175,12 @@ export function AppNavBar() {
   const marketsActive = isMarketsPath(pathname);
   const portfolioActive = isPortfolioPath(pathname);
   const toolsActive = isToolsPath(pathname);
+  const userIdentity = user ? shortenIdentity(user.name?.trim() || user.email, 20) : "";
+
+  const handleLogout = (): void => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <nav className="glass-nav relative z-20">
@@ -218,7 +233,21 @@ export function AppNavBar() {
           />
         </div>
 
-        <div className="hidden shrink-0 md:block">
+        <div className="hidden shrink-0 items-center gap-3 md:flex">
+          {user ? (
+            <>
+              <span className="max-w-[12rem] truncate text-xs text-slate-300" title={user.name?.trim() || user.email}>
+                {userIdentity}
+              </span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-lg border border-brand-border/80 px-3 py-1.5 text-sm text-slate-200 transition hover:border-brand-blue hover:text-white"
+              >
+                Wyloguj
+              </button>
+            </>
+          ) : null}
           <LanguageSwitcher />
         </div>
       </div>
@@ -244,6 +273,23 @@ export function AppNavBar() {
           <div className="border-t border-brand-border/50 pt-4">
             <LanguageSwitcher />
           </div>
+          {user ? (
+            <div className="border-t border-brand-border/50 pt-4">
+              <div className="mb-2 text-xs text-slate-300" title={user.name?.trim() || user.email}>
+                {userIdentity}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  handleLogout();
+                }}
+                className="rounded-lg border border-brand-border/80 px-3 py-1.5 text-sm text-slate-200 transition hover:border-brand-blue hover:text-white"
+              >
+                Wyloguj
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
     </nav>
