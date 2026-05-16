@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getLatestLiveQuote } from "../services/api";
+import { createStripeCheckoutSession, getLatestLiveQuote } from "../services/api";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const problemCards = [
@@ -112,6 +112,11 @@ export function LandingPage() {
   const [quotes, setQuotes] = useState<HeroQuote[]>([]);
   const [quotesLoading, setQuotesLoading] = useState(true);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
+  const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<"pro" | "pro_plus" | null>(null);
+
+  useEffect(() => {
+    document.title = "StockAI Pro — Platforma inwestycyjna nowej generacji";
+  }, []);
 
   const emptyQuotes = useMemo<HeroQuote[]>(
     () =>
@@ -169,6 +174,29 @@ export function LandingPage() {
   }, []);
 
   const displayedQuotes = quotes.length > 0 ? quotes : emptyQuotes;
+
+  const handleChoosePlan = async (plan: "pro" | "pro_plus"): Promise<void> => {
+    const userId =
+      typeof window !== "undefined" ? window.localStorage.getItem("userId")?.trim() ?? "" : "";
+    if (!userId) {
+      window.location.href = "/login";
+      return;
+    }
+    try {
+      setCheckoutLoadingPlan(plan);
+      const { url } = await createStripeCheckoutSession({
+        userId,
+        plan,
+        billing: billingCycle,
+      });
+      window.location.href = url;
+    } catch (error) {
+      console.error("Failed to create Stripe Checkout session", error);
+      window.alert(t("landing.pricing.checkoutError", { defaultValue: "Nie udało się rozpocząć płatności." }));
+    } finally {
+      setCheckoutLoadingPlan(null);
+    }
+  };
 
   return (
     <div className="relative overflow-hidden">
@@ -390,12 +418,25 @@ export function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  to="/dashboard"
-                  className="interactive-tilt mt-6 inline-flex rounded-lg border border-brand-border/70 bg-white/5 px-4 py-2 text-sm font-semibold text-white"
-                >
-                  {t(tier.ctaKey)}
-                </Link>
+                {tier.id === "pro" || tier.id === "proPlus" ? (
+                  <button
+                    type="button"
+                    onClick={() => void handleChoosePlan(tier.id === "pro" ? "pro" : "pro_plus")}
+                    disabled={checkoutLoadingPlan !== null}
+                    className="interactive-tilt mt-6 inline-flex rounded-lg border border-brand-border/70 bg-white/5 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {checkoutLoadingPlan === (tier.id === "pro" ? "pro" : "pro_plus")
+                      ? t("common.loading", { defaultValue: "Loading..." })
+                      : t(tier.ctaKey)}
+                  </button>
+                ) : (
+                  <Link
+                    to="/dashboard"
+                    className="interactive-tilt mt-6 inline-flex rounded-lg border border-brand-border/70 bg-white/5 px-4 py-2 text-sm font-semibold text-white"
+                  >
+                    {t(tier.ctaKey)}
+                  </Link>
+                )}
                 {tier.id === "pro" ? (
                   <p className="mt-2 text-xs text-slate-400">
                     {t("landing.pricing.trial", { defaultValue: "14 days free" })}

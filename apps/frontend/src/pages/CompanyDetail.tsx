@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { AnalysisBrief } from "../components/AnalysisBrief";
 import { BrokerCTAButton } from "../components/affiliate/BrokerCTAButton";
 import { Chart } from "../components/Chart";
+import { WatchlistButton } from "../components/WatchlistButton";
 import type { AnalysisResponse, Company, NewsRow, QuoteRow } from "../services/api";
 import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -62,6 +63,23 @@ export function CompanyDetail() {
   const [error, setError] = useState<string | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const etoroMarket = toEtoroMarket(company?.exchange);
+
+  useEffect(() => {
+    const companyName = company?.name?.trim() || sym;
+    document.title = `${sym} — ${companyName} | StockAI Pro`;
+
+    const descriptionText = company?.description?.trim()
+      ? `${sym} (${companyName}) na StockAI Pro: ${company.description.slice(0, 160)}`
+      : `${sym} (${companyName}) na StockAI Pro: notowania, wykres, newsy i analiza AI.`;
+
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement("meta");
+      metaDescription.setAttribute("name", "description");
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute("content", descriptionText);
+  }, [company, sym]);
 
   useEffect(() => {
     if (!sym) return;
@@ -146,7 +164,10 @@ export function CompanyDetail() {
         </div>
         <div className="min-w-0 flex-1">
           <h1 className="text-3xl font-bold text-white">{company.name}</h1>
-          <p className="mt-1 font-mono text-sm text-slate-500">{company.symbol}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <p className="font-mono text-sm text-slate-500">{company.symbol}</p>
+            <WatchlistButton symbol={company.symbol} />
+          </div>
           {etoroMarket && (
             <section className="mt-4 rounded-xl border border-brand-green/30 bg-brand-green/5 p-4">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-green">
