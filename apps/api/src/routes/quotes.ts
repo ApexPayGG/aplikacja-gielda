@@ -346,7 +346,14 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
             return bVolume > aVolume ? 1 : -1;
           })
           .slice(0, limit)
-          .map((row) => serializeHistoricalQuoteFallback(row));
+          .map((row) => {
+            const serialized = serializeHistoricalQuoteFallback(row);
+            return {
+              ...serialized,
+              internalTicker: serialized.ticker,
+              ticker: serialized.ticker.replace(/\.US$/, ""),
+            };
+          });
       }
 
       res.json({ limit, count: mapped.length, quotes: mapped });

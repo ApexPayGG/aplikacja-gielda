@@ -258,11 +258,13 @@ describe("quotes routes", () => {
 
     const res = await fetch(`${baseUrl}/api/quotes/top?limit=5`);
     assert.equal(res.status, 200);
-    const body = (await res.json()) as { quotes: Array<{ ticker: string }> };
+    const body = (await res.json()) as { quotes: Array<{ ticker: string; internalTicker?: string }> };
 
     assert.deepEqual(
       body.quotes.map((q) => q.ticker).sort(),
-      ["AAPL", "META.US"],
+      ["AAPL", "META"],
     );
+    const metaQuote = body.quotes.find((q) => q.ticker === "META");
+    assert.equal(metaQuote?.internalTicker, "META.US");
   });
 });
