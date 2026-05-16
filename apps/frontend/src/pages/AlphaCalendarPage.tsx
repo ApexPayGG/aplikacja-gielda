@@ -101,14 +101,15 @@ function probabilityColor(score: number): string {
   return "text-brand-red";
 }
 
-function formatDateTime(value: string): string {
+function formatDateTime(value: string, notAvailable: string): string {
   const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "n/a";
+  if (Number.isNaN(d.getTime())) return notAvailable;
   return d.toLocaleString();
 }
 
 export function AlphaCalendarPage() {
   const { t } = useTranslation();
+  const naDate = t("common.notAvailable");
   const [calendar, setCalendar] = useState<AlphaCalendarResponse | null>(null);
   const [calendarLoading, setCalendarLoading] = useState(false);
   const [tickerInput, setTickerInput] = useState("");
@@ -179,11 +180,11 @@ export function AlphaCalendarPage() {
           <div>
             <h1 className="text-2xl font-bold text-white">📅 {t("alpha.title")} — {t("alpha.windows")}</h1>
             <p className="mt-1 text-sm text-slate-400">
-              {new Date().toLocaleDateString()} • Następne 48h
+              {new Date().toLocaleDateString()} • {t("alpha.subtitleNext48h")}
             </p>
           </div>
           <span className={`rounded px-3 py-1 text-xs ${usingMock ? "bg-orange-500/20 text-orange-200" : "bg-slate-700/40 text-slate-300"}`}>
-            {usingMock ? "Mock fallback active" : "Live API"}
+            {usingMock ? t("common.apiMockBadge") : t("common.apiLiveBadge")}
           </span>
         </header>
 
@@ -202,9 +203,9 @@ export function AlphaCalendarPage() {
           ) : (
             <>
               <div className="rounded-lg border border-brand-blue/35 bg-brand-blue/12 p-4">
-                <h2 className="text-sm font-semibold text-brand-blue">🤖 AI Summary</h2>
+                <h2 className="text-sm font-semibold text-brand-blue">{t("alpha.aiSummaryTitle")}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-200">
-                  {calendar?.aiSummary ?? "Brak podsumowania AI."}
+                  {calendar?.aiSummary?.trim() ? calendar.aiSummary : t("alpha.aiSummaryEmpty")}
                 </p>
               </div>
 
@@ -221,7 +222,7 @@ export function AlphaCalendarPage() {
                       {w.historicalAvgReturn.toFixed(2)}%
                     </p>
                     <p className="mt-2 text-xs text-slate-400">
-                      {formatDateTime(w.windowStart)} → {formatDateTime(w.windowEnd)}
+                      {formatDateTime(w.windowStart, naDate)} → {formatDateTime(w.windowEnd, naDate)}
                     </p>
                     <p className="mt-3 text-sm text-slate-300">{w.description}</p>
                     <p className="mt-3 text-xs italic text-slate-400">{w.aiNote}</p>
@@ -236,12 +237,12 @@ export function AlphaCalendarPage() {
           <h2 className="text-lg font-semibold text-white">{t("common.search")}</h2>
           <form onSubmit={onCheckTicker} className="flex flex-wrap items-end gap-3">
             <label className="flex min-w-[220px] flex-col gap-1 text-sm">
-              <span className="text-slate-400">Ticker</span>
+              <span className="text-slate-400">{t("alpha.tickerLabel")}</span>
               <input
                 className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
                 value={tickerInput}
                 onChange={(e) => setTickerInput(e.target.value.toUpperCase())}
-                placeholder="AAPL"
+                placeholder={t("alpha.tickerPlaceholder")}
               />
             </label>
             <button
@@ -263,16 +264,16 @@ export function AlphaCalendarPage() {
                     <th className="px-2 py-2">{t("alpha.windows")}</th>
                     <th className="px-2 py-2">{t("alpha.probability")}</th>
                     <th className="px-2 py-2">{t("alpha.historicalReturn")}</th>
-                    <th className="px-2 py-2">Start</th>
-                    <th className="px-2 py-2">End</th>
-                    <th className="px-2 py-2">Opis</th>
+                    <th className="px-2 py-2">{t("alpha.colStart")}</th>
+                    <th className="px-2 py-2">{t("alpha.colEnd")}</th>
+                    <th className="px-2 py-2">{t("alpha.colDescription")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {tickerRows.length === 0 && (
                     <tr>
                       <td colSpan={6} className="px-2 py-6 text-center text-slate-500">
-                        Brak okien dla tickera.
+                        {t("alpha.emptyTickerRows")}
                       </td>
                     </tr>
                   )}
@@ -286,8 +287,8 @@ export function AlphaCalendarPage() {
                         {w.historicalAvgReturn >= 0 ? "+" : ""}
                         {w.historicalAvgReturn.toFixed(2)}%
                       </td>
-                      <td className="px-2 py-2 text-xs text-slate-300">{formatDateTime(w.windowStart)}</td>
-                      <td className="px-2 py-2 text-xs text-slate-300">{formatDateTime(w.windowEnd)}</td>
+                      <td className="px-2 py-2 text-xs text-slate-300">{formatDateTime(w.windowStart, naDate)}</td>
+                      <td className="px-2 py-2 text-xs text-slate-300">{formatDateTime(w.windowEnd, naDate)}</td>
                       <td className="px-2 py-2 text-slate-300">{w.description}</td>
                     </tr>
                   ))}

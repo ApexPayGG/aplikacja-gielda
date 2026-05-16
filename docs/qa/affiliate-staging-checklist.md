@@ -3,6 +3,18 @@
 Ten dokument prowadzi krok po kroku przez QA Sprint 1 (affiliate).
 Zakladany czas: 15-30 min.
 
+## Copy-Paste Only (7 commands)
+
+```bash
+npx prisma migrate deploy && psql "$DB_URL" -c "SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_name IN ('affiliate_brokers','affiliate_clicks','affiliate_conversions','affiliate_payouts') ORDER BY table_name;"
+psql "$DB_URL" -c "SELECT slug, partner_id, is_active FROM affiliate_brokers WHERE slug IN ('xtb','bossa','etoro','trade_republic') ORDER BY slug;"
+curl.exe -sS -X PATCH "$STAGING_API_BASE/admin/affiliate/brokers/xtb" -H "Content-Type: application/json" -d "{\"isActive\":true}" && curl.exe -sS -X PATCH "$STAGING_API_BASE/admin/affiliate/brokers/bossa" -H "Content-Type: application/json" -d "{\"isActive\":true}" && curl.exe -sS "$STAGING_API_BASE/affiliate/brokers?country=PL&market=US"
+curl.exe -i -sS "$STAGING_API_BASE/affiliate/redirect?broker=xtb&page=company_detail&ticker=AAPL&userId=qa-smoke-user" && curl.exe -i -sS "$STAGING_API_BASE/affiliate/redirect?broker=xtb&page=signals&ticker=MSFT&userId=qa-smoke-user"
+psql "$DB_URL" -c "SELECT click_id, user_id, source_page, source_ticker, clicked_at FROM affiliate_clicks WHERE user_id='qa-smoke-user' ORDER BY clicked_at DESC LIMIT 2;"
+CLICK1=$(psql "$DB_URL" -t -A -c "SELECT click_id FROM affiliate_clicks WHERE user_id='qa-smoke-user' ORDER BY clicked_at DESC OFFSET 0 LIMIT 1;") && CLICK2=$(psql "$DB_URL" -t -A -c "SELECT click_id FROM affiliate_clicks WHERE user_id='qa-smoke-user' ORDER BY clicked_at DESC OFFSET 1 LIMIT 1;") && CSV_CONTENT=$(printf "external_user_id,conversion_type,conversion_date,commission_amount,commission_currency,ftd_amount,click_id_ref\nUSR_001,signup,2026-05-11,100.00,EUR,500.00,%s\nUSR_002,ftd,2026-05-10,150.00,EUR,1000.00,%s\nUSR_003,signup,2026-05-09,80.00,EUR,250.00,\n" "$CLICK1" "$CLICK2") && curl.exe -sS -X POST "$STAGING_API_BASE/admin/affiliate/import-csv" -H "Content-Type: application/json" -d "{\"brokerSlug\":\"xtb\",\"csvContent\":\"$CSV_CONTENT\"}"
+psql "$DB_URL" -c "SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE matched_click_id IS NOT NULL) AS matched, COUNT(*) FILTER (WHERE matched_click_id IS NULL) AS unmatched FROM affiliate_conversions WHERE external_user_id IN ('USR_001','USR_002','USR_003') AND conversion_date BETWEEN DATE '2026-05-09' AND DATE '2026-05-11';"
+```
+
 ## ⚡ Quick Run (5 min smoke test)
 
 Use this BEFORE prod deploy decision. If all 7 pass -> deploy.
