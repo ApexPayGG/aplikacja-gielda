@@ -218,4 +218,51 @@ describe("quotes routes", () => {
     assert.equal(body.quotes[0].ticker, "AAPL");
     assert.equal(body.quotes[0].source, "quotes_fallback");
   });
+
+  it("GET /api/quotes/top fallback deduplicates base symbol and prefers ticker without .US", async () => {
+    queryRawResponses = [
+      [],
+      [
+        {
+          id: BigInt(21),
+          symbol: "AAPL.US",
+          open: new Prisma.Decimal("180.00"),
+          high: new Prisma.Decimal("182.00"),
+          low: new Prisma.Decimal("179.00"),
+          close: new Prisma.Decimal("181.00"),
+          volume: BigInt(2100000),
+          timestamp: new Date("2026-05-06T00:00:00.000Z"),
+        },
+        {
+          id: BigInt(22),
+          symbol: "AAPL",
+          open: new Prisma.Decimal("179.00"),
+          high: new Prisma.Decimal("181.00"),
+          low: new Prisma.Decimal("178.00"),
+          close: new Prisma.Decimal("180.50"),
+          volume: BigInt(2000000),
+          timestamp: new Date("2026-05-05T00:00:00.000Z"),
+        },
+        {
+          id: BigInt(23),
+          symbol: "META.US",
+          open: new Prisma.Decimal("500.00"),
+          high: new Prisma.Decimal("510.00"),
+          low: new Prisma.Decimal("495.00"),
+          close: new Prisma.Decimal("507.00"),
+          volume: BigInt(1800000),
+          timestamp: new Date("2026-05-06T00:00:00.000Z"),
+        },
+      ],
+    ];
+
+    const res = await fetch(`${baseUrl}/api/quotes/top?limit=5`);
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { quotes: Array<{ ticker: string }> };
+
+    assert.deepEqual(
+      body.quotes.map((q) => q.ticker).sort(),
+      ["AAPL", "META.US"],
+    );
+  });
 });

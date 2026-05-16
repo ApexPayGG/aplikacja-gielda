@@ -15,12 +15,11 @@ const POPULAR_TOP_TICKERS = [
   "NVDA",
   "META",
   "TSLA",
-  "V",
   "JPM",
   "JNJ",
-  "XOM",
-  "PG",
   "KO",
+  "V",
+  "XOM",
 ] as const;
 
 type RedisRateStore = Pick<ReturnType<typeof getCacheRedis>, "incr" | "expire" | "ttl">;
@@ -108,6 +107,14 @@ function quoteSymbolCandidates(ticker: string): string[] {
   const us = `${base}.US`;
   if (base && !out.includes(us)) out.push(us);
   return out;
+}
+
+function baseTickerSymbol(symbol: string): string {
+  return symbol.trim().toUpperCase().replace(/\.US$/, "");
+}
+
+function isUsSuffixedTicker(symbol: string): boolean {
+  return /\.US$/i.test(symbol.trim());
 }
 
 function serializeHistoricalQuoteFallback(row: {
@@ -258,9 +265,6 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
       );
 
       if (mapped.length === 0) {
-        const popularCandidates = Array.from(
-          new Set(POPULAR_TOP_TICKERS.flatMap((ticker) => quoteSymbolCandidates(ticker))),
-        );
         const fallbackRows = await db.$queryRaw<
           Array<{
             id: bigint;
@@ -273,7 +277,35 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
             timestamp: Date;
           }>
         >(Prisma.sql`
-          SELECT DISTINCT ON ("symbol")
+          WITH candidates AS (
+            SELECT
+              "id",
+              "symbol",
+              "open",
+              "high",
+              "low",
+              "close",
+              "volume",
+              "timestamp",
+              regexp_replace("symbol", '\\.US$', '') AS "base_symbol",
+              CASE WHEN "symbol" ~ '\\.US$' THEN 1 ELSE 0 END AS "suffix_rank"
+            FROM "quotes"
+            WHERE regexp_replace("symbol", '\\.US$', '') IN (${Prisma.join(POPULAR_TOP_TICKERS)})
+          ),
+          deduplicated AS (
+            SELECT DISTINCT ON ("base_symbol")
+              "id",
+              "symbol",
+              "open",
+              "high",
+              "low",
+              "close",
+              "volume",
+              "timestamp"
+            FROM candidates
+            ORDER BY "base_symbol", "suffix_rank" ASC, "timestamp" DESC, "id" DESC
+          )
+          SELECT
             "id",
             "symbol",
             "open",
@@ -282,12 +314,39 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
             "close",
             "volume",
             "timestamp"
-          FROM "quotes"
-          WHERE "symbol" IN (${Prisma.join(popularCandidates)})
-          ORDER BY "symbol", "timestamp" DESC, "id" DESC
+          FROM deduplicated
+          ORDER BY "volume" DESC NULLS LAST
           LIMIT ${limit}
         `);
-        mapped = fallbackRows.map((row) => serializeHistoricalQuoteFallback(row));
+        const bestByBase = new Map<string, (typeof fallbackRows)[number]>();
+        for (const row of fallbackRows) {
+          const base = baseTickerSymbol(row.symbol);
+          const current = bestByBase.get(base);
+          if (!current) {
+            bestByBase.set(base, row);
+            continue;
+          }
+          const currentHasSuffix = isUsSuffixedTicker(current.symbol);
+          const candidateHasSuffix = isUsSuffixedTicker(row.symbol);
+          const candidateIsPreferred =
+            (!candidateHasSuffix && currentHasSuffix) ||
+            (candidateHasSuffix === currentHasSuffix &&
+              (row.timestamp.getTime() > current.timestamp.getTime() ||
+                (row.timestamp.getTime() === current.timestamp.getTime() && row.id > current.id)));
+          if (candidateIsPreferred) {
+            bestByBase.set(base, row);
+          }
+        }
+
+        mapped = Array.from(bestByBase.values())
+          .sort((a, b) => {
+            const aVolume = a.volume ?? BigInt(0);
+            const bVolume = b.volume ?? BigInt(0);
+            if (aVolume === bVolume) return b.timestamp.getTime() - a.timestamp.getTime();
+            return bVolume > aVolume ? 1 : -1;
+          })
+          .slice(0, limit)
+          .map((row) => serializeHistoricalQuoteFallback(row));
       }
 
       res.json({ limit, count: mapped.length, quotes: mapped });
