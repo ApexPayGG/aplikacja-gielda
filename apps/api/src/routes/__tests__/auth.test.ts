@@ -17,9 +17,12 @@ describe("auth routes", () => {
       createAuthRouter({
         registerFn: async ({ email, name }) => ({
           user: { id: "u-1", email, name: name ?? null, tier: "FREE" },
-          token: "register-token",
+          verificationEmailSent: true,
         }),
         loginFn: async ({ email, password }) => {
+          if (email === "unverified@example.com") {
+            throw new Error("Please verify your email first");
+          }
           if (email === "bad@example.com" || password !== "password123") {
             throw new Error("Invalid credentials");
           }
@@ -27,6 +30,11 @@ describe("auth routes", () => {
             user: { id: "u-1", email, name: "Jan", tier: "FREE" },
             token: "login-token",
           };
+        },
+        verifyEmailFn: async (token) => {
+          if (token !== "good-token") {
+            throw new Error("Verification token expired or invalid");
+          }
         },
         getUserByIdFn: async (id) => (id === "u-1" ? { id, email: "jan@example.com", name: "Jan", tier: "FREE" } : null),
       }),
@@ -49,16 +57,16 @@ describe("auth routes", () => {
     });
   });
 
-  it("POST /api/auth/register returns user and token", async () => {
+  it("POST /api/auth/register returns user and verification flag", async () => {
     const res = await fetch(`${baseUrl}/api/auth/register`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ email: "jan@example.com", password: "password123", name: "Jan" }),
     });
     assert.equal(res.status, 201);
-    const body = (await res.json()) as { user: { email: string }; token: string };
+    const body = (await res.json()) as { user: { email: string }; verificationEmailSent: boolean };
     assert.equal(body.user.email, "jan@example.com");
-    assert.equal(body.token, "register-token");
+    assert.equal(body.verificationEmailSent, true);
   });
 
   it("POST /api/auth/login returns 401 for invalid credentials", async () => {
@@ -83,5 +91,30 @@ describe("auth routes", () => {
   it("GET /api/auth/me returns 401 without bearer token", async () => {
     const res = await fetch(`${baseUrl}/api/auth/me`);
     assert.equal(res.status, 401);
+  });
+
+  it("POST /api/auth/login returns 403 for unverified email", async () => {
+    const res = await fetch(`${baseUrl}/api/auth/login`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "unverified@example.com", password: "password123" }),
+    });
+    assert.equal(res.status, 403);
+  });
+
+  it("GET /api/auth/verify returns json for valid token", async () => {
+    const res = await fetch(`${baseUrl}/api/auth/verify?token=good-token`, {
+      headers: { accept: "application/json" },
+    });
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { verified: boolean };
+    assert.equal(body.verified, true);
+  });
+
+  it("GET /api/auth/verify returns 400 for invalid token", async () => {
+    const res = await fetch(`${baseUrl}/api/auth/verify?token=bad-token`, {
+      headers: { accept: "application/json" },
+    });
+    assert.equal(res.status, 400);
   });
 });

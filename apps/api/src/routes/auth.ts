@@ -1,11 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
-import { getAuthUserById, loginUser, registerUser } from "../modules/auth/authModule";
+import { getAuthUserById, loginUser, registerUser, verifyEmailToken } from "../modules/auth/authModule";
 import { getAuthenticatedUserId, requireAuth } from "../modules/auth/authMiddleware";
 
 type AuthRouteDeps = {
   registerFn: typeof registerUser;
   loginFn: typeof loginUser;
+  verifyEmailFn: typeof verifyEmailToken;
   getUserByIdFn: typeof getAuthUserById;
 };
 
@@ -13,6 +14,7 @@ export function createAuthRouter(depsInput?: Partial<AuthRouteDeps>): Router {
   const deps: AuthRouteDeps = {
     registerFn: depsInput?.registerFn ?? registerUser,
     loginFn: depsInput?.loginFn ?? loginUser,
+    verifyEmailFn: depsInput?.verifyEmailFn ?? verifyEmailToken,
     getUserByIdFn: depsInput?.getUserByIdFn ?? getAuthUserById,
   };
 
@@ -55,6 +57,40 @@ export function createAuthRouter(depsInput?: Partial<AuthRouteDeps>): Router {
       }
       if (error instanceof Error && error.message === "Invalid credentials") {
         res.status(401).json({ error: error.message });
+        return;
+      }
+      if (error instanceof Error && error.message === "Please verify your email first") {
+        res.status(403).json({ error: error.message });
+        return;
+      }
+      next(error);
+    }
+  });
+
+  router.get("/api/auth/verify", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = String(req.query.token ?? "");
+      await deps.verifyEmailFn(token);
+      if (req.accepts("json")) {
+        res.json({ verified: true });
+        return;
+      }
+      res.redirect("/login?verified=true");
+    } catch (error) {
+      if (error instanceof Error && error.message === "Verification token expired or invalid") {
+        if (req.accepts("json")) {
+          res.status(400).json({ error: error.message });
+          return;
+        }
+        res.redirect("/login?verified=false");
+        return;
+      }
+      if (error instanceof Error && error.message === "Invalid verification token") {
+        if (req.accepts("json")) {
+          res.status(400).json({ error: error.message });
+          return;
+        }
+        res.redirect("/login?verified=false");
         return;
       }
       next(error);

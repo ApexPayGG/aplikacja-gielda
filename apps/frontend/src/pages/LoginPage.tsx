@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +22,12 @@ export function LoginPage() {
       await login(email, password);
       navigate("/", { replace: true });
     } catch (e) {
-      setError(apiErrorMessage(e));
+      const message = apiErrorMessage(e);
+      if (message === "Please verify your email first") {
+        setError("Sprawdź skrzynkę i kliknij link aktywacyjny");
+        return;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -31,6 +37,11 @@ export function LoginPage() {
     <div className="mx-auto flex min-h-screen max-w-md items-center px-4">
       <form onSubmit={onSubmit} className="neo-panel w-full space-y-4 rounded-xl p-6">
         <h1 className="text-2xl font-bold text-white">{t("auth.loginTitle", { defaultValue: "Logowanie" })}</h1>
+        {params.get("verified") === "true" ? (
+          <p className="rounded border border-brand-green/40 bg-brand-green/10 px-3 py-2 text-sm text-brand-green">
+            Email zweryfikowany! Możesz się zalogować.
+          </p>
+        ) : null}
         <label className="block space-y-1 text-sm text-slate-300">
           <span>{t("auth.email", { defaultValue: "Email" })}</span>
           <input

@@ -1598,3 +1598,11 @@ export async function createStripeCheckoutSession(body: {
   const { data } = await api.post<{ url: string }>("/stripe/create-checkout-session", body);
   return data;
 }
+
+export async function verifyEmailToken(token: string): Promise<{ verified: boolean }> {
+  const { data } = await publicApi.get<{ verified: boolean }>("/auth/verify", {
+    params: { token },
+    headers: { Accept: "application/json" },
+  });
+  return data;
+}

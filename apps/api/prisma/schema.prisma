@@ -59,6 +59,9 @@ enum AlphaWindowType {
 model User {
   id                   String               @id @default(cuid())
   email                String               @unique
+  emailVerified        Boolean              @default(false) @map("email_verified")
+  verifyToken          String?              @map("verify_token")
+  verifyTokenExp       DateTime?            @map("verify_token_exp")
   passwordHash         String               @map("password_hash")
   name                 String?
   tier                 String               @default("FREE")

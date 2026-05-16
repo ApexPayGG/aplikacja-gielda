@@ -43,6 +43,7 @@ import { AlpacaDashboardPage } from "./pages/AlpacaDashboardPage";
 import { AdminAffiliatePage } from "./pages/AdminAffiliatePage";
 import { PremiumCompanyAnalysis } from "./pages/PremiumCompanyAnalysis";
 import { WeeklyReviewPage } from "./pages/WeeklyReviewPage";
+import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { token, isLoading } = useAuth();
@@ -67,6 +68,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={token ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
           <Route path="/register" element={token ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
+          <Route path="/verify" element={<VerifyEmailPage />} />
 
           <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
           <Route path="/companies" element={<Home />} />

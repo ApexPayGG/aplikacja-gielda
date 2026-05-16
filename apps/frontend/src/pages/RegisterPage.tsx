@@ -1,26 +1,27 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function RegisterPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { register } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     setError(null);
+    setRegisteredEmail(null);
     setLoading(true);
     try {
-      await register(email, password, name);
-      navigate("/", { replace: true });
+      const result = await register(email, password, name);
+      setRegisteredEmail(result.email);
     } catch (e) {
       setError(apiErrorMessage(e));
     } finally {
@@ -33,6 +34,11 @@ export function RegisterPage() {
       <form onSubmit={onSubmit} className="neo-panel w-full space-y-4 rounded-xl p-6">
         <h1 className="text-2xl font-bold text-white">{t("auth.registerTitle", { defaultValue: "Rejestracja" })}</h1>
         <p className="text-sm text-slate-400">Start free · No credit card required</p>
+        {registeredEmail ? (
+          <p className="rounded border border-brand-green/40 bg-brand-green/10 px-3 py-2 text-sm text-brand-green">
+            Sprawdź swoją skrzynkę - wysłaliśmy link aktywacyjny na {registeredEmail}
+          </p>
+        ) : null}
         <label className="block space-y-1 text-sm text-slate-300">
           <span>{t("auth.nameOptional", { defaultValue: "Imię (opcjonalnie)" })}</span>
           <input
