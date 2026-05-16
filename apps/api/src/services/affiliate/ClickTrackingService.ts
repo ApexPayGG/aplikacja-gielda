@@ -18,6 +18,8 @@ type TrackClickResult = {
   countryCode: string | null;
 };
 
+const ETORO_TRACKING_URL = "https://med.etoro.com/B9219_A129734_TClick_Sstockaipro-main.aspx";
+
 function detectDeviceType(userAgent: string): "mobile" | "tablet" | "desktop" | "unknown" {
   const ua = userAgent.toLowerCase();
   if (!ua) return "unknown";
@@ -88,7 +90,12 @@ export class ClickTrackingService {
 
     const clickId = generateClickId(12);
     const ticker = (params.ticker ?? "").trim().toUpperCase() || undefined;
-    const template = ticker && broker.tickerUrlTemplate ? broker.tickerUrlTemplate : broker.baseUrl;
+    const template =
+      brokerSlug === "etoro"
+        ? ETORO_TRACKING_URL
+        : ticker && broker.tickerUrlTemplate
+          ? broker.tickerUrlTemplate
+          : broker.baseUrl;
     const redirectUrl = buildAffiliateUrl({
       template,
       partnerId: broker.partnerId,

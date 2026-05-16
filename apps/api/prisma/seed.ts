@@ -6,6 +6,7 @@ import "dotenv/config";
 import { PrismaClient, DividendAlertType, DividendTrendDirection } from "@prisma/client";
 
 const prisma = new PrismaClient();
+const ETORO_TRACKING_URL = "https://med.etoro.com/B9219_A129734_TClick_Sstockaipro-main.aspx";
 
 /** Domyślnie mock włączony (dev). Ustaw `DIVIDEND_SEED_MOCK=false` przy seedzie przed pierwszym `npm run dividends:sync`. */
 const SEED_MOCK_DIVIDENDS = !["false", "0", "no", "off"].includes(
@@ -90,11 +91,10 @@ const AFFILIATE_BROKER_SEED = [
     slug: "etoro",
     displayName: "eToro",
     logoUrl: "https://stock-ai.pro/assets/brokers/etoro.svg",
-    partnerId: "{REGISTER_AT_https://www.etoro.com/partners}",
-    affiliateProgramUrl: "https://www.etoro.com/partners",
-    baseUrl:
-      "https://www.etoro.com/?utm_source=stockai&utm_medium=affiliate&utm_campaign={click_id}&aid={partner_id}",
-    tickerUrlTemplate: "https://www.etoro.com/markets/{ticker}?aid={partner_id}&utm_campaign={click_id}",
+    partnerId: "stockaipro-main",
+    affiliateProgramUrl: ETORO_TRACKING_URL,
+    baseUrl: ETORO_TRACKING_URL,
+    tickerUrlTemplate: ETORO_TRACKING_URL,
     clickIdParam: "utm_campaign",
     attributionMethod: "click_id",
     supportedCountries: ["PL", "DE", "FR", "ES", "IT", "NL", "GB", "US", "AU", "JP", "KR"],
