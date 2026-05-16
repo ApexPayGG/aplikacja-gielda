@@ -27,6 +27,9 @@ describe("stripe routes", () => {
           if (userId === "cfg") {
             throw new Error("STRIPE_SECRET_KEY is not set");
           }
+          if (userId === "boom") {
+            throw new Error("Database unavailable");
+          }
           return `https://checkout.stripe.test/${userId}/${plan}/${billing}`;
         },
         getUserSubscriptionFn: async () => ({
@@ -95,6 +98,15 @@ describe("stripe routes", () => {
     assert.equal(res.status, 503);
     const body = (await res.json()) as { error: string };
     assert.equal(body.error, "Stripe is not configured. Set required STRIPE_* environment variables.");
+  });
+
+  it("POST /api/stripe/create-checkout-session keeps non-config errors as 500", async () => {
+    const res = await fetch(`${baseUrl}/api/stripe/create-checkout-session`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ userId: "boom", plan: "pro", billing: "monthly" }),
+    });
+    assert.equal(res.status, 500);
   });
 
   it("GET /api/stripe/subscription/:userId returns subscription", async () => {

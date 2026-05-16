@@ -20,12 +20,7 @@ type StripeRouteDeps = {
 
 function isStripeConfigurationError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
-  return (
-    error.message.includes("STRIPE_") ||
-    error.message.includes("price_pro_") ||
-    error.message.includes("price_proplus_") ||
-    error.message.includes("No such price")
-  );
+  return error.message === "STRIPE_SECRET_KEY is not set" || error.message.includes("No such price");
 }
 
 function isPlan(value: unknown): value is StripePlan {

@@ -22,22 +22,12 @@ const TIER_BY_PLAN: Record<StripePlan, UserTier> = {
   pro_plus: "PRO_PLUS",
 };
 
-type StripeClient = ReturnType<typeof initStripeClient>;
-
-let stripeClient: StripeClient | null = null;
-
-function initStripeClient(secretKey: string) {
-  return new Stripe(secretKey);
-}
-
-function getStripeClient(): StripeClient {
-  if (stripeClient) return stripeClient;
-  const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
-  if (!secretKey) {
+function getStripe(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY?.trim();
+  if (!key) {
     throw new Error("STRIPE_SECRET_KEY is not set");
   }
-  stripeClient = initStripeClient(secretKey);
-  return stripeClient;
+  return new Stripe(key);
 }
 
 function getPriceId(plan: StripePlan, billing: StripeBilling): string {
@@ -63,7 +53,7 @@ function parsePeriodEnd(periodEnd: number | null | undefined): Date | null {
 }
 
 export async function createCheckoutSession(input: CreateCheckoutSessionInput): Promise<string> {
-  const stripe = getStripeClient();
+  const stripe = getStripe();
   const user = await prisma.user.findUnique({
     where: { id: input.userId },
     select: { id: true, email: true, stripeCustomerId: true },
@@ -130,7 +120,7 @@ export function constructWebhookEvent(rawBody: Buffer, signature: string) {
   if (!secret) {
     throw new Error("STRIPE_WEBHOOK_SECRET is not set");
   }
-  const stripe = getStripeClient();
+  const stripe = getStripe();
   return stripe.webhooks.constructEvent(rawBody, signature, secret);
 }
 
@@ -144,7 +134,7 @@ async function resolveSessionTier(
   if (!session.subscription || typeof session.subscription !== "string") {
     return { tier: "PRO", periodEnd: null };
   }
-  const stripe = getStripeClient();
+  const stripe = getStripe();
   const sub = await stripe.subscriptions.retrieve(session.subscription);
   const item = sub.items.data[0];
   const priceId = item?.price?.id;
