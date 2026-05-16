@@ -174,9 +174,19 @@ export function LandingPage() {
     <div className="relative overflow-hidden">
       <header className="sticky top-0 z-30 border-b border-brand-border/60 bg-[rgba(11,14,17,0.94)] backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link to="/" className="shrink-0">
-            <img src="/logo.png" alt="StockAI Pro" className="h-8 w-40 object-cover object-center" />
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link to="/" className="shrink-0">
+              <img src="/logo.png" alt="StockAI Pro" className="h-8 w-40 object-cover object-center" />
+            </Link>
+            <nav className="hidden items-center gap-4 text-sm font-medium text-slate-300 md:flex">
+              <Link to="/companies" className="transition hover:text-white">
+                Markets
+              </Link>
+              <Link to="/signals" className="transition hover:text-white">
+                Signals
+              </Link>
+            </nav>
+          </div>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
             <Link

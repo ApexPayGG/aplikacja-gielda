@@ -3,6 +3,7 @@ import axios from "axios";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatQuoteAge } from "../utils/formatQuoteAge";
@@ -439,6 +440,8 @@ function readMentorStyle(): MentorStyle {
 
 export function SignalsPage() {
   const { t, i18n } = useTranslation("common");
+  const { token } = useAuth();
+  const isLoggedIn = Boolean(token);
   const [signals, setSignals] = useState<SignalListItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [narrative, setNarrative] = useState<NarrativeData | null>(null);
@@ -664,6 +667,13 @@ export function SignalsPage() {
       setDna(null);
       return;
     }
+    if (!isLoggedIn) {
+      setNarrative(null);
+      setDna(null);
+      setLoadingDetail(false);
+      setDetailError(null);
+      return;
+    }
     const signal = selectedSignal;
     let cancelled = false;
     async function loadDetail(): Promise<void> {
@@ -722,7 +732,7 @@ export function SignalsPage() {
     return () => {
       cancelled = true;
     };
-  }, [selectedSignal, t, i18n.language, i18n.resolvedLanguage]);
+  }, [selectedSignal, isLoggedIn, t, i18n.language, i18n.resolvedLanguage]);
 
   useEffect(() => {
     if (!selectedSignal || !narrative) return;
@@ -1031,7 +1041,19 @@ export function SignalsPage() {
                 </div>
               )}
 
-              {!loadingDetail && narrative && dna && (
+              {!isLoggedIn && (
+                <article className="neo-panel rounded-lg border border-brand-amber/35 p-4">
+                  <h3 className="text-lg font-semibold text-brand-amber">AI</h3>
+                  <p className="mt-2 text-sm text-slate-200">
+                    Zaloguj się aby zobaczyć pełną analizę AI
+                  </p>
+                  <Link to="/login" className="mt-3 inline-block text-sm font-semibold text-brand-blue hover:underline">
+                    {t("auth.loginButton", { defaultValue: "Login" })}
+                  </Link>
+                </article>
+              )}
+
+              {!loadingDetail && isLoggedIn && narrative && dna && (
                 <div className="space-y-5">
                   {mentorModeEnabled && (
                     <article className="neo-panel rounded-lg border border-brand-green/35 p-4">

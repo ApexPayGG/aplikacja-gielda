@@ -107,7 +107,7 @@ export default function App() {
           <Route path="/alpha-calendar" element={<ProtectedRoute><AlphaCalendarPage /></ProtectedRoute>} />
           <Route path="/alpha" element={<Navigate to="/alpha-calendar" replace />} />
 
-          <Route path="/dividend" element={<ProtectedRoute><Dividends /></ProtectedRoute>} />
+          <Route path="/dividend" element={<Dividends />} />
           <Route path="/dividend/intelligence" element={<ProtectedRoute><DividendIntelligencePage /></ProtectedRoute>} />
           <Route path="/admin/affiliate" element={<ProtectedRoute><AdminAffiliatePage /></ProtectedRoute>} />
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
