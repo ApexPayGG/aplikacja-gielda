@@ -23,8 +23,12 @@ describe("stripe routes", () => {
     });
     app.use(
       createStripeRouter({
-        createCheckoutSessionFn: async ({ userId, plan, billing }) =>
-          `https://checkout.stripe.test/${userId}/${plan}/${billing}`,
+        createCheckoutSessionFn: async ({ userId, plan, billing }) => {
+          if (userId === "cfg") {
+            throw new Error("STRIPE_SECRET_KEY is not set");
+          }
+          return `https://checkout.stripe.test/${userId}/${plan}/${billing}`;
+        },
         getUserSubscriptionFn: async () => ({
           tier: "PRO",
           status: "active",
@@ -80,6 +84,17 @@ describe("stripe routes", () => {
     assert.equal(res.status, 200);
     assert.equal(completedCalls, 1);
     assert.equal(deletedCalls, 0);
+  });
+
+  it("POST /api/stripe/create-checkout-session returns 503 for Stripe config error", async () => {
+    const res = await fetch(`${baseUrl}/api/stripe/create-checkout-session`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ userId: "cfg", plan: "pro", billing: "monthly" }),
+    });
+    assert.equal(res.status, 503);
+    const body = (await res.json()) as { error: string };
+    assert.equal(body.error, "Stripe is not configured. Set required STRIPE_* environment variables.");
   });
 
   it("GET /api/stripe/subscription/:userId returns subscription", async () => {

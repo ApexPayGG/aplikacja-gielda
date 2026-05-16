@@ -160,7 +160,7 @@ export function EmotionalStateWidget() {
         </div>
       ) : null}
 
-      <aside className="fixed right-3 top-3 z-[65] w-56 rounded-lg border border-slate-700/80 bg-slate-900/90 p-3 shadow-xl backdrop-blur">
+      <aside className="fixed right-3 top-20 z-[65] w-56 rounded-lg border border-slate-700/80 bg-slate-900/90 p-3 shadow-xl backdrop-blur">
         <div className="text-xs uppercase tracking-wide text-slate-400">{t("emotional.widgetTitle")}</div>
         <div className={`mt-1 text-lg font-semibold ${levelColor(level)}`}>{t(`emotional.level.${level}`)}</div>
         <div className="mt-2 text-xs text-slate-400">

@@ -18,6 +18,16 @@ type StripeRouteDeps = {
   constructWebhookEventFn: typeof constructWebhookEvent;
 };
 
+function isStripeConfigurationError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  return (
+    error.message.includes("STRIPE_") ||
+    error.message.includes("price_pro_") ||
+    error.message.includes("price_proplus_") ||
+    error.message.includes("No such price")
+  );
+}
+
 function isPlan(value: unknown): value is StripePlan {
   return value === "pro" || value === "pro_plus";
 }
@@ -56,6 +66,11 @@ export function createStripeRouter(depsInput?: Partial<StripeRouteDeps>): Router
       } catch (error) {
         if (error instanceof Error && error.message === "User not found") {
           return res.status(404).json({ error: error.message });
+        }
+        if (isStripeConfigurationError(error)) {
+          return res
+            .status(503)
+            .json({ error: "Stripe is not configured. Set required STRIPE_* environment variables." });
         }
         next(error);
       }

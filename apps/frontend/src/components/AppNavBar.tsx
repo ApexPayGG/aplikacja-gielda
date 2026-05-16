@@ -84,12 +84,6 @@ function triggerClass(active: boolean): string {
   }`;
 }
 
-function shortenIdentity(value: string, maxLen = 20): string {
-  const normalized = value.trim();
-  if (normalized.length <= maxLen) return normalized;
-  return `${normalized.slice(0, maxLen - 1)}…`;
-}
-
 type DesktopDropdownProps = {
   id: DropdownId;
   labelKey: string;
@@ -175,7 +169,8 @@ export function AppNavBar() {
   const marketsActive = isMarketsPath(pathname);
   const portfolioActive = isPortfolioPath(pathname);
   const toolsActive = isToolsPath(pathname);
-  const userIdentity = user ? shortenIdentity(user.name?.trim() || user.email, 20) : "";
+  const userName = user?.name?.trim() || null;
+  const userEmail = user?.email ?? "";
 
   const handleLogout = (): void => {
     logout();
@@ -236,9 +231,10 @@ export function AppNavBar() {
         <div className="hidden shrink-0 items-center gap-3 md:flex">
           {user ? (
             <>
-              <span className="max-w-[12rem] truncate text-xs text-slate-300" title={user.name?.trim() || user.email}>
-                {userIdentity}
-              </span>
+              <div className="max-w-[18rem] text-right">
+                {userName ? <div className="text-xs text-slate-200">{userName}</div> : null}
+                <div className="break-all text-[11px] text-slate-400">{userEmail}</div>
+              </div>
               <button
                 type="button"
                 onClick={handleLogout}
@@ -275,9 +271,8 @@ export function AppNavBar() {
           </div>
           {user ? (
             <div className="border-t border-brand-border/50 pt-4">
-              <div className="mb-2 text-xs text-slate-300" title={user.name?.trim() || user.email}>
-                {userIdentity}
-              </div>
+              {userName ? <div className="text-xs text-slate-200">{userName}</div> : null}
+              <div className="mb-2 break-all text-[11px] text-slate-400">{userEmail}</div>
               <button
                 type="button"
                 onClick={() => {
