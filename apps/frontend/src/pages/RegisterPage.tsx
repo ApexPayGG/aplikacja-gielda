@@ -32,6 +32,7 @@ export function RegisterPage() {
     <div className="mx-auto flex min-h-screen max-w-md items-center px-4">
       <form onSubmit={onSubmit} className="neo-panel w-full space-y-4 rounded-xl p-6">
         <h1 className="text-2xl font-bold text-white">{t("auth.registerTitle", { defaultValue: "Rejestracja" })}</h1>
+        <p className="text-sm text-slate-400">Start free · No credit card required</p>
         <label className="block space-y-1 text-sm text-slate-300">
           <span>{t("auth.nameOptional", { defaultValue: "Imię (opcjonalnie)" })}</span>
           <input

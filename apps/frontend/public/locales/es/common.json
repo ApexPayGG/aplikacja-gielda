@@ -1135,7 +1135,7 @@
         },
         "pro": {
           "name": "Pro",
-          "price": "$29/mo",
+          "price": "$9/mo",
           "body": "Full access for active investors.",
           "features": [
             "All AI modules",
@@ -1146,7 +1146,7 @@
         },
         "proPlus": {
           "name": "Pro+",
-          "price": "$79/mo",
+          "price": "$19/mo",
           "body": "For power users and automation workflows.",
           "features": [
             "Everything in Pro",
@@ -1155,7 +1155,15 @@
           ],
           "cta": "Choose Pro+"
         }
-      }
+      },
+      "badge": "Precio Early Adopter",
+      "earlyAdopter": "Las primeras 500 cuentas Pro se mantienen en $9/mes para siempre",
+      "monthly": "mensual",
+      "yearly": "anual",
+      "save": "Ahorra 27%",
+      "saveProPlus": "Ahorra 34%",
+      "popular": "Más popular",
+      "trial": "14 días gratis"
     },
     "footerCta": {
       "title": "Start your free account today",

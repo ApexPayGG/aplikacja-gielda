@@ -1126,24 +1126,44 @@
           "name": "Free",
           "price": "$0/mo",
           "body": "Basic features to start building consistency.",
-          "features": ["Core dashboard", "Basic AI signals", "Community access"],
+          "features": [
+            "Core dashboard",
+            "Basic AI signals",
+            "Community access"
+          ],
           "cta": "Start free"
         },
         "pro": {
           "name": "Pro",
-          "price": "$29/mo",
+          "price": "$9/mo",
           "body": "Full access for active investors.",
-          "features": ["All AI modules", "Behavioral coaching", "Trader psyche profile"],
+          "features": [
+            "All AI modules",
+            "Behavioral coaching",
+            "Trader psyche profile"
+          ],
           "cta": "Choose Pro"
         },
         "proPlus": {
           "name": "Pro+",
-          "price": "$79/mo",
+          "price": "$19/mo",
           "body": "For power users and automation workflows.",
-          "features": ["Everything in Pro", "API access", "Broker integration"],
+          "features": [
+            "Everything in Pro",
+            "API access",
+            "Broker integration"
+          ],
           "cta": "Choose Pro+"
         }
-      }
+      },
+      "badge": "Early Adopter Price",
+      "earlyAdopter": "First 500 Pro accounts locked at $9/mo forever",
+      "monthly": "monthly",
+      "yearly": "yearly",
+      "save": "Save 27%",
+      "saveProPlus": "Save 34%",
+      "popular": "Most Popular",
+      "trial": "14 days free"
     },
     "footerCta": {
       "title": "Start your free account today",

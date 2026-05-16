@@ -1135,7 +1135,7 @@
         },
         "pro": {
           "name": "Pro",
-          "price": "$29/mo",
+          "price": "$9/mo",
           "body": "Full access for active investors.",
           "features": [
             "All AI modules",
@@ -1146,7 +1146,7 @@
         },
         "proPlus": {
           "name": "Pro+",
-          "price": "$79/mo",
+          "price": "$19/mo",
           "body": "For power users and automation workflows.",
           "features": [
             "Everything in Pro",
@@ -1155,7 +1155,15 @@
           ],
           "cta": "Choose Pro+"
         }
-      }
+      },
+      "badge": "얼리 어답터 가격",
+      "earlyAdopter": "선착순 Pro 500계정은 평생 월 $9 고정",
+      "monthly": "월간",
+      "yearly": "연간",
+      "save": "27% 절약",
+      "saveProPlus": "34% 절약",
+      "popular": "가장 인기",
+      "trial": "14일 무료"
     },
     "footerCta": {
       "title": "Start your free account today",

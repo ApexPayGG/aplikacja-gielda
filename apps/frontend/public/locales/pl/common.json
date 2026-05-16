@@ -1139,24 +1139,44 @@
           "name": "Free",
           "price": "$0/mo",
           "body": "Podstawowe funkcje, żeby zacząć budować konsekwencję.",
-          "features": ["Główny dashboard", "Podstawowe sygnały AI", "Dostęp do społeczności"],
+          "features": [
+            "Główny dashboard",
+            "Podstawowe sygnały AI",
+            "Dostęp do społeczności"
+          ],
           "cta": "Zacznij za darmo"
         },
         "pro": {
           "name": "Pro",
-          "price": "$29/mo",
+          "price": "$9/mo",
           "body": "Pełny dostęp dla aktywnych inwestorów.",
-          "features": ["Wszystkie moduły AI", "Coaching behawioralny", "Profil psychiki tradera"],
+          "features": [
+            "Wszystkie moduły AI",
+            "Coaching behawioralny",
+            "Profil psychiki tradera"
+          ],
           "cta": "Wybierz Pro"
         },
         "proPlus": {
           "name": "Pro+",
-          "price": "$79/mo",
+          "price": "$19/mo",
           "body": "Dla power userów i workflow automatyzacji.",
-          "features": ["Wszystko z Pro", "Dostęp do API", "Integracja brokerska"],
+          "features": [
+            "Wszystko z Pro",
+            "Dostęp do API",
+            "Integracja brokerska"
+          ],
           "cta": "Wybierz Pro+"
         }
-      }
+      },
+      "badge": "Cena dla pierwszych użytkowników",
+      "earlyAdopter": "Pierwsze 500 kont Pro w cenie $9/mo — na zawsze",
+      "monthly": "miesięcznie",
+      "yearly": "rocznie",
+      "save": "Oszczędź 27%",
+      "saveProPlus": "Oszczędź 34%",
+      "popular": "Najpopularniejszy",
+      "trial": "14 dni za darmo"
     },
     "footerCta": {
       "title": "Załóż darmowe konto już dziś",

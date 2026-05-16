@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getLatestQuoteBySymbol } from "../services/api";
+import { getLatestLiveQuote } from "../services/api";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const problemCards = [
@@ -21,24 +21,24 @@ const solutionFeatures = [
 
 const pricingTiers = [
   {
+    id: "free",
     nameKey: "landing.pricing.tiers.free.name",
-    priceKey: "landing.pricing.tiers.free.price",
     bodyKey: "landing.pricing.tiers.free.body",
     featuresKey: "landing.pricing.tiers.free.features",
     ctaKey: "landing.pricing.tiers.free.cta",
     highlighted: false,
   },
   {
+    id: "pro",
     nameKey: "landing.pricing.tiers.pro.name",
-    priceKey: "landing.pricing.tiers.pro.price",
     bodyKey: "landing.pricing.tiers.pro.body",
     featuresKey: "landing.pricing.tiers.pro.features",
     ctaKey: "landing.pricing.tiers.pro.cta",
     highlighted: true,
   },
   {
+    id: "proPlus",
     nameKey: "landing.pricing.tiers.proPlus.name",
-    priceKey: "landing.pricing.tiers.proPlus.price",
     bodyKey: "landing.pricing.tiers.proPlus.body",
     featuresKey: "landing.pricing.tiers.proPlus.features",
     ctaKey: "landing.pricing.tiers.proPlus.cta",
@@ -61,6 +61,7 @@ type HeroQuote = {
 };
 
 const HERO_QUOTES_CACHE_KEY = "landing.heroQuotes.v1";
+type BillingCycle = "monthly" | "yearly";
 
 function toNumber(value: string | null | undefined): number | null {
   if (value == null) return null;
@@ -110,6 +111,7 @@ export function LandingPage() {
   const { t } = useTranslation();
   const [quotes, setQuotes] = useState<HeroQuote[]>([]);
   const [quotesLoading, setQuotesLoading] = useState(true);
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
 
   const emptyQuotes = useMemo<HeroQuote[]>(
     () =>
@@ -142,9 +144,9 @@ export function LandingPage() {
       const rows = await Promise.all(
         HERO_TICKERS.map(async (ticker): Promise<HeroQuote> => {
           try {
-            const quote = await getLatestQuoteBySymbol(ticker);
+            const { quote } = await getLatestLiveQuote(ticker);
             const open = toNumber(quote.open);
-            const close = toNumber(quote.close);
+            const close = toNumber(quote.price);
             const changePct =
               close !== null && open !== null && open > 0 ? ((close - open) / open) * 100 : null;
             return { ticker, price: close, changePct };
@@ -302,6 +304,27 @@ export function LandingPage() {
       <section className="border-y border-brand-border/60 bg-slate-950/35">
         <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
           <h2 className="text-2xl font-semibold text-white md:text-3xl">{t("landing.pricing.title")}</h2>
+          <div className="mt-6 inline-flex rounded-xl border border-brand-border/70 bg-slate-900/50 p-1">
+            <button
+              type="button"
+              onClick={() => setBillingCycle("monthly")}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                billingCycle === "monthly" ? "bg-brand-amber text-slate-950" : "text-slate-300 hover:text-white"
+              }`}
+            >
+              {t("landing.pricing.monthly")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingCycle("yearly")}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                billingCycle === "yearly" ? "bg-brand-amber text-slate-950" : "text-slate-300 hover:text-white"
+              }`}
+            >
+              {t("landing.pricing.yearly")}
+            </button>
+          </div>
+          <p className="mt-3 text-sm text-brand-amber">{t("landing.pricing.earlyAdopter")}</p>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {pricingTiers.map((tier) => (
               <article
@@ -310,8 +333,36 @@ export function LandingPage() {
                   tier.highlighted ? "neo-panel-accent neo-panel border border-brand-blue/40" : "neo-panel"
                 }`}
               >
-                <h3 className="text-xl font-semibold text-white">{t(tier.nameKey)}</h3>
-                <p className="mt-2 text-3xl font-bold text-brand-amber">{t(tier.priceKey)}</p>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-semibold text-white">{t(tier.nameKey)}</h3>
+                  {tier.id === "pro" ? (
+                    <span className="rounded-full border border-brand-amber/50 bg-brand-amber/10 px-2 py-0.5 text-[11px] font-semibold text-brand-amber">
+                      ⭐ {t("landing.pricing.badge")}
+                    </span>
+                  ) : null}
+                  {tier.id === "pro" ? (
+                    <span className="rounded-full border border-brand-blue/40 bg-brand-blue/10 px-2 py-0.5 text-[11px] font-semibold text-brand-blue">
+                      {t("landing.pricing.popular")}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-2 text-3xl font-bold text-brand-amber">
+                  {tier.id === "free"
+                    ? "$0/mo"
+                    : tier.id === "pro"
+                      ? billingCycle === "monthly"
+                        ? "$9/mo"
+                        : "$79/yr"
+                      : billingCycle === "monthly"
+                        ? "$19/mo"
+                        : "$149/yr"}
+                </p>
+                {tier.id === "pro" && billingCycle === "yearly" ? (
+                  <p className="mt-1 text-xs font-semibold text-brand-green">{t("landing.pricing.save")}</p>
+                ) : null}
+                {tier.id === "proPlus" && billingCycle === "yearly" ? (
+                  <p className="mt-1 text-xs font-semibold text-brand-green">{t("landing.pricing.saveProPlus")}</p>
+                ) : null}
                 <p className="mt-3 text-sm text-slate-300">{t(tier.bodyKey)}</p>
                 <ul className="mt-5 space-y-2 text-sm text-slate-200">
                   {pricingFeatures(tier.featuresKey).map((item) => (
@@ -327,6 +378,7 @@ export function LandingPage() {
                 >
                   {t(tier.ctaKey)}
                 </Link>
+                {tier.id === "pro" ? <p className="mt-2 text-xs text-slate-400">{t("landing.pricing.trial")}</p> : null}
               </article>
             ))}
           </div>

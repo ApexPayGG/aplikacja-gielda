@@ -1135,7 +1135,7 @@
         },
         "pro": {
           "name": "Pro",
-          "price": "$29/mo",
+          "price": "$9/mo",
           "body": "Full access for active investors.",
           "features": [
             "All AI modules",
@@ -1146,7 +1146,7 @@
         },
         "proPlus": {
           "name": "Pro+",
-          "price": "$79/mo",
+          "price": "$19/mo",
           "body": "For power users and automation workflows.",
           "features": [
             "Everything in Pro",
@@ -1155,7 +1155,15 @@
           ],
           "cta": "Choose Pro+"
         }
-      }
+      },
+      "badge": "अर्ली एडॉप्टर कीमत",
+      "earlyAdopter": "पहले 500 Pro अकाउंट्स हमेशा के लिए $9/माह पर लॉक",
+      "monthly": "मासिक",
+      "yearly": "वार्षिक",
+      "save": "27% बचाएं",
+      "saveProPlus": "34% बचाएं",
+      "popular": "सबसे लोकप्रिय",
+      "trial": "14 दिन मुफ्त"
     },
     "footerCta": {
       "title": "Start your free account today",
