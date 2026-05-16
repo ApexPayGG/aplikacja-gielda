@@ -93,6 +93,8 @@ import { createAdminAffiliateRouter } from "./routes/adminAffiliate";
 import { createHistoricalTwinsRouter } from "./routes/historicaltwins";
 import { createPremiumCompanyRouter } from "./routes/premiumCompany";
 import { createAuthRouter } from "./routes/auth";
+import { createWatchlistRouter } from "./routes/watchlist";
+import { createStripeRouter } from "./routes/stripe";
 import { runSnapshotJob } from "./modules/historicaltwins/snapshotJob";
 import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 import { importCompanyOnDemand, searchCompaniesOnDemand } from "./modules/companies/companySearchModule";
@@ -210,8 +212,20 @@ export function createApp(): express.Express {
     }),
   );
 
-  app.use(express.json({ limit: "1mb" }));
+  app.use(
+    express.json({
+      limit: "1mb",
+      verify: (req, _res, buf) => {
+        const requestPath = typeof req.url === "string" ? req.url.split("?")[0] : "";
+        if (requestPath === "/api/stripe/webhook") {
+          (req as typeof req & { rawBody?: Buffer }).rawBody = Buffer.from(buf);
+        }
+      },
+    }),
+  );
   app.use(createAuthRouter());
+  app.use(createStripeRouter());
+  app.use(createWatchlistRouter());
   app.use(createCopilotRouter());
   app.use(createDividendsRouter());
   app.use(createDividendRouter());

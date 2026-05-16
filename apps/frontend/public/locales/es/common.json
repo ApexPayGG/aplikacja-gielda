@@ -871,6 +871,15 @@
     "portfolioTitle": "Portfolio",
     "portfolioDesc": "Coming soon - watchlists and alerts."
   },
+  "watchlist": {
+    "follow": "♡ Follow",
+    "following": "♥ Following",
+    "yours": "Your watchlist",
+    "empty": "You are not observing any companies yet.",
+    "symbol": "Symbol",
+    "lastPrice": "Last price",
+    "changePct": "Change %"
+  },
   "dividendsPage": {
     "title": "Dividend screening (MVP)",
     "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",

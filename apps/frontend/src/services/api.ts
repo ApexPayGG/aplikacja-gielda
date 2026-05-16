@@ -169,6 +169,17 @@ export interface LatestSymbolQuoteResponse {
   timestamp: string;
 }
 
+export interface WatchlistItem {
+  id: string;
+  userId: string;
+  symbol: string;
+  addedAt: string;
+}
+
+export interface WatchlistResponse {
+  items: WatchlistItem[];
+}
+
 export interface NewsRow {
   id: string;
   symbol: string;
@@ -637,6 +648,26 @@ export async function getTopLiveQuotes(limit = 10): Promise<TopLiveQuotesRespons
 
 export async function getLatestQuoteBySymbol(symbol: string): Promise<LatestSymbolQuoteResponse> {
   const { data } = await publicApi.get<LatestSymbolQuoteResponse>(`/quotes/${encodeURIComponent(symbol)}`);
+  return data;
+}
+
+export async function getWatchlist(userId: string): Promise<WatchlistItem[]> {
+  const { data } = await api.get<WatchlistResponse>(`/watchlist/${encodeURIComponent(userId)}`);
+  return Array.isArray(data.items) ? data.items : [];
+}
+
+export async function addToWatchlist(userId: string, symbol: string): Promise<WatchlistItem> {
+  const { data } = await api.post<WatchlistItem>("/watchlist", {
+    userId,
+    symbol: symbol.trim().toUpperCase(),
+  });
+  return data;
+}
+
+export async function removeFromWatchlist(userId: string, symbol: string): Promise<{ deleted: boolean }> {
+  const { data } = await api.delete<{ deleted: boolean }>(
+    `/watchlist/${encodeURIComponent(userId)}/${encodeURIComponent(symbol.trim().toUpperCase())}`,
+  );
   return data;
 }
 
@@ -1554,4 +1585,16 @@ export async function getPremiumCatch(ticker: string): Promise<PremiumCatchRespo
     const { data } = await api.get<PremiumCatchResponse>(`/premium/${encodeURIComponent(candidate)}/catch`);
     return data;
   });
+}
+
+export type StripeCheckoutPlan = "pro" | "pro_plus";
+export type StripeCheckoutBilling = "monthly" | "yearly";
+
+export async function createStripeCheckoutSession(body: {
+  userId: string;
+  plan: StripeCheckoutPlan;
+  billing: StripeCheckoutBilling;
+}): Promise<{ url: string }> {
+  const { data } = await api.post<{ url: string }>("/stripe/create-checkout-session", body);
+  return data;
 }

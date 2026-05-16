@@ -2,6 +2,7 @@ import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Company } from "../services/api";
+import { WatchlistButton } from "./WatchlistButton";
 
 type Props = {
   company: Company;
@@ -26,8 +27,11 @@ export function CompanyCard({ company }: Props) {
   return (
     <Link
       to={`/company/${encodeURIComponent(company.symbol)}/premium`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-surface-border bg-surface-elevated transition hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-surface-border bg-surface-elevated transition hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5"
     >
+      <div className="absolute right-3 top-3 z-10">
+        <WatchlistButton symbol={company.symbol} />
+      </div>
       <div className="flex h-28 items-center justify-center bg-slate-900/80 p-4">
         {showLogo ? (
           <img

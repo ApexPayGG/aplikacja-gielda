@@ -332,6 +332,15 @@
     "portfolioTitle": "Portfel",
     "portfolioDesc": "Wkrótce - watchlisty i alerty."
   },
+  "watchlist": {
+    "follow": "♡ Obserwuj",
+    "following": "♥ Obserwujesz",
+    "yours": "Twoje obserwowane",
+    "empty": "Nie obserwujesz jeszcze żadnych spółek.",
+    "symbol": "Symbol",
+    "lastPrice": "Ostatnia cena",
+    "changePct": "Zmiana %"
+  },
   "dividendsPage": {
     "title": "Screening dywidend (MVP)",
     "subtitle": "Historia dywidend (mock seed), screener wzrostu i kalkulator podatku 19% (szacunek). Dane:",
