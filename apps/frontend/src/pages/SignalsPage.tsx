@@ -88,7 +88,11 @@ const marketFlags: Record<MarketCode, string> = {
 
 const GLOSSARY_TERMS = ["RSI", "MACD", "VWAP", "breakout", "oversold"] as const;
 
-const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
+const USER_ID = (() => {
+  const raw = window.localStorage.getItem("userId")?.trim();
+  if (!raw || raw.toLowerCase() === "null" || raw.toLowerCase() === "undefined") return null;
+  return raw;
+})();
 
 const mockSignals: SignalListItem[] = [
   {
@@ -891,24 +895,28 @@ export function SignalsPage() {
                         {signal.ticker} <span className="text-slate-400">{signal.market}</span> {marketFlags[signal.market]}
                       </div>
                       <div className="mt-1 text-xs text-slate-400">{renderGlossaryTerms(signal.setupType)}</div>
-                      <span className={`mt-2 inline-flex rounded px-2 py-0.5 text-[10px] font-semibold tracking-wide ${confidenceCueClass(cue)}`}>
-                        {t(`signals.confidenceCue.${cue}`)}
-                      </span>
+                      {isLoggedIn ? (
+                        <span className={`mt-2 inline-flex rounded px-2 py-0.5 text-[10px] font-semibold tracking-wide ${confidenceCueClass(cue)}`}>
+                          {t(`signals.confidenceCue.${cue}`)}
+                        </span>
+                      ) : null}
                     </div>
                     <div className={`font-mono text-2xl font-bold ${riskScoreColor(signal.riskScore)}`}>{Math.round(signal.riskScore)}</div>
                   </div>
-                  <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
-                    <span className={`rounded px-2 py-1 ${regimeBadgeClass(signal.marketRegime)}`}>
-                      {t(`signals.marketRegime.${signal.marketRegime}`)}
-                    </span>
-                    <span className={`${signal.changePct >= 0 ? "text-brand-green" : "text-brand-red"} font-mono`}>
-                      {signal.changePct >= 0 ? "+" : ""}
-                      {signal.changePct.toFixed(2)}%
-                    </span>
-                    <span className={`ml-auto rounded px-2 py-1 font-semibold ${typeBadgeClass(signal.signalType)}`}>
-                      {t(`signals.signalType.${signal.signalType}`)}
-                    </span>
-                  </div>
+                  {isLoggedIn ? (
+                    <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
+                      <span className={`rounded px-2 py-1 ${regimeBadgeClass(signal.marketRegime)}`}>
+                        {t(`signals.marketRegime.${signal.marketRegime}`)}
+                      </span>
+                      <span className={`${signal.changePct >= 0 ? "text-brand-green" : "text-brand-red"} font-mono`}>
+                        {signal.changePct >= 0 ? "+" : ""}
+                        {signal.changePct.toFixed(2)}%
+                      </span>
+                      <span className={`ml-auto rounded px-2 py-1 font-semibold ${typeBadgeClass(signal.signalType)}`}>
+                        {t(`signals.signalType.${signal.signalType}`)}
+                      </span>
+                    </div>
+                  ) : null}
                 </button>
               );
             })}
@@ -1042,14 +1050,22 @@ export function SignalsPage() {
               )}
 
               {!isLoggedIn && (
-                <article className="neo-panel rounded-lg border border-brand-amber/35 p-4">
-                  <h3 className="text-lg font-semibold text-brand-amber">AI</h3>
-                  <p className="mt-2 text-sm text-slate-200">
-                    Zaloguj się aby zobaczyć pełną analizę AI
-                  </p>
-                  <Link to="/login" className="mt-3 inline-block text-sm font-semibold text-brand-blue hover:underline">
-                    {t("auth.loginButton", { defaultValue: "Login" })}
-                  </Link>
+                <article className="neo-panel relative overflow-hidden rounded-lg border border-brand-amber/35 p-4">
+                  <div className="pointer-events-none select-none space-y-3 blur-sm opacity-50">
+                    <div className="h-6 w-2/5 rounded bg-slate-700/70" />
+                    <div className="h-4 w-full rounded bg-slate-700/60" />
+                    <div className="h-4 w-10/12 rounded bg-slate-700/60" />
+                    <div className="h-20 rounded bg-slate-800/70" />
+                  </div>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-950/70 px-4 text-center">
+                    <p className="text-sm font-semibold text-slate-100">Zaloguj się aby zobaczyć analizę AI</p>
+                    <Link
+                      to="/register"
+                      className="rounded-lg bg-brand-amber px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-brand-amber/90"
+                    >
+                      Zarejestruj się za darmo
+                    </Link>
+                  </div>
                 </article>
               )}
 
@@ -1230,9 +1246,11 @@ export function SignalsPage() {
                 </div>
               )}
 
-              <div className="mt-8 border-t border-slate-800 pt-6">
-                <ReactionSection variant="signal" signalId={selectedSignal.id} userId={USER_ID} />
-              </div>
+              {USER_ID ? (
+                <div className="mt-8 border-t border-slate-800 pt-6">
+                  <ReactionSection variant="signal" signalId={selectedSignal.id} userId={USER_ID} />
+                </div>
+              ) : null}
             </>
           )}
         </section>
