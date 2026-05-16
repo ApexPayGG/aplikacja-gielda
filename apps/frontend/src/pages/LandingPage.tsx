@@ -108,7 +108,7 @@ function writeCachedHeroQuotes(rows: HeroQuote[]): void {
 }
 
 export function LandingPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("common");
   const [quotes, setQuotes] = useState<HeroQuote[]>([]);
   const [quotesLoading, setQuotesLoading] = useState(true);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
@@ -312,7 +312,7 @@ export function LandingPage() {
                 billingCycle === "monthly" ? "bg-brand-amber text-slate-950" : "text-slate-300 hover:text-white"
               }`}
             >
-              {t("landing.pricing.monthly")}
+              {t("landing.pricing.monthly", { defaultValue: "monthly" })}
             </button>
             <button
               type="button"
@@ -321,10 +321,14 @@ export function LandingPage() {
                 billingCycle === "yearly" ? "bg-brand-amber text-slate-950" : "text-slate-300 hover:text-white"
               }`}
             >
-              {t("landing.pricing.yearly")}
+              {t("landing.pricing.yearly", { defaultValue: "yearly" })}
             </button>
           </div>
-          <p className="mt-3 text-sm text-brand-amber">{t("landing.pricing.earlyAdopter")}</p>
+          <p className="mt-3 text-sm text-brand-amber">
+            {t("landing.pricing.earlyAdopter", {
+              defaultValue: "First 500 Pro accounts locked at $9/mo forever",
+            })}
+          </p>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {pricingTiers.map((tier) => (
               <article
@@ -337,12 +341,12 @@ export function LandingPage() {
                   <h3 className="text-xl font-semibold text-white">{t(tier.nameKey)}</h3>
                   {tier.id === "pro" ? (
                     <span className="rounded-full border border-brand-amber/50 bg-brand-amber/10 px-2 py-0.5 text-[11px] font-semibold text-brand-amber">
-                      ⭐ {t("landing.pricing.badge")}
+                      ⭐ {t("landing.pricing.badge", { defaultValue: "Early Adopter Price" })}
                     </span>
                   ) : null}
                   {tier.id === "pro" ? (
                     <span className="rounded-full border border-brand-blue/40 bg-brand-blue/10 px-2 py-0.5 text-[11px] font-semibold text-brand-blue">
-                      {t("landing.pricing.popular")}
+                      {t("landing.pricing.popular", { defaultValue: "Most Popular" })}
                     </span>
                   ) : null}
                 </div>
@@ -358,10 +362,14 @@ export function LandingPage() {
                         : "$149/yr"}
                 </p>
                 {tier.id === "pro" && billingCycle === "yearly" ? (
-                  <p className="mt-1 text-xs font-semibold text-brand-green">{t("landing.pricing.save")}</p>
+                  <p className="mt-1 text-xs font-semibold text-brand-green">
+                    {t("landing.pricing.save", { defaultValue: "Save 27%" })}
+                  </p>
                 ) : null}
                 {tier.id === "proPlus" && billingCycle === "yearly" ? (
-                  <p className="mt-1 text-xs font-semibold text-brand-green">{t("landing.pricing.saveProPlus")}</p>
+                  <p className="mt-1 text-xs font-semibold text-brand-green">
+                    {t("landing.pricing.saveProPlus", { defaultValue: "Save 34%" })}
+                  </p>
                 ) : null}
                 <p className="mt-3 text-sm text-slate-300">{t(tier.bodyKey)}</p>
                 <ul className="mt-5 space-y-2 text-sm text-slate-200">
@@ -378,7 +386,11 @@ export function LandingPage() {
                 >
                   {t(tier.ctaKey)}
                 </Link>
-                {tier.id === "pro" ? <p className="mt-2 text-xs text-slate-400">{t("landing.pricing.trial")}</p> : null}
+                {tier.id === "pro" ? (
+                  <p className="mt-2 text-xs text-slate-400">
+                    {t("landing.pricing.trial", { defaultValue: "14 days free" })}
+                  </p>
+                ) : null}
               </article>
             ))}
           </div>
