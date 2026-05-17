@@ -3,9 +3,11 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { ShareButton } from "../components/ShareButton";
+import { VirtualList } from "../components/VirtualList";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { getOptimizedLogoUrl } from "../utils/imageOptimization";
 import { colors } from "../styles/designSystem";
 
 type SignalFilter = "ALL" | "BULLISH" | "BEARISH" | "VOLUME";
@@ -89,6 +91,8 @@ const filterOptions: Array<{ id: SignalFilter; label: string }> = [
   { id: "VOLUME", label: "Volume" },
 ];
 
+const SIGNAL_ROW_HEIGHT = 360;
+
 function isEndpointMissing(error: unknown): boolean {
   return axios.isAxiosError(error) && error.response?.status === 404;
 }
@@ -115,7 +119,10 @@ function parseSignal(raw: unknown): SignalListItem | null {
   const companyName = companyNameFromApi || companyNameFromMap || `${ticker} Company`;
 
   const logoInput = row.logoUrl ?? row.logo ?? null;
-  const logoUrl = typeof logoInput === "string" && logoInput.trim() ? logoInput.trim() : companyMetaByTicker[ticker]?.logoUrl ?? null;
+  const logoUrl =
+    typeof logoInput === "string" && logoInput.trim()
+      ? logoInput.trim()
+      : companyMetaByTicker[ticker]?.logoUrl ?? getOptimizedLogoUrl(ticker);
 
   return {
     id,
@@ -159,6 +166,7 @@ export function SignalsPage() {
   const [listError, setListError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<SignalFilter>("ALL");
   const [hoveredSignalId, setHoveredSignalId] = useState<string | null>(null);
+  const [failedSignalLogoIds, setFailedSignalLogoIds] = useState<Record<string, true>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -166,7 +174,7 @@ export function SignalsPage() {
       setLoadingList(true);
       setListError(null);
       try {
-        const { data } = await api.get<Record<string, unknown>>("/signals", { params: { limit: 20 } });
+        const { data } = await api.get<Record<string, unknown>>("/signals", { params: { limit: 200 } });
         const rows = unpackSignalRows(data)
           .map((row) => parseSignal(row))
           .filter((row): row is SignalListItem => row !== null);
@@ -197,6 +205,126 @@ export function SignalsPage() {
     const matcher = createSignalFilterMatcher(activeFilter);
     return signals.filter(matcher);
   }, [signals, activeFilter]);
+
+  const shouldVirtualize = filteredSignals.length > 50;
+
+  const renderSignalCard = (signal: SignalListItem) => {
+    const isPositive = signal.changePct >= 0;
+    const isHovered = hoveredSignalId === signal.id;
+    const signedChangeForShare = `${signal.changePct >= 0 ? "+" : ""}${signal.changePct.toFixed(1)}%`;
+    const showLogo = Boolean(signal.logoUrl) && !failedSignalLogoIds[signal.id];
+    return (
+      <article
+        key={signal.id}
+        className="h-full rounded-2xl border p-5 transition"
+        style={{
+          backgroundColor: colors.bgPrimary,
+          borderColor: isHovered ? colors.brandCyan : colors.border,
+          boxShadow: isHovered ? "0 12px 28px rgba(13, 13, 26, 0.08)" : "0 2px 8px rgba(13, 13, 26, 0.05)",
+        }}
+        onMouseEnter={() => setHoveredSignalId(signal.id)}
+        onMouseLeave={() => setHoveredSignalId(null)}
+      >
+        <div className="grid gap-4 md:grid-cols-[2.2fr_1.2fr_1.2fr] md:items-center">
+          <div className="flex items-center gap-3">
+            <div
+              className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border text-sm font-bold uppercase"
+              style={{
+                borderColor: colors.borderStrong,
+                backgroundColor: colors.bgSecondary,
+                color: colors.brandDark,
+              }}
+            >
+              {showLogo ? (
+                <img
+                  src={signal.logoUrl ?? getOptimizedLogoUrl(signal.ticker)}
+                  alt={`${signal.companyName} logo`}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  onError={() => setFailedSignalLogoIds((current) => ({ ...current, [signal.id]: true }))}
+                />
+              ) : (
+                signal.ticker.slice(0, 2)
+              )}
+            </div>
+            <div>
+              <p className="text-lg font-bold" style={{ color: colors.brandDark }}>
+                {signal.ticker}
+              </p>
+              <p className="text-sm" style={{ color: colors.textSecondary }}>
+                {signal.companyName}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <span
+              className="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+              style={{ backgroundColor: colors.brandCyan, color: colors.brandDark }}
+            >
+              {signal.setupType}
+            </span>
+            <p className="text-4xl font-bold leading-none" style={{ color: colors.brandDark }}>
+              {Math.round(signal.riskScore)}
+            </p>
+          </div>
+
+          <div className="text-left md:text-right">
+            <p className="text-2xl font-semibold" style={{ color: colors.textPrimary }}>
+              ${formatPrice(signal.price)}
+            </p>
+            <span
+              className="mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+              style={{
+                backgroundColor: `${isPositive ? colors.positive : colors.negative}1A`,
+                color: isPositive ? colors.positive : colors.negative,
+              }}
+            >
+              {signal.changePct >= 0 ? "+" : ""}
+              {signal.changePct.toFixed(2)}%
+            </span>
+            <div className="mt-3 flex md:justify-end">
+              <ShareButton
+                label={`Udostępnij sygnał ${signal.ticker} ${signedChangeForShare}`}
+                url={`https://stock-ai.pro/signals/${signal.id}`}
+                twitterText={`🚀 Sygnał AI: ${signal.ticker} ${signal.setupType} | Score: ${Math.round(signal.riskScore)}/100 | StockAI Pro #inwestowanie #GPW`}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="relative mt-5 overflow-hidden rounded-xl border"
+          style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+        >
+          <div className="space-y-2 p-4 blur-[2px]" style={{ opacity: isLoggedIn ? 1 : 0.72 }}>
+            <div className="mb-2 h-2.5 w-3/4 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+            <div className="mb-2 h-2.5 w-11/12 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+            <div className="h-2.5 w-2/3 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+          </div>
+          {!isLoggedIn ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/75 px-4 text-center">
+              <p className="text-sm font-semibold" style={{ color: colors.brandDark }}>
+                Zaloguj się aby zobaczyć analizę AI
+              </p>
+              <Link
+                to="/register"
+                className="rounded-lg px-3 py-1.5 text-xs font-semibold"
+                style={{ color: colors.bgPrimary, backgroundColor: colors.brandDark }}
+              >
+                Zaloguj się
+              </Link>
+            </div>
+          ) : (
+            <div className="absolute inset-0 flex items-center px-4 text-xs" style={{ color: colors.textSecondary }}>
+              Analiza AI dostępna w podglądzie premium dla tego sygnału.
+            </div>
+          )}
+        </div>
+      </article>
+    );
+  };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary, color: colors.textPrimary }}>
@@ -275,117 +403,16 @@ export function SignalsPage() {
         ) : null}
 
         {!loadingList && !listError && filteredSignals.length > 0 ? (
-          <div className="space-y-4">
-            {filteredSignals.map((signal) => {
-              const isPositive = signal.changePct >= 0;
-              const isHovered = hoveredSignalId === signal.id;
-              const signedChangeForShare = `${signal.changePct >= 0 ? "+" : ""}${signal.changePct.toFixed(1)}%`;
-              return (
-                <article
-                  key={signal.id}
-                  className="rounded-2xl border p-5 transition"
-                  style={{
-                    backgroundColor: colors.bgPrimary,
-                    borderColor: isHovered ? colors.brandCyan : colors.border,
-                    boxShadow: isHovered ? "0 12px 28px rgba(13, 13, 26, 0.08)" : "0 2px 8px rgba(13, 13, 26, 0.05)",
-                  }}
-                  onMouseEnter={() => setHoveredSignalId(signal.id)}
-                  onMouseLeave={() => setHoveredSignalId(null)}
-                >
-                  <div className="grid gap-4 md:grid-cols-[2.2fr_1.2fr_1.2fr] md:items-center">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border text-sm font-bold uppercase"
-                        style={{
-                          borderColor: colors.borderStrong,
-                          backgroundColor: colors.bgSecondary,
-                          color: colors.brandDark,
-                        }}
-                      >
-                        {signal.logoUrl ? (
-                          <img src={signal.logoUrl} alt={`${signal.companyName} logo`} className="h-full w-full object-cover" />
-                        ) : (
-                          signal.ticker.slice(0, 2)
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-lg font-bold" style={{ color: colors.brandDark }}>
-                          {signal.ticker}
-                        </p>
-                        <p className="text-sm" style={{ color: colors.textSecondary }}>
-                          {signal.companyName}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <span
-                        className="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-                        style={{ backgroundColor: colors.brandCyan, color: colors.brandDark }}
-                      >
-                        {signal.setupType}
-                      </span>
-                      <p className="text-4xl font-bold leading-none" style={{ color: colors.brandDark }}>
-                        {Math.round(signal.riskScore)}
-                      </p>
-                    </div>
-
-                    <div className="text-left md:text-right">
-                      <p className="text-2xl font-semibold" style={{ color: colors.textPrimary }}>
-                        ${formatPrice(signal.price)}
-                      </p>
-                      <span
-                        className="mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-                        style={{
-                          backgroundColor: `${isPositive ? colors.positive : colors.negative}1A`,
-                          color: isPositive ? colors.positive : colors.negative,
-                        }}
-                      >
-                        {signal.changePct >= 0 ? "+" : ""}
-                        {signal.changePct.toFixed(2)}%
-                      </span>
-                      <div className="mt-3 flex md:justify-end">
-                        <ShareButton
-                          label={`Udostępnij sygnał ${signal.ticker} ${signedChangeForShare}`}
-                          url={`https://stock-ai.pro/signals/${signal.id}`}
-                          twitterText={`🚀 Sygnał AI: ${signal.ticker} ${signal.setupType} | Score: ${Math.round(signal.riskScore)}/100 | StockAI Pro #inwestowanie #GPW`}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    className="relative mt-5 overflow-hidden rounded-xl border"
-                    style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-                  >
-                    <div className="space-y-2 p-4 blur-[2px]" style={{ opacity: isLoggedIn ? 1 : 0.72 }}>
-                      <div className="h-2.5 w-3/4 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                      <div className="h-2.5 w-11/12 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                      <div className="h-2.5 w-2/3 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                    </div>
-                    {!isLoggedIn ? (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/75 px-4 text-center">
-                        <p className="text-sm font-semibold" style={{ color: colors.brandDark }}>
-                          Zaloguj się aby zobaczyć analizę AI
-                        </p>
-                        <Link
-                          to="/register"
-                          className="rounded-lg px-3 py-1.5 text-xs font-semibold"
-                          style={{ color: colors.bgPrimary, backgroundColor: colors.brandDark }}
-                        >
-                          Zaloguj się
-                        </Link>
-                      </div>
-                    ) : (
-                      <div className="absolute inset-0 flex items-center px-4 text-xs" style={{ color: colors.textSecondary }}>
-                        Analiza AI dostępna w podglądzie premium dla tego sygnału.
-                      </div>
-                    )}
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          shouldVirtualize ? (
+            <VirtualList
+              items={filteredSignals}
+              itemHeight={SIGNAL_ROW_HEIGHT}
+              getItemKey={(signal) => signal.id}
+              renderItem={(signal) => <div className="pb-4">{renderSignalCard(signal)}</div>}
+            />
+          ) : (
+            <div className="space-y-4">{filteredSignals.map((signal) => renderSignalCard(signal))}</div>
+          )
         ) : null}
       </div>
     </div>
