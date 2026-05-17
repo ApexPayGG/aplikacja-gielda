@@ -50,6 +50,9 @@ import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 import { hasCompletedOnboarding } from "./utils/onboarding";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ErrorPage } from "./pages/ErrorPage";
+import { PricingPage } from "./pages/PricingPage";
+import { PrivacyPage } from "./pages/PrivacyPage";
+import { TermsPage } from "./pages/TermsPage";
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { token, isLoading } = useAuth();
@@ -94,6 +97,9 @@ export default function App() {
           <Route path="/error" element={<ErrorPage />} />
 
           <Route path="/" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LandingPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="/companies" element={<Home />} />
           <Route path="/company/:symbol" element={<CompanyDetail />} />
           <Route path="/signals" element={<SignalsPage />} />

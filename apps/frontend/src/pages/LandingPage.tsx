@@ -441,6 +441,22 @@ export function LandingPage() {
           </Link>
         </div>
       </section>
+
+      <footer className="border-t border-border bg-bgPrimary">
+        <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-6 py-5 text-sm text-textMuted">
+          <Link to="/privacy" className="transition hover:text-brandDark">
+            Privacy
+          </Link>
+          <span aria-hidden="true">|</span>
+          <Link to="/terms" className="transition hover:text-brandDark">
+            Terms
+          </Link>
+          <span aria-hidden="true">|</span>
+          <Link to="/pricing" className="transition hover:text-brandDark">
+            Pricing
+          </Link>
+        </div>
+      </footer>
     </div>
   );
 }
