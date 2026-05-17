@@ -186,7 +186,7 @@ export function Dashboard() {
   }
 
   return (
-    <div className="mx-auto max-w-[1400px] bg-bgPrimary px-4 py-6 md:px-6">
+    <div className="mx-auto max-w-[1400px] bg-bgPrimary px-4 py-6 dark:bg-gray-900 md:px-6">
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-4">
           <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-sm">
