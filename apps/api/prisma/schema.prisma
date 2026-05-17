@@ -78,6 +78,8 @@ model User {
   minSignalScore       Int                  @default(70)
   createdAt            DateTime             @default(now()) @map("created_at")
   lastLoginAt          DateTime?            @map("last_login_at")
+  onboardingEmail2Sent Boolean              @default(false) @map("onboarding_email2_sent")
+  onboardingEmail3Sent Boolean              @default(false) @map("onboarding_email3_sent")
   virtual_trades       VirtualTrade[]
   portfolio_snapshots  PortfolioSnapshot[]
   affiliateClicks      AffiliateClick[]
