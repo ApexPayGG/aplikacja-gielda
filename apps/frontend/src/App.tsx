@@ -74,6 +74,7 @@ const PaymentCancelPage = lazyNamed(() => import("./pages/PaymentCancelPage"), "
 const ProfilePage = lazyNamed(() => import("./pages/ProfilePage"), "ProfilePage");
 const PrivacyPage = lazyNamed(() => import("./pages/PrivacyPage"), "PrivacyPage");
 const TermsPage = lazyNamed(() => import("./pages/TermsPage"), "TermsPage");
+const ChangelogPage = lazyNamed(() => import("./pages/ChangelogPage"), "ChangelogPage");
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { token, isLoading } = useAuth();
@@ -137,6 +138,7 @@ export default function App() {
 
               <Route path="/" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LandingPage />} />
               <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/changelog" element={<ChangelogPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/companies" element={<Home />} />
