@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Company } from "../services/api";
-import { getOptimizedLogoUrl } from "../utils/imageOptimization";
+import { getLogoFallbackUrl, getOptimizedLogoUrl, normalizeTickerSymbol } from "../utils/imageOptimization";
 import { WatchlistButton } from "./WatchlistButton";
 
 type Props = {
@@ -20,6 +20,7 @@ function readNumber(value: unknown): number | null {
 export function CompanyCard({ company }: Props) {
   const [logoFailed, setLogoFailed] = useState(false);
   const [logoLoaded, setLogoLoaded] = useState(false);
+  const [logoFallbackUsed, setLogoFallbackUsed] = useState(false);
   const companyMeta = company as Company & {
     price?: number | string | null;
     close?: number | string | null;
@@ -31,15 +32,17 @@ export function CompanyCard({ company }: Props) {
   const changePct = readNumber(companyMeta.changePct ?? companyMeta.changePercent);
   const logoSrc = useMemo(() => {
     if (typeof company.logoUrl === "string" && company.logoUrl.trim()) return company.logoUrl.trim();
-    const symbol = String(company.symbol ?? "").trim().toUpperCase();
+    const symbol = normalizeTickerSymbol(String(company.symbol ?? ""));
     if (!symbol) return undefined;
-    const [baseSymbol] = symbol.split(".");
-    return getOptimizedLogoUrl(baseSymbol || symbol);
+    return getOptimizedLogoUrl(symbol);
   }, [company.logoUrl, company.symbol]);
+
+  const resolvedLogoSrc = logoFallbackUsed ? getLogoFallbackUrl(company.symbol) : logoSrc;
 
   useEffect(() => {
     setLogoFailed(false);
     setLogoLoaded(false);
+    setLogoFallbackUsed(false);
   }, [logoSrc]);
 
   const fallbackInitials = useMemo(() => {
@@ -50,7 +53,7 @@ export function CompanyCard({ company }: Props) {
     return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
   }, [company.name, company.symbol]);
 
-  const showLogo = Boolean(logoSrc) && !logoFailed;
+  const showLogo = Boolean(resolvedLogoSrc) && !logoFailed;
 
   return (
     <Link
@@ -69,15 +72,19 @@ export function CompanyCard({ company }: Props) {
               </div>
             ) : null}
             <img
-              src={logoSrc}
+              src={resolvedLogoSrc}
               alt={`${company.name} logo`}
               className={`h-16 w-16 object-contain transition-opacity duration-200 ${logoLoaded ? "opacity-100" : "opacity-0"}`}
               loading="lazy"
               decoding="async"
               onLoad={() => setLogoLoaded(true)}
               onError={() => {
-                setLogoFailed(true);
                 setLogoLoaded(false);
+                if (!logoFallbackUsed) {
+                  setLogoFallbackUsed(true);
+                  return;
+                }
+                setLogoFailed(true);
               }}
             />
           </>

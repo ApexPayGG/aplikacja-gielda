@@ -1,4 +1,4 @@
-const LOGO_FALLBACK_URL = "/icons/technology.svg";
+const fallbackIcons = ["technology", "finance", "energy", "healthcare", "consumer", "industrial"] as const;
 
 const symbolDomainMap: Record<string, string> = {
   AAPL: "apple.com",
@@ -15,9 +15,23 @@ function toClearbitUrl(domain: string): string {
   return `https://logo.clearbit.com/${encodeURIComponent(domain)}?size=128&format=png`;
 }
 
-export function getOptimizedLogoUrl(symbol: string): string {
+export function normalizeTickerSymbol(symbol: string): string {
   const normalized = symbol.trim().toUpperCase();
-  if (!normalized) return LOGO_FALLBACK_URL;
+  if (!normalized) return "";
+  return normalized.split(".")[0]?.trim() ?? normalized;
+}
+
+export function getLogoFallbackUrl(symbol: string): string {
+  const normalized = normalizeTickerSymbol(symbol);
+  if (!normalized) return "/icons/technology.svg";
+  const checksum = normalized.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+  const icon = fallbackIcons[checksum % fallbackIcons.length];
+  return `/icons/${icon}.svg`;
+}
+
+export function getOptimizedLogoUrl(symbol: string): string {
+  const normalized = normalizeTickerSymbol(symbol);
+  if (!normalized) return getLogoFallbackUrl(symbol);
   const domain = symbolDomainMap[normalized] ?? `${normalized.toLowerCase()}.com`;
   return toClearbitUrl(domain);
 }

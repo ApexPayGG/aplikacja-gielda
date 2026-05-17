@@ -7,7 +7,7 @@ import { VirtualList } from "../components/VirtualList";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
-import { getOptimizedLogoUrl } from "../utils/imageOptimization";
+import { getLogoFallbackUrl, getOptimizedLogoUrl, normalizeTickerSymbol } from "../utils/imageOptimization";
 import { colors } from "../styles/designSystem";
 
 type SignalFilter = "ALL" | "BULLISH" | "BEARISH" | "VOLUME";
@@ -122,7 +122,7 @@ function parseSignal(raw: unknown): SignalListItem | null {
   const logoUrl =
     typeof logoInput === "string" && logoInput.trim()
       ? logoInput.trim()
-      : companyMetaByTicker[ticker]?.logoUrl ?? getOptimizedLogoUrl(ticker);
+      : companyMetaByTicker[ticker]?.logoUrl ?? getOptimizedLogoUrl(normalizeTickerSymbol(ticker));
 
   return {
     id,
@@ -167,6 +167,7 @@ export function SignalsPage() {
   const [activeFilter, setActiveFilter] = useState<SignalFilter>("ALL");
   const [hoveredSignalId, setHoveredSignalId] = useState<string | null>(null);
   const [failedSignalLogoIds, setFailedSignalLogoIds] = useState<Record<string, true>>({});
+  const [fallbackSignalLogoIds, setFallbackSignalLogoIds] = useState<Record<string, true>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -212,7 +213,10 @@ export function SignalsPage() {
     const isPositive = signal.changePct >= 0;
     const isHovered = hoveredSignalId === signal.id;
     const signedChangeForShare = `${signal.changePct >= 0 ? "+" : ""}${signal.changePct.toFixed(1)}%`;
-    const showLogo = Boolean(signal.logoUrl) && !failedSignalLogoIds[signal.id];
+    const logoSrc = fallbackSignalLogoIds[signal.id]
+      ? getLogoFallbackUrl(signal.ticker)
+      : signal.logoUrl ?? getOptimizedLogoUrl(signal.ticker);
+    const showLogo = Boolean(logoSrc) && !failedSignalLogoIds[signal.id];
     return (
       <article
         key={signal.id}
@@ -237,12 +241,18 @@ export function SignalsPage() {
             >
               {showLogo ? (
                 <img
-                  src={signal.logoUrl ?? getOptimizedLogoUrl(signal.ticker)}
+                  src={logoSrc}
                   alt={`${signal.companyName} logo`}
                   className="h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"
-                  onError={() => setFailedSignalLogoIds((current) => ({ ...current, [signal.id]: true }))}
+                  onError={() => {
+                    if (!fallbackSignalLogoIds[signal.id]) {
+                      setFallbackSignalLogoIds((current) => ({ ...current, [signal.id]: true }));
+                      return;
+                    }
+                    setFailedSignalLogoIds((current) => ({ ...current, [signal.id]: true }));
+                  }}
                 />
               ) : (
                 signal.ticker.slice(0, 2)
