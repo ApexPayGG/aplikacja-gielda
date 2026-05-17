@@ -352,7 +352,7 @@ export async function searchCompaniesOnDemand(
   const dbRows = await dependencies.searchDb(q, take);
   const merged = dedupeBySymbol(dbRows).slice(0, take);
 
-  if (merged.length < 3 && merged.length < take) {
+  if (merged.length < 3) {
     try {
       const eodRows = await dependencies.searchEod(q, take);
       const withFallback = dedupeBySymbol([...merged, ...eodRows]).slice(0, take);

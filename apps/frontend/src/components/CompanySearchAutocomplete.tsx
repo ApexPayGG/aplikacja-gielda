@@ -1,7 +1,7 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { searchCompaniesAutocomplete, type CompanySearchSuggestion } from "../services/api";
+import { importCompanyFromSearch, searchCompaniesAutocomplete, type CompanySearchSuggestion } from "../services/api";
 import { colors } from "../styles/designSystem";
 
 type CompanySearchAutocompleteProps = {
@@ -89,12 +89,17 @@ export function CompanySearchAutocomplete({
 
   const itemsToRender = useMemo(() => results.slice(0, Math.max(1, Math.min(20, limit))), [results, limit]);
 
-  function selectCompany(company: CompanySearchSuggestion) {
+  async function selectCompany(company: CompanySearchSuggestion): Promise<void> {
     setQuery(company.symbol);
     setIsOpen(false);
     onQueryChange?.(company.symbol);
     onSelectCompany?.(company);
     if (navigateOnSelect) {
+      try {
+        await importCompanyFromSearch(company.symbol, company.exchange);
+      } catch {
+        // Import is best-effort; navigate anyway to preserve UX.
+      }
       navigate(`/company/${encodeURIComponent(company.symbol)}`);
     }
   }
@@ -121,7 +126,7 @@ export function CompanySearchAutocomplete({
     if (event.key === "Enter") {
       if (!showDropdown || highlightedIndex < 0 || highlightedIndex >= itemsToRender.length) return;
       event.preventDefault();
-      selectCompany(itemsToRender[highlightedIndex]!);
+      void selectCompany(itemsToRender[highlightedIndex]!);
     }
   }
 
@@ -182,7 +187,7 @@ export function CompanySearchAutocomplete({
                       className="flex w-full items-center justify-between gap-3 px-4 py-2 text-left transition"
                       style={{ backgroundColor: active ? colors.bgSecondary : colors.bgPrimary }}
                       onMouseEnter={() => setHighlightedIndex(index)}
-                      onClick={() => selectCompany(company)}
+                      onClick={() => void selectCompany(company)}
                     >
                       <div className="min-w-0">
                         <p className="truncate text-sm font-bold" style={{ color: colors.brandDark }}>

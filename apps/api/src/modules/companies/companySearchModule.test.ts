@@ -53,6 +53,19 @@ describe("companySearchModule.searchCompaniesOnDemand", () => {
     assert.equal(searchEod.mock.calls.length, 1);
   });
 
+  it("still triggers fallback lookup when DB < 3 and limit is small", async () => {
+    const searchDb = mock.fn(async () => [
+      { symbol: "AAPL", name: "Apple", exchange: "US", sector: "Technology" },
+      { symbol: "MSFT", name: "Microsoft", exchange: "US", sector: "Technology" },
+    ]);
+    const searchEod = mock.fn(async () => [{ symbol: "TSLA.US", name: "Tesla", exchange: "US", sector: "Unknown" }]);
+
+    const result = await searchCompaniesOnDemand("a", 2, createDependencies({ searchDb, searchEod }));
+
+    assert.equal(result.length, 2);
+    assert.equal(searchEod.mock.calls.length, 1);
+  });
+
   it("returns empty array for empty query", async () => {
     const searchDb = mock.fn(async () => [{ symbol: "AAPL", name: "Apple", exchange: "US", sector: "Technology" }]);
     const searchEod = mock.fn(async () => [{ symbol: "TSLA.US", name: "Tesla", exchange: "US", sector: "Unknown" }]);

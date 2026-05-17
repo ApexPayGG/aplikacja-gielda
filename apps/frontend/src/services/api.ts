@@ -648,6 +648,20 @@ export async function searchCompanies(query: string, limit = 20): Promise<Compan
   }));
 }
 
+export async function importCompanyFromSearch(symbol: string, exchange?: string | null): Promise<void> {
+  const normalizedSymbol = symbol.trim().toUpperCase();
+  if (!normalizedSymbol) return;
+  const [baseSymbol, exchangeFromSymbol = ""] = normalizedSymbol.split(".");
+  const resolvedExchange = (exchange ?? exchangeFromSymbol).trim().toUpperCase();
+  if (!baseSymbol || !resolvedExchange) return;
+  await api.get("/companies/search/import", {
+    params: {
+      symbol: baseSymbol,
+      exchange: resolvedExchange,
+    },
+  });
+}
+
 export async function getCompanyBySector(
   sector: string,
   page = 1,
