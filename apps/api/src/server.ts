@@ -10,6 +10,9 @@ import { analyzeStock } from "./ai/analysis";
 import { cacheJsonGet, cacheJsonSet } from "./cache/jsonCache";
 import { REDIS_TTL_SEC, redisKeys } from "./config/redis";
 import { prisma } from "./db/index";
+import { createInputSanitizerMiddleware } from "./middleware/inputSanitizer";
+import { createRateLimiterMiddleware } from "./middleware/rateLimiter";
+import { createSecurityHeadersMiddleware } from "./middleware/securityHeaders";
 import {
   getCompaniesBySector,
   getCompanyBySymbol,
@@ -170,6 +173,8 @@ export function createApp(): express.Express {
     return value;
   });
 
+  app.use(createSecurityHeadersMiddleware());
+
   app.use(
     cors({
       origin: [
@@ -193,6 +198,9 @@ export function createApp(): express.Express {
       },
     }),
   );
+  app.use(createRateLimiterMiddleware({ prisma }));
+  app.use(createInputSanitizerMiddleware());
+
   app.use(createAuthRouter());
   app.use(createStripeRouter());
   app.use(createWatchlistRouter());
