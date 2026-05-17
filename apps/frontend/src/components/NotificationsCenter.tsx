@@ -118,9 +118,13 @@ export function NotificationsCenter() {
 
   const handleMarkAllRead = async () => {
     if (!user?.id || unreadCount <= 0) return;
-    await markAllNotificationsReadApi(user.id);
-    setItems((prev) => prev.map((item) => ({ ...item, read: true })));
-    setUnreadCount(0);
+    try {
+      await markAllNotificationsReadApi(user.id);
+      setItems((prev) => prev.map((item) => ({ ...item, read: true })));
+      setUnreadCount(0);
+    } catch {
+      // Keep existing state when API call fails.
+    }
   };
 
   const handleOpenNotification = async (notification: NotificationItem) => {

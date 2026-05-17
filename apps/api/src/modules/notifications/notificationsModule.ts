@@ -122,9 +122,12 @@ type DbLike = {
       orderBy: { createdAt: "desc" | "asc" };
       take: number;
     }) => Promise<NotificationRow[]>;
+    findFirst: (args: { where: { id?: string; userId?: string } }) => Promise<NotificationRow | null>;
     count: (args: { where: { userId: string; read?: boolean } }) => Promise<number>;
-    updateMany: (args: { where: { userId?: string; read?: boolean }; data: { read: boolean } }) => Promise<{ count: number }>;
-    update: (args: { where: { id: string }; data: { read: boolean } }) => Promise<NotificationRow>;
+    updateMany: (args: {
+      where: { id?: string; userId?: string; read?: boolean };
+      data: { read: boolean };
+    }) => Promise<{ count: number }>;
   };
 };
 
@@ -317,21 +320,19 @@ export async function markAllNotificationsAsRead(userId: string): Promise<MarkAl
   return { updatedCount: result.count };
 }
 
-export async function markNotificationAsRead(notificationId: string): Promise<NotificationCenterItem> {
+export async function markNotificationAsRead(notificationId: string, userId: string): Promise<NotificationCenterItem> {
   const safeNotificationId = normalizeNotificationId(notificationId);
-  try {
-    const row = await db.notification.update({
-      where: { id: safeNotificationId },
-      data: { read: true },
-    });
-    return toNotificationItem(row);
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    if (msg.includes("Record to update not found")) {
-      throw new Error("Notification not found");
-    }
-    throw error;
+  const safeUserId = normalizeUserId(userId);
+  const updateResult = await db.notification.updateMany({
+    where: { id: safeNotificationId, userId: safeUserId },
+    data: { read: true },
+  });
+  if (updateResult.count === 0) {
+    throw new Error("Notification not found");
   }
+  const row = await db.notification.findFirst({ where: { id: safeNotificationId, userId: safeUserId } });
+  if (!row) throw new Error("Notification not found");
+  return toNotificationItem(row);
 }
 
 export function buildDiscordSignalEmbed(signal: NotificationSignalPayload): DiscordSignalEmbed {

@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
+import { getAuthenticatedUserId, requireAuth } from "../modules/auth/authMiddleware";
 import {
   getNotificationPreferences,
   getUserNotifications,
@@ -90,9 +91,12 @@ export function createNotificationsRouter(depsInput?: Partial<NotificationsRoute
     },
   );
 
-  router.get("/api/notifications/:userId", async (req: Request, res: Response, next: NextFunction) => {
+  router.get("/api/notifications/:userId", requireAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = String(req.params.userId ?? "").trim();
+      if (getAuthenticatedUserId(req) !== userId) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
       const limit = req.query.limit != null ? Number(req.query.limit) : undefined;
       const payload: NotificationsListResponse = await deps.listNotificationsFn(userId, limit);
       res.json(payload);
@@ -103,9 +107,12 @@ export function createNotificationsRouter(depsInput?: Partial<NotificationsRoute
     }
   });
 
-  router.put("/api/notifications/:userId/read-all", async (req: Request, res: Response, next: NextFunction) => {
+  router.put("/api/notifications/:userId/read-all", requireAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = String(req.params.userId ?? "").trim();
+      if (getAuthenticatedUserId(req) !== userId) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
       const payload: MarkAllNotificationsReadResponse = await deps.markAllAsReadFn(userId);
       res.json(payload);
     } catch (error) {
@@ -115,10 +122,11 @@ export function createNotificationsRouter(depsInput?: Partial<NotificationsRoute
     }
   });
 
-  router.put("/api/notifications/:id/read", async (req: Request, res: Response, next: NextFunction) => {
+  router.put("/api/notifications/:id/read", requireAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const notificationId = String(req.params.id ?? "").trim();
-      const payload: NotificationCenterItem = await deps.markNotificationAsReadFn(notificationId);
+      const userId = getAuthenticatedUserId(req);
+      const payload: NotificationCenterItem = await deps.markNotificationAsReadFn(notificationId, userId);
       res.json(payload);
     } catch (error) {
       const status = mapErrorToStatus(error);

@@ -101,6 +101,8 @@ model Notification {
   link      String?
   createdAt DateTime @default(now())
 
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, read])
   @@map("notifications")
 }
 

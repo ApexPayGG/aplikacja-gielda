@@ -1,13 +1,18 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import express from "express";
+import { signAuthToken } from "../../modules/auth/authJwt";
 import { createNotificationsRouter } from "../notifications";
 
 describe("notifications preferences routes", () => {
   let server: ReturnType<express.Express["listen"]> | null = null;
   let baseUrl = "";
+  let authToken = "";
+  const oldSecret = process.env.JWT_SECRET;
 
   beforeEach(async () => {
+    process.env.JWT_SECRET = "test-secret";
+    authToken = signAuthToken({ sub: "demo-user", email: "demo@example.com" });
     const app = express();
     app.use(express.json());
     app.use(
@@ -53,9 +58,9 @@ describe("notifications preferences routes", () => {
           unreadCount: 1,
         }),
         markAllAsReadFn: async () => ({ updatedCount: 3 }),
-        markNotificationAsReadFn: async (id) => ({
+        markNotificationAsReadFn: async (id, userId) => ({
           id,
-          userId: "demo-user",
+          userId,
           type: "SIGNAL",
           title: "Nowy sygnał",
           message: "AAPL przekroczył poziom wejścia",
@@ -74,6 +79,7 @@ describe("notifications preferences routes", () => {
   });
 
   afterEach(async () => {
+    process.env.JWT_SECRET = oldSecret;
     await new Promise<void>((resolve, reject) => {
       if (!server) return resolve();
       server.close((err) => (err ? reject(err) : resolve()));
@@ -118,7 +124,9 @@ describe("notifications preferences routes", () => {
   });
 
   it("GET /api/notifications/:userId returns notifications and unread count", async () => {
-    const res = await fetch(`${baseUrl}/api/notifications/demo-user?limit=1`);
+    const res = await fetch(`${baseUrl}/api/notifications/demo-user?limit=1`, {
+      headers: { authorization: `Bearer ${authToken}` },
+    });
     assert.equal(res.status, 200);
     const body = (await res.json()) as { notifications: Array<{ id: string }>; unreadCount: number };
     assert.equal(body.notifications.length, 1);
@@ -129,6 +137,7 @@ describe("notifications preferences routes", () => {
   it("PUT /api/notifications/:userId/read-all marks all as read", async () => {
     const res = await fetch(`${baseUrl}/api/notifications/demo-user/read-all`, {
       method: "PUT",
+      headers: { authorization: `Bearer ${authToken}` },
     });
     assert.equal(res.status, 200);
     const body = (await res.json()) as { updatedCount: number };
@@ -138,10 +147,19 @@ describe("notifications preferences routes", () => {
   it("PUT /api/notifications/:id/read marks one notification as read", async () => {
     const res = await fetch(`${baseUrl}/api/notifications/n-1/read`, {
       method: "PUT",
+      headers: { authorization: `Bearer ${authToken}` },
     });
     assert.equal(res.status, 200);
     const body = (await res.json()) as { id: string; read: boolean };
     assert.equal(body.id, "n-1");
     assert.equal(body.read, true);
+  });
+
+  it("GET /api/notifications/:userId returns 403 for different authenticated user", async () => {
+    const otherToken = signAuthToken({ sub: "other-user", email: "other@example.com" });
+    const res = await fetch(`${baseUrl}/api/notifications/demo-user`, {
+      headers: { authorization: `Bearer ${otherToken}` },
+    });
+    assert.equal(res.status, 403);
   });
 });
