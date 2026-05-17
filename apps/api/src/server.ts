@@ -81,6 +81,7 @@ import { createCrowdWisdomRouter } from "./routes/crowdwisdom";
 import { createGlossaryRouter } from "./routes/glossary";
 import { createDigestRouter } from "./routes/digest";
 import { createDiscordSyncRouter } from "./routes/discordSync";
+import { createNotificationsRouter } from "./routes/notifications";
 import { createSkillTreeRouter } from "./routes/skilltree";
 import { createNewsHalfLifeRouter } from "./routes/newshalflife";
 import { createVolatilityRouter } from "./routes/volatility";
@@ -258,6 +259,7 @@ export function createApp(): express.Express {
   app.use(createGlossaryRouter());
   app.use(createDigestRouter());
   app.use(createDiscordSyncRouter());
+  app.use(createNotificationsRouter());
   app.use(createVolatilityRouter());
   app.use(createDividendCalcRouter());
   app.use(createAlpacaRouter());
