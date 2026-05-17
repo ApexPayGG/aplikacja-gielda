@@ -1,64 +1,107 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
-  color-scheme: dark;
-  /* Paleta „V1” — tło / tekst / CTA / rynek / akcenty tech (PDF użytkownika) */
-  --color-brand-bg: 11 14 17;
-  --color-brand-text: 234 236 239;
-  --color-brand-neutral: 132 142 156;
-  --color-brand-green: 2 192 118;
-  --color-brand-red: 207 48 74;
-  --color-brand-blue: 0 242 255;
-  --color-brand-violet: 138 43 226;
-  --color-brand-amber: 240 185 11;
-  --color-brand-border: 33 40 52;
-  --glow-green: 2 192 118;
-  --glow-blue: 0 242 255;
-  --glow-violet: 138 43 226;
+  color-scheme: light;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f4f6fa;
+  --bg-tertiary: #eceef5;
+  --brand-dark: #2d0a6b;
+  --brand-medium: #7a0f9e;
+  --brand-cyan: #00c9d4;
+  --brand-gold: #ffae33;
+  --positive: #00a86b;
+  --negative: #e53935;
+  --text-primary: #0d0d1a;
+  --text-secondary: #5a5a7a;
+  --text-muted: #9b9bb5;
+  --border: #e2e6f0;
+  --border-strong: #c8cce0;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
-  @apply bg-brand-bg text-brand-text antialiased min-h-screen;
+  margin: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgb(0 201 212 / 0.28);
+  color: var(--text-primary);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-dark) var(--bg-tertiary);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: var(--brand-dark);
 }
 
 .app-shell {
+  min-height: 100vh;
   background:
-    radial-gradient(140% 100% at 0% 0%, rgb(var(--glow-blue) / 0.1) 0%, transparent 45%),
-    radial-gradient(120% 90% at 100% 0%, rgb(var(--glow-green) / 0.08) 0%, transparent 45%),
-    radial-gradient(90% 80% at 50% 100%, rgb(var(--glow-violet) / 0.07) 0%, transparent 55%),
-    rgb(var(--color-brand-bg));
-}
-
-.app-shell::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, rgb(var(--color-brand-neutral) / 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(var(--color-brand-neutral) / 0.05) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(circle at 50% 35%, black 20%, transparent 80%);
-  z-index: 0;
+    radial-gradient(120% 80% at 0% 0%, rgb(45 10 107 / 0.08) 0%, transparent 48%),
+    radial-gradient(120% 80% at 100% 0%, rgb(122 15 158 / 0.08) 0%, transparent 50%),
+    var(--bg-primary);
 }
 
 .glass-nav {
-  backdrop-filter: blur(10px);
-  background:
-    linear-gradient(180deg, rgb(14 17 22 / 0.92) 0%, rgb(11 14 17 / 0.78) 100%);
-  border-bottom: 1px solid rgb(var(--color-brand-border) / 0.9);
-  box-shadow:
-    0 8px 20px rgb(0 0 0 / 0.28),
-    inset 0 1px 0 rgb(255 255 255 / 0.04);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
 }
 
 .nav-link-chrome {
   position: relative;
-  transition: color 0.18s ease;
 }
 
 .nav-link-chrome::after {
@@ -69,9 +112,9 @@ body {
   bottom: -4px;
   height: 2px;
   transform: scaleX(0);
+  transition: transform 0.18s ease;
   transform-origin: center;
-  transition: transform 0.2s ease;
-  background: linear-gradient(90deg, rgb(var(--color-brand-blue)), rgb(var(--color-brand-green)));
+  background: var(--brand-dark);
 }
 
 .nav-link-chrome:hover::after,
@@ -80,12 +123,9 @@ body {
 }
 
 .neo-panel {
-  border: 1px solid rgb(var(--color-brand-border) / 0.9);
-  background:
-    linear-gradient(160deg, rgb(18 22 28 / 0.95) 0%, rgb(15 18 24 / 0.96) 60%, rgb(12 15 20 / 0.98) 100%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.04),
-    0 10px 24px rgb(0 0 0 / 0.28);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  box-shadow: 0 8px 24px rgb(45 10 107 / 0.08);
 }
 
 .neo-panel-accent {
@@ -99,8 +139,7 @@ body {
   inset: -1px;
   border-radius: inherit;
   pointer-events: none;
-  background:
-    linear-gradient(120deg, rgb(var(--glow-blue) / 0.28), rgb(var(--glow-violet) / 0.22), rgb(var(--glow-green) / 0.26));
+  background: linear-gradient(120deg, rgb(0 201 212 / 0.35), rgb(122 15 158 / 0.3), rgb(45 10 107 / 0.25));
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -112,50 +151,33 @@ body {
   padding: 1px;
 }
 
-.spot-glow {
-  box-shadow:
-    0 0 0 1px rgb(var(--color-brand-border) / 0.7),
-    0 0 16px rgb(var(--glow-blue) / 0.28);
-}
-
-.text-gradient-brand {
-  background: linear-gradient(90deg, rgb(var(--color-brand-blue)), rgb(var(--color-brand-violet)), rgb(var(--color-brand-green)));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
 .pill-signal {
-  border: 1px solid rgb(255 255 255 / 0.1);
-  backdrop-filter: blur(5px);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
 }
 
 .interactive-tilt {
   transition:
     transform 0.18s ease,
-    box-shadow 0.22s ease,
-    border-color 0.22s ease;
-  will-change: transform;
+    box-shadow 0.2s ease;
 }
 
 .interactive-tilt:hover {
-  transform: translateY(-2px) scale(1.003);
-  box-shadow:
-    0 14px 28px rgb(0 0 0 / 0.34),
-    0 0 18px rgb(var(--glow-blue) / 0.16);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgb(45 10 107 / 0.12);
 }
 
 .interactive-tilt:active {
-  transform: translateY(0) scale(0.998);
+  transform: translateY(0);
 }
 
 .live-dot {
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background: rgb(var(--color-brand-green));
-  box-shadow: 0 0 0 0 rgb(var(--color-brand-green) / 0.65);
-  animation: livePulse 1.9s infinite;
+  background: var(--positive);
+  box-shadow: 0 0 0 0 rgb(0 168 107 / 0.55);
+  animation: livePulse 1.8s infinite;
 }
 
 .feedback-layer {
@@ -174,39 +196,34 @@ body {
   max-width: 340px;
   border-radius: 0.75rem;
   padding: 0.65rem 0.8rem;
-  border: 1px solid rgb(var(--color-brand-border) / 0.9);
-  background: linear-gradient(160deg, rgb(18 22 28 / 0.96) 0%, rgb(14 17 22 / 0.98) 100%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.03),
-    0 10px 22px rgb(0 0 0 / 0.32);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  box-shadow: 0 10px 22px rgb(45 10 107 / 0.14);
   animation: toastIn 0.24s ease;
 }
 
 .feedback-toast-success {
-  border-color: rgb(var(--color-brand-green) / 0.5);
+  border-color: rgb(0 168 107 / 0.5);
 }
 
 .feedback-toast-error {
-  border-color: rgb(var(--color-brand-red) / 0.55);
+  border-color: rgb(229 57 53 / 0.5);
 }
 
 .feedback-toast-info {
-  border-color: rgb(var(--color-brand-blue) / 0.5);
+  border-color: rgb(0 201 212 / 0.5);
 }
 
 .pnl-glow-positive {
-  text-shadow: 0 0 12px rgb(var(--color-brand-green) / 0.26);
+  text-shadow: 0 0 10px rgb(0 168 107 / 0.2);
 }
 
 .pnl-glow-negative {
-  text-shadow: 0 0 12px rgb(var(--color-brand-red) / 0.28);
+  text-shadow: 0 0 10px rgb(229 57 53 / 0.22);
 }
 
 .confidence-halo {
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.05),
-    0 0 0 1px rgb(var(--color-brand-violet) / 0.35),
-    0 0 18px rgb(var(--color-brand-violet) / 0.24);
+  box-shadow: 0 0 0 1px rgb(122 15 158 / 0.25), 0 0 16px rgb(122 15 158 / 0.2);
 }
 
 .risk-beam {
@@ -219,7 +236,7 @@ body {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.14), transparent);
+  background: linear-gradient(90deg, transparent, rgb(0 201 212 / 0.2), transparent);
   animation: riskSweep 2.8s ease-in-out infinite;
 }
 
@@ -237,13 +254,13 @@ body {
 
 @keyframes livePulse {
   0% {
-    box-shadow: 0 0 0 0 rgb(var(--color-brand-green) / 0.62);
+    box-shadow: 0 0 0 0 rgb(0 168 107 / 0.55);
   }
   70% {
-    box-shadow: 0 0 0 10px rgb(var(--color-brand-green) / 0);
+    box-shadow: 0 0 0 10px rgb(0 168 107 / 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgb(var(--color-brand-green) / 0);
+    box-shadow: 0 0 0 0 rgb(0 168 107 / 0);
   }
 }
 

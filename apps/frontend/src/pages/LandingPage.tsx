@@ -46,12 +46,6 @@ const pricingTiers = [
   },
 ];
 
-const testimonials = [
-  { quoteKey: "landing.socialProof.testimonials.0.quote", authorKey: "landing.socialProof.testimonials.0.author" },
-  { quoteKey: "landing.socialProof.testimonials.1.quote", authorKey: "landing.socialProof.testimonials.1.author" },
-  { quoteKey: "landing.socialProof.testimonials.2.quote", authorKey: "landing.socialProof.testimonials.2.author" },
-];
-
 const HERO_TICKERS = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META", "JPM", "XOM", "V"] as const;
 
 type HeroQuote = {
@@ -67,11 +61,6 @@ function toNumber(value: string | null | undefined): number | null {
   if (value == null) return null;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
-}
-
-function changeClass(changePct: number | null): string {
-  if (changePct == null) return "text-slate-400";
-  return changePct >= 0 ? "text-emerald-300" : "text-red-300";
 }
 
 function isValidHeroQuoteArray(value: unknown): value is HeroQuote[] {
@@ -199,33 +188,33 @@ export function LandingPage() {
   };
 
   return (
-    <div className="relative overflow-hidden">
-      <header className="sticky top-0 z-30 border-b border-brand-border/60 bg-[rgba(11,14,17,0.94)] backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-6">
-            <Link to="/" className="shrink-0">
+    <div className="bg-bgPrimary text-textSecondary">
+      <header className="sticky top-0 z-40 border-b border-border bg-bgPrimary/95 shadow-sm backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
+          <div className="flex shrink-0 items-center">
+            <Link to="/">
               <img src="/logo.png" alt="StockAI Pro" className="h-8 w-40 object-cover object-center" />
             </Link>
-            <nav className="hidden items-center gap-4 text-sm font-medium text-slate-300 md:flex">
-              <Link to="/companies" className="transition hover:text-white">
-                Markets
-              </Link>
-              <Link to="/signals" className="transition hover:text-white">
-                Signals
-              </Link>
-            </nav>
           </div>
-          <div className="flex items-center gap-2">
+          <nav className="hidden flex-1 items-center justify-center gap-8 text-sm font-medium text-textSecondary md:flex">
+            <a href="#problem" className="transition hover:text-brandDark">
+              Problem
+            </a>
+            <a href="#solution" className="transition hover:text-brandDark">
+              Solution
+            </a>
+            <a href="#pricing" className="transition hover:text-brandDark">
+              Pricing
+            </a>
+            <Link to="/companies" className="transition hover:text-brandDark">
+              Markets
+            </Link>
+          </nav>
+          <div className="flex shrink-0 items-center gap-3">
             <LanguageSwitcher />
             <Link
-              to="/login"
-              className="rounded-lg border border-brand-border/70 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-brand-blue hover:text-white"
-            >
-              {t("auth.loginButton", { defaultValue: "Login" })}
-            </Link>
-            <Link
               to="/register"
-              className="rounded-lg bg-brand-amber px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-brand-amber/90"
+              className="rounded-xl bg-brandDark px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brandMedium"
             >
               {t("auth.registerButton", { defaultValue: "Register" })}
             </Link>
@@ -233,162 +222,148 @@ export function LandingPage() {
         </div>
       </header>
 
-      <section className="relative isolate border-b border-brand-border/70">
-        <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_12%_20%,rgba(0,242,255,0.18),transparent_35%),radial-gradient(circle_at_82%_18%,rgba(138,43,226,0.2),transparent_40%),linear-gradient(180deg,rgba(12,16,24,0.95),rgba(11,14,17,0.95))]" />
-        <div className="pointer-events-none absolute inset-0 -z-10 opacity-70 [mask-image:linear-gradient(to_bottom,black,transparent)]">
-          <div className="absolute inset-x-0 top-14 mx-auto h-40 max-w-6xl animate-pulse rounded-full bg-brand-blue/10 blur-3xl" />
-          <div className="absolute inset-x-0 top-32 mx-auto h-44 max-w-5xl animate-pulse rounded-full bg-brand-violet/10 blur-3xl [animation-delay:350ms]" />
-        </div>
-
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-20 md:grid-cols-[1.1fr_0.9fr] md:py-24">
-          <div>
-            <span className="pill-signal inline-flex rounded-full border border-brand-border/80 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-300">
-              StockAI Pro
+      <section className="relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brandDark/10 via-bgPrimary to-brandMedium/10" />
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 md:grid-cols-[1.15fr_0.85fr] md:py-24">
+          <div className="relative z-10">
+            <span className="inline-flex rounded-full border border-border bg-bgPrimary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brandDark">
+              AMC Energy Edition
             </span>
-            <h1 className="mt-5 max-w-2xl text-4xl font-bold leading-tight text-white md:text-6xl">
+            <h1 className="mt-5 max-w-3xl text-5xl font-bold leading-tight text-textPrimary md:text-6xl">
               {t("landing.hero.title")}
             </h1>
-            <p className="mt-5 max-w-2xl text-base text-slate-300 md:text-lg">{t("landing.hero.subtitle")}</p>
+            <p className="mt-5 max-w-2xl text-lg font-normal text-textSecondary">{t("landing.hero.subtitle")}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/dashboard"
-                className="interactive-tilt rounded-xl bg-brand-amber px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_24px_rgba(240,185,11,0.35)]"
+                className="rounded-xl bg-brandDark px-7 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brandMedium"
               >
                 {t("landing.hero.ctaPrimary")}
               </Link>
               <a
-                href="#how-it-works"
-                className="interactive-tilt rounded-xl border border-brand-border/80 bg-transparent px-6 py-3 text-sm font-semibold text-slate-100"
+                href="#solution"
+                className="rounded-xl border border-brandCyan px-7 py-3 text-sm font-semibold text-brandDark transition hover:bg-brandCyan/10"
               >
                 {t("landing.hero.ctaSecondary")}
               </a>
             </div>
           </div>
 
-          <div className="neo-panel relative rounded-2xl p-5">
-            <div className="mb-4 flex items-center justify-between text-xs text-slate-400">
-              <span>{t("landing.hero.widgetTitle")}</span>
-              <span className="inline-flex items-center gap-2">
-                <span className="live-dot" />
+          <aside className="relative z-10 rounded-2xl border border-border bg-bgPrimary p-5 shadow-md">
+            <div className="mb-4 flex items-center justify-between text-xs text-textMuted">
+              <span>{t("landing.hero.widgetTitle", { defaultValue: "Live market pulse" })}</span>
+              <span className="inline-flex items-center gap-2 font-semibold text-brandDark">
+                <span className="h-2 w-2 rounded-full bg-positive" />
                 {t("landing.hero.widgetLive")}
               </span>
             </div>
-            <div className="grid gap-2 rounded-xl border border-brand-border/70 bg-slate-950/55 p-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               {displayedQuotes.map((row) => (
-                <div
-                  key={row.ticker}
-                  className="rounded-lg border border-brand-border/60 bg-slate-900/60 px-3 py-2"
-                >
+                <div key={row.ticker} className="rounded-xl border border-border bg-bgPrimary px-3 py-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-semibold text-slate-200">{row.ticker}</span>
-                    <span className={`text-xs font-semibold ${changeClass(row.changePct)}`}>
+                    <span className="font-mono text-xs font-semibold text-textSecondary">{row.ticker}</span>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                        row.changePct == null
+                          ? "bg-bgTertiary text-textMuted"
+                          : row.changePct >= 0
+                            ? "bg-positive/10 text-positive"
+                            : "bg-negative/10 text-negative"
+                      }`}
+                    >
                       {row.changePct == null ? "—" : `${row.changePct >= 0 ? "+" : ""}${row.changePct.toFixed(2)}%`}
                     </span>
                   </div>
-                  <div className="mt-1 text-sm font-semibold text-white">
+                  <div className="mt-2 font-mono text-2xl font-bold text-brandDark">
                     {row.price == null ? "—" : row.price.toFixed(2)}
                   </div>
                 </div>
               ))}
             </div>
-            {quotesLoading ? (
-              <p className="mt-2 text-[11px] text-slate-500">{t("common.loading")}</p>
-            ) : null}
-          </div>
+            {quotesLoading ? <p className="mt-3 text-xs text-textMuted">{t("common.loading")}</p> : null}
+          </aside>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-        <h2 className="text-2xl font-semibold text-white md:text-3xl">{t("landing.problem.title")}</h2>
+      <section id="problem" className="mx-auto max-w-7xl px-6 py-16 md:py-20">
+        <h2 className="text-3xl font-bold text-textPrimary">{t("landing.problem.title")}</h2>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {problemCards.map((card) => (
-            <article key={card.titleKey} className="neo-panel interactive-tilt rounded-2xl p-6">
-              <div className="mb-4 text-3xl" aria-hidden>
+            <article key={card.titleKey} className="rounded-2xl border border-border bg-bgPrimary p-6 shadow-sm">
+              <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-brandCyan/10 text-xl text-brandCyan">
                 {card.icon}
               </div>
-              <h3 className="text-lg font-semibold text-white">{t(card.titleKey)}</h3>
-              <p className="mt-2 text-sm text-slate-300">{t(card.bodyKey)}</p>
+              <h3 className="text-lg font-bold text-textPrimary">{t(card.titleKey)}</h3>
+              <p className="mt-2 text-sm text-textSecondary">{t(card.bodyKey)}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section id="how-it-works" className="border-y border-brand-border/60 bg-slate-950/35">
-        <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-          <h2 className="text-2xl font-semibold text-white md:text-3xl">{t("landing.solution.title")}</h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section id="solution" className="bg-bgSecondary py-16 md:py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <h2 className="text-3xl font-bold text-textPrimary">{t("landing.solution.title")}</h2>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {solutionFeatures.map((featureKey) => (
-              <div key={featureKey} className="neo-panel rounded-2xl p-5">
-                <p className="text-base font-semibold text-slate-100">{t(featureKey)}</p>
+              <div key={featureKey} className="rounded-xl border border-border bg-bgPrimary p-5 shadow-sm">
+                <p className="border-l-4 border-brandCyan pl-3 text-base font-semibold text-textPrimary">{t(featureKey)}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-        <h2 className="text-2xl font-semibold text-white md:text-3xl">{t("landing.socialProof.title")}</h2>
-        <p className="mt-3 text-sm text-slate-300 md:text-base">{t("landing.socialProof.subtitle")}</p>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {testimonials.map((testimonial) => (
-            <blockquote key={testimonial.quoteKey} className="neo-panel rounded-2xl p-6">
-              <p className="text-sm leading-relaxed text-slate-200">"{t(testimonial.quoteKey)}"</p>
-              <footer className="mt-4 text-xs text-slate-400">{t(testimonial.authorKey)}</footer>
-            </blockquote>
-          ))}
+      <section id="pricing" className="mx-auto max-w-7xl px-6 py-16 md:py-20">
+        <h2 className="text-3xl font-bold text-textPrimary">{t("landing.pricing.title")}</h2>
+        <div className="mt-6 inline-flex rounded-xl border border-border bg-bgSecondary p-1">
+          <button
+            type="button"
+            onClick={() => setBillingCycle("monthly")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              billingCycle === "monthly" ? "bg-brandDark text-white" : "text-textSecondary hover:text-brandDark"
+            }`}
+          >
+            {t("landing.pricing.monthly", { defaultValue: "monthly" })}
+          </button>
+          <button
+            type="button"
+            onClick={() => setBillingCycle("yearly")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              billingCycle === "yearly" ? "bg-brandDark text-white" : "text-textSecondary hover:text-brandDark"
+            }`}
+          >
+            {t("landing.pricing.yearly", { defaultValue: "yearly" })}
+          </button>
         </div>
-      </section>
+        <p className="mt-3 text-sm text-brandMedium">
+          {t("landing.pricing.earlyAdopter", {
+            defaultValue: "First 500 Pro accounts locked at $9/mo forever",
+          })}
+        </p>
 
-      <section className="border-y border-brand-border/60 bg-slate-950/35">
-        <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-          <h2 className="text-2xl font-semibold text-white md:text-3xl">{t("landing.pricing.title")}</h2>
-          <div className="mt-6 inline-flex rounded-xl border border-brand-border/70 bg-slate-900/50 p-1">
-            <button
-              type="button"
-              onClick={() => setBillingCycle("monthly")}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                billingCycle === "monthly" ? "bg-brand-amber text-slate-950" : "text-slate-300 hover:text-white"
-              }`}
-            >
-              {t("landing.pricing.monthly", { defaultValue: "monthly" })}
-            </button>
-            <button
-              type="button"
-              onClick={() => setBillingCycle("yearly")}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                billingCycle === "yearly" ? "bg-brand-amber text-slate-950" : "text-slate-300 hover:text-white"
-              }`}
-            >
-              {t("landing.pricing.yearly", { defaultValue: "yearly" })}
-            </button>
-          </div>
-          <p className="mt-3 text-sm text-brand-amber">
-            {t("landing.pricing.earlyAdopter", {
-              defaultValue: "First 500 Pro accounts locked at $9/mo forever",
-            })}
-          </p>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {pricingTiers.map((tier) => (
+        <div className="mt-8 grid gap-5 md:grid-cols-3">
+          {pricingTiers.map((tier) => {
+            const highlighted = tier.highlighted;
+            return (
               <article
                 key={tier.nameKey}
-                className={`rounded-2xl p-6 ${
-                  tier.highlighted ? "neo-panel-accent neo-panel border border-brand-blue/40" : "neo-panel"
+                className={`rounded-2xl border p-6 shadow-lg ${
+                  highlighted ? "border-brandDark bg-brandDark text-white" : "border-border bg-bgPrimary text-textSecondary"
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-semibold text-white">{t(tier.nameKey)}</h3>
+                  <h3 className={`text-xl font-bold ${highlighted ? "text-white" : "text-textPrimary"}`}>{t(tier.nameKey)}</h3>
                   {tier.id === "pro" ? (
-                    <span className="rounded-full border border-brand-amber/50 bg-brand-amber/10 px-2 py-0.5 text-[11px] font-semibold text-brand-amber">
-                      ⭐ {t("landing.pricing.badge", { defaultValue: "Early Adopter Price" })}
-                    </span>
-                  ) : null}
-                  {tier.id === "pro" ? (
-                    <span className="rounded-full border border-brand-blue/40 bg-brand-blue/10 px-2 py-0.5 text-[11px] font-semibold text-brand-blue">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                        highlighted ? "bg-white/15 text-white" : "bg-brandDark/10 text-brandDark"
+                      }`}
+                    >
                       {t("landing.pricing.popular", { defaultValue: "Most Popular" })}
                     </span>
                   ) : null}
                 </div>
-                <p className="mt-2 text-3xl font-bold text-brand-amber">
+                <p className={`mt-3 font-mono text-3xl font-bold ${highlighted ? "text-white" : "text-brandDark"}`}>
                   {tier.id === "free"
                     ? "$0/mo"
                     : tier.id === "pro"
@@ -400,20 +375,20 @@ export function LandingPage() {
                         : "$149/yr"}
                 </p>
                 {tier.id === "pro" && billingCycle === "yearly" ? (
-                  <p className="mt-1 text-xs font-semibold text-brand-green">
+                  <p className={`mt-1 text-xs font-semibold ${highlighted ? "text-brandCyan" : "text-positive"}`}>
                     {t("landing.pricing.save", { defaultValue: "Save 27%" })}
                   </p>
                 ) : null}
                 {tier.id === "proPlus" && billingCycle === "yearly" ? (
-                  <p className="mt-1 text-xs font-semibold text-brand-green">
+                  <p className={`mt-1 text-xs font-semibold ${highlighted ? "text-brandCyan" : "text-positive"}`}>
                     {t("landing.pricing.saveProPlus", { defaultValue: "Save 34%" })}
                   </p>
                 ) : null}
-                <p className="mt-3 text-sm text-slate-300">{t(tier.bodyKey)}</p>
-                <ul className="mt-5 space-y-2 text-sm text-slate-200">
+                <p className={`mt-3 text-sm ${highlighted ? "text-white/85" : "text-textSecondary"}`}>{t(tier.bodyKey)}</p>
+                <ul className={`mt-5 space-y-2 text-sm ${highlighted ? "text-white/90" : "text-textSecondary"}`}>
                   {pricingFeatures(tier.featuresKey).map((item) => (
                     <li key={item} className="flex items-start gap-2">
-                      <span className="mt-0.5 text-brand-green">✓</span>
+                      <span className={highlighted ? "text-brandCyan" : "text-positive"}>✓</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -423,7 +398,11 @@ export function LandingPage() {
                     type="button"
                     onClick={() => void handleChoosePlan(tier.id === "pro" ? "pro" : "pro_plus")}
                     disabled={checkoutLoadingPlan !== null}
-                    className="interactive-tilt mt-6 inline-flex rounded-lg border border-brand-border/70 bg-white/5 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                    className={`mt-6 inline-flex rounded-lg px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                      highlighted
+                        ? "bg-white text-brandDark hover:bg-bgSecondary"
+                        : "bg-brandDark text-white hover:bg-brandMedium"
+                    }`}
                   >
                     {checkoutLoadingPlan === (tier.id === "pro" ? "pro" : "pro_plus")
                       ? t("common.loading", { defaultValue: "Loading..." })
@@ -432,32 +411,34 @@ export function LandingPage() {
                 ) : (
                   <Link
                     to="/dashboard"
-                    className="interactive-tilt mt-6 inline-flex rounded-lg border border-brand-border/70 bg-white/5 px-4 py-2 text-sm font-semibold text-white"
+                    className={`mt-6 inline-flex rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                      highlighted ? "bg-white text-brandDark hover:bg-bgSecondary" : "bg-brandDark text-white hover:bg-brandMedium"
+                    }`}
                   >
                     {t(tier.ctaKey)}
                   </Link>
                 )}
                 {tier.id === "pro" ? (
-                  <p className="mt-2 text-xs text-slate-400">
+                  <p className={`mt-2 text-xs ${highlighted ? "text-white/75" : "text-textMuted"}`}>
                     {t("landing.pricing.trial", { defaultValue: "14 days free" })}
                   </p>
                 ) : null}
               </article>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-        <div className="neo-panel rounded-2xl border border-brand-border/70 px-6 py-10 text-center md:px-10">
-          <h2 className="text-3xl font-semibold text-white">{t("landing.footerCta.title")}</h2>
+      <section className="bg-gradient-to-r from-brandDark to-brandMedium py-14">
+        <div className="mx-auto max-w-5xl px-6 text-center text-white">
+          <h2 className="text-3xl font-bold">{t("landing.footerCta.title")}</h2>
+          <p className="mt-3 text-sm text-white/85">{t("landing.footerCta.disclaimer")}</p>
           <Link
             to="/dashboard"
-            className="interactive-tilt mt-6 inline-flex rounded-xl bg-brand-amber px-7 py-3 text-sm font-semibold text-slate-950"
+            className="mt-6 inline-flex rounded-xl bg-white px-7 py-3 text-sm font-semibold text-brandDark transition hover:bg-bgSecondary"
           >
             {t("landing.footerCta.button")}
           </Link>
-          <p className="mt-4 text-xs text-slate-400">{t("landing.footerCta.disclaimer")}</p>
         </div>
       </section>
     </div>

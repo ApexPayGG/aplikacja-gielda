@@ -73,14 +73,14 @@ function isToolsPath(pathname: string): boolean {
 }
 
 function navLinkClass(isActive: boolean): string {
-  return `nav-link-chrome block rounded px-2 py-1.5 text-sm ${
-    isActive ? "is-active text-brand-green" : "text-slate-300 hover:text-brand-blue"
+  return `block rounded-md border-b-2 px-2 py-1.5 text-sm font-medium transition-colors ${
+    isActive ? "border-brandDark text-brandDark" : "border-transparent text-textSecondary hover:text-brandDark"
   }`;
 }
 
 function triggerClass(active: boolean): string {
-  return `nav-link-chrome inline-flex items-center gap-0.5 rounded px-2 py-1.5 text-sm ${
-    active ? "is-active text-brand-green" : "text-slate-300 hover:text-brand-blue"
+  return `inline-flex items-center gap-0.5 rounded-md border-b-2 px-2 py-1.5 text-sm font-medium transition-colors ${
+    active ? "border-brandDark text-brandDark" : "border-transparent text-textSecondary hover:text-brandDark"
   }`;
 }
 
@@ -135,7 +135,7 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
       </button>
       {open ? (
         <div className="absolute left-0 top-full z-50 -mt-0.5 min-w-[13.5rem] pt-2">
-          <div className="neo-panel rounded-xl border border-brand-border/90 py-1 shadow-lg">
+          <div className="rounded-xl border border-border bg-bgPrimary py-1 shadow-lg">
             {items.map((item) => (
               <NavLink
                 key={item.to}
@@ -178,7 +178,7 @@ export function AppNavBar() {
   };
 
   return (
-    <nav className="glass-nav relative z-20">
+    <nav className="relative z-20 border-b border-border bg-bgPrimary">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4">
         <Link to="/" className="shrink-0">
           <img src="/logo.png" alt="StockAI Pro" className="h-8 w-40 object-cover object-center" />
@@ -186,7 +186,7 @@ export function AppNavBar() {
 
         <button
           type="button"
-          className="ml-auto inline-flex rounded-lg border border-brand-border/80 p-2 text-slate-200 md:hidden"
+          className="ml-auto inline-flex rounded-lg border border-border p-2 text-brandDark md:hidden"
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav-panel"
           onClick={() => setMobileOpen((v) => !v)}
@@ -232,13 +232,13 @@ export function AppNavBar() {
           {user ? (
             <>
               <div className="max-w-[18rem] text-right">
-                {userName ? <div className="text-xs text-slate-200">{userName}</div> : null}
-                <div className="break-all text-[11px] text-slate-400">{userEmail}</div>
+                {userName ? <div className="text-xs text-brandDark">{userName}</div> : null}
+                <div className="break-all text-[11px] text-brandDark">{userEmail}</div>
               </div>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="rounded-lg border border-brand-border/80 px-3 py-1.5 text-sm text-slate-200 transition hover:border-brand-blue hover:text-white"
+                className="rounded-lg border border-brandDark/20 px-3 py-1.5 text-sm font-semibold text-brandDark transition hover:bg-brandDark hover:text-white"
               >
                 Wyloguj
               </button>
@@ -250,7 +250,7 @@ export function AppNavBar() {
 
       <div
         id="mobile-nav-panel"
-        className={`border-t border-brand-border/60 bg-[rgb(11_14_17/0.97)] backdrop-blur-md md:hidden ${
+        className={`border-t border-border bg-bgPrimary md:hidden ${
           mobileOpen ? "block" : "hidden"
         }`}
       >
@@ -266,20 +266,20 @@ export function AppNavBar() {
           <MobileSection titleKey="nav.markets" links={marketsLinks} onNavigate={() => setMobileOpen(false)} />
           <MobileSection titleKey="nav.portfolio" links={portfolioLinks} onNavigate={() => setMobileOpen(false)} />
           <MobileSection titleKey="nav.tools" links={toolsLinks} onNavigate={() => setMobileOpen(false)} />
-          <div className="border-t border-brand-border/50 pt-4">
+          <div className="border-t border-border pt-4">
             <LanguageSwitcher />
           </div>
           {user ? (
-            <div className="border-t border-brand-border/50 pt-4">
-              {userName ? <div className="text-xs text-slate-200">{userName}</div> : null}
-              <div className="mb-2 break-all text-[11px] text-slate-400">{userEmail}</div>
+            <div className="border-t border-border pt-4">
+              {userName ? <div className="text-xs text-brandDark">{userName}</div> : null}
+              <div className="mb-2 break-all text-[11px] text-brandDark">{userEmail}</div>
               <button
                 type="button"
                 onClick={() => {
                   setMobileOpen(false);
                   handleLogout();
                 }}
-                className="rounded-lg border border-brand-border/80 px-3 py-1.5 text-sm text-slate-200 transition hover:border-brand-blue hover:text-white"
+                className="rounded-lg border border-brandDark/20 px-3 py-1.5 text-sm font-semibold text-brandDark transition hover:bg-brandDark hover:text-white"
               >
                 Wyloguj
               </button>
@@ -303,8 +303,8 @@ function MobileSection({
   const { t } = useTranslation();
   return (
     <div>
-      <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">{t(titleKey)}</div>
-      <div className="flex flex-col gap-0.5 border-l border-brand-border/60 pl-3">
+      <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-textMuted">{t(titleKey)}</div>
+      <div className="flex flex-col gap-0.5 border-l border-border pl-3">
         {links.map((item) => (
           <NavLink key={item.to} to={item.to} className={({ isActive }) => navLinkClass(isActive)} onClick={onNavigate}>
             {t(item.labelKey)}

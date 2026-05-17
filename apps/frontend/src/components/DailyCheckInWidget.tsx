@@ -7,13 +7,17 @@ const USER_ID_FALLBACK = "";
 const MOOD_EMOJIS = ["😞", "😕", "😐", "🙂", "😄"] as const;
 const RISK_LEVELS: DailyCheckInRiskLevel[] = ["LOW", "MEDIUM", "HIGH"];
 
+type DailyCheckInWidgetProps = {
+  compact?: boolean;
+};
+
 function readUserId(): string {
   if (typeof window === "undefined") return USER_ID_FALLBACK;
   const value = window.localStorage.getItem("userId")?.trim();
   return value || USER_ID_FALLBACK;
 }
 
-export function DailyCheckInWidget() {
+export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const userId = useMemo(() => user?.id ?? readUserId(), [user?.id]);
@@ -72,18 +76,18 @@ export function DailyCheckInWidget() {
   if (loading || !visible) return null;
 
   return (
-    <section className="mb-6 rounded-2xl border border-accent/30 bg-slate-900/70 p-4 shadow-lg">
+    <section className={`${compact ? "mb-0" : "mb-6"} rounded-2xl border border-border bg-bgPrimary p-4 shadow-sm`}>
       {aiMessage ? (
-        <div className="animate-pulse rounded-xl border border-emerald-400/40 bg-emerald-500/10 p-4 text-emerald-100">
+        <div className="rounded-xl border border-positive/30 bg-positive/10 p-4 text-positive">
           <p className="text-sm font-medium">{aiMessage}</p>
         </div>
       ) : (
         <div className="space-y-4">
           <div>
-            <h2 className="text-base font-semibold text-white">
+            <h2 className="text-base font-semibold text-textPrimary">
               {t("checkin.title", { defaultValue: "Daily Check-In" })}
             </h2>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-textSecondary">
               {t("checkin.subtitle", { defaultValue: "Set your mindset before the market opens." })}
             </p>
           </div>
@@ -98,9 +102,7 @@ export function DailyCheckInWidget() {
                   type="button"
                   onClick={() => setMood(value)}
                   className={`rounded-lg border px-3 py-2 text-xl transition ${
-                    selected
-                      ? "border-accent bg-accent/20"
-                      : "border-slate-700 bg-slate-800/80 hover:border-slate-500"
+                    selected ? "border-brandDark bg-brandDark/10" : "border-border bg-bgSecondary hover:border-borderStrong"
                   }`}
                   aria-label={`${t("checkin.moodLabel", { defaultValue: "Mood" })} ${value}`}
                 >
@@ -111,7 +113,7 @@ export function DailyCheckInWidget() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm text-slate-300">
+            <label className="mb-1 block text-sm text-textSecondary">
               {t("checkin.planLabel", { defaultValue: "What is your plan today?" })}
             </label>
             <textarea
@@ -119,7 +121,7 @@ export function DailyCheckInWidget() {
               onChange={(event) => setPlan(event.target.value.slice(0, 200))}
               rows={2}
               maxLength={200}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950/70 px-3 py-2 text-sm text-white outline-none ring-accent/40 transition focus:ring"
+              className="w-full rounded-lg border border-border bg-bgSecondary px-3 py-2 text-sm text-textPrimary outline-none ring-brandCyan/40 transition focus:ring"
               placeholder={t("checkin.planPlaceholder", { defaultValue: "Optional..." })}
             />
           </div>
@@ -134,8 +136,8 @@ export function DailyCheckInWidget() {
                   onClick={() => setRiskLevel(level)}
                   className={`rounded-lg border px-3 py-1.5 text-xs font-semibold tracking-wide ${
                     selected
-                      ? "border-accent bg-accent/20 text-white"
-                      : "border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-500"
+                      ? "border-brandDark bg-brandDark text-white"
+                      : "border-border bg-bgSecondary text-textSecondary hover:border-borderStrong"
                   }`}
                 >
                   {t(`checkin.risk.${level}`, { defaultValue: level })}
@@ -151,13 +153,13 @@ export function DailyCheckInWidget() {
                 void handleSubmit();
               }}
               disabled={submitting}
-              className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg bg-brandDark px-4 py-2 text-sm font-semibold text-white transition hover:bg-brandMedium disabled:cursor-not-allowed disabled:opacity-60"
             >
               {submitting
                 ? t("checkin.submitting", { defaultValue: "Saving..." })
                 : t("checkin.submit", { defaultValue: "Start trading day" })}
             </button>
-            {error ? <p className="text-sm text-red-300">{error}</p> : null}
+            {error ? <p className="text-sm text-negative">{error}</p> : null}
           </div>
         </div>
       )}
