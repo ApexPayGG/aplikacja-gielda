@@ -7,16 +7,23 @@ import LanguageSwitcher from "../components/LanguageSwitcher";
 const problemCards = [
   { icon: "🧩", titleKey: "landing.problem.cards.apps.title", bodyKey: "landing.problem.cards.apps.body" },
   { icon: "📉", titleKey: "landing.problem.cards.emotions.title", bodyKey: "landing.problem.cards.emotions.body" },
-  { icon: "🧠", titleKey: "landing.problem.cards.memory.title", bodyKey: "landing.problem.cards.memory.body" },
+  { icon: "🧠", titleKey: "landing.problem.cards.context.title", bodyKey: "landing.problem.cards.context.body" },
 ];
 
 const solutionFeatures = [
-  "landing.solution.features.signalAnalysis",
-  "landing.solution.features.behavioralCoach",
-  "landing.solution.features.traderPsycheProfile",
-  "landing.solution.features.globalMarkets",
-  "landing.solution.features.brokerIntegration",
-  "landing.solution.features.languages",
+  { titleKey: "landing.solution.features.aiBrief.title", bodyKey: "landing.solution.features.aiBrief.body" },
+  { titleKey: "landing.solution.features.behavioralCoach.title", bodyKey: "landing.solution.features.behavioralCoach.body" },
+  { titleKey: "landing.solution.features.signalDna.title", bodyKey: "landing.solution.features.signalDna.body" },
+  { titleKey: "landing.solution.features.preMortemAi.title", bodyKey: "landing.solution.features.preMortemAi.body" },
+  { titleKey: "landing.solution.features.globalMarkets.title", bodyKey: "landing.solution.features.globalMarkets.body" },
+  { titleKey: "landing.solution.features.paperTrading.title", bodyKey: "landing.solution.features.paperTrading.body" },
+];
+
+const socialProofStats = [
+  "landing.socialProof.stats.exchanges",
+  "landing.socialProof.stats.modules",
+  "landing.socialProof.stats.languages",
+  "landing.socialProof.stats.adFree",
 ];
 
 const pricingTiers = [
@@ -304,12 +311,26 @@ export function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <h2 className="text-3xl font-bold text-textPrimary">{t("landing.solution.title")}</h2>
           <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {solutionFeatures.map((featureKey) => (
-              <div key={featureKey} className="rounded-xl border border-border bg-bgPrimary p-5 shadow-sm">
-                <p className="border-l-4 border-brandCyan pl-3 text-base font-semibold text-textPrimary">{t(featureKey)}</p>
+            {solutionFeatures.map((feature) => (
+              <div key={feature.titleKey} className="rounded-xl border border-border bg-bgPrimary p-5 shadow-sm">
+                <p className="border-l-4 border-brandCyan pl-3 text-base font-semibold text-textPrimary">
+                  {t(feature.titleKey)}
+                </p>
+                <p className="mt-3 text-sm text-textSecondary">{t(feature.bodyKey)}</p>
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-16 md:py-20">
+        <h2 className="text-center text-3xl font-bold text-textPrimary">{t("landing.socialProof.title")}</h2>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {socialProofStats.map((statKey) => (
+            <article key={statKey} className="rounded-2xl border border-border bg-bgPrimary p-6 text-center shadow-sm">
+              <p className="text-lg font-bold text-brandDark">{t(statKey)}</p>
+            </article>
+          ))}
         </div>
       </section>
 

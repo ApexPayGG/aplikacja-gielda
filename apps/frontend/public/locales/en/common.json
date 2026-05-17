@@ -1093,40 +1093,49 @@
           "title": "Emotions cost you money",
           "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes."
         },
-        "memory": {
-          "title": "No one remembers your mistakes",
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
+        "context": {
+          "title": "You lack context",
+          "body": "You see a signal but don't know if market conditions support it or if timing is right."
         }
       }
     },
     "solution": {
       "title": "One platform built for investor growth",
       "features": {
-        "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": "Behavioral Coach",
-        "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": "12 Global Markets",
-        "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages"
+        "aiBrief": {
+          "title": "AI Brief with narrative",
+          "body": "Not just a score - a full explanation of why it is worth it or not."
+        },
+        "behavioralCoach": {
+          "title": "Behavioral Coach",
+          "body": "Detects your mistakes and helps prevent repeating them."
+        },
+        "signalDna": {
+          "title": "Signal DNA",
+          "body": "Historical setup twins - how this setup ended in the past."
+        },
+        "preMortemAi": {
+          "title": "Pre-Mortem AI",
+          "body": "Before you buy, AI shows the most likely loss scenario."
+        },
+        "globalMarkets": {
+          "title": "130+ exchanges",
+          "body": "GPW, NYSE, DAX, TSE, NSE and more. No app switching."
+        },
+        "paperTrading": {
+          "title": "Paper Trading",
+          "body": "Practice without risk. Learn from mistakes that cost nothing."
+        }
       }
     },
     "socialProof": {
       "title": "Join our early access community",
-      "subtitle": "Early access community growing every week.",
-      "testimonials": [
-        {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
-        },
-        {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
-        },
-        {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
-        }
-      ]
+      "stats": {
+        "exchanges": "130+ exchanges",
+        "modules": "27 AI modules",
+        "languages": "9 languages",
+        "adFree": "100% ad-free"
+      }
     },
     "pricing": {
       "title": "Simple pricing",

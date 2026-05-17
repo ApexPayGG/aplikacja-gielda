@@ -1088,58 +1088,67 @@
   },
   "landing": {
     "hero": {
-      "title": "Platforma inwestycyjna nowej generacji",
-      "subtitle": "Research AI · Coaching behawioralny · 12 giełd · 9 języków",
+      "title": "Inwestuj mądrzej. Nie więcej.",
+      "subtitle": "AI analizuje rynki, wykrywa okazje i chroni Cię przed własnymi błędami. GPW, Wall Street, DAX i 130+ giełd w jednym miejscu.",
       "ctaPrimary": "Zacznij za darmo",
-      "ctaSecondary": "Zobacz jak to działa",
+      "ctaSecondary": "Zobacz jak działa",
       "widgetTitle": "Puls rynku na żywo",
       "widgetLive": "Na żywo"
     },
     "problem": {
-      "title": "Dlaczego inwestorzy się blokują",
+      "title": "Czy to brzmi znajomo?",
       "cards": {
         "apps": {
-          "title": "Korzystasz z 5-6 aplikacji",
-          "body": "Screener w jednej karcie, dziennik w drugiej, broker gdzie indziej. Przełączanie kontekstu zabija klarowność."
+          "title": "Używasz 5 aplikacji jednocześnie",
+          "body": "TradingView do wykresów, Finviz do screeningu, broker do transakcji... chaos."
         },
         "emotions": {
-          "title": "Emocje kosztują Cię pieniądze",
-          "body": "Strach, chciwość i FOMO po cichu nadpisują plan, gdy rośnie zmienność."
+          "title": "Emocje sabotują Twoje decyzje",
+          "body": "Strach, chciwość, FOMO. Badania pokazują że 80% strat to błędy psychologiczne."
         },
-        "memory": {
-          "title": "Nikt nie pamięta Twoich błędów",
-          "body": "Bez pętli feedbacku te same kosztowne schematy powtarzają się transakcja po transakcji."
+        "context": {
+          "title": "Brakuje Ci kontekstu",
+          "body": "Widzisz sygnał ale nie wiesz czy rynek sprzyja, czy to właściwy moment."
         }
       }
     },
     "solution": {
-      "title": "Jedna platforma zbudowana pod rozwój inwestora",
+      "title": "Jedno miejsce. Pełny obraz.",
       "features": {
-        "signalAnalysis": "Analiza sygnałów AI",
-        "behavioralCoach": "Coach behawioralny",
-        "traderPsycheProfile": "Profil psychiki tradera",
-        "globalMarkets": "12 globalnych rynków",
-        "brokerIntegration": "Integracja z brokerami",
-        "languages": "9 języków"
+        "aiBrief": {
+          "title": "AI Brief z narracją",
+          "body": "Nie sam score — pełne wyjaśnienie dlaczego warto lub nie."
+        },
+        "behavioralCoach": {
+          "title": "Behavioral Coach",
+          "body": "Wykrywa Twoje błędy i powstrzymuje przed powtarzaniem ich."
+        },
+        "signalDna": {
+          "title": "Signal DNA",
+          "body": "Historyczne bliźniaki setupu — jak ten setup kończył się w przeszłości."
+        },
+        "preMortemAi": {
+          "title": "Pre-Mortem AI",
+          "body": "Zanim kupisz — AI pokazuje najbardziej prawdopodobny scenariusz straty."
+        },
+        "globalMarkets": {
+          "title": "130+ giełd",
+          "body": "GPW, NYSE, DAX, TSE, NSE i więcej. Bez przełączania aplikacji."
+        },
+        "paperTrading": {
+          "title": "Paper Trading",
+          "body": "Ćwicz bez ryzyka. Ucz się na błędach które nic nie kosztują."
+        }
       }
     },
     "socialProof": {
-      "title": "Dołącz do naszej społeczności early access",
-      "subtitle": "Społeczność early access rośnie z tygodnia na tydzień.",
-      "testimonials": [
-        {
-          "quote": "Kiedyś skakałam między aplikacjami. Teraz realizuję jeden proces od sygnału do refleksji.",
-          "author": "Kasia, Warsaw"
-        },
-        {
-          "quote": "Behawioralne podpowiedzi pomogły mi skończyć z revenge tradingiem. Moja dyscyplina ryzyka wreszcie jest realna.",
-          "author": "Lukas, Berlin"
-        },
-        {
-          "quote": "Bramka brokerska i kontekst AI oszczędzają mi czas podczas każdej sesji.",
-          "author": "Clara, Madrid"
-        }
-      ]
+      "title": "Dołącz do inwestorów którzy już inwestują mądrzej",
+      "stats": {
+        "exchanges": "130+ giełd",
+        "modules": "27 modułów AI",
+        "languages": "9 języków",
+        "adFree": "100% ad-free"
+      }
     },
     "pricing": {
       "title": "Prosty cennik",
@@ -1188,9 +1197,9 @@
       "trial": "14 dni za darmo"
     },
     "footerCta": {
-      "title": "Załóż darmowe konto już dziś",
-      "button": "Utwórz darmowe konto",
-      "disclaimer": "Produkt edukacyjny. To nie jest porada inwestycyjna. Inwestowanie wiąże się z ryzykiem."
+      "title": "Gotowy żeby inwestować mądrzej?",
+      "button": "Zacznij za darmo",
+      "disclaimer": "Zacznij za darmo — bez karty kredytowej. Upgrade w każdej chwili."
     }
   }
 }
