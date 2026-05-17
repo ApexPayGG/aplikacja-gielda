@@ -65,6 +65,7 @@ model User {
   passwordHash         String               @map("password_hash")
   name                 String?
   tier                 String               @default("FREE")
+  role                 String               @default("USER")
   stripeCustomerId     String?              @map("stripe_customer_id")
   subscriptionStatus   String?              @default("free") @map("subscription_status")
   subscriptionEnd      DateTime?            @map("subscription_end")

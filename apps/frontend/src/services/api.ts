@@ -1254,6 +1254,45 @@ export interface AdminAffiliateBrokerResponse {
   broker?: AdminAffiliateBrokerPayload;
 }
 
+export type AdminTier = "FREE" | "PRO" | "PRO_PLUS";
+
+export interface AdminStatsResponse {
+  totalUsers: number;
+  freeUsers: number;
+  proUsers: number;
+  proPlusUsers: number;
+  newUsersToday: number;
+  newUsersThisWeek: number;
+  totalSignals: number;
+  totalTrades: number;
+  affiliateClicks: number;
+  affiliateConversions: number;
+}
+
+export interface AdminUserItem {
+  id: string;
+  email: string;
+  tier: AdminTier | string;
+  createdAt: string;
+  lastLogin: string | null;
+}
+
+export interface AdminUsersResponse {
+  users: AdminUserItem[];
+  page: number;
+  limit: number;
+  total: number;
+}
+
+export interface AdminErrorItem {
+  id: number;
+  jobId: string;
+  ticker: string;
+  attempt: number;
+  status: string;
+  createdAt: string;
+}
+
 export interface TaxSystemItem {
   code: string;
   name: string;
@@ -1374,6 +1413,31 @@ export async function importAdminAffiliateCsv(body: {
     unmatched: number;
     errors: Array<{ row: number; error: string }>;
   };
+}
+
+export async function getAdminStats(): Promise<AdminStatsResponse> {
+  const { data } = await api.get<AdminStatsResponse>("/admin/stats");
+  return data;
+}
+
+export async function getAdminUsers(page = 1, limit = 20): Promise<AdminUsersResponse> {
+  const { data } = await api.get<AdminUsersResponse>("/admin/users", {
+    params: { page, limit },
+  });
+  return data;
+}
+
+export async function updateAdminUserTier(userId: string, tier: AdminTier): Promise<{ user: AdminUserItem }> {
+  const { data } = await api.post<{ user: AdminUserItem }>(
+    `/admin/user/${encodeURIComponent(userId)}/tier`,
+    { tier },
+  );
+  return data;
+}
+
+export async function getAdminErrors(): Promise<{ errors: AdminErrorItem[] }> {
+  const { data } = await api.get<{ errors: AdminErrorItem[] }>("/admin/errors");
+  return data;
 }
 
 export async function getAlpacaSettings(userId: string): Promise<{

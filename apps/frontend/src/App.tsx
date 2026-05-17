@@ -43,6 +43,7 @@ import { BacktestPage } from "./pages/BacktestPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { AlpacaDashboardPage } from "./pages/AlpacaDashboardPage";
 import { AdminAffiliatePage } from "./pages/AdminAffiliatePage";
+import { AdminPage } from "./pages/AdminPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { PremiumCompanyAnalysis } from "./pages/PremiumCompanyAnalysis";
 import { WeeklyReviewPage } from "./pages/WeeklyReviewPage";
@@ -66,6 +67,14 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   }
   if (!onboardingCompleted && !location.pathname.startsWith("/onboarding")) {
     return <Navigate to="/onboarding" replace />;
+  }
+  return <>{children}</>;
+}
+
+function AdminOnlyRoute({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  if (user?.role !== "ADMIN") {
+    return <Navigate to="/dashboard" replace />;
   }
   return <>{children}</>;
 }
@@ -141,6 +150,7 @@ export default function App() {
 
           <Route path="/dividend" element={<DividendPage />} />
           <Route path="/dividend/intelligence" element={<ProtectedRoute><DividendIntelligencePage /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><AdminOnlyRoute><AdminPage /></AdminOnlyRoute></ProtectedRoute>} />
           <Route path="/admin/affiliate" element={<ProtectedRoute><AdminAffiliatePage /></ProtectedRoute>} />
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
           <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />

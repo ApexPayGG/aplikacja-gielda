@@ -91,6 +91,7 @@ import { createDividendCalcRouter } from "./routes/dividendcalc";
 import { createAlpacaRouter } from "./routes/alpaca";
 import { createAffiliateRouter } from "./routes/affiliate";
 import { createAdminAffiliateRouter } from "./routes/adminAffiliate";
+import { createAdminRouter } from "./routes/admin";
 import { createHistoricalTwinsRouter } from "./routes/historicaltwins";
 import { createPremiumCompanyRouter } from "./routes/premiumCompany";
 import { createAuthRouter } from "./routes/auth";
@@ -264,6 +265,7 @@ export function createApp(): express.Express {
   app.use(createDividendCalcRouter());
   app.use(createAlpacaRouter());
   app.use(createAffiliateRouter());
+  app.use(createAdminRouter());
   app.use(createAdminAffiliateRouter());
   const premiumRouter = createPremiumCompanyRouter(prisma);
   app.use("/api/premium", premiumRouter);
