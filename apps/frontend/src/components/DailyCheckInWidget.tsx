@@ -76,7 +76,9 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
   if (loading || !visible) return null;
 
   return (
-    <section className={`${compact ? "mb-0" : "mb-6"} rounded-2xl border border-border bg-bgPrimary p-4 shadow-sm`}>
+    <section
+      className={`${compact ? "mb-0 rounded-xl p-3" : "mb-6 rounded-2xl p-4"} border border-border bg-bgPrimary shadow-sm`}
+    >
       {aiMessage ? (
         <div className="rounded-xl border border-positive/30 bg-positive/10 p-4 text-positive">
           <p className="text-sm font-medium">{aiMessage}</p>
@@ -84,12 +86,14 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
       ) : (
         <div className="space-y-4">
           <div>
-            <h2 className="text-base font-semibold text-textPrimary">
+            <h2 className={`${compact ? "text-sm" : "text-base"} font-semibold text-textPrimary`}>
               {t("checkin.title", { defaultValue: "Daily Check-In" })}
             </h2>
-            <p className="mt-1 text-sm text-textSecondary">
-              {t("checkin.subtitle", { defaultValue: "Set your mindset before the market opens." })}
-            </p>
+            {compact ? null : (
+              <p className="mt-1 text-sm text-textSecondary">
+                {t("checkin.subtitle", { defaultValue: "Set your mindset before the market opens." })}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -101,7 +105,7 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
                   key={emoji}
                   type="button"
                   onClick={() => setMood(value)}
-                  className={`rounded-lg border px-3 py-2 text-xl transition ${
+                  className={`rounded-lg border ${compact ? "px-2 py-1.5 text-lg" : "px-3 py-2 text-xl"} transition ${
                     selected ? "border-brandDark bg-brandDark/10" : "border-border bg-bgSecondary hover:border-borderStrong"
                   }`}
                   aria-label={`${t("checkin.moodLabel", { defaultValue: "Mood" })} ${value}`}
@@ -113,15 +117,15 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
           </div>
 
           <div>
-            <label className="mb-1 block text-sm text-textSecondary">
+            <label className={`mb-1 block ${compact ? "text-xs" : "text-sm"} text-textSecondary`}>
               {t("checkin.planLabel", { defaultValue: "What is your plan today?" })}
             </label>
             <textarea
               value={plan}
               onChange={(event) => setPlan(event.target.value.slice(0, 200))}
-              rows={2}
+              rows={compact ? 1 : 2}
               maxLength={200}
-              className="w-full rounded-lg border border-border bg-bgSecondary px-3 py-2 text-sm text-textPrimary outline-none ring-brandCyan/40 transition focus:ring"
+              className={`w-full rounded-lg border border-border bg-bgSecondary px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-textPrimary outline-none ring-brandCyan/40 transition focus:ring`}
               placeholder={t("checkin.planPlaceholder", { defaultValue: "Optional..." })}
             />
           </div>
@@ -134,7 +138,7 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
                   key={level}
                   type="button"
                   onClick={() => setRiskLevel(level)}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-semibold tracking-wide ${
+                  className={`rounded-lg border ${compact ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs"} font-semibold tracking-wide ${
                     selected
                       ? "border-brandDark bg-brandDark text-white"
                       : "border-border bg-bgSecondary text-textSecondary hover:border-borderStrong"
@@ -153,7 +157,7 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
                 void handleSubmit();
               }}
               disabled={submitting}
-              className="rounded-lg bg-brandDark px-4 py-2 text-sm font-semibold text-white transition hover:bg-brandMedium disabled:cursor-not-allowed disabled:opacity-60"
+              className={`rounded-lg bg-brandDark ${compact ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm"} font-semibold text-white transition hover:bg-brandMedium disabled:cursor-not-allowed disabled:opacity-60`}
             >
               {submitting
                 ? t("checkin.submitting", { defaultValue: "Saving..." })

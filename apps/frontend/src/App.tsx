@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppNavBar } from "./components/AppNavBar";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 import { useAuth } from "./context/AuthContext";
@@ -58,11 +58,13 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 
 export default function App() {
   const { token } = useAuth();
+  const location = useLocation();
+  const showFloatingEmotionalWidget = token && !location.pathname.startsWith("/dashboard");
 
   return (
     <div className="app-shell min-h-screen">
       {token ? <AppNavBar /> : null}
-      {token ? <EmotionalStateWidget /> : null}
+      {showFloatingEmotionalWidget ? <EmotionalStateWidget /> : null}
 
       <main className="relative z-10">
         <Routes>

@@ -10,6 +10,10 @@ import {
 const PULSE_MS = 60_000;
 const USER_ID_FALLBACK = "";
 
+type EmotionalStateWidgetProps = {
+  variant?: "floating" | "compact";
+};
+
 function parseUserId(): string {
   const stored = globalThis.localStorage?.getItem("userId")?.trim();
   return stored || USER_ID_FALLBACK;
@@ -39,7 +43,13 @@ function levelColor(level: EmotionalLevel): string {
   return "text-emerald-300";
 }
 
-export function EmotionalStateWidget() {
+function levelColorCompact(level: EmotionalLevel): string {
+  if (level === "HIGH") return "text-negative";
+  if (level === "MEDIUM") return "text-brandGold";
+  return "text-positive";
+}
+
+export function EmotionalStateWidget({ variant = "floating" }: EmotionalStateWidgetProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const userIdRef = useRef(user?.id ?? parseUserId());
@@ -151,6 +161,35 @@ export function EmotionalStateWidget() {
       ? "border-red-400/60 bg-red-500/20 text-red-100"
       : "border-yellow-400/60 bg-yellow-500/20 text-yellow-100";
   }, [level, stressDetected]);
+
+  if (variant === "compact") {
+    return (
+      <section className="rounded-2xl border border-border bg-bgPrimary p-4 shadow-sm">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-textSecondary">{t("emotional.widgetTitle")}</p>
+            <p className={`mt-1 text-2xl font-semibold ${levelColorCompact(level)}`}>{t(`emotional.level.${level}`)}</p>
+          </div>
+          <span
+            className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
+              stressDetected ? "bg-negative/10 text-negative" : "bg-positive/10 text-positive"
+            }`}
+          >
+            {stressDetected ? "Uwaga" : "Stabilny"}
+          </span>
+        </div>
+
+        <p className="mt-2 text-xs text-textSecondary">
+          {t("emotional.lastChecked")}:{" "}
+          <span className="font-medium text-textPrimary">{lastChecked ? new Date(lastChecked).toLocaleTimeString() : "-"}</span>
+        </p>
+
+        {suggestion ? (
+          <p className="mt-3 rounded-lg border border-border bg-bgSecondary px-3 py-2 text-sm text-textSecondary">{suggestion}</p>
+        ) : null}
+      </section>
+    );
+  }
 
   return (
     <>
