@@ -74,7 +74,7 @@ const faqItems: FaqItem[] = [
 
 export function HelpPage() {
   const [searchValue, setSearchValue] = useState("");
-  const [openQuestion, setOpenQuestion] = useState<number | null>(0);
+  const [openQuestion, setOpenQuestion] = useState<string | null>(faqItems[0]?.question ?? null);
 
   const filteredFaq = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
@@ -108,8 +108,7 @@ export function HelpPage() {
             value={searchValue}
             onChange={(event) => setSearchValue(event.target.value)}
             placeholder="Wpisz pytanie lub słowo kluczowe..."
-            className="mt-2 w-full rounded-xl border bg-bgPrimary px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/30"
-            style={{ borderColor: colors.borderStrong }}
+            className="mt-2 w-full rounded-xl border border-borderStrong bg-bgPrimary px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/30"
           />
         </header>
 
@@ -137,19 +136,19 @@ export function HelpPage() {
           </h2>
 
           <div className="space-y-3">
-            {filteredFaq.map((item, index) => {
-              const isOpen = openQuestion === index;
+            {filteredFaq.map((item) => {
+              const isOpen = openQuestion === item.question;
               return (
                 <article key={item.question} className="overflow-hidden rounded-2xl border bg-bgPrimary" style={{ borderColor: colors.border }}>
                   <button
                     type="button"
                     className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
-                    onClick={() => setOpenQuestion(isOpen ? null : index)}
+                    onClick={() => setOpenQuestion(isOpen ? null : item.question)}
                     aria-expanded={isOpen}
                   >
                     <span className="font-medium text-textPrimary">{item.question}</span>
                     <span className="text-2xl leading-none" style={{ color: colors.brandCyan }} aria-hidden="true">
-                      {isOpen ? "−" : "+"}
+                      {isOpen ? "-" : "+"}
                     </span>
                   </button>
                   {isOpen ? <p className="border-t px-5 py-4 text-sm text-textSecondary" style={{ borderColor: colors.border }}>{item.answer}</p> : null}
