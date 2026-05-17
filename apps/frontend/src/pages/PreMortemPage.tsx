@@ -1,21 +1,37 @@
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 import { runPreMortem, type PreMortemResponse } from "../services/api";
+import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 const PLN_PER_USD = 3.95;
 
+const HORIZON_OPTIONS = [
+  { months: 3, label: "3 miesiace", riskPct: 0.08, rewardPct: 0.15 },
+  { months: 6, label: "6 miesiecy", riskPct: 0.12, rewardPct: 0.24 },
+  { months: 12, label: "12 miesiecy", riskPct: 0.18, rewardPct: 0.35 },
+] as const;
+
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat("pl-PL", {
+    style: "currency",
+    currency: "PLN",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function pickHorizon(months: number) {
+  return HORIZON_OPTIONS.find((option) => option.months === months) ?? HORIZON_OPTIONS[1];
+}
+
 export function PreMortemPage() {
-  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [form, setForm] = useState({
-    symbol: "",
-    entry: "",
-    stopLoss: "",
-    takeProfit: "",
+    ticker: "",
+    entryPrice: "",
     quantity: "1",
+    horizonMonths: 6,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,33 +41,55 @@ export function PreMortemPage() {
   useEffect(() => {
     const symbol = searchParams.get("symbol");
     const entry = searchParams.get("entry");
-    const stopLoss = searchParams.get("stopLoss");
-    const takeProfit = searchParams.get("takeProfit");
     const quantity = searchParams.get("quantity");
+    const horizon = Number(searchParams.get("horizonMonths"));
     const regime = searchParams.get("regime");
-    if (symbol || entry || stopLoss || takeProfit || quantity) {
+    if (symbol || entry || quantity || Number.isFinite(horizon)) {
       setForm((prev) => ({
-        symbol: symbol?.trim().toUpperCase() || prev.symbol,
-        entry: entry != null && entry !== "" ? entry : prev.entry,
-        stopLoss: stopLoss != null && stopLoss !== "" ? stopLoss : prev.stopLoss,
-        takeProfit: takeProfit != null && takeProfit !== "" ? takeProfit : prev.takeProfit,
+        ticker: symbol?.trim().toUpperCase() || prev.ticker,
+        entryPrice: entry != null && entry !== "" ? entry : prev.entryPrice,
         quantity: quantity != null && quantity !== "" ? quantity : prev.quantity,
+        horizonMonths: HORIZON_OPTIONS.some((option) => option.months === horizon)
+          ? horizon
+          : prev.horizonMonths,
       }));
     }
-    setPrefillNote(regime ? t("pearls.premortemPrefilledRegime", { regime }) : null);
-  }, [searchParams, t]);
+    setPrefillNote(regime ? `Tryb rynkowy z prefilla: ${regime}` : null);
+  }, [searchParams]);
 
-  async function onSubmit(event: React.FormEvent): Promise<void> {
+  const selectedHorizon = useMemo(() => pickHorizon(form.horizonMonths), [form.horizonMonths]);
+
+  const projectedGain = useMemo(() => {
+    if (!result) return 0;
+    const multiplier = selectedHorizon.rewardPct / selectedHorizon.riskPct;
+    return Math.abs(result.maxLoss) * multiplier;
+  }, [result, selectedHorizon.riskPct, selectedHorizon.rewardPct]);
+
+  const aiNarrative = useMemo(() => {
+    if (!result) return "";
+    return `AI ocenia, ze dla ${form.ticker || "wybranego waloru"} rynek (${result.marketRegime}) moze najpierw wygenerowac zmiennosc, dlatego zalecana jest dyscyplina planu dla horyzontu ${selectedHorizon.label}.`;
+  }, [form.ticker, result, selectedHorizon.label]);
+
+  async function onSubmit(event: FormEvent): Promise<void> {
     event.preventDefault();
+    const entry = Number(form.entryPrice);
+    const quantity = Number(form.quantity);
+    if (!form.ticker.trim() || !Number.isFinite(entry) || entry <= 0 || !Number.isFinite(quantity) || quantity <= 0) {
+      setError("Uzupelnij poprawnie wszystkie pola formularza.");
+      return;
+    }
+
+    const stopLoss = entry * (1 - selectedHorizon.riskPct);
+    const takeProfit = entry * (1 + selectedHorizon.rewardPct);
     setLoading(true);
     setError(null);
     try {
       const response = await runPreMortem({
-        symbol: form.symbol.trim().toUpperCase(),
-        entry: Number(form.entry),
-        stopLoss: Number(form.stopLoss),
-        takeProfit: Number(form.takeProfit),
-        quantity: Number(form.quantity),
+        symbol: form.ticker.trim().toUpperCase(),
+        entry,
+        stopLoss,
+        takeProfit,
+        quantity,
         userId: USER_ID,
       });
       setResult(response);
@@ -63,94 +101,196 @@ export function PreMortemPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="mb-2 text-3xl font-bold text-white">{t("premortem.title")}</h1>
-      <p className="mb-6 text-sm text-slate-400">{t("premortem.subtitle")}</p>
+    <div className="min-h-screen" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
+      <div className="mx-auto max-w-5xl px-4 py-10">
+        <header className="mb-8 space-y-2">
+          <h1 className="text-4xl font-bold" style={{ color: colors.brandDark }}>
+            Pre-Mortem AI
+          </h1>
+          <p className="text-sm md:text-base" style={{ color: colors.textSecondary }}>
+            Zanim wejdziesz w pozycje, przetestuj scenariusz straty i potencjalny upside.
+          </p>
+        </header>
 
-      {prefillNote ? (
-        <div className="mb-4 rounded-lg border border-brand-blue/40 bg-brand-blue/10 px-4 py-3 text-sm text-slate-200">
-          {prefillNote}
-        </div>
-      ) : null}
-
-      <form onSubmit={onSubmit} className="neo-panel rounded-xl p-5">
-        <div className="grid gap-3 md:grid-cols-2">
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-slate-400">{t("premortem.symbol")}</span>
-            <input
-              className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-              value={form.symbol}
-              onChange={(e) => setForm((prev) => ({ ...prev, symbol: e.target.value.toUpperCase() }))}
-              placeholder="AAPL"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-slate-400">{t("premortem.quantity")}</span>
-            <input
-              type="number"
-              className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-              value={form.quantity}
-              onChange={(e) => setForm((prev) => ({ ...prev, quantity: e.target.value }))}
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-slate-400">{t("premortem.entry")}</span>
-            <input
-              type="number"
-              step="0.01"
-              className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-              value={form.entry}
-              onChange={(e) => setForm((prev) => ({ ...prev, entry: e.target.value }))}
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-slate-400">{t("premortem.stopLoss")}</span>
-            <input
-              type="number"
-              step="0.01"
-              className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-              value={form.stopLoss}
-              onChange={(e) => setForm((prev) => ({ ...prev, stopLoss: e.target.value }))}
-            />
-          </label>
-          <label className="md:col-span-2 flex flex-col gap-1 text-sm">
-            <span className="text-slate-400">{t("premortem.takeProfit")}</span>
-            <input
-              type="number"
-              step="0.01"
-              className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-              value={form.takeProfit}
-              onChange={(e) => setForm((prev) => ({ ...prev, takeProfit: e.target.value }))}
-            />
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-4 rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue/85 disabled:opacity-60"
-        >
-          {loading ? t("common.loading") : t("premortem.runButton")}
-        </button>
-      </form>
-
-      {error ? <p className="mt-4 text-sm text-brand-red">{error}</p> : null}
-
-      {result ? (
-        <section className="mt-5 rounded-xl border border-brand-red/40 bg-brand-red/10 p-5">
-          <h2 className="font-semibold text-red-100">🎯 PRE-MORTEM ANALYSIS</h2>
-          <p className="mt-2 text-sm text-red-100">{result.scenario}</p>
-          <div className="mt-3 flex flex-wrap gap-2 text-sm">
-            <span className="rounded bg-brand-amber/20 px-2 py-1 font-semibold text-brand-amber">{result.probability}% chance</span>
-            <span className="rounded bg-slate-700/50 px-2 py-1 text-slate-200">
-              {Math.abs(result.maxLoss).toFixed(2)} PLN (~{(Math.abs(result.maxLoss) / PLN_PER_USD).toFixed(2)} USD)
-            </span>
-            <span className="rounded bg-slate-700/50 px-2 py-1 text-slate-300">
-              {t("premortem.marketRegime")}: {result.marketRegime}
-            </span>
+        {prefillNote ? (
+          <div
+            className="mb-4 rounded-xl border px-4 py-3 text-sm"
+            style={{
+              borderColor: colors.borderStrong,
+              backgroundColor: colors.bgPrimary,
+              color: colors.textSecondary,
+            }}
+          >
+            {prefillNote}
           </div>
-        </section>
-      ) : null}
+        ) : null}
+
+        <form
+          onSubmit={onSubmit}
+          className="rounded-2xl border p-6 shadow-sm"
+          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="font-semibold" style={{ color: colors.textSecondary }}>
+                Ticker
+              </span>
+              <input
+                value={form.ticker}
+                onChange={(event) => setForm((prev) => ({ ...prev, ticker: event.target.value.toUpperCase() }))}
+                placeholder="AAPL"
+                className="rounded-xl border px-3 py-2 outline-none"
+                style={{
+                  borderColor: colors.borderStrong,
+                  backgroundColor: colors.bgPrimary,
+                  color: colors.textPrimary,
+                }}
+              />
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="font-semibold" style={{ color: colors.textSecondary }}>
+                Entry price
+              </span>
+              <input
+                type="number"
+                step="0.01"
+                value={form.entryPrice}
+                onChange={(event) => setForm((prev) => ({ ...prev, entryPrice: event.target.value }))}
+                className="rounded-xl border px-3 py-2 outline-none"
+                style={{
+                  borderColor: colors.borderStrong,
+                  backgroundColor: colors.bgPrimary,
+                  color: colors.textPrimary,
+                }}
+              />
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="font-semibold" style={{ color: colors.textSecondary }}>
+                Ilosc
+              </span>
+              <input
+                type="number"
+                step="1"
+                min="1"
+                value={form.quantity}
+                onChange={(event) => setForm((prev) => ({ ...prev, quantity: event.target.value }))}
+                className="rounded-xl border px-3 py-2 outline-none"
+                style={{
+                  borderColor: colors.borderStrong,
+                  backgroundColor: colors.bgPrimary,
+                  color: colors.textPrimary,
+                }}
+              />
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="font-semibold" style={{ color: colors.textSecondary }}>
+                Horyzont
+              </span>
+              <select
+                value={form.horizonMonths}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, horizonMonths: Number(event.target.value) }))
+                }
+                className="rounded-xl border px-3 py-2 outline-none"
+                style={{
+                  borderColor: colors.borderStrong,
+                  backgroundColor: colors.bgPrimary,
+                  color: colors.textPrimary,
+                }}
+              >
+                {HORIZON_OPTIONS.map((option) => (
+                  <option key={option.months} value={option.months}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="mt-5 rounded-xl px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+            style={{
+              background: `linear-gradient(90deg, ${colors.brandDark} 0%, ${colors.brandMedium} 100%)`,
+            }}
+          >
+            {loading ? "Analiza..." : "Analizuj ryzyko"}
+          </button>
+        </form>
+
+        {error ? (
+          <p className="mt-4 text-sm" style={{ color: colors.negative }}>
+            {error}
+          </p>
+        ) : null}
+
+        {result ? (
+          <section className="mt-6 space-y-4">
+            <div className="grid gap-4 md:grid-cols-3">
+              <article
+                className="rounded-2xl border p-5"
+                style={{ borderColor: colors.negative, backgroundColor: colors.bgPrimary }}
+              >
+                <p className="text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+                  Scenariusz straty
+                </p>
+                <p className="mt-3 text-sm leading-relaxed" style={{ color: colors.textPrimary }}>
+                  {result.scenario}
+                </p>
+                <p className="mt-3 text-sm font-semibold" style={{ color: colors.negative }}>
+                  Max loss: {formatCurrency(Math.abs(result.maxLoss))}
+                </p>
+              </article>
+
+              <article
+                className="rounded-2xl border p-5 text-center"
+                style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
+              >
+                <p className="text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+                  Prawdopodobienstwo
+                </p>
+                <p className="mt-3 text-5xl font-extrabold" style={{ color: colors.brandGold }}>
+                  {result.probability}%
+                </p>
+              </article>
+
+              <article
+                className="rounded-2xl border p-5"
+                style={{ borderColor: colors.positive, backgroundColor: colors.bgPrimary }}
+              >
+                <p className="text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+                  Scenariusz zysku
+                </p>
+                <p className="mt-3 text-sm leading-relaxed" style={{ color: colors.textPrimary }}>
+                  Przy zachowaniu planu potencjalny upside dla horyzontu {selectedHorizon.label} moze
+                  osiagnac ok. {formatCurrency(projectedGain)}.
+                </p>
+                <p className="mt-3 text-sm font-semibold" style={{ color: colors.positive }}>
+                  Regime: {result.marketRegime}
+                </p>
+              </article>
+            </div>
+
+            <article
+              className="rounded-2xl p-6 text-white shadow-sm"
+              style={{
+                background: `linear-gradient(135deg, ${colors.brandDark} 0%, ${colors.brandMedium} 100%)`,
+              }}
+            >
+              <p className="text-xs uppercase tracking-wide text-white/80">AI narrative</p>
+              <p className="mt-3 text-sm leading-relaxed">{aiNarrative}</p>
+              <p className="mt-4 text-xs text-white/80">
+                Loss benchmark: {formatCurrency(Math.abs(result.maxLoss))} (~
+                {(Math.abs(result.maxLoss) / PLN_PER_USD).toFixed(2)} USD)
+              </p>
+            </article>
+          </section>
+        ) : null}
+      </div>
     </div>
   );
 }
