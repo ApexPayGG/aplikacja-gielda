@@ -1,11 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Bars3Icon, ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  BriefcaseIcon,
+  ChartBarSquareIcon,
+  ChevronDownIcon,
+  UserCircleIcon,
+  WrenchScrewdriverIcon,
+} from "@heroicons/react/24/outline";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useAuth } from "../context/AuthContext";
 
 type DropdownId = "markets" | "portfolio" | "tools";
+type MobileDrawerLink = {
+  to: string;
+  label: string;
+  icon: typeof ChartBarSquareIcon;
+  isActive: (pathname: string) => boolean;
+};
 
 const marketsLinks: { to: string; labelKey: string }[] = [
   { to: "/signals", labelKey: "nav.signals" },
@@ -70,6 +82,32 @@ function isToolsPath(pathname: string): boolean {
     pathname.startsWith("/tax-optimizer") ||
     pathname.startsWith("/admin/affiliate")
   );
+}
+
+function isAccountPath(pathname: string): boolean {
+  return pathname.startsWith("/settings");
+}
+
+function getUserInitials(name: string | null, email: string): string {
+  if (name) {
+    const tokens = name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    if (tokens.length > 0) {
+      return tokens
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase() ?? "")
+        .join("");
+    }
+  }
+
+  const fallback = email.split("@")[0] ?? "";
+  if (!fallback) {
+    return "U";
+  }
+
+  return fallback.slice(0, 2).toUpperCase();
 }
 
 function navLinkClass(isActive: boolean): string {
@@ -160,17 +198,44 @@ export function AppNavBar() {
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<DropdownId | null>(null);
+  const accountLabel = t("nav.account", { defaultValue: "Account" });
+  const logoutLabel = t("nav.logout", { defaultValue: "Wyloguj" });
+
+  const mobileDrawerLinks: MobileDrawerLink[] = [
+    { to: "/signals", label: t("nav.markets"), icon: ChartBarSquareIcon, isActive: isMarketsPath },
+    { to: "/paper-trading", label: t("nav.portfolio"), icon: BriefcaseIcon, isActive: isPortfolioPath },
+    { to: "/position-size", label: t("nav.tools"), icon: WrenchScrewdriverIcon, isActive: isToolsPath },
+    { to: "/settings", label: accountLabel, icon: UserCircleIcon, isActive: isAccountPath },
+  ];
 
   useEffect(() => {
     setMobileOpen(false);
     setOpenDropdown(null);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mobileOpen]);
+
   const marketsActive = isMarketsPath(pathname);
   const portfolioActive = isPortfolioPath(pathname);
   const toolsActive = isToolsPath(pathname);
   const userName = user?.name?.trim() || null;
   const userEmail = user?.email ?? "";
+  const userInitials = getUserInitials(userName, userEmail);
 
   const handleLogout = (): void => {
     logout();
@@ -186,12 +251,29 @@ export function AppNavBar() {
 
         <button
           type="button"
-          className="ml-auto inline-flex rounded-lg border border-border p-2 text-brandDark md:hidden"
+          className="ml-auto inline-flex h-11 w-11 flex-col items-center justify-center rounded-lg border border-border md:hidden"
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav-panel"
           onClick={() => setMobileOpen((v) => !v)}
         >
-          {mobileOpen ? <XMarkIcon className="h-6 w-6" aria-hidden /> : <Bars3Icon className="h-6 w-6" aria-hidden />}
+          <span
+            aria-hidden
+            className={`block h-0.5 w-6 bg-brandDark transition-transform duration-300 ${
+              mobileOpen ? "translate-y-[7px] rotate-45" : ""
+            }`}
+          />
+          <span
+            aria-hidden
+            className={`my-1 block h-0.5 w-6 bg-brandDark transition-opacity duration-200 ${
+              mobileOpen ? "opacity-0" : "opacity-100"
+            }`}
+          />
+          <span
+            aria-hidden
+            className={`block h-0.5 w-6 bg-brandDark transition-transform duration-300 ${
+              mobileOpen ? "-translate-y-[7px] -rotate-45" : ""
+            }`}
+          />
           <span className="sr-only">{t("nav.menu")}</span>
         </button>
 
@@ -240,7 +322,7 @@ export function AppNavBar() {
                 onClick={handleLogout}
                 className="rounded-lg border border-brandDark/20 px-3 py-1.5 text-sm font-semibold text-brandDark transition hover:bg-brandDark hover:text-white"
               >
-                Wyloguj
+                {logoutLabel}
               </button>
             </>
           ) : null}
@@ -249,69 +331,77 @@ export function AppNavBar() {
       </div>
 
       <div
-        id="mobile-nav-panel"
-        className={`border-t border-border bg-bgPrimary md:hidden ${
-          mobileOpen ? "block" : "hidden"
+        className={`fixed inset-0 z-30 bg-textPrimary/30 transition-opacity duration-300 md:hidden ${
+          mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
+        aria-hidden={!mobileOpen}
+        onClick={() => setMobileOpen(false)}
+      />
+      <aside
+        id="mobile-nav-panel"
+        className={`fixed right-0 top-0 z-40 flex h-dvh w-[min(88vw,22rem)] flex-col bg-bgPrimary shadow-[-12px_0_28px_rgba(13,13,26,0.14)] transition-transform duration-300 md:hidden ${
+          mobileOpen ? "visible translate-x-0" : "invisible translate-x-full"
+        }`}
+        role="dialog"
+        aria-modal="true"
+        aria-hidden={!mobileOpen}
       >
-        <div className="mx-auto max-h-[min(70vh,calc(100dvh-5rem))] max-w-6xl space-y-5 overflow-y-auto px-4 py-4">
-          <div className="flex flex-col gap-1">
-            <NavLink to="/" end className={({ isActive }) => navLinkClass(isActive)} onClick={() => setMobileOpen(false)}>
-              {t("nav.home")}
-            </NavLink>
-            <NavLink to="/dashboard" className={({ isActive }) => navLinkClass(isActive)} onClick={() => setMobileOpen(false)}>
-              {t("nav.dashboard")}
-            </NavLink>
-          </div>
-          <MobileSection titleKey="nav.markets" links={marketsLinks} onNavigate={() => setMobileOpen(false)} />
-          <MobileSection titleKey="nav.portfolio" links={portfolioLinks} onNavigate={() => setMobileOpen(false)} />
-          <MobileSection titleKey="nav.tools" links={toolsLinks} onNavigate={() => setMobileOpen(false)} />
-          <div className="border-t border-border pt-4">
-            <LanguageSwitcher />
-          </div>
-          {user ? (
-            <div className="border-t border-border pt-4">
-              {userName ? <div className="text-xs text-brandDark">{userName}</div> : null}
-              <div className="mb-2 break-all text-[11px] text-brandDark">{userEmail}</div>
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileOpen(false);
-                  handleLogout();
-                }}
-                className="rounded-lg border border-brandDark/20 px-3 py-1.5 text-sm font-semibold text-brandDark transition hover:bg-brandDark hover:text-white"
-              >
-                Wyloguj
-              </button>
+        <div className="border-b border-border px-6 py-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brandDark text-sm font-semibold text-white">
+              {userInitials}
             </div>
-          ) : null}
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wide text-textMuted">{accountLabel}</p>
+              <p className="truncate text-sm font-medium text-brandDark">{userEmail || userName || "—"}</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </nav>
-  );
-}
 
-function MobileSection({
-  titleKey,
-  links,
-  onNavigate,
-}: {
-  titleKey: string;
-  links: { to: string; labelKey: string }[];
-  onNavigate: () => void;
-}) {
-  const { t } = useTranslation();
-  return (
-    <div>
-      <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-textMuted">{t(titleKey)}</div>
-      <div className="flex flex-col gap-0.5 border-l border-border pl-3">
-        {links.map((item) => (
-          <NavLink key={item.to} to={item.to} className={({ isActive }) => navLinkClass(isActive)} onClick={onNavigate}>
-            {t(item.labelKey)}
-          </NavLink>
-        ))}
-      </div>
-    </div>
+        <nav className="flex-1 overflow-y-auto">
+          {mobileDrawerLinks.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.isActive(pathname);
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={`flex items-center gap-3 border-b border-border px-6 py-4 text-base font-semibold transition-colors ${
+                  isActive
+                    ? "border-l-4 border-l-brandCyan bg-bgSecondary/40 pl-5 text-brandDark"
+                    : "border-l-4 border-l-transparent text-textSecondary hover:text-brandDark"
+                }`}
+                tabIndex={mobileOpen ? 0 : -1}
+                onClick={() => setMobileOpen(false)}
+              >
+                <Icon className="h-5 w-5 shrink-0" aria-hidden />
+                <span>{item.label}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
+
+        <div className="border-t border-border px-6 py-4">
+          <LanguageSwitcher />
+        </div>
+
+        {user ? (
+          <div className="border-t border-border px-6 py-5">
+            <button
+              type="button"
+              tabIndex={mobileOpen ? 0 : -1}
+              onClick={() => {
+                setMobileOpen(false);
+                handleLogout();
+              }}
+              className="text-sm font-semibold text-negative transition-colors hover:opacity-80"
+            >
+              {logoutLabel}
+            </button>
+          </div>
+        ) : null}
+      </aside>
+    </nav>
   );
 }
 
