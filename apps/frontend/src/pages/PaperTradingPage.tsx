@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { FeedbackToastStack, type FeedbackToast } from "../components/FeedbackToastStack";
@@ -14,7 +14,7 @@ import {
 } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatQuoteAge } from "../utils/formatQuoteAge";
-import { ReactionSection } from "../components/ReactionSection";
+import { colors } from "../styles/designSystem";
 
 type Direction = "LONG" | "SHORT";
 type ExitAction = "HOLD" | "TIGHTEN_SL" | "SCALE_OUT" | "EXIT_NOW";
@@ -185,10 +185,6 @@ function formatPct(n: number): string {
   return `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
 }
 
-function pnlClass(n: number): string {
-  return n >= 0 ? "text-brand-green" : "text-brand-red";
-}
-
 function parseDate(value?: string): Date | null {
   if (!value) return null;
   const d = new Date(value);
@@ -271,6 +267,7 @@ export function PaperTradingPage() {
   const [error, setError] = useState<string | null>(null);
   const [usingMock, setUsingMock] = useState(false);
   const [toasts, setToasts] = useState<FeedbackToast[]>([]);
+  const [openTradePanelVisible, setOpenTradePanelVisible] = useState(false);
   const [preMortemOpen, setPreMortemOpen] = useState(false);
   const [preMortemForm, setPreMortemForm] = useState({
     symbol: "",
@@ -468,27 +465,17 @@ export function PaperTradingPage() {
     () => positionRows.reduce((acc, row) => acc + row.pnl, 0),
     [positionRows],
   );
-
-  const decisionSummary = useMemo(() => {
-    const proceed = receipts.filter((r) => r.kind === "PROCEED_PREMORTEM").length;
-    const losses = receipts.filter((r) => r.kind === "CLOSED_LOSS").length;
-    const total = proceed + losses;
-    const proceedRate = total > 0 ? (proceed / total) * 100 : 0;
-
-    const worstLoss = receipts
-      .filter((r) => r.kind === "CLOSED_LOSS")
-      .map((r) => {
-        const payload = r.payload as Record<string, unknown>;
-        const pnl = Number(payload.pnl ?? 0);
-        return {
-          symbol: r.symbol,
-          pnl,
-        };
-      })
-      .sort((a, b) => a.pnl - b.pnl)[0] ?? null;
-
-    return { proceed, losses, total, proceedRate, worstLoss };
-  }, [receipts]);
+  const realizedPnl = useMemo(() => history.reduce((acc, row) => acc + Number(row.pnl ?? 0), 0), [history]);
+  const portfolioBalance = totalUnrealized + realizedPnl;
+  const closedCount = history.length;
+  const winCount = useMemo(() => history.filter((row) => Number(row.pnl ?? 0) > 0).length, [history]);
+  const winRate = closedCount > 0 ? (winCount / closedCount) * 100 : 0;
+  const bestTrade = useMemo(() => {
+    return history.reduce<PaperTrade | null>((best, row) => {
+      if (!best) return row;
+      return Number(row.pnl ?? 0) > Number(best.pnl ?? 0) ? row : best;
+    }, null);
+  }, [history]);
 
   const openTradeNow = async (
     payload: { ticker: string; entryPrice: number; quantity: number; direction: Direction },
@@ -537,6 +524,7 @@ export function PaperTradingPage() {
         }
       }
       setForm((prev) => ({ ...prev, ticker: "", entryPrice: "", stopLoss: "", takeProfit: "" }));
+      setOpenTradePanelVisible(false);
       await loadData();
       pushToast("success", "Pozycja otwarta", `${ticker} • ${payload.direction} • ${quantity}`);
     } catch (e) {
@@ -756,332 +744,373 @@ export function PaperTradingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-bg text-slate-100">
-      <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
-        <header className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight text-white">{t("paperTrading.title")}</h1>
-          <div className={`rounded px-3 py-1 text-xs ${usingMock ? "bg-orange-500/20 text-orange-200" : "bg-slate-700/40 text-slate-300"}`}>
-            {usingMock ? "Mock fallback active" : "Live API"}
+    <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary, color: colors.textPrimary }}>
+      <div className="mx-auto max-w-7xl space-y-4 px-4 py-6">
+        <section
+          className="rounded-2xl border px-4 py-4 shadow-sm md:px-5"
+          style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.14em]" style={{ color: colors.textSecondary }}>
+                Paper Trading
+              </p>
+              <h1 className="text-2xl font-semibold md:text-3xl" style={{ color: colors.brandDark }}>
+                Paper Trading
+              </h1>
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <span className="font-mono text-3xl md:text-4xl" style={{ color: colors.brandDark }}>
+                  {formatMoney(portfolioBalance)}
+                </span>
+                <span
+                  className="rounded-full px-3 py-1 text-xs font-semibold"
+                  style={{
+                    backgroundColor: portfolioBalance >= 0 ? `${colors.positive}20` : `${colors.negative}20`,
+                    color: portfolioBalance >= 0 ? colors.positive : colors.negative,
+                  }}
+                >
+                  P&amp;L {formatPct(portfolioBalance)}
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <button
+                type="button"
+                onClick={() => setOpenTradePanelVisible((prev) => !prev)}
+                className="rounded-xl px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
+                style={{ background: `linear-gradient(135deg, ${colors.brandDark}, ${colors.brandMedium})` }}
+              >
+                Otwórz pozycję
+              </button>
+              <span
+                className="rounded-full border px-2 py-0.5 text-[11px]"
+                style={{
+                  borderColor: usingMock ? `${colors.brandGold}66` : colors.borderStrong,
+                  backgroundColor: usingMock ? `${colors.brandGold}1A` : colors.bgPrimary,
+                  color: usingMock ? colors.brandMedium : colors.textSecondary,
+                }}
+              >
+                {usingMock ? "Mock fallback active" : "Live API"}
+              </span>
+              <span className="text-[11px]" style={{ color: colors.textMuted }}>
+                Decision receipts: {receipts.length}
+              </span>
+            </div>
           </div>
-        </header>
+        </section>
 
-        {error && <div className="rounded border border-brand-red/30 bg-brand-red/10 p-3 text-sm text-brand-red">{error}</div>}
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StatTile label="Otwarte pozycje" value={String(portfolio?.openPositions.length ?? positionRows.length)} />
+          <StatTile label="Zamknięte" value={String(closedCount)} />
+          <StatTile label="Win rate" value={`${winRate.toFixed(1)}%`} tone={winRate >= 50 ? "positive" : "negative"} />
+          <StatTile
+            label="Najlepszy trade"
+            value={bestTrade ? `${bestTrade.ticker} ${formatPct(Number(bestTrade.pnlPct ?? 0))}` : "n/a"}
+            tone={Number(bestTrade?.pnl ?? 0) >= 0 ? "positive" : "negative"}
+          />
+        </section>
+
+        {error ? (
+          <div
+            className="rounded-xl border px-3 py-2 text-sm"
+            style={{ borderColor: `${colors.negative}55`, backgroundColor: `${colors.negative}12`, color: colors.negative }}
+          >
+            {error}
+          </div>
+        ) : null}
         <FeedbackToastStack toasts={toasts} />
         {reflectionInsight ? (
-          <div className="rounded border border-brand-blue/40 bg-brand-blue/15 p-3 text-sm text-brand-blue">
+          <div
+            className="rounded-xl border px-3 py-2 text-sm"
+            style={{ borderColor: `${colors.brandCyan}66`, backgroundColor: `${colors.brandCyan}14`, color: colors.brandDark }}
+          >
             <p className="font-semibold">{t("reflection.aiTitle")}</p>
-            <p className="mt-1 text-blue-100">{reflectionInsight}</p>
+            <p className="mt-1">{reflectionInsight}</p>
           </div>
         ) : null}
 
-        <section className="neo-panel neo-panel-accent rounded-xl p-4">
-          <h2 className="mb-4 text-lg font-semibold text-white">{t("paperTrading.openPosition")}</h2>
-          <form onSubmit={onOpenTrade} className="grid gap-3 md:grid-cols-6">
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">Ticker</span>
-              <input
-                className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-                value={form.ticker}
-                onChange={(e) => setForm((prev) => ({ ...prev, ticker: e.target.value.toUpperCase() }))}
-                placeholder="AAPL"
-              />
-            </label>
+        {openTradePanelVisible ? (
+          <section
+            className="rounded-2xl border p-4 shadow-sm"
+            style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+          >
+            <form onSubmit={onOpenTrade} className="grid gap-3 md:grid-cols-6">
+              <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+                <span>Ticker</span>
+                <input
+                  className="rounded-lg border bg-white px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  value={form.ticker}
+                  onChange={(e) => setForm((prev) => ({ ...prev, ticker: e.target.value.toUpperCase() }))}
+                  placeholder="AAPL"
+                />
+              </label>
 
-            <div className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">{t("paperTrading.direction")}</span>
-              <div className="flex overflow-hidden rounded border border-brand-border">
+              <div className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+                <span>{t("paperTrading.direction")}</span>
+                <div className="flex overflow-hidden rounded-lg border" style={{ borderColor: colors.borderStrong }}>
+                  <button
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, direction: "LONG" }))}
+                    className="flex-1 px-3 py-2 text-xs font-semibold"
+                    style={{
+                      backgroundColor: form.direction === "LONG" ? `${colors.positive}18` : colors.bgPrimary,
+                      color: form.direction === "LONG" ? colors.positive : colors.textSecondary,
+                    }}
+                  >
+                    {t("paperTrading.long")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, direction: "SHORT" }))}
+                    className="flex-1 px-3 py-2 text-xs font-semibold"
+                    style={{
+                      backgroundColor: form.direction === "SHORT" ? `${colors.negative}18` : colors.bgPrimary,
+                      color: form.direction === "SHORT" ? colors.negative : colors.textSecondary,
+                    }}
+                  >
+                    {t("paperTrading.short")}
+                  </button>
+                </div>
+              </div>
+
+              <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+                <span>{t("paperTrading.entryPrice")}</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="rounded-lg border bg-white px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  value={form.entryPrice}
+                  onChange={(e) => setForm((prev) => ({ ...prev, entryPrice: e.target.value }))}
+                  placeholder="100.00"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+                <span>{t("premortem.stopLoss")}</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="rounded-lg border bg-white px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  value={form.stopLoss}
+                  onChange={(e) => setForm((prev) => ({ ...prev, stopLoss: e.target.value }))}
+                  placeholder="95.00"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+                <span>{t("premortem.takeProfit")}</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="rounded-lg border bg-white px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  value={form.takeProfit}
+                  onChange={(e) => setForm((prev) => ({ ...prev, takeProfit: e.target.value }))}
+                  placeholder="115.00"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+                <span>{t("paperTrading.quantity")}</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="rounded-lg border bg-white px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  value={form.quantity}
+                  onChange={(e) => setForm((prev) => ({ ...prev, quantity: e.target.value }))}
+                  placeholder="1"
+                />
+              </label>
+
+              <div className="md:col-span-6">
                 <button
-                  type="button"
-                  onClick={() => setForm((prev) => ({ ...prev, direction: "LONG" }))}
-                  className={`flex-1 px-3 py-2 ${form.direction === "LONG" ? "bg-brand-green/20 text-brand-green" : "bg-brand-bg text-slate-300"}`}
+                  type="submit"
+                  disabled={submittingOpen}
+                  className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+                  style={{ backgroundColor: colors.brandDark }}
                 >
-                  {t("paperTrading.long")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setForm((prev) => ({ ...prev, direction: "SHORT" }))}
-                  className={`flex-1 px-3 py-2 ${form.direction === "SHORT" ? "bg-brand-red/20 text-brand-red" : "bg-brand-bg text-slate-300"}`}
-                >
-                  {t("paperTrading.short")}
+                  {submittingOpen ? t("common.loading") : t("paperTrading.openPosition")}
                 </button>
               </div>
-            </div>
+            </form>
+          </section>
+        ) : null}
 
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">{t("paperTrading.entryPrice")}</span>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-                value={form.entryPrice}
-                onChange={(e) => setForm((prev) => ({ ...prev, entryPrice: e.target.value }))}
-                placeholder="100.00"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">{t("premortem.stopLoss")}</span>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-                value={form.stopLoss}
-                onChange={(e) => setForm((prev) => ({ ...prev, stopLoss: e.target.value }))}
-                placeholder="95.00"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">{t("premortem.takeProfit")}</span>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-                value={form.takeProfit}
-                onChange={(e) => setForm((prev) => ({ ...prev, takeProfit: e.target.value }))}
-                placeholder="115.00"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">{t("paperTrading.quantity")}</span>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-                value={form.quantity}
-                onChange={(e) => setForm((prev) => ({ ...prev, quantity: e.target.value }))}
-                placeholder="1"
-              />
-            </label>
-
-            <div className="md:col-span-6">
-              <button
-                type="submit"
-                disabled={submittingOpen}
-                className="interactive-tilt rounded bg-brand-amber px-4 py-2 text-sm font-semibold text-brand-bg transition hover:bg-brand-amber/85 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {submittingOpen ? t("common.loading") : t("paperTrading.openPosition")}
-              </button>
-            </div>
-          </form>
-        </section>
-
-        <section className="neo-panel rounded-xl p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">{t("paperTrading.portfolio")}</h2>
-            <div className="text-right">
-              <div className={`font-mono text-sm ${pnlClass(totalUnrealized)} ${totalUnrealized >= 0 ? "pnl-glow-positive" : "pnl-glow-negative"}`}>
-                Unrealized: {formatMoney(totalUnrealized)}
-              </div>
-              <div className="text-xs text-slate-500">Open trades: {portfolio?.openPositions.length ?? 0}</div>
-            </div>
+        <section className="rounded-2xl border shadow-sm" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+          <div
+            className="flex items-center justify-between border-b px-4 py-3"
+            style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+          >
+            <h2 className="text-sm font-semibold uppercase tracking-[0.12em]" style={{ color: colors.brandDark }}>
+              Otwarte pozycje
+            </h2>
+            <span className="text-xs font-medium" style={{ color: colors.textSecondary }}>
+              Unrealized {formatMoney(totalUnrealized)}
+            </span>
           </div>
           {loadingPortfolio ? (
-            <TableSkeleton rows={4} />
+            <div className="p-4">
+              <TableSkeleton rows={4} />
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
-                <thead className="text-left text-slate-400">
-                  <tr className="border-b border-slate-800">
-                    <th className="px-2 py-2">Ticker</th>
-                    <th className="px-2 py-2">{t("paperTrading.direction")}</th>
-                    <th className="px-2 py-2">{t("paperTrading.entryPrice")}</th>
-                    <th className="px-2 py-2">Current Price</th>
-                    <th className="px-2 py-2">{t("pearls.quoteFreshness")}</th>
-                    <th className="px-2 py-2">{t("paperTrading.pnl")}</th>
-                    <th className="px-2 py-2">PnL%</th>
-                    <th className="px-2 py-2">Czas otwarcia</th>
-                    <th className="px-2 py-2">Exit Signal</th>
-                    <th className="px-2 py-2">{t("common.close")}</th>
+                <thead className="text-left text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+                  <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
+                    <th className="px-3 py-2">Logo + Symbol</th>
+                    <th className="px-3 py-2">Entry price</th>
+                    <th className="px-3 py-2">Current price</th>
+                    <th className="px-3 py-2">P&amp;L %</th>
+                    <th className="px-3 py-2">Czas</th>
+                    <th className="px-3 py-2">Akcje</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {positionRows.length === 0 && (
+                  {positionRows.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="px-2 py-6 text-center text-slate-500">
+                      <td colSpan={6} className="px-3 py-6 text-center text-sm" style={{ color: colors.textMuted }}>
                         Brak aktywnych pozycji.
                       </td>
                     </tr>
-                  )}
-                  {positionRows.map((row) => {
-                    const signal = exitSignals[row.id];
-                    const freshnessTone = quoteFreshnessTone(row.quoteUpdatedAt, nowMs);
-                    return (
-                      <Fragment key={row.id}>
-                      <tr className="border-b border-slate-900/80">
-                        <td className="px-2 py-2 font-semibold text-white">{row.ticker}</td>
-                        <td className={`px-2 py-2 ${row.direction === "LONG" ? "text-brand-green" : "text-brand-red"}`}>{row.direction === "LONG" ? t("paperTrading.long") : t("paperTrading.short")}</td>
-                        <td className="px-2 py-2 font-mono">{formatMoney(row.entryPrice)}</td>
-                        <td className="px-2 py-2 font-mono">{formatMoney(row.currentPrice)}</td>
-                        <td className="px-2 py-2 text-xs text-slate-400">
-                          {row.quoteUpdatedAt ? (
-                            <span title={row.quoteUpdatedAt} className={`inline-flex rounded px-2 py-1 ${quoteFreshnessToneClass(freshnessTone)}`}>
-                              {t("pearls.quoteChip", {
-                                age: formatQuoteAge(row.quoteUpdatedAt, nowMs),
-                                source: row.quoteSource ?? "—",
-                              })}
-                            </span>
-                          ) : (
-                            "—"
-                          )}
-                        </td>
-                        <td className={`px-2 py-2 font-mono ${pnlClass(row.pnl)} ${row.pnl >= 0 ? "pnl-glow-positive" : "pnl-glow-negative"}`}>
-                          {formatMoney(row.pnl)}
-                        </td>
-                        <td className={`px-2 py-2 font-mono ${pnlClass(row.pnlPct)} ${row.pnlPct >= 0 ? "pnl-glow-positive" : "pnl-glow-negative"}`}>
-                          {formatPct(row.pnlPct)}
-                        </td>
-                        <td className="px-2 py-2 text-xs text-slate-300">{formatDate(row.entryAt)}</td>
-                        <td className="px-2 py-2">
-                          <span className={`rounded px-2 py-1 text-xs font-semibold ${exitBadgeClass(signal?.action ?? "HOLD")}`}>
-                            {signal?.action ?? "HOLD"}
-                          </span>
-                        </td>
-                        <td className="px-2 py-2">
-                          <button
-                            type="button"
-                            disabled={closingTradeId === row.id}
-                            onClick={() => openReflectionModal(row)}
-                            className="interactive-tilt rounded bg-brand-red/20 px-3 py-1 text-xs font-semibold text-brand-red hover:bg-brand-red/30 disabled:opacity-60"
+                  ) : (
+                    positionRows.map((row) => {
+                      const signal = exitSignals[row.id];
+                      const freshnessTone = quoteFreshnessTone(row.quoteUpdatedAt, nowMs);
+                      return (
+                        <tr key={row.id} style={{ borderBottom: `1px solid ${colors.border}` }}>
+                          <td className="px-3 py-2">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-semibold"
+                                style={{ backgroundColor: colors.bgTertiary, color: colors.brandDark }}
+                              >
+                                {row.ticker.slice(0, 2)}
+                              </span>
+                              <span className="font-semibold" style={{ color: colors.brandDark }}>
+                                {row.ticker}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-3 py-2 font-mono">{formatMoney(row.entryPrice)}</td>
+                          <td className="px-3 py-2">
+                            <div className="font-mono">{formatMoney(row.currentPrice)}</div>
+                            {row.quoteUpdatedAt ? (
+                              <span
+                                title={row.quoteUpdatedAt}
+                                className={`mt-1 inline-flex rounded px-2 py-0.5 text-[10px] ${quoteFreshnessToneClass(freshnessTone)}`}
+                              >
+                                {formatQuoteAge(row.quoteUpdatedAt, nowMs)} • {row.quoteSource ?? "—"}
+                              </span>
+                            ) : null}
+                          </td>
+                          <td
+                            className="px-3 py-2 font-mono font-semibold"
+                            style={{ color: row.pnlPct >= 0 ? colors.positive : colors.negative }}
                           >
-                            {closingTradeId === row.id ? t("common.loading") : t("paperTrading.closePosition")}
-                          </button>
-                        </td>
-                      </tr>
-                      <tr className="border-b border-slate-900/60 bg-slate-950/30">
-                        <td colSpan={10} className="px-2 py-2">
-                          <ReactionSection variant="trade" tradeId={row.id} userId={USER_ID} />
-                        </td>
-                      </tr>
-                      </Fragment>
-                    );
-                  })}
+                            {formatPct(row.pnlPct)}
+                          </td>
+                          <td className="px-3 py-2 text-xs" style={{ color: colors.textSecondary }} title={formatDate(row.entryAt)}>
+                            {durationText(row.entryAt, new Date(nowMs).toISOString())}
+                          </td>
+                          <td className="px-3 py-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <button
+                                type="button"
+                                disabled={closingTradeId === row.id}
+                                onClick={() => openReflectionModal(row)}
+                                className="rounded-md px-3 py-1 text-xs font-semibold text-white disabled:opacity-60"
+                                style={{ backgroundColor: colors.brandDark }}
+                              >
+                                {closingTradeId === row.id ? t("common.loading") : "Zamknij"}
+                              </button>
+                              <span className={`rounded px-2 py-0.5 text-[10px] font-semibold ${exitBadgeClass(signal?.action ?? "HOLD")}`}>
+                                {signal?.action ?? "HOLD"}
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
           )}
         </section>
 
-        <section className="neo-panel rounded-xl p-4">
-          <h2 className="mb-3 text-lg font-semibold text-white">{t("pearls.decisionTrailTitle")}</h2>
-          <div className="mb-3 grid gap-2 md:grid-cols-3">
-            <div className="rounded border border-slate-800 bg-brand-bg/60 px-3 py-2">
-              <div className="text-[11px] uppercase tracking-wide text-slate-500">
-                {t("pearls.summaryTotal", { defaultValue: "Recorded decisions" })}
-              </div>
-              <div className="mt-1 font-mono text-lg text-white">{decisionSummary.total}</div>
-            </div>
-            <div className="rounded border border-slate-800 bg-brand-bg/60 px-3 py-2">
-              <div className="text-[11px] uppercase tracking-wide text-slate-500">
-                {t("pearls.summaryProceedRate", { defaultValue: "Pre-Mortem proceed rate" })}
-              </div>
-              <div className="mt-1 font-mono text-lg text-brand-blue">{decisionSummary.proceedRate.toFixed(1)}%</div>
-            </div>
-            <div className="rounded border border-slate-800 bg-brand-bg/60 px-3 py-2">
-              <div className="text-[11px] uppercase tracking-wide text-slate-500">
-                {t("pearls.summaryWorstLoss", { defaultValue: "Largest realized loss" })}
-              </div>
-              <div className="mt-1 font-mono text-lg text-brand-red">
-                {decisionSummary.worstLoss
-                  ? `${decisionSummary.worstLoss.symbol} ${decisionSummary.worstLoss.pnl.toFixed(2)}`
-                  : t("common.notAvailable")}
-              </div>
-            </div>
+        <section className="rounded-2xl border shadow-sm" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+          <div
+            className="flex items-center justify-between border-b px-4 py-3"
+            style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+          >
+            <h2 className="text-xs font-semibold uppercase tracking-[0.12em]" style={{ color: colors.brandDark }}>
+              Zamknięte pozycje
+            </h2>
+            <span className="text-xs" style={{ color: colors.textSecondary }}>
+              Ostatnie {Math.min(history.length, 10)}
+            </span>
           </div>
-          {receipts.length === 0 ? (
-            <p className="text-sm text-slate-500">{t("pearls.decisionTrailEmpty")}</p>
-          ) : (
-            <ul className="space-y-2 text-sm text-slate-200">
-              {receipts.map((r) => {
-                const pl = r.payload as Record<string, unknown>;
-                const isProceed = r.kind === "PROCEED_PREMORTEM";
-                return (
-                  <li key={r.id} className="rounded-lg border border-slate-800 bg-brand-bg/60 px-3 py-2">
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
-                      <span>{new Date(r.createdAt).toLocaleString()}</span>
-                      <span className="font-mono text-white">{r.symbol}</span>
-                      <span className="rounded bg-slate-800 px-2 py-0.5 text-slate-200">
-                        {isProceed ? t("pearls.receiptProceed") : t("pearls.receiptLoss")}
-                      </span>
-                    </div>
-                    {isProceed ? (
-                      <p className="mt-1 text-slate-300">
-                        {String(pl.scenario ?? "").slice(0, 160)}
-                        {String(pl.scenario ?? "").length > 160 ? "…" : ""}{" "}
-                        <span className="text-brand-amber">({Number(pl.probability ?? 0)}%)</span>
-                      </p>
-                    ) : (
-                      <p className="mt-1 text-slate-300">
-                        {t("pearls.receiptLossDetail", {
-                          pnl: Number(pl.pnl ?? 0).toFixed(2),
-                          pct: Number(pl.pnlPct ?? 0).toFixed(2),
-                        })}
-                      </p>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
-
-        <section className="neo-panel rounded-xl p-4">
-          <h2 className="mb-3 text-lg font-semibold text-white">{t("paperTrading.history")} (10)</h2>
           {loadingHistory ? (
-            <TableSkeleton rows={5} />
+            <div className="p-3">
+              <TableSkeleton rows={4} />
+            </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead className="text-left text-slate-400">
-                  <tr className="border-b border-slate-800">
-                    <th className="px-2 py-2">Ticker</th>
-                    <th className="px-2 py-2">{t("paperTrading.direction")}</th>
-                    <th className="px-2 py-2">Entry</th>
-                    <th className="px-2 py-2">Exit</th>
-                    <th className="px-2 py-2">{t("paperTrading.pnl")}</th>
-                    <th className="px-2 py-2">PnL%</th>
-                    <th className="px-2 py-2">Czas trwania</th>
+              <table className="min-w-full text-xs">
+                <thead className="text-left uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+                  <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
+                    <th className="px-3 py-2">Logo + Symbol</th>
+                    <th className="px-3 py-2">Entry price</th>
+                    <th className="px-3 py-2">Exit price</th>
+                    <th className="px-3 py-2">P&amp;L %</th>
+                    <th className="px-3 py-2">Czas</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {history.length === 0 && (
+                  {history.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-2 py-6 text-center text-slate-500">
+                      <td colSpan={5} className="px-3 py-5 text-center" style={{ color: colors.textMuted }}>
                         Brak historii transakcji.
                       </td>
                     </tr>
+                  ) : (
+                    history.slice(0, 10).map((row) => {
+                      const pnlPct = Number(row.pnlPct ?? 0);
+                      return (
+                        <tr key={row.id} style={{ borderBottom: `1px solid ${colors.border}` }}>
+                          <td className="px-3 py-1.5">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="inline-flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold"
+                                style={{ backgroundColor: colors.bgTertiary, color: colors.brandDark }}
+                              >
+                                {row.ticker.slice(0, 2)}
+                              </span>
+                              <span className="font-semibold" style={{ color: colors.brandDark }}>
+                                {row.ticker}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-3 py-1.5 font-mono">{formatMoney(row.entryPrice)}</td>
+                          <td className="px-3 py-1.5 font-mono">{formatMoney(Number(row.exitPrice ?? row.entryPrice))}</td>
+                          <td className="px-3 py-1.5 font-mono font-semibold" style={{ color: pnlPct >= 0 ? colors.positive : colors.negative }}>
+                            {formatPct(pnlPct)}
+                          </td>
+                          <td className="px-3 py-1.5" style={{ color: colors.textSecondary }}>
+                            {durationText(row.entryAt, row.exitAt)}
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
-                  {history.slice(0, 10).map((row) => {
-                    const pnl = Number(row.pnl ?? 0);
-                    const pnlPct = Number(row.pnlPct ?? 0);
-                    return (
-                      <Fragment key={row.id}>
-                      <tr className="border-b border-slate-900/80">
-                        <td className="px-2 py-2 font-semibold text-white">{row.ticker}</td>
-                        <td className={`px-2 py-2 ${row.direction === "LONG" ? "text-brand-green" : "text-brand-red"}`}>{row.direction === "LONG" ? t("paperTrading.long") : t("paperTrading.short")}</td>
-                        <td className="px-2 py-2 font-mono">{formatMoney(row.entryPrice)}</td>
-                        <td className="px-2 py-2 font-mono">{formatMoney(Number(row.exitPrice ?? row.entryPrice))}</td>
-                        <td className={`px-2 py-2 font-mono ${pnlClass(pnl)} ${pnl >= 0 ? "pnl-glow-positive" : "pnl-glow-negative"}`}>
-                          {formatMoney(pnl)}
-                        </td>
-                        <td className={`px-2 py-2 font-mono ${pnlClass(pnlPct)} ${pnlPct >= 0 ? "pnl-glow-positive" : "pnl-glow-negative"}`}>
-                          {formatPct(pnlPct)}
-                        </td>
-                        <td className="px-2 py-2 text-xs text-slate-300">{durationText(row.entryAt, row.exitAt)}</td>
-                      </tr>
-                      <tr className="border-b border-slate-900/60 bg-slate-950/30">
-                        <td colSpan={7} className="px-2 py-2">
-                          <ReactionSection variant="trade" tradeId={row.id} userId={USER_ID} />
-                        </td>
-                      </tr>
-                      </Fragment>
-                    );
-                  })}
                 </tbody>
               </table>
             </div>
@@ -1090,37 +1119,48 @@ export function PaperTradingPage() {
       </div>
 
       {reflectionTrade ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-lg rounded-xl border border-brand-border bg-brand-bg p-5 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(13,13,26,0.45)" }}>
+          <div
+            className="w-full max-w-lg rounded-2xl border p-5 shadow-[0_28px_72px_rgba(45,10,107,0.28)]"
+            style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
+          >
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-white">{t("reflection.title")}</h3>
-              <span className="rounded bg-slate-800 px-2 py-1 text-xs text-slate-300">
+              <h3 className="text-lg font-bold" style={{ color: colors.brandDark }}>
+                {t("reflection.title")}
+              </h3>
+              <span className="rounded-full px-2 py-1 text-xs font-semibold" style={{ backgroundColor: colors.bgTertiary, color: colors.textSecondary }}>
                 {t("reflection.timer", { seconds: reflectionTimerSec })}
               </span>
             </div>
-            <p className="mb-4 text-sm text-slate-300">
+            <p className="mb-4 text-sm" style={{ color: colors.textSecondary }}>
               {t("reflection.subtitle", { symbol: reflectionTrade.ticker })}
             </p>
 
             <div className="space-y-3">
               <div>
-                <p className="mb-2 text-sm text-slate-300">{t("reflection.followedPlan")}</p>
-                <div className="flex overflow-hidden rounded border border-brand-border">
+                <p className="mb-2 text-sm" style={{ color: colors.textSecondary }}>
+                  {t("reflection.followedPlan")}
+                </p>
+                <div className="flex overflow-hidden rounded-lg border" style={{ borderColor: colors.borderStrong }}>
                   <button
                     type="button"
                     onClick={() => setReflectionFollowedPlan(true)}
-                    className={`flex-1 px-3 py-2 text-sm ${
-                      reflectionFollowedPlan ? "bg-brand-green/20 text-brand-green" : "bg-brand-bg text-slate-300"
-                    }`}
+                    className="flex-1 px-3 py-2 text-sm font-semibold"
+                    style={{
+                      backgroundColor: reflectionFollowedPlan ? `${colors.positive}20` : colors.bgPrimary,
+                      color: reflectionFollowedPlan ? colors.positive : colors.textSecondary,
+                    }}
                   >
                     {t("reflection.yes")}
                   </button>
                   <button
                     type="button"
                     onClick={() => setReflectionFollowedPlan(false)}
-                    className={`flex-1 px-3 py-2 text-sm ${
-                      !reflectionFollowedPlan ? "bg-brand-red/20 text-brand-red" : "bg-brand-bg text-slate-300"
-                    }`}
+                    className="flex-1 px-3 py-2 text-sm font-semibold"
+                    style={{
+                      backgroundColor: !reflectionFollowedPlan ? `${colors.negative}20` : colors.bgPrimary,
+                      color: !reflectionFollowedPlan ? colors.negative : colors.textSecondary,
+                    }}
                   >
                     {t("reflection.no")}
                   </button>
@@ -1128,11 +1168,12 @@ export function PaperTradingPage() {
               </div>
 
               <label className="flex flex-col gap-1 text-sm">
-                <span className="text-slate-300">{t("reflection.emotion")}</span>
+                <span style={{ color: colors.textSecondary }}>{t("reflection.emotion")}</span>
                 <select
                   value={reflectionEmotion}
                   onChange={(e) => setReflectionEmotion(e.target.value as ReflectionEmotion)}
-                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                 >
                   <option value="FRUSTRATION">{emotionLabel(t, "FRUSTRATION")}</option>
                   <option value="FEAR">{emotionLabel(t, "FEAR")}</option>
@@ -1143,15 +1184,18 @@ export function PaperTradingPage() {
               </label>
 
               <label className="flex flex-col gap-1 text-sm">
-                <span className="text-slate-300">{t("reflection.lesson")}</span>
+                <span style={{ color: colors.textSecondary }}>{t("reflection.lesson")}</span>
                 <textarea
                   value={reflectionLesson}
                   maxLength={100}
                   onChange={(e) => setReflectionLesson(e.target.value.slice(0, 100))}
                   placeholder={t("reflection.lessonPlaceholder")}
-                  className="min-h-[88px] rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  className="min-h-[88px] rounded-lg border bg-white px-3 py-2 outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                 />
-                <span className="text-xs text-slate-500">{reflectionLesson.length}/100</span>
+                <span className="text-xs" style={{ color: colors.textMuted }}>
+                  {reflectionLesson.length}/100
+                </span>
               </label>
             </div>
 
@@ -1160,7 +1204,8 @@ export function PaperTradingPage() {
                 type="button"
                 onClick={() => void closeTradeWithReflection()}
                 disabled={reflectionSubmitting}
-                className="rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue/85 disabled:opacity-60"
+                className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+                style={{ backgroundColor: colors.brandDark }}
               >
                 {reflectionSubmitting ? t("common.loading") : t("reflection.saveAndClose")}
               </button>
@@ -1168,7 +1213,8 @@ export function PaperTradingPage() {
                 type="button"
                 onClick={() => void closeTradeWithoutReflection()}
                 disabled={reflectionSubmitting}
-                className="rounded border border-brand-border px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800/50 disabled:opacity-60"
+                className="rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-60"
+                style={{ borderColor: colors.borderStrong, color: colors.textSecondary }}
               >
                 {t("reflection.skip")}
               </button>
@@ -1178,50 +1224,60 @@ export function PaperTradingPage() {
       ) : null}
 
       {preMortemOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-2xl rounded-xl border border-brand-border bg-brand-bg p-5 shadow-2xl">
-            <h3 className="mb-4 text-lg font-bold text-white">🎯 PRE-MORTEM ANALYSIS</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(13,13,26,0.45)" }}>
+          <div
+            className="w-full max-w-2xl rounded-2xl border p-5 shadow-[0_28px_72px_rgba(45,10,107,0.24)]"
+            style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
+          >
+            <h3 className="mb-4 text-lg font-bold" style={{ color: colors.brandDark }}>
+              🎯 PRE-MORTEM ANALYSIS
+            </h3>
             <div className="grid gap-3 md:grid-cols-2">
               <label className="flex flex-col gap-1 text-sm">
-                <span className="text-slate-400">{t("premortem.symbol")}</span>
+                <span style={{ color: colors.textSecondary }}>{t("premortem.symbol")}</span>
                 <input
-                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={preMortemForm.symbol}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, symbol: e.target.value.toUpperCase() }))}
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm">
-                <span className="text-slate-400">{t("premortem.quantity")}</span>
+                <span style={{ color: colors.textSecondary }}>{t("premortem.quantity")}</span>
                 <input
                   type="number"
-                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={preMortemForm.quantity}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, quantity: e.target.value }))}
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm">
-                <span className="text-slate-400">{t("premortem.entry")}</span>
+                <span style={{ color: colors.textSecondary }}>{t("premortem.entry")}</span>
                 <input
                   type="number"
-                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={preMortemForm.entry}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, entry: e.target.value }))}
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm">
-                <span className="text-slate-400">{t("premortem.stopLoss")}</span>
+                <span style={{ color: colors.textSecondary }}>{t("premortem.stopLoss")}</span>
                 <input
                   type="number"
-                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={preMortemForm.stopLoss}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, stopLoss: e.target.value }))}
                 />
               </label>
               <label className="md:col-span-2 flex flex-col gap-1 text-sm">
-                <span className="text-slate-400">{t("premortem.takeProfit")}</span>
+                <span style={{ color: colors.textSecondary }}>{t("premortem.takeProfit")}</span>
                 <input
                   type="number"
-                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={preMortemForm.takeProfit}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, takeProfit: e.target.value }))}
                 />
@@ -1233,24 +1289,29 @@ export function PaperTradingPage() {
                 type="button"
                 onClick={() => void onRunPreMortem()}
                 disabled={runningPreMortem}
-                className="rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue/85 disabled:opacity-60"
+                className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+                style={{ backgroundColor: colors.brandDark }}
               >
                 {runningPreMortem ? t("common.loading") : t("premortem.runButton")}
               </button>
             </div>
 
             {preMortemResult ? (
-              <div className="mt-4 rounded-lg border border-brand-red/40 bg-brand-red/10 p-4">
-                <p className="text-sm font-semibold text-brand-red">{t("premortem.lossScenario")}</p>
-                <p className="mt-1 text-sm text-red-100">{preMortemResult.scenario}</p>
+              <div className="mt-4 rounded-lg border p-4" style={{ borderColor: `${colors.negative}4D`, backgroundColor: `${colors.negative}12` }}>
+                <p className="text-sm font-semibold" style={{ color: colors.negative }}>
+                  {t("premortem.lossScenario")}
+                </p>
+                <p className="mt-1 text-sm" style={{ color: colors.textPrimary }}>
+                  {preMortemResult.scenario}
+                </p>
                 <div className="mt-3 flex flex-wrap gap-2 text-sm">
-                  <span className="rounded bg-brand-amber/20 px-2 py-1 font-semibold text-brand-amber">
+                  <span className="rounded px-2 py-1 font-semibold" style={{ backgroundColor: `${colors.brandGold}24`, color: colors.brandMedium }}>
                     {preMortemResult.probability}% chance
                   </span>
-                  <span className="rounded bg-slate-700/50 px-2 py-1 text-slate-200">
+                  <span className="rounded px-2 py-1" style={{ backgroundColor: colors.bgTertiary, color: colors.textPrimary }}>
                     {Math.abs(preMortemResult.maxLoss).toFixed(2)} PLN (~{(Math.abs(preMortemResult.maxLoss) / PLN_PER_USD).toFixed(2)} USD)
                   </span>
-                  <span className="rounded bg-slate-700/50 px-2 py-1 text-slate-300">
+                  <span className="rounded px-2 py-1" style={{ backgroundColor: colors.bgTertiary, color: colors.textSecondary }}>
                     {t("premortem.marketRegime")}: {preMortemResult.marketRegime}
                   </span>
                 </div>
@@ -1262,14 +1323,16 @@ export function PaperTradingPage() {
                 type="button"
                 onClick={() => void onProceedAnyway()}
                 disabled={!preMortemResult || submittingOpen}
-                className="rounded bg-brand-green px-4 py-2 text-sm font-semibold text-white hover:bg-brand-green/85 disabled:opacity-50"
+                className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                style={{ backgroundColor: colors.positive }}
               >
                 {t("premortem.proceed")}
               </button>
               <button
                 type="button"
                 onClick={() => setPreMortemOpen(false)}
-                className="rounded border border-brand-border px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800/50"
+                className="rounded-lg border px-4 py-2 text-sm font-semibold"
+                style={{ borderColor: colors.borderStrong, color: colors.textSecondary }}
               >
                 {t("premortem.cancel")}
               </button>
@@ -1281,13 +1344,35 @@ export function PaperTradingPage() {
   );
 }
 
+function StatTile(props: { label: string; value: string; tone?: "default" | "positive" | "negative" }) {
+  const tone = props.tone ?? "default";
+  const valueColor = tone === "positive" ? colors.positive : tone === "negative" ? colors.negative : colors.brandDark;
+  return (
+    <div
+      className="rounded-xl border px-3 py-2 shadow-sm"
+      style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+    >
+      <div className="text-[11px] uppercase tracking-[0.1em]" style={{ color: colors.textSecondary }}>
+        {props.label}
+      </div>
+      <div className="mt-1 font-mono text-xl font-semibold" style={{ color: valueColor }}>
+        {props.value}
+      </div>
+    </div>
+  );
+}
+
 function TableSkeleton(props: { rows: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: props.rows }).map((_, idx) => (
-        <div key={`sk-${idx}`} className="animate-pulse rounded border border-brand-border bg-brand-bg/70 p-3">
-          <div className="h-4 w-1/4 rounded bg-slate-700/50" />
-          <div className="mt-2 h-4 w-full rounded bg-slate-700/40" />
+        <div
+          key={`sk-${idx}`}
+          className="animate-pulse rounded border p-3"
+          style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+        >
+          <div className="h-4 w-1/4 rounded" style={{ backgroundColor: colors.borderStrong }} />
+          <div className="mt-2 h-4 w-full rounded" style={{ backgroundColor: colors.border }} />
         </div>
       ))}
     </div>
