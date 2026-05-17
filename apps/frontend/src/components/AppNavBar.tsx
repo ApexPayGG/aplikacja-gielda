@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { NotificationsCenter } from "./NotificationsCenter";
+import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "../context/AuthContext";
 
 type DropdownId = "markets" | "portfolio" | "tools";
@@ -270,7 +271,7 @@ export function AppNavBar() {
   };
 
   return (
-    <nav className="relative z-20 border-b border-border bg-bgPrimary">
+    <nav className="relative z-20 border-b border-border bg-bgPrimary dark:border-gray-700 dark:bg-gray-900">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4">
         <Link to="/" className="shrink-0">
           <img src="/logo.png" alt="StockAI Pro" className="h-8 w-40 object-cover object-center" />
@@ -339,6 +340,7 @@ export function AppNavBar() {
 
         <div className="hidden shrink-0 items-center gap-3 md:flex">
           <NotificationsCenter />
+          <ThemeToggle />
           {user ? (
             <div ref={accountMenuRef} className="relative">
               <button

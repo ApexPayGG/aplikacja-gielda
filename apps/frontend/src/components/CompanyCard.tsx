@@ -45,7 +45,7 @@ export function CompanyCard({ company }: Props) {
   return (
     <Link
       to={`/company/${encodeURIComponent(company.symbol)}/premium`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-bgPrimary shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-bgPrimary shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
     >
       <div className="absolute right-3 top-3 z-10">
         <WatchlistButton symbol={company.symbol} />
