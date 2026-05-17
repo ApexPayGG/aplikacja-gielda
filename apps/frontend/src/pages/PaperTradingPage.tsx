@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { PrinterIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import { BulkActions, BulkRowCheckbox } from "../components/BulkActions";
 import { FeedbackToastStack, type FeedbackToast } from "../components/FeedbackToastStack";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -14,6 +16,8 @@ import {
 } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatQuoteAge } from "../utils/formatQuoteAge";
+import { formatCurrency, formatDate, formatNumber, formatPercent } from "../utils/formatters";
+import { printPortfolioReport } from "../utils/printReport";
 import { colors } from "../styles/designSystem";
 
 type Direction = "LONG" | "SHORT";
@@ -177,24 +181,10 @@ function isFallbackError(e: unknown): boolean {
   return axios.isAxiosError(e) && (!e.response || e.response.status === 404 || e.response.status >= 500);
 }
 
-function formatMoney(n: number): string {
-  return `$${n.toFixed(2)}`;
-}
-
-function formatPct(n: number): string {
-  return `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
-}
-
 function parseDate(value?: string): Date | null {
   if (!value) return null;
   const d = new Date(value);
   return Number.isNaN(d.getTime()) ? null : d;
-}
-
-function formatDate(value?: string): string {
-  const d = parseDate(value);
-  if (!d) return "n/a";
-  return d.toLocaleString();
 }
 
 function durationText(start?: string, end?: string): string {
@@ -287,6 +277,8 @@ export function PaperTradingPage() {
   const [reflectionEmotion, setReflectionEmotion] = useState<ReflectionEmotion>("NEUTRAL");
   const [reflectionLesson, setReflectionLesson] = useState("");
   const [reflectionInsight, setReflectionInsight] = useState<string | null>(null);
+  const [selectedTradeIds, setSelectedTradeIds] = useState<string[]>([]);
+  const [bulkClosing, setBulkClosing] = useState(false);
 
   const pushToast = useCallback((tone: FeedbackToast["tone"], title: string, message?: string) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -461,6 +453,11 @@ export function PaperTradingPage() {
     return () => window.clearTimeout(id);
   }, [reflectionInsight]);
 
+  useEffect(() => {
+    const availableIds = new Set(positionRows.map((row) => row.id));
+    setSelectedTradeIds((prev) => prev.filter((id) => availableIds.has(id)));
+  }, [positionRows]);
+
   const totalUnrealized = useMemo(
     () => positionRows.reduce((acc, row) => acc + row.pnl, 0),
     [positionRows],
@@ -476,6 +473,91 @@ export function PaperTradingPage() {
       return Number(row.pnl ?? 0) > Number(best.pnl ?? 0) ? row : best;
     }, null);
   }, [history]);
+  const selectedOpenTrades = useMemo(
+    () => positionRows.filter((row) => selectedTradeIds.includes(row.id)),
+    [positionRows, selectedTradeIds],
+  );
+  const allOpenTradesSelected = positionRows.length > 0 && selectedOpenTrades.length === positionRows.length;
+
+  const toggleSelectAllOpenTrades = useCallback((checked: boolean) => {
+    setSelectedTradeIds(checked ? positionRows.map((row) => row.id) : []);
+  }, [positionRows]);
+
+  const toggleTradeSelection = useCallback((tradeId: string, checked: boolean) => {
+    setSelectedTradeIds((prev) => {
+      if (checked) return prev.includes(tradeId) ? prev : [...prev, tradeId];
+      return prev.filter((id) => id !== tradeId);
+    });
+  }, []);
+
+  const clearSelectedTrades = useCallback(() => {
+    setSelectedTradeIds([]);
+  }, []);
+
+  const exportSelectedTrades = useCallback(() => {
+    if (selectedOpenTrades.length === 0) return;
+    const rows = [
+      ["Ticker", "Direction", "Entry Price", "Current Price", "Quantity", "P&L", "P&L %", "Entry At"],
+      ...selectedOpenTrades.map((trade) => [
+        trade.ticker,
+        trade.direction,
+        String(trade.entryPrice),
+        String(trade.currentPrice),
+        String(trade.quantity),
+        String(trade.pnl),
+        String(trade.pnlPct),
+        trade.entryAt,
+      ]),
+    ];
+    const csv = rows.map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")).join("\n");
+    const file = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(file);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `stockai-selected-trades-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+    pushToast("success", "Eksport gotowy", `Wyeksportowano ${selectedOpenTrades.length} pozycji.`);
+  }, [pushToast, selectedOpenTrades]);
+
+  const onPrintReport = useCallback(() => {
+    const tradesForPrint = [
+      ...positionRows.map((row) => ({
+        ticker: row.ticker,
+        direction: row.direction,
+        status: "OPEN",
+        quantity: row.quantity,
+        entryPrice: row.entryPrice,
+        currentPrice: row.currentPrice,
+        pnl: row.pnl,
+        pnlPct: row.pnlPct,
+        entryAt: row.entryAt,
+      })),
+      ...history.map((row) => ({
+        ticker: row.ticker,
+        direction: row.direction,
+        status: "CLOSED",
+        quantity: row.quantity,
+        entryPrice: row.entryPrice,
+        exitPrice: Number(row.exitPrice ?? row.entryPrice),
+        pnl: Number(row.pnl ?? 0),
+        pnlPct: Number(row.pnlPct ?? 0),
+        entryAt: row.entryAt,
+        exitAt: row.exitAt,
+      })),
+    ];
+    const stats = {
+      "Portfolio balance": formatCurrency(portfolioBalance, "USD"),
+      "Unrealized P&L": formatCurrency(totalUnrealized, "USD"),
+      "Realized P&L": formatCurrency(realizedPnl, "USD"),
+      "Win rate": `${formatNumber(winRate, 1)}%`,
+      "Open positions": positionRows.length,
+      "Closed positions": history.length,
+    };
+    printPortfolioReport(tradesForPrint, stats);
+  }, [history, portfolioBalance, positionRows, realizedPnl, totalUnrealized, winRate]);
 
   const openTradeNow = async (
     payload: { ticker: string; entryPrice: number; quantity: number; direction: Direction },
@@ -710,7 +792,7 @@ export function PaperTradingPage() {
         }
       }
       await loadData();
-      pushToast("success", "Pozycja zamknięta", `${trade.ticker} @ ${formatMoney(exitPrice)}`);
+      pushToast("success", "Pozycja zamknięta", `${trade.ticker} @ ${formatCurrency(exitPrice, "USD")}`);
     } catch (e) {
       if (isFallbackError(e)) {
         const exitPrice = trade.currentPrice;
@@ -730,7 +812,7 @@ export function PaperTradingPage() {
         }));
         setHistory((prev) => [closedTrade, ...prev].slice(0, 10));
         setUsingMock(true);
-        pushToast("info", "Zamknięto w trybie mock", `${trade.ticker} • ${formatPct(pnlPct)}`);
+        pushToast("info", "Zamknięto w trybie mock", `${trade.ticker} • ${formatPercent(pnlPct)}`);
       } else {
         const nextError = apiErrorMessage(e);
         setError(nextError);
@@ -740,6 +822,19 @@ export function PaperTradingPage() {
       setClosingTradeId(null);
       setReflectionSubmitting(false);
       setReflectionTrade(null);
+    }
+  }
+
+  async function closeSelectedTrades(): Promise<void> {
+    if (selectedOpenTrades.length === 0 || bulkClosing) return;
+    setBulkClosing(true);
+    try {
+      for (const trade of selectedOpenTrades) {
+        await executeCloseTrade(trade, null);
+      }
+      setSelectedTradeIds([]);
+    } finally {
+      setBulkClosing(false);
     }
   }
 
@@ -760,7 +855,7 @@ export function PaperTradingPage() {
               </h1>
               <div className="mt-2 flex flex-wrap items-center gap-3">
                 <span className="font-mono text-3xl md:text-4xl" style={{ color: colors.brandDark }}>
-                  {formatMoney(portfolioBalance)}
+                  {formatCurrency(portfolioBalance, "USD")}
                 </span>
                 <span
                   className="rounded-full px-3 py-1 text-xs font-semibold"
@@ -769,19 +864,30 @@ export function PaperTradingPage() {
                     color: portfolioBalance >= 0 ? colors.positive : colors.negative,
                   }}
                 >
-                  P&amp;L {formatPct(portfolioBalance)}
+                  P&amp;L {formatPercent(portfolioBalance)}
                 </span>
               </div>
             </div>
             <div className="flex flex-col items-end gap-2">
-              <button
-                type="button"
-                onClick={() => setOpenTradePanelVisible((prev) => !prev)}
-                className="rounded-xl px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
-                style={{ background: `linear-gradient(135deg, ${colors.brandDark}, ${colors.brandMedium})` }}
-              >
-                Otwórz pozycję
-              </button>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={onPrintReport}
+                  className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition hover:brightness-95"
+                  style={{ borderColor: colors.brandDark, color: colors.brandDark, backgroundColor: colors.bgPrimary }}
+                >
+                  <PrinterIcon className="h-4 w-4" />
+                  Drukuj raport
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOpenTradePanelVisible((prev) => !prev)}
+                  className="rounded-xl px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
+                  style={{ background: `linear-gradient(135deg, ${colors.brandDark}, ${colors.brandMedium})` }}
+                >
+                  Otwórz pozycję
+                </button>
+              </div>
               <span
                 className="rounded-full border px-2 py-0.5 text-[11px]"
                 style={{
@@ -802,10 +908,10 @@ export function PaperTradingPage() {
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatTile label="Otwarte pozycje" value={String(portfolio?.openPositions.length ?? positionRows.length)} />
           <StatTile label="Zamknięte" value={String(closedCount)} />
-          <StatTile label="Win rate" value={`${winRate.toFixed(1)}%`} tone={winRate >= 50 ? "positive" : "negative"} />
+          <StatTile label="Win rate" value={`${formatNumber(winRate, 1)}%`} tone={winRate >= 50 ? "positive" : "negative"} />
           <StatTile
             label="Najlepszy trade"
-            value={bestTrade ? `${bestTrade.ticker} ${formatPct(Number(bestTrade.pnlPct ?? 0))}` : "n/a"}
+            value={bestTrade ? `${bestTrade.ticker} ${formatPercent(Number(bestTrade.pnlPct ?? 0))}` : "n/a"}
             tone={Number(bestTrade?.pnl ?? 0) >= 0 ? "positive" : "negative"}
           />
         </section>
@@ -953,9 +1059,20 @@ export function PaperTradingPage() {
               Otwarte pozycje
             </h2>
             <span className="text-xs font-medium" style={{ color: colors.textSecondary }}>
-              Unrealized {formatMoney(totalUnrealized)}
+              Unrealized {formatCurrency(totalUnrealized, "USD")}
             </span>
           </div>
+          <BulkActions
+            totalCount={positionRows.length}
+            selectedCount={selectedOpenTrades.length}
+            allSelected={allOpenTradesSelected}
+            disabled={loadingPortfolio || bulkClosing}
+            closeDisabled={bulkClosing || closingTradeId !== null}
+            onToggleAll={toggleSelectAllOpenTrades}
+            onCloseSelected={closeSelectedTrades}
+            onExportSelected={exportSelectedTrades}
+            onClearSelection={clearSelectedTrades}
+          />
           {loadingPortfolio ? (
             <div className="p-4">
               <TableSkeleton rows={4} />
@@ -965,6 +1082,7 @@ export function PaperTradingPage() {
               <table className="min-w-full text-sm">
                 <thead className="text-left text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
                   <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
+                    <th className="px-3 py-2">#</th>
                     <th className="px-3 py-2">Logo + Symbol</th>
                     <th className="px-3 py-2">Entry price</th>
                     <th className="px-3 py-2">Current price</th>
@@ -976,7 +1094,7 @@ export function PaperTradingPage() {
                 <tbody>
                   {positionRows.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-3 py-6 text-center text-sm" style={{ color: colors.textMuted }}>
+                      <td colSpan={7} className="px-3 py-6 text-center text-sm" style={{ color: colors.textMuted }}>
                         Brak aktywnych pozycji.
                       </td>
                     </tr>
@@ -984,8 +1102,17 @@ export function PaperTradingPage() {
                     positionRows.map((row) => {
                       const signal = exitSignals[row.id];
                       const freshnessTone = quoteFreshnessTone(row.quoteUpdatedAt, nowMs);
+                      const isSelected = selectedTradeIds.includes(row.id);
                       return (
                         <tr key={row.id} style={{ borderBottom: `1px solid ${colors.border}` }}>
+                          <td className="px-3 py-2">
+                            <BulkRowCheckbox
+                              checked={isSelected}
+                              disabled={bulkClosing || closingTradeId === row.id}
+                              label={`Zaznacz ${row.ticker}`}
+                              onChange={(checked) => toggleTradeSelection(row.id, checked)}
+                            />
+                          </td>
                           <td className="px-3 py-2">
                             <div className="flex items-center gap-2">
                               <span
@@ -999,9 +1126,9 @@ export function PaperTradingPage() {
                               </span>
                             </div>
                           </td>
-                          <td className="px-3 py-2 font-mono">{formatMoney(row.entryPrice)}</td>
+                          <td className="px-3 py-2 font-mono">{formatCurrency(row.entryPrice, "USD")}</td>
                           <td className="px-3 py-2">
-                            <div className="font-mono">{formatMoney(row.currentPrice)}</div>
+                            <div className="font-mono">{formatCurrency(row.currentPrice, "USD")}</div>
                             {row.quoteUpdatedAt ? (
                               <span
                                 title={row.quoteUpdatedAt}
@@ -1015,21 +1142,21 @@ export function PaperTradingPage() {
                             className="px-3 py-2 font-mono font-semibold"
                             style={{ color: row.pnlPct >= 0 ? colors.positive : colors.negative }}
                           >
-                            {formatPct(row.pnlPct)}
+                            {formatPercent(row.pnlPct)}
                           </td>
-                          <td className="px-3 py-2 text-xs" style={{ color: colors.textSecondary }} title={formatDate(row.entryAt)}>
+                          <td className="px-3 py-2 text-xs" style={{ color: colors.textSecondary }} title={formatDate(row.entryAt, "pl-PL")}>
                             {durationText(row.entryAt, new Date(nowMs).toISOString())}
                           </td>
                           <td className="px-3 py-2">
                             <div className="flex flex-wrap items-center gap-2">
                               <button
                                 type="button"
-                                disabled={closingTradeId === row.id}
+                                disabled={bulkClosing || closingTradeId === row.id}
                                 onClick={() => openReflectionModal(row)}
                                 className="rounded-md px-3 py-1 text-xs font-semibold text-white disabled:opacity-60"
                                 style={{ backgroundColor: colors.brandDark }}
                               >
-                                {closingTradeId === row.id ? t("common.loading") : "Zamknij"}
+                                {closingTradeId === row.id || bulkClosing ? t("common.loading") : "Zamknij"}
                               </button>
                               <span className={`rounded px-2 py-0.5 text-[10px] font-semibold ${exitBadgeClass(signal?.action ?? "HOLD")}`}>
                                 {signal?.action ?? "HOLD"}
@@ -1099,10 +1226,10 @@ export function PaperTradingPage() {
                               </span>
                             </div>
                           </td>
-                          <td className="px-3 py-1.5 font-mono">{formatMoney(row.entryPrice)}</td>
-                          <td className="px-3 py-1.5 font-mono">{formatMoney(Number(row.exitPrice ?? row.entryPrice))}</td>
+                          <td className="px-3 py-1.5 font-mono">{formatCurrency(row.entryPrice, "USD")}</td>
+                          <td className="px-3 py-1.5 font-mono">{formatCurrency(Number(row.exitPrice ?? row.entryPrice), "USD")}</td>
                           <td className="px-3 py-1.5 font-mono font-semibold" style={{ color: pnlPct >= 0 ? colors.positive : colors.negative }}>
-                            {formatPct(pnlPct)}
+                            {formatPercent(pnlPct)}
                           </td>
                           <td className="px-3 py-1.5" style={{ color: colors.textSecondary }}>
                             {durationText(row.entryAt, row.exitAt)}

@@ -13,6 +13,7 @@ import {
 } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { formatCurrency, formatPercent } from "../utils/formatters";
 
 type AlpacaMode = "paper" | "live";
 type GenericRecord = Record<string, unknown>;
@@ -42,19 +43,6 @@ function readUserId(): string {
 function asNumber(value: unknown): number {
   const number = Number(value);
   return Number.isFinite(number) ? number : 0;
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function formatPercent(value: number): string {
-  return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
 }
 
 function statusStyle(status: string): { backgroundColor: string; color: string; borderColor: string } {
@@ -246,7 +234,7 @@ export function AlpacaPage() {
               Portfolio value
             </p>
             <p className="mt-2 font-mono text-2xl font-bold" style={{ color: colors.brandDark }}>
-              {loading ? "..." : formatCurrency(portfolioValue)}
+              {loading ? "..." : formatCurrency(portfolioValue, "USD")}
             </p>
           </article>
           <article className="rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
@@ -254,7 +242,7 @@ export function AlpacaPage() {
               Buying power
             </p>
             <p className="mt-2 font-mono text-2xl font-semibold" style={{ color: colors.textPrimary }}>
-              {loading ? "..." : formatCurrency(buyingPower)}
+              {loading ? "..." : formatCurrency(buyingPower, "USD")}
             </p>
           </article>
           <article className="rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
@@ -327,8 +315,8 @@ export function AlpacaPage() {
                           {position.symbol}
                         </td>
                         <td className="px-2 py-2">{position.qty}</td>
-                        <td className="px-2 py-2">{formatCurrency(position.avgPrice)}</td>
-                        <td className="px-2 py-2">{formatCurrency(position.currentPrice)}</td>
+                        <td className="px-2 py-2">{formatCurrency(position.avgPrice, "USD")}</td>
+                        <td className="px-2 py-2">{formatCurrency(position.currentPrice, "USD")}</td>
                         <td className="px-2 py-2">
                           <span className="font-semibold" style={{ color: position.pnlPct >= 0 ? colors.positive : colors.negative }}>
                             {formatPercent(position.pnlPct)}

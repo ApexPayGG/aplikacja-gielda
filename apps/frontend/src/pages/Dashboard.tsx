@@ -13,6 +13,7 @@ import { EmotionalStateWidget } from "../components/EmotionalStateWidget";
 import { useAuth } from "../context/AuthContext";
 import { getCompanyDetail, getLatestQuoteBySymbol, getWatchlist } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { formatCurrency, formatDate, formatNumber, formatPercent } from "../utils/formatters";
 
 type WatchedCompany = {
   symbol: string;
@@ -25,16 +26,9 @@ type WatchedCompany = {
 
 type TrendTone = "up" | "down" | "flat";
 
-const usdFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
 function formatChange(value: number | null): string {
   if (value == null) return "—";
-  return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
+  return formatPercent(value);
 }
 
 function makeFallbackLogo(symbol: string, exchange?: string | null): string | null {
@@ -133,13 +127,7 @@ export function Dashboard() {
   }, [user?.name]);
 
   const todayLabel = useMemo(
-    () =>
-      new Intl.DateTimeFormat("pl-PL", {
-        weekday: "long",
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      }).format(new Date()),
+    () => formatDate(new Date(), "pl-PL"),
     [],
   );
 
@@ -156,7 +144,7 @@ export function Dashboard() {
     },
     {
       label: "Win rate",
-      value: `${quickStats.winRate.toFixed(1)}%`,
+      value: `${formatNumber(quickStats.winRate, 1)}%`,
       trend: quickStats.winRate >= 50 ? "up" : "down",
     },
     {
@@ -277,7 +265,7 @@ export function Dashboard() {
                       </div>
 
                       <p className="mt-4 font-mono text-2xl font-bold text-brandDark">
-                        {row.close != null ? usdFormatter.format(row.close) : t("common.notAvailable", { defaultValue: "n/a" })}
+                        {row.close != null ? formatCurrency(row.close, "USD") : t("common.notAvailable", { defaultValue: "n/a" })}
                       </p>
                     </Link>
                   );
