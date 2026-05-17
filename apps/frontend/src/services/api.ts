@@ -1826,6 +1826,17 @@ export interface WaitlistCountResponse {
   count: number;
 }
 
+export interface ContactMessageBody {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export interface ContactMessageResponse {
+  success: boolean;
+}
+
 export async function createStripeCheckoutSession(body: {
   userId: string;
   plan: StripeCheckoutPlan;
@@ -1846,6 +1857,11 @@ export async function joinWaitlist(body: {
 
 export async function getWaitlistCount(): Promise<WaitlistCountResponse> {
   const { data } = await publicApi.get<WaitlistCountResponse>("/waitlist");
+  return data;
+}
+
+export async function sendContactMessage(body: ContactMessageBody): Promise<ContactMessageResponse> {
+  const { data } = await publicApi.post<ContactMessageResponse>("/contact", body);
   return data;
 }
 
