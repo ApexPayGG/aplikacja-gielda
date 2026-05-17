@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StockAI Pro - Offline</title>
+    <style>
+      :root {
+        --brand-dark: #2d0a6b;
+        --brand-cyan: #00c9d4;
+        --text: #f4f6fa;
+        --surface: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+        background: radial-gradient(circle at top right, rgba(0, 201, 212, 0.25), transparent 40%),
+          linear-gradient(165deg, var(--brand-dark), #1f074a 70%);
+        color: var(--text);
+      }
+
+      .card {
+        width: min(92vw, 420px);
+        padding: 2rem;
+        border-radius: 1rem;
+        background: var(--surface);
+        border: 1px solid rgba(0, 201, 212, 0.3);
+        backdrop-filter: blur(6px);
+        text-align: center;
+      }
+
+      .logo {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 1rem;
+        border-radius: 20px;
+        display: block;
+        border: 2px solid rgba(0, 201, 212, 0.35);
+        object-fit: cover;
+        background: #ffffff;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin: 0.9rem 0 1.6rem;
+        color: rgba(244, 246, 250, 0.92);
+      }
+
+      button {
+        appearance: none;
+        border: 0;
+        border-radius: 0.75rem;
+        padding: 0.72rem 1.1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--brand-dark);
+        background: var(--brand-cyan);
+        transition: transform 0.15s ease, filter 0.15s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <img class="logo" src="/logo.png" alt="Logo StockAI Pro" />
+      <h1>StockAI Pro</h1>
+      <p>Brak połączenia z internetem</p>
+      <button type="button" onclick="window.location.reload()">Spróbuj ponownie</button>
+    </main>
+  </body>
+</html>

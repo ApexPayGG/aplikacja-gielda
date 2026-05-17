@@ -5,6 +5,7 @@ import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import "./index.css";
 import "./i18n";
+import { registerServiceWorker } from "./utils/pwa";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -15,3 +16,5 @@ createRoot(document.getElementById("root")!).render(
     </BrowserRouter>
   </StrictMode>,
 );
+
+registerServiceWorker();

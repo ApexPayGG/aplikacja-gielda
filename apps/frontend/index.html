@@ -3,6 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#2D0A6B" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -47,6 +50,26 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          if (window.__stockaiSwRegistered || window.__stockaiSwRegistrationStarted) {
+            return;
+          }
+
+          window.__stockaiSwRegistrationStarted = true;
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then(function () {
+              window.__stockaiSwRegistered = true;
+            })
+            .catch(function (error) {
+              window.__stockaiSwRegistrationStarted = false;
+              console.error("Service worker registration failed:", error);
+            });
+        });
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
