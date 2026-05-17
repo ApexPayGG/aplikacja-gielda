@@ -103,6 +103,7 @@ import { createStripeRouter } from "./routes/stripe";
 import { createSitemapRouter } from "./routes/sitemap";
 import { createUserProfileRouter } from "./routes/userProfile";
 import { createWaitlistRouter } from "./routes/waitlist";
+import { createContactRouter } from "./routes/contact";
 import { runSnapshotJob } from "./modules/historicaltwins/snapshotJob";
 import { importCompanyOnDemand, searchCompaniesOnDemand } from "./modules/companies/companySearchModule";
 
@@ -206,6 +207,7 @@ export function createApp(): express.Express {
   app.use(createAuthRouter());
   app.use(createUserProfileRouter());
   app.use(createWaitlistRouter());
+  app.use(createContactRouter());
   app.use(createStripeRouter());
   app.use(createWatchlistRouter());
   app.use(createCopilotRouter());

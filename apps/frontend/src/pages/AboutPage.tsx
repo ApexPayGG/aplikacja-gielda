@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { SEOHead } from "../components/SEOHead";
 import { colors } from "../styles/designSystem";
 
@@ -138,6 +139,14 @@ export function AboutPage() {
           >
             marcin.chledzik@amcenergy.pl
           </a>
+          <div className="mt-4">
+            <Link
+              to="/contact"
+              className="inline-flex rounded-lg bg-brandDark px-4 py-2 text-sm font-semibold text-white transition hover:bg-brandMedium"
+            >
+              Przejdź do kontaktu
+            </Link>
+          </div>
           <div className="mt-6 flex flex-wrap gap-3">
             {contactBadges.map((badge) => (
               <a
