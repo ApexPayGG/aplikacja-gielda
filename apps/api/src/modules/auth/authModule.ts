@@ -2,6 +2,8 @@ import crypto from "node:crypto";
 import process from "node:process";
 import bcrypt from "bcrypt";
 import { prisma } from "../../db/index";
+import { generateVerificationEmail } from "../../templates/emailVerification";
+import { generateWelcomeEmail } from "../../templates/welcomeEmail";
 import { signAuthToken } from "./authJwt";
 
 const SALT_ROUNDS = 10;
@@ -48,13 +50,12 @@ function toAuthUser(user: { id: string; email: string; name: string | null; tier
   };
 }
 
-async function sendVerificationEmail(to: string, token: string): Promise<void> {
+async function sendResendEmail(input: { to: string; subject: string; text: string; html: string }): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   if (!apiKey) {
     throw new Error("RESEND_API_KEY is not set");
   }
 
-  const verifyUrl = `https://stock-ai.pro/verify?token=${encodeURIComponent(token)}`;
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -63,10 +64,10 @@ async function sendVerificationEmail(to: string, token: string): Promise<void> {
     },
     body: JSON.stringify({
       from: "noreply@stock-ai.pro",
-      to: [to],
-      subject: "Potwierdź swój email — StockAI Pro",
-      text: `Kliknij link aby aktywować konto: ${verifyUrl}`,
-      html: `<p>Kliknij link aby aktywować konto: <a href="${verifyUrl}">${verifyUrl}</a></p>`,
+      to: [input.to],
+      subject: input.subject,
+      text: input.text,
+      html: input.html,
     }),
   });
 
@@ -74,6 +75,25 @@ async function sendVerificationEmail(to: string, token: string): Promise<void> {
     const body = await response.text();
     throw new Error(`Resend API error (${response.status}): ${body}`);
   }
+}
+
+async function sendVerificationEmail(to: string, token: string): Promise<void> {
+  const verifyUrl = `https://stock-ai.pro/verify?token=${encodeURIComponent(token)}`;
+  await sendResendEmail({
+    to,
+    subject: "Potwierdź swój email — StockAI Pro",
+    text: `Kliknij link aby aktywować konto: ${verifyUrl}`,
+    html: generateVerificationEmail(token, to),
+  });
+}
+
+async function sendWelcomeEmail(to: string, name?: string | null): Promise<void> {
+  await sendResendEmail({
+    to,
+    subject: "Witaj w StockAI Pro!",
+    text: "Witaj w StockAI Pro! Przejdź do aplikacji: https://stock-ai.pro/app",
+    html: generateWelcomeEmail(name ?? undefined),
+  });
 }
 
 export async function registerUser(input: {
@@ -164,8 +184,8 @@ export async function verifyEmailToken(tokenInput: string): Promise<void> {
     throw new Error("Invalid verification token");
   }
 
-  const users = await prisma.$queryRaw<Array<{ id: string; verify_token_exp: Date | null }>>`
-    SELECT id, verify_token_exp
+  const users = await prisma.$queryRaw<Array<{ id: string; email: string; name: string | null; verify_token_exp: Date | null }>>`
+    SELECT id, email, name, verify_token_exp
     FROM users
     WHERE verify_token = ${token}
     LIMIT 1
@@ -182,6 +202,8 @@ export async function verifyEmailToken(tokenInput: string): Promise<void> {
         verify_token_exp = NULL
     WHERE id = ${user.id}
   `;
+
+  await sendWelcomeEmail(user.email, user.name);
 }
 
 export async function getAuthUserById(userId: string): Promise<AuthUserPayload | null> {
