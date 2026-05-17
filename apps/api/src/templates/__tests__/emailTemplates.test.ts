@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import { generateVerificationEmail } from "../emailVerification";
 import { generateOnboardingBehavioralCoachEmail } from "../onboardingBehavioralCoachEmail";
 import { generateOnboardingWeekOneEmail } from "../onboardingWeekOneEmail";
+import { generatePasswordResetEmail } from "../passwordResetEmail";
 import { generateWelcomeEmail } from "../welcomeEmail";
 
 describe("email templates", () => {
@@ -16,6 +17,14 @@ describe("email templates", () => {
     assert.match(html, /© 2026 StockAI Pro/);
     assert.match(html, /https:\/\/stock-ai\.pro\/verify\?token=token-123/);
     assert.match(html, /jan@example\.com/);
+  });
+
+  it("builds password reset email with token link, recipient email and reset CTA", () => {
+    const html = generatePasswordResetEmail("token-123", "jan@example.com");
+
+    assert.match(html, /https:\/\/stock-ai\.pro\/reset-password\?token=token-123/);
+    assert.match(html, /jan@example\.com/);
+    assert.match(html, /Resetuj hasło/);
   });
 
   it("builds welcome email with 3 quick start steps and CTA", () => {
