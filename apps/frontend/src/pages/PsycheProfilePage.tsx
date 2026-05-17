@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
-import { useTranslation } from "react-i18next";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   createPsycheRule,
   deletePsycheRule,
@@ -11,6 +11,7 @@ import {
   type PsycheTradingRule,
   type TraderProfile,
 } from "../services/api";
+import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
@@ -21,32 +22,113 @@ const EXAMPLE_RULES = [
   "Stop loss zawsze przed wejściem",
 ];
 
-function growthColor(score: number): string {
-  if (score >= 60) return "text-brand-green";
-  if (score >= 35) return "text-brand-amber";
-  return "text-brand-red";
+type BiasSeverity = "positive" | "negative" | "brandGold";
+
+const POSITIVE_BIAS_HINTS = ["discipline", "consistency", "patience", "plan", "calm", "focus"];
+const NEGATIVE_BIAS_HINTS = ["revenge", "fomo", "panic", "over", "fear", "loss", "impulsive", "stress"];
+
+function withAlpha(hex: string, alpha: number): string {
+  const normalized = hex.replace("#", "");
+  if (normalized.length !== 6) return hex;
+  const r = Number.parseInt(normalized.slice(0, 2), 16);
+  const g = Number.parseInt(normalized.slice(2, 4), 16);
+  const b = Number.parseInt(normalized.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function gaugeStyle(score: number): CSSProperties {
-  const pct = Math.min(100, Math.max(0, score));
-  const hue = pct >= 60 ? "#00c87a" : pct >= 35 ? "#f59e0b" : "#ff4a4a";
+function formatDisplayName(userId: string): string {
+  if (!userId) return "Trader";
+  const base = userId.split("@")[0]?.replace(/[._-]+/g, " ").trim() || "Trader";
+  return base
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+    .join(" ");
+}
+
+function getInitials(name: string): string {
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+  return initials || "TR";
+}
+
+function getBiasSeverity(bias: string): BiasSeverity {
+  const lower = bias.toLowerCase();
+  if (POSITIVE_BIAS_HINTS.some((token) => lower.includes(token))) {
+    return "positive";
+  }
+  if (NEGATIVE_BIAS_HINTS.some((token) => lower.includes(token))) {
+    return "negative";
+  }
+  return "brandGold";
+}
+
+function growthScoreTheme(score: number): { color: string; bg: string } {
+  if (score >= 70) {
+    return {
+      color: colors.positive,
+      bg: withAlpha(colors.positive, 0.12),
+    };
+  }
+  if (score >= 40) {
+    return {
+      color: colors.brandGold,
+      bg: withAlpha(colors.brandGold, 0.16),
+    };
+  }
   return {
-    background: `conic-gradient(${hue} ${pct * 3.6}deg, rgba(30,41,59,0.9) 0deg)`,
+    color: colors.negative,
+    bg: withAlpha(colors.negative, 0.12),
   };
 }
 
+function decisionTone(log: PsycheDecisionLog): string {
+  if (log.planCompliance === true) return colors.positive;
+  if (log.planCompliance === false) return colors.negative;
+  if (typeof log.outcome === "number") return log.outcome >= 0 ? colors.positive : colors.negative;
+  return colors.brandGold;
+}
+
 export function PsycheProfilePage() {
-  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<TraderProfile | null>(null);
   const [hasProfile, setHasProfile] = useState(false);
   const [rules, setRules] = useState<PsycheTradingRule[]>([]);
   const [logs, setLogs] = useState<PsycheDecisionLog[]>([]);
   const [newRule, setNewRule] = useState("");
+  const [isRulesEditorOpen, setIsRulesEditorOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const exampleHint = useMemo(() => EXAMPLE_RULES.join(" · "), []);
+  const displayName = useMemo(() => formatDisplayName(USER_ID), []);
+  const initials = useMemo(() => getInitials(displayName), [displayName]);
+  const scoreTheme = useMemo(() => growthScoreTheme(profile?.growthScore ?? 0), [profile?.growthScore]);
+  const dominantTradingStyle = profile?.tradingStyle?.trim() || "Style pending";
+  const detectedBiases = profile?.topBiases ?? [];
+  const decisionTimeline = useMemo(() => logs.slice(0, 5), [logs]);
+  const aiInsight = useMemo(() => {
+    if (!profile) {
+      return "AI insight pojawi się po pierwszym pełnym check-inie i analizie Twoich decyzji.";
+    }
+    const good = profile.goodConditions?.trim();
+    const bad = profile.badConditions?.trim();
+    if (good && bad) {
+      return `Najlepiej działasz, gdy ${good}. Uważaj na sytuacje: ${bad}.`;
+    }
+    if (good) {
+      return `Najbardziej stabilne decyzje podejmujesz, gdy ${good}.`;
+    }
+    if (bad) {
+      return `Twoja główna strefa ryzyka: ${bad}. Wzmocnij pre-trade checklist przed wejściem.`;
+    }
+    return "Twój profil dojrzewa. Kontynuuj check-iny i journaling, aby AI zbudowało precyzyjniejsze wskazówki.";
+  }, [profile]);
 
   const loadAll = useCallback(async () => {
     setError(null);
@@ -60,7 +142,7 @@ export function PsycheProfilePage() {
       setProfile(p.profile);
       setHasProfile(p.hasProfile);
       setRules(r.rules);
-      setLogs(l.logs.slice(0, 10));
+      setLogs(l.logs);
     } catch (e) {
       setError(apiErrorMessage(e));
     } finally {
@@ -109,157 +191,241 @@ export function PsycheProfilePage() {
     }
   }
 
+  function onStartCheckIn(): void {
+    void onRefreshProfile();
+    navigate("/dashboard");
+  }
+
   return (
-    <div className="mx-auto max-w-6xl space-y-8 px-4 py-10 text-slate-100">
-      <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">{t("psyche.title")}</h1>
-          <p className="mt-1 text-sm text-slate-400">{t("psyche.subtitle")}</p>
-        </div>
-        <button
-          type="button"
-          disabled={refreshing}
-          onClick={() => void onRefreshProfile()}
-          className="rounded-lg border border-brand-green/50 bg-brand-green/15 px-4 py-2 text-sm font-semibold text-brand-green transition hover:bg-brand-green/25 disabled:opacity-60"
-        >
-          {refreshing ? t("common.loading") : t("psyche.refresh")}
-        </button>
-      </header>
+    <div className="min-h-screen" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
+        <header>
+          <h1 className="text-4xl font-bold tracking-tight">Trader Psyche Profile</h1>
+          <p className="mt-2 text-sm md:text-base" style={{ color: colors.textSecondary }}>
+            Twój profil psychologiczny i decyzje tradingowe w design systemie AMC Energy.
+          </p>
+        </header>
 
-      {error ? <div className="rounded-lg border border-brand-red/40 bg-brand-red/10 px-4 py-3 text-sm text-brand-red">{error}</div> : null}
-
-      <section className="neo-panel rounded-2xl p-6">
-        <h2 className="mb-6 text-center text-sm font-semibold uppercase tracking-widest text-brand-blue">{t("psyche.dnaTitle")}</h2>
-        {loading ? (
-          <p className="text-center text-slate-400">{t("common.loading")}</p>
-        ) : !hasProfile || !profile ? (
-          <div className="text-center text-slate-400">
-            <p>{t("psyche.noProfile")}</p>
-          </div>
-        ) : (
-          <div className="grid gap-8 md:grid-cols-[220px_1fr] md:items-start">
-            <div className="mx-auto flex flex-col items-center gap-3">
-              <div className="flex h-44 w-44 items-center justify-center rounded-full p-1" style={gaugeStyle(profile.growthScore)}>
-                <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-[#060d18]">
-                  <span className={`text-4xl font-extrabold ${growthColor(profile.growthScore)}`}>{profile.growthScore}</span>
-                  <span className="text-xs uppercase tracking-wide text-slate-500">{t("psyche.growthScore")}</span>
-                </div>
-              </div>
-              <p className="text-center text-xs text-slate-500">{new Date(profile.updatedAt).toLocaleString()}</p>
-            </div>
-            <div className="space-y-4">
-              <p className="text-lg font-semibold text-white">{profile.tradingStyle ?? "—"}</p>
-              <p className="text-xs uppercase tracking-wide text-slate-500">{t("psyche.tradingStyle")}</p>
-              <div>
-                <p className="mb-2 text-xs uppercase tracking-wide text-slate-500">{t("psyche.topBiases")}</p>
-                <div className="flex flex-wrap gap-2">
-                  {(profile.topBiases.length ? profile.topBiases : ["—"]).map((b) => (
-                    <span
-                      key={b}
-                      className="rounded-full border border-brand-red/40 bg-brand-red/15 px-3 py-1 text-xs font-semibold text-brand-red"
-                    >
-                      {b}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border border-brand-green/30 bg-brand-green/5 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-brand-green">{t("psyche.goodConditions")}</p>
-                  <p className="mt-2 text-sm text-slate-200">{profile.goodConditions ?? "—"}</p>
-                </div>
-                <div className="rounded-xl border border-brand-red/30 bg-brand-red/5 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-brand-red">{t("psyche.badConditions")}</p>
-                  <p className="mt-2 text-sm text-slate-200">{profile.badConditions ?? "—"}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </section>
-
-      <section className="neo-panel rounded-2xl p-6">
-        <h2 className="mb-4 text-lg font-semibold text-white">{t("psyche.rulesTitle")}</h2>
-        <div className="mb-4 flex flex-col gap-2 md:flex-row">
-          <input
-            className="flex-1 rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-sm text-white outline-none focus:border-brand-blue"
-            placeholder={`${t("psyche.rulePlaceholder")} (${exampleHint})`}
-            value={newRule}
-            onChange={(e) => setNewRule(e.target.value)}
-          />
-          <button
-            type="button"
-            onClick={() => void onAddRule()}
-            className="rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue/85"
+        {error ? (
+          <div
+            className="rounded-xl border px-4 py-3 text-sm"
+            style={{ borderColor: colors.negative, backgroundColor: withAlpha(colors.negative, 0.08), color: colors.negative }}
           >
-            {t("psyche.addRule")}
-          </button>
-        </div>
-        <ul className="space-y-2">
-          {rules.map((r) => (
-            <li
-              key={r.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-800 bg-brand-bg/60 px-3 py-2 text-sm"
+            {error}
+          </div>
+        ) : null}
+
+        <section
+          className="rounded-2xl border bg-white p-5 shadow-sm md:p-6"
+          style={{ borderColor: colors.border, opacity: loading ? 0.7 : 1 }}
+        >
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-4">
+              <div
+                className="flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-white"
+                style={{ backgroundColor: colors.brandDark }}
+              >
+                {initials}
+              </div>
+              <div>
+                <p className="text-xl font-semibold">{displayName}</p>
+                <p className="text-xs" style={{ color: colors.textMuted }}>
+                  {hasProfile && profile?.updatedAt ? `Updated ${new Date(profile.updatedAt).toLocaleString()}` : "Waiting for profile data"}
+                </p>
+              </div>
+            </div>
+
+            <div
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+              style={{ color: scoreTheme.color, backgroundColor: scoreTheme.bg }}
             >
-              <span className="text-slate-200">{r.rule}</span>
-              <div className="flex items-center gap-2">
-                <span className="rounded bg-slate-800 px-2 py-0.5 text-xs text-slate-300">
-                  {t("psyche.breaches")}: {r.breaches}
-                </span>
+              <span>GrowthScore</span>
+              <span className="text-base">{profile?.growthScore ?? 0}</span>
+            </div>
+          </div>
+        </section>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <section className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: colors.border }}>
+            <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+              Trading Style
+            </h2>
+            <div className="mt-4">
+              <span
+                className="inline-flex rounded-full px-4 py-2 text-base font-semibold"
+                style={{ color: colors.brandDark, backgroundColor: withAlpha(colors.brandCyan, 0.2) }}
+              >
+                {dominantTradingStyle}
+              </span>
+            </div>
+          </section>
+
+          <section className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: colors.border }}>
+            <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+              Detected Biases
+            </h2>
+            {detectedBiases.length === 0 ? (
+              <p className="mt-4 text-sm" style={{ color: colors.textSecondary }}>
+                Brak wykrytych biasów.
+              </p>
+            ) : (
+              <ul className="mt-4 space-y-2">
+                {detectedBiases.map((bias) => {
+                  const severity = getBiasSeverity(bias);
+                  const severityColor = severity === "positive" ? colors.positive : severity === "negative" ? colors.negative : colors.brandGold;
+                  return (
+                    <li key={bias} className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2" style={{ borderColor: colors.border }}>
+                      <span className="text-sm font-medium">{bias}</span>
+                      <span
+                        className="rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide"
+                        style={{ color: severityColor, backgroundColor: withAlpha(severityColor, 0.16) }}
+                      >
+                        {severity}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+
+          <section className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: colors.border }}>
+            <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+              Trading Rules
+            </h2>
+
+            {rules.length === 0 ? (
+              <p className="mt-4 text-sm" style={{ color: colors.textSecondary }}>
+                Nie masz jeszcze zdefiniowanych reguł.
+              </p>
+            ) : (
+              <ul className="mt-4 space-y-2">
+                {rules.map((rule) => (
+                  <li key={rule.id} className="rounded-xl border px-3 py-2" style={{ borderColor: colors.border }}>
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-medium">{rule.rule}</p>
+                        <p className="text-xs" style={{ color: colors.textMuted }}>
+                          Breaches: {rule.breaches}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-semibold uppercase" style={{ color: rule.active ? colors.brandDark : colors.textMuted }}>
+                          {rule.active ? "active" : "inactive"}
+                        </span>
+                        <span
+                          className="relative inline-block h-6 w-11 rounded-full"
+                          style={{ backgroundColor: rule.active ? colors.brandDark : colors.borderStrong }}
+                        >
+                          <span
+                            className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-all"
+                            style={{ left: rule.active ? "1.4rem" : "0.125rem" }}
+                          />
+                        </span>
+                      </div>
+                    </div>
+                    {isRulesEditorOpen ? (
+                      <div className="mt-2 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => void onDeleteRule(rule.id)}
+                          className="text-xs font-semibold"
+                          style={{ color: colors.negative }}
+                        >
+                          Usuń
+                        </button>
+                      </div>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {isRulesEditorOpen ? (
+              <div className="mt-4 space-y-2 border-t pt-4" style={{ borderColor: colors.border }}>
+                <input
+                  className="w-full rounded-xl border px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
+                  placeholder={`Dodaj regułę (${exampleHint})`}
+                  value={newRule}
+                  onChange={(e) => setNewRule(e.target.value)}
+                />
                 <button
                   type="button"
-                  onClick={() => void onDeleteRule(r.id)}
-                  className="text-xs font-semibold text-brand-red hover:underline"
+                  onClick={() => void onAddRule()}
+                  className="rounded-xl px-4 py-2 text-sm font-semibold text-white"
+                  style={{ backgroundColor: colors.brandDark }}
                 >
-                  {t("psyche.deleteRule")}
+                  Dodaj regułę
                 </button>
               </div>
-            </li>
-          ))}
-        </ul>
-      </section>
+            ) : null}
+          </section>
 
-      <section className="neo-panel rounded-2xl p-6">
-        <h2 className="mb-4 text-lg font-semibold text-white">{t("psyche.decisionLogTitle")}</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="text-xs uppercase tracking-wide text-slate-500">
-              <tr className="border-b border-slate-800">
-                <th className="py-2 pr-3">{t("psyche.colDate")}</th>
-                <th className="py-2 pr-3">{t("psyche.colSymbol")}</th>
-                <th className="py-2 pr-3">{t("psyche.colAction")}</th>
-                <th className="py-2 pr-3">{t("psyche.colMood")}</th>
-                <th className="py-2">{t("psyche.colCompliance")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-6 text-center text-slate-500">
-                    {t("psyche.emptyLogs")}
-                  </td>
-                </tr>
-              ) : (
-                logs.map((row) => (
-                  <tr key={row.id} className="border-b border-slate-900/80">
-                    <td className="py-2 pr-3 text-slate-400">{new Date(row.createdAt).toLocaleString()}</td>
-                    <td className="py-2 pr-3 font-mono text-white">{row.symbol}</td>
-                    <td className="py-2 pr-3 text-slate-200">{row.action}</td>
-                    <td className="py-2 pr-3 text-slate-300">{row.mood ?? "—"}</td>
-                    <td className="py-2 text-slate-300">
-                      {row.planCompliance === true
-                        ? t("psyche.complianceYes")
-                        : row.planCompliance === false
-                          ? t("psyche.complianceNo")
-                          : t("psyche.complianceUnknown")}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          <section className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: colors.border }}>
+            <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+              Decision History
+            </h2>
+            {decisionTimeline.length === 0 ? (
+              <p className="mt-4 text-sm" style={{ color: colors.textSecondary }}>
+                Brak historii decyzji.
+              </p>
+            ) : (
+              <ol className="mt-4 space-y-3">
+                {decisionTimeline.map((entry, index) => (
+                  <li key={entry.id} className="flex gap-3">
+                    <div className="flex flex-col items-center">
+                      <span className="mt-1 h-2.5 w-2.5 rounded-full" style={{ backgroundColor: decisionTone(entry) }} />
+                      {index < decisionTimeline.length - 1 ? (
+                        <span className="mt-1 h-full w-px" style={{ backgroundColor: colors.border }} />
+                      ) : null}
+                    </div>
+                    <div className="pb-2">
+                      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+                        {new Date(entry.createdAt).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm font-medium">
+                        {entry.action} {entry.symbol}
+                      </p>
+                      <p className="text-xs" style={{ color: colors.textSecondary }}>
+                        Mood: {entry.mood ?? "n/a"} · {entry.planCompliance === true ? "Plan ok" : entry.planCompliance === false ? "Plan break" : "Plan unknown"}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
         </div>
-      </section>
+
+        <section
+          className="rounded-2xl p-5 text-white shadow-lg"
+          style={{ background: `linear-gradient(135deg, ${colors.brandDark}, ${colors.brandMedium})` }}
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/80">AI Insight</p>
+          <p className="mt-3 text-base leading-7 md:text-lg">{aiInsight}</p>
+        </section>
+
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => setIsRulesEditorOpen((prev) => !prev)}
+            className="rounded-xl px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: colors.brandDark }}
+          >
+            Edytuj zasady
+          </button>
+          <button
+            type="button"
+            onClick={onStartCheckIn}
+            disabled={refreshing}
+            className="rounded-xl px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+            style={{ backgroundColor: colors.brandDark }}
+          >
+            {refreshing ? "Odświeżanie..." : "Nowy Check-In"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
