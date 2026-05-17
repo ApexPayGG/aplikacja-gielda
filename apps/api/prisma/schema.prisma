@@ -101,6 +101,16 @@ model Watchlist {
   @@map("watchlists")
 }
 
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  source    String?
+  createdAt DateTime @default(now())
+
+  @@map("waitlist_entries")
+}
+
 model Company {
   symbol      String   @id
   name        String

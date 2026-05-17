@@ -1777,6 +1777,17 @@ export async function getPremiumCatch(ticker: string): Promise<PremiumCatchRespo
 
 export type StripeCheckoutPlan = "pro" | "pro_plus";
 export type StripeCheckoutBilling = "monthly" | "yearly";
+export type WaitlistSource = "landing" | "pricing" | "signal";
+
+export interface WaitlistSubmitResponse {
+  ok: boolean;
+  alreadyJoined: boolean;
+  count: number;
+}
+
+export interface WaitlistCountResponse {
+  count: number;
+}
 
 export async function createStripeCheckoutSession(body: {
   userId: string;
@@ -1784,6 +1795,20 @@ export async function createStripeCheckoutSession(body: {
   billing: StripeCheckoutBilling;
 }): Promise<{ url: string }> {
   const { data } = await api.post<{ url: string }>("/stripe/create-checkout-session", body);
+  return data;
+}
+
+export async function joinWaitlist(body: {
+  email: string;
+  name?: string;
+  source?: WaitlistSource;
+}): Promise<WaitlistSubmitResponse> {
+  const { data } = await publicApi.post<WaitlistSubmitResponse>("/waitlist", body);
+  return data;
+}
+
+export async function getWaitlistCount(): Promise<WaitlistCountResponse> {
+  const { data } = await publicApi.get<WaitlistCountResponse>("/waitlist");
   return data;
 }
 
