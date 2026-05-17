@@ -198,12 +198,14 @@ export function AppNavBar() {
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<DropdownId | null>(null);
+  const accountLabel = t("nav.account", { defaultValue: "Account" });
+  const logoutLabel = t("nav.logout", { defaultValue: "Wyloguj" });
 
   const mobileDrawerLinks: MobileDrawerLink[] = [
     { to: "/signals", label: t("nav.markets"), icon: ChartBarSquareIcon, isActive: isMarketsPath },
     { to: "/paper-trading", label: t("nav.portfolio"), icon: BriefcaseIcon, isActive: isPortfolioPath },
     { to: "/position-size", label: t("nav.tools"), icon: WrenchScrewdriverIcon, isActive: isToolsPath },
-    { to: "/settings", label: "Account", icon: UserCircleIcon, isActive: isAccountPath },
+    { to: "/settings", label: accountLabel, icon: UserCircleIcon, isActive: isAccountPath },
   ];
 
   useEffect(() => {
@@ -320,7 +322,7 @@ export function AppNavBar() {
                 onClick={handleLogout}
                 className="rounded-lg border border-brandDark/20 px-3 py-1.5 text-sm font-semibold text-brandDark transition hover:bg-brandDark hover:text-white"
               >
-                Wyloguj
+                {logoutLabel}
               </button>
             </>
           ) : null}
@@ -338,8 +340,10 @@ export function AppNavBar() {
       <aside
         id="mobile-nav-panel"
         className={`fixed right-0 top-0 z-40 flex h-dvh w-[min(88vw,22rem)] flex-col bg-bgPrimary shadow-[-12px_0_28px_rgba(13,13,26,0.14)] transition-transform duration-300 md:hidden ${
-          mobileOpen ? "translate-x-0" : "translate-x-full"
+          mobileOpen ? "visible translate-x-0" : "invisible translate-x-full"
         }`}
+        role="dialog"
+        aria-modal="true"
         aria-hidden={!mobileOpen}
       >
         <div className="border-b border-border px-6 py-5">
@@ -348,8 +352,8 @@ export function AppNavBar() {
               {userInitials}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wide text-textMuted">Account</p>
-              <p className="truncate text-sm font-medium text-brandDark">{userEmail || userName || "user@amc.energy"}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-textMuted">{accountLabel}</p>
+              <p className="truncate text-sm font-medium text-brandDark">{userEmail || userName || "—"}</p>
             </div>
           </div>
         </div>
@@ -367,6 +371,7 @@ export function AppNavBar() {
                     ? "border-l-4 border-l-brandCyan bg-bgSecondary/40 pl-5 text-brandDark"
                     : "border-l-4 border-l-transparent text-textSecondary hover:text-brandDark"
                 }`}
+                tabIndex={mobileOpen ? 0 : -1}
                 onClick={() => setMobileOpen(false)}
               >
                 <Icon className="h-5 w-5 shrink-0" aria-hidden />
@@ -376,17 +381,22 @@ export function AppNavBar() {
           })}
         </nav>
 
+        <div className="border-t border-border px-6 py-4">
+          <LanguageSwitcher />
+        </div>
+
         {user ? (
           <div className="border-t border-border px-6 py-5">
             <button
               type="button"
+              tabIndex={mobileOpen ? 0 : -1}
               onClick={() => {
                 setMobileOpen(false);
                 handleLogout();
               }}
               className="text-sm font-semibold text-negative transition-colors hover:opacity-80"
             >
-              Wyloguj
+              {logoutLabel}
             </button>
           </div>
         ) : null}
