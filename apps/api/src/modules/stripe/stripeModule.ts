@@ -22,7 +22,7 @@ const TIER_BY_PLAN: Record<StripePlan, UserTier> = {
   pro_plus: "PRO_PLUS",
 };
 
-function getStripe(): Stripe {
+function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY?.trim();
   if (!key) {
     throw new Error("STRIPE_SECRET_KEY is not set");
@@ -41,10 +41,6 @@ function getPriceId(plan: StripePlan, billing: StripeBilling): string {
     return process.env.STRIPE_PROPLUS_MONTHLY_PRICE_ID?.trim() || "price_proplus_monthly";
   }
   return process.env.STRIPE_PROPLUS_YEARLY_PRICE_ID?.trim() || "price_proplus_yearly";
-}
-
-function getFrontendBaseUrl(): string {
-  return process.env.FRONTEND_BASE_URL?.trim() || "http://localhost:5173";
 }
 
 function parsePeriodEnd(periodEnd: number | null | undefined): Date | null {
@@ -81,8 +77,8 @@ export async function createCheckoutSession(input: CreateCheckoutSessionInput): 
     customer: customerId,
     payment_method_types: ["card"],
     line_items: [{ price: getPriceId(input.plan, input.billing), quantity: 1 }],
-    success_url: `${getFrontendBaseUrl()}/?checkout=success`,
-    cancel_url: `${getFrontendBaseUrl()}/?checkout=cancelled`,
+    success_url: "https://stock-ai.pro/payment-success?session_id={CHECKOUT_SESSION_ID}",
+    cancel_url: "https://stock-ai.pro/payment-cancel",
     metadata: {
       userId: user.id,
       tier,

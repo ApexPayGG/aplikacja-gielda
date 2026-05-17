@@ -62,6 +62,8 @@ model User {
   emailVerified        Boolean              @default(false) @map("email_verified")
   verifyToken          String?              @map("verify_token")
   verifyTokenExp       DateTime?            @map("verify_token_exp")
+  passwordResetToken   String?              @map("password_reset_token")
+  passwordResetTokenExp DateTime?           @map("password_reset_token_exp")
   passwordHash         String               @map("password_hash")
   name                 String?
   tier                 String               @default("FREE")

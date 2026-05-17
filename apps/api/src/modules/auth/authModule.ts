@@ -7,6 +7,7 @@ import { generateWelcomeEmail } from "../../templates/welcomeEmail";
 import { signAuthToken } from "./authJwt";
 
 const SALT_ROUNDS = 10;
+const PASSWORD_RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
 
 export type AuthUserPayload = {
   id: string;
@@ -101,6 +102,27 @@ async function sendWelcomeEmail(to: string, name?: string | null): Promise<void>
     subject: "Witaj w StockAI Pro!",
     text: "Witaj w StockAI Pro! Przejdź do aplikacji: https://stock-ai.pro/app",
     html: generateWelcomeEmail(name ?? undefined),
+  });
+}
+
+async function sendPasswordResetEmail(to: string, token: string): Promise<void> {
+  const resetUrl = `https://stock-ai.pro/reset-password?token=${encodeURIComponent(token)}`;
+  await sendResendEmail({
+    to,
+    subject: "Reset hasła — StockAI Pro",
+    text: `Kliknij link aby ustawić nowe hasło: ${resetUrl}`,
+    html: `
+      <div style="font-family:Arial,sans-serif;line-height:1.5;color:#0d0d1a">
+        <h2 style="margin-bottom:12px">Reset hasła</h2>
+        <p>Otrzymaliśmy prośbę o zresetowanie hasła do Twojego konta StockAI Pro.</p>
+        <p>
+          <a href="${resetUrl}" style="display:inline-block;background:#2D0A6B;color:#ffffff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600">
+            Ustaw nowe hasło
+          </a>
+        </p>
+        <p>Jeśli to nie Ty, zignoruj tę wiadomość.</p>
+      </div>
+    `,
   });
 }
 
@@ -213,6 +235,62 @@ export async function verifyEmailToken(tokenInput: string): Promise<void> {
   `;
 
   await sendWelcomeEmail(user.email, user.name);
+}
+
+export async function requestPasswordReset(input: { email: string }): Promise<void> {
+  const email = normalizeEmail(input.email);
+  assertEmail(email);
+
+  const users = await prisma.$queryRaw<Array<{ id: string; email: string }>>`
+    SELECT id, email
+    FROM users
+    WHERE email = ${email}
+    LIMIT 1
+  `;
+  const user = users[0];
+  if (!user) {
+    return;
+  }
+
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  const resetTokenExp = new Date(Date.now() + PASSWORD_RESET_TOKEN_TTL_MS);
+  await prisma.$executeRaw`
+    UPDATE users
+    SET password_reset_token = ${resetToken},
+        password_reset_token_exp = ${resetTokenExp}
+    WHERE id = ${user.id}
+  `;
+  await sendPasswordResetEmail(user.email, resetToken);
+}
+
+export async function resetPassword(input: { token: string; newPassword: string }): Promise<void> {
+  const token = String(input.token ?? "").trim();
+  const newPassword = String(input.newPassword ?? "");
+
+  if (!token) {
+    throw new Error("Invalid reset token");
+  }
+  assertPassword(newPassword);
+
+  const users = await prisma.$queryRaw<Array<{ id: string; password_reset_token_exp: Date | null }>>`
+    SELECT id, password_reset_token_exp
+    FROM users
+    WHERE password_reset_token = ${token}
+    LIMIT 1
+  `;
+  const user = users[0];
+  if (!user || !user.password_reset_token_exp || user.password_reset_token_exp.getTime() < Date.now()) {
+    throw new Error("Reset token expired or invalid");
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+  await prisma.$executeRaw`
+    UPDATE users
+    SET password_hash = ${passwordHash},
+        password_reset_token = NULL,
+        password_reset_token_exp = NULL
+    WHERE id = ${user.id}
+  `;
 }
 
 export async function getAuthUserById(userId: string): Promise<AuthUserPayload | null> {

@@ -1706,3 +1706,16 @@ export async function verifyEmailToken(token: string): Promise<{ verified: boole
   });
   return data;
 }
+
+export async function forgotPassword(email: string): Promise<{ ok: boolean }> {
+  const { data } = await publicApi.post<{ ok: boolean }>("/auth/forgot-password", { email });
+  return data;
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<{ ok: boolean }> {
+  const { data } = await publicApi.post<{ ok: boolean }>("/auth/reset-password", {
+    token,
+    newPassword,
+  });
+  return data;
+}

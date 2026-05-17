@@ -99,6 +99,9 @@ export function PricingPage() {
 
     try {
       setCheckoutLoadingPlan(plan);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("checkout_plan", plan);
+      }
       trackEvent("begin_checkout", { plan, billing: billingCycle });
       const { url } = await createStripeCheckoutSession({
         userId,

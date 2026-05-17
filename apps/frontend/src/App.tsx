@@ -30,6 +30,8 @@ const DividendPage = lazyNamed(() => import("./pages/DividendPage"), "DividendPa
 const Home = lazyNamed(() => import("./pages/Home"), "Home");
 const LandingPage = lazyNamed(() => import("./pages/LandingPage"), "LandingPage");
 const LoginPage = lazyNamed(() => import("./pages/LoginPage"), "LoginPage");
+const ForgotPasswordPage = lazyNamed(() => import("./pages/ForgotPasswordPage"), "ForgotPasswordPage");
+const ResetPasswordPage = lazyNamed(() => import("./pages/ResetPasswordPage"), "ResetPasswordPage");
 const LossStreakPage = lazyNamed(() => import("./pages/LossStreakPage"), "LossStreakPage");
 const MistakeLibraryPage = lazyNamed(() => import("./pages/MistakeLibraryPage"), "MistakeLibraryPage");
 const PsycheProfilePage = lazyNamed(() => import("./pages/PsycheProfilePage"), "PsycheProfilePage");
@@ -65,6 +67,8 @@ const VerifyEmailPage = lazyNamed(() => import("./pages/VerifyEmailPage"), "Veri
 const NotFoundPage = lazyNamed(() => import("./pages/NotFoundPage"), "NotFoundPage");
 const ErrorPage = lazyNamed(() => import("./pages/ErrorPage"), "ErrorPage");
 const PricingPage = lazyNamed(() => import("./pages/PricingPage"), "PricingPage");
+const PaymentSuccessPage = lazyNamed(() => import("./pages/PaymentSuccessPage"), "PaymentSuccessPage");
+const PaymentCancelPage = lazyNamed(() => import("./pages/PaymentCancelPage"), "PaymentCancelPage");
 const PrivacyPage = lazyNamed(() => import("./pages/PrivacyPage"), "PrivacyPage");
 const TermsPage = lazyNamed(() => import("./pages/TermsPage"), "TermsPage");
 
@@ -111,7 +115,11 @@ export default function App() {
           <Routes>
             <Route path="/login" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LoginPage />} />
             <Route path="/register" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/verify" element={<VerifyEmailPage />} />
+            <Route path="/payment-success" element={<PaymentSuccessPage />} />
+            <Route path="/payment-cancel" element={<PaymentCancelPage />} />
             <Route
               path="/onboarding"
               element={token && onboardingCompleted ? <Navigate to="/dashboard" replace /> : <OnboardingPage />}

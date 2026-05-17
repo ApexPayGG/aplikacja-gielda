@@ -240,6 +240,37 @@ a {
   animation: riskSweep 2.8s ease-in-out infinite;
 }
 
+.payment-confetti {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.payment-confetti-piece {
+  position: absolute;
+  top: -12%;
+  width: 10px;
+  height: 20px;
+  border-radius: 9999px;
+  opacity: 0.78;
+  animation-name: confettiFall;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.payment-confetti-piece:nth-child(3n + 1) {
+  background: var(--brand-cyan);
+}
+
+.payment-confetti-piece:nth-child(3n + 2) {
+  background: var(--brand-medium);
+}
+
+.payment-confetti-piece:nth-child(3n + 3) {
+  background: var(--brand-gold);
+}
+
 @keyframes riskSweep {
   0% {
     transform: translateX(-110%);
@@ -275,10 +306,28 @@ a {
   }
 }
 
+@keyframes confettiFall {
+  0% {
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(-24px, 110vh, 0) rotate(520deg);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .risk-beam::after,
   .live-dot,
-  .feedback-toast {
+  .feedback-toast,
+  .payment-confetti-piece {
     animation: none;
   }
 

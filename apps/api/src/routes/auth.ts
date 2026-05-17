@@ -1,12 +1,21 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
-import { getAuthUserById, loginUser, registerUser, verifyEmailToken } from "../modules/auth/authModule";
+import {
+  getAuthUserById,
+  loginUser,
+  registerUser,
+  requestPasswordReset,
+  resetPassword,
+  verifyEmailToken,
+} from "../modules/auth/authModule";
 import { getAuthenticatedUserId, requireAuth } from "../modules/auth/authMiddleware";
 
 type AuthRouteDeps = {
   registerFn: typeof registerUser;
   loginFn: typeof loginUser;
   verifyEmailFn: typeof verifyEmailToken;
+  forgotPasswordFn: typeof requestPasswordReset;
+  resetPasswordFn: typeof resetPassword;
   getUserByIdFn: typeof getAuthUserById;
 };
 
@@ -15,6 +24,8 @@ export function createAuthRouter(depsInput?: Partial<AuthRouteDeps>): Router {
     registerFn: depsInput?.registerFn ?? registerUser,
     loginFn: depsInput?.loginFn ?? loginUser,
     verifyEmailFn: depsInput?.verifyEmailFn ?? verifyEmailToken,
+    forgotPasswordFn: depsInput?.forgotPasswordFn ?? requestPasswordReset,
+    resetPasswordFn: depsInput?.resetPasswordFn ?? resetPassword,
     getUserByIdFn: depsInput?.getUserByIdFn ?? getAuthUserById,
   };
 
@@ -91,6 +102,42 @@ export function createAuthRouter(depsInput?: Partial<AuthRouteDeps>): Router {
           return;
         }
         res.redirect("/login?verified=false");
+        return;
+      }
+      next(error);
+    }
+  });
+
+  router.post("/api/auth/forgot-password", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = req.body as Record<string, unknown>;
+      await deps.forgotPasswordFn({ email: String(body.email ?? "") });
+      res.json({ ok: true });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Invalid email") {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+      next(error);
+    }
+  });
+
+  router.post("/api/auth/reset-password", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = req.body as Record<string, unknown>;
+      await deps.resetPasswordFn({
+        token: String(body.token ?? ""),
+        newPassword: String(body.newPassword ?? ""),
+      });
+      res.json({ ok: true });
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        (error.message === "Invalid reset token" ||
+          error.message === "Reset token expired or invalid" ||
+          error.message === "Password must be at least 8 characters")
+      ) {
+        res.status(400).json({ error: error.message });
         return;
       }
       next(error);

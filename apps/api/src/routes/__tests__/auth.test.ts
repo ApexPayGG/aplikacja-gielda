@@ -36,6 +36,19 @@ describe("auth routes", () => {
             throw new Error("Verification token expired or invalid");
           }
         },
+        forgotPasswordFn: async ({ email }) => {
+          if (email === "bad-email") {
+            throw new Error("Invalid email");
+          }
+        },
+        resetPasswordFn: async ({ token, newPassword }) => {
+          if (token !== "good-reset-token") {
+            throw new Error("Reset token expired or invalid");
+          }
+          if (newPassword.length < 8) {
+            throw new Error("Password must be at least 8 characters");
+          }
+        },
         getUserByIdFn: async (id) =>
           id === "u-1"
             ? { id, email: "jan@example.com", name: "Jan", tier: "FREE", role: "USER" }
@@ -117,6 +130,46 @@ describe("auth routes", () => {
   it("GET /api/auth/verify returns 400 for invalid token", async () => {
     const res = await fetch(`${baseUrl}/api/auth/verify?token=bad-token`, {
       headers: { accept: "application/json" },
+    });
+    assert.equal(res.status, 400);
+  });
+
+  it("POST /api/auth/forgot-password returns 200 for known email format", async () => {
+    const res = await fetch(`${baseUrl}/api/auth/forgot-password`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "jan@example.com" }),
+    });
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { ok: boolean };
+    assert.equal(body.ok, true);
+  });
+
+  it("POST /api/auth/forgot-password returns 400 for invalid email", async () => {
+    const res = await fetch(`${baseUrl}/api/auth/forgot-password`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "bad-email" }),
+    });
+    assert.equal(res.status, 400);
+  });
+
+  it("POST /api/auth/reset-password returns 200 for valid token and password", async () => {
+    const res = await fetch(`${baseUrl}/api/auth/reset-password`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ token: "good-reset-token", newPassword: "newPassword123" }),
+    });
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { ok: boolean };
+    assert.equal(body.ok, true);
+  });
+
+  it("POST /api/auth/reset-password returns 400 for invalid token", async () => {
+    const res = await fetch(`${baseUrl}/api/auth/reset-password`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ token: "bad-reset-token", newPassword: "newPassword123" }),
     });
     assert.equal(res.status, 400);
   });

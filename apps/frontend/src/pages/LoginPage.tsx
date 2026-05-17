@@ -86,6 +86,12 @@ export function LoginPage() {
                 />
               </label>
 
+              <p className="text-right text-sm text-textSecondary">
+                <Link to="/forgot-password" className="font-medium text-brandCyan">
+                  Nie pamiętasz hasła?
+                </Link>
+              </p>
+
               {error ? <p className="text-sm text-negative">{error}</p> : null}
 
               <button
