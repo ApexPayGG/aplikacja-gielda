@@ -41,17 +41,24 @@ import { WalkForwardPage } from "./pages/WalkForwardPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { AlpacaDashboardPage } from "./pages/AlpacaDashboardPage";
 import { AdminAffiliatePage } from "./pages/AdminAffiliatePage";
+import { OnboardingPage } from "./pages/OnboardingPage";
 import { PremiumCompanyAnalysis } from "./pages/PremiumCompanyAnalysis";
 import { WeeklyReviewPage } from "./pages/WeeklyReviewPage";
 import { VerifyEmailPage } from "./pages/VerifyEmailPage";
+import { hasCompletedOnboarding } from "./utils/onboarding";
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { token, isLoading } = useAuth();
+  const location = useLocation();
+  const onboardingCompleted = hasCompletedOnboarding();
   if (isLoading) {
     return <div className="mx-auto flex min-h-screen items-center justify-center text-slate-300">Loading...</div>;
   }
   if (!token) {
     return <Navigate to="/login" replace />;
+  }
+  if (!onboardingCompleted && !location.pathname.startsWith("/onboarding")) {
+    return <Navigate to="/onboarding" replace />;
   }
   return <>{children}</>;
 }
@@ -59,20 +66,28 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 export default function App() {
   const { token } = useAuth();
   const location = useLocation();
-  const showFloatingEmotionalWidget = token && !location.pathname.startsWith("/dashboard");
+  const onboardingCompleted = hasCompletedOnboarding();
+  const defaultAuthenticatedRoute = onboardingCompleted ? "/dashboard" : "/onboarding";
+  const inOnboarding = location.pathname.startsWith("/onboarding");
+  const showTopNavigation = token && !inOnboarding;
+  const showFloatingEmotionalWidget = token && !location.pathname.startsWith("/dashboard") && !inOnboarding;
 
   return (
     <div className="app-shell min-h-screen">
-      {token ? <AppNavBar /> : null}
+      {showTopNavigation ? <AppNavBar /> : null}
       {showFloatingEmotionalWidget ? <EmotionalStateWidget /> : null}
 
       <main className="relative z-10">
         <Routes>
-          <Route path="/login" element={token ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
-          <Route path="/register" element={token ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
+          <Route path="/login" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LoginPage />} />
+          <Route path="/register" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <RegisterPage />} />
           <Route path="/verify" element={<VerifyEmailPage />} />
+          <Route
+            path="/onboarding"
+            element={token && onboardingCompleted ? <Navigate to="/dashboard" replace /> : <OnboardingPage />}
+          />
 
-          <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
+          <Route path="/" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LandingPage />} />
           <Route path="/companies" element={<Home />} />
           <Route path="/company/:symbol" element={<CompanyDetail />} />
           <Route path="/signals" element={<SignalsPage />} />
