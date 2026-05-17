@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
+import { SignalsFilter } from "../components/SignalsFilter";
 import { ShareButton } from "../components/ShareButton";
 import { useAuth } from "../context/AuthContext";
+import { useSignalsFilter } from "../hooks/useSignalsFilter";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { colors } from "../styles/designSystem";
-
-type SignalFilter = "ALL" | "BULLISH" | "BEARISH" | "VOLUME";
 
 type SignalListItem = {
   id: string;
@@ -17,6 +17,8 @@ type SignalListItem = {
   logoUrl: string | null;
   setupType: string;
   riskScore: number;
+  exchange: string | null;
+  createdAt: string;
   changePct: number;
   price: number;
 };
@@ -36,7 +38,9 @@ const mockSignals: SignalListItem[] = [
     companyName: "Apple Inc.",
     logoUrl: null,
     riskScore: 86,
-    setupType: "Breakout above VWAP",
+    setupType: "Breakout",
+    exchange: "US",
+    createdAt: new Date().toISOString(),
     changePct: 2.4,
     price: 192.41,
   },
@@ -46,7 +50,9 @@ const mockSignals: SignalListItem[] = [
     companyName: "ORLEN S.A.",
     logoUrl: null,
     riskScore: 64,
-    setupType: "Mean reversion to EMA20",
+    setupType: "Support Bounce",
+    exchange: "GPW",
+    createdAt: new Date(Date.now() - 86_400_000).toISOString(),
     changePct: -0.8,
     price: 69.2,
   },
@@ -56,7 +62,9 @@ const mockSignals: SignalListItem[] = [
     companyName: "SAP SE",
     logoUrl: null,
     riskScore: 79,
-    setupType: "Volume squeeze expansion",
+    setupType: "Volume Spike",
+    exchange: "DAX",
+    createdAt: new Date(Date.now() - 3 * 86_400_000).toISOString(),
     changePct: 1.1,
     price: 184.5,
   },
@@ -66,7 +74,9 @@ const mockSignals: SignalListItem[] = [
     companyName: "Toyota Motor",
     logoUrl: null,
     riskScore: 55,
-    setupType: "Failed breakout reversal",
+    setupType: "Oversold",
+    exchange: "HK",
+    createdAt: new Date(Date.now() - 11 * 86_400_000).toISOString(),
     changePct: -2.1,
     price: 3280,
   },
@@ -77,16 +87,11 @@ const mockSignals: SignalListItem[] = [
     logoUrl: null,
     riskScore: 82,
     setupType: "Momentum continuation",
+    exchange: "US",
+    createdAt: new Date(Date.now() - 27 * 86_400_000).toISOString(),
     changePct: 1.8,
     price: 428.3,
   },
-];
-
-const filterOptions: Array<{ id: SignalFilter; label: string }> = [
-  { id: "ALL", label: "All" },
-  { id: "BULLISH", label: "Bullish" },
-  { id: "BEARISH", label: "Bearish" },
-  { id: "VOLUME", label: "Volume" },
 ];
 
 function isEndpointMissing(error: unknown): boolean {
@@ -116,6 +121,8 @@ function parseSignal(raw: unknown): SignalListItem | null {
 
   const logoInput = row.logoUrl ?? row.logo ?? null;
   const logoUrl = typeof logoInput === "string" && logoInput.trim() ? logoInput.trim() : companyMetaByTicker[ticker]?.logoUrl ?? null;
+  const createdAt = String(row.createdAt ?? row.timestamp ?? row.updatedAt ?? row.date ?? new Date().toISOString());
+  const exchange = String(row.exchange ?? row.market ?? row.marketCode ?? "").trim() || null;
 
   return {
     id,
@@ -124,17 +131,11 @@ function parseSignal(raw: unknown): SignalListItem | null {
     logoUrl,
     riskScore: Number(row.riskScore ?? row.score ?? 0) || 0,
     setupType: String(row.setupType ?? row.setup ?? "Unknown setup"),
+    exchange,
+    createdAt,
     changePct: Number(row.changePct ?? row.changePercent ?? 0) || 0,
     price: Number(row.price ?? 0) || 0,
   };
-}
-
-function rankSignals(rows: SignalListItem[]): SignalListItem[] {
-  return [...rows].sort((a, b) => {
-    const aWeight = a.riskScore * 0.7 + a.changePct * 8;
-    const bWeight = b.riskScore * 0.7 + b.changePct * 8;
-    return bWeight - aWeight;
-  });
 }
 
 function formatPrice(value: number): string {
@@ -144,21 +145,16 @@ function formatPrice(value: number): string {
   });
 }
 
-function createSignalFilterMatcher(activeFilter: SignalFilter): (signal: SignalListItem) => boolean {
-  if (activeFilter === "BULLISH") return (signal) => signal.changePct > 0;
-  if (activeFilter === "BEARISH") return (signal) => signal.changePct < 0;
-  if (activeFilter === "VOLUME") return (signal) => /volume/i.test(signal.setupType);
-  return () => true;
-}
-
 export function SignalsPage() {
   const { token } = useAuth();
   const isLoggedIn = Boolean(token);
   const [signals, setSignals] = useState<SignalListItem[]>([]);
   const [loadingList, setLoadingList] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<SignalFilter>("ALL");
   const [hoveredSignalId, setHoveredSignalId] = useState<string | null>(null);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const { filters, hasActiveFilters, toggleSetupType, setRiskScoreMin, toggleExchange, setTimeframe, setSortBy, resetFilters, applyFilters } =
+    useSignalsFilter();
 
   useEffect(() => {
     let cancelled = false;
@@ -172,12 +168,12 @@ export function SignalsPage() {
           .filter((row): row is SignalListItem => row !== null);
 
         if (!cancelled) {
-          setSignals(rows.length > 0 ? rankSignals(rows) : rankSignals(mockSignals));
+          setSignals(rows.length > 0 ? rows : mockSignals);
         }
       } catch (error) {
         if (cancelled) return;
         if (isEndpointMissing(error)) {
-          setSignals(rankSignals(mockSignals));
+          setSignals(mockSignals);
         } else {
           setListError(apiErrorMessage(error));
           setSignals([]);
@@ -194,9 +190,8 @@ export function SignalsPage() {
   }, []);
 
   const filteredSignals = useMemo(() => {
-    const matcher = createSignalFilterMatcher(activeFilter);
-    return signals.filter(matcher);
-  }, [signals, activeFilter]);
+    return applyFilters(signals);
+  }, [signals, applyFilters]);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary, color: colors.textPrimary }}>
@@ -209,185 +204,221 @@ export function SignalsPage() {
             <p className="max-w-2xl text-sm" style={{ color: colors.textSecondary }}>
               Przeglądaj aktywne setupy i ocenę ryzyka według nowego design systemu AMC Energy.
             </p>
+            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+              Wyniki: {filteredSignals.length}
+            </p>
             <EtoroCTAButton sourcePage="signals" className="max-w-xs" />
           </div>
-          <div
-            className="inline-flex flex-wrap items-center gap-2 rounded-2xl border p-2"
-            style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-          >
-            {filterOptions.map((option) => {
-              const active = option.id === activeFilter;
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  onClick={() => setActiveFilter(option.id)}
-                  className="rounded-xl px-4 py-2 text-sm font-semibold transition"
-                  style={{
-                    backgroundColor: active ? colors.brandDark : colors.bgPrimary,
-                    color: active ? colors.bgPrimary : colors.textSecondary,
-                    border: `1px solid ${active ? colors.brandDark : colors.border}`,
-                  }}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
         </header>
+        <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
+          <aside className="hidden lg:block">
+            <div className="sticky top-24">
+              <SignalsFilter
+                filters={filters}
+                onToggleSetupType={toggleSetupType}
+                onRiskScoreChange={setRiskScoreMin}
+                onToggleExchange={toggleExchange}
+                onTimeframeChange={setTimeframe}
+                onSortByChange={setSortBy}
+                onReset={resetFilters}
+              />
+            </div>
+          </aside>
 
-        {loadingList ? (
           <div className="space-y-4">
-            {Array.from({ length: 6 }).map((_, idx) => (
-              <div
-                key={`skeleton-${idx}`}
-                className="animate-pulse rounded-2xl border p-5"
-                style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-              >
-                <div className="mb-4 h-5 w-1/3 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                <div className="mb-2 h-4 w-4/5 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                <div className="h-4 w-2/5 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-              </div>
-            ))}
-          </div>
-        ) : null}
-
-        {!loadingList && listError ? (
-          <div
-            className="rounded-2xl border px-4 py-3 text-sm"
-            style={{
-              borderColor: colors.negative,
-              color: colors.negative,
-              backgroundColor: `${colors.negative}12`,
-            }}
-          >
-            {listError}
-          </div>
-        ) : null}
-
-        {!loadingList && !listError && filteredSignals.length === 0 ? (
-          <div
-            className="rounded-2xl border px-4 py-6 text-center text-sm"
-            style={{ borderColor: colors.border, color: colors.textSecondary, backgroundColor: colors.bgSecondary }}
-          >
-            Brak sygnałów dla wybranego filtra.
-          </div>
-        ) : null}
-
-        {!loadingList && !listError && filteredSignals.length > 0 ? (
-          <div className="space-y-4">
-            {filteredSignals.map((signal) => {
-              const isPositive = signal.changePct >= 0;
-              const isHovered = hoveredSignalId === signal.id;
-              const signedChangeForShare = `${signal.changePct >= 0 ? "+" : ""}${signal.changePct.toFixed(1)}%`;
-              return (
-                <article
-                  key={signal.id}
-                  className="rounded-2xl border p-5 transition"
-                  style={{
-                    backgroundColor: colors.bgPrimary,
-                    borderColor: isHovered ? colors.brandCyan : colors.border,
-                    boxShadow: isHovered ? "0 12px 28px rgba(13, 13, 26, 0.08)" : "0 2px 8px rgba(13, 13, 26, 0.05)",
-                  }}
-                  onMouseEnter={() => setHoveredSignalId(signal.id)}
-                  onMouseLeave={() => setHoveredSignalId(null)}
-                >
-                  <div className="grid gap-4 md:grid-cols-[2.2fr_1.2fr_1.2fr] md:items-center">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border text-sm font-bold uppercase"
-                        style={{
-                          borderColor: colors.borderStrong,
-                          backgroundColor: colors.bgSecondary,
-                          color: colors.brandDark,
-                        }}
-                      >
-                        {signal.logoUrl ? (
-                          <img src={signal.logoUrl} alt={`${signal.companyName} logo`} className="h-full w-full object-cover" />
-                        ) : (
-                          signal.ticker.slice(0, 2)
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-lg font-bold" style={{ color: colors.brandDark }}>
-                          {signal.ticker}
-                        </p>
-                        <p className="text-sm" style={{ color: colors.textSecondary }}>
-                          {signal.companyName}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <span
-                        className="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-                        style={{ backgroundColor: colors.brandCyan, color: colors.brandDark }}
-                      >
-                        {signal.setupType}
-                      </span>
-                      <p className="text-4xl font-bold leading-none" style={{ color: colors.brandDark }}>
-                        {Math.round(signal.riskScore)}
-                      </p>
-                    </div>
-
-                    <div className="text-left md:text-right">
-                      <p className="text-2xl font-semibold" style={{ color: colors.textPrimary }}>
-                        ${formatPrice(signal.price)}
-                      </p>
-                      <span
-                        className="mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-                        style={{
-                          backgroundColor: `${isPositive ? colors.positive : colors.negative}1A`,
-                          color: isPositive ? colors.positive : colors.negative,
-                        }}
-                      >
-                        {signal.changePct >= 0 ? "+" : ""}
-                        {signal.changePct.toFixed(2)}%
-                      </span>
-                      <div className="mt-3 flex md:justify-end">
-                        <ShareButton
-                          label={`Udostępnij sygnał ${signal.ticker} ${signedChangeForShare}`}
-                          url={`https://stock-ai.pro/signals/${signal.id}`}
-                          twitterText={`🚀 Sygnał AI: ${signal.ticker} ${signal.setupType} | Score: ${Math.round(signal.riskScore)}/100 | StockAI Pro #inwestowanie #GPW`}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
+            {loadingList ? (
+              <div className="space-y-4">
+                {Array.from({ length: 6 }).map((_, idx) => (
                   <div
-                    className="relative mt-5 overflow-hidden rounded-xl border"
+                    key={`skeleton-${idx}`}
+                    className="animate-pulse rounded-2xl border p-5"
                     style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
                   >
-                    <div className="space-y-2 p-4 blur-[2px]" style={{ opacity: isLoggedIn ? 1 : 0.72 }}>
-                      <div className="h-2.5 w-3/4 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                      <div className="h-2.5 w-11/12 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                      <div className="h-2.5 w-2/3 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                    </div>
-                    {!isLoggedIn ? (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/75 px-4 text-center">
-                        <p className="text-sm font-semibold" style={{ color: colors.brandDark }}>
-                          Zaloguj się aby zobaczyć analizę AI
-                        </p>
-                        <Link
-                          to="/register"
-                          className="rounded-lg px-3 py-1.5 text-xs font-semibold"
-                          style={{ color: colors.bgPrimary, backgroundColor: colors.brandDark }}
-                        >
-                          Zaloguj się
-                        </Link>
-                      </div>
-                    ) : (
-                      <div className="absolute inset-0 flex items-center px-4 text-xs" style={{ color: colors.textSecondary }}>
-                        Analiza AI dostępna w podglądzie premium dla tego sygnału.
-                      </div>
-                    )}
+                    <div className="mb-4 h-5 w-1/3 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+                    <div className="mb-2 h-4 w-4/5 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+                    <div className="h-4 w-2/5 rounded" style={{ backgroundColor: colors.bgTertiary }} />
                   </div>
-                </article>
-              );
-            })}
+                ))}
+              </div>
+            ) : null}
+
+            {!loadingList && listError ? (
+              <div
+                className="rounded-2xl border px-4 py-3 text-sm"
+                style={{
+                  borderColor: colors.negative,
+                  color: colors.negative,
+                  backgroundColor: `${colors.negative}12`,
+                }}
+              >
+                {listError}
+              </div>
+            ) : null}
+
+            {!loadingList && !listError && filteredSignals.length === 0 ? (
+              <div
+                className="rounded-2xl border px-4 py-6 text-center text-sm"
+                style={{ borderColor: colors.border, color: colors.textSecondary, backgroundColor: colors.bgSecondary }}
+              >
+                Brak sygnałów dla wybranego filtra.
+              </div>
+            ) : null}
+
+            {!loadingList && !listError && filteredSignals.length > 0 ? (
+              <div className="space-y-4">
+                {filteredSignals.map((signal) => {
+                  const isPositive = signal.changePct >= 0;
+                  const isHovered = hoveredSignalId === signal.id;
+                  const signedChangeForShare = `${signal.changePct >= 0 ? "+" : ""}${signal.changePct.toFixed(1)}%`;
+                  return (
+                    <article
+                      key={signal.id}
+                      className="rounded-2xl border p-5 transition"
+                      style={{
+                        backgroundColor: colors.bgPrimary,
+                        borderColor: isHovered ? colors.brandCyan : colors.border,
+                        boxShadow: isHovered ? "0 12px 28px rgba(13, 13, 26, 0.08)" : "0 2px 8px rgba(13, 13, 26, 0.05)",
+                      }}
+                      onMouseEnter={() => setHoveredSignalId(signal.id)}
+                      onMouseLeave={() => setHoveredSignalId(null)}
+                    >
+                      <div className="grid gap-4 md:grid-cols-[2.2fr_1.2fr_1.2fr] md:items-center">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border text-sm font-bold uppercase"
+                            style={{
+                              borderColor: colors.borderStrong,
+                              backgroundColor: colors.bgSecondary,
+                              color: colors.brandDark,
+                            }}
+                          >
+                            {signal.logoUrl ? (
+                              <img src={signal.logoUrl} alt={`${signal.companyName} logo`} className="h-full w-full object-cover" />
+                            ) : (
+                              signal.ticker.slice(0, 2)
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-lg font-bold" style={{ color: colors.brandDark }}>
+                              {signal.ticker}
+                            </p>
+                            <p className="text-sm" style={{ color: colors.textSecondary }}>
+                              {signal.companyName}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <span
+                            className="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                            style={{ backgroundColor: colors.brandCyan, color: colors.brandDark }}
+                          >
+                            {signal.setupType}
+                          </span>
+                          <p className="text-4xl font-bold leading-none" style={{ color: colors.brandDark }}>
+                            {Math.round(signal.riskScore)}
+                          </p>
+                        </div>
+
+                        <div className="text-left md:text-right">
+                          <p className="text-2xl font-semibold" style={{ color: colors.textPrimary }}>
+                            ${formatPrice(signal.price)}
+                          </p>
+                          <span
+                            className="mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                            style={{
+                              backgroundColor: `${isPositive ? colors.positive : colors.negative}1A`,
+                              color: isPositive ? colors.positive : colors.negative,
+                            }}
+                          >
+                            {signal.changePct >= 0 ? "+" : ""}
+                            {signal.changePct.toFixed(2)}%
+                          </span>
+                          <div className="mt-3 flex md:justify-end">
+                            <ShareButton
+                              label={`Udostępnij sygnał ${signal.ticker} ${signedChangeForShare}`}
+                              url={`https://stock-ai.pro/signals/${signal.id}`}
+                              twitterText={`🚀 Sygnał AI: ${signal.ticker} ${signal.setupType} | Score: ${Math.round(signal.riskScore)}/100 | StockAI Pro #inwestowanie #GPW`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div
+                        className="relative mt-5 overflow-hidden rounded-xl border"
+                        style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+                      >
+                        <div className="space-y-2 p-4 blur-[2px]" style={{ opacity: isLoggedIn ? 1 : 0.72 }}>
+                          <div className="h-2.5 w-3/4 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+                          <div className="h-2.5 w-11/12 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+                          <div className="h-2.5 w-2/3 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+                        </div>
+                        {!isLoggedIn ? (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/75 px-4 text-center">
+                            <p className="text-sm font-semibold" style={{ color: colors.brandDark }}>
+                              Zaloguj się aby zobaczyć analizę AI
+                            </p>
+                            <Link
+                              to="/register"
+                              className="rounded-lg px-3 py-1.5 text-xs font-semibold"
+                              style={{ color: colors.bgPrimary, backgroundColor: colors.brandDark }}
+                            >
+                              Zaloguj się
+                            </Link>
+                          </div>
+                        ) : (
+                          <div className="absolute inset-0 flex items-center px-4 text-xs" style={{ color: colors.textSecondary }}>
+                            Analiza AI dostępna w podglądzie premium dla tego sygnału.
+                          </div>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
-        ) : null}
+        </div>
       </div>
+
+      <button
+        type="button"
+        className="fixed bottom-4 right-4 z-30 rounded-full px-5 py-3 text-sm font-semibold shadow-lg lg:hidden"
+        style={{ backgroundColor: colors.brandDark, color: colors.bgPrimary }}
+        onClick={() => setIsMobileFiltersOpen(true)}
+      >
+        Filtry {hasActiveFilters ? "•" : ""}
+      </button>
+
+      {isMobileFiltersOpen ? (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/45"
+            onClick={() => setIsMobileFiltersOpen(false)}
+            aria-label="Zamknij panel filtrów"
+          />
+          <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-3xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-base font-bold" style={{ color: colors.brandDark }}>
+                Filtry sygnałów
+              </p>
+              <button type="button" className="text-sm font-semibold" style={{ color: colors.brandCyan }} onClick={() => setIsMobileFiltersOpen(false)}>
+                Zamknij
+              </button>
+            </div>
+            <SignalsFilter
+              filters={filters}
+              onToggleSetupType={toggleSetupType}
+              onRiskScoreChange={setRiskScoreMin}
+              onToggleExchange={toggleExchange}
+              onTimeframeChange={setTimeframe}
+              onSortByChange={setSortBy}
+              onReset={resetFilters}
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
