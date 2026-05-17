@@ -1,4 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getNewsHalfLife, type NewsHalfLifeItem, type NewsHalfLifeResponse } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -36,6 +37,7 @@ function readSource(item: NewsHalfLifeItem): string {
 }
 
 export function NewsHalfLifePage() {
+  const { i18n } = useTranslation();
   const [symbol, setSymbol] = useState("AAPL");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -157,7 +159,7 @@ export function NewsHalfLifePage() {
               </h3>
 
               <p className="mt-2 text-xs" style={{ color: colors.textSecondary }}>
-                Źródło: {readSource(item)} • Data: {formatDate(item.date, "en-US")}
+                Źródło: {readSource(item)} • Data: {formatDate(item.date, i18n.language || "en-US")}
               </p>
             </article>
           );

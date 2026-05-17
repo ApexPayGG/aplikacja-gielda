@@ -173,6 +173,9 @@ export function EarningsPredictorPage() {
               <h2 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
                 Factors impact
               </h2>
+              <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
+                Symulowane czynniki na bazie confidence score.
+              </p>
               <ul className="mt-4 space-y-3">
                 {factors.map((factor) => (
                   <li key={factor.name}>
@@ -195,6 +198,9 @@ export function EarningsPredictorPage() {
             <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
               Historia predykcji
             </h3>
+            <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
+              Symulowana historia skuteczności modelu.
+            </p>
             <div className="mt-3 overflow-x-auto rounded-xl border" style={{ borderColor: colors.border }}>
               <table className="w-full min-w-[420px] text-left text-sm">
                 <thead style={{ backgroundColor: colors.bgPrimary, color: colors.textSecondary }}>

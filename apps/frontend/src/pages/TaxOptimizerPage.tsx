@@ -101,6 +101,7 @@ export function TaxOptimizerPage() {
     const parsed = Number.parseFloat(customRate.replace(",", "."));
     return Number.isFinite(parsed) ? parsed : Number.NaN;
   }, [customRate]);
+  const customRateValid = country !== "CUSTOM" || Number.isFinite(rateAsNumber);
 
   const fmt = useCallback(
     (n: number) => formatCurrency(n, data?.currency ?? currentSystem?.currency ?? "USD"),
@@ -150,9 +151,17 @@ export function TaxOptimizerPage() {
 
   useEffect(() => {
     if (!systems.length) return;
-    if (country === "CUSTOM" && !Number.isFinite(rateAsNumber)) return;
+    if (!customRateValid) {
+      setData(null);
+      setSummary(null);
+      return;
+    }
     void recalculate();
-  }, [country, rateAsNumber, recalculate, systems.length]);
+  }, [country, customRateValid, recalculate, systems.length]);
+
+  useEffect(() => {
+    setSummary(null);
+  }, [country]);
 
   const persistCountry = useCallback(async () => {
     try {
@@ -163,6 +172,10 @@ export function TaxOptimizerPage() {
   }, [country, userId]);
 
   const handleCalculate = useCallback(async () => {
+    if (!customRateValid) {
+      setError("Wprowadź poprawną stawkę dla trybu Custom.");
+      return;
+    }
     const source = data;
     if (!source) return;
 
@@ -187,7 +200,7 @@ export function TaxOptimizerPage() {
       }),
     });
     await persistCountry();
-  }, [country, data, dividendsInput, grossGainsInput, lossesInput, persistCountry, taxYearInput]);
+  }, [country, customRateValid, data, dividendsInput, grossGainsInput, lossesInput, persistCountry, taxYearInput]);
 
   const titleCountryCode = (data?.country ?? country).toUpperCase();
   const countryName = TAX_COUNTRY_ENGLISH_NAMES[titleCountryCode] ?? titleCountryCode;
@@ -307,7 +320,7 @@ export function TaxOptimizerPage() {
         <button
           type="button"
           onClick={() => void handleCalculate()}
-          disabled={loading || !data}
+          disabled={loading || !data || !customRateValid}
           className="mt-5 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
           style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
         >
