@@ -1098,6 +1098,10 @@
         "memory": {
           "title": "No one remembers your mistakes",
           "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
+        },
+        "context": {
+          "title": "맥락이 부족하십니다",
+          "body": "신호는 보이지만, 시장이 이를 뒷받침하는지 지금이 적절한 시점인지 알기 어렵습니다."
         }
       }
     },
@@ -1105,11 +1109,33 @@
       "title": "One platform built for investor growth",
       "features": {
         "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": "Behavioral Coach",
+        "behavioralCoach": {
+          "title": "Behavioral Coach",
+          "body": "사용자의 실수를 감지하고 같은 실수를 반복하지 않도록 도와드립니다."
+        },
         "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": "12 Global Markets",
+        "globalMarkets": {
+          "title": "12 Global Markets",
+          "body": "GPW, NYSE, DAX, TSE, NSE 등 다양한 시장을 지원합니다. 앱을 전환할 필요가 없습니다."
+        },
         "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages"
+        "languages": "9 Languages",
+        "aiBrief": {
+          "title": "서사가 포함된 AI Brief",
+          "body": "점수만이 아니라, 왜 가치가 있는지 혹은 아닌지를 완전하게 설명합니다."
+        },
+        "signalDna": {
+          "title": "Signal DNA",
+          "body": "과거의 유사한 셋업을 통해, 이 셋업이 과거에 어떻게 마무리되었는지 보여드립니다."
+        },
+        "preMortemAi": {
+          "title": "Pre-Mortem AI",
+          "body": "매수 전에 AI가 가장 가능성 높은 손실 시나리오를 보여드립니다."
+        },
+        "paperTrading": {
+          "title": "Paper Trading",
+          "body": "위험 없이 연습하세요. 비용이 들지 않는 실수에서 배울 수 있습니다."
+        }
       }
     },
     "socialProof": {
@@ -1128,7 +1154,13 @@
           "quote": "The broker gateway plus AI context saves me time every single session.",
           "author": "Clara, Madrid"
         }
-      ]
+      ],
+      "stats": {
+        "exchanges": "130개+ 거래소",
+        "modules": "AI 모듈 27개",
+        "languages": "9개 언어",
+        "adFree": "100% 광고 없음"
+      }
     },
     "pricing": {
       "title": "Simple pricing",
@@ -1181,5 +1213,21 @@
       "button": "Create free account",
       "disclaimer": "Educational product. Not financial advice. Investing involves risk."
     }
+  },
+  "auth": {
+    "email": "이메일",
+    "haveAccount": "이미 계정이 있으신가요? 로그인하세요",
+    "loginButton": "로그인",
+    "loginLink": "이미 계정이 있으신가요? 로그인하세요",
+    "loginLoading": "로그인 중...",
+    "loginTitle": "로그인",
+    "nameOptional": "이름(선택 사항)",
+    "noAccount": "계정이 없으신가요? 회원가입하세요",
+    "password": "비밀번호",
+    "passwordMin": "비밀번호(최소 8자)",
+    "registerButton": "계정 만들기",
+    "registerLink": "계정이 없으신가요? 회원가입하세요",
+    "registerLoading": "회원가입 중...",
+    "registerTitle": "회원가입"
   }
 }

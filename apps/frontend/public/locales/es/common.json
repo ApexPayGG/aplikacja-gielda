@@ -1098,6 +1098,10 @@
         "memory": {
           "title": "No one remembers your mistakes",
           "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
+        },
+        "context": {
+          "title": "Te falta contexto",
+          "body": "Ves una señal, pero no sabes si el mercado acompaña o si es el momento adecuado."
         }
       }
     },
@@ -1105,11 +1109,33 @@
       "title": "One platform built for investor growth",
       "features": {
         "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": "Behavioral Coach",
+        "behavioralCoach": {
+          "title": "Behavioral Coach",
+          "body": "Detecta tus errores y te ayuda a no repetirlos."
+        },
         "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": "12 Global Markets",
+        "globalMarkets": {
+          "title": "12 Global Markets",
+          "body": "GPW, NYSE, DAX, TSE, NSE y más. Sin cambiar de aplicación."
+        },
         "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages"
+        "languages": "9 Languages",
+        "aiBrief": {
+          "title": "AI Brief con narrativa",
+          "body": "No solo una puntuación: una explicación completa de por qué vale la pena o no."
+        },
+        "signalDna": {
+          "title": "Signal DNA",
+          "body": "Gemelos históricos del setup: cómo terminó este setup en el pasado."
+        },
+        "preMortemAi": {
+          "title": "Pre-Mortem AI",
+          "body": "Antes de comprar, la IA muestra el escenario de pérdida más probable."
+        },
+        "paperTrading": {
+          "title": "Paper Trading",
+          "body": "Practica sin riesgo. Aprende de errores que no cuestan nada."
+        }
       }
     },
     "socialProof": {
@@ -1128,7 +1154,13 @@
           "quote": "The broker gateway plus AI context saves me time every single session.",
           "author": "Clara, Madrid"
         }
-      ]
+      ],
+      "stats": {
+        "exchanges": "130+ bolsas",
+        "modules": "27 módulos de IA",
+        "languages": "9 idiomas",
+        "adFree": "100 % sin anuncios"
+      }
     },
     "pricing": {
       "title": "Simple pricing",
@@ -1181,5 +1213,21 @@
       "button": "Create free account",
       "disclaimer": "Educational product. Not financial advice. Investing involves risk."
     }
+  },
+  "auth": {
+    "email": "Correo electrónico",
+    "haveAccount": "¿Ya tienes una cuenta? Inicia sesión",
+    "loginButton": "Iniciar sesión",
+    "loginLink": "¿Ya tienes una cuenta? Inicia sesión",
+    "loginLoading": "Iniciando sesión...",
+    "loginTitle": "Iniciar sesión",
+    "nameOptional": "Nombre (opcional)",
+    "noAccount": "¿No tienes una cuenta? Regístrate",
+    "password": "Contraseña",
+    "passwordMin": "Contraseña (mín. 8 caracteres)",
+    "registerButton": "Crear cuenta",
+    "registerLink": "¿No tienes una cuenta? Regístrate",
+    "registerLoading": "Registrando cuenta...",
+    "registerTitle": "Registro"
   }
 }

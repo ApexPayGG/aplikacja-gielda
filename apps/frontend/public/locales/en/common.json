@@ -1190,5 +1190,21 @@
       "button": "Create free account",
       "disclaimer": "Educational product. Not financial advice. Investing involves risk."
     }
+  },
+  "auth": {
+    "email": "Email",
+    "haveAccount": "Already have an account? Sign in",
+    "loginButton": "Sign in",
+    "loginLink": "Already have an account? Sign in",
+    "loginLoading": "Signing in...",
+    "loginTitle": "Sign in",
+    "nameOptional": "Name (optional)",
+    "noAccount": "Don't have an account? Sign up",
+    "password": "Password",
+    "passwordMin": "Password (min. 8 characters)",
+    "registerButton": "Create account",
+    "registerLink": "Don't have an account? Sign up",
+    "registerLoading": "Creating account...",
+    "registerTitle": "Sign up"
   }
 }
