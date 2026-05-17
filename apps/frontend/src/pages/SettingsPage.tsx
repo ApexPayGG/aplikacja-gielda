@@ -451,6 +451,14 @@ export function SettingsPage() {
                 Upgrade plan
               </button>
             </div>
+            <div className="mt-4 rounded-xl border border-brandCyan/40 bg-brandCyan/10 p-4">
+              <p className="text-sm text-textPrimary">
+                API REST to funkcja planu <span className="font-semibold text-brandDark">Pro+</span>.
+              </p>
+              <Link to="/api-docs" className="mt-2 inline-flex text-sm font-semibold text-brandDark transition hover:text-brandMedium">
+                Zobacz API Documentation
+              </Link>
+            </div>
           </section>
 
           <section id="settings-brokers" className={cardClass}>

@@ -210,6 +210,12 @@ export function PricingPage() {
             >
               {checkoutLoadingPlan === "pro_plus" ? "Przekierowywanie..." : "Przejdź do Stripe Checkout"}
             </button>
+            <Link
+              to="/api-docs"
+              className="mt-3 inline-flex text-sm font-semibold text-white/90 underline decoration-white/50 underline-offset-4 transition hover:text-white"
+            >
+              API Documentation (Pro+ feature)
+            </Link>
           </article>
         </section>
 
