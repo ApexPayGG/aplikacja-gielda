@@ -13,7 +13,11 @@ export function PageErrorBoundary({ page, children, enableTracking = true }: Pag
     console.error(`[PageErrorBoundary] ${page}`, error);
 
     if (enableTracking) {
-      trackEvent("error", { page, message: error.message });
+      try {
+        trackEvent("error", { page, message: error.message });
+      } catch (trackingError) {
+        console.error("[PageErrorBoundary] Failed to track error event", trackingError);
+      }
     }
   };
 
