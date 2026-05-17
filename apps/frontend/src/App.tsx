@@ -57,7 +57,7 @@ const TaxOptimizerPage = lazyNamed(() => import("./pages/TaxOptimizerPage"), "Ta
 const VolatilityPage = lazyNamed(() => import("./pages/VolatilityPage"), "VolatilityPage");
 const BacktestPage = lazyNamed(() => import("./pages/BacktestPage"), "BacktestPage");
 const RegisterPage = lazyNamed(() => import("./pages/RegisterPage"), "RegisterPage");
-const AlpacaDashboardPage = lazyNamed(() => import("./pages/AlpacaDashboardPage"), "AlpacaDashboardPage");
+const AlpacaPage = lazyNamed(() => import("./pages/AlpacaPage"), "AlpacaPage");
 const AdminAffiliatePage = lazyNamed(() => import("./pages/AdminAffiliatePage"), "AdminAffiliatePage");
 const AdminPage = lazyNamed(() => import("./pages/AdminPage"), "AdminPage");
 const OnboardingPage = lazyNamed(() => import("./pages/OnboardingPage"), "OnboardingPage");
@@ -144,7 +144,7 @@ export default function App() {
             <Route path="/coach" element={<Navigate to="/behavioral-coach" replace />} />
             <Route path="/psyche-profile" element={<ProtectedRoute><PsycheProfilePage /></ProtectedRoute>} />
             <Route path="/weekly-review" element={<ProtectedRoute><WeeklyReviewPage /></ProtectedRoute>} />
-            <Route path="/alpaca" element={<ProtectedRoute><AlpacaDashboardPage /></ProtectedRoute>} />
+            <Route path="/alpaca" element={<ProtectedRoute><AlpacaPage /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/mistake-library" element={<ProtectedRoute><MistakeLibraryPage /></ProtectedRoute>} />
             <Route path="/skill-tree" element={<ProtectedRoute><SkillTreePage /></ProtectedRoute>} />
