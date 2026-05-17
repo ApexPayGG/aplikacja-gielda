@@ -26,6 +26,7 @@ export function SearchBar({ value, onChange, onSubmit, placeholder = "Search by 
         <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
         <input
           type="search"
+          data-shortcut-search="true"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={resolvedPlaceholder}

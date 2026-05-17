@@ -349,6 +349,7 @@ export function AppNavBar() {
         </div>
 
         <div className="hidden shrink-0 items-center gap-3 md:flex">
+          <p className="text-xs text-textMuted">Naciśnij ? aby zobaczyć skróty</p>
           <NotificationsCenter />
           <ThemeToggle />
           {user ? (
