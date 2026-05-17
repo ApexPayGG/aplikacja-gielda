@@ -16,7 +16,7 @@ describe("auth routes", () => {
     app.use(
       createAuthRouter({
         registerFn: async ({ email, name }) => ({
-          user: { id: "u-1", email, name: name ?? null, tier: "FREE" },
+          user: { id: "u-1", email, name: name ?? null, tier: "FREE", role: "USER" },
           verificationEmailSent: true,
         }),
         loginFn: async ({ email, password }) => {
@@ -27,7 +27,7 @@ describe("auth routes", () => {
             throw new Error("Invalid credentials");
           }
           return {
-            user: { id: "u-1", email, name: "Jan", tier: "FREE" },
+            user: { id: "u-1", email, name: "Jan", tier: "FREE", role: "USER" },
             token: "login-token",
           };
         },
@@ -36,7 +36,10 @@ describe("auth routes", () => {
             throw new Error("Verification token expired or invalid");
           }
         },
-        getUserByIdFn: async (id) => (id === "u-1" ? { id, email: "jan@example.com", name: "Jan", tier: "FREE" } : null),
+        getUserByIdFn: async (id) =>
+          id === "u-1"
+            ? { id, email: "jan@example.com", name: "Jan", tier: "FREE", role: "USER" }
+            : null,
       }),
     );
 

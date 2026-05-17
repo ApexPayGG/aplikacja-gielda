@@ -10,6 +10,7 @@ type AuthUser = {
   email: string;
   name: string | null;
   tier: string;
+  role: string;
 };
 
 type AuthContextValue = {

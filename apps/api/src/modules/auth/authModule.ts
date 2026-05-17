@@ -13,6 +13,7 @@ export type AuthUserPayload = {
   email: string;
   name: string | null;
   tier: string;
+  role: string;
 };
 
 export type AuthSuccessPayload = {
@@ -41,12 +42,19 @@ function assertPassword(password: string): void {
   }
 }
 
-function toAuthUser(user: { id: string; email: string; name: string | null; tier: string }): AuthUserPayload {
+function toAuthUser(user: {
+  id: string;
+  email: string;
+  name: string | null;
+  tier: string;
+  role: string;
+}): AuthUserPayload {
   return {
     id: user.id,
     email: user.email,
     name: user.name,
     tier: user.tier,
+    role: user.role,
   };
 }
 
@@ -120,11 +128,11 @@ export async function registerUser(input: {
   const verifyToken = crypto.randomBytes(32).toString("hex");
   const verifyTokenExp = new Date(Date.now() + 24 * 60 * 60 * 1000);
   const users = await prisma.$queryRaw<
-    Array<{ id: string; email: string; name: string | null; tier: string }>
+    Array<{ id: string; email: string; name: string | null; tier: string; role: string }>
   >`
-    INSERT INTO users (id, email, password_hash, name, tier, created_at, email_verified, verify_token, verify_token_exp)
-    VALUES (${id}, ${email}, ${passwordHash}, ${name}, 'FREE', NOW(), false, ${verifyToken}, ${verifyTokenExp})
-    RETURNING id, email, name, tier
+    INSERT INTO users (id, email, password_hash, name, tier, role, created_at, email_verified, verify_token, verify_token_exp)
+    VALUES (${id}, ${email}, ${passwordHash}, ${name}, 'FREE', 'USER', NOW(), false, ${verifyToken}, ${verifyTokenExp})
+    RETURNING id, email, name, tier, role
   `;
   const user = users[0];
   if (!user) throw new Error("Failed to create user");
@@ -146,11 +154,12 @@ export async function loginUser(input: { email: string; password: string }): Pro
       email: string;
       name: string | null;
       tier: string;
+      role: string;
       password_hash: string;
       email_verified: boolean;
     }>
   >`
-    SELECT id, email, name, tier, password_hash, email_verified
+    SELECT id, email, name, tier, role, password_hash, email_verified
     FROM users
     WHERE email = ${email}
     LIMIT 1
@@ -208,9 +217,9 @@ export async function verifyEmailToken(tokenInput: string): Promise<void> {
 
 export async function getAuthUserById(userId: string): Promise<AuthUserPayload | null> {
   const users = await prisma.$queryRaw<
-    Array<{ id: string; email: string; name: string | null; tier: string }>
+    Array<{ id: string; email: string; name: string | null; tier: string; role: string }>
   >`
-    SELECT id, email, name, tier
+    SELECT id, email, name, tier, role
     FROM users
     WHERE id = ${userId}
     LIMIT 1
