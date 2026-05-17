@@ -1229,5 +1229,11 @@
     "registerLink": "계정이 없으신가요? 회원가입하세요",
     "registerLoading": "회원가입 중...",
     "registerTitle": "회원가입"
+  },
+  "cookie": {
+    "message": "더 나은 사용 경험을 위해 쿠키를 사용합니다. 모든 쿠키 또는 필수 쿠키만 허용할 수 있습니다.",
+    "acceptAll": "모두 허용",
+    "necessaryOnly": "필수만",
+    "privacyLink": "개인정보처리방침"
   }
 }

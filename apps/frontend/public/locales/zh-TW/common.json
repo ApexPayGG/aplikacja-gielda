@@ -1229,5 +1229,11 @@
     "registerLink": "還沒有帳號嗎？立即註冊",
     "registerLoading": "註冊中...",
     "registerTitle": "註冊"
+  },
+  "cookie": {
+    "message": "我們使用 Cookie 來改善您的使用體驗。您可以接受全部或僅接受必要 Cookie。",
+    "acceptAll": "接受全部",
+    "necessaryOnly": "僅必要",
+    "privacyLink": "隱私權政策"
   }
 }

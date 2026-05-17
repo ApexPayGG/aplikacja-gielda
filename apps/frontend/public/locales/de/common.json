@@ -1229,5 +1229,11 @@
     "registerLink": "Sie haben noch kein Konto? Registrieren Sie sich",
     "registerLoading": "Registrierung läuft...",
     "registerTitle": "Registrierung"
+  },
+  "cookie": {
+    "message": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern. Sie können alle oder nur notwendige Cookies akzeptieren.",
+    "acceptAll": "Alle akzeptieren",
+    "necessaryOnly": "Nur notwendige",
+    "privacyLink": "Datenschutzrichtlinie"
   }
 }

@@ -1229,5 +1229,11 @@
     "registerLink": "アカウントをお持ちでないですか？新規登録してください",
     "registerLoading": "登録中...",
     "registerTitle": "新規登録"
+  },
+  "cookie": {
+    "message": "当サイトでは体験向上のために Cookie を使用します。すべてを許可するか、必要なものだけを許可できます。",
+    "acceptAll": "すべて許可",
+    "necessaryOnly": "必要なもののみ",
+    "privacyLink": "プライバシーポリシー"
   }
 }

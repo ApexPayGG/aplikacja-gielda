@@ -1206,5 +1206,11 @@
     "registerLink": "Don't have an account? Sign up",
     "registerLoading": "Creating account...",
     "registerTitle": "Sign up"
+  },
+  "cookie": {
+    "message": "We use cookies to improve your experience. You can accept all cookies or only the necessary ones.",
+    "acceptAll": "Accept all",
+    "necessaryOnly": "Necessary only",
+    "privacyLink": "Privacy policy"
   }
 }

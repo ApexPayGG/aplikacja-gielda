@@ -1,13 +1,16 @@
 import type { ComponentType, ReactNode } from "react";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppNavBar } from "./components/AppNavBar";
+import { CookieConsent } from "./components/CookieConsent";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 import { PageErrorBoundary } from "./components/PageErrorBoundary";
 import { useAuth } from "./context/AuthContext";
+import { initializeGA4 } from "./utils/analytics";
+import { getCookieConsent, type CookieConsentType } from "./utils/cookieConsent";
 import { hasCompletedOnboarding } from "./utils/onboarding";
 
 function lazyNamed<TModule extends Record<string, unknown>, TKey extends keyof TModule>(
@@ -106,11 +109,18 @@ function withPageErrorBoundary(page: string, children: ReactNode) {
 export default function App() {
   const { token } = useAuth();
   const location = useLocation();
+  const [cookieConsent, setCookieConsent] = useState<CookieConsentType | null>(() => getCookieConsent());
   const onboardingCompleted = hasCompletedOnboarding();
   const defaultAuthenticatedRoute = onboardingCompleted ? "/dashboard" : "/onboarding";
   const inOnboarding = location.pathname.startsWith("/onboarding");
   const showTopNavigation = token && !inOnboarding;
   const showFloatingEmotionalWidget = token && !location.pathname.startsWith("/dashboard") && !inOnboarding;
+
+  useEffect(() => {
+    if (cookieConsent === "all") {
+      initializeGA4();
+    }
+  }, [cookieConsent]);
 
   return (
     <div className="app-shell min-h-screen">
@@ -209,6 +219,7 @@ export default function App() {
           </Suspense>
         </ErrorBoundary>
       </main>
+      {cookieConsent === null ? <CookieConsent onConsent={setCookieConsent} /> : null}
       {token ? <MobileBottomNav /> : null}
     </div>
   );

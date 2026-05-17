@@ -1203,5 +1203,11 @@
       "button": "Zacznij za darmo",
       "disclaimer": "Zacznij za darmo — bez karty kredytowej. Upgrade w każdej chwili."
     }
+  },
+  "cookie": {
+    "message": "Używamy cookies aby poprawić Twoje doświadczenie. Możesz zaakceptować wszystkie lub tylko niezbędne.",
+    "acceptAll": "Akceptuj wszystkie",
+    "necessaryOnly": "Tylko niezbędne",
+    "privacyLink": "Polityka prywatności"
   }
 }

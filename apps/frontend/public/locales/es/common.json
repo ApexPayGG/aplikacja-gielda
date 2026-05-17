@@ -1229,5 +1229,11 @@
     "registerLink": "¿No tienes una cuenta? Regístrate",
     "registerLoading": "Registrando cuenta...",
     "registerTitle": "Registro"
+  },
+  "cookie": {
+    "message": "Usamos cookies para mejorar tu experiencia. Puedes aceptar todas o solo las necesarias.",
+    "acceptAll": "Aceptar todas",
+    "necessaryOnly": "Solo necesarias",
+    "privacyLink": "Política de privacidad"
   }
 }
