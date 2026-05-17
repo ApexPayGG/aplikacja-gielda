@@ -13,11 +13,11 @@ describe("digest routes", () => {
     app.use(
       createDigestRouter({
         previewFn: async (userId, lang) => ({
-          digest: `Digest for ${userId} in ${lang ?? "pl"}`,
+          digest: `Digest for ${userId} in ${lang ?? "auto"}`,
           date: "2026-05-10",
         }),
         sendFn: async (userId, lang) => ({
-          digest: `Sent digest for ${userId} in ${lang ?? "pl"}`,
+          digest: `Sent digest for ${userId} in ${lang ?? "auto"}`,
           date: "2026-05-10",
         }),
       }),
@@ -52,6 +52,13 @@ describe("digest routes", () => {
     assert.equal(res.status, 200);
     const body = (await res.json()) as { digest: string };
     assert.equal(body.digest, "Digest for demo-user in pl");
+  });
+
+  it("GET /api/digest/preview/:userId without lang keeps language undefined", async () => {
+    const res = await fetch(`${baseUrl}/api/digest/preview/demo-user`);
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { digest: string };
+    assert.equal(body.digest, "Digest for demo-user in auto");
   });
 
   it("POST /api/digest/send/:userId sends digest immediately", async () => {

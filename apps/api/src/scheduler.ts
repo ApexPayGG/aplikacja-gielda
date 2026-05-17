@@ -21,6 +21,7 @@ import { registerDiscordSignalAlerts, scheduleDiscordBatchFlush } from "./jobs/d
 import { registerDividendAlertsJob, scheduleDailyDividendAlerts } from "./modules/dividend/dividendModule";
 import { registerExitMonitorJob, scheduleExitMonitor } from "./modules/exitIntelligence/exitIntelligence";
 import { registerAlphaCalendarJob, scheduleDailyAlphaCalendar } from "./modules/alphaCalendar/alphaCalendar";
+import { registerDailyDigestJob, scheduleDailyDigestJob } from "./modules/digest/digestModule";
 import { registerPortfolioSnapshots, scheduleDailyPortfolioSnapshotsJob } from "./jobs/portfolioSnapshots";
 import { registerFetchPolygonQuotes } from "./jobs/fetchPolygonQuotes";
 import {
@@ -121,6 +122,8 @@ export async function startScheduler(): Promise<void> {
   const eodhdGpwWorkerConn = createRedisConnection();
   const eodhdGlobalConn = createRedisConnection();
   const eodhdGlobalWorkerConn = createRedisConnection();
+  const digestConn = createRedisConnection();
+  const digestWorkerConn = createRedisConnection();
 
   const queue = new Queue(QUEUE_NAME, { connection });
   const worker = new Worker(QUEUE_NAME, () => runHourlyJob(), { connection: duplicate });
@@ -183,6 +186,18 @@ export async function startScheduler(): Promise<void> {
     console.log(`[scheduler] portfolio snapshots job ${job.id} completed`);
   });
   await scheduleDailyPortfolioSnapshotsJob(portfolioQueue);
+
+  const { queue: dailyDigestQueue, worker: dailyDigestWorker } = registerDailyDigestJob(
+    digestConn,
+    digestWorkerConn,
+  );
+  dailyDigestWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] daily digest job ${job?.id} failed`, err);
+  });
+  dailyDigestWorker.on("completed", (job) => {
+    console.log(`[scheduler] daily digest job ${job.id} completed`);
+  });
+  await scheduleDailyDigestJob(dailyDigestQueue);
 
   const { queue: fundQueue, worker: fundWorker } = registerFundamentalSync(fundConn, fundWorkerConn);
   fundWorker.on("failed", (job, err) => {
@@ -273,6 +288,7 @@ export async function startScheduler(): Promise<void> {
   console.log("[scheduler] Dividend alerts: daily @ 06:00 UTC (queue dividend-alerts)");
   console.log("[scheduler] Dividend module ex-date alerts: daily @ 08:00 UTC (queue dividend-module-alerts)");
   console.log("[scheduler] Portfolio snapshots: daily @ 17:00 UTC (queue portfolio-snapshots)");
+  console.log("[scheduler] Daily digest email: daily @ 08:00 UTC (queue daily-digest-email)");
   console.log("[scheduler] Fundamentals (EODHD): daily @ 03:00 UTC (queue fundamental-sync)");
   console.log("[scheduler] EODHD GPW import: daily @ 01:30 UTC (queue eodhd-import-gpw)");
   console.log("[scheduler] EODHD global import: daily @ 02:00 UTC (queue eodhd-import-global)");

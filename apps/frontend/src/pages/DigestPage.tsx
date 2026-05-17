@@ -163,7 +163,7 @@ export function DigestPage() {
               className="rounded-xl px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
               style={{ backgroundColor: colors.brandDark }}
             >
-              {loadingPreview ? t("common.loading") : t("digest.previewButton")}
+              {loadingPreview ? t("common.loading") : "Wyślij teraz"}
             </button>
 
             <button
