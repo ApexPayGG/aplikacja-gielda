@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { createStripeCheckoutSession } from "../services/api";
 import { colors } from "../styles/designSystem";
+import { trackEvent } from "../utils/analytics";
 
 type BillingCycle = "monthly" | "yearly";
 type PaidPlan = "pro" | "pro_plus";
@@ -97,6 +98,7 @@ export function PricingPage() {
 
     try {
       setCheckoutLoadingPlan(plan);
+      trackEvent("begin_checkout", { plan, billing: billingCycle });
       const { url } = await createStripeCheckoutSession({
         userId,
         plan,

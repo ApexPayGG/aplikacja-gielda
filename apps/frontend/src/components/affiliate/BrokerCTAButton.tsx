@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, getAffiliateBrokers, type AffiliateBrokerItem } from "../../services/api";
+import { trackEvent } from "../../utils/analytics";
 import { apiErrorMessage } from "../../utils/apiErrorMessage";
 import { DisclosureNote } from "./DisclosureNote";
 
@@ -118,6 +119,9 @@ export function BrokerCTAButton({
       sourcePage,
       signalId,
     });
+    if (brokerSlug.trim().toLowerCase() === "etoro") {
+      trackEvent("affiliate_click", { broker: "etoro" });
+    }
     window.location.assign(url);
   };
 
@@ -130,6 +134,9 @@ export function BrokerCTAButton({
       sourcePage,
       signalId,
     });
+    if (brokerSlug.trim().toLowerCase() === "etoro") {
+      trackEvent("affiliate_click", { broker: "etoro" });
+    }
     window.location.assign(url);
   };
 

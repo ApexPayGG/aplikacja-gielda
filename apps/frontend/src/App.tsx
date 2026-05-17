@@ -1,66 +1,79 @@
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
+import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppNavBar } from "./components/AppNavBar";
+import { LoadingScreen } from "./components/LoadingScreen";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 import { useAuth } from "./context/AuthContext";
-import { AlphaCalendarPage } from "./pages/AlphaCalendarPage";
-import { BehavioralCoachPage } from "./pages/BehavioralCoachPage";
-import { CompanyDetail } from "./pages/CompanyDetail";
-import { ConcentrationPage } from "./pages/ConcentrationPage";
-import { CorrelationPage } from "./pages/CorrelationPage";
-import { Dashboard } from "./pages/Dashboard";
-import { DividendCompoundPage } from "./pages/DividendCompoundPage";
-import { DividendIntelligencePage } from "./pages/DividendIntelligencePage";
-import { DividendPage } from "./pages/DividendPage";
-import { Home } from "./pages/Home";
-import { LandingPage } from "./pages/LandingPage";
-import { LoginPage } from "./pages/LoginPage";
-import { LossStreakPage } from "./pages/LossStreakPage";
-import { MistakeLibraryPage } from "./pages/MistakeLibraryPage";
-import { PsycheProfilePage } from "./pages/PsycheProfilePage";
-import { PaperTradingPage } from "./pages/PaperTradingPage";
-import { PositionSizePage } from "./pages/PositionSizePage";
-import { PreMortemPage } from "./pages/PreMortemPage";
-import { ReverseScreenerPage } from "./pages/ReverseScreenerPage";
-import { ReplayModePage } from "./pages/ReplayModePage";
-import { StrategyDnaPage } from "./pages/StrategyDnaPage";
-import { TrackRecordPage } from "./pages/TrackRecordPage";
-import { CrowdWisdomPage } from "./pages/CrowdWisdomPage";
-import { GlossaryPage } from "./pages/GlossaryPage";
-import { DigestPage } from "./pages/DigestPage";
-import { SkillTreePage } from "./pages/SkillTreePage";
-import { EarningsPredictorPage } from "./pages/EarningsPredictorPage";
-import { InsiderMirrorPage } from "./pages/InsiderMirrorPage";
-import { NewsHalfLifePage } from "./pages/NewsHalfLifePage";
-import { SignalsPage } from "./pages/SignalsPage";
-import { StressTestPage } from "./pages/StressTestPage";
-import { SettingsPage } from "./pages/SettingsPage";
-import { MirrorTradingPage } from "./pages/MirrorTradingPage";
-import { TaxOptimizerPage } from "./pages/TaxOptimizerPage";
-import { VolatilityPage } from "./pages/VolatilityPage";
-import { BacktestPage } from "./pages/BacktestPage";
-import { RegisterPage } from "./pages/RegisterPage";
-import { AlpacaDashboardPage } from "./pages/AlpacaDashboardPage";
-import { AdminAffiliatePage } from "./pages/AdminAffiliatePage";
-import { AdminPage } from "./pages/AdminPage";
-import { OnboardingPage } from "./pages/OnboardingPage";
-import { PremiumCompanyAnalysis } from "./pages/PremiumCompanyAnalysis";
-import { WeeklyReviewPage } from "./pages/WeeklyReviewPage";
-import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 import { hasCompletedOnboarding } from "./utils/onboarding";
-import { NotFoundPage } from "./pages/NotFoundPage";
-import { ErrorPage } from "./pages/ErrorPage";
-import { PricingPage } from "./pages/PricingPage";
-import { PrivacyPage } from "./pages/PrivacyPage";
-import { TermsPage } from "./pages/TermsPage";
+
+function lazyNamed<TModule extends Record<string, unknown>, TKey extends keyof TModule>(
+  loader: () => Promise<TModule>,
+  key: TKey,
+) {
+  return lazy(async () => {
+    const module = await loader();
+    return { default: module[key] as ComponentType };
+  });
+}
+
+const AlphaCalendarPage = lazyNamed(() => import("./pages/AlphaCalendarPage"), "AlphaCalendarPage");
+const BehavioralCoachPage = lazyNamed(() => import("./pages/BehavioralCoachPage"), "BehavioralCoachPage");
+const CompanyDetail = lazyNamed(() => import("./pages/CompanyDetail"), "CompanyDetail");
+const ConcentrationPage = lazyNamed(() => import("./pages/ConcentrationPage"), "ConcentrationPage");
+const CorrelationPage = lazyNamed(() => import("./pages/CorrelationPage"), "CorrelationPage");
+const Dashboard = lazyNamed(() => import("./pages/Dashboard"), "Dashboard");
+const DividendCompoundPage = lazyNamed(() => import("./pages/DividendCompoundPage"), "DividendCompoundPage");
+const DividendIntelligencePage = lazyNamed(() => import("./pages/DividendIntelligencePage"), "DividendIntelligencePage");
+const DividendPage = lazyNamed(() => import("./pages/DividendPage"), "DividendPage");
+const Home = lazyNamed(() => import("./pages/Home"), "Home");
+const LandingPage = lazyNamed(() => import("./pages/LandingPage"), "LandingPage");
+const LoginPage = lazyNamed(() => import("./pages/LoginPage"), "LoginPage");
+const LossStreakPage = lazyNamed(() => import("./pages/LossStreakPage"), "LossStreakPage");
+const MistakeLibraryPage = lazyNamed(() => import("./pages/MistakeLibraryPage"), "MistakeLibraryPage");
+const PsycheProfilePage = lazyNamed(() => import("./pages/PsycheProfilePage"), "PsycheProfilePage");
+const PaperTradingPage = lazyNamed(() => import("./pages/PaperTradingPage"), "PaperTradingPage");
+const PositionSizePage = lazyNamed(() => import("./pages/PositionSizePage"), "PositionSizePage");
+const PreMortemPage = lazyNamed(() => import("./pages/PreMortemPage"), "PreMortemPage");
+const ReverseScreenerPage = lazyNamed(() => import("./pages/ReverseScreenerPage"), "ReverseScreenerPage");
+const ReplayModePage = lazyNamed(() => import("./pages/ReplayModePage"), "ReplayModePage");
+const StrategyDnaPage = lazyNamed(() => import("./pages/StrategyDnaPage"), "StrategyDnaPage");
+const TrackRecordPage = lazyNamed(() => import("./pages/TrackRecordPage"), "TrackRecordPage");
+const CrowdWisdomPage = lazyNamed(() => import("./pages/CrowdWisdomPage"), "CrowdWisdomPage");
+const GlossaryPage = lazyNamed(() => import("./pages/GlossaryPage"), "GlossaryPage");
+const DigestPage = lazyNamed(() => import("./pages/DigestPage"), "DigestPage");
+const SkillTreePage = lazyNamed(() => import("./pages/SkillTreePage"), "SkillTreePage");
+const EarningsPredictorPage = lazyNamed(() => import("./pages/EarningsPredictorPage"), "EarningsPredictorPage");
+const InsiderMirrorPage = lazyNamed(() => import("./pages/InsiderMirrorPage"), "InsiderMirrorPage");
+const NewsHalfLifePage = lazyNamed(() => import("./pages/NewsHalfLifePage"), "NewsHalfLifePage");
+const SignalsPage = lazyNamed(() => import("./pages/SignalsPage"), "SignalsPage");
+const StressTestPage = lazyNamed(() => import("./pages/StressTestPage"), "StressTestPage");
+const SettingsPage = lazyNamed(() => import("./pages/SettingsPage"), "SettingsPage");
+const MirrorTradingPage = lazyNamed(() => import("./pages/MirrorTradingPage"), "MirrorTradingPage");
+const TaxOptimizerPage = lazyNamed(() => import("./pages/TaxOptimizerPage"), "TaxOptimizerPage");
+const VolatilityPage = lazyNamed(() => import("./pages/VolatilityPage"), "VolatilityPage");
+const BacktestPage = lazyNamed(() => import("./pages/BacktestPage"), "BacktestPage");
+const RegisterPage = lazyNamed(() => import("./pages/RegisterPage"), "RegisterPage");
+const AlpacaDashboardPage = lazyNamed(() => import("./pages/AlpacaDashboardPage"), "AlpacaDashboardPage");
+const AdminAffiliatePage = lazyNamed(() => import("./pages/AdminAffiliatePage"), "AdminAffiliatePage");
+const AdminPage = lazyNamed(() => import("./pages/AdminPage"), "AdminPage");
+const OnboardingPage = lazyNamed(() => import("./pages/OnboardingPage"), "OnboardingPage");
+const PremiumCompanyAnalysis = lazyNamed(() => import("./pages/PremiumCompanyAnalysis"), "PremiumCompanyAnalysis");
+const WeeklyReviewPage = lazyNamed(() => import("./pages/WeeklyReviewPage"), "WeeklyReviewPage");
+const VerifyEmailPage = lazyNamed(() => import("./pages/VerifyEmailPage"), "VerifyEmailPage");
+const NotFoundPage = lazyNamed(() => import("./pages/NotFoundPage"), "NotFoundPage");
+const ErrorPage = lazyNamed(() => import("./pages/ErrorPage"), "ErrorPage");
+const PricingPage = lazyNamed(() => import("./pages/PricingPage"), "PricingPage");
+const PrivacyPage = lazyNamed(() => import("./pages/PrivacyPage"), "PrivacyPage");
+const TermsPage = lazyNamed(() => import("./pages/TermsPage"), "TermsPage");
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { token, isLoading } = useAuth();
   const location = useLocation();
   const onboardingCompleted = hasCompletedOnboarding();
   if (isLoading) {
-    return <div className="mx-auto flex min-h-screen items-center justify-center text-slate-300">Loading...</div>;
+    return <LoadingScreen />;
   }
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -94,69 +107,71 @@ export default function App() {
       {showFloatingEmotionalWidget ? <EmotionalStateWidget /> : null}
 
       <main className={`relative z-10 ${token ? "pb-16 md:pb-0" : ""}`}>
-        <Routes>
-          <Route path="/login" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LoginPage />} />
-          <Route path="/register" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <RegisterPage />} />
-          <Route path="/verify" element={<VerifyEmailPage />} />
-          <Route
-            path="/onboarding"
-            element={token && onboardingCompleted ? <Navigate to="/dashboard" replace /> : <OnboardingPage />}
-          />
-          <Route path="/404" element={<NotFoundPage />} />
-          <Route path="/error" element={<ErrorPage />} />
+        <Suspense fallback={<LoadingScreen />}>
+          <Routes>
+            <Route path="/login" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LoginPage />} />
+            <Route path="/register" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <RegisterPage />} />
+            <Route path="/verify" element={<VerifyEmailPage />} />
+            <Route
+              path="/onboarding"
+              element={token && onboardingCompleted ? <Navigate to="/dashboard" replace /> : <OnboardingPage />}
+            />
+            <Route path="/404" element={<NotFoundPage />} />
+            <Route path="/error" element={<ErrorPage />} />
 
-          <Route path="/" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LandingPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/companies" element={<Home />} />
-          <Route path="/company/:symbol" element={<CompanyDetail />} />
-          <Route path="/signals" element={<SignalsPage />} />
-          <Route path="/glossary" element={<GlossaryPage />} />
-          <Route path="/track-record/public/:hash" element={<TrackRecordPage />} />
+            <Route path="/" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LandingPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/companies" element={<Home />} />
+            <Route path="/company/:symbol" element={<CompanyDetail />} />
+            <Route path="/signals" element={<SignalsPage />} />
+            <Route path="/glossary" element={<GlossaryPage />} />
+            <Route path="/track-record/public/:hash" element={<TrackRecordPage />} />
 
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/paper-trading" element={<ProtectedRoute><PaperTradingPage /></ProtectedRoute>} />
-          <Route path="/behavioral-coach" element={<ProtectedRoute><BehavioralCoachPage /></ProtectedRoute>} />
-          <Route path="/loss-streak" element={<ProtectedRoute><LossStreakPage /></ProtectedRoute>} />
-          <Route path="/coach" element={<Navigate to="/behavioral-coach" replace />} />
-          <Route path="/psyche-profile" element={<ProtectedRoute><PsycheProfilePage /></ProtectedRoute>} />
-          <Route path="/weekly-review" element={<ProtectedRoute><WeeklyReviewPage /></ProtectedRoute>} />
-          <Route path="/alpaca" element={<ProtectedRoute><AlpacaDashboardPage /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-          <Route path="/mistake-library" element={<ProtectedRoute><MistakeLibraryPage /></ProtectedRoute>} />
-          <Route path="/skill-tree" element={<ProtectedRoute><SkillTreePage /></ProtectedRoute>} />
-          <Route path="/mirror-trading" element={<ProtectedRoute><MirrorTradingPage /></ProtectedRoute>} />
-          <Route path="/digest" element={<ProtectedRoute><DigestPage /></ProtectedRoute>} />
-          <Route path="/position-size" element={<ProtectedRoute><PositionSizePage /></ProtectedRoute>} />
-          <Route path="/stress-test" element={<ProtectedRoute><StressTestPage /></ProtectedRoute>} />
-          <Route path="/concentration" element={<ProtectedRoute><ConcentrationPage /></ProtectedRoute>} />
-          <Route path="/tax-optimizer" element={<ProtectedRoute><TaxOptimizerPage /></ProtectedRoute>} />
-          <Route path="/premortem" element={<ProtectedRoute><PreMortemPage /></ProtectedRoute>} />
-          <Route path="/strategy-dna" element={<ProtectedRoute><StrategyDnaPage /></ProtectedRoute>} />
-          <Route path="/track-record" element={<ProtectedRoute><TrackRecordPage /></ProtectedRoute>} />
-          <Route path="/replay" element={<ProtectedRoute><ReplayModePage /></ProtectedRoute>} />
-          <Route path="/backtest" element={<ProtectedRoute><BacktestPage /></ProtectedRoute>} />
-          <Route path="/earnings-predictor" element={<ProtectedRoute><EarningsPredictorPage /></ProtectedRoute>} />
-          <Route path="/insider-mirror" element={<ProtectedRoute><InsiderMirrorPage /></ProtectedRoute>} />
-          <Route path="/reverse-screener" element={<ProtectedRoute><ReverseScreenerPage /></ProtectedRoute>} />
-          <Route path="/correlation" element={<ProtectedRoute><CorrelationPage /></ProtectedRoute>} />
-          <Route path="/volatility" element={<ProtectedRoute><VolatilityPage /></ProtectedRoute>} />
-          <Route path="/news-halflife" element={<ProtectedRoute><NewsHalfLifePage /></ProtectedRoute>} />
-          <Route path="/crowd-wisdom" element={<ProtectedRoute><CrowdWisdomPage /></ProtectedRoute>} />
-          <Route path="/dividend-compound" element={<ProtectedRoute><DividendCompoundPage /></ProtectedRoute>} />
-          <Route path="/alpha-calendar" element={<ProtectedRoute><AlphaCalendarPage /></ProtectedRoute>} />
-          <Route path="/alpha" element={<Navigate to="/alpha-calendar" replace />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/paper-trading" element={<ProtectedRoute><PaperTradingPage /></ProtectedRoute>} />
+            <Route path="/behavioral-coach" element={<ProtectedRoute><BehavioralCoachPage /></ProtectedRoute>} />
+            <Route path="/loss-streak" element={<ProtectedRoute><LossStreakPage /></ProtectedRoute>} />
+            <Route path="/coach" element={<Navigate to="/behavioral-coach" replace />} />
+            <Route path="/psyche-profile" element={<ProtectedRoute><PsycheProfilePage /></ProtectedRoute>} />
+            <Route path="/weekly-review" element={<ProtectedRoute><WeeklyReviewPage /></ProtectedRoute>} />
+            <Route path="/alpaca" element={<ProtectedRoute><AlpacaDashboardPage /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+            <Route path="/mistake-library" element={<ProtectedRoute><MistakeLibraryPage /></ProtectedRoute>} />
+            <Route path="/skill-tree" element={<ProtectedRoute><SkillTreePage /></ProtectedRoute>} />
+            <Route path="/mirror-trading" element={<ProtectedRoute><MirrorTradingPage /></ProtectedRoute>} />
+            <Route path="/digest" element={<ProtectedRoute><DigestPage /></ProtectedRoute>} />
+            <Route path="/position-size" element={<ProtectedRoute><PositionSizePage /></ProtectedRoute>} />
+            <Route path="/stress-test" element={<ProtectedRoute><StressTestPage /></ProtectedRoute>} />
+            <Route path="/concentration" element={<ProtectedRoute><ConcentrationPage /></ProtectedRoute>} />
+            <Route path="/tax-optimizer" element={<ProtectedRoute><TaxOptimizerPage /></ProtectedRoute>} />
+            <Route path="/premortem" element={<ProtectedRoute><PreMortemPage /></ProtectedRoute>} />
+            <Route path="/strategy-dna" element={<ProtectedRoute><StrategyDnaPage /></ProtectedRoute>} />
+            <Route path="/track-record" element={<ProtectedRoute><TrackRecordPage /></ProtectedRoute>} />
+            <Route path="/replay" element={<ProtectedRoute><ReplayModePage /></ProtectedRoute>} />
+            <Route path="/backtest" element={<ProtectedRoute><BacktestPage /></ProtectedRoute>} />
+            <Route path="/earnings-predictor" element={<ProtectedRoute><EarningsPredictorPage /></ProtectedRoute>} />
+            <Route path="/insider-mirror" element={<ProtectedRoute><InsiderMirrorPage /></ProtectedRoute>} />
+            <Route path="/reverse-screener" element={<ProtectedRoute><ReverseScreenerPage /></ProtectedRoute>} />
+            <Route path="/correlation" element={<ProtectedRoute><CorrelationPage /></ProtectedRoute>} />
+            <Route path="/volatility" element={<ProtectedRoute><VolatilityPage /></ProtectedRoute>} />
+            <Route path="/news-halflife" element={<ProtectedRoute><NewsHalfLifePage /></ProtectedRoute>} />
+            <Route path="/crowd-wisdom" element={<ProtectedRoute><CrowdWisdomPage /></ProtectedRoute>} />
+            <Route path="/dividend-compound" element={<ProtectedRoute><DividendCompoundPage /></ProtectedRoute>} />
+            <Route path="/alpha-calendar" element={<ProtectedRoute><AlphaCalendarPage /></ProtectedRoute>} />
+            <Route path="/alpha" element={<Navigate to="/alpha-calendar" replace />} />
 
-          <Route path="/dividend" element={<DividendPage />} />
-          <Route path="/dividend/intelligence" element={<ProtectedRoute><DividendIntelligencePage /></ProtectedRoute>} />
-          <Route path="/admin" element={<ProtectedRoute><AdminOnlyRoute><AdminPage /></AdminOnlyRoute></ProtectedRoute>} />
-          <Route path="/admin/affiliate" element={<ProtectedRoute><AdminAffiliatePage /></ProtectedRoute>} />
-          <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
-          <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
-          <Route path="/company/:symbol/premium" element={<ProtectedRoute><PremiumCompanyAnalysis /></ProtectedRoute>} />
-          <Route path="*" element={<Navigate to="/404" replace />} />
-        </Routes>
+            <Route path="/dividend" element={<DividendPage />} />
+            <Route path="/dividend/intelligence" element={<ProtectedRoute><DividendIntelligencePage /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><AdminOnlyRoute><AdminPage /></AdminOnlyRoute></ProtectedRoute>} />
+            <Route path="/admin/affiliate" element={<ProtectedRoute><AdminAffiliatePage /></ProtectedRoute>} />
+            <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
+            <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
+            <Route path="/company/:symbol/premium" element={<ProtectedRoute><PremiumCompanyAnalysis /></ProtectedRoute>} />
+            <Route path="*" element={<Navigate to="/404" replace />} />
+          </Routes>
+        </Suspense>
       </main>
       {token ? <MobileBottomNav /> : null}
     </div>

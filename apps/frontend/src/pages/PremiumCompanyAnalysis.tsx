@@ -11,6 +11,7 @@ import type {
 import { createStripeCheckoutSession } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
+import { trackEvent } from "../utils/analytics";
 
 type Tier = "FREE" | "PRO" | "PRO_PLUS";
 
@@ -159,6 +160,11 @@ export function PremiumCompanyAnalysis() {
     };
   }, [loadAnalysis, reset, ticker, usageLimit, userId]);
 
+  useEffect(() => {
+    if (!ticker) return;
+    trackEvent("premium_analysis_view", { symbol: ticker });
+  }, [ticker]);
+
   const isScreenLocked = lockedFrom != null && currentScreen >= lockedFrom;
   const showUpgradeBlock = overLimit || isScreenLocked;
 
@@ -199,6 +205,7 @@ export function PremiumCompanyAnalysis() {
     }
     setIsUpgrading(true);
     try {
+      trackEvent("begin_checkout", { plan: "pro", billing: "monthly" });
       const { url } = await createStripeCheckoutSession({
         userId: currentUserId,
         plan: "pro",

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
+import { trackEvent } from "../utils/analytics";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function RegisterPage() {
@@ -23,6 +24,7 @@ export function RegisterPage() {
     try {
       const result = await register(email, password, name);
       setRegisteredEmail(result.email);
+      trackEvent("sign_up");
     } catch (e) {
       setError(apiErrorMessage(e));
     } finally {

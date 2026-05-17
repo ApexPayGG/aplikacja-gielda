@@ -7,6 +7,7 @@ import { WatchlistButton } from "../components/WatchlistButton";
 import { colors } from "../styles/designSystem";
 import { api, getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
 import type { AnalysisResponse, Company, NewsRow, QuoteRow } from "../services/api";
+import { trackEvent } from "../utils/analytics";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 function formatMarketCap(value: number, currency: string, locale: string): string {
@@ -313,6 +314,7 @@ export function CompanyDetail() {
               {etoroMarket ? (
                 <a
                   href={etoroHref}
+                  onClick={() => trackEvent("affiliate_click", { broker: "etoro" })}
                   className="mt-3 inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold lg:w-auto"
                   style={{ backgroundColor: colors.brandDark, color: "#FFFFFF" }}
                 >

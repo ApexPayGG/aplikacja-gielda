@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
+import { trackEvent } from "../utils/analytics";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function LoginPage() {
@@ -21,6 +22,7 @@ export function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
+      trackEvent("login");
       navigate("/", { replace: true });
     } catch (e) {
       const message = apiErrorMessage(e);
