@@ -37,6 +37,7 @@ const LandingPage = lazyNamed(() => import("./pages/LandingPage"), "LandingPage"
 const LoginPage = lazyNamed(() => import("./pages/LoginPage"), "LoginPage");
 const ForgotPasswordPage = lazyNamed(() => import("./pages/ForgotPasswordPage"), "ForgotPasswordPage");
 const ResetPasswordPage = lazyNamed(() => import("./pages/ResetPasswordPage"), "ResetPasswordPage");
+const HelpPage = lazyNamed(() => import("./pages/HelpPage"), "HelpPage");
 const LossStreakPage = lazyNamed(() => import("./pages/LossStreakPage"), "LossStreakPage");
 const MistakeLibraryPage = lazyNamed(() => import("./pages/MistakeLibraryPage"), "MistakeLibraryPage");
 const PsycheProfilePage = lazyNamed(() => import("./pages/PsycheProfilePage"), "PsycheProfilePage");
@@ -152,6 +153,7 @@ export default function App() {
               <Route path="/waitlist" element={<WaitlistPage />} />
               <Route path="/changelog" element={<ChangelogPage />} />
               <Route path="/waitlist" element={<WaitlistPage />} />
+              <Route path="/help" element={<HelpPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/companies" element={<Home />} />
