@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { prisma } from "../../db/index";
 import { generateVerificationEmail } from "../../templates/emailVerification";
 import { generateWelcomeEmail } from "../../templates/welcomeEmail";
+import { ONBOARDING_EMAIL_1_SUBJECT } from "../email/onboardingSequence";
 import { signAuthToken } from "./authJwt";
 
 const SALT_ROUNDS = 10;
@@ -72,7 +73,7 @@ async function sendResendEmail(input: { to: string; subject: string; text: strin
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "noreply@stock-ai.pro",
+      from: "hello@stock-ai.pro",
       to: [input.to],
       subject: input.subject,
       text: input.text,
@@ -99,8 +100,8 @@ async function sendVerificationEmail(to: string, token: string): Promise<void> {
 async function sendWelcomeEmail(to: string, name?: string | null): Promise<void> {
   await sendResendEmail({
     to,
-    subject: "Witaj w StockAI Pro!",
-    text: "Witaj w StockAI Pro! Przejdź do aplikacji: https://stock-ai.pro/app",
+    subject: ONBOARDING_EMAIL_1_SUBJECT,
+    text: "Witaj w StockAI Pro! Zacznij od Dashboard: https://stock-ai.pro/app/dashboard",
     html: generateWelcomeEmail(name ?? undefined),
   });
 }

@@ -10,6 +10,9 @@ function escapeHtml(value: string): string {
 export function generateWelcomeEmail(name?: string): string {
   const safeName = name?.trim() ? escapeHtml(name.trim()) : null;
   const greeting = safeName ? `Cześć ${safeName},` : "Cześć,";
+  const dashboardUrl = "https://stock-ai.pro/app/dashboard";
+  const watchlistUrl = "https://stock-ai.pro/app/watchlist";
+  const paperTradingUrl = "https://stock-ai.pro/app/paper-trading";
 
   return `<!doctype html>
 <html lang="pl">
@@ -32,7 +35,7 @@ export function generateWelcomeEmail(name?: string): string {
               <td style="background-color:#ffffff;padding:32px 28px;color:#111827;">
                 <h1 style="margin:0 0 16px 0;font-size:30px;line-height:1.2;">Witaj w StockAI Pro!</h1>
                 <p style="margin:0 0 24px 0;font-size:16px;line-height:1.6;color:#374151;">
-                  ${greeting} Twoje konto jest już aktywne. Oto szybki plan startu, który pomoże Ci wykorzystać platformę od pierwszego dnia.
+                  ${greeting} Twoje konto jest aktywne. Zacznij od tych 3 kroków, aby szybko uruchomić StockAI Pro w praktyce.
                 </p>
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px 0;">
                   <tr>
@@ -40,7 +43,10 @@ export function generateWelcomeEmail(name?: string): string {
                       <table role="presentation" cellpadding="0" cellspacing="0">
                         <tr>
                           <td style="width:30px;height:30px;border-radius:15px;background:#2D0A6B;color:#ffffff;text-align:center;font-weight:700;font-size:14px;">1</td>
-                          <td style="padding-left:12px;font-size:15px;line-height:1.5;color:#374151;">Uzupełnij profil inwestora i ustaw preferencje rynku.</td>
+                          <td style="padding-left:12px;font-size:15px;line-height:1.5;color:#374151;">
+                            <a href="${dashboardUrl}" style="color:#2D0A6B;text-decoration:none;font-weight:600;">Otwórz Dashboard</a>
+                            i zobacz kluczowe wskaźniki oraz aktywne sygnały.
+                          </td>
                         </tr>
                       </table>
                     </td>
@@ -50,7 +56,11 @@ export function generateWelcomeEmail(name?: string): string {
                       <table role="presentation" cellpadding="0" cellspacing="0">
                         <tr>
                           <td style="width:30px;height:30px;border-radius:15px;background:#2D0A6B;color:#ffffff;text-align:center;font-weight:700;font-size:14px;">2</td>
-                          <td style="padding-left:12px;font-size:15px;line-height:1.5;color:#374151;">Dodaj spółki do watchlisty, aby monitorować sygnały i sentyment.</td>
+                          <td style="padding-left:12px;font-size:15px;line-height:1.5;color:#374151;">
+                            Dodaj pierwsze spółki do
+                            <a href="${watchlistUrl}" style="color:#2D0A6B;text-decoration:none;font-weight:600;">Watchlisty</a>,
+                            aby śledzić sygnały i alerty.
+                          </td>
                         </tr>
                       </table>
                     </td>
@@ -60,7 +70,11 @@ export function generateWelcomeEmail(name?: string): string {
                       <table role="presentation" cellpadding="0" cellspacing="0">
                         <tr>
                           <td style="width:30px;height:30px;border-radius:15px;background:#2D0A6B;color:#ffffff;text-align:center;font-weight:700;font-size:14px;">3</td>
-                          <td style="padding-left:12px;font-size:15px;line-height:1.5;color:#374151;">Uruchom pierwszy alert i skonfiguruj codzienny digest wyników.</td>
+                          <td style="padding-left:12px;font-size:15px;line-height:1.5;color:#374151;">
+                            Wykonaj pierwszy trade w
+                            <a href="${paperTradingUrl}" style="color:#2D0A6B;text-decoration:none;font-weight:600;">Paper Trading</a>,
+                            aby trenować strategię bez ryzyka.
+                          </td>
                         </tr>
                       </table>
                     </td>
@@ -69,8 +83,8 @@ export function generateWelcomeEmail(name?: string): string {
                 <table role="presentation" cellpadding="0" cellspacing="0">
                   <tr>
                     <td style="border-radius:10px;background-color:#2D0A6B;">
-                      <a href="https://stock-ai.pro/app" style="display:inline-block;padding:14px 26px;color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;border-radius:10px;">
-                        Przejdź do aplikacji
+                      <a href="${dashboardUrl}" style="display:inline-block;padding:14px 26px;color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;border-radius:10px;">
+                        Przejdź do Dashboard
                       </a>
                     </td>
                   </tr>
