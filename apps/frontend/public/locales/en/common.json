@@ -956,6 +956,8 @@
     }
   },
   "etoro": {
+    "cta": "Open account on eToro",
+    "subtitle": "Trade stocks through a licensed broker",
     "company": {
       "title": "Trade this stock",
       "button": "Open account on eToro",

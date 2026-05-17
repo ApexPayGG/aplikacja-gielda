@@ -3,11 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { AnalysisBrief } from "../components/AnalysisBrief";
+import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { WatchlistButton } from "../components/WatchlistButton";
 import { colors } from "../styles/designSystem";
-import { api, getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
+import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
 import type { AnalysisResponse, Company, NewsRow, QuoteRow } from "../services/api";
-import { trackEvent } from "../utils/analytics";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 function formatMarketCap(value: number, currency: string, locale: string): string {
@@ -126,15 +126,6 @@ export function CompanyDetail() {
   const parsedMarketCap = parseNumber(extractMetric(company?.description, ["MarketCap"]));
   const parsedPe = extractMetric(company?.description, ["P/E", "PE", "PERatio"]);
   const parsedCurrency = extractMetric(company?.description, ["Currency"])?.toUpperCase() ?? "USD";
-  const etoroHref = useMemo(() => {
-    const base = String(api.defaults.baseURL ?? "/api").replace(/\/+$/, "");
-    const search = new URLSearchParams({
-      broker: "etoro",
-      page: "company_detail",
-      ticker: sym,
-    });
-    return `${base}/affiliate/redirect?${search.toString()}`;
-  }, [sym]);
   const premiumHref = `/company/${encodeURIComponent(sym)}/premium`;
   const fundamentals = [
     { label: "P/E", value: parsedPe ?? "N/A" },
@@ -312,14 +303,7 @@ export function CompanyDetail() {
                 </span>
               </div>
               {etoroMarket ? (
-                <a
-                  href={etoroHref}
-                  onClick={() => trackEvent("affiliate_click", { broker: "etoro" })}
-                  className="mt-3 inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold lg:w-auto"
-                  style={{ backgroundColor: colors.brandDark, color: "#FFFFFF" }}
-                >
-                  {t("etoro.company.button", { defaultValue: "Open account on eToro" })}
-                </a>
+                <EtoroCTAButton sourcePage="company_detail" ticker={sym} className="mt-3" />
               ) : null}
               <Link
                 to={premiumHref}

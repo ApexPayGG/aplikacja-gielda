@@ -54,6 +54,46 @@ export function createAffiliateRouter(): Router {
   router.get("/api/affiliate/redirect", redirectHandler);
   router.get("/api/v1/affiliate/redirect", redirectHandler);
 
+  const clickHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = (req.body ?? {}) as Record<string, unknown>;
+      const broker = String(body.broker ?? "").trim().toLowerCase();
+      if (!broker) return res.status(400).json({ error: "Missing broker" });
+
+      const sourcePage = String(body.page ?? "").trim() || "etoro_cta";
+      const ticker = String(body.ticker ?? "").trim().toUpperCase() || undefined;
+      const sourceSignalId = String(body.signalId ?? "").trim() || undefined;
+      const userId = String(body.userId ?? "").trim() || undefined;
+      const language = String(body.lang ?? "").trim() || undefined;
+
+      const result = await clickTrackingService.trackClick({
+        userId,
+        brokerSlug: broker,
+        language,
+        ticker,
+        sourcePage,
+        sourceSignalId,
+        request: req,
+      });
+
+      res.status(201).json({
+        clickId: result.clickId,
+        broker,
+        lang: language ?? null,
+        url: result.redirectUrl,
+        countryCode: result.countryCode,
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("not available")) {
+        return res.status(404).json({ error: error.message });
+      }
+      next(error);
+    }
+  };
+
+  router.post("/api/affiliate/click", clickHandler);
+  router.post("/api/v1/affiliate/click", clickHandler);
+
   const brokersHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const market = String(req.query.market ?? "").trim().toUpperCase() || undefined;

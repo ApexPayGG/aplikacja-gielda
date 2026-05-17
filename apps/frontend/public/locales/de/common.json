@@ -956,6 +956,8 @@
     }
   },
   "etoro": {
+    "cta": "Eroeffne ein eToro-Konto",
+    "subtitle": "Handle Aktien über einen lizenzierten Broker",
     "company": {
       "title": "Trade this stock",
       "button": "Open account on eToro",

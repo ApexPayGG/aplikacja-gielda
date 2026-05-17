@@ -956,6 +956,8 @@
     }
   },
   "etoro": {
+    "cta": "eToro पर खाता खोलें",
+    "subtitle": "लाइसेंस प्राप्त ब्रोकर के साथ शेयर ट्रेड करें",
     "company": {
       "title": "Trade this stock",
       "button": "Open account on eToro",

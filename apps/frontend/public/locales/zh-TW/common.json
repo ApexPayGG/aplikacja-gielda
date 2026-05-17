@@ -956,6 +956,8 @@
     }
   },
   "etoro": {
+    "cta": "在 eToro 開立帳戶",
+    "subtitle": "透過持牌經紀商交易股票",
     "company": {
       "title": "Trade this stock",
       "button": "Open account on eToro",

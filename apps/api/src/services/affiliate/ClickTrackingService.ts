@@ -1,11 +1,13 @@
 import { randomBytes } from "node:crypto";
 import type { Request } from "express";
 import { prisma } from "../../db/index";
+import { getEtoroLink } from "../../modules/affiliate/etoroModule";
 import { extractClientIp, getCountryFromIp } from "./geoIpService";
 
 type TrackClickParams = {
   userId?: string;
   brokerSlug: string;
+  language?: string;
   ticker?: string;
   sourcePage: string;
   sourceSignalId?: string;
@@ -16,14 +18,6 @@ type TrackClickResult = {
   clickId: string;
   redirectUrl: string;
   countryCode: string | null;
-};
-
-const ETORO_LINKS: Record<string, string> = {
-  pl: "https://med.etoro.com/B9219_A129734_TClick_Sstockaipro-main.aspx",
-  en: "https://med.etoro.com/B12087_A129734_TClick_Sstockaipro-main.aspx",
-  fr: "https://med.etoro.com/B217_A129734_TClick_Sstockaipro-main.aspx",
-  de: "https://med.etoro.com/B19298_A129734_TClick_Sstockaipro-main.aspx",
-  es: "https://med.etoro.com/B210_A129734_TClick_Sstockaipro-main.aspx",
 };
 
 function detectDeviceType(userAgent: string): "mobile" | "tablet" | "desktop" | "unknown" {
@@ -105,10 +99,10 @@ export class ClickTrackingService {
 
     const clickId = generateClickId(12);
     const ticker = (params.ticker ?? "").trim().toUpperCase() || undefined;
-    const preferredLanguage = pickPreferredLanguage(params.request);
+    const preferredLanguage = normalizeLanguage(params.language ?? pickPreferredLanguage(params.request));
     const redirectUrl =
       brokerSlug === "etoro"
-        ? ETORO_LINKS[preferredLanguage] ?? ETORO_LINKS.en
+        ? getEtoroLink(preferredLanguage)
         : buildAffiliateUrl({
             template: ticker && broker.tickerUrlTemplate ? broker.tickerUrlTemplate : broker.baseUrl,
             partnerId: broker.partnerId,
