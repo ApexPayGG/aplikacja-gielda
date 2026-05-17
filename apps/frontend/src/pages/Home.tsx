@@ -1,9 +1,10 @@
-import { BuildingOffice2Icon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { CompanySearchAutocomplete } from "../components/CompanySearchAutocomplete";
 import { CompanyCard } from "../components/CompanyCard";
 import type { Company } from "../services/api";
-import { getCompanyBySector, searchCompanies } from "../services/api";
+import { getCompanyBySector } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -63,7 +64,6 @@ function matchesMarket(company: Company, market: (typeof MARKET_FILTERS)[number]
 
 export function Home() {
   const { t } = useTranslation();
-  const [query, setQuery] = useState("");
   const [sector, setSector] = useState("All");
   const [market, setMarket] = useState<(typeof MARKET_FILTERS)[number]>("All");
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -92,21 +92,6 @@ export function Home() {
     void loadSector(sector);
   }, [sector, loadSector]);
 
-  const runSearch = async () => {
-    const q = query.trim();
-    if (!q) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const rows = await searchCompanies(q, 48);
-      setCompanies(rows);
-    } catch (e) {
-      setError(apiErrorMessage(e));
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const visibleCompanies = useMemo(() => companies.filter((company) => matchesMarket(company, market)), [companies, market]);
 
   return (
@@ -120,31 +105,12 @@ export function Home() {
         </p>
       </header>
 
-      <form
-        className="mb-6"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void runSearch();
-        }}
-      >
-        <div className="relative">
-          <MagnifyingGlassIcon className="pointer-events-none absolute left-4 top-1/2 h-6 w-6 -translate-y-1/2 text-brandDark" />
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={t("home.searchPlaceholder", { defaultValue: "Szukaj po nazwie lub tickerze..." })}
-            className="h-14 w-full rounded-2xl border border-border bg-bgPrimary pl-14 pr-28 text-base text-textPrimary shadow-sm outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/30"
-          />
-          <button
-            type="submit"
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-brandDark px-4 py-2 text-sm font-semibold text-white transition hover:bg-brandMedium disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={!query.trim()}
-          >
-            {t("common.search", { defaultValue: "Szukaj" })}
-          </button>
-        </div>
-      </form>
+      <div className="mb-6">
+        <CompanySearchAutocomplete
+          limit={8}
+          placeholder={t("home.searchPlaceholder", { defaultValue: "Szukaj po nazwie lub tickerze..." })}
+        />
+      </div>
 
       <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
@@ -212,19 +178,11 @@ export function Home() {
       {!loading && visibleCompanies.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-bgSecondary px-6 py-14 text-center">
           <BuildingOffice2Icon className="mb-3 h-10 w-10 text-textMuted" aria-hidden />
-          <p className="mb-4 text-sm text-textSecondary">
+          <p className="text-sm text-textSecondary">
             {sector === "All"
-              ? t("home.emptySelectSector", { defaultValue: "Wybierz sektor lub wpisz zapytanie, aby wyświetlić spółki." })
+              ? t("home.emptySelectSector", { defaultValue: "Wybierz sektor lub skorzystaj z wyszukiwarki, aby wyświetlić spółki." })
               : t("home.emptySector", { defaultValue: "Brak spółek dla wybranych filtrów." })}
           </p>
-          <button
-            type="button"
-            onClick={() => void runSearch()}
-            className="rounded-xl border border-brandDark/25 bg-bgPrimary px-4 py-2 text-sm font-semibold text-brandDark transition hover:bg-brandDark hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
-            disabled={!query.trim()}
-          >
-            {t("common.search", { defaultValue: "Szukaj" })}
-          </button>
         </div>
       )}
 

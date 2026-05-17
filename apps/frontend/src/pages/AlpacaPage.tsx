@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BrokerCTAButton } from "../components/affiliate/BrokerCTAButton";
+import { CompanySearchAutocomplete } from "../components/CompanySearchAutocomplete";
 import {
   cancelAlpacaOrder,
   getAlpacaAccount,
@@ -425,16 +426,19 @@ export function AlpacaPage() {
             Order form
           </h2>
           <div className="mt-4 space-y-4">
-            <label className="block text-sm font-medium" style={{ color: colors.textSecondary }}>
-              Symbol search
-              <input
-                className="mt-1 w-full rounded-xl border px-3 py-2 text-sm outline-none transition"
-                style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
-                value={symbol}
-                onChange={(event) => setSymbol(event.target.value.toUpperCase())}
+            <div>
+              <p className="mb-1 text-sm font-medium" style={{ color: colors.textSecondary }}>
+                Symbol search
+              </p>
+              <CompanySearchAutocomplete
+                initialValue={symbol}
+                limit={8}
+                navigateOnSelect={false}
                 placeholder="AAPL"
+                onQueryChange={(nextQuery) => setSymbol(nextQuery.toUpperCase())}
+                onSelectCompany={(company) => setSymbol(company.symbol.toUpperCase())}
               />
-            </label>
+            </div>
 
             <div>
               <p className="mb-1 text-sm font-medium" style={{ color: colors.textSecondary }}>

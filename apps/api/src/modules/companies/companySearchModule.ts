@@ -22,14 +22,7 @@ export type CompanySearchResultItem = {
   symbol: string;
   name: string;
   exchange: string;
-  currency: string | null;
-  type: string | null;
-  logoUrl?: string | null;
-};
-
-export type CompanySearchResponse = {
-  results: CompanySearchResultItem[];
-  source: "database" | "eodhd";
+  sector: string;
 };
 
 const EODHD_BASE = "https://eodhd.com/api";
@@ -127,9 +120,7 @@ function mapDbRowsToSearch(rows: Awaited<ReturnType<typeof searchCompanies>>): C
         row.description?.match(/Exchange=([A-Z0-9_]+)/i)?.[1]) ??
         "UNKNOWN"
       ).toUpperCase(),
-    currency: row.description?.match(/Currency=([^;]+)/i)?.[1]?.trim() ?? null,
-    type: "stock",
-    logoUrl: row.logoUrl ?? null,
+    sector: row.sector || "Unknown",
   }));
 }
 
@@ -142,10 +133,53 @@ function mapEodSearchRow(row: EodhdSearchRow): CompanySearchResultItem | null {
     symbol,
     name: toStr(row.Name ?? row.name) ?? code.toUpperCase(),
     exchange: exchange.toUpperCase(),
-    currency: toStr(row.Currency ?? row.currency),
-    type: toStr(row.Type ?? row.type),
+    sector: "Unknown",
   };
 }
+
+export type CompanySearchDependencies = {
+  searchDb: (query: string, limit: number) => Promise<CompanySearchResultItem[]>;
+  searchEod: (query: string, limit: number) => Promise<CompanySearchResultItem[]>;
+};
+
+function normalizeSearchLimit(limit: number): number {
+  return Math.min(50, Math.max(1, Number.isFinite(limit) ? Math.trunc(limit) : 8));
+}
+
+function dedupeBySymbol(items: CompanySearchResultItem[]): CompanySearchResultItem[] {
+  const seen = new Set<string>();
+  const out: CompanySearchResultItem[] = [];
+  for (const row of items) {
+    const key = row.symbol.trim().toUpperCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(row);
+  }
+  return out;
+}
+
+async function searchEodCompanies(query: string, limit: number): Promise<CompanySearchResultItem[]> {
+  const token = getApiToken();
+  const params = new URLSearchParams({
+    api_token: token,
+    limit: String(limit),
+    fmt: "json",
+  });
+  const url = `${EODHD_BASE}/search/${encodeURIComponent(query)}?${params.toString()}`;
+  const rows = await fetchJson<EodhdSearchRow[] | { error?: string }>(url);
+  if (!Array.isArray(rows)) {
+    throw new Error(typeof rows.error === "string" ? rows.error : "Unexpected search payload from EODHD");
+  }
+  return rows.map(mapEodSearchRow).filter((r): r is CompanySearchResultItem => r !== null);
+}
+
+const defaultSearchDependencies: CompanySearchDependencies = {
+  searchDb: async (query, limit) => {
+    const dbRows = await searchCompanies(query, limit);
+    return mapDbRowsToSearch(dbRows);
+  },
+  searchEod: searchEodCompanies,
+};
 
 async function setCompanyExchange(symbol: string, exchange: string): Promise<void> {
   await prisma.$executeRawUnsafe(
@@ -306,53 +340,27 @@ export async function importCompanyOnDemand(input: {
   return { imported: true, symbol: canonical, quotesCount };
 }
 
-export async function searchCompaniesOnDemand(query: string): Promise<CompanySearchResponse> {
+export async function searchCompaniesOnDemand(
+  query: string,
+  limit = 8,
+  dependencies: CompanySearchDependencies = defaultSearchDependencies,
+): Promise<CompanySearchResultItem[]> {
   const q = query.trim();
-  if (!q) return { results: [], source: "database" };
+  if (!q) return [];
+  const take = normalizeSearchLimit(limit);
 
-  const dbRows = await searchCompanies(q, 10);
-  if (dbRows.length > 0) {
-    return { results: mapDbRowsToSearch(dbRows), source: "database" };
+  const dbRows = await dependencies.searchDb(q, take);
+  const merged = dedupeBySymbol(dbRows).slice(0, take);
+
+  if (merged.length < 3) {
+    try {
+      const eodRows = await dependencies.searchEod(q, take);
+      const withFallback = dedupeBySymbol([...merged, ...eodRows]).slice(0, take);
+      return withFallback;
+    } catch (error) {
+      console.warn("[companies.search] eod fallback failed", error);
+    }
   }
 
-  const token = getApiToken();
-  const params = new URLSearchParams({
-    api_token: token,
-    limit: "10",
-    fmt: "json",
-  });
-  const url = `${EODHD_BASE}/search/${encodeURIComponent(q)}?${params.toString()}`;
-  const rows = await fetchJson<EodhdSearchRow[] | { error?: string }>(url);
-  if (!Array.isArray(rows)) {
-    throw new Error(typeof rows.error === "string" ? rows.error : "Unexpected search payload from EODHD");
-  }
-
-  const eodResults = rows.map(mapEodSearchRow).filter((r): r is CompanySearchResultItem => r !== null);
-  if (eodResults.length === 0) return { results: [], source: "eodhd" };
-
-  const best = eodResults[0];
-  const code = best.symbol.split(".")[0] ?? best.symbol;
-  await importCompanyOnDemand({
-    symbol: code,
-    exchange: best.exchange,
-    name: best.name,
-  });
-
-  const imported = await prisma.company.findUnique({ where: { symbol: best.symbol.toUpperCase() } });
-  if (imported) {
-    return {
-      results: [
-        {
-          symbol: imported.symbol,
-          name: imported.name,
-          exchange: best.exchange,
-          currency: imported.description?.match(/Currency=([^;]+)/i)?.[1]?.trim() ?? best.currency,
-          type: best.type ?? "stock",
-        },
-      ],
-      source: "eodhd",
-    };
-  }
-
-  return { results: [best], source: "eodhd" };
+  return merged;
 }

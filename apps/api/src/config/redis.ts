@@ -10,7 +10,7 @@ export const REDIS_TTL_SEC = {
   /** Dividend history (API) */
   DIVIDEND: 86_400,
   /** Company search results */
-  SEARCH: 600,
+  SEARCH: 300,
   /** Dividend growth screener (aggregated) */
   SCREENER: 3600,
   /** Claude analysis brief (expensive); aligns with screener refresh cadence */

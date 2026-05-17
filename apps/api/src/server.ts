@@ -334,13 +334,14 @@ export function createApp(): express.Express {
     try {
       const q = String(req.query.q ?? "").trim();
       if (!q) return res.status(400).json({ error: "Missing query parameter q" });
-      const cacheKey = redisKeys.companySearch(q, 10);
-      const cached = await cacheJsonGet<{ results: unknown[]; source: "database" | "eodhd" }>(cacheKey);
+      const limit = Math.min(50, Math.max(1, parseInt(String(req.query.limit ?? "8"), 10) || 8));
+      const cacheKey = redisKeys.companySearch(q, limit);
+      const cached = await cacheJsonGet<unknown[]>(cacheKey);
       if (cached !== null) {
         res.json(cached);
         return;
       }
-      const payload = await searchCompaniesOnDemand(q);
+      const payload = await searchCompaniesOnDemand(q, limit);
       await cacheJsonSet(cacheKey, payload, REDIS_TTL_SEC.SEARCH);
       res.json(payload);
     } catch (e) {
