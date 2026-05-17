@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
+import { SEOHead } from "../components/SEOHead";
 import { createStripeCheckoutSession } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
@@ -82,10 +83,6 @@ export function PricingPage() {
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<PaidPlan | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  useEffect(() => {
-    document.title = "Pricing | StockAI Pro";
-  }, []);
-
   const pricingNote = useMemo(() => {
     return billingCycle === "yearly" ? "Płatność roczna = 2 miesiące gratis względem planu miesięcznego." : "Zmieniaj plan w dowolnym momencie.";
   }, [billingCycle]);
@@ -119,6 +116,10 @@ export function PricingPage() {
 
   return (
     <div className="min-h-screen bg-bgSecondary text-textSecondary">
+      <SEOHead
+        title="Cennik — StockAI Pro"
+        description="Free, Pro $9/mo, Pro+ $19/mo. AI investment research for retail investors."
+      />
       <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
         <header className="text-center">
           <h1 className="text-4xl font-bold text-textPrimary md:text-5xl">Wybierz swój plan</h1>

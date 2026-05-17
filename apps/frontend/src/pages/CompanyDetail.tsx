@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { AnalysisBrief } from "../components/AnalysisBrief";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
+import { SEOHead } from "../components/SEOHead";
 import { WatchlistButton } from "../components/WatchlistButton";
 import { colors } from "../styles/designSystem";
 import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
@@ -105,6 +106,18 @@ export function CompanyDetail() {
   const [error, setError] = useState<string | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<CompanyTabId>("overview");
+  const companyName = company?.name?.trim() || sym;
+  const seoTitle = `${sym} — ${companyName} | StockAI Pro`;
+  const seoDescription = `AI analysis of ${companyName}. Risk score, signals, dividend data and Premium Analysis.`;
+  const seoStructuredData = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "FinancialProduct",
+      name: companyName,
+      tickerSymbol: sym,
+    }),
+    [companyName, sym],
+  );
   const etoroMarket = toEtoroMarket(company?.exchange);
   const sortedQuotes = useMemo(
     () => [...quotes].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()),
@@ -138,23 +151,6 @@ export function CompanyDetail() {
     { label: "52w Low", value: formatPrice(trailingLow, currentLang) },
     { label: "Currency", value: parsedCurrency },
   ];
-
-  useEffect(() => {
-    const companyName = company?.name?.trim() || sym;
-    document.title = `${sym} — ${companyName} | StockAI Pro`;
-
-    const descriptionText = company?.description?.trim()
-      ? `${sym} (${companyName}) na StockAI Pro: ${company.description.slice(0, 160)}`
-      : `${sym} (${companyName}) na StockAI Pro: notowania, wykres, newsy i analiza AI.`;
-
-    let metaDescription = document.querySelector('meta[name="description"]');
-    if (!metaDescription) {
-      metaDescription = document.createElement("meta");
-      metaDescription.setAttribute("name", "description");
-      document.head.appendChild(metaDescription);
-    }
-    metaDescription.setAttribute("content", descriptionText);
-  }, [company, sym]);
 
   useEffect(() => {
     if (!sym) return;
@@ -206,25 +202,32 @@ export function CompanyDetail() {
 
   if (loading && !company) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-20 text-center text-slate-500">
-        {t("company.loading", { defaultValue: "Loading company..." })}
-      </div>
+      <>
+        <SEOHead title={seoTitle} description={seoDescription} structuredData={seoStructuredData} />
+        <div className="mx-auto max-w-4xl px-4 py-20 text-center text-slate-500">
+          {t("company.loading", { defaultValue: "Loading company..." })}
+        </div>
+      </>
     );
   }
 
   if (error || !company) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-20">
-        <p className="text-red-300">{error ?? "Company not found"}</p>
-        <Link to="/" className="mt-4 inline-block hover:underline" style={{ color: colors.brandMedium }}>
-          {t("company.backHome", { defaultValue: "<- Back home" })}
-        </Link>
-      </div>
+      <>
+        <SEOHead title={seoTitle} description={seoDescription} structuredData={seoStructuredData} />
+        <div className="mx-auto max-w-4xl px-4 py-20">
+          <p className="text-red-300">{error ?? "Company not found"}</p>
+          <Link to="/" className="mt-4 inline-block hover:underline" style={{ color: colors.brandMedium }}>
+            {t("company.backHome", { defaultValue: "<- Back home" })}
+          </Link>
+        </div>
+      </>
     );
   }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary, color: colors.textPrimary }}>
+      <SEOHead title={seoTitle} description={seoDescription} structuredData={seoStructuredData} />
       <div className="mx-auto max-w-[1280px] px-4 py-6 lg:px-6">
         <Link to="/" className="mb-4 inline-block text-sm hover:underline" style={{ color: colors.brandMedium }}>
         {t("company.backToCompanies", { defaultValue: "← Companies" })}

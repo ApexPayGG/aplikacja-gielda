@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
+import { SEOHead } from "../components/SEOHead";
 import { createStripeCheckoutSession, getLatestLiveQuote } from "../services/api";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 
@@ -111,10 +112,6 @@ export function LandingPage() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<"pro" | "pro_plus" | null>(null);
 
-  useEffect(() => {
-    document.title = "StockAI Pro — Platforma inwestycyjna nowej generacji";
-  }, []);
-
   const emptyQuotes = useMemo<HeroQuote[]>(
     () =>
       HERO_TICKERS.map((ticker) => ({
@@ -197,6 +194,11 @@ export function LandingPage() {
 
   return (
     <div className="bg-bgPrimary text-textSecondary">
+      <SEOHead
+        title="StockAI Pro — AI Investment Research Platform"
+        description="AI-powered stock analysis, behavioral coaching and broker integration. GPW, NYSE, DAX and 130+ markets."
+        ogType="website"
+      />
       <header className="sticky top-0 z-40 border-b border-border bg-bgPrimary/95 shadow-sm backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex shrink-0 items-center">
