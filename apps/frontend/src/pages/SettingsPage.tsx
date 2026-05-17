@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { BrokerCTAButton } from "../components/affiliate/BrokerCTAButton";
 import { TAX_COUNTRY_FLAGS } from "../constants/taxCountries";
 import { useAuth } from "../context/AuthContext";
@@ -355,6 +356,12 @@ export function SettingsPage() {
               </button>
             ))}
           </nav>
+          <div className="mt-6 rounded-xl border border-border bg-bgSecondary p-3">
+            <p className="text-xs uppercase tracking-wide text-textMuted">Product</p>
+            <Link to="/changelog" className="mt-2 inline-flex text-sm font-semibold text-brandDark transition hover:text-brandMedium">
+              Co nowego (Changelog)
+            </Link>
+          </div>
         </aside>
 
         <div className="space-y-6">
