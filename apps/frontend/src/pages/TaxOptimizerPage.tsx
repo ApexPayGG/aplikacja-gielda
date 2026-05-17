@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { TAX_COUNTRY_ENGLISH_NAMES, TAX_COUNTRY_FLAGS } from "../constants/taxCountries";
 import {
   calculateTax,
@@ -9,10 +8,18 @@ import {
   type TaxCalculateResponse,
   type TaxSystemItem,
 } from "../services/api";
+import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatCurrency } from "../utils/money";
 
 const DEFAULT_USER_ID = "";
+const COUNTRY_PILLS = ["PL", "DE", "FR", "ES", "GB", "US", "JP", "KR", "TW", "IN", "CUSTOM"] as const;
+
+type SummaryState = {
+  taxDue: number;
+  potentialSavings: number;
+  suggestions: Array<{ title: string; body: string }>;
+};
 
 function readUserId(): string {
   if (typeof window === "undefined") return DEFAULT_USER_ID;
@@ -20,18 +27,70 @@ function readUserId(): string {
   return fromStorage || DEFAULT_USER_ID;
 }
 
+function parseNumericInput(input: string, fallback: number): number {
+  if (!input.trim()) return fallback;
+  const normalized = input.replace(",", ".");
+  const parsed = Number.parseFloat(normalized);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function buildOptimizationSuggestions(params: {
+  country: string;
+  taxYear: string;
+  losses: number;
+  dividends: number;
+  taxDue: number;
+  taxName: string;
+}): SummaryState["suggestions"] {
+  const result: SummaryState["suggestions"] = [];
+
+  if (params.losses <= 0) {
+    result.push({
+      title: "Harvesting strat",
+      body: "Rozważ zamknięcie części stratnych pozycji przed końcem roku, aby obniżyć podstawę opodatkowania.",
+    });
+  } else {
+    result.push({
+      title: "Rozliczenie strat",
+      body: "Zachowaj pełną dokumentację strat i rozlicz je z zyskami w tym samym lub kolejnym roku podatkowym.",
+    });
+  }
+
+  if (params.dividends > 0) {
+    result.push({
+      title: "Podatek od dywidend",
+      body: `Zweryfikuj umowy o unikaniu podwójnego opodatkowania dla kraju ${params.country} i przygotuj potrącenia pod ${params.taxName}.`,
+    });
+  }
+
+  result.push({
+    title: "Plan na rok podatkowy",
+    body: `Ustal harmonogram realizacji zysków i strat na ${params.taxYear}, aby uniknąć kumulacji podatku na koniec okresu.`,
+  });
+
+  if (params.taxDue > 0) {
+    result.push({
+      title: "Optymalizacja rachunków",
+      body: "Sprawdź możliwość wykorzystania rachunków uprzywilejowanych podatkowo dla części portfela długoterminowego.",
+    });
+  }
+
+  return result.slice(0, 4);
+}
+
 export function TaxOptimizerPage() {
-  const { t, i18n } = useTranslation();
   const [userId] = useState<string>(() => readUserId());
   const [systems, setSystems] = useState<TaxSystemItem[]>([]);
   const [country, setCountry] = useState("PL");
   const [customRate, setCustomRate] = useState("19");
-  const [showCountrySelector, setShowCountrySelector] = useState(false);
-  const [settingsSaving, setSettingsSaving] = useState(false);
+  const [grossGainsInput, setGrossGainsInput] = useState("");
+  const [lossesInput, setLossesInput] = useState("");
+  const [dividendsInput, setDividendsInput] = useState("0");
+  const [taxYearInput, setTaxYearInput] = useState(String(new Date().getFullYear()));
   const [data, setData] = useState<TaxCalculateResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [settingsNotice, setSettingsNotice] = useState<string | null>(null);
+  const [summary, setSummary] = useState<SummaryState | null>(null);
 
   const currentSystem = useMemo(
     () => systems.find((entry) => entry.code === country) ?? null,
@@ -42,12 +101,12 @@ export function TaxOptimizerPage() {
     const parsed = Number.parseFloat(customRate.replace(",", "."));
     return Number.isFinite(parsed) ? parsed : Number.NaN;
   }, [customRate]);
+  const customRateValid = country !== "CUSTOM" || Number.isFinite(rateAsNumber);
 
   const fmt = useCallback(
     (n: number) => formatCurrency(n, data?.currency ?? currentSystem?.currency ?? "USD"),
     [currentSystem?.currency, data?.currency],
   );
-  const dateLocale = i18n.language.replace(/_/g, "-");
 
   const loadSettingsAndSystems = useCallback(async () => {
     setLoading(true);
@@ -58,7 +117,6 @@ export function TaxOptimizerPage() {
       const savedCountry = String(settings.taxCountry ?? "").trim().toUpperCase();
       const resolvedCountry = savedCountry || "PL";
       setCountry(resolvedCountry);
-      setShowCountrySelector(!savedCountry);
     } catch (e) {
       setError(apiErrorMessage(e));
     } finally {
@@ -77,6 +135,8 @@ export function TaxOptimizerPage() {
         customRate: country === "CUSTOM" ? rateAsNumber : undefined,
       });
       setData(next);
+      setGrossGainsInput(next.grossGains.toFixed(2));
+      setLossesInput(next.losses.toFixed(2));
     } catch (e) {
       setData(null);
       setError(apiErrorMessage(e));
@@ -91,188 +151,238 @@ export function TaxOptimizerPage() {
 
   useEffect(() => {
     if (!systems.length) return;
-    if (country === "CUSTOM" && !Number.isFinite(rateAsNumber)) return;
+    if (!customRateValid) {
+      setData(null);
+      setSummary(null);
+      return;
+    }
     void recalculate();
-  }, [country, rateAsNumber, recalculate, systems.length]);
+  }, [country, customRateValid, recalculate, systems.length]);
+
+  useEffect(() => {
+    setSummary(null);
+  }, [country]);
 
   const persistCountry = useCallback(async () => {
-    setSettingsSaving(true);
-    setSettingsNotice(null);
     try {
       await saveAlpacaSettings({ userId, taxCountry: country });
-      setSettingsNotice(t("common.save"));
     } catch (e) {
       setError(apiErrorMessage(e));
-    } finally {
-      setSettingsSaving(false);
     }
-  }, [country, t, userId]);
+  }, [country, userId]);
 
-  const taxName = data?.taxName ?? currentSystem?.cgt.name ?? "CGT";
+  const handleCalculate = useCallback(async () => {
+    if (!customRateValid) {
+      setError("Wprowadź poprawną stawkę dla trybu Custom.");
+      return;
+    }
+    const source = data;
+    if (!source) return;
+
+    const gains = parseNumericInput(grossGainsInput, source.grossGains);
+    const losses = parseNumericInput(lossesInput, source.losses);
+    const dividends = parseNumericInput(dividendsInput, 0);
+    const taxableBase = Math.max(0, gains - losses + dividends);
+    const taxRate = source.taxRate;
+    const estimatedTax = taxableBase * taxRate;
+    const potentialSavings = Math.max(0, losses * taxRate * 0.45 + dividends * taxRate * 0.1);
+
+    setSummary({
+      taxDue: estimatedTax,
+      potentialSavings,
+      suggestions: buildOptimizationSuggestions({
+        country,
+        taxYear: taxYearInput || String(new Date().getFullYear()),
+        losses,
+        dividends,
+        taxDue: estimatedTax,
+        taxName: source.taxName,
+      }),
+    });
+    await persistCountry();
+  }, [country, customRateValid, data, dividendsInput, grossGainsInput, lossesInput, persistCountry, taxYearInput]);
+
   const titleCountryCode = (data?.country ?? country).toUpperCase();
   const countryName = TAX_COUNTRY_ENGLISH_NAMES[titleCountryCode] ?? titleCountryCode;
-  const zeroTax = data?.taxRate === 0;
-  const showUsNote = country === "US";
+  const activeTaxRate = data?.taxRate ?? (country === "CUSTOM" && Number.isFinite(rateAsNumber) ? rateAsNumber / 100 : 0);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <header className="mb-8 flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white">
-              {t("tax.title")} — {countryName}
-            </h1>
-            <p className="mt-2 max-w-2xl text-xs text-slate-500">{t("money.gpwCaption")}</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowCountrySelector((v) => !v)}
-            className="rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-xs font-medium uppercase tracking-wide text-slate-200 transition hover:border-brand-blue"
-          >
-            {t("tax.changeCountry")}
-          </button>
+    <div className="mx-auto max-w-6xl space-y-6 px-4 py-10" style={{ color: colors.textPrimary }}>
+      <header
+        className="rounded-3xl border p-6 shadow-[0_20px_44px_rgba(45,10,107,0.12)]"
+        style={{
+          borderColor: colors.border,
+          background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})`,
+        }}
+      >
+        <h1 className="text-3xl font-bold" style={{ color: colors.brandDark }}>
+          Optymalizator podatkowy
+        </h1>
+        <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
+          Symuluj scenariusze podatkowe dla portfela i zaplanuj obciążenia zanim zamkniesz rok.
+        </p>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          {COUNTRY_PILLS.map((item) => {
+            const active = country === item;
+            const label = item === "CUSTOM" ? "Custom" : item;
+            const systemName = systems.find((entry) => entry.code === item)?.name;
+            return (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setCountry(item)}
+                className="rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition"
+                style={{
+                  borderColor: active ? colors.brandDark : colors.borderStrong,
+                  backgroundColor: active ? colors.brandDark : colors.bgPrimary,
+                  color: active ? colors.bgPrimary : colors.textSecondary,
+                }}
+                title={systemName || TAX_COUNTRY_ENGLISH_NAMES[item] || item}
+              >
+                {item === "CUSTOM" ? label : `${TAX_COUNTRY_FLAGS[item] ?? ""} ${label}`.trim()}
+              </button>
+            );
+          })}
+        </div>
+      </header>
+
+      <section className="rounded-2xl border p-5 shadow-[0_14px_32px_rgba(45,10,107,0.08)]" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+              Zyski
+            </span>
+            <input
+              value={grossGainsInput}
+              onChange={(event) => setGrossGainsInput(event.target.value)}
+              inputMode="decimal"
+              className="rounded-xl border px-3 py-2 outline-none"
+              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+              Straty
+            </span>
+            <input
+              value={lossesInput}
+              onChange={(event) => setLossesInput(event.target.value)}
+              inputMode="decimal"
+              className="rounded-xl border px-3 py-2 outline-none"
+              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+              Dywidendy
+            </span>
+            <input
+              value={dividendsInput}
+              onChange={(event) => setDividendsInput(event.target.value)}
+              inputMode="decimal"
+              className="rounded-xl border px-3 py-2 outline-none"
+              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+              Rok podatkowy
+            </span>
+            <input
+              value={taxYearInput}
+              onChange={(event) => setTaxYearInput(event.target.value)}
+              inputMode="numeric"
+              className="rounded-xl border px-3 py-2 outline-none"
+              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+            />
+          </label>
         </div>
 
-        {(showCountrySelector || !data) && (
-          <div className="neo-panel grid gap-3 rounded-xl border border-white/5 p-4 sm:grid-cols-[1fr_auto] sm:items-end">
-            <label className="flex flex-col gap-1 text-sm text-slate-300">
-              <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                {t("tax.selectCountry")}
-              </span>
-              <select
-                value={country}
-                onChange={(e) => setCountry(String(e.target.value).toUpperCase())}
-                className="rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
-              >
-                {systems.map((entry) => (
-                  <option key={entry.code} value={entry.code}>
-                    {`${TAX_COUNTRY_FLAGS[entry.code] ?? ""} ${entry.name}`}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button
-              type="button"
-              onClick={() => void persistCountry()}
-              disabled={settingsSaving}
-              className="rounded-lg border border-brand-blue/60 bg-brand-blue/10 px-4 py-2 text-sm text-brand-blue transition hover:bg-brand-blue/20 disabled:opacity-60"
-            >
-              {settingsSaving ? t("common.loading") : t("common.save")}
-            </button>
-          </div>
-        )}
-
         {country === "CUSTOM" && (
-          <label className="flex max-w-xs flex-col gap-1 text-sm text-slate-300">
-            <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
-              {t("tax.customRate")}
+          <label className="mt-4 flex max-w-xs flex-col gap-1.5 text-sm">
+            <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+              Custom rate (%)
             </span>
             <input
               value={customRate}
-              onChange={(e) => setCustomRate(e.target.value)}
+              onChange={(event) => setCustomRate(event.target.value)}
               inputMode="decimal"
-              placeholder="19"
-              className="rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-white outline-none focus:border-brand-blue"
+              className="rounded-xl border px-3 py-2 outline-none"
+              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
             />
           </label>
         )}
-      </header>
 
-      {settingsNotice && <p className="mb-4 text-xs text-brand-green">{settingsNotice}</p>}
-      {loading && <p className="text-slate-400">{t("common.loading")}</p>}
-      {error && <p className="text-sm text-brand-red">{error}</p>}
+        <button
+          type="button"
+          onClick={() => void handleCalculate()}
+          disabled={loading || !data || !customRateValid}
+          className="mt-5 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
+          style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
+        >
+          {loading ? "Ładowanie..." : "Oblicz"}
+        </button>
+      </section>
 
-      {!loading && !error && data && (
-        <>
-          {zeroTax && (
-            <div className="mb-5 rounded-xl border border-brand-green/40 bg-brand-green/10 px-4 py-3 text-sm text-brand-green">
-              {country === "TW" ? "No CGT on listed stocks in Taiwan" : t("tax.noTax")}
-            </div>
-          )}
+      {error ? (
+        <div className="rounded-xl border px-4 py-3 text-sm" style={{ borderColor: `${colors.negative}66`, color: colors.negative, backgroundColor: `${colors.negative}14` }}>
+          {error}
+        </div>
+      ) : null}
 
-          {showUsNote && data.note && (
-            <div className="mb-5 rounded-xl border border-brand-blue/30 bg-brand-blue/10 px-4 py-3 text-sm text-brand-blue">
-              {data.note}
-            </div>
-          )}
+      {summary && !error ? (
+        <section className="rounded-2xl border p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+          <div className="grid gap-4 md:grid-cols-2">
+            <article className="rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+              <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+                Podatek należny
+              </p>
+              <p className="mt-2 text-4xl font-bold" style={{ color: colors.negative }}>
+                -{fmt(summary.taxDue)}
+              </p>
+            </article>
 
-          <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <div className="neo-panel rounded-xl border border-white/5 p-4">
-              <div className="text-xs uppercase tracking-wide text-slate-500">GROSS GAINS</div>
-              <div className="mt-2 font-mono text-xl font-semibold text-brand-green">
-                {fmt(data.grossGains)}
-              </div>
-            </div>
-            <div className="neo-panel rounded-xl border border-white/5 p-4">
-              <div className="text-xs uppercase tracking-wide text-slate-500">LOSSES</div>
-              <div className="mt-2 font-mono text-xl font-semibold text-brand-red">{fmt(data.losses)}</div>
-            </div>
-            <div className="neo-panel rounded-xl border border-white/5 p-4">
-              <div className="text-xs uppercase tracking-wide text-slate-500">NET INCOME</div>
-              <div
-                className={`mt-2 font-mono text-xl font-semibold ${data.netIncome >= 0 ? "text-brand-green" : "text-brand-red"}`}
-              >
-                {data.netIncome < 0 ? "-" : ""}
-                {fmt(Math.abs(data.netIncome))}
-              </div>
-            </div>
-            <div className="neo-panel rounded-xl border border-white/5 p-4">
-              <div className="text-xs uppercase tracking-wide text-slate-500">{taxName}</div>
-              <div className="mt-2 font-mono text-xl font-semibold text-brand-amber">
-                {(data.taxRate * 100).toFixed(2)}%
-              </div>
-              <div className="mt-1 text-[10px] text-slate-500">{data.form}</div>
-            </div>
-            <div className="neo-panel rounded-xl border border-brand-amber/30 bg-brand-amber/5 p-4 sm:col-span-2 lg:col-span-1">
-              <div className="text-xs uppercase tracking-wide text-slate-500">TAX DUE</div>
-              <div className="mt-2 font-mono text-2xl font-bold text-brand-amber">{fmt(data.taxDue)}</div>
+            <article className="rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+              <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+                Potencjalna oszczędność
+              </p>
+              <p className="mt-2 text-4xl font-bold" style={{ color: colors.positive }}>
+                +{fmt(summary.potentialSavings)}
+              </p>
+            </article>
+          </div>
+
+          <div className="mt-5">
+            <h2 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
+              Sugestie optymalizacji
+            </h2>
+            <div className="mt-3 space-y-3">
+              {summary.suggestions.map((suggestion) => (
+                <article
+                  key={suggestion.title}
+                  className="rounded-xl border p-4"
+                  style={{ borderColor: colors.border, borderLeft: `4px solid ${colors.brandCyan}`, backgroundColor: colors.bgPrimary }}
+                >
+                  <p className="text-sm font-semibold" style={{ color: colors.brandDark }}>
+                    {suggestion.title}
+                  </p>
+                  <p className="mt-1 text-sm" style={{ color: colors.textSecondary }}>
+                    {suggestion.body}
+                  </p>
+                </article>
+              ))}
             </div>
           </div>
 
-          <section className="neo-panel overflow-x-auto rounded-xl p-4">
-            <h2 className="mb-3 text-lg font-semibold text-white">{t("taxOptimizer.closedTrades")}</h2>
-            {data.trades.length === 0 ? (
-              <p className="text-sm text-slate-500">{t("taxOptimizer.noTrades")}</p>
-            ) : (
-              <table className="w-full min-w-[520px] text-left text-sm">
-                <thead>
-                  <tr className="border-b border-brand-border text-xs uppercase text-slate-500">
-                    <th className="py-2 pr-4">{t("taxOptimizer.colTicker")}</th>
-                    <th className="py-2 pr-4">{t("taxOptimizer.colOpen")}</th>
-                    <th className="py-2 pr-4">{t("taxOptimizer.colClose")}</th>
-                    <th className="py-2 pr-4">{t("taxOptimizer.colPnl")}</th>
-                    <th className="py-2">{t("taxOptimizer.colPct")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.trades.map((r, idx) => (
-                    <tr
-                      key={`${r.ticker}-${r.closeDate}-${idx}`}
-                      className="border-b border-white/5 font-mono text-slate-200"
-                    >
-                      <td className="py-2 pr-4 font-semibold text-white">{r.ticker}</td>
-                      <td className="py-2 pr-4 text-xs text-slate-400">
-                        {new Date(r.openDate).toLocaleDateString(dateLocale)}
-                      </td>
-                      <td className="py-2 pr-4 text-xs text-slate-400">
-                        {new Date(r.closeDate).toLocaleDateString(dateLocale)}
-                      </td>
-                      <td className={`py-2 pr-4 ${r.pnl >= 0 ? "text-brand-green" : "text-brand-red"}`}>
-                        {fmt(r.pnl)}
-                      </td>
-                      <td className={`py-2 ${r.pnlPct >= 0 ? "text-brand-green" : "text-brand-red"}`}>
-                        {r.pnlPct.toFixed(2)}%
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </section>
-
-          <p className="mt-8 text-xs leading-relaxed text-slate-500">{t("tax.disclaimer")}</p>
-        </>
-      )}
+          <p className="mt-5 text-xs" style={{ color: colors.textMuted }}>
+            Kraj: {countryName} • Efektywna stawka: {(activeTaxRate * 100).toFixed(2)}%
+          </p>
+        </section>
+      ) : null}
     </div>
   );
 }
