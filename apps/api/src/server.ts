@@ -96,43 +96,10 @@ import { createAuthRouter } from "./routes/auth";
 import { createWatchlistRouter } from "./routes/watchlist";
 import { createStripeRouter } from "./routes/stripe";
 import { runSnapshotJob } from "./modules/historicaltwins/snapshotJob";
-import { sendDailyDigests } from "./modules/digest/dailyDigestModule";
 import { importCompanyOnDemand, searchCompaniesOnDemand } from "./modules/companies/companySearchModule";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
-}
-
-function msUntilNextUtcEight(now = new Date()): number {
-  const next = new Date(now);
-  next.setUTCHours(8, 0, 0, 0);
-  if (next.getTime() <= now.getTime()) {
-    next.setUTCDate(next.getUTCDate() + 1);
-  }
-  return Math.max(0, next.getTime() - now.getTime());
-}
-
-function scheduleDailyDigestJob(): void {
-  const run = async () => {
-    try {
-      const result = await sendDailyDigests();
-      console.log(`[digest] sendDailyDigests done sent=${result.sent} failed=${result.failed}`);
-    } catch (error) {
-      console.error("[digest] sendDailyDigests failed", error);
-    } finally {
-      setTimeout(() => {
-        void run();
-      }, 24 * 60 * 60 * 1000);
-    }
-  };
-
-  const initialDelayMs = msUntilNextUtcEight();
-  console.log(
-    `[digest] Daily digest cron armed for 08:00 UTC (starts in ${Math.round(initialDelayMs / 1000)}s)`,
-  );
-  setTimeout(() => {
-    void run();
-  }, initialDelayMs);
 }
 
 function scheduleHistoricalTwinSnapshotJob(): void {
@@ -727,7 +694,6 @@ export function createApp(): express.Express {
 export async function startServer(port?: number): Promise<void> {
   const app = createApp();
   const p = port ?? parseInt(process.env.PORT ?? "3000", 10);
-  scheduleDailyDigestJob();
   scheduleHistoricalTwinSnapshotJob();
   await new Promise<void>((resolve, reject) => {
     const server = app.listen(p, () => {

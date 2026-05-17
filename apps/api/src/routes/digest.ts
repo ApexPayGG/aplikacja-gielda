@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
-import { buildDailyDigest, sendDailyDigest } from "../modules/digest/dailyDigestModule";
+import { buildDailyDigest, sendDailyDigest } from "../modules/digest/digestModule";
 
 type DigestRouteDeps = {
   previewFn: typeof buildDailyDigest;
