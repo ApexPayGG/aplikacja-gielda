@@ -283,7 +283,7 @@ export function AlpacaPage() {
         <div className="rounded-2xl border p-4" style={{ borderColor: `${colors.brandGold}66`, color: colors.brandDark, backgroundColor: `${colors.brandGold}14` }}>
           <p className="text-sm font-medium">{t("alpaca.connectBanner", { defaultValue: "Connect your Alpaca account in Settings" })}</p>
           <BrokerCTAButton
-            sourcePage="alpaca_page"
+            sourcePage="alpaca_dashboard"
             brokerSlug="etoro"
             label={t("etoro.alpaca.button", { defaultValue: "Try eToro" })}
             size="small"
