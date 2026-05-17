@@ -79,6 +79,7 @@ const PrivacyPage = lazyNamed(() => import("./pages/PrivacyPage"), "PrivacyPage"
 const TermsPage = lazyNamed(() => import("./pages/TermsPage"), "TermsPage");
 const WaitlistPage = lazyNamed(() => import("./pages/WaitlistPage"), "WaitlistPage");
 const ChangelogPage = lazyNamed(() => import("./pages/ChangelogPage"), "ChangelogPage");
+const AboutPage = lazyNamed(() => import("./pages/AboutPage"), "AboutPage");
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { token, isLoading } = useAuth();
@@ -151,6 +152,7 @@ export default function App() {
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/waitlist" element={<WaitlistPage />} />
               <Route path="/changelog" element={<ChangelogPage />} />
+              <Route path="/about" element={<AboutPage />} />
               <Route path="/waitlist" element={<WaitlistPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/terms" element={<TermsPage />} />

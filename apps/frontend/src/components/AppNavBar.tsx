@@ -5,6 +5,7 @@ import {
   BriefcaseIcon,
   ChartBarSquareIcon,
   ChevronDownIcon,
+  InformationCircleIcon,
   UserCircleIcon,
   WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
@@ -207,6 +208,12 @@ export function AppNavBar() {
   const logoutLabel = t("nav.logout", { defaultValue: "Wyloguj" });
 
   const mobileDrawerLinks: MobileDrawerLink[] = [
+    {
+      to: "/about",
+      label: t("nav.about", { defaultValue: "O nas" }),
+      icon: InformationCircleIcon,
+      isActive: (path) => path.startsWith("/about"),
+    },
     { to: "/signals", label: t("nav.markets"), icon: ChartBarSquareIcon, isActive: isMarketsPath },
     { to: "/paper-trading", label: t("nav.portfolio"), icon: BriefcaseIcon, isActive: isPortfolioPath },
     { to: "/position-size", label: t("nav.tools"), icon: WrenchScrewdriverIcon, isActive: isToolsPath },
@@ -307,6 +314,9 @@ export function AppNavBar() {
         <div className="hidden min-w-0 flex-1 items-center gap-x-1 gap-y-2 md:flex md:gap-x-3">
           <NavLink to="/" end className={({ isActive }) => navLinkClass(isActive)}>
             {t("nav.home")}
+          </NavLink>
+          <NavLink to="/about" className={({ isActive }) => navLinkClass(isActive)}>
+            {t("nav.about", { defaultValue: "O nas" })}
           </NavLink>
           <NavLink to="/dashboard" className={({ isActive }) => navLinkClass(isActive)}>
             {t("nav.dashboard")}

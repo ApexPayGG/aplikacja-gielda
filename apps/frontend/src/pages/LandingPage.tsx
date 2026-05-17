@@ -492,6 +492,10 @@ export function LandingPage() {
             Pricing
           </Link>
           <span aria-hidden="true">|</span>
+          <Link to="/about" className="transition hover:text-brandDark">
+            About
+          </Link>
+          <span aria-hidden="true">|</span>
           <Link to="/changelog" className="transition hover:text-brandDark">
             Changelog
           </Link>
