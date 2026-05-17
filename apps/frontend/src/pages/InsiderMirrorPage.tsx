@@ -1,22 +1,29 @@
 import { FormEvent, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import {
-  getInsiderMirror,
-  type InsiderAction,
-  type InsiderMirrorResponse,
-  type InsiderSentiment,
-} from "../services/api";
+import { getInsiderMirror, type InsiderMirrorResponse, type InsiderTransaction } from "../services/api";
+import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
-function sentimentClasses(sentiment: InsiderSentiment): string {
-  if (sentiment === "BUY") return "bg-brand-green/20 text-brand-green border-brand-green/40";
-  if (sentiment === "SELL") return "bg-brand-red/20 text-brand-red border-brand-red/40";
-  return "bg-slate-500/20 text-slate-200 border-slate-500/40";
+type TransactionFilter = "ALL" | "PURCHASES" | "SALES" | "LAST_7_DAYS" | "LAST_30_DAYS";
+
+const FILTER_OPTIONS: Array<{ value: TransactionFilter; label: string }> = [
+  { value: "ALL", label: "All" },
+  { value: "PURCHASES", label: "Purchases" },
+  { value: "SALES", label: "Sales" },
+  { value: "LAST_7_DAYS", label: "Last 7 days" },
+  { value: "LAST_30_DAYS", label: "Last 30 days" },
+];
+
+function parseDateToMs(value: string): number | null {
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) ? timestamp : null;
 }
 
-function actionClasses(action: InsiderAction): string {
-  if (action === "BUY") return "text-brand-green";
-  return "text-brand-red";
+function isWithinDays(date: string, days: number): boolean {
+  const timestamp = parseDateToMs(date);
+  if (timestamp === null) return false;
+  const now = Date.now();
+  const limit = now - days * 24 * 60 * 60 * 1000;
+  return timestamp >= limit && timestamp <= now;
 }
 
 function formatUsd(value: number): string {
@@ -26,25 +33,36 @@ function formatUsd(value: number): string {
   return `$${value.toFixed(0)}`;
 }
 
+function initialsFromName(name: string): string {
+  const parts = name
+    .split(" ")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (parts.length === 0) return "IN";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
+}
+
+function matchesFilter(transaction: InsiderTransaction, filter: TransactionFilter): boolean {
+  if (filter === "ALL") return true;
+  if (filter === "PURCHASES") return transaction.action === "BUY";
+  if (filter === "SALES") return transaction.action === "SELL";
+  if (filter === "LAST_7_DAYS") return isWithinDays(transaction.date, 7);
+  return isWithinDays(transaction.date, 30);
+}
+
 export function InsiderMirrorPage() {
-  const { t } = useTranslation();
-  const [symbolInput, setSymbolInput] = useState("");
+  const [symbolInput, setSymbolInput] = useState("AAPL");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<InsiderMirrorResponse | null>(null);
-
-  const sentimentLabel = useMemo(() => {
-    if (!result) return "";
-    if (result.netSentiment === "BUY") return t("insider.sentimentBuy");
-    if (result.netSentiment === "SELL") return t("insider.sentimentSell");
-    return t("insider.sentimentNeutral");
-  }, [result, t]);
+  const [activeFilter, setActiveFilter] = useState<TransactionFilter>("ALL");
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     const symbol = symbolInput.trim().toUpperCase();
     if (!symbol) {
-      setError(t("insider.validationSymbol"));
+      setError("Podaj symbol spółki.");
       setResult(null);
       return;
     }
@@ -62,95 +80,236 @@ export function InsiderMirrorPage() {
     }
   }
 
+  const filteredTransactions = useMemo(() => {
+    if (!result) return [];
+    return result.transactions.filter((transaction) => matchesFilter(transaction, activeFilter));
+  }, [activeFilter, result]);
+
+  const topInsiders = useMemo(() => {
+    const aggregate = new Map<
+      string,
+      {
+        name: string;
+        role: string;
+        totalValue: number;
+        purchases: number;
+        sales: number;
+      }
+    >();
+
+    for (const transaction of filteredTransactions) {
+      const existing = aggregate.get(transaction.name) ?? {
+        name: transaction.name,
+        role: transaction.role,
+        totalValue: 0,
+        purchases: 0,
+        sales: 0,
+      };
+
+      existing.totalValue += Math.abs(transaction.value);
+      if (transaction.action === "BUY") existing.purchases += 1;
+      if (transaction.action === "SELL") existing.sales += 1;
+      aggregate.set(transaction.name, existing);
+    }
+
+    return [...aggregate.values()].sort((a, b) => b.totalValue - a.totalValue).slice(0, 3);
+  }, [filteredTransactions]);
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-white">{t("insider.title")}</h1>
-        <p className="mt-1 text-sm text-slate-400">{t("insider.subtitle")}</p>
-      </header>
+    <div className="min-h-screen py-8" style={{ backgroundColor: colors.bgSecondary }}>
+      <div className="mx-auto max-w-6xl px-4">
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold" style={{ color: colors.brandDark }}>
+            Insider Mirror
+          </h1>
+          <p className="mt-2 text-sm md:text-base" style={{ color: colors.textSecondary }}>
+            Śledź najnowsze transakcje insiderów i szybko oceniaj kierunek ich działania.
+          </p>
+        </header>
 
-      <section className="neo-panel rounded-2xl p-6">
-        <form onSubmit={onSubmit} className="flex flex-col gap-3 md:flex-row">
-          <input
-            value={symbolInput}
-            onChange={(event) => setSymbolInput(event.target.value.toUpperCase())}
-            placeholder={t("insider.symbolPlaceholder")}
-            className="w-full rounded-lg border border-brand-border bg-brand-bg px-4 py-2 text-white outline-none focus:border-brand-blue"
-            maxLength={16}
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-lg bg-brand-blue px-5 py-2 font-semibold text-white hover:bg-brand-blue/85 disabled:opacity-60"
-          >
-            {loading ? t("common.loading") : t("insider.searchButton")}
-          </button>
-        </form>
-      </section>
-
-      {error ? (
-        <div className="mt-6 rounded-lg border border-brand-red/30 bg-brand-red/10 p-3 text-sm text-brand-red">
-          {error}
-        </div>
-      ) : null}
-
-      {!loading && !error && result ? (
-        <section className="neo-panel mt-6 rounded-2xl p-6">
-          <div className="flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-between">
-            <h2 className="text-xl font-semibold text-white">
-              {t("insider.resultFor")} {result.symbol}
-            </h2>
-            <span
-              className={`rounded-full border px-4 py-2 text-sm font-bold uppercase tracking-wide ${sentimentClasses(
-                result.netSentiment,
-              )}`}
+        <section className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+          <form onSubmit={onSubmit} className="flex flex-col gap-3 md:flex-row">
+            <input
+              value={symbolInput}
+              onChange={(event) => setSymbolInput(event.target.value.toUpperCase())}
+              placeholder="AAPL / MSFT / TSLA"
+              className="w-full rounded-xl border px-4 py-2.5 outline-none"
+              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+              maxLength={16}
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded-xl px-5 py-2.5 font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              style={{ backgroundColor: colors.brandDark }}
             >
-              {sentimentLabel}
-            </span>
-          </div>
-
-          <article className="mt-6 rounded-xl border border-brand-border bg-brand-bg/70 p-4">
-            <p className="text-xs uppercase tracking-wide text-slate-400">{t("insider.insight")}</p>
-            <p className="mt-2 text-lg text-slate-100">{result.insight}</p>
-          </article>
-
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
-              {t("insider.transactionsTitle")}
-            </h3>
-            {result.transactions.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-400">{t("insider.emptyTransactions")}</p>
-            ) : (
-              <div className="mt-3 overflow-x-auto rounded-xl border border-brand-border">
-                <table className="min-w-full divide-y divide-brand-border text-left text-sm">
-                  <thead className="bg-brand-bg/60 text-xs uppercase tracking-wide text-slate-400">
-                    <tr>
-                      <th className="px-4 py-2 font-semibold">{t("insider.colName")}</th>
-                      <th className="px-4 py-2 font-semibold">{t("insider.colRole")}</th>
-                      <th className="px-4 py-2 font-semibold">{t("insider.colAction")}</th>
-                      <th className="px-4 py-2 text-right font-semibold">{t("insider.colValue")}</th>
-                      <th className="px-4 py-2 font-semibold">{t("insider.colDate")}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-brand-border/70 bg-brand-bg/30">
-                    {result.transactions.map((tx, idx) => (
-                      <tr key={`${tx.name}-${tx.date}-${idx}`}>
-                        <td className="px-4 py-2 text-white">{tx.name}</td>
-                        <td className="px-4 py-2 text-slate-300">{tx.role}</td>
-                        <td className={`px-4 py-2 font-semibold ${actionClasses(tx.action)}`}>
-                          {tx.action === "BUY" ? t("insider.actionBuy") : t("insider.actionSell")}
-                        </td>
-                        <td className="px-4 py-2 text-right font-mono text-slate-100">{formatUsd(tx.value)}</td>
-                        <td className="px-4 py-2 text-slate-300">{tx.date}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+              {loading ? "Ładowanie..." : "Pobierz transakcje"}
+            </button>
+          </form>
         </section>
-      ) : null}
+
+        {error ? (
+          <div
+            className="mt-4 rounded-xl border px-4 py-3 text-sm"
+            style={{
+              borderColor: `${colors.negative}66`,
+              color: colors.negative,
+              backgroundColor: `${colors.negative}12`,
+            }}
+          >
+            {error}
+          </div>
+        ) : null}
+
+        {!loading && !error && result ? (
+          <section className="mt-6 space-y-6">
+            <div className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="text-2xl font-semibold" style={{ color: colors.brandDark }}>
+                  {result.symbol}
+                </h2>
+                <p className="text-sm" style={{ color: colors.textSecondary }}>
+                  {result.insight}
+                </p>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {FILTER_OPTIONS.map((filter) => {
+                  const active = activeFilter === filter.value;
+                  return (
+                    <button
+                      key={filter.value}
+                      type="button"
+                      onClick={() => setActiveFilter(filter.value)}
+                      className="rounded-full px-3 py-1.5 text-xs font-semibold transition-colors"
+                      style={{
+                        backgroundColor: active ? colors.brandDark : colors.bgSecondary,
+                        color: active ? colors.bgPrimary : colors.textSecondary,
+                        border: `1px solid ${active ? colors.brandDark : colors.border}`,
+                      }}
+                    >
+                      {filter.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+              <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
+                Transakcje insiderów
+              </h3>
+
+              {filteredTransactions.length === 0 ? (
+                <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
+                  Brak transakcji dla wybranego filtra.
+                </p>
+              ) : (
+                <div className="mt-3 overflow-x-auto rounded-xl border" style={{ borderColor: colors.border }}>
+                  <table className="min-w-full text-left text-sm">
+                    <thead style={{ backgroundColor: colors.bgSecondary, color: colors.textSecondary }}>
+                      <tr>
+                        <th className="px-4 py-3 font-semibold">Logo+Symbol</th>
+                        <th className="px-4 py-3 font-semibold">Insider</th>
+                        <th className="px-4 py-3 font-semibold">Typ (Kup/Sprzedaj)</th>
+                        <th className="px-4 py-3 text-right font-semibold">Wartość</th>
+                        <th className="px-4 py-3 font-semibold">Data</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredTransactions.map((transaction, index) => {
+                        const isPurchase = transaction.action === "BUY";
+                        return (
+                          <tr key={`${transaction.name}-${transaction.date}-${index}`} className="border-t" style={{ borderColor: colors.border }}>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
+                                  style={{ backgroundColor: colors.brandDark, color: colors.bgPrimary }}
+                                >
+                                  {result.symbol.slice(0, 2)}
+                                </span>
+                                <span className="font-semibold" style={{ color: colors.brandDark }}>
+                                  {result.symbol}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="font-semibold" style={{ color: colors.textPrimary }}>
+                                {transaction.name}
+                              </p>
+                              <p className="text-xs" style={{ color: colors.textSecondary }}>
+                                {transaction.role}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span
+                                className="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase"
+                                style={{
+                                  backgroundColor: isPurchase ? `${colors.positive}1A` : `${colors.negative}1A`,
+                                  color: isPurchase ? colors.positive : colors.negative,
+                                }}
+                              >
+                                {isPurchase ? "Kup" : "Sprzedaj"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-right font-mono" style={{ color: colors.textPrimary }}>
+                              {formatUsd(transaction.value)}
+                            </td>
+                            <td className="px-4 py-3" style={{ color: colors.textSecondary }}>
+                              {transaction.date}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+              <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
+                Top insiders
+              </h3>
+              {topInsiders.length === 0 ? (
+                <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
+                  Brak danych dla sekcji Top insiders.
+                </p>
+              ) : (
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  {topInsiders.map((insider) => (
+                    <article key={insider.name} className="rounded-xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"
+                          style={{ backgroundColor: colors.brandDark, color: colors.bgPrimary }}
+                        >
+                          {initialsFromName(insider.name)}
+                        </span>
+                        <div>
+                          <p className="font-semibold" style={{ color: colors.textPrimary }}>
+                            {insider.name}
+                          </p>
+                          <p className="text-xs" style={{ color: colors.textSecondary }}>
+                            {insider.role}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
+                        Łączna wartość: <span style={{ color: colors.brandDark, fontWeight: 700 }}>{formatUsd(insider.totalValue)}</span>
+                      </p>
+                      <p className="mt-1 text-xs" style={{ color: colors.textSecondary }}>
+                        Kup: {insider.purchases} · Sprzedaj: {insider.sales}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        ) : null}
+      </div>
     </div>
   );
 }
