@@ -8,12 +8,8 @@ import {
   type EmotionalTrackInput,
 } from "../modules/behavioral/emotionalStateDetector";
 
-type DbLike = {
-  emotionalEvent: {
-    create: (args: { data: Record<string, unknown> }) => Promise<unknown>;
-    findFirst: (args: Record<string, unknown>) => Promise<unknown>;
-  };
-};
+type EmotionalTrackDeps = NonNullable<Parameters<typeof trackEmotionalState>[1]>;
+type DbLike = NonNullable<EmotionalTrackDeps["db"]>;
 
 function toFinite(value: unknown): number | null {
   const n = Number(value);
@@ -23,7 +19,7 @@ function toFinite(value: unknown): number | null {
 export function createEmotionalRouter(
   deps?: {
     db?: DbLike;
-    suggestor?: (payload: EmotionalTrackInput) => Promise<string>;
+    suggestor?: EmotionalTrackDeps["suggestor"];
   },
 ): Router {
   const db = (deps?.db ?? (prisma as unknown as DbLike)) as DbLike;
@@ -50,7 +46,7 @@ export function createEmotionalRouter(
           tradeFrequency,
           avgDecisionTime,
         },
-        { db, suggestor },
+        { db, suggestor } as EmotionalTrackDeps,
       );
       res.json(result);
     } catch (error) {
@@ -62,7 +58,10 @@ export function createEmotionalRouter(
     try {
       const userId = String(req.params.userId ?? "").trim();
       if (!userId) return res.status(400).json({ error: "Missing userId" });
-      const status = await getEmotionalStatus(userId, { db });
+      const status = await getEmotionalStatus(
+        userId,
+        ({ db } as unknown) as Parameters<typeof getEmotionalStatus>[1],
+      );
       res.json(status);
     } catch (error) {
       next(error);

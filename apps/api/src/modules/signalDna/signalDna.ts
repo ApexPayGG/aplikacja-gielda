@@ -126,10 +126,10 @@ async function defaultNarrative(input: { twins: SignalTwin[]; avgResultPct: numb
 export function createSignalDnaService(customDeps?: Partial<SignalDnaDeps>) {
   const deps: SignalDnaDeps = {
     db: customDeps?.db ??
-      ({
+      (({
         signal: prisma.signal,
         paperTrade: prisma.paperTrade,
-      } as SignalDnaDeps["db"]),
+      } as unknown) as SignalDnaDeps["db"]),
     cache: customDeps?.cache ?? (getCacheRedis() as unknown as CacheLike),
     narrate: customDeps?.narrate ?? defaultNarrative,
   };

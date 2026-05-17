@@ -35,7 +35,7 @@ describe("sitemap routes", () => {
     await new Promise<void>((resolve) => {
       server = app.listen(0, () => resolve());
     });
-    const addr = server.address();
+    const addr = server!.address();
     if (!addr || typeof addr === "string") throw new Error("no port");
     baseUrl = `http://127.0.0.1:${addr.port}`;
   });

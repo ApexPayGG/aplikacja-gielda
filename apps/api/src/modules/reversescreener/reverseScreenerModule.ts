@@ -1,4 +1,4 @@
-import type { Quote } from "@prisma/client";
+import type { Prisma, Quote } from "@prisma/client";
 import { prisma } from "../../db/index";
 import { calcSignalDnaSimilarity } from "../signalDna/signalDna";
 
