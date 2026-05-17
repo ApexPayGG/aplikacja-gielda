@@ -137,7 +137,7 @@ export function createBacktestRouter(): Router {
         });
         if (bars.length < 2) continue;
         const first = Number(bars[0]?.close ?? 0);
-        const last = Number((bars[Math.min(20, bars.length - 1)]?.close ?? 0) as number);
+        const last = Number((bars[Math.min(20, bars.length - 1)]?.close ?? 0) as unknown as number);
         if (first <= 0) continue;
         const retPct = ((last - first) / first) * 100;
         returns.push(retPct);

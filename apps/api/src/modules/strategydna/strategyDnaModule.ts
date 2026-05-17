@@ -204,10 +204,10 @@ Return JSON: { primary: {name, pct}, secondary: {name, pct}, insight: string (ma
 export function createStrategyDnaService(customDeps?: Partial<StrategyDnaDeps>) {
   const deps: StrategyDnaDeps = {
     db: customDeps?.db ??
-      ({
+      (({
         paperTrade: prisma.paperTrade,
         company: prisma.company,
-      } as StrategyDnaDeps["db"]),
+      } as unknown) as StrategyDnaDeps["db"]),
     runAi: customDeps?.runAi ?? defaultRunAi,
   };
 

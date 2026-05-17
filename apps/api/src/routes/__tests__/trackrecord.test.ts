@@ -21,6 +21,9 @@ describe("trackrecord routes", () => {
           bestTradePct: 11.2,
           worstTradePct: -5.1,
           generatedAt: new Date("2026-01-01T10:00:00.000Z"),
+          bestTrade: { symbol: "AAPL", pct: 11.2 },
+          worstTrade: { symbol: "MSFT", pct: -5.1 },
+          maxWinStreak: 3,
         }),
         getPublicFn: async (hash) =>
           hash === "hash-123"
