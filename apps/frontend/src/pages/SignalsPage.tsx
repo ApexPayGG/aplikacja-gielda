@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
+import { ExportButton } from "../components/ExportButton";
 import { ShareButton } from "../components/ShareButton";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
@@ -152,7 +153,7 @@ function createSignalFilterMatcher(activeFilter: SignalFilter): (signal: SignalL
 }
 
 export function SignalsPage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const isLoggedIn = Boolean(token);
   const [signals, setSignals] = useState<SignalListItem[]>([]);
   const [loadingList, setLoadingList] = useState(true);
@@ -211,28 +212,31 @@ export function SignalsPage() {
             </p>
             <EtoroCTAButton sourcePage="signals" className="max-w-xs" />
           </div>
-          <div
-            className="inline-flex flex-wrap items-center gap-2 rounded-2xl border p-2"
-            style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-          >
-            {filterOptions.map((option) => {
-              const active = option.id === activeFilter;
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  onClick={() => setActiveFilter(option.id)}
-                  className="rounded-xl px-4 py-2 text-sm font-semibold transition"
-                  style={{
-                    backgroundColor: active ? colors.brandDark : colors.bgPrimary,
-                    color: active ? colors.bgPrimary : colors.textSecondary,
-                    border: `1px solid ${active ? colors.brandDark : colors.border}`,
-                  }}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
+          <div className="flex flex-col items-start gap-3 md:items-end">
+            <ExportButton endpoint="/export/signals" userId={user?.id} label="Eksportuj sygnały" />
+            <div
+              className="inline-flex flex-wrap items-center gap-2 rounded-2xl border p-2"
+              style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+            >
+              {filterOptions.map((option) => {
+                const active = option.id === activeFilter;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => setActiveFilter(option.id)}
+                    className="rounded-xl px-4 py-2 text-sm font-semibold transition"
+                    style={{
+                      backgroundColor: active ? colors.brandDark : colors.bgPrimary,
+                      color: active ? colors.bgPrimary : colors.textSecondary,
+                      border: `1px solid ${active ? colors.brandDark : colors.border}`,
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </header>
 

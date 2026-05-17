@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import { ExportButton } from "../components/ExportButton";
 import { FeedbackToastStack, type FeedbackToast } from "../components/FeedbackToastStack";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -774,6 +775,7 @@ export function PaperTradingPage() {
               </div>
             </div>
             <div className="flex flex-col items-end gap-2">
+              <ExportButton endpoint="/export/portfolio" userId={USER_ID || undefined} label="Eksportuj portfel" />
               <button
                 type="button"
                 onClick={() => setOpenTradePanelVisible((prev) => !prev)}
