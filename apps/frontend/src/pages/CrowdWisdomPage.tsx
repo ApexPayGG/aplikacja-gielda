@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { colors } from "../styles/designSystem";
 import { getCrowdWisdom, searchCompanies, type Company, type CrowdWisdomResponse } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -27,29 +28,38 @@ function formatDivergence(value: number): string {
 const DIVERGENCE_GOLD_THRESHOLD = 15;
 
 export function CrowdWisdomPage() {
+  const { t } = useTranslation();
   const [symbolInput, setSymbolInput] = useState("AAPL");
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState<Company[]>([]);
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<CrowdWisdomResponse | null>(null);
   const [scannedCompanies, setScannedCompanies] = useState<CrowdWisdomResponse[]>([]);
+  const searchRequestId = useRef(0);
 
   useEffect(() => {
     const query = symbolInput.trim();
     if (query.length < 2) {
       setSuggestions([]);
+      setSearching(false);
       return;
     }
 
     const timeout = window.setTimeout(async () => {
+      const requestId = searchRequestId.current + 1;
+      searchRequestId.current = requestId;
       setSearching(true);
       try {
         const response = await searchCompanies(query, 8);
+        if (searchRequestId.current !== requestId) return;
         setSuggestions(response);
       } catch {
+        if (searchRequestId.current !== requestId) return;
         setSuggestions([]);
       } finally {
+        if (searchRequestId.current !== requestId) return;
         setSearching(false);
       }
     }, 250);
@@ -64,6 +74,7 @@ export function CrowdWisdomPage() {
 
     setLoading(true);
     setError(null);
+    setSuggestions([]);
     try {
       const response = await getCrowdWisdom(symbol);
       setSelectedCompany(response);
@@ -91,16 +102,32 @@ export function CrowdWisdomPage() {
   const insiderSentiment = selectedCompany ? sentimentSummary(selectedCompany.insiderBuying) : null;
   const divergenceValue = selectedCompany ? Math.abs(selectedCompany.divergence) : 0;
   const hasLargeDivergence = divergenceValue >= DIVERGENCE_GOLD_THRESHOLD;
+  const signalLabel = selectedCompany
+    ? selectedCompany.signal === "CONTRARIAN_BUY"
+      ? t("crowdwisdom.signalBuy", { defaultValue: "Sygnał: Kupuj kontrariańsko" })
+      : selectedCompany.signal === "CONTRARIAN_SELL"
+        ? t("crowdwisdom.signalSell", { defaultValue: "Sygnał: Sprzedaj kontrariańsko" })
+        : t("crowdwisdom.signalNeutral", { defaultValue: "Sygnał: Neutralny" })
+    : "";
+  const signalColor =
+    selectedCompany?.signal === "CONTRARIAN_BUY"
+      ? colors.positive
+      : selectedCompany?.signal === "CONTRARIAN_SELL"
+        ? colors.negative
+        : colors.textSecondary;
 
   return (
     <div className="min-h-screen py-8" style={{ backgroundColor: colors.bgSecondary }}>
       <div className="mx-auto max-w-6xl px-4">
         <header className="mb-6">
           <h1 className="text-4xl font-bold" style={{ color: colors.brandDark }}>
-            Crowd Wisdom Inverter
+            {t("crowdwisdom.redesignTitle", { defaultValue: "Crowd Wisdom Inverter" })}
           </h1>
           <p className="mt-2 text-sm md:text-base" style={{ color: colors.textSecondary }}>
-            Konfrontuj nastroje inwestorów retail z aktywnością insiderów i wychwytuj największe rozbieżności.
+            {t("crowdwisdom.redesignSubtitle", {
+              defaultValue:
+                "Konfrontuj nastroje inwestorów retail z aktywnością insiderów i wychwytuj największe rozbieżności.",
+            })}
           </p>
         </header>
 
@@ -112,12 +139,16 @@ export function CrowdWisdomPage() {
           <div className="flex flex-col gap-3 md:flex-row md:items-end">
             <label className="relative flex-1 text-sm">
               <span className="mb-2 block font-semibold" style={{ color: colors.textSecondary }}>
-                Search spółki
+                {t("crowdwisdom.searchStocks", { defaultValue: "Search spółki" })}
               </span>
               <input
                 value={symbolInput}
                 onChange={(e) => setSymbolInput(e.target.value.toUpperCase())}
-                placeholder="AAPL / PKN / MSFT"
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => {
+                  window.setTimeout(() => setIsInputFocused(false), 120);
+                }}
+                placeholder={t("crowdwisdom.searchPlaceholder", { defaultValue: "AAPL / PKN / MSFT" })}
                 className="w-full rounded-xl border px-3 py-2.5 outline-none transition-colors"
                 style={{
                   borderColor: colors.borderStrong,
@@ -125,7 +156,7 @@ export function CrowdWisdomPage() {
                   color: colors.textPrimary,
                 }}
               />
-              {suggestions.length > 0 ? (
+              {suggestions.length > 0 && isInputFocused ? (
                 <ul
                   className="absolute left-0 right-0 top-[calc(100%+6px)] z-20 max-h-64 overflow-y-auto rounded-xl border shadow-lg"
                   style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
@@ -136,9 +167,11 @@ export function CrowdWisdomPage() {
                         type="button"
                         className="flex w-full items-start justify-between gap-2 px-3 py-2 text-left text-sm transition-colors hover:opacity-90"
                         style={{ color: colors.textPrimary }}
+                        onMouseDown={(event) => event.preventDefault()}
                         onClick={() => {
                           setSymbolInput(company.symbol);
                           setSuggestions([]);
+                          setIsInputFocused(false);
                         }}
                       >
                         <span className="font-semibold">{company.symbol}</span>
@@ -158,12 +191,12 @@ export function CrowdWisdomPage() {
               className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               style={{ backgroundColor: colors.brandDark }}
             >
-              {loading ? "Ładowanie..." : "Analizuj"}
+              {loading ? t("common.loading", { defaultValue: "Ładowanie..." }) : t("crowdwisdom.analyze", { defaultValue: "Analizuj" })}
             </button>
           </div>
           {searching ? (
             <p className="mt-2 text-xs" style={{ color: colors.textMuted }}>
-              Wyszukiwanie spółek...
+              {t("crowdwisdom.searching", { defaultValue: "Wyszukiwanie spółek..." })}
             </p>
           ) : null}
         </form>
@@ -201,6 +234,13 @@ export function CrowdWisdomPage() {
               </span>
             </div>
 
+            <span
+              className="mb-4 inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
+              style={{ backgroundColor: `${signalColor}1A`, color: signalColor }}
+            >
+              {signalLabel}
+            </span>
+
             <div className="grid gap-4 md:grid-cols-3">
               <SentimentCard title="Retail sentiment" sentiment={retailSentiment} />
               <SentimentCard title="Insider sentiment" sentiment={insiderSentiment} />
@@ -226,12 +266,12 @@ export function CrowdWisdomPage() {
 
         <section className="mt-6 rounded-2xl border p-5 md:p-6" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
           <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-            Spółki z największą dywergencją
+            {t("crowdwisdom.topDivergence", { defaultValue: "Spółki z największą dywergencją" })}
           </h3>
 
           {divergenceLeaders.length === 0 ? (
             <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
-              Brak danych. Wyszukaj i przeanalizuj pierwszą spółkę.
+              {t("crowdwisdom.emptyLeaders", { defaultValue: "Brak danych. Wyszukaj i przeanalizuj pierwszą spółkę." })}
             </p>
           ) : (
             <div className="mt-3 overflow-x-auto rounded-xl border" style={{ borderColor: colors.border }}>

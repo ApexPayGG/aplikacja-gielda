@@ -1,4 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getInsiderMirror, type InsiderMirrorResponse, type InsiderTransaction } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -14,8 +15,18 @@ const FILTER_OPTIONS: Array<{ value: TransactionFilter; label: string }> = [
 ];
 
 function parseDateToMs(value: string): number | null {
-  const timestamp = new Date(value).getTime();
-  return Number.isFinite(timestamp) ? timestamp : null;
+  const normalized = value.trim();
+  const isoMatch = normalized.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (isoMatch) {
+    const year = Number(isoMatch[1]);
+    const month = Number(isoMatch[2]);
+    const day = Number(isoMatch[3]);
+    const timestamp = Date.UTC(year, month - 1, day, 12, 0, 0, 0);
+    return Number.isFinite(timestamp) ? timestamp : null;
+  }
+
+  const fallback = new Date(normalized).getTime();
+  return Number.isFinite(fallback) ? fallback : null;
 }
 
 function isWithinDays(date: string, days: number): boolean {
@@ -52,17 +63,26 @@ function matchesFilter(transaction: InsiderTransaction, filter: TransactionFilte
 }
 
 export function InsiderMirrorPage() {
+  const { t } = useTranslation();
   const [symbolInput, setSymbolInput] = useState("AAPL");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<InsiderMirrorResponse | null>(null);
   const [activeFilter, setActiveFilter] = useState<TransactionFilter>("ALL");
+  const filterOptions = useMemo(
+    () =>
+      FILTER_OPTIONS.map((option) => ({
+        value: option.value,
+        label: t(`insider.filters.${option.value}`, { defaultValue: option.label }),
+      })),
+    [t],
+  );
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     const symbol = symbolInput.trim().toUpperCase();
     if (!symbol) {
-      setError("Podaj symbol spółki.");
+      setError(t("insider.validationSymbol", { defaultValue: "Podaj symbol spółki." }));
       setResult(null);
       return;
     }
@@ -114,16 +134,31 @@ export function InsiderMirrorPage() {
 
     return [...aggregate.values()].sort((a, b) => b.totalValue - a.totalValue).slice(0, 3);
   }, [filteredTransactions]);
+  const sentimentLabel = result
+    ? result.netSentiment === "BUY"
+      ? t("insider.sentimentBuy", { defaultValue: "Net sentiment: Kup" })
+      : result.netSentiment === "SELL"
+        ? t("insider.sentimentSell", { defaultValue: "Net sentiment: Sprzedaj" })
+        : t("insider.sentimentNeutral", { defaultValue: "Net sentiment: Neutralny" })
+    : "";
+  const sentimentColor =
+    result?.netSentiment === "BUY"
+      ? colors.positive
+      : result?.netSentiment === "SELL"
+        ? colors.negative
+        : colors.textSecondary;
 
   return (
     <div className="min-h-screen py-8" style={{ backgroundColor: colors.bgSecondary }}>
       <div className="mx-auto max-w-6xl px-4">
         <header className="mb-8">
           <h1 className="text-4xl font-bold" style={{ color: colors.brandDark }}>
-            Insider Mirror
+            {t("insider.redesignTitle", { defaultValue: "Insider Mirror" })}
           </h1>
           <p className="mt-2 text-sm md:text-base" style={{ color: colors.textSecondary }}>
-            Śledź najnowsze transakcje insiderów i szybko oceniaj kierunek ich działania.
+            {t("insider.redesignSubtitle", {
+              defaultValue: "Śledź najnowsze transakcje insiderów i szybko oceniaj kierunek ich działania.",
+            })}
           </p>
         </header>
 
@@ -132,7 +167,7 @@ export function InsiderMirrorPage() {
             <input
               value={symbolInput}
               onChange={(event) => setSymbolInput(event.target.value.toUpperCase())}
-              placeholder="AAPL / MSFT / TSLA"
+              placeholder={t("insider.searchPlaceholder", { defaultValue: "AAPL / MSFT / TSLA" })}
               className="w-full rounded-xl border px-4 py-2.5 outline-none"
               style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
               maxLength={16}
@@ -143,7 +178,9 @@ export function InsiderMirrorPage() {
               className="rounded-xl px-5 py-2.5 font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               style={{ backgroundColor: colors.brandDark }}
             >
-              {loading ? "Ładowanie..." : "Pobierz transakcje"}
+              {loading
+                ? t("common.loading", { defaultValue: "Ładowanie..." })
+                : t("insider.fetchTransactions", { defaultValue: "Pobierz transakcje" })}
             </button>
           </form>
         </section>
@@ -172,9 +209,15 @@ export function InsiderMirrorPage() {
                   {result.insight}
                 </p>
               </div>
+              <span
+                className="mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
+                style={{ backgroundColor: `${sentimentColor}1A`, color: sentimentColor }}
+              >
+                {sentimentLabel}
+              </span>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                {FILTER_OPTIONS.map((filter) => {
+                {filterOptions.map((filter) => {
                   const active = activeFilter === filter.value;
                   return (
                     <button
@@ -197,12 +240,12 @@ export function InsiderMirrorPage() {
 
             <div className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
               <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-                Transakcje insiderów
+                {t("insider.transactionsTitle", { defaultValue: "Transakcje insiderów" })}
               </h3>
 
               {filteredTransactions.length === 0 ? (
                 <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
-                  Brak transakcji dla wybranego filtra.
+                  {t("insider.emptyTransactions", { defaultValue: "Brak transakcji dla wybranego filtra." })}
                 </p>
               ) : (
                 <div className="mt-3 overflow-x-auto rounded-xl border" style={{ borderColor: colors.border }}>
@@ -270,11 +313,11 @@ export function InsiderMirrorPage() {
 
             <div className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
               <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-                Top insiders
+                {t("insider.topInsiders", { defaultValue: "Top insiders" })}
               </h3>
               {topInsiders.length === 0 ? (
                 <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
-                  Brak danych dla sekcji Top insiders.
+                  {t("insider.emptyTopInsiders", { defaultValue: "Brak danych dla sekcji Top insiders." })}
                 </p>
               ) : (
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
