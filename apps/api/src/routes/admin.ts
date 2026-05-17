@@ -55,8 +55,49 @@ type AdminRouteDeps = {
     signal: { count: () => Promise<number> };
     virtualTrade: { count: () => Promise<number> };
     paperTrade: { count: () => Promise<number> };
-    affiliateClick: { count: () => Promise<number> };
+    affiliateClick: {
+      count: (args?: { where?: { clickedAt?: { gte: Date } } }) => Promise<number>;
+      groupBy: (args: {
+        by: Array<"brokerId" | "language" | "sourcePage">;
+        where?: { clickedAt?: { gte: Date } };
+        _count: { _all: true };
+      }) => Promise<
+        Array<{
+          brokerId?: string | null;
+          language?: string | null;
+          sourcePage?: string | null;
+          _count: { _all: number };
+        }>
+      >;
+      findMany: (args: {
+        skip: number;
+        take: number;
+        orderBy: { clickedAt: "desc" };
+        where?: { clickedAt?: { gte: Date } };
+        select: {
+          id: true;
+          language: true;
+          sourcePage: true;
+          clickedAt: true;
+          broker: { select: { slug: true } };
+        };
+      }) => Promise<
+        Array<{
+          id: string;
+          language: string | null;
+          sourcePage: string | null;
+          clickedAt: Date;
+          broker: { slug: string } | null;
+        }>
+      >;
+    };
     affiliateConversion: { count: () => Promise<number> };
+    affiliateBroker: {
+      findMany: (args: {
+        where: { id: { in: string[] } };
+        select: { id: true; slug: true };
+      }) => Promise<Array<{ id: string; slug: string }>>;
+    };
     dlqEvent: {
       findMany: (args: {
         orderBy: { createdAt: "desc" };
@@ -97,9 +138,25 @@ function parsePagination(value: unknown, fallback: number, min: number, max: num
   return Math.min(max, Math.max(min, parsed));
 }
 
+function dateKeyUtc(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function recordFromGroupedRows(
+  rows: Array<{
+    key: string;
+    count: number;
+  }>,
+): Record<string, number> {
+  return rows.reduce<Record<string, number>>((acc, row) => {
+    acc[row.key] = row.count;
+    return acc;
+  }, {});
+}
+
 export function createAdminRouter(inputDeps?: Partial<AdminRouteDeps>): Router {
   const deps: AdminRouteDeps = {
-    db: inputDeps?.db ?? prisma,
+    db: inputDeps?.db ?? (prisma as unknown as AdminRouteDeps["db"]),
     requireAuthMiddleware: inputDeps?.requireAuthMiddleware ?? requireAuth,
     now: inputDeps?.now ?? (() => new Date()),
   };
@@ -271,6 +328,146 @@ export function createAdminRouter(inputDeps?: Partial<AdminRouteDeps>): Router {
         },
       });
       res.json({ errors: rows });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.get("/api/admin/affiliate/stats", async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const now = deps.now();
+      const todayStart = startOfUtcDay(now);
+      const startOfLast7Days = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
+      const startOfLast30Days = new Date(todayStart.getTime() - 29 * 24 * 60 * 60 * 1000);
+
+      const [
+        totalClicks,
+        clicksLast30Days,
+        brokerCountsRaw,
+        langCountsRaw,
+        pageCountsRaw,
+        clicksLast7Rows,
+      ] = await Promise.all([
+        deps.db.affiliateClick.count(),
+        deps.db.affiliateClick.count({ where: { clickedAt: { gte: startOfLast30Days } } }),
+        deps.db.affiliateClick.groupBy({
+          by: ["brokerId"],
+          _count: { _all: true },
+        }),
+        deps.db.affiliateClick.groupBy({
+          by: ["language"],
+          _count: { _all: true },
+        }),
+        deps.db.affiliateClick.groupBy({
+          by: ["sourcePage"],
+          _count: { _all: true },
+        }),
+        deps.db.affiliateClick.findMany({
+          skip: 0,
+          take: 100_000,
+          where: { clickedAt: { gte: startOfLast7Days } },
+          orderBy: { clickedAt: "desc" },
+          select: {
+            id: true,
+            language: true,
+            sourcePage: true,
+            clickedAt: true,
+            broker: { select: { slug: true } },
+          },
+        }),
+      ]);
+
+      const brokerIds = brokerCountsRaw
+        .map((row) => row.brokerId)
+        .filter((value): value is string => typeof value === "string" && value.length > 0);
+
+      const brokerRows =
+        brokerIds.length > 0
+          ? await deps.db.affiliateBroker.findMany({
+              where: { id: { in: brokerIds } },
+              select: { id: true, slug: true },
+            })
+          : [];
+      const brokerMap = new Map(brokerRows.map((broker) => [broker.id, broker.slug]));
+
+      const clicksByBroker = recordFromGroupedRows(
+        brokerCountsRaw.map((row) => ({
+          key: brokerMap.get(row.brokerId ?? "") ?? "unknown",
+          count: row._count._all,
+        })),
+      );
+      const clicksByLang = recordFromGroupedRows(
+        langCountsRaw.map((row) => ({
+          key: (row.language ?? "unknown").toLowerCase(),
+          count: row._count._all,
+        })),
+      );
+      const clicksByPage = recordFromGroupedRows(
+        pageCountsRaw.map((row) => ({
+          key: (row.sourcePage ?? "unknown").toLowerCase(),
+          count: row._count._all,
+        })),
+      );
+
+      const dailyMap = new Map<string, number>();
+      for (let i = 0; i < 7; i += 1) {
+        const date = new Date(startOfLast7Days.getTime() + i * 24 * 60 * 60 * 1000);
+        dailyMap.set(dateKeyUtc(date), 0);
+      }
+      for (const row of clicksLast7Rows) {
+        const key = dateKeyUtc(row.clickedAt);
+        if (!dailyMap.has(key)) continue;
+        dailyMap.set(key, (dailyMap.get(key) ?? 0) + 1);
+      }
+      const clicksLast7Days = Array.from(dailyMap.entries()).map(([date, count]) => ({ date, count }));
+
+      res.json({
+        totalClicks,
+        clicksByBroker,
+        clicksByLang,
+        clicksByPage,
+        clicksLast7Days,
+        clicksLast30Days,
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.get("/api/admin/affiliate/clicks", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const page = parsePagination(req.query.page, 1, 1, 10_000);
+      const limit = parsePagination(req.query.limit, 20, 1, 100);
+      const skip = (page - 1) * limit;
+
+      const [total, clicks] = await Promise.all([
+        deps.db.affiliateClick.count(),
+        deps.db.affiliateClick.findMany({
+          skip,
+          take: limit,
+          orderBy: { clickedAt: "desc" },
+          select: {
+            id: true,
+            language: true,
+            sourcePage: true,
+            clickedAt: true,
+            broker: { select: { slug: true } },
+          },
+        }),
+      ]);
+
+      res.json({
+        page,
+        limit,
+        total,
+        clicks: clicks.map((row) => ({
+          id: row.id,
+          broker: row.broker?.slug ?? "unknown",
+          lang: row.language ?? "unknown",
+          page: row.sourcePage ?? "unknown",
+          createdAt: row.clickedAt,
+        })),
+      });
     } catch (error) {
       next(error);
     }

@@ -1372,6 +1372,30 @@ export interface AdminUsersResponse {
   total: number;
 }
 
+export interface AdminAffiliateStatsResponse {
+  totalClicks: number;
+  clicksByBroker: Record<string, number>;
+  clicksByLang: Record<string, number>;
+  clicksByPage: Record<string, number>;
+  clicksLast7Days: Array<{ date: string; count: number }>;
+  clicksLast30Days: number;
+}
+
+export interface AdminAffiliateClickItem {
+  id: string;
+  broker: string;
+  lang: string;
+  page: string;
+  createdAt: string;
+}
+
+export interface AdminAffiliateClicksResponse {
+  page: number;
+  limit: number;
+  total: number;
+  clicks: AdminAffiliateClickItem[];
+}
+
 export interface AdminErrorItem {
   id: number;
   jobId: string;
@@ -1525,6 +1549,21 @@ export async function updateAdminUserTier(userId: string, tier: AdminTier): Prom
 
 export async function getAdminErrors(): Promise<{ errors: AdminErrorItem[] }> {
   const { data } = await api.get<{ errors: AdminErrorItem[] }>("/admin/errors");
+  return data;
+}
+
+export async function getAdminAffiliateStats(): Promise<AdminAffiliateStatsResponse> {
+  const { data } = await api.get<AdminAffiliateStatsResponse>("/admin/affiliate/stats");
+  return data;
+}
+
+export async function getAdminAffiliateClicks(
+  page = 1,
+  limit = 20,
+): Promise<AdminAffiliateClicksResponse> {
+  const { data } = await api.get<AdminAffiliateClicksResponse>("/admin/affiliate/clicks", {
+    params: { page, limit },
+  });
   return data;
 }
 
