@@ -97,6 +97,7 @@ import { createPremiumCompanyRouter } from "./routes/premiumCompany";
 import { createAuthRouter } from "./routes/auth";
 import { createWatchlistRouter } from "./routes/watchlist";
 import { createStripeRouter } from "./routes/stripe";
+import { createSitemapRouter } from "./routes/sitemap";
 import { runSnapshotJob } from "./modules/historicaltwins/snapshotJob";
 import { importCompanyOnDemand, searchCompaniesOnDemand } from "./modules/companies/companySearchModule";
 
@@ -243,6 +244,7 @@ export function createApp(): express.Express {
   app.use(createCorrelationRouter());
   app.use(createReactionsRouter());
   app.use("/api/tax", createTaxRouter(prisma));
+  app.use(createSitemapRouter());
 
   app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });
