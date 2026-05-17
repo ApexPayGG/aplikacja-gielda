@@ -37,8 +37,8 @@ import { StressTestPage } from "./pages/StressTestPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { MirrorTradingPage } from "./pages/MirrorTradingPage";
 import { TaxOptimizerPage } from "./pages/TaxOptimizerPage";
-import { VolatilityHeatMapPage } from "./pages/VolatilityHeatMapPage";
-import { WalkForwardPage } from "./pages/WalkForwardPage";
+import { VolatilityPage } from "./pages/VolatilityPage";
+import { BacktestPage } from "./pages/BacktestPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { AlpacaDashboardPage } from "./pages/AlpacaDashboardPage";
 import { AdminAffiliatePage } from "./pages/AdminAffiliatePage";
@@ -119,12 +119,12 @@ export default function App() {
           <Route path="/strategy-dna" element={<ProtectedRoute><StrategyDnaPage /></ProtectedRoute>} />
           <Route path="/track-record" element={<ProtectedRoute><TrackRecordPage /></ProtectedRoute>} />
           <Route path="/replay" element={<ProtectedRoute><ReplayModePage /></ProtectedRoute>} />
-          <Route path="/backtest" element={<ProtectedRoute><WalkForwardPage /></ProtectedRoute>} />
+          <Route path="/backtest" element={<ProtectedRoute><BacktestPage /></ProtectedRoute>} />
           <Route path="/earnings-predictor" element={<ProtectedRoute><EarningsPredictorPage /></ProtectedRoute>} />
           <Route path="/insider-mirror" element={<ProtectedRoute><InsiderMirrorPage /></ProtectedRoute>} />
           <Route path="/reverse-screener" element={<ProtectedRoute><ReverseScreenerPage /></ProtectedRoute>} />
           <Route path="/correlation" element={<ProtectedRoute><CorrelationPage /></ProtectedRoute>} />
-          <Route path="/volatility" element={<ProtectedRoute><VolatilityHeatMapPage /></ProtectedRoute>} />
+          <Route path="/volatility" element={<ProtectedRoute><VolatilityPage /></ProtectedRoute>} />
           <Route path="/news-halflife" element={<ProtectedRoute><NewsHalfLifePage /></ProtectedRoute>} />
           <Route path="/crowd-wisdom" element={<ProtectedRoute><CrowdWisdomPage /></ProtectedRoute>} />
           <Route path="/dividend-compound" element={<ProtectedRoute><DividendCompoundPage /></ProtectedRoute>} />
