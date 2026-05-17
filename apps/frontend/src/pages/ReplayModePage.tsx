@@ -1,47 +1,95 @@
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useEffect, useMemo, useState } from "react";
 import {
   evaluateReplayDecision,
   getReplaySnapshot,
   type ReplayAction,
   type ReplayEvaluateResponse,
   type ReplaySnapshotResponse,
+  searchCompanies,
 } from "../services/api";
+import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const SYMBOL_OPTIONS = ["PKN", "KGH", "PKO", "PZU", "PEO", "LPP", "CDR"];
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
+type ReplayDecision = ReplayAction | "SKIP";
 
 function formatPrice(value: number): string {
   return Number.isFinite(value) ? value.toFixed(2) : "0.00";
 }
 
 export function ReplayModePage() {
-  const { t } = useTranslation();
-  const [symbol, setSymbol] = useState("PKN");
+  const [symbolInput, setSymbolInput] = useState("PKN");
+  const [symbolOptions, setSymbolOptions] = useState<string[]>(SYMBOL_OPTIONS);
   const [date, setDate] = useState("");
   const [snapshot, setSnapshot] = useState<ReplaySnapshotResponse | null>(null);
-  const [action, setAction] = useState<ReplayAction>("BUY");
-  const [price, setPrice] = useState("");
+  const [reason, setReason] = useState("");
+  const [selectedDecision, setSelectedDecision] = useState<ReplayDecision | null>(null);
   const [evaluation, setEvaluation] = useState<ReplayEvaluateResponse | null>(null);
   const [loadingSnapshot, setLoadingSnapshot] = useState(false);
   const [loadingEvaluation, setLoadingEvaluation] = useState(false);
+  const [loadingSymbols, setLoadingSymbols] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canEvaluate = useMemo(
-    () => Boolean(snapshot) && Number.isFinite(Number(price)) && Number(price) > 0,
-    [snapshot, price],
-  );
+  const maxReplayDate = useMemo(() => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return yesterday.toISOString().slice(0, 10);
+  }, []);
+
+  useEffect(() => {
+    const query = symbolInput.trim();
+    if (!query) {
+      setSymbolOptions(SYMBOL_OPTIONS);
+      return;
+    }
+
+    let cancelled = false;
+    const timeoutId = window.setTimeout(async () => {
+      setLoadingSymbols(true);
+      try {
+        const companies = await searchCompanies(query, 8);
+        if (cancelled) return;
+        const remoteSymbols = companies
+          .map((row) => row.symbol?.trim().toUpperCase())
+          .filter((item): item is string => Boolean(item));
+        const merged = Array.from(
+          new Set([query.toUpperCase(), ...remoteSymbols, ...SYMBOL_OPTIONS]),
+        );
+        setSymbolOptions(merged.slice(0, 12));
+      } catch {
+        if (!cancelled) {
+          setSymbolOptions(Array.from(new Set([query.toUpperCase(), ...SYMBOL_OPTIONS])));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingSymbols(false);
+        }
+      }
+    }, 250);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [symbolInput]);
 
   async function onLoadSnapshot(event: React.FormEvent) {
     event.preventDefault();
+    const normalizedSymbol = symbolInput.trim().toUpperCase();
+    if (!normalizedSymbol) {
+      setError("Wpisz symbol spółki.");
+      return;
+    }
+
     setError(null);
     setEvaluation(null);
+    setSelectedDecision(null);
+    setReason("");
     setLoadingSnapshot(true);
     try {
-      const next = await getReplaySnapshot(symbol, date);
+      const next = await getReplaySnapshot(normalizedSymbol, date);
       setSnapshot(next);
-      setPrice(formatPrice(next.close));
     } catch (e) {
       setSnapshot(null);
       setError(apiErrorMessage(e));
@@ -50,18 +98,31 @@ export function ReplayModePage() {
     }
   }
 
-  async function onEvaluate(event: React.FormEvent) {
-    event.preventDefault();
+  async function onDecide(decision: ReplayDecision) {
     if (!snapshot) return;
     setError(null);
+    setSelectedDecision(decision);
+
+    if (decision === "SKIP") {
+      setEvaluation({
+        score: 6,
+        explanation:
+          reason.trim().length > 0
+            ? `Pominięcie zostało uzasadnione: ${reason.trim()}`
+            : "Pominięcie może być dobrą decyzją, jeśli setup nie spełnia Twoich kryteriów.",
+        actualOutcome: snapshot.priceChange5d,
+      });
+      return;
+    }
+
     setLoadingEvaluation(true);
     try {
       const result = await evaluateReplayDecision({
         userId: USER_ID,
         symbol: snapshot.symbol,
         date: snapshot.date,
-        action,
-        price: Number(price),
+        action: decision,
+        price: Number(snapshot.close),
       });
       setEvaluation(result);
     } catch (e) {
@@ -73,144 +134,165 @@ export function ReplayModePage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-bg text-slate-100">
-      <div className="mx-auto max-w-4xl space-y-6 px-4 py-6">
-        <header>
-          <h1 className="text-2xl font-bold text-white">{t("replay.title")}</h1>
-          <p className="mt-1 text-sm text-slate-400">{t("replay.subtitle")}</p>
+    <div className="min-h-screen bg-bgSecondary">
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 text-textPrimary">
+        <header
+          className="rounded-3xl border border-border bg-bgPrimary p-6 shadow-[0_18px_45px_rgba(45,10,107,0.1)]"
+          style={{ background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
+        >
+          <h1 className="text-3xl font-bold text-brandDark">Replay Mode</h1>
+          <p className="mt-2 text-sm text-textSecondary">Cofnij się w czasie i zagraj &quot;co bym zrobił&quot;</p>
         </header>
 
         {error ? (
-          <div className="rounded border border-brand-red/30 bg-brand-red/10 p-3 text-sm text-brand-red">
+          <div className="rounded-xl border border-negative/30 bg-negative/10 px-4 py-3 text-sm font-medium text-negative">
             {error}
           </div>
         ) : null}
 
-        <section className="neo-panel rounded-xl p-4">
-          <h2 className="mb-3 text-lg font-semibold text-white">{t("replay.step1Title")}</h2>
-          <form onSubmit={onLoadSnapshot} className="grid gap-3 md:grid-cols-3">
+        <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+          <form onSubmit={onLoadSnapshot} className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
             <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">{t("replay.symbol")}</span>
-              <select
-                value={symbol}
-                onChange={(e) => setSymbol(e.target.value)}
-                className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white"
-              >
-                {SYMBOL_OPTIONS.map((item) => (
+              <span className="font-medium text-textSecondary">Symbol search</span>
+              <input
+                list="replay-symbols"
+                type="search"
+                value={symbolInput}
+                onChange={(e) => setSymbolInput(e.target.value.toUpperCase())}
+                placeholder="Wyszukaj spółkę..."
+                className="rounded-xl border border-border bg-bgSecondary px-3 py-2.5 text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
+                required
+              />
+              <datalist id="replay-symbols">
+                {symbolOptions.map((item) => (
                   <option key={item} value={item}>
                     {item}
                   </option>
                 ))}
-              </select>
+              </datalist>
+              <span className="text-xs text-textMuted">{loadingSymbols ? "Szukam symboli..." : "Wpisz ticker lub nazwę"}</span>
             </label>
+
             <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-400">{t("replay.date")}</span>
+              <span className="font-medium text-textSecondary">Date picker</span>
               <input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white"
+                max={maxReplayDate}
+                className="rounded-xl border border-border bg-bgSecondary px-3 py-2.5 text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
                 required
               />
             </label>
+
             <div className="flex items-end">
               <button
                 type="submit"
                 disabled={loadingSnapshot}
-                className="rounded bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue/85 disabled:opacity-60"
+                className="w-full rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+                style={{ backgroundColor: colors.brandDark }}
               >
-                {loadingSnapshot ? t("common.loading") : t("replay.loadSnapshot")}
+                {loadingSnapshot ? "Ładowanie..." : "Załaduj historię"}
               </button>
             </div>
           </form>
         </section>
 
         {snapshot ? (
-          <section className="neo-panel rounded-xl p-4">
-            <h2 className="mb-3 text-lg font-semibold text-white">{t("replay.step2Title")}</h2>
-            <div className="grid gap-3 text-sm md:grid-cols-3">
-              <Stat label="Open" value={formatPrice(snapshot.open)} />
-              <Stat label="High" value={formatPrice(snapshot.high)} />
-              <Stat label="Low" value={formatPrice(snapshot.low)} />
-              <Stat label="Close" value={formatPrice(snapshot.close)} />
-              <Stat label="Volume" value={snapshot.volume.toLocaleString()} />
-              <Stat
-                label={t("replay.priceChange5d")}
-                value={`${snapshot.priceChange5d >= 0 ? "+" : ""}${snapshot.priceChange5d.toFixed(2)}%`}
-              />
-            </div>
-            <p className="mt-3 text-sm text-slate-400">{t("replay.contextHint")}</p>
-          </section>
-        ) : null}
+          <section className="grid gap-5 md:grid-cols-[1.45fr_1fr]">
+            <article
+              className="flex min-h-[360px] items-center justify-center rounded-2xl border border-border p-6 text-center shadow-[0_14px_34px_rgba(45,10,107,0.08)]"
+              style={{ backgroundColor: colors.bgSecondary }}
+            >
+              <div>
+                <p className="text-sm font-medium text-textMuted">Wykres historyczny</p>
+                <p className="mt-2 text-xs text-textMuted">
+                  {snapshot.symbol} • {snapshot.date}
+                </p>
+              </div>
+            </article>
 
-        {snapshot ? (
-          <section className="neo-panel rounded-xl p-4">
-            <h2 className="mb-3 text-lg font-semibold text-white">{t("replay.step3Title")}</h2>
-            <form onSubmit={onEvaluate} className="grid gap-3 md:grid-cols-3">
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="text-slate-400">{t("replay.action")}</span>
-                <select
-                  value={action}
-                  onChange={(e) => setAction(e.target.value as ReplayAction)}
-                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white"
-                >
-                  <option value="BUY">{t("common.buy")}</option>
-                  <option value="SELL">{t("common.sell")}</option>
-                </select>
-              </label>
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="text-slate-400">{t("replay.price")}</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="rounded border border-brand-border bg-brand-bg px-3 py-2 text-white"
-                />
-              </label>
-              <div className="flex items-end">
+            <aside className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+              <p className="text-sm font-semibold text-textSecondary">Panel decyzji</p>
+              <div className="mt-4 rounded-xl border border-border bg-bgSecondary p-3">
+                <p className="text-xs uppercase tracking-wide text-textMuted">Cena na wybrany dzień</p>
+                <p className="mt-1 font-mono text-2xl font-bold text-brandDark">{formatPrice(snapshot.close)}</p>
+              </div>
+
+              <div className="mt-4 grid grid-cols-3 gap-2">
                 <button
-                  type="submit"
-                  disabled={!canEvaluate || loadingEvaluation}
-                  className="rounded bg-brand-amber px-4 py-2 text-sm font-semibold text-brand-bg hover:bg-brand-amber/85 disabled:opacity-60"
+                  type="button"
+                  onClick={() => void onDecide("BUY")}
+                  disabled={loadingEvaluation}
+                  className="rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+                  style={{ backgroundColor: colors.positive }}
                 >
-                  {loadingEvaluation ? t("common.loading") : t("replay.evaluate")}
+                  Kup
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void onDecide("SELL")}
+                  disabled={loadingEvaluation}
+                  className="rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+                  style={{ backgroundColor: colors.negative }}
+                >
+                  Sprzedaj
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void onDecide("SKIP")}
+                  disabled={loadingEvaluation}
+                  className="rounded-lg border border-border px-3 py-2 text-sm font-semibold transition hover:bg-bgSecondary disabled:opacity-60"
+                  style={{ color: colors.textMuted }}
+                >
+                  Pomiń
                 </button>
               </div>
-            </form>
+
+              <label className="mt-4 block text-sm">
+                <span className="font-medium text-textSecondary">Dlaczego?</span>
+                <textarea
+                  value={reason}
+                  onChange={(event) => setReason(event.target.value)}
+                  rows={5}
+                  placeholder="Opisz swój tok myślenia..."
+                  className="mt-1 w-full rounded-xl border border-border bg-bgSecondary px-3 py-2.5 text-sm text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
+                />
+              </label>
+
+              {loadingEvaluation ? <p className="mt-3 text-xs text-textMuted">Analiza decyzji...</p> : null}
+            </aside>
           </section>
         ) : null}
 
         {evaluation ? (
-          <section className="neo-panel rounded-xl p-4">
-            <h2 className="mb-3 text-lg font-semibold text-white">{t("replay.step4Title")}</h2>
-            <div className="space-y-2 text-sm">
+          <section
+            className="rounded-2xl p-5 text-white shadow-[0_18px_45px_rgba(45,10,107,0.35)]"
+            style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
+          >
+            <h2 className="text-lg font-semibold text-white">AI Feedback</h2>
+            <div className="mt-3 grid gap-3 text-sm md:grid-cols-3">
               <p>
-                <span className="text-slate-400">{t("replay.score")}:</span>{" "}
-                <span className="font-semibold text-white">{evaluation.score}/10</span>
+                <span className="text-white/70">Decyzja:</span>{" "}
+                <span className="font-semibold">
+                  {selectedDecision === "BUY" ? "Kup" : selectedDecision === "SELL" ? "Sprzedaj" : "Pomiń"}
+                </span>
               </p>
               <p>
-                <span className="text-slate-400">{t("replay.actualOutcome")}:</span>{" "}
-                <span className="font-semibold text-white">
+                <span className="text-white/70">Score:</span> <span className="font-semibold">{evaluation.score}/10</span>
+              </p>
+              <p>
+                <span className="text-white/70">Faktyczny wynik:</span>{" "}
+                <span className="font-semibold">
                   {evaluation.actualOutcome >= 0 ? "+" : ""}
                   {evaluation.actualOutcome.toFixed(2)}%
                 </span>
               </p>
-              <p className="text-slate-300">{evaluation.explanation}</p>
             </div>
+            <p className="mt-2 text-sm text-white/90">{evaluation.explanation}</p>
           </section>
         ) : null}
       </div>
-    </div>
-  );
-}
-
-function Stat(props: { label: string; value: string }) {
-  return (
-    <div className="rounded border border-brand-border bg-brand-bg/70 p-3">
-      <p className="text-xs uppercase tracking-wide text-slate-400">{props.label}</p>
-      <p className="mt-1 text-base font-semibold text-white">{props.value}</p>
     </div>
   );
 }
