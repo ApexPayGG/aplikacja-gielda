@@ -21,7 +21,7 @@ export function createDigestRouter(depsInput?: Partial<DigestRouteDeps>): Router
     try {
       const userId = String(req.params.userId ?? "").trim();
       if (!userId) return res.status(400).json({ error: "Missing userId" });
-      const lang = String(req.query.lang ?? "pl");
+      const lang = typeof req.query.lang === "string" ? req.query.lang.trim() : undefined;
       const payload = await deps.previewFn(userId, lang);
       res.json(payload);
     } catch (error) {
@@ -32,7 +32,7 @@ export function createDigestRouter(depsInput?: Partial<DigestRouteDeps>): Router
   router.get("/api/digest/preview", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = String(req.query.userId ?? DEFAULT_USER_ID).trim();
-      const lang = String(req.query.lang ?? "pl");
+      const lang = typeof req.query.lang === "string" ? req.query.lang.trim() : undefined;
       const payload = await deps.previewFn(userId, lang);
       res.json(payload);
     } catch (error) {
@@ -44,7 +44,7 @@ export function createDigestRouter(depsInput?: Partial<DigestRouteDeps>): Router
     try {
       const userId = String(req.params.userId ?? "").trim();
       if (!userId) return res.status(400).json({ error: "Missing userId" });
-      const lang = String(req.query.lang ?? "pl");
+      const lang = typeof req.query.lang === "string" ? req.query.lang.trim() : undefined;
       const payload = await deps.sendFn(userId, lang);
       res.json(payload);
     } catch (error) {

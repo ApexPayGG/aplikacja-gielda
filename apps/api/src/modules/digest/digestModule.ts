@@ -50,6 +50,13 @@ type PortfolioSummary = {
   avgPnlPct: number;
 };
 
+type DigestSections = {
+  intro: string;
+  signals: string;
+  portfolio: string;
+  behavioralTip: string;
+};
+
 const defaultDeps: DigestModuleDeps = {
   db: prisma,
   fetchImpl: fetch,
@@ -121,7 +128,6 @@ function buildPrompt(input: {
   const positionsBlock =
     input.positions.length > 0
       ? input.positions
-          .slice(0, 5)
           .map(
             (position, idx) =>
               `${idx + 1}. ${position.ticker} ${position.direction} qty=${position.quantity}, entry=${round2(position.entryPrice)}, pnl=${round2(position.pnl ?? 0)} (${round2(position.pnlPct ?? 0)}%)`,
@@ -134,15 +140,18 @@ function buildPrompt(input: {
     : "Start with a localized equivalent of this phrase: Dzień dobry! Oto Twój dzienny przegląd rynku...";
 
   return [
-    "Napisz pojedynczą narrację Daily Digest dla inwestora.",
+    "Napisz Daily Digest dla inwestora i zwróć wynik jako JSON.",
     `Język odpowiedzi: ${input.lang}.`,
     localizedGreetingInstruction,
     `Maksymalnie ${DAILY_DIGEST_WORD_LIMIT} słów.`,
     "Użyj ciepłego, profesjonalnego tonu i konkretów.",
-    "Wymagane sekcje (w jednej spójnej narracji, bez list markdown):",
-    "1) Top 3 sygnały z ostatnich 24h z krótkim opisem każdego.",
-    "2) Stan portfela paper trading (otwarte pozycje + podsumowanie).",
-    "3) Jeden tip behawioralny na dziś.",
+    "Wymagane sekcje odpowiedzi:",
+    "- intro: jedno zdanie otwierające.",
+    "- signals: krótka sekcja z top 3 sygnałami (1-3 zdania).",
+    "- portfolio: krótki stan portfela paper trading (1-2 zdania).",
+    "- behavioralTip: dokładnie jeden tip behawioralny (1 zdanie).",
+    "Zwróć TYLKO poprawny JSON bez markdown, dokładnie taki kształt:",
+    '{"intro":"...","signals":"...","portfolio":"...","behavioralTip":"..."}',
     "",
     "DANE WEJŚCIOWE:",
     "TOP SYGNAŁY:",
@@ -162,6 +171,26 @@ function extractClaudeText(content: Anthropic.Messages.Message["content"]): stri
     .map((block) => block.text)
     .join("\n")
     .trim();
+}
+
+function parseDigestSections(raw: string): DigestSections {
+  const candidate = raw.match(/\{[\s\S]*\}/)?.[0] ?? raw;
+  const parsed = JSON.parse(candidate) as Partial<DigestSections>;
+  const intro = String(parsed.intro ?? "").trim();
+  const signals = String(parsed.signals ?? "").trim();
+  const portfolio = String(parsed.portfolio ?? "").trim();
+  const behavioralTip = String(parsed.behavioralTip ?? "").trim();
+
+  if (!intro || !signals || !portfolio || !behavioralTip) {
+    throw new Error("Claude digest response JSON is missing required sections");
+  }
+
+  return { intro, signals, portfolio, behavioralTip };
+}
+
+function composeDigestNarration(sections: DigestSections, lang: string): string {
+  const tipPrefix = lang.startsWith("pl") ? "Tip behawioralny:" : "Behavioral tip:";
+  return `${sections.intro} ${sections.signals} ${sections.portfolio} ${tipPrefix} ${sections.behavioralTip}`;
 }
 
 async function resolvePreferredLanguage(db: typeof prisma, userId: string): Promise<string> {
@@ -220,7 +249,14 @@ async function generateDigestNarration(input: {
   });
   const raw = extractClaudeText(response.content);
   if (!raw) throw new Error("Claude digest response was empty");
-  return clipToWordLimit(raw, DAILY_DIGEST_WORD_LIMIT);
+  let composed = raw;
+  try {
+    const sections = parseDigestSections(raw);
+    composed = composeDigestNarration(sections, input.lang);
+  } catch {
+    // Fallback to raw text if model returned prose instead of JSON.
+  }
+  return clipToWordLimit(composed, DAILY_DIGEST_WORD_LIMIT);
 }
 
 async function resolveRecipient(db: typeof prisma, userId: string): Promise<{ email: string; name: string | null }> {
