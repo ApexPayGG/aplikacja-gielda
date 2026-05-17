@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppNavBar } from "./components/AppNavBar";
+import { MobileBottomNav } from "./components/MobileBottomNav";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 import { useAuth } from "./context/AuthContext";
 import { AlphaCalendarPage } from "./pages/AlphaCalendarPage";
@@ -66,7 +67,7 @@ export default function App() {
       {token ? <AppNavBar /> : null}
       {showFloatingEmotionalWidget ? <EmotionalStateWidget /> : null}
 
-      <main className="relative z-10">
+      <main className={`relative z-10 ${token ? "pb-16 md:pb-0" : ""}`}>
         <Routes>
           <Route path="/login" element={token ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
           <Route path="/register" element={token ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
@@ -120,6 +121,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+      {token ? <MobileBottomNav /> : null}
     </div>
   );
 }
