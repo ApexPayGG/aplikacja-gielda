@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { createStripeCheckoutSession } from "../services/api";
 import { colors } from "../styles/designSystem";
 
@@ -161,6 +162,7 @@ export function PricingPage() {
             >
               Zacznij za darmo
             </Link>
+            <EtoroCTAButton sourcePage="pricing_page" className="mt-3" />
           </article>
 
           <article className="rounded-2xl border p-6 shadow-lg" style={{ backgroundColor: colors.brandDark, borderColor: colors.brandDark }}>

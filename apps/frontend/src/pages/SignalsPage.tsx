@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -207,6 +208,7 @@ export function SignalsPage() {
             <p className="max-w-2xl text-sm" style={{ color: colors.textSecondary }}>
               Przeglądaj aktywne setupy i ocenę ryzyka według nowego design systemu AMC Energy.
             </p>
+            <EtoroCTAButton sourcePage="signals" className="max-w-xs" />
           </div>
           <div
             className="inline-flex flex-wrap items-center gap-2 rounded-2xl border p-2"

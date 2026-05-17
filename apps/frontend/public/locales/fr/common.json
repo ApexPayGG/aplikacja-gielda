@@ -956,6 +956,8 @@
     }
   },
   "etoro": {
+    "cta": "Ouvrez un compte eToro",
+    "subtitle": "Négociez des actions via un courtier agréé",
     "company": {
       "title": "Trade this stock",
       "button": "Open account on eToro",

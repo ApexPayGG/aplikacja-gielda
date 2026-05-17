@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { createStripeCheckoutSession, getLatestLiveQuote } from "../services/api";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 
@@ -309,6 +310,10 @@ export function LandingPage() {
                 <p className="border-l-4 border-brandCyan pl-3 text-base font-semibold text-textPrimary">{t(featureKey)}</p>
               </div>
             ))}
+          </div>
+          <div className="mt-8 rounded-2xl border border-border bg-bgPrimary p-6 shadow-sm">
+            <p className="text-sm font-semibold text-textPrimary">{t("etoro.subtitle")}</p>
+            <EtoroCTAButton sourcePage="landing_page" className="mt-3 max-w-sm" />
           </div>
         </div>
       </section>

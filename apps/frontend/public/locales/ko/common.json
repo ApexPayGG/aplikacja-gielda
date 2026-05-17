@@ -956,6 +956,8 @@
     }
   },
   "etoro": {
+    "cta": "eToro 계좌 개설",
+    "subtitle": "라이선스 보유 브로커를 통해 주식을 거래하세요",
     "company": {
       "title": "Trade this stock",
       "button": "Open account on eToro",
