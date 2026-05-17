@@ -461,12 +461,20 @@ export function LandingPage() {
         <div className="mx-auto max-w-5xl px-6 text-center text-white">
           <h2 className="text-3xl font-bold">{t("landing.footerCta.title")}</h2>
           <p className="mt-3 text-sm text-white/85">{t("landing.footerCta.disclaimer")}</p>
-          <Link
-            to="/dashboard"
-            className="mt-6 inline-flex rounded-xl bg-white px-7 py-3 text-sm font-semibold text-brandDark transition hover:bg-bgSecondary"
-          >
-            {t("landing.footerCta.button")}
-          </Link>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              to="/dashboard"
+              className="inline-flex rounded-xl bg-white px-7 py-3 text-sm font-semibold text-brandDark transition hover:bg-bgSecondary"
+            >
+              {t("landing.footerCta.button")}
+            </Link>
+            <Link
+              to="/waitlist?source=landing"
+              className="inline-flex rounded-xl border border-white/60 px-7 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Dołącz do waitlisty
+            </Link>
+          </div>
         </div>
       </section>
 
