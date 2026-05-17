@@ -2,9 +2,11 @@ import type { ComponentType, ReactNode } from "react";
 import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppNavBar } from "./components/AppNavBar";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
+import { PageErrorBoundary } from "./components/PageErrorBoundary";
 import { useAuth } from "./context/AuthContext";
 import { hasCompletedOnboarding } from "./utils/onboarding";
 
@@ -96,6 +98,10 @@ function AdminOnlyRoute({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+function withPageErrorBoundary(page: string, children: ReactNode) {
+  return <PageErrorBoundary page={page}>{children}</PageErrorBoundary>;
+}
+
 export default function App() {
   const { token } = useAuth();
   const location = useLocation();
@@ -111,75 +117,95 @@ export default function App() {
       {showFloatingEmotionalWidget ? <EmotionalStateWidget /> : null}
 
       <main className={`relative z-10 ${token ? "pb-16 md:pb-0" : ""}`}>
-        <Suspense fallback={<LoadingScreen />}>
-          <Routes>
-            <Route path="/login" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LoginPage />} />
-            <Route path="/register" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/verify" element={<VerifyEmailPage />} />
-            <Route path="/payment-success" element={<PaymentSuccessPage />} />
-            <Route path="/payment-cancel" element={<PaymentCancelPage />} />
-            <Route
-              path="/onboarding"
-              element={token && onboardingCompleted ? <Navigate to="/dashboard" replace /> : <OnboardingPage />}
-            />
-            <Route path="/404" element={<NotFoundPage />} />
-            <Route path="/error" element={<ErrorPage />} />
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingScreen />}>
+            <Routes>
+              <Route path="/login" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LoginPage />} />
+              <Route path="/register" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <RegisterPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/verify" element={<VerifyEmailPage />} />
+              <Route path="/payment-success" element={<PaymentSuccessPage />} />
+              <Route path="/payment-cancel" element={<PaymentCancelPage />} />
+              <Route
+                path="/onboarding"
+                element={token && onboardingCompleted ? <Navigate to="/dashboard" replace /> : <OnboardingPage />}
+              />
+              <Route path="/404" element={<NotFoundPage />} />
+              <Route path="/error" element={<ErrorPage />} />
 
-            <Route path="/" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LandingPage />} />
-            <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="/companies" element={<Home />} />
-            <Route path="/company/:symbol" element={<CompanyDetail />} />
-            <Route path="/signals" element={<SignalsPage />} />
-            <Route path="/glossary" element={<GlossaryPage />} />
-            <Route path="/track-record/public/:hash" element={<TrackRecordPage />} />
+              <Route path="/" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LandingPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/companies" element={<Home />} />
+              <Route path="/company/:symbol" element={<CompanyDetail />} />
+              <Route path="/signals" element={<SignalsPage />} />
+              <Route path="/glossary" element={<GlossaryPage />} />
+              <Route path="/track-record/public/:hash" element={<TrackRecordPage />} />
 
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/paper-trading" element={<ProtectedRoute><PaperTradingPage /></ProtectedRoute>} />
-            <Route path="/behavioral-coach" element={<ProtectedRoute><BehavioralCoachPage /></ProtectedRoute>} />
-            <Route path="/loss-streak" element={<ProtectedRoute><LossStreakPage /></ProtectedRoute>} />
-            <Route path="/coach" element={<Navigate to="/behavioral-coach" replace />} />
-            <Route path="/psyche-profile" element={<ProtectedRoute><PsycheProfilePage /></ProtectedRoute>} />
-            <Route path="/weekly-review" element={<ProtectedRoute><WeeklyReviewPage /></ProtectedRoute>} />
-            <Route path="/alpaca" element={<ProtectedRoute><AlpacaPage /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-            <Route path="/mistake-library" element={<ProtectedRoute><MistakeLibraryPage /></ProtectedRoute>} />
-            <Route path="/skill-tree" element={<ProtectedRoute><SkillTreePage /></ProtectedRoute>} />
-            <Route path="/mirror-trading" element={<ProtectedRoute><MirrorTradingPage /></ProtectedRoute>} />
-            <Route path="/digest" element={<ProtectedRoute><DigestPage /></ProtectedRoute>} />
-            <Route path="/position-size" element={<ProtectedRoute><PositionSizePage /></ProtectedRoute>} />
-            <Route path="/stress-test" element={<ProtectedRoute><StressTestPage /></ProtectedRoute>} />
-            <Route path="/concentration" element={<ProtectedRoute><ConcentrationPage /></ProtectedRoute>} />
-            <Route path="/tax-optimizer" element={<ProtectedRoute><TaxOptimizerPage /></ProtectedRoute>} />
-            <Route path="/premortem" element={<ProtectedRoute><PreMortemPage /></ProtectedRoute>} />
-            <Route path="/strategy-dna" element={<ProtectedRoute><StrategyDnaPage /></ProtectedRoute>} />
-            <Route path="/track-record" element={<ProtectedRoute><TrackRecordPage /></ProtectedRoute>} />
-            <Route path="/replay" element={<ProtectedRoute><ReplayModePage /></ProtectedRoute>} />
-            <Route path="/backtest" element={<ProtectedRoute><BacktestPage /></ProtectedRoute>} />
-            <Route path="/earnings-predictor" element={<ProtectedRoute><EarningsPredictorPage /></ProtectedRoute>} />
-            <Route path="/insider-mirror" element={<ProtectedRoute><InsiderMirrorPage /></ProtectedRoute>} />
-            <Route path="/reverse-screener" element={<ProtectedRoute><ReverseScreenerPage /></ProtectedRoute>} />
-            <Route path="/correlation" element={<ProtectedRoute><CorrelationPage /></ProtectedRoute>} />
-            <Route path="/volatility" element={<ProtectedRoute><VolatilityPage /></ProtectedRoute>} />
-            <Route path="/news-halflife" element={<ProtectedRoute><NewsHalfLifePage /></ProtectedRoute>} />
-            <Route path="/crowd-wisdom" element={<ProtectedRoute><CrowdWisdomPage /></ProtectedRoute>} />
-            <Route path="/dividend-compound" element={<ProtectedRoute><DividendCompoundPage /></ProtectedRoute>} />
-            <Route path="/alpha-calendar" element={<ProtectedRoute><AlphaCalendarPage /></ProtectedRoute>} />
-            <Route path="/alpha" element={<Navigate to="/alpha-calendar" replace />} />
+              <Route
+                path="/dashboard"
+                element={<ProtectedRoute>{withPageErrorBoundary("Dashboard", <Dashboard />)}</ProtectedRoute>}
+              />
+              <Route
+                path="/paper-trading"
+                element={<ProtectedRoute>{withPageErrorBoundary("PaperTradingPage", <PaperTradingPage />)}</ProtectedRoute>}
+              />
+              <Route
+                path="/behavioral-coach"
+                element={
+                  <ProtectedRoute>{withPageErrorBoundary("BehavioralCoachPage", <BehavioralCoachPage />)}</ProtectedRoute>
+                }
+              />
+              <Route path="/loss-streak" element={<ProtectedRoute><LossStreakPage /></ProtectedRoute>} />
+              <Route path="/coach" element={<Navigate to="/behavioral-coach" replace />} />
+              <Route path="/psyche-profile" element={<ProtectedRoute><PsycheProfilePage /></ProtectedRoute>} />
+              <Route path="/weekly-review" element={<ProtectedRoute><WeeklyReviewPage /></ProtectedRoute>} />
+              <Route path="/alpaca" element={<ProtectedRoute><AlpacaPage /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="/mistake-library" element={<ProtectedRoute><MistakeLibraryPage /></ProtectedRoute>} />
+              <Route path="/skill-tree" element={<ProtectedRoute><SkillTreePage /></ProtectedRoute>} />
+              <Route path="/mirror-trading" element={<ProtectedRoute><MirrorTradingPage /></ProtectedRoute>} />
+              <Route path="/digest" element={<ProtectedRoute><DigestPage /></ProtectedRoute>} />
+              <Route path="/position-size" element={<ProtectedRoute><PositionSizePage /></ProtectedRoute>} />
+              <Route path="/stress-test" element={<ProtectedRoute><StressTestPage /></ProtectedRoute>} />
+              <Route path="/concentration" element={<ProtectedRoute><ConcentrationPage /></ProtectedRoute>} />
+              <Route path="/tax-optimizer" element={<ProtectedRoute><TaxOptimizerPage /></ProtectedRoute>} />
+              <Route path="/premortem" element={<ProtectedRoute><PreMortemPage /></ProtectedRoute>} />
+              <Route path="/strategy-dna" element={<ProtectedRoute><StrategyDnaPage /></ProtectedRoute>} />
+              <Route path="/track-record" element={<ProtectedRoute><TrackRecordPage /></ProtectedRoute>} />
+              <Route path="/replay" element={<ProtectedRoute><ReplayModePage /></ProtectedRoute>} />
+              <Route path="/backtest" element={<ProtectedRoute><BacktestPage /></ProtectedRoute>} />
+              <Route path="/earnings-predictor" element={<ProtectedRoute><EarningsPredictorPage /></ProtectedRoute>} />
+              <Route path="/insider-mirror" element={<ProtectedRoute><InsiderMirrorPage /></ProtectedRoute>} />
+              <Route path="/reverse-screener" element={<ProtectedRoute><ReverseScreenerPage /></ProtectedRoute>} />
+              <Route path="/correlation" element={<ProtectedRoute><CorrelationPage /></ProtectedRoute>} />
+              <Route path="/volatility" element={<ProtectedRoute><VolatilityPage /></ProtectedRoute>} />
+              <Route path="/news-halflife" element={<ProtectedRoute><NewsHalfLifePage /></ProtectedRoute>} />
+              <Route path="/crowd-wisdom" element={<ProtectedRoute><CrowdWisdomPage /></ProtectedRoute>} />
+              <Route path="/dividend-compound" element={<ProtectedRoute><DividendCompoundPage /></ProtectedRoute>} />
+              <Route path="/alpha-calendar" element={<ProtectedRoute><AlphaCalendarPage /></ProtectedRoute>} />
+              <Route path="/alpha" element={<Navigate to="/alpha-calendar" replace />} />
 
-            <Route path="/dividend" element={<DividendPage />} />
-            <Route path="/dividend/intelligence" element={<ProtectedRoute><DividendIntelligencePage /></ProtectedRoute>} />
-            <Route path="/admin" element={<ProtectedRoute><AdminOnlyRoute><AdminPage /></AdminOnlyRoute></ProtectedRoute>} />
-            <Route path="/admin/affiliate" element={<ProtectedRoute><AdminAffiliatePage /></ProtectedRoute>} />
-            <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
-            <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
-            <Route path="/company/:symbol/premium" element={<ProtectedRoute><PremiumCompanyAnalysis /></ProtectedRoute>} />
-            <Route path="*" element={<Navigate to="/404" replace />} />
-          </Routes>
-        </Suspense>
+              <Route path="/dividend" element={<DividendPage />} />
+              <Route path="/dividend/intelligence" element={<ProtectedRoute><DividendIntelligencePage /></ProtectedRoute>} />
+              <Route path="/admin" element={<ProtectedRoute><AdminOnlyRoute><AdminPage /></AdminOnlyRoute></ProtectedRoute>} />
+              <Route path="/admin/affiliate" element={<ProtectedRoute><AdminAffiliatePage /></ProtectedRoute>} />
+              <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
+              <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
+              <Route
+                path="/company/:symbol/premium"
+                element={
+                  <ProtectedRoute>
+                    {withPageErrorBoundary("PremiumCompanyAnalysis", <PremiumCompanyAnalysis />)}
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<Navigate to="/404" replace />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </main>
       {token ? <MobileBottomNav /> : null}
     </div>
