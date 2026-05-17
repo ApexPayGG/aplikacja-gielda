@@ -11,7 +11,7 @@ import { CorrelationPage } from "./pages/CorrelationPage";
 import { Dashboard } from "./pages/Dashboard";
 import { DividendCompoundPage } from "./pages/DividendCompoundPage";
 import { DividendIntelligencePage } from "./pages/DividendIntelligencePage";
-import { Dividends } from "./pages/Dividends";
+import { DividendPage } from "./pages/DividendPage";
 import { Home } from "./pages/Home";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -111,7 +111,7 @@ export default function App() {
           <Route path="/alpha-calendar" element={<ProtectedRoute><AlphaCalendarPage /></ProtectedRoute>} />
           <Route path="/alpha" element={<Navigate to="/alpha-calendar" replace />} />
 
-          <Route path="/dividend" element={<Dividends />} />
+          <Route path="/dividend" element={<DividendPage />} />
           <Route path="/dividend/intelligence" element={<ProtectedRoute><DividendIntelligencePage /></ProtectedRoute>} />
           <Route path="/admin/affiliate" element={<ProtectedRoute><AdminAffiliatePage /></ProtectedRoute>} />
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
