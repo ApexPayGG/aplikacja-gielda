@@ -48,6 +48,14 @@
     "medium": "मध्यम",
     "low": "निम्न"
   },
+  "share": {
+    "button": "Share",
+    "twitter": "Twitter/X",
+    "linkedin": "LinkedIn",
+    "copy": "Copy link",
+    "whatsapp": "WhatsApp",
+    "copied": "Copied!"
+  },
   "money": {
     "gpwCaption": "राशि PLN में (GPW नोशनल); साथ का USD संकेतक है (≈ 3.95 PLN प्रति USD, लाइव दर नहीं)।"
   },

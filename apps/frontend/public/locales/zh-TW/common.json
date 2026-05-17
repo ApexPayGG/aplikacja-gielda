@@ -48,6 +48,14 @@
     "medium": "Medium",
     "low": "Low"
   },
+  "share": {
+    "button": "Share",
+    "twitter": "Twitter/X",
+    "linkedin": "LinkedIn",
+    "copy": "Copy link",
+    "whatsapp": "WhatsApp",
+    "copied": "Copied!"
+  },
   "money": {
     "gpwCaption": "金額為 PLN（GPW 名目）；旁邊的 USD 為參考（約 3.95 PLN 兌 1 USD，非即時匯率）。"
   },

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
+import { ShareButton } from "../components/ShareButton";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -278,6 +279,7 @@ export function SignalsPage() {
             {filteredSignals.map((signal) => {
               const isPositive = signal.changePct >= 0;
               const isHovered = hoveredSignalId === signal.id;
+              const signedChangeForShare = `${signal.changePct >= 0 ? "+" : ""}${signal.changePct.toFixed(1)}%`;
               return (
                 <article
                   key={signal.id}
@@ -342,6 +344,13 @@ export function SignalsPage() {
                         {signal.changePct >= 0 ? "+" : ""}
                         {signal.changePct.toFixed(2)}%
                       </span>
+                      <div className="mt-3 flex md:justify-end">
+                        <ShareButton
+                          label={`Udostępnij sygnał ${signal.ticker} ${signedChangeForShare}`}
+                          url={`https://stock-ai.pro/signals/${signal.id}`}
+                          twitterText={`🚀 Sygnał AI: ${signal.ticker} ${signal.setupType} | Score: ${Math.round(signal.riskScore)}/100 | StockAI Pro #inwestowanie #GPW`}
+                        />
+                      </div>
                     </div>
                   </div>
 

@@ -48,6 +48,14 @@
     "medium": "Medium",
     "low": "Low"
   },
+  "share": {
+    "button": "Share",
+    "twitter": "Twitter/X",
+    "linkedin": "LinkedIn",
+    "copy": "Copy link",
+    "whatsapp": "WhatsApp",
+    "copied": "Copied!"
+  },
   "money": {
     "gpwCaption": "Beträge in PLN (GPW-Notional); USD daneben ist indikativ (ca. 3,95 PLN pro USD, kein Live-Kurs)."
   },

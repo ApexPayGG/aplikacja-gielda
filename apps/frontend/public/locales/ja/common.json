@@ -48,6 +48,14 @@
     "medium": "Medium",
     "low": "Low"
   },
+  "share": {
+    "button": "Share",
+    "twitter": "Twitter/X",
+    "linkedin": "LinkedIn",
+    "copy": "Copy link",
+    "whatsapp": "WhatsApp",
+    "copied": "Copied!"
+  },
   "money": {
     "gpwCaption": "金額はPLN（GPW想定）。横のUSDは目安です（約3.95 PLN = 1 USD、ライブ為替ではありません）。"
   },

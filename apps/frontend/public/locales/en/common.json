@@ -48,6 +48,14 @@
     "medium": "Medium",
     "low": "Low"
   },
+  "share": {
+    "button": "Share",
+    "twitter": "Twitter/X",
+    "linkedin": "LinkedIn",
+    "copy": "Copy link",
+    "whatsapp": "WhatsApp",
+    "copied": "Copied!"
+  },
   "money": {
     "gpwCaption": "Amounts in PLN (GPW notionals); USD shown alongside is indicative (≈ 3.95 PLN per USD, not a live FX feed)."
   },

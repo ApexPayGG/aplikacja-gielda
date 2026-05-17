@@ -45,6 +45,14 @@
     "apiLiveBadge": "API na żywo",
     "notAvailable": "—"
   },
+  "share": {
+    "button": "Udostępnij",
+    "twitter": "Twitter/X",
+    "linkedin": "LinkedIn",
+    "copy": "Kopiuj link",
+    "whatsapp": "WhatsApp",
+    "copied": "Skopiowano!"
+  },
   "auth": {
     "loginTitle": "Logowanie",
     "registerTitle": "Rejestracja",

@@ -48,6 +48,14 @@
     "medium": "Medium",
     "low": "Low"
   },
+  "share": {
+    "button": "Share",
+    "twitter": "Twitter/X",
+    "linkedin": "LinkedIn",
+    "copy": "Copy link",
+    "whatsapp": "WhatsApp",
+    "copied": "Copied!"
+  },
   "money": {
     "gpwCaption": "Importes en PLN (nocional GPW); el USD mostrado es orientativo (≈ 3,95 PLN por USD, no es tipo en vivo)."
   },

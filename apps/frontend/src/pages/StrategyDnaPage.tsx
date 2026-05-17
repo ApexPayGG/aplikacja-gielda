@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { ShareButton } from "../components/ShareButton";
 import { getStrategyDna, type StrategyDnaResponse } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -92,6 +93,17 @@ export function StrategyDnaPage() {
     };
   }, []);
 
+  const dominantStyle = data ? legendLabel(data.primary.name) : "";
+  const investorMatch = data ? clampPercent(data.primary.pct) : 0;
+  const shareInvestor = dominantStyle;
+  const strategyShareUrl =
+    USER_ID.length > 0
+      ? `https://stock-ai.pro/strategy-dna/${encodeURIComponent(USER_ID)}`
+      : "https://stock-ai.pro/strategy-dna";
+  const strategyShareText = data
+    ? `🧬 Mój styl inwestowania: ${dominantStyle} | ${investorMatch}% podobny do ${shareInvestor} | StockAI Pro`
+    : undefined;
+
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10 text-textPrimary">
       <header
@@ -100,6 +112,11 @@ export function StrategyDnaPage() {
       >
         <h1 className="text-3xl font-bold text-brandDark">Strategy DNA</h1>
         <p className="mt-2 text-sm text-textSecondary">Poznaj wzorce decyzji i dominujący styl inwestowania.</p>
+        {data && data.hasEnoughData ? (
+          <div className="mt-4">
+            <ShareButton label="Udostępnij swój styl" url={strategyShareUrl} twitterText={strategyShareText} />
+          </div>
+        ) : null}
       </header>
 
       {fromMistakes && highlightSymbols.length > 0 ? (

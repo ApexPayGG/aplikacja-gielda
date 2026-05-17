@@ -7,6 +7,7 @@ import {
   getPublicTrackRecord,
   type TrackRecordPublicResponse,
 } from "../services/api";
+import { ShareButton } from "../components/ShareButton";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -103,10 +104,17 @@ export function TrackRecordPage() {
   const [metrics, setMetrics] = useState<TrackRecordPublicResponse | null>(null);
   const [historyRows, setHistoryRows] = useState<TradeHistoryRow[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const effectiveHash = hash ?? publicHash;
-  const shareUrl = effectiveHash ? `stock-ai.pro/track-record/public/${effectiveHash}` : null;
+  const shareProfileUrl =
+    USER_ID.length > 0
+      ? `https://stock-ai.pro/track-record/${encodeURIComponent(USER_ID)}`
+      : effectiveHash
+        ? `https://stock-ai.pro/track-record/public/${effectiveHash}`
+        : null;
+  const shareText = metrics
+    ? `📊 Mój track record: Win rate ${metrics.winRate.toFixed(2)}% | ${metrics.totalTrades} transakcji | StockAI Pro`
+    : undefined;
   const tableRows = useMemo(() => {
     if (historyRows.length > 0) return historyRows;
     if (metrics) return fallbackRows(metrics);
@@ -184,7 +192,6 @@ export function TrackRecordPage() {
     if (isPublicView) return;
     setLoading(true);
     setError(null);
-    setCopied(false);
     try {
       const generated = await generateTrackRecord(USER_ID);
       const publicMetrics = await getPublicTrackRecord(generated.publicHash);
@@ -196,17 +203,6 @@ export function TrackRecordPage() {
       setError(apiErrorMessage(e));
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function onCopyLink() {
-    if (!shareUrl) return;
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-    } catch {
-      setCopied(false);
-      setError(t("trackrecord.copyFailed"));
     }
   }
 
@@ -241,7 +237,7 @@ export function TrackRecordPage() {
           </section>
         ) : null}
 
-        {metrics && shareUrl ? (
+        {metrics ? (
           <section className="space-y-5">
             <article className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_12px_30px_rgba(45,10,107,0.08)]">
               <h2 className="text-lg font-semibold text-brandDark">Publiczny profil</h2>
@@ -254,16 +250,12 @@ export function TrackRecordPage() {
 
               <div className="mt-5 flex flex-wrap items-center gap-3 text-sm">
                 <p className="text-textSecondary">
-                  {t("trackrecord.shareLinkLabel")}: <span className="font-mono text-textPrimary">{shareUrl}</span>
+                  {t("trackrecord.shareLinkLabel")}:{" "}
+                  <span className="font-mono text-textPrimary">{shareProfileUrl ?? t("common.notAvailable")}</span>
                 </p>
-                <button
-                  type="button"
-                  onClick={onCopyLink}
-                  className="rounded-xl px-4 py-2 font-semibold text-brandDark transition hover:brightness-95"
-                  style={{ backgroundColor: colors.brandCyan }}
-                >
-                  {copied ? t("trackrecord.copied") : t("trackrecord.copyButton")}
-                </button>
+                {shareProfileUrl ? (
+                  <ShareButton label="Udostępnij swój Track Record" url={shareProfileUrl} twitterText={shareText} />
+                ) : null}
               </div>
             </article>
 
