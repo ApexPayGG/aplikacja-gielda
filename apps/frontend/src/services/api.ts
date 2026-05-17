@@ -102,6 +102,10 @@ export interface Company {
 }
 
 export interface SearchResponse {
+  symbol?: string;
+  name?: string;
+  exchange?: string | null;
+  sector?: string | null;
   source?: "database" | "eodhd";
   results?: Array<{
     symbol: string;
@@ -114,6 +118,13 @@ export interface SearchResponse {
   query?: string;
   count?: number;
   data?: Company[];
+}
+
+export interface CompanySearchSuggestion {
+  symbol: string;
+  name: string;
+  exchange: string | null;
+  sector: string;
 }
 
 export interface SectorListResponse {
@@ -589,20 +600,49 @@ export interface MistakeLibraryResponse {
   };
 }
 
-export async function searchCompanies(query: string, limit = 20): Promise<Company[]> {
+export async function searchCompaniesAutocomplete(query: string, limit = 8): Promise<CompanySearchSuggestion[]> {
   const { data } = await api.get<SearchResponse>("/companies/search", {
     params: { q: query, limit },
   });
-  if (Array.isArray(data.data)) return data.data;
-  if (!Array.isArray(data.results)) return [];
-  return data.results.map((row) => ({
+  if (Array.isArray(data)) {
+    return data
+      .filter((row): row is SearchResponse => typeof row?.symbol === "string" && typeof row?.name === "string")
+      .map((row) => ({
+        symbol: row.symbol as string,
+        name: row.name as string,
+        exchange: row.exchange ?? null,
+        sector: row.sector ?? "Unknown",
+      }));
+  }
+  if (Array.isArray(data.results)) {
+    return data.results.map((row) => ({
+      symbol: row.symbol,
+      name: row.name,
+      exchange: row.exchange ?? null,
+      sector: "Unknown",
+    }));
+  }
+  if (Array.isArray(data.data)) {
+    return data.data.map((row) => ({
+      symbol: row.symbol,
+      name: row.name,
+      exchange: row.exchange ?? null,
+      sector: row.sector ?? "Unknown",
+    }));
+  }
+  return [];
+}
+
+export async function searchCompanies(query: string, limit = 20): Promise<Company[]> {
+  const rows = await searchCompaniesAutocomplete(query, limit);
+  return rows.map((row) => ({
     symbol: row.symbol,
     name: row.name,
     exchange: row.exchange ?? null,
-    sector: "Unknown",
+    sector: row.sector ?? "Unknown",
     industry: "Unknown",
-    logoUrl: row.logoUrl ?? null,
-    description: row.exchange ? `Exchange=${row.exchange}${row.currency ? `; Currency=${row.currency}` : ""}` : null,
+    logoUrl: null,
+    description: row.exchange ? `Exchange=${row.exchange}` : null,
     webUrl: null,
     createdAt: new Date().toISOString(),
   }));
