@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import process from "node:process";
 import bcrypt from "bcrypt";
 import { prisma } from "../../db/index";
+import { generatePasswordResetEmail } from "../../templates/passwordResetEmail";
 import { generateVerificationEmail } from "../../templates/emailVerification";
 import { generateWelcomeEmail } from "../../templates/welcomeEmail";
 import { ONBOARDING_EMAIL_1_SUBJECT } from "../email/onboardingSequence";
@@ -112,18 +113,7 @@ async function sendPasswordResetEmail(to: string, token: string): Promise<void> 
     to,
     subject: "Reset hasła — StockAI Pro",
     text: `Kliknij link aby ustawić nowe hasło: ${resetUrl}`,
-    html: `
-      <div style="font-family:Arial,sans-serif;line-height:1.5;color:#0d0d1a">
-        <h2 style="margin-bottom:12px">Reset hasła</h2>
-        <p>Otrzymaliśmy prośbę o zresetowanie hasła do Twojego konta StockAI Pro.</p>
-        <p>
-          <a href="${resetUrl}" style="display:inline-block;background:#2D0A6B;color:#ffffff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600">
-            Ustaw nowe hasło
-          </a>
-        </p>
-        <p>Jeśli to nie Ty, zignoruj tę wiadomość.</p>
-      </div>
-    `,
+    html: generatePasswordResetEmail(token, to),
   });
 }
 
