@@ -1,13 +1,12 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { AnalysisBrief } from "../components/AnalysisBrief";
-import { BrokerCTAButton } from "../components/affiliate/BrokerCTAButton";
-import { Chart } from "../components/Chart";
 import { WatchlistButton } from "../components/WatchlistButton";
+import { colors } from "../styles/designSystem";
+import { api, getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
 import type { AnalysisResponse, Company, NewsRow, QuoteRow } from "../services/api";
-import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 function formatMarketCap(value: number, currency: string, locale: string): string {
@@ -23,6 +22,38 @@ function formatCompanyDescription(description: string, locale: string): string {
     if (!Number.isFinite(parsed)) return `${rawValue} ${currency}`;
     return formatMarketCap(parsed, currency, locale);
   });
+}
+
+function formatPrice(value: number | null, locale: string): string {
+  if (!Number.isFinite(value ?? Number.NaN)) return "N/A";
+  return new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value ?? 0);
+}
+
+function formatVolume(value: number | null, locale: string): string {
+  if (!Number.isFinite(value ?? Number.NaN)) return "N/A";
+  return new Intl.NumberFormat(locale).format(value ?? 0);
+}
+
+function formatSignedPercent(value: number | null, locale: string): string {
+  if (!Number.isFinite(value ?? Number.NaN)) return "N/A";
+  const sign = (value ?? 0) >= 0 ? "+" : "";
+  return `${sign}${new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value ?? 0)}%`;
+}
+
+function extractMetric(description: string | null | undefined, keys: string[]): string | null {
+  if (!description) return null;
+  for (const key of keys) {
+    const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const match = description.match(new RegExp(`${escaped}\\s*=\\s*([^;\\n]+)`, "i"));
+    if (match?.[1]) return match[1].trim();
+  }
+  return null;
+}
+
+function parseNumber(value: string | null): number | null {
+  if (!value) return null;
+  const parsed = Number(value.replace(/,/g, "."));
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function toEtoroMarket(exchangeRaw?: string | null): "US" | "EU" | null {
@@ -48,6 +79,16 @@ function toEtoroMarket(exchangeRaw?: string | null): "US" | "EU" | null {
   return euExchanges.has(exchange) ? "EU" : null;
 }
 
+type CompanyTabId = "overview" | "ai-brief" | "signals" | "dividend" | "premium-analysis";
+
+const tabs: Array<{ id: CompanyTabId; label: string }> = [
+  { id: "overview", label: "Overview" },
+  { id: "ai-brief", label: "AI Brief" },
+  { id: "signals", label: "Signals" },
+  { id: "dividend", label: "Dividend" },
+  { id: "premium-analysis", label: "Premium Analysis" },
+];
+
 export function CompanyDetail() {
   const { t, i18n } = useTranslation();
   const { symbol = "" } = useParams();
@@ -62,7 +103,49 @@ export function CompanyDetail() {
   const [analysisLoading, setAnalysisLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<CompanyTabId>("overview");
   const etoroMarket = toEtoroMarket(company?.exchange);
+  const sortedQuotes = useMemo(
+    () => [...quotes].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()),
+    [quotes],
+  );
+  const latestQuote = sortedQuotes.at(-1) ?? null;
+  const previousQuote = sortedQuotes.length > 1 ? sortedQuotes.at(-2) ?? null : null;
+  const latestClose = latestQuote ? Number(latestQuote.close) : null;
+  const previousClose = previousQuote ? Number(previousQuote.close) : null;
+  const changePct =
+    Number.isFinite(latestClose) && Number.isFinite(previousClose) && (previousClose ?? 0) !== 0
+      ? (((latestClose ?? 0) - (previousClose ?? 0)) / (previousClose ?? 0)) * 100
+      : null;
+  const quoteHighs = sortedQuotes.map((q) => Number(q.high)).filter((value) => Number.isFinite(value));
+  const quoteLows = sortedQuotes.map((q) => Number(q.low)).filter((value) => Number.isFinite(value));
+  const trailingHigh = quoteHighs.length ? Math.max(...quoteHighs) : null;
+  const trailingLow = quoteLows.length ? Math.min(...quoteLows) : null;
+  const currentVolume = latestQuote ? Number(latestQuote.volume) : null;
+  const parsedMarketCap = parseNumber(extractMetric(company?.description, ["MarketCap"]));
+  const parsedPe = extractMetric(company?.description, ["P/E", "PE", "PERatio"]);
+  const parsedCurrency = extractMetric(company?.description, ["Currency"])?.toUpperCase() ?? "USD";
+  const etoroHref = useMemo(() => {
+    const base = String(api.defaults.baseURL ?? "/api").replace(/\/+$/, "");
+    const search = new URLSearchParams({
+      broker: "etoro",
+      page: "company_detail",
+      ticker: sym,
+    });
+    return `${base}/affiliate/redirect?${search.toString()}`;
+  }, [sym]);
+  const premiumHref = `/company/${encodeURIComponent(sym)}/premium`;
+  const fundamentals = [
+    { label: "P/E", value: parsedPe ?? "N/A" },
+    {
+      label: "Market Cap",
+      value: parsedMarketCap ? formatMarketCap(parsedMarketCap, parsedCurrency, currentLang) : "N/A",
+    },
+    { label: "Volume", value: formatVolume(currentVolume, currentLang) },
+    { label: "52w High", value: formatPrice(trailingHigh, currentLang) },
+    { label: "52w Low", value: formatPrice(trailingLow, currentLang) },
+    { label: "Currency", value: parsedCurrency },
+  ];
 
   useEffect(() => {
     const companyName = company?.name?.trim() || sym;
@@ -141,7 +224,7 @@ export function CompanyDetail() {
     return (
       <div className="mx-auto max-w-4xl px-4 py-20">
         <p className="text-red-300">{error ?? "Company not found"}</p>
-        <Link to="/" className="mt-4 inline-block text-accent-muted hover:underline">
+        <Link to="/" className="mt-4 inline-block hover:underline" style={{ color: colors.brandMedium }}>
           {t("company.backHome", { defaultValue: "<- Back home" })}
         </Link>
       </div>
@@ -149,138 +232,323 @@ export function CompanyDetail() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <Link to="/" className="mb-6 inline-block text-sm text-accent-muted hover:underline">
+    <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary, color: colors.textPrimary }}>
+      <div className="mx-auto max-w-[1280px] px-4 py-6 lg:px-6">
+        <Link to="/" className="mb-4 inline-block text-sm hover:underline" style={{ color: colors.brandMedium }}>
         {t("company.backToCompanies", { defaultValue: "← Companies" })}
       </Link>
 
-      <div className="mb-10 flex flex-col gap-8 md:flex-row md:items-start">
-        <div className="flex h-36 w-full max-w-[200px] shrink-0 items-center justify-center rounded-2xl border border-surface-border bg-slate-900/60 p-4 md:h-44">
-          {company.logoUrl ? (
-            <img src={company.logoUrl} alt="" className="max-h-full max-w-full object-contain" />
-          ) : (
-            <span className="text-4xl font-bold text-slate-600">{company.symbol.slice(0, 3)}</span>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <h1 className="text-3xl font-bold text-white">{company.name}</h1>
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <p className="font-mono text-sm text-slate-500">{company.symbol}</p>
-            <WatchlistButton symbol={company.symbol} />
-          </div>
-          {etoroMarket && (
-            <section className="mt-4 rounded-xl border border-brand-green/30 bg-brand-green/5 p-4">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-green">
-                {t("etoro.company.title", { defaultValue: "Trade this stock" })}
-              </h2>
-              <div className="mt-3">
-                <BrokerCTAButton
-                  ticker={company.symbol}
-                  sourcePage="company_detail"
-                  market={etoroMarket}
-                  brokerSlug="etoro"
-                  size="medium"
-                  variant="primary"
-                  label={t("etoro.company.button", { defaultValue: "Open account on eToro" })}
-                  showDisclosure={false}
-                  icon={
-                    <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-white px-2 text-xs font-bold text-[#00c853]">
-                      eToro
-                    </span>
-                  }
-                />
-                <p className="mt-2 text-xs text-slate-300">
-                  {t("etoro.company.disclaimer", {
-                    defaultValue: "CFDs involve risk. 76% of retail accounts lose money.",
-                  })}
-                </p>
+        <section
+          className="rounded-2xl border p-4 shadow-sm lg:p-5"
+          style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+        >
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex min-w-0 items-start gap-4">
+              <div
+                className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border"
+                style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
+              >
+                {company.logoUrl ? (
+                  <img src={company.logoUrl} alt="" className="h-20 w-20 rounded-xl object-contain p-2" />
+                ) : (
+                  <span className="text-2xl font-bold" style={{ color: colors.brandDark }}>
+                    {company.symbol.slice(0, 3)}
+                  </span>
+                )}
               </div>
-            </section>
-          )}
-          <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-            <div>
-              <dt className="text-slate-500">{t("company.sector", { defaultValue: "Sector" })}</dt>
-              <dd className="text-slate-200">{company.sector}</dd>
-            </div>
-            <div>
-              <dt className="text-slate-500">{t("company.industry", { defaultValue: "Industry" })}</dt>
-              <dd className="text-slate-200">{company.industry}</dd>
-            </div>
-            {company.webUrl && (
-              <div className="sm:col-span-2">
-                <dt className="text-slate-500">{t("company.website", { defaultValue: "Website" })}</dt>
-                <dd>
+              <div className="min-w-0">
+                <h1 className="truncate text-2xl font-semibold lg:text-3xl" style={{ color: colors.textPrimary }}>
+                  {company.name}
+                </h1>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span
+                    className="rounded-md px-2 py-1 text-xs font-semibold"
+                    style={{ backgroundColor: colors.bgTertiary, color: colors.textSecondary }}
+                  >
+                    {company.symbol}
+                  </span>
+                  {company.exchange ? (
+                    <span
+                      className="rounded-md px-2 py-1 text-xs font-semibold uppercase"
+                      style={{ backgroundColor: "#eef2ff", color: colors.brandDark }}
+                    >
+                      {company.exchange}
+                    </span>
+                  ) : null}
+                  <WatchlistButton symbol={company.symbol} />
+                </div>
+                {company.webUrl ? (
                   <a
                     href={company.webUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-accent-muted hover:underline"
+                    className="mt-2 inline-flex items-center gap-1 text-xs hover:underline"
+                    style={{ color: colors.brandMedium }}
                   >
                     {company.webUrl}
-                    <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+                    <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
                   </a>
-                </dd>
+                ) : null}
               </div>
-            )}
-          </dl>
-          {company.description && (
-            <p className="mt-4 text-sm leading-relaxed text-slate-400">
-              {formatCompanyDescription(company.description, currentLang)}
-            </p>
-          )}
-        </div>
-      </div>
-
-      <div className="mb-10">
-        <Chart quotes={quotes} title={t("company.chartTitle", { defaultValue: "Close - recent history" })} />
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <BrokerCTAButton
-            ticker={company.symbol}
-            sourcePage="company_detail"
-            size="medium"
-            variant="primary"
-          />
-          <Link
-            to={`/company/${encodeURIComponent(company.symbol)}/premium`}
-            className="rounded-lg border border-brand-blue/60 bg-brand-blue/10 px-4 py-2 text-sm font-medium text-brand-blue transition hover:bg-brand-blue/20"
-          >
-            Open Premium Analysis
-          </Link>
-        </div>
-      </div>
-
-      <div className="mb-10">
-        <h2 className="mb-3 text-lg font-semibold text-white">{t("company.recentNews", { defaultValue: "Recent news" })}</h2>
-        <ul className="divide-y divide-surface-border rounded-2xl border border-surface-border bg-surface-elevated">
-          {news.length === 0 && (
-            <li className="px-4 py-6 text-sm text-slate-500">
-              {t("company.noNews", { defaultValue: "No news rows in database yet." })}
-            </li>
-          )}
-          {news.map((n) => (
-            <li key={`${n.id}-${n.timestamp}`} className="px-4 py-3">
-              <a
-                href={n.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-accent-muted hover:underline"
-              >
-                {n.title}
-              </a>
-              <p className="mt-1 text-xs text-slate-500">
-                {new Date(n.timestamp).toLocaleDateString(i18n.resolvedLanguage || "en", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}{" "}
-                · {n.source}
+            </div>
+            <div className="w-full max-w-sm lg:text-right">
+              <p className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: colors.textMuted }}>
+                Last Close
               </p>
-            </li>
-          ))}
-        </ul>
-      </div>
+              <div className="mt-1 flex flex-wrap items-center gap-2 lg:justify-end">
+                <span className="font-mono text-4xl font-semibold" style={{ color: colors.brandDark }}>
+                  {formatPrice(latestClose, currentLang)}
+                </span>
+                <span
+                  className="rounded-md px-2 py-1 text-xs font-semibold"
+                  style={{
+                    backgroundColor:
+                      changePct == null ? colors.bgTertiary : (changePct ?? 0) >= 0 ? "rgba(0, 168, 107, 0.14)" : "rgba(229, 57, 53, 0.14)",
+                    color: changePct == null ? colors.textSecondary : (changePct ?? 0) >= 0 ? colors.positive : colors.negative,
+                  }}
+                >
+                  {formatSignedPercent(changePct, currentLang)}
+                </span>
+              </div>
+              {etoroMarket ? (
+                <a
+                  href={etoroHref}
+                  className="mt-3 inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold lg:w-auto"
+                  style={{ backgroundColor: colors.brandDark, color: "#FFFFFF" }}
+                >
+                  {t("etoro.company.button", { defaultValue: "Open account on eToro" })}
+                </a>
+              ) : null}
+              <Link
+                to={premiumHref}
+                className="mt-2 inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white lg:w-auto"
+                style={{
+                  backgroundImage: `linear-gradient(90deg, ${colors.brandDark} 0%, ${colors.brandMedium} 100%)`,
+                }}
+              >
+                Premium Analysis
+              </Link>
+            </div>
+          </div>
+        </section>
 
-      <AnalysisBrief analysis={analysis} loading={analysisLoading} error={analysisError} />
+        <div className="mt-4 border-b" style={{ borderColor: colors.border }}>
+          <nav className="-mb-px flex flex-wrap gap-2">
+            {tabs.map((tab) => {
+              const isActive = tab.id === activeTab;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className="rounded-t-lg border px-4 py-2 text-sm font-semibold transition"
+                  style={{
+                    borderColor: colors.border,
+                    backgroundColor: isActive ? colors.bgSecondary : colors.bgPrimary,
+                    color: isActive ? colors.brandDark : colors.textSecondary,
+                  }}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className="mt-4">
+          {activeTab === "overview" ? (
+            <section className="grid gap-4 xl:grid-cols-[1.45fr_1fr]">
+              <div className="space-y-4">
+                <article
+                  className="rounded-xl border p-4"
+                  style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+                >
+                  <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+                    Price Chart
+                  </h2>
+                  <div
+                    className="mt-3 flex h-72 items-center justify-center rounded-lg border border-dashed text-sm"
+                    style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary, color: colors.textMuted }}
+                  >
+                    Chart placeholder (Bloomberg-style dense chart goes here)
+                  </div>
+                </article>
+
+                <article
+                  className="rounded-xl border p-4"
+                  style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+                >
+                  <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+                    OHLCV (Latest Session)
+                  </h2>
+                  <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+                    {[
+                      { label: "Open", value: formatPrice(latestQuote ? Number(latestQuote.open) : null, currentLang) },
+                      { label: "High", value: formatPrice(latestQuote ? Number(latestQuote.high) : null, currentLang) },
+                      { label: "Low", value: formatPrice(latestQuote ? Number(latestQuote.low) : null, currentLang) },
+                      { label: "Close", value: formatPrice(latestQuote ? Number(latestQuote.close) : null, currentLang) },
+                      { label: "Volume", value: formatVolume(latestQuote ? Number(latestQuote.volume) : null, currentLang) },
+                    ].map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-lg border px-3 py-2"
+                        style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
+                      >
+                        <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+                          {item.label}
+                        </p>
+                        <p className="mt-1 font-mono text-sm font-semibold" style={{ color: colors.textPrimary }}>
+                          {item.value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+
+              <div className="space-y-4">
+                <article
+                  className="rounded-xl border p-4"
+                  style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+                >
+                  <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+                    Fundamentals
+                  </h2>
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    {fundamentals.map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-lg border px-3 py-2"
+                        style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
+                      >
+                        <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+                          {item.label}
+                        </p>
+                        <p className="mt-1 text-sm font-semibold" style={{ color: colors.textPrimary }}>
+                          {item.value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span
+                      className="rounded-full px-3 py-1 text-xs font-semibold"
+                      style={{ backgroundColor: colors.bgTertiary, color: colors.brandDark }}
+                    >
+                      Sector: {company.sector || "N/A"}
+                    </span>
+                    <span
+                      className="rounded-full px-3 py-1 text-xs font-semibold"
+                      style={{ backgroundColor: colors.bgTertiary, color: colors.brandMedium }}
+                    >
+                      Industry: {company.industry || "N/A"}
+                    </span>
+                  </div>
+                  {company.description ? (
+                    <p className="mt-4 text-sm leading-relaxed" style={{ color: colors.textSecondary }}>
+                      {formatCompanyDescription(company.description, currentLang)}
+                    </p>
+                  ) : null}
+                </article>
+              </div>
+            </section>
+          ) : null}
+
+          {activeTab === "ai-brief" ? (
+            <section
+              className="rounded-xl border p-4"
+              style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+            >
+              <AnalysisBrief analysis={analysis} loading={analysisLoading} error={analysisError} />
+            </section>
+          ) : null}
+
+          {activeTab === "signals" ? (
+            <section
+              className="rounded-xl border p-4"
+              style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+            >
+              <h2 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>
+                Signals
+              </h2>
+              <ul className="mt-3 divide-y rounded-lg border" style={{ borderColor: colors.border }}>
+                {news.length === 0 ? (
+                  <li className="px-4 py-6 text-sm" style={{ color: colors.textMuted }}>
+                    {t("company.noNews", { defaultValue: "No signals available yet." })}
+                  </li>
+                ) : (
+                  news.map((n) => (
+                    <li key={`${n.id}-${n.timestamp}`} className="px-4 py-3" style={{ borderColor: colors.border }}>
+                      <a
+                        href={n.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium hover:underline"
+                        style={{ color: colors.brandDark }}
+                      >
+                        {n.title}
+                      </a>
+                      <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
+                        {new Date(n.timestamp).toLocaleDateString(i18n.resolvedLanguage || "en", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}{" "}
+                        · {n.source}
+                      </p>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </section>
+          ) : null}
+
+          {activeTab === "dividend" ? (
+            <section
+              className="rounded-xl border p-4"
+              style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+            >
+              <h2 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>
+                Dividend
+              </h2>
+              <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
+                Dividend snapshot and payout calendar will be displayed here.
+              </p>
+            </section>
+          ) : null}
+
+          {activeTab === "premium-analysis" ? (
+            <section
+              className="rounded-xl border p-4"
+              style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+            >
+              <h2 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>
+                Premium Analysis
+              </h2>
+              <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
+                Unlock advanced narrative, valuation context, and risk scenarios for this company.
+              </p>
+              <Link
+                to={premiumHref}
+                className="mt-4 inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white"
+                style={{
+                  backgroundImage: `linear-gradient(90deg, ${colors.brandDark} 0%, ${colors.brandMedium} 100%)`,
+                }}
+              >
+                Open Premium Analysis
+              </Link>
+            </section>
+          ) : null}
+        </div>
+
+        {etoroMarket ? (
+          <p className="mt-4 text-xs" style={{ color: colors.textMuted }}>
+            {t("etoro.company.disclaimer", {
+              defaultValue: "CFDs involve risk. 76% of retail accounts lose money.",
+            })}
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }
