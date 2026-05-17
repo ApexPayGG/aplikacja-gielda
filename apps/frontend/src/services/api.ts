@@ -89,6 +89,24 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+export interface UserProfile {
+  id: string;
+  email: string;
+  name: string | null;
+  language: string | null;
+  timezone: string | null;
+  avatarUrl: string | null;
+  tier: string;
+  lastLoginAt: string | null;
+}
+
+export interface UserProfileUpdateInput {
+  name?: string | null;
+  language?: string;
+  timezone?: string;
+  avatar?: string | null;
+}
+
 export interface Company {
   symbol: string;
   name: string;
@@ -587,6 +605,22 @@ export interface MistakeLibraryResponse {
     strategy: number;
     timing: number;
   };
+}
+
+export async function getUserProfile(userId: string): Promise<UserProfile> {
+  const { data } = await api.get<{ profile: UserProfile }>(`/user/profile/${encodeURIComponent(userId)}`);
+  return data.profile;
+}
+
+export async function updateUserProfile(
+  userId: string,
+  body: UserProfileUpdateInput,
+): Promise<UserProfile> {
+  const { data } = await api.put<{ profile: UserProfile }>(
+    `/user/profile/${encodeURIComponent(userId)}`,
+    body,
+  );
+  return data.profile;
 }
 
 export async function searchCompanies(query: string, limit = 20): Promise<Company[]> {

@@ -66,6 +66,9 @@ model User {
   passwordResetTokenExp DateTime?           @map("password_reset_token_exp")
   passwordHash         String               @map("password_hash")
   name                 String?
+  language             String?              @default("pl")
+  timezone             String?              @default("Europe/Warsaw")
+  avatarUrl            String?              @map("avatar_url")
   tier                 String               @default("FREE")
   role                 String               @default("USER")
   stripeCustomerId     String?              @map("stripe_customer_id")

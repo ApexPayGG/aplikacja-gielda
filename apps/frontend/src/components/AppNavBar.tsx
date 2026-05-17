@@ -85,7 +85,7 @@ function isToolsPath(pathname: string): boolean {
 }
 
 function isAccountPath(pathname: string): boolean {
-  return pathname.startsWith("/settings");
+  return pathname.startsWith("/settings") || pathname.startsWith("/profile");
 }
 
 function getUserInitials(name: string | null, email: string): string {
@@ -198,20 +198,46 @@ export function AppNavBar() {
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<DropdownId | null>(null);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
   const accountLabel = t("nav.account", { defaultValue: "Account" });
+  const profileLabel = t("nav.profile", { defaultValue: "Mój profil" });
+  const settingsLabel = t("nav.settings", { defaultValue: "Ustawienia" });
   const logoutLabel = t("nav.logout", { defaultValue: "Wyloguj" });
 
   const mobileDrawerLinks: MobileDrawerLink[] = [
     { to: "/signals", label: t("nav.markets"), icon: ChartBarSquareIcon, isActive: isMarketsPath },
     { to: "/paper-trading", label: t("nav.portfolio"), icon: BriefcaseIcon, isActive: isPortfolioPath },
     { to: "/position-size", label: t("nav.tools"), icon: WrenchScrewdriverIcon, isActive: isToolsPath },
-    { to: "/settings", label: accountLabel, icon: UserCircleIcon, isActive: isAccountPath },
+    { to: "/profile", label: profileLabel, icon: UserCircleIcon, isActive: isAccountPath },
+    { to: "/settings", label: settingsLabel, icon: UserCircleIcon, isActive: isAccountPath },
   ];
 
   useEffect(() => {
     setMobileOpen(false);
     setOpenDropdown(null);
+    setAccountOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!accountOpen) return;
+    const closeOnOutside = (event: MouseEvent) => {
+      if (!accountMenuRef.current?.contains(event.target as Node)) {
+        setAccountOpen(false);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setAccountOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", closeOnOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeOnOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [accountOpen]);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -312,19 +338,49 @@ export function AppNavBar() {
 
         <div className="hidden shrink-0 items-center gap-3 md:flex">
           {user ? (
-            <>
-              <div className="max-w-[18rem] text-right">
-                {userName ? <div className="text-xs text-brandDark">{userName}</div> : null}
-                <div className="break-all text-[11px] text-brandDark">{userEmail}</div>
-              </div>
+            <div ref={accountMenuRef} className="relative">
               <button
                 type="button"
-                onClick={handleLogout}
-                className="rounded-lg border border-brandDark/20 px-3 py-1.5 text-sm font-semibold text-brandDark transition hover:bg-brandDark hover:text-white"
+                onClick={() => setAccountOpen((open) => !open)}
+                className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-left transition hover:border-brandDark/35"
+                aria-expanded={accountOpen}
+                aria-haspopup="true"
               >
-                {logoutLabel}
+                <div className="max-w-[18rem] text-right">
+                  {userName ? <div className="text-xs text-brandDark">{userName}</div> : null}
+                  <div className="break-all text-[11px] text-brandDark">{userEmail}</div>
+                </div>
+                <ChevronDownIcon className="h-4 w-4 text-brandDark" aria-hidden />
               </button>
-            </>
+              {accountOpen ? (
+                <div className="absolute right-0 top-full z-50 mt-2 min-w-[11rem] rounded-xl border border-border bg-bgPrimary py-1 shadow-lg">
+                  <NavLink
+                    to="/profile"
+                    className={({ isActive }) => `${navLinkClass(isActive)} rounded-none px-3`}
+                    onClick={() => setAccountOpen(false)}
+                  >
+                    {profileLabel}
+                  </NavLink>
+                  <NavLink
+                    to="/settings"
+                    className={({ isActive }) => `${navLinkClass(isActive)} rounded-none px-3`}
+                    onClick={() => setAccountOpen(false)}
+                  >
+                    {settingsLabel}
+                  </NavLink>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAccountOpen(false);
+                      handleLogout();
+                    }}
+                    className="block w-full px-3 py-2 text-left text-sm font-medium text-negative transition hover:bg-bgSecondary"
+                  >
+                    {logoutLabel}
+                  </button>
+                </div>
+              ) : null}
+            </div>
           ) : null}
           <LanguageSwitcher />
         </div>

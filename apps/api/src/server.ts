@@ -101,6 +101,7 @@ import { createAuthRouter } from "./routes/auth";
 import { createWatchlistRouter } from "./routes/watchlist";
 import { createStripeRouter } from "./routes/stripe";
 import { createSitemapRouter } from "./routes/sitemap";
+import { createUserProfileRouter } from "./routes/userProfile";
 import { runSnapshotJob } from "./modules/historicaltwins/snapshotJob";
 import { importCompanyOnDemand, searchCompaniesOnDemand } from "./modules/companies/companySearchModule";
 
@@ -202,6 +203,7 @@ export function createApp(): express.Express {
   app.use(createInputSanitizerMiddleware());
 
   app.use(createAuthRouter());
+  app.use(createUserProfileRouter());
   app.use(createStripeRouter());
   app.use(createWatchlistRouter());
   app.use(createCopilotRouter());

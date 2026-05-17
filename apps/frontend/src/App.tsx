@@ -71,6 +71,7 @@ const ErrorPage = lazyNamed(() => import("./pages/ErrorPage"), "ErrorPage");
 const PricingPage = lazyNamed(() => import("./pages/PricingPage"), "PricingPage");
 const PaymentSuccessPage = lazyNamed(() => import("./pages/PaymentSuccessPage"), "PaymentSuccessPage");
 const PaymentCancelPage = lazyNamed(() => import("./pages/PaymentCancelPage"), "PaymentCancelPage");
+const ProfilePage = lazyNamed(() => import("./pages/ProfilePage"), "ProfilePage");
 const PrivacyPage = lazyNamed(() => import("./pages/PrivacyPage"), "PrivacyPage");
 const TermsPage = lazyNamed(() => import("./pages/TermsPage"), "TermsPage");
 
@@ -163,6 +164,7 @@ export default function App() {
               <Route path="/psyche-profile" element={<ProtectedRoute><PsycheProfilePage /></ProtectedRoute>} />
               <Route path="/weekly-review" element={<ProtectedRoute><WeeklyReviewPage /></ProtectedRoute>} />
               <Route path="/alpaca" element={<ProtectedRoute><AlpacaPage /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               <Route path="/mistake-library" element={<ProtectedRoute><MistakeLibraryPage /></ProtectedRoute>} />
               <Route path="/skill-tree" element={<ProtectedRoute><SkillTreePage /></ProtectedRoute>} />
