@@ -4,11 +4,13 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppNavBar } from "./components/AppNavBar";
 import { CookieConsent } from "./components/CookieConsent";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { KeyboardShortcutsHelp } from "./components/KeyboardShortcutsHelp";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 import { PageErrorBoundary } from "./components/PageErrorBoundary";
 import { useAuth } from "./context/AuthContext";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { initializeGA4 } from "./utils/analytics";
 import { getCookieConsent, type CookieConsentType } from "./utils/cookieConsent";
 import { hasCompletedOnboarding } from "./utils/onboarding";
@@ -120,6 +122,7 @@ export default function App() {
   const inOnboarding = location.pathname.startsWith("/onboarding");
   const showTopNavigation = token && !inOnboarding;
   const showFloatingEmotionalWidget = token && !location.pathname.startsWith("/dashboard") && !inOnboarding;
+  useKeyboardShortcuts();
 
   useEffect(() => {
     if (cookieConsent === "all") {
@@ -231,6 +234,7 @@ export default function App() {
       </main>
       {cookieConsent === null ? <CookieConsent onConsent={setCookieConsent} /> : null}
       {token ? <MobileBottomNav /> : null}
+      <KeyboardShortcutsHelp />
     </div>
   );
 }

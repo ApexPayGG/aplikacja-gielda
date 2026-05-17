@@ -139,6 +139,7 @@ export function CompanySearchAutocomplete({
         />
         <input
           type="search"
+          data-shortcut-search="true"
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
