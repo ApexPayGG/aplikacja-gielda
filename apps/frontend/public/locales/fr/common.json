@@ -1098,6 +1098,10 @@
         "memory": {
           "title": "No one remembers your mistakes",
           "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
+        },
+        "context": {
+          "title": "Vous manquez de contexte",
+          "body": "Vous voyez un signal, mais vous ne savez pas si le marché est favorable ni si le timing est le bon."
         }
       }
     },
@@ -1105,11 +1109,33 @@
       "title": "One platform built for investor growth",
       "features": {
         "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": "Behavioral Coach",
+        "behavioralCoach": {
+          "title": "Behavioral Coach",
+          "body": "Détecte vos erreurs et vous aide à éviter de les répéter."
+        },
         "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": "12 Global Markets",
+        "globalMarkets": {
+          "title": "12 Global Markets",
+          "body": "GPW, NYSE, DAX, TSE, NSE et plus encore. Sans changer d'application."
+        },
         "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages"
+        "languages": "9 Languages",
+        "aiBrief": {
+          "title": "AI Brief avec narration",
+          "body": "Pas seulement un score : une explication complète de pourquoi c'est pertinent, ou non."
+        },
+        "signalDna": {
+          "title": "Signal DNA",
+          "body": "Des jumeaux historiques de setup : comment ce setup s'est terminé dans le passé."
+        },
+        "preMortemAi": {
+          "title": "Pre-Mortem AI",
+          "body": "Avant d'acheter, l'IA montre le scénario de perte le plus probable."
+        },
+        "paperTrading": {
+          "title": "Paper Trading",
+          "body": "Entraînez-vous sans risque. Apprenez d’erreurs qui ne coûtent rien."
+        }
       }
     },
     "socialProof": {
@@ -1128,7 +1154,13 @@
           "quote": "The broker gateway plus AI context saves me time every single session.",
           "author": "Clara, Madrid"
         }
-      ]
+      ],
+      "stats": {
+        "exchanges": "130+ bourses",
+        "modules": "27 modules IA",
+        "languages": "9 langues",
+        "adFree": "100 % sans publicité"
+      }
     },
     "pricing": {
       "title": "Simple pricing",
@@ -1181,5 +1213,21 @@
       "button": "Create free account",
       "disclaimer": "Educational product. Not financial advice. Investing involves risk."
     }
+  },
+  "auth": {
+    "email": "E-mail",
+    "haveAccount": "Vous avez déjà un compte ? Connectez-vous",
+    "loginButton": "Se connecter",
+    "loginLink": "Vous avez déjà un compte ? Connectez-vous",
+    "loginLoading": "Connexion...",
+    "loginTitle": "Connexion",
+    "nameOptional": "Nom (optionnel)",
+    "noAccount": "Vous n'avez pas de compte ? Inscrivez-vous",
+    "password": "Mot de passe",
+    "passwordMin": "Mot de passe (min. 8 caractères)",
+    "registerButton": "Créer un compte",
+    "registerLink": "Vous n'avez pas de compte ? Inscrivez-vous",
+    "registerLoading": "Inscription...",
+    "registerTitle": "Inscription"
   }
 }

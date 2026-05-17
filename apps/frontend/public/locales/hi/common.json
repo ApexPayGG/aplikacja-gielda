@@ -1098,6 +1098,10 @@
         "memory": {
           "title": "No one remembers your mistakes",
           "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
+        },
+        "context": {
+          "title": "आपके पास संदर्भ की कमी है",
+          "body": "आपको संकेत दिखता है, लेकिन यह नहीं पता चलता कि बाजार अनुकूल है या यह सही समय है।"
         }
       }
     },
@@ -1105,11 +1109,33 @@
       "title": "One platform built for investor growth",
       "features": {
         "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": "Behavioral Coach",
+        "behavioralCoach": {
+          "title": "Behavioral Coach",
+          "body": "यह आपकी गलतियों को पहचानता है और उन्हें दोहराने से रोकने में मदद करता है।"
+        },
         "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": "12 Global Markets",
+        "globalMarkets": {
+          "title": "12 Global Markets",
+          "body": "GPW, NYSE, DAX, TSE, NSE और भी बहुत कुछ। ऐप बदलने की ज़रूरत नहीं।"
+        },
         "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages"
+        "languages": "9 Languages",
+        "aiBrief": {
+          "title": "व्याख्या सहित AI Brief",
+          "body": "सिर्फ स्कोर नहीं — क्यों यह सही है या नहीं, इसकी पूरी व्याख्या।"
+        },
+        "signalDna": {
+          "title": "Signal DNA",
+          "body": "सेटअप के ऐतिहासिक जुड़वां — अतीत में ऐसे सेटअप का क्या परिणाम हुआ।"
+        },
+        "preMortemAi": {
+          "title": "Pre-Mortem AI",
+          "body": "खरीदने से पहले AI सबसे संभावित नुकसान का परिदृश्य दिखाता है।"
+        },
+        "paperTrading": {
+          "title": "Paper Trading",
+          "body": "बिना जोखिम अभ्यास करें। ऐसी गलतियों से सीखें जिनकी कोई लागत नहीं।"
+        }
       }
     },
     "socialProof": {
@@ -1128,7 +1154,13 @@
           "quote": "The broker gateway plus AI context saves me time every single session.",
           "author": "Clara, Madrid"
         }
-      ]
+      ],
+      "stats": {
+        "exchanges": "130+ एक्सचेंज",
+        "modules": "27 AI मॉड्यूल",
+        "languages": "9 भाषाएँ",
+        "adFree": "100% विज्ञापन-मुक्त"
+      }
     },
     "pricing": {
       "title": "Simple pricing",
@@ -1181,5 +1213,21 @@
       "button": "Create free account",
       "disclaimer": "Educational product. Not financial advice. Investing involves risk."
     }
+  },
+  "auth": {
+    "email": "ईमेल",
+    "haveAccount": "क्या आपका पहले से खाता है? लॉग इन करें",
+    "loginButton": "लॉग इन करें",
+    "loginLink": "क्या आपका पहले से खाता है? लॉग इन करें",
+    "loginLoading": "लॉग इन किया जा रहा है...",
+    "loginTitle": "लॉग इन",
+    "nameOptional": "नाम (वैकल्पिक)",
+    "noAccount": "क्या आपका खाता नहीं है? साइन अप करें",
+    "password": "पासवर्ड",
+    "passwordMin": "पासवर्ड (कम से कम 8 अक्षर)",
+    "registerButton": "खाता बनाएँ",
+    "registerLink": "क्या आपका खाता नहीं है? साइन अप करें",
+    "registerLoading": "खाता बनाया जा रहा है...",
+    "registerTitle": "साइन अप"
   }
 }

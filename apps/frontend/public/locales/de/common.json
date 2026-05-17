@@ -1098,6 +1098,10 @@
         "memory": {
           "title": "Niemand merkt sich deine Fehler",
           "body": "Ohne Feedback-Schleife wiederholen sich dieselben teuren Muster von Trade zu Trade."
+        },
+        "context": {
+          "title": "Ihnen fehlt der Kontext",
+          "body": "Sie sehen ein Signal, wissen aber nicht, ob das Marktumfeld passt oder ob der Zeitpunkt richtig ist."
         }
       }
     },
@@ -1105,11 +1109,33 @@
       "title": "Eine Plattform für deinen Anlegerfortschritt",
       "features": {
         "signalAnalysis": "KI-Signalanalyse",
-        "behavioralCoach": "Verhaltenscoach",
+        "behavioralCoach": {
+          "title": "Verhaltenscoach",
+          "body": "Erkennt Ihre Fehler und hilft, sie nicht zu wiederholen."
+        },
         "traderPsycheProfile": "Trader-Psychologieprofil",
-        "globalMarkets": "12 globale Märkte",
+        "globalMarkets": {
+          "title": "12 globale Märkte",
+          "body": "GPW, NYSE, DAX, TSE, NSE und mehr. Kein Wechseln zwischen Apps."
+        },
         "brokerIntegration": "Broker-Integration",
-        "languages": "9 Sprachen"
+        "languages": "9 Sprachen",
+        "aiBrief": {
+          "title": "KI-Briefing mit Narrativ",
+          "body": "Nicht nur ein Score – eine vollständige Erklärung, warum es sich lohnt oder nicht."
+        },
+        "signalDna": {
+          "title": "Signal DNA",
+          "body": "Historische Setup-Zwillinge – wie dieses Setup in der Vergangenheit ausgegangen ist."
+        },
+        "preMortemAi": {
+          "title": "Pre-Mortem AI",
+          "body": "Bevor Sie kaufen, zeigt KI das wahrscheinlichste Verlustszenario."
+        },
+        "paperTrading": {
+          "title": "Paper Trading",
+          "body": "Üben ohne Risiko. Aus Fehlern lernen, die nichts kosten."
+        }
       }
     },
     "socialProof": {
@@ -1128,7 +1154,13 @@
           "quote": "Das Broker-Gateway plus KI-Kontext spart mir in jeder Session Zeit.",
           "author": "Clara, Madrid"
         }
-      ]
+      ],
+      "stats": {
+        "exchanges": "130+ Börsen",
+        "modules": "27 KI-Module",
+        "languages": "9 Sprachen",
+        "adFree": "100 % werbefrei"
+      }
     },
     "pricing": {
       "title": "Einfache Preise",
@@ -1181,5 +1213,21 @@
       "button": "Kostenloses Konto erstellen",
       "disclaimer": "Bildungsprodukt. Keine Finanzberatung. Investieren ist mit Risiken verbunden."
     }
+  },
+  "auth": {
+    "email": "E-Mail",
+    "haveAccount": "Haben Sie bereits ein Konto? Melden Sie sich an",
+    "loginButton": "Anmelden",
+    "loginLink": "Haben Sie bereits ein Konto? Melden Sie sich an",
+    "loginLoading": "Anmeldung läuft...",
+    "loginTitle": "Anmeldung",
+    "nameOptional": "Name (optional)",
+    "noAccount": "Sie haben noch kein Konto? Registrieren Sie sich",
+    "password": "Passwort",
+    "passwordMin": "Passwort (mind. 8 Zeichen)",
+    "registerButton": "Konto erstellen",
+    "registerLink": "Sie haben noch kein Konto? Registrieren Sie sich",
+    "registerLoading": "Registrierung läuft...",
+    "registerTitle": "Registrierung"
   }
 }

@@ -1098,6 +1098,10 @@
         "memory": {
           "title": "No one remembers your mistakes",
           "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
+        },
+        "context": {
+          "title": "你缺乏市場脈絡",
+          "body": "你看到了訊號，但不知道市場是否配合、現在是否是正確時機。"
         }
       }
     },
@@ -1105,11 +1109,33 @@
       "title": "One platform built for investor growth",
       "features": {
         "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": "Behavioral Coach",
+        "behavioralCoach": {
+          "title": "Behavioral Coach",
+          "body": "偵測你的錯誤，並協助你避免重複犯錯。"
+        },
         "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": "12 Global Markets",
+        "globalMarkets": {
+          "title": "12 Global Markets",
+          "body": "涵蓋 GPW、NYSE、DAX、TSE、NSE 等市場，無需切換應用程式。"
+        },
         "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages"
+        "languages": "9 Languages",
+        "aiBrief": {
+          "title": "含敘事的 AI Brief",
+          "body": "不只是分數，而是完整解釋為何值得或不值得。"
+        },
+        "signalDna": {
+          "title": "Signal DNA",
+          "body": "歷史上的相似 setup：這種 setup 過去通常如何收場。"
+        },
+        "preMortemAi": {
+          "title": "Pre-Mortem AI",
+          "body": "在你買入前，AI 會先顯示最可能的虧損情境。"
+        },
+        "paperTrading": {
+          "title": "Paper Trading",
+          "body": "零風險練習，從不需付出成本的錯誤中學習。"
+        }
       }
     },
     "socialProof": {
@@ -1128,7 +1154,13 @@
           "quote": "The broker gateway plus AI context saves me time every single session.",
           "author": "Clara, Madrid"
         }
-      ]
+      ],
+      "stats": {
+        "exchanges": "130+ 交易所",
+        "modules": "27 個 AI 模組",
+        "languages": "9 種語言",
+        "adFree": "100% 無廣告"
+      }
     },
     "pricing": {
       "title": "Simple pricing",
@@ -1181,5 +1213,21 @@
       "button": "Create free account",
       "disclaimer": "Educational product. Not financial advice. Investing involves risk."
     }
+  },
+  "auth": {
+    "email": "電子郵件",
+    "haveAccount": "已經有帳號了嗎？請登入",
+    "loginButton": "登入",
+    "loginLink": "已經有帳號了嗎？請登入",
+    "loginLoading": "登入中...",
+    "loginTitle": "登入",
+    "nameOptional": "姓名（選填）",
+    "noAccount": "還沒有帳號嗎？立即註冊",
+    "password": "密碼",
+    "passwordMin": "密碼（至少 8 個字元）",
+    "registerButton": "建立帳號",
+    "registerLink": "還沒有帳號嗎？立即註冊",
+    "registerLoading": "註冊中...",
+    "registerTitle": "註冊"
   }
 }
