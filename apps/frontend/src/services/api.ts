@@ -1567,6 +1567,24 @@ export interface NotificationDeliveryResponse {
   telegramSent: boolean;
 }
 
+export type NotificationType = "SIGNAL" | "DIVIDEND" | "SYSTEM" | "COACH" | string;
+
+export interface NotificationItem {
+  id: string;
+  userId: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read: boolean;
+  link: string | null;
+  createdAt: string;
+}
+
+export interface NotificationsResponse {
+  notifications: NotificationItem[];
+  unreadCount: number;
+}
+
 export async function getNotificationPreferencesApi(userId: string): Promise<NotificationPreferences> {
   const { data } = await api.get<NotificationPreferences>(`/notifications/preferences/${encodeURIComponent(userId)}`);
   return data;
@@ -1587,6 +1605,25 @@ export async function testNotificationPreferencesApi(userId: string): Promise<No
   const { data } = await api.post<NotificationDeliveryResponse>(
     `/notifications/preferences/${encodeURIComponent(userId)}/test`,
   );
+  return data;
+}
+
+export async function getNotificationsApi(userId: string, limit = 20): Promise<NotificationsResponse> {
+  const { data } = await api.get<NotificationsResponse>(`/notifications/${encodeURIComponent(userId)}`, {
+    params: { limit },
+  });
+  return data;
+}
+
+export async function markAllNotificationsReadApi(userId: string): Promise<{ updatedCount: number }> {
+  const { data } = await api.put<{ updatedCount: number }>(
+    `/notifications/${encodeURIComponent(userId)}/read-all`,
+  );
+  return data;
+}
+
+export async function markNotificationReadApi(notificationId: string): Promise<NotificationItem> {
+  const { data } = await api.put<NotificationItem>(`/notifications/${encodeURIComponent(notificationId)}/read`);
   return data;
 }
 
