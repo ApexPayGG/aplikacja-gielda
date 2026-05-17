@@ -37,6 +37,7 @@ const LandingPage = lazyNamed(() => import("./pages/LandingPage"), "LandingPage"
 const LoginPage = lazyNamed(() => import("./pages/LoginPage"), "LoginPage");
 const ForgotPasswordPage = lazyNamed(() => import("./pages/ForgotPasswordPage"), "ForgotPasswordPage");
 const ResetPasswordPage = lazyNamed(() => import("./pages/ResetPasswordPage"), "ResetPasswordPage");
+const HelpPage = lazyNamed(() => import("./pages/HelpPage"), "HelpPage");
 const LossStreakPage = lazyNamed(() => import("./pages/LossStreakPage"), "LossStreakPage");
 const MistakeLibraryPage = lazyNamed(() => import("./pages/MistakeLibraryPage"), "MistakeLibraryPage");
 const PsycheProfilePage = lazyNamed(() => import("./pages/PsycheProfilePage"), "PsycheProfilePage");
@@ -80,7 +81,6 @@ const TermsPage = lazyNamed(() => import("./pages/TermsPage"), "TermsPage");
 const WaitlistPage = lazyNamed(() => import("./pages/WaitlistPage"), "WaitlistPage");
 const ChangelogPage = lazyNamed(() => import("./pages/ChangelogPage"), "ChangelogPage");
 const ContactPage = lazyNamed(() => import("./pages/ContactPage"), "ContactPage");
-const HelpPage = lazyNamed(() => import("./pages/HelpPage"), "HelpPage");
 const AboutPage = lazyNamed(() => import("./pages/AboutPage"), "AboutPage");
 
 function ProtectedRoute({ children }: { children: ReactNode }) {

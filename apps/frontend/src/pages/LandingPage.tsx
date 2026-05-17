@@ -500,6 +500,10 @@ export function LandingPage() {
             Contact
           </Link>
           <span aria-hidden="true">|</span>
+          <Link to="/help" className="transition hover:text-brandDark">
+            Help Center
+          </Link>
+          <span aria-hidden="true">|</span>
           <Link to="/changelog" className="transition hover:text-brandDark">
             Changelog
           </Link>

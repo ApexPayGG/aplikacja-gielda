@@ -361,6 +361,9 @@ export function SettingsPage() {
             <Link to="/changelog" className="mt-2 inline-flex text-sm font-semibold text-brandDark transition hover:text-brandMedium">
               Co nowego (Changelog)
             </Link>
+            <Link to="/help" className="mt-1 inline-flex text-sm font-semibold text-brandDark transition hover:text-brandMedium">
+              Centrum pomocy
+            </Link>
           </div>
         </aside>
 
