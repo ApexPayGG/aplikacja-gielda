@@ -7,6 +7,7 @@ import {
   type MistakeLibraryItem,
   type MistakeType,
 } from "../services/api";
+import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
@@ -16,6 +17,33 @@ function formatSignedPct(value: number): string {
   return `${sign}${value.toFixed(2)}%`;
 }
 
+type MistakeFilter = "ALL" | MistakeType;
+
+const typeMeta: Record<
+  MistakeType,
+  {
+    label: string;
+    badgeColor: string;
+    badgeBg: string;
+  }
+> = {
+  EMOTIONAL: {
+    label: "Emotions",
+    badgeColor: colors.negative,
+    badgeBg: "rgba(229, 57, 53, 0.12)",
+  },
+  STRATEGY: {
+    label: "Strategy",
+    badgeColor: colors.brandGold,
+    badgeBg: "rgba(255, 174, 51, 0.16)",
+  },
+  TIMING: {
+    label: "Timing",
+    badgeColor: colors.brandMedium,
+    badgeBg: "rgba(122, 15, 158, 0.12)",
+  },
+};
+
 export function MistakeLibraryPage() {
   const { t } = useTranslation();
   const [items, setItems] = useState<MistakeLibraryItem[]>([]);
@@ -23,6 +51,7 @@ export function MistakeLibraryPage() {
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<MistakeFilter>("ALL");
 
   async function load(): Promise<void> {
     const data = await getBehavioralMistakes(USER_ID);
@@ -51,20 +80,6 @@ export function MistakeLibraryPage() {
     };
   }, []);
 
-  const grouped = useMemo(() => {
-    const byType: Record<MistakeType, MistakeLibraryItem[]> = {
-      EMOTIONAL: [],
-      STRATEGY: [],
-      TIMING: [],
-    };
-    for (const item of items) {
-      if (item.type === "EMOTIONAL" || item.type === "STRATEGY" || item.type === "TIMING") {
-        byType[item.type].push(item);
-      }
-    }
-    return byType;
-  }, [items]);
-
   const mistakeSymbols = useMemo(() => {
     const set = new Set<string>();
     for (const item of items) {
@@ -72,6 +87,28 @@ export function MistakeLibraryPage() {
     }
     return [...set];
   }, [items]);
+
+  const typeCounters = useMemo(
+    () => ({
+      EMOTIONAL: items.filter((item) => item.type === "EMOTIONAL").length,
+      STRATEGY: items.filter((item) => item.type === "STRATEGY").length,
+      TIMING: items.filter((item) => item.type === "TIMING").length,
+    }),
+    [items],
+  );
+
+  const mostCommonType = useMemo(() => {
+    const sorted = (Object.entries(typeCounters) as Array<[MistakeType, number]>).sort((a, b) => b[1] - a[1]);
+    if (!sorted[0] || sorted[0][1] === 0) return "Brak danych";
+    return typeMeta[sorted[0][0]].label;
+  }, [typeCounters]);
+
+  const totalCostPct = useMemo(() => items.reduce((sum, item) => sum + item.pnl, 0), [items]);
+
+  const filteredItems = useMemo(() => {
+    if (filter === "ALL") return items;
+    return items.filter((item) => item.type === filter);
+  }, [filter, items]);
 
   async function onAnalyzeClick(): Promise<void> {
     setAnalyzing(true);
@@ -87,83 +124,144 @@ export function MistakeLibraryPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <header className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-3xl font-bold text-white">{t("mistakes.title")}</h1>
-        <div className="flex flex-wrap items-center gap-2">
-          {mistakeSymbols.length > 0 ? (
-            <Link
-              to={`/strategy-dna?from=mistakes&symbols=${encodeURIComponent(mistakeSymbols.join(","))}`}
-              className="rounded-lg border border-brand-blue/50 bg-brand-blue/15 px-3 py-2 text-sm font-semibold text-brand-blue transition hover:bg-brand-blue/25"
+    <div className="min-h-screen px-4 py-10" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
+      <div className="mx-auto max-w-6xl">
+        <header className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight">Biblioteka błędów</h1>
+            <p className="mt-2 text-sm md:text-base" style={{ color: colors.textSecondary }}>
+              Najczęstsze schematy błędów inwestycyjnych wraz z ich kosztem.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {mistakeSymbols.length > 0 ? (
+              <Link
+                to={`/strategy-dna?from=mistakes&symbols=${encodeURIComponent(mistakeSymbols.join(","))}`}
+                className="rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
+                style={{ borderColor: colors.borderStrong, color: colors.brandDark }}
+              >
+                {t("mistakes.dnaContextLink")}
+              </Link>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => void onAnalyzeClick()}
+              disabled={analyzing}
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              style={{ backgroundColor: colors.brandDark }}
             >
-              {t("mistakes.dnaContextLink")}
-            </Link>
-          ) : null}
-          <button
-          type="button"
-          onClick={() => void onAnalyzeClick()}
-          disabled={analyzing}
-          className="rounded-lg border border-brand-blue/50 bg-brand-blue/20 px-4 py-2 text-sm font-semibold text-brand-blue transition hover:bg-brand-blue/30 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {analyzing ? t("mistakes.analyzing") : t("mistakes.analyzeButton")}
-        </button>
-        </div>
-      </header>
+              {analyzing ? t("mistakes.analyzing") : t("mistakes.analyzeButton")}
+            </button>
+          </div>
+        </header>
 
-      {error ? <p className="mb-4 text-sm text-brand-red">{error}</p> : null}
+        {error ? (
+          <p className="mb-4 rounded-xl border px-4 py-3 text-sm" style={{ borderColor: colors.negative, color: colors.negative }}>
+            {error}
+          </p>
+        ) : null}
 
-      <section className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="neo-panel rounded-xl p-4">
-          <div className="text-xs uppercase tracking-wide text-slate-500">{t("mistakes.summary.total")}</div>
-          <div className="mt-2 text-2xl font-bold text-white">{summary.total}</div>
-        </div>
-        <div className="neo-panel rounded-xl p-4">
-          <div className="text-xs uppercase tracking-wide text-slate-500">{t("mistakes.summary.emotional")}</div>
-          <div className="mt-2 text-2xl font-bold text-red-300">{summary.emotional}</div>
-        </div>
-        <div className="neo-panel rounded-xl p-4">
-          <div className="text-xs uppercase tracking-wide text-slate-500">{t("mistakes.summary.strategy")}</div>
-          <div className="mt-2 text-2xl font-bold text-amber-300">{summary.strategy}</div>
-        </div>
-        <div className="neo-panel rounded-xl p-4">
-          <div className="text-xs uppercase tracking-wide text-slate-500">{t("mistakes.summary.timing")}</div>
-          <div className="mt-2 text-2xl font-bold text-brand-blue">{summary.timing}</div>
-        </div>
-      </section>
+        <section className="mb-6 grid gap-3 md:grid-cols-3">
+          <article className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+              Łączne błędy
+            </p>
+            <p className="mt-2 text-3xl font-bold" style={{ color: colors.brandDark }}>
+              {summary.total}
+            </p>
+          </article>
+          <article className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+              Najczęstszy typ
+            </p>
+            <p className="mt-2 text-2xl font-bold" style={{ color: colors.brandMedium }}>
+              {mostCommonType}
+            </p>
+          </article>
+          <article className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+              Koszt błędów w %
+            </p>
+            <p className="mt-2 text-2xl font-bold" style={{ color: totalCostPct < 0 ? colors.negative : colors.positive }}>
+              {formatSignedPct(totalCostPct)}
+            </p>
+          </article>
+        </section>
 
-      {loading ? (
-        <div className="neo-panel rounded-xl p-5 text-slate-400">{t("common.loading")}</div>
-      ) : (
-        <div className="space-y-5">
-          {(["EMOTIONAL", "STRATEGY", "TIMING"] as MistakeType[]).map((type) => (
-            <section key={type} className="neo-panel rounded-xl p-5">
-              <h2 className="mb-3 text-lg font-semibold text-white">{t(`mistakes.types.${type}`)}</h2>
-              {grouped[type].length === 0 ? (
-                <p className="text-sm text-slate-500">{t("mistakes.emptyType")}</p>
-              ) : (
-                <ul className="space-y-2">
-                  {grouped[type].map((item) => (
-                    <li key={item.id} className="rounded-lg border border-brand-border/60 bg-brand-bg/70 p-3">
-                      <div className="flex flex-wrap items-center gap-2 text-sm">
-                        <span className="font-semibold text-white">{item.symbol}</span>
-                        <span className="font-mono text-brand-red">{formatSignedPct(item.pnl)}</span>
-                        <span className="text-slate-500">{new Date(item.createdAt).toLocaleString()}</span>
-                        <Link
-                          to={`/strategy-dna?from=mistakes&symbol=${encodeURIComponent(item.symbol)}`}
-                          className="ml-auto text-xs font-semibold text-brand-blue hover:underline"
-                        >
-                          {t("mistakes.dnaRowLink")}
-                        </Link>
-                      </div>
-                      <p className="mt-1 text-sm text-slate-300">{item.explanation}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          ))}
-        </div>
-      )}
+        <section className="mb-4 rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+          <p className="mb-3 text-sm font-semibold" style={{ color: colors.textSecondary }}>
+            Filtr po typie
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(["ALL", "EMOTIONAL", "STRATEGY", "TIMING"] as MistakeFilter[]).map((type) => {
+              const active = filter === type;
+              const label = type === "ALL" ? "Wszystkie" : typeMeta[type].label;
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setFilter(type)}
+                  className="rounded-full border px-3 py-1.5 text-xs font-semibold transition"
+                  style={{
+                    borderColor: active ? colors.brandDark : colors.borderStrong,
+                    backgroundColor: active ? "rgba(45, 10, 107, 0.1)" : colors.bgPrimary,
+                    color: active ? colors.brandDark : colors.textSecondary,
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {loading ? (
+          <div className="rounded-xl border bg-white p-5 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
+            {t("common.loading")}
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="rounded-xl border bg-white p-5 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
+            Brak błędów dla wybranego filtra.
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {filteredItems.map((item) => {
+              const meta = typeMeta[item.type];
+              return (
+                <li key={item.id} className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                      style={{ backgroundColor: meta.badgeBg, color: meta.badgeColor }}
+                    >
+                      {meta.label}
+                    </span>
+                    <span className="text-xs font-medium" style={{ color: colors.textMuted }}>
+                      {new Date(item.createdAt).toLocaleDateString("pl-PL")}
+                    </span>
+                    <span className="text-xs font-semibold" style={{ color: item.pnl < 0 ? colors.negative : colors.positive }}>
+                      Koszt: {formatSignedPct(item.pnl)}
+                    </span>
+                    <Link
+                      to={`/strategy-dna?from=mistakes&symbol=${encodeURIComponent(item.symbol)}`}
+                      className="ml-auto text-xs font-semibold hover:underline"
+                      style={{ color: colors.brandDark }}
+                    >
+                      {t("mistakes.dnaRowLink")}
+                    </Link>
+                  </div>
+                  <p className="mt-2 text-sm font-semibold" style={{ color: colors.brandDark }}>
+                    {item.symbol}
+                  </p>
+                  <p className="mt-1 text-sm" style={{ color: colors.textSecondary }}>
+                    {item.explanation}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

@@ -16,6 +16,7 @@ import { DividendPage } from "./pages/DividendPage";
 import { Home } from "./pages/Home";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
+import { LossStreakPage } from "./pages/LossStreakPage";
 import { MistakeLibraryPage } from "./pages/MistakeLibraryPage";
 import { PsycheProfilePage } from "./pages/PsycheProfilePage";
 import { PaperTradingPage } from "./pages/PaperTradingPage";
@@ -102,6 +103,7 @@ export default function App() {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/paper-trading" element={<ProtectedRoute><PaperTradingPage /></ProtectedRoute>} />
           <Route path="/behavioral-coach" element={<ProtectedRoute><BehavioralCoachPage /></ProtectedRoute>} />
+          <Route path="/loss-streak" element={<ProtectedRoute><LossStreakPage /></ProtectedRoute>} />
           <Route path="/coach" element={<Navigate to="/behavioral-coach" replace />} />
           <Route path="/psyche-profile" element={<ProtectedRoute><PsycheProfilePage /></ProtectedRoute>} />
           <Route path="/weekly-review" element={<ProtectedRoute><WeeklyReviewPage /></ProtectedRoute>} />
