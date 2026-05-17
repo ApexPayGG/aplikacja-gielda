@@ -2,9 +2,15 @@ import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import {
   getNotificationPreferences,
+  getUserNotifications,
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
   sendSignalTestNotification,
+  type MarkAllNotificationsReadResponse,
+  type NotificationCenterItem,
   updateNotificationPreferences,
   type NotificationDeliveryResult,
+  type NotificationsListResponse,
   type NotificationPreferencesUpdateInput,
   type UserNotificationPreferences,
 } from "../modules/notifications/notificationsModule";
@@ -13,13 +19,19 @@ type NotificationsRouteDeps = {
   getPreferencesFn: typeof getNotificationPreferences;
   updatePreferencesFn: typeof updateNotificationPreferences;
   sendTestNotificationFn: typeof sendSignalTestNotification;
+  listNotificationsFn: typeof getUserNotifications;
+  markAllAsReadFn: typeof markAllNotificationsAsRead;
+  markNotificationAsReadFn: typeof markNotificationAsRead;
 };
 
 function mapErrorToStatus(error: unknown): number {
   const msg = error instanceof Error ? error.message : String(error);
   if (msg.includes("Missing userId")) return 400;
+  if (msg.includes("Missing notificationId")) return 400;
   if (msg.includes("Invalid Discord webhook URL")) return 400;
+  if (msg.includes("Invalid notifications limit")) return 400;
   if (msg.includes("User not found")) return 404;
+  if (msg.includes("Notification not found")) return 404;
   return 500;
 }
 
@@ -32,6 +44,9 @@ export function createNotificationsRouter(depsInput?: Partial<NotificationsRoute
     getPreferencesFn: depsInput?.getPreferencesFn ?? getNotificationPreferences,
     updatePreferencesFn: depsInput?.updatePreferencesFn ?? updateNotificationPreferences,
     sendTestNotificationFn: depsInput?.sendTestNotificationFn ?? sendSignalTestNotification,
+    listNotificationsFn: depsInput?.listNotificationsFn ?? getUserNotifications,
+    markAllAsReadFn: depsInput?.markAllAsReadFn ?? markAllNotificationsAsRead,
+    markNotificationAsReadFn: depsInput?.markNotificationAsReadFn ?? markNotificationAsRead,
   };
   const router = Router();
 
@@ -74,6 +89,43 @@ export function createNotificationsRouter(depsInput?: Partial<NotificationsRoute
       }
     },
   );
+
+  router.get("/api/notifications/:userId", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = String(req.params.userId ?? "").trim();
+      const limit = req.query.limit != null ? Number(req.query.limit) : undefined;
+      const payload: NotificationsListResponse = await deps.listNotificationsFn(userId, limit);
+      res.json(payload);
+    } catch (error) {
+      const status = mapErrorToStatus(error);
+      if (status !== 500) return res.status(status).json({ error: mapErrorMessage(error) });
+      next(error);
+    }
+  });
+
+  router.put("/api/notifications/:userId/read-all", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = String(req.params.userId ?? "").trim();
+      const payload: MarkAllNotificationsReadResponse = await deps.markAllAsReadFn(userId);
+      res.json(payload);
+    } catch (error) {
+      const status = mapErrorToStatus(error);
+      if (status !== 500) return res.status(status).json({ error: mapErrorMessage(error) });
+      next(error);
+    }
+  });
+
+  router.put("/api/notifications/:id/read", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const notificationId = String(req.params.id ?? "").trim();
+      const payload: NotificationCenterItem = await deps.markNotificationAsReadFn(notificationId);
+      res.json(payload);
+    } catch (error) {
+      const status = mapErrorToStatus(error);
+      if (status !== 500) return res.status(status).json({ error: mapErrorMessage(error) });
+      next(error);
+    }
+  });
 
   return router;
 }

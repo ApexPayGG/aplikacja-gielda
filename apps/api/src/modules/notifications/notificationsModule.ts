@@ -50,6 +50,26 @@ export interface NotificationDeliveryResult {
   telegramSent: boolean;
 }
 
+export interface NotificationCenterItem {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  link: string | null;
+  createdAt: Date;
+}
+
+export interface NotificationsListResponse {
+  notifications: NotificationCenterItem[];
+  unreadCount: number;
+}
+
+export interface MarkAllNotificationsReadResponse {
+  updatedCount: number;
+}
+
 interface UserPreferencesRow {
   id: string;
   discordWebhook: string | null;
@@ -57,6 +77,17 @@ interface UserPreferencesRow {
   notifySignals: boolean | null;
   notifyDividends: boolean | null;
   minSignalScore: number | null;
+}
+
+interface NotificationRow {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  link: string | null;
+  createdAt: Date;
 }
 
 type DbLike = {
@@ -85,6 +116,16 @@ type DbLike = {
       };
     }) => Promise<UserPreferencesRow>;
   };
+  notification: {
+    findMany: (args: {
+      where: { userId: string };
+      orderBy: { createdAt: "desc" | "asc" };
+      take: number;
+    }) => Promise<NotificationRow[]>;
+    count: (args: { where: { userId: string; read?: boolean } }) => Promise<number>;
+    updateMany: (args: { where: { userId?: string; read?: boolean }; data: { read: boolean } }) => Promise<{ count: number }>;
+    update: (args: { where: { id: string }; data: { read: boolean } }) => Promise<NotificationRow>;
+  };
 };
 
 const db = prisma as unknown as DbLike;
@@ -94,6 +135,19 @@ function normalizeUserId(userId: string): string {
   const safeUserId = String(userId ?? "").trim();
   if (!safeUserId) throw new Error("Missing userId");
   return safeUserId;
+}
+
+function normalizeNotificationId(notificationId: string): string {
+  const safeNotificationId = String(notificationId ?? "").trim();
+  if (!safeNotificationId) throw new Error("Missing notificationId");
+  return safeNotificationId;
+}
+
+function normalizeLimit(limitInput: unknown): number {
+  if (limitInput == null || limitInput === "") return 20;
+  const parsed = Number(limitInput);
+  if (!Number.isInteger(parsed) || parsed <= 0) throw new Error("Invalid notifications limit");
+  return Math.min(parsed, 100);
 }
 
 function clampSignalScore(score: number): number {
@@ -124,6 +178,19 @@ function toPrefs(row: UserPreferencesRow): UserNotificationPreferences {
     notifySignals: row.notifySignals ?? true,
     notifyDividends: row.notifyDividends ?? true,
     minSignalScore: clampSignalScore(row.minSignalScore ?? 70),
+  };
+}
+
+function toNotificationItem(row: NotificationRow): NotificationCenterItem {
+  return {
+    id: row.id,
+    userId: row.userId,
+    type: row.type,
+    title: row.title,
+    message: row.message,
+    read: row.read,
+    link: row.link,
+    createdAt: row.createdAt,
   };
 }
 
@@ -216,6 +283,55 @@ export async function updateNotificationPreferences(
     select: preferencesSelect(),
   });
   return toPrefs(updated);
+}
+
+export async function getUserNotifications(
+  userId: string,
+  limitInput?: number,
+): Promise<NotificationsListResponse> {
+  const safeUserId = normalizeUserId(userId);
+  const safeLimit = normalizeLimit(limitInput);
+  const [rows, unreadCount] = await Promise.all([
+    db.notification.findMany({
+      where: { userId: safeUserId },
+      orderBy: { createdAt: "desc" },
+      take: safeLimit,
+    }),
+    db.notification.count({
+      where: { userId: safeUserId, read: false },
+    }),
+  ]);
+
+  return {
+    notifications: rows.map(toNotificationItem),
+    unreadCount,
+  };
+}
+
+export async function markAllNotificationsAsRead(userId: string): Promise<MarkAllNotificationsReadResponse> {
+  const safeUserId = normalizeUserId(userId);
+  const result = await db.notification.updateMany({
+    where: { userId: safeUserId, read: false },
+    data: { read: true },
+  });
+  return { updatedCount: result.count };
+}
+
+export async function markNotificationAsRead(notificationId: string): Promise<NotificationCenterItem> {
+  const safeNotificationId = normalizeNotificationId(notificationId);
+  try {
+    const row = await db.notification.update({
+      where: { id: safeNotificationId },
+      data: { read: true },
+    });
+    return toNotificationItem(row);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    if (msg.includes("Record to update not found")) {
+      throw new Error("Notification not found");
+    }
+    throw error;
+  }
 }
 
 export function buildDiscordSignalEmbed(signal: NotificationSignalPayload): DiscordSignalEmbed {

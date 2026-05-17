@@ -9,6 +9,7 @@ import {
   WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { NotificationsCenter } from "./NotificationsCenter";
 import { useAuth } from "../context/AuthContext";
 
 type DropdownId = "markets" | "portfolio" | "tools";
@@ -337,6 +338,7 @@ export function AppNavBar() {
         </div>
 
         <div className="hidden shrink-0 items-center gap-3 md:flex">
+          <NotificationsCenter />
           {user ? (
             <div ref={accountMenuRef} className="relative">
               <button
