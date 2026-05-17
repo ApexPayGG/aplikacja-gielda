@@ -68,6 +68,11 @@ model User {
   stripeCustomerId     String?              @map("stripe_customer_id")
   subscriptionStatus   String?              @default("free") @map("subscription_status")
   subscriptionEnd      DateTime?            @map("subscription_end")
+  discordWebhook       String?
+  telegramChatId       String?
+  notifySignals        Boolean              @default(true)
+  notifyDividends      Boolean              @default(true)
+  minSignalScore       Int                  @default(70)
   createdAt            DateTime             @default(now()) @map("created_at")
   lastLoginAt          DateTime?            @map("last_login_at")
   virtual_trades       VirtualTrade[]

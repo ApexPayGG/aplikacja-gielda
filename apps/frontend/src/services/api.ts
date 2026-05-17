@@ -1402,6 +1402,42 @@ export async function saveAlpacaSettings(body: {
   return data;
 }
 
+export interface NotificationPreferences {
+  discordWebhook: string | null;
+  telegramChatId: string | null;
+  notifySignals: boolean;
+  notifyDividends: boolean;
+  minSignalScore: number;
+}
+
+export interface NotificationDeliveryResponse {
+  discordSent: boolean;
+  telegramSent: boolean;
+}
+
+export async function getNotificationPreferencesApi(userId: string): Promise<NotificationPreferences> {
+  const { data } = await api.get<NotificationPreferences>(`/notifications/preferences/${encodeURIComponent(userId)}`);
+  return data;
+}
+
+export async function saveNotificationPreferencesApi(
+  userId: string,
+  body: Partial<NotificationPreferences>,
+): Promise<NotificationPreferences> {
+  const { data } = await api.put<NotificationPreferences>(
+    `/notifications/preferences/${encodeURIComponent(userId)}`,
+    body,
+  );
+  return data;
+}
+
+export async function testNotificationPreferencesApi(userId: string): Promise<NotificationDeliveryResponse> {
+  const { data } = await api.post<NotificationDeliveryResponse>(
+    `/notifications/preferences/${encodeURIComponent(userId)}/test`,
+  );
+  return data;
+}
+
 export async function getTaxSystems(): Promise<TaxSystemItem[]> {
   const { data } = await api.get<{ systems: TaxSystemItem[] }>("/tax/systems");
   return Array.isArray(data.systems) ? data.systems : [];

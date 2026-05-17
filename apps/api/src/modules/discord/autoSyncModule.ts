@@ -1,23 +1,20 @@
 import { prisma } from "../../db/index";
 
-type UserSettingsStore = {
-  findUnique: (args: {
-    where: { userId: string };
-    select?: { discordWebhook?: boolean };
-  }) => Promise<{ discordWebhook: string | null } | null>;
-  upsert: (args: {
-    where: { userId: string };
-    create: { userId: string; discordWebhook: string | null };
-    update: { discordWebhook: string | null };
-  }) => Promise<{ id: string }>;
-};
-
 type DbLike = {
-  userSettings: UserSettingsStore;
+  user: {
+    findUnique: (args: {
+      where: { id: string };
+      select?: { discordWebhook?: boolean };
+    }) => Promise<{ discordWebhook: string | null } | null>;
+    update: (args: {
+      where: { id: string };
+      data: { discordWebhook: string | null };
+      select?: { id?: boolean };
+    }) => Promise<{ id: string }>;
+  };
 };
 
 const db = prisma as unknown as DbLike;
-const hasDiscordInfra = Boolean(process.env.DISCORD_BOT_TOKEN?.trim());
 
 function normalizeUserId(userId: string): string {
   const next = String(userId ?? "").trim();
@@ -81,18 +78,18 @@ export function buildDiscordCloseMessage(input: {
 export async function saveDiscordWebhook(userId: string, webhookUrl: string): Promise<boolean> {
   const safeUserId = normalizeUserId(userId);
   const safeWebhook = normalizeWebhookUrl(webhookUrl);
-  await db.userSettings.upsert({
-    where: { userId: safeUserId },
-    create: { userId: safeUserId, discordWebhook: safeWebhook },
-    update: { discordWebhook: safeWebhook },
+  await db.user.update({
+    where: { id: safeUserId },
+    data: { discordWebhook: safeWebhook },
+    select: { id: true },
   });
   return true;
 }
 
 export async function getDiscordWebhook(userId: string): Promise<string | null> {
   const safeUserId = normalizeUserId(userId);
-  const row = await db.userSettings.findUnique({
-    where: { userId: safeUserId },
+  const row = await db.user.findUnique({
+    where: { id: safeUserId },
     select: { discordWebhook: true },
   });
   const webhookUrl = row?.discordWebhook?.trim() ?? "";
@@ -100,7 +97,6 @@ export async function getDiscordWebhook(userId: string): Promise<string | null> 
 }
 
 export async function sendDiscordWebhookMessage(webhookUrl: string, content: string): Promise<boolean> {
-  if (!hasDiscordInfra) return false;
   const res = await fetch(webhookUrl, {
     method: "POST",
     headers: { "content-type": "application/json" },

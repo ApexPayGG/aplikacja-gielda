@@ -4,7 +4,17 @@ import { BrokerCTAButton } from "../components/affiliate/BrokerCTAButton";
 import { TAX_COUNTRY_FLAGS } from "../constants/taxCountries";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
-import { getAlpacaAccount, getAlpacaSettings, getTaxSystems, saveAlpacaSettings, type TaxSystemItem } from "../services/api";
+import {
+  getAlpacaAccount,
+  getAlpacaSettings,
+  getNotificationPreferencesApi,
+  getTaxSystems,
+  saveAlpacaSettings,
+  saveNotificationPreferencesApi,
+  testNotificationPreferencesApi,
+  type NotificationPreferences,
+  type TaxSystemItem,
+} from "../services/api";
 import { colors } from "../styles/designSystem";
 
 type MentorStyle = "supportive" | "strict";
@@ -35,6 +45,11 @@ function readUserId(): string {
   return fromStorage || DEFAULT_USER_ID;
 }
 
+function normalizeSignalScore(score: number): number {
+  if (!Number.isFinite(score)) return 70;
+  return Math.max(50, Math.min(100, Math.round(score)));
+}
+
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
@@ -45,13 +60,18 @@ export function SettingsPage() {
     readStoredBoolean("mentorModeEnabled", false),
   );
   const [mentorStyle, setMentorStyle] = useState<MentorStyle>(() => readStoredStyle());
-  const [discordWebhookUrl, setDiscordWebhookUrl] = useState("");
-  const [hasActiveWebhook, setHasActiveWebhook] = useState(false);
-  const [loadingWebhook, setLoadingWebhook] = useState(true);
-  const [savingWebhook, setSavingWebhook] = useState(false);
-  const [testingWebhook, setTestingWebhook] = useState(false);
-  const [discordNotice, setDiscordNotice] = useState<string | null>(null);
-  const [discordError, setDiscordError] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState<NotificationPreferences>({
+    discordWebhook: null,
+    telegramChatId: null,
+    notifySignals: true,
+    notifyDividends: true,
+    minSignalScore: 70,
+  });
+  const [loadingNotifications, setLoadingNotifications] = useState(true);
+  const [savingNotifications, setSavingNotifications] = useState(false);
+  const [testingNotifications, setTestingNotifications] = useState(false);
+  const [notificationsNotice, setNotificationsNotice] = useState<string | null>(null);
+  const [notificationsError, setNotificationsError] = useState<string | null>(null);
 
   const [mirrorEnabled, setMirrorEnabled] = useState(false);
   const [mirrorRevenue, setMirrorRevenue] = useState(10);
@@ -108,24 +128,26 @@ export function SettingsPage() {
   }
 
   useEffect(() => {
-    const loadWebhook = async () => {
-      setLoadingWebhook(true);
-      setDiscordError(null);
+    const loadNotificationPreferences = async () => {
+      setLoadingNotifications(true);
+      setNotificationsError(null);
       try {
-        const { data } = await api.get<{ webhookUrl: string | null }>(
-          `/discord/webhook/${encodeURIComponent(userId)}`,
-        );
-        const value = (data.webhookUrl ?? "").trim();
-        setDiscordWebhookUrl(value);
-        setHasActiveWebhook(Boolean(value));
+        const data = await getNotificationPreferencesApi(userId);
+        setNotifications({
+          discordWebhook: (data.discordWebhook ?? "").trim() || null,
+          telegramChatId: (data.telegramChatId ?? "").trim() || null,
+          notifySignals: Boolean(data.notifySignals),
+          notifyDividends: Boolean(data.notifyDividends),
+          minSignalScore: normalizeSignalScore(Number(data.minSignalScore)),
+        });
       } catch {
-        setDiscordError(t("discord.loadError"));
+        setNotificationsError("Nie udało się pobrać ustawień powiadomień.");
       } finally {
-        setLoadingWebhook(false);
+        setLoadingNotifications(false);
       }
     };
-    void loadWebhook();
-  }, [t, userId]);
+    void loadNotificationPreferences();
+  }, [userId]);
 
   useEffect(() => {
     const loadAffiliateImpact = async () => {
@@ -201,50 +223,52 @@ export function SettingsPage() {
     }
   }
 
-  async function saveDiscordWebhook(): Promise<void> {
-    const nextWebhook = discordWebhookUrl.trim();
-    if (!nextWebhook) {
-      setDiscordError(t("discord.saveError"));
-      return;
-    }
-    setSavingWebhook(true);
-    setDiscordNotice(null);
-    setDiscordError(null);
+  async function saveNotificationPreferences(): Promise<void> {
+    setSavingNotifications(true);
+    setNotificationsNotice(null);
+    setNotificationsError(null);
     try {
-      const { data } = await api.post<{ saved: boolean }>("/discord/webhook/save", {
-        userId,
-        webhookUrl: nextWebhook,
+      const payload: NotificationPreferences = {
+        discordWebhook: (notifications.discordWebhook ?? "").trim() || null,
+        telegramChatId: (notifications.telegramChatId ?? "").trim() || null,
+        notifySignals: Boolean(notifications.notifySignals),
+        notifyDividends: Boolean(notifications.notifyDividends),
+        minSignalScore: normalizeSignalScore(notifications.minSignalScore),
+      };
+      const data = await saveNotificationPreferencesApi(userId, payload);
+      setNotifications({
+        discordWebhook: (data.discordWebhook ?? "").trim() || null,
+        telegramChatId: (data.telegramChatId ?? "").trim() || null,
+        notifySignals: Boolean(data.notifySignals),
+        notifyDividends: Boolean(data.notifyDividends),
+        minSignalScore: normalizeSignalScore(data.minSignalScore),
       });
-      if (data.saved) {
-        setHasActiveWebhook(true);
-        setDiscordNotice(t("discord.saveSuccess"));
-        return;
-      }
-      setDiscordError(t("discord.saveError"));
+      setNotificationsNotice("Preferencje powiadomień zapisane.");
     } catch {
-      setDiscordError(t("discord.saveError"));
+      setNotificationsError("Nie udało się zapisać preferencji powiadomień.");
     } finally {
-      setSavingWebhook(false);
+      setSavingNotifications(false);
     }
   }
 
-  async function testDiscordWebhook(): Promise<void> {
-    setTestingWebhook(true);
-    setDiscordNotice(null);
-    setDiscordError(null);
+  async function testNotificationDelivery(): Promise<void> {
+    setTestingNotifications(true);
+    setNotificationsNotice(null);
+    setNotificationsError(null);
     try {
-      const { data } = await api.post<{ sent: boolean }>(
-        `/discord/webhook/test/${encodeURIComponent(userId)}`,
-      );
-      if (data.sent) {
-        setDiscordNotice(t("discord.testSuccess"));
-      } else {
-        setDiscordError(t("discord.testError"));
+      const data = await testNotificationPreferencesApi(userId);
+      if (data.discordSent || data.telegramSent) {
+        const channels = [data.discordSent ? "Discord" : null, data.telegramSent ? "Telegram" : null]
+          .filter(Boolean)
+          .join(" + ");
+        setNotificationsNotice(`Wysłano test na: ${channels}.`);
+        return;
       }
+      setNotificationsError("Brak aktywnych kanałów lub nie udało się wysłać testu.");
     } catch {
-      setDiscordError(t("discord.testError"));
+      setNotificationsError("Nie udało się wysłać testowego powiadomienia.");
     } finally {
-      setTestingWebhook(false);
+      setTestingNotifications(false);
     }
   }
 
@@ -634,46 +658,104 @@ export function SettingsPage() {
           <section id="settings-notifications" className={cardClass}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-textPrimary">Notifications</h2>
-                <p className="text-sm text-textSecondary">{t("discord.subtitle")}</p>
+                <h2 className="text-lg font-semibold text-textPrimary">Powiadomienia</h2>
+                <p className="text-sm text-textSecondary">
+                  Skonfiguruj kanały Discord/Telegram i progi wysyłki sygnałów.
+                </p>
               </div>
               <span className="rounded-full bg-brandDark px-3 py-1 text-xs font-semibold text-white">
-                {hasActiveWebhook ? t("discord.active") : t("discord.inactive")}
+                {notifications.discordWebhook || notifications.telegramChatId ? "Aktywne" : "Nieaktywne"}
               </span>
             </div>
 
             <label className="mt-4 flex flex-col gap-1 text-sm">
-              <span className="text-textSecondary">{t("discord.webhookLabel")}</span>
+              <span className="text-textSecondary">Discord webhook</span>
               <input
-                value={discordWebhookUrl}
-                onChange={(e) => setDiscordWebhookUrl(e.target.value)}
-                placeholder={t("discord.webhookPlaceholder")}
+                value={notifications.discordWebhook ?? ""}
+                onChange={(e) =>
+                  setNotifications((prev) => ({ ...prev, discordWebhook: e.target.value.trim() || null }))
+                }
+                placeholder="https://discord.com/api/webhooks/..."
                 className={fieldClass}
               />
             </label>
 
+            <label className="mt-4 flex flex-col gap-1 text-sm">
+              <span className="text-textSecondary">Telegram chat ID</span>
+              <input
+                value={notifications.telegramChatId ?? ""}
+                onChange={(e) =>
+                  setNotifications((prev) => ({ ...prev, telegramChatId: e.target.value.trim() || null }))
+                }
+                placeholder="np. 123456789"
+                className={fieldClass}
+              />
+            </label>
+
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <label className="flex items-center justify-between rounded-xl border border-border bg-bgSecondary px-3 py-2 text-sm">
+                <span className="text-textSecondary">Sygnały</span>
+                <input
+                  type="checkbox"
+                  checked={notifications.notifySignals}
+                  onChange={(e) => setNotifications((prev) => ({ ...prev, notifySignals: e.target.checked }))}
+                  className="h-4 w-4 accent-brandDark"
+                />
+              </label>
+              <label className="flex items-center justify-between rounded-xl border border-border bg-bgSecondary px-3 py-2 text-sm">
+                <span className="text-textSecondary">Dywidendy</span>
+                <input
+                  type="checkbox"
+                  checked={notifications.notifyDividends}
+                  onChange={(e) => setNotifications((prev) => ({ ...prev, notifyDividends: e.target.checked }))}
+                  className="h-4 w-4 accent-brandDark"
+                />
+              </label>
+            </div>
+
+            <div className="mt-4 space-y-2 rounded-xl border border-border bg-bgSecondary px-3 py-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-textSecondary">Minimalny score sygnału</span>
+                <span className="font-mono text-brandDark">{normalizeSignalScore(notifications.minSignalScore)}</span>
+              </div>
+              <input
+                type="range"
+                min={50}
+                max={100}
+                step={1}
+                value={normalizeSignalScore(notifications.minSignalScore)}
+                onChange={(e) =>
+                  setNotifications((prev) => ({
+                    ...prev,
+                    minSignalScore: normalizeSignalScore(Number(e.target.value)),
+                  }))
+                }
+                className="w-full accent-brandDark"
+              />
+            </div>
+
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 type="button"
-                disabled={savingWebhook || loadingWebhook}
-                onClick={() => void saveDiscordWebhook()}
+                disabled={savingNotifications || loadingNotifications}
+                onClick={() => void saveNotificationPreferences()}
                 className={secondaryButtonClass}
               >
-                {savingWebhook ? t("common.loading") : t("discord.saveButton")}
+                {savingNotifications ? t("common.loading") : t("common.save")}
               </button>
               <button
                 type="button"
-                disabled={testingWebhook || loadingWebhook || !hasActiveWebhook}
-                onClick={() => void testDiscordWebhook()}
+                disabled={testingNotifications || loadingNotifications}
+                onClick={() => void testNotificationDelivery()}
                 className={secondaryButtonClass}
               >
-                {testingWebhook ? t("common.loading") : t("discord.testButton")}
+                {testingNotifications ? t("common.loading") : "Testuj powiadomienie"}
               </button>
             </div>
 
             <div className="mt-3 space-y-1">
-              {discordNotice ? <p className="text-sm text-positive">{discordNotice}</p> : null}
-              {discordError ? <p className="text-sm text-negative">{discordError}</p> : null}
+              {notificationsNotice ? <p className="text-sm text-positive">{notificationsNotice}</p> : null}
+              {notificationsError ? <p className="text-sm text-negative">{notificationsError}</p> : null}
             </div>
           </section>
 
