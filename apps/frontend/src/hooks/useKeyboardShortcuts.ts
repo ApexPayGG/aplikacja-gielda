@@ -12,6 +12,11 @@ function hasModifierKey(event: KeyboardEvent): boolean {
   return event.ctrlKey || event.metaKey || event.altKey;
 }
 
+function hasHelpModifier(event: KeyboardEvent): boolean {
+  const usesAltGraph = event.getModifierState?.("AltGraph") ?? false;
+  return event.metaKey || (event.ctrlKey && !usesAltGraph) || (event.altKey && !usesAltGraph);
+}
+
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) {
     return false;
@@ -32,16 +37,17 @@ function isVisible(element: HTMLElement): boolean {
   return rect.width > 0 && rect.height > 0 && window.getComputedStyle(element).visibility !== "hidden";
 }
 
-function focusFirstSearchInput(): void {
+function focusFirstSearchInput(): boolean {
   for (const selector of SEARCH_SHORTCUT_SELECTORS) {
     const candidates = Array.from(document.querySelectorAll<HTMLElement>(selector));
     const match = candidates.find((element) => isVisible(element));
     if (match instanceof HTMLInputElement || match instanceof HTMLTextAreaElement) {
       match.focus();
       match.select();
-      return;
+      return true;
     }
   }
+  return false;
 }
 
 function isQuestionMarkShortcut(event: KeyboardEvent): boolean {
@@ -73,6 +79,11 @@ export function useKeyboardShortcuts(): void {
         return;
       }
 
+      const shortcutsHelpOpen = document.body.dataset.shortcutsHelpOpen === "true";
+      if (shortcutsHelpOpen) {
+        return;
+      }
+
       if (isTypingTarget(event.target)) {
         return;
       }
@@ -89,7 +100,7 @@ export function useKeyboardShortcuts(): void {
         }
       }
 
-      if (isQuestionMarkShortcut(event) && !hasModifierKey(event)) {
+      if (isQuestionMarkShortcut(event) && !hasHelpModifier(event)) {
         event.preventDefault();
         window.dispatchEvent(new Event(KEYBOARD_SHORTCUTS_HELP_EVENT));
         return;
@@ -110,8 +121,10 @@ export function useKeyboardShortcuts(): void {
       }
 
       if (normalizedKey === "/") {
-        event.preventDefault();
-        focusFirstSearchInput();
+        const focused = focusFirstSearchInput();
+        if (focused) {
+          event.preventDefault();
+        }
       }
     };
 
