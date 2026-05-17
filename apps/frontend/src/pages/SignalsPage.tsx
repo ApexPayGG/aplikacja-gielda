@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SignalsFilter } from "../components/SignalsFilter";
+import { ExportButton } from "../components/ExportButton";
 import { ShareButton } from "../components/ShareButton";
 import { VirtualList } from "../components/VirtualList";
 import { useAuth } from "../context/AuthContext";
@@ -152,7 +153,7 @@ function formatPrice(value: number): string {
 }
 
 export function SignalsPage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const isLoggedIn = Boolean(token);
   const [signals, setSignals] = useState<SignalListItem[]>([]);
   const [loadingList, setLoadingList] = useState(true);
@@ -345,6 +346,9 @@ export function SignalsPage() {
               Wyniki: {filteredSignals.length}
             </p>
             <EtoroCTAButton sourcePage="signals" className="max-w-xs" />
+          </div>
+          <div className="self-start md:self-auto">
+            <ExportButton endpoint="/export/signals" userId={user?.id} label="Eksportuj sygnały" />
           </div>
         </header>
         <div className="grid gap-6 lg:grid-cols-[300px_1fr]">

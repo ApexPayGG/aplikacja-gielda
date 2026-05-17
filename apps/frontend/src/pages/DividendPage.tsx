@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ExportButton } from "../components/ExportButton";
+import { useAuth } from "../context/AuthContext";
 import { getDividendGrowthScreener, type DividendGrowthRow } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -96,6 +98,7 @@ function mapCompanyRow(row: DividendGrowthRow): DividendCompanyRow {
 
 export function DividendPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [rows, setRows] = useState<DividendGrowthRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -186,13 +189,16 @@ export function DividendPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
-        <header className="space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight">{t("dividend.pageTitle", { defaultValue: "Dywidendy" })}</h1>
-          <p className="text-sm md:text-base" style={{ color: colors.textSecondary }}>
-            {t("dividend.pageSubtitle", {
-              defaultValue: "Screener spolek dywidendowych zgodny z design systemem AMC Energy.",
-            })}
-          </p>
+        <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold tracking-tight">{t("dividend.pageTitle", { defaultValue: "Dywidendy" })}</h1>
+            <p className="text-sm md:text-base" style={{ color: colors.textSecondary }}>
+              {t("dividend.pageSubtitle", {
+                defaultValue: "Screener spolek dywidendowych zgodny z design systemem AMC Energy.",
+              })}
+            </p>
+          </div>
+          <ExportButton endpoint="/export/dividend" userId={user?.id} label="Eksportuj dywidendy" />
         </header>
 
         <section className="rounded-2xl border p-5 shadow-sm" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>

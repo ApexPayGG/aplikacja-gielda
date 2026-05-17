@@ -3,6 +3,7 @@ import { PrinterIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { BulkActions, BulkRowCheckbox } from "../components/BulkActions";
+import { ExportButton } from "../components/ExportButton";
 import { FeedbackToastStack, type FeedbackToast } from "../components/FeedbackToastStack";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -870,6 +871,7 @@ export function PaperTradingPage() {
             </div>
             <div className="flex flex-col items-end gap-2">
               <div className="flex flex-wrap items-center justify-end gap-2">
+                <ExportButton endpoint="/export/portfolio" userId={USER_ID || undefined} label="Eksportuj portfel" />
                 <button
                   type="button"
                   onClick={onPrintReport}
