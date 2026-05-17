@@ -37,6 +37,8 @@ export const REDIS_TTL_SEC = {
   PREMIUM_TWINS: 7 * 86_400,
   /** Premium analysis catch */
   PREMIUM_CATCH: 86_400,
+  /** XML sitemap payload */
+  SITEMAP: 3_600,
 } as const;
 
 const KEY_PREFIX = "cache:v1";
@@ -76,6 +78,7 @@ export const redisKeys = {
   premiumTwins: (symbol: string, limit: number, minMatch: number) =>
     `${KEY_PREFIX}:premium:twins:${symbol.trim().toUpperCase()}:l${limit}:m${minMatch}`,
   premiumCatch: (symbol: string) => `${KEY_PREFIX}:premium:catch:${symbol.trim().toUpperCase()}`,
+  sitemapXml: () => `${KEY_PREFIX}:sitemap:xml`,
 } as const;
 
 export function isRedisConfigured(): boolean {
