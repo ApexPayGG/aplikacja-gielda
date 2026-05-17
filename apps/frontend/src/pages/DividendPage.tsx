@@ -61,9 +61,10 @@ function healthColor(score: number): string {
 }
 
 function deriveHealthScore(row: DividendGrowthRow, yieldPct: number): number {
-  const growthYoY = toNumber((row as Record<string, unknown>).growthYoY) ?? 0;
-  const cagr5Y = toNumber((row as Record<string, unknown>).cagr5Y) ?? 0;
-  const cagr10Y = toNumber((row as Record<string, unknown>).cagr10Y) ?? 0;
+  const rowRecord = row as unknown as Record<string, unknown>;
+  const growthYoY = toNumber(rowRecord.growthYoY) ?? 0;
+  const cagr5Y = toNumber(rowRecord.cagr5Y) ?? 0;
+  const cagr10Y = toNumber(rowRecord.cagr10Y) ?? 0;
   const score = 52 + growthYoY * 0.7 + cagr5Y * 1.1 + cagr10Y * 0.6 + (yieldPct - 3) * 4;
   return Math.round(clamp(score, 0, 100));
 }
