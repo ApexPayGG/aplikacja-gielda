@@ -7,9 +7,11 @@ import { ThemeProvider } from "./context/ThemeContext";
 import "./index.css";
 import "./i18n";
 import { registerServiceWorker } from "./utils/pwa";
+import { enableGlobalImageLazyLoading } from "./utils/imageOptimization";
 import { getTheme, setTheme } from "./utils/theme";
 
 setTheme(getTheme());
+enableGlobalImageLazyLoading();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

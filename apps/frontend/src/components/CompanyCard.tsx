@@ -1,7 +1,7 @@
-import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Company } from "../services/api";
+import { getLogoFallbackUrl, getOptimizedLogoUrl, normalizeTickerSymbol } from "../utils/imageOptimization";
 import { WatchlistButton } from "./WatchlistButton";
 
 type Props = {
@@ -19,6 +19,8 @@ function readNumber(value: unknown): number | null {
 
 export function CompanyCard({ company }: Props) {
   const [logoFailed, setLogoFailed] = useState(false);
+  const [logoLoaded, setLogoLoaded] = useState(false);
+  const [logoFallbackUsed, setLogoFallbackUsed] = useState(false);
   const companyMeta = company as Company & {
     price?: number | string | null;
     close?: number | string | null;
@@ -29,18 +31,29 @@ export function CompanyCard({ company }: Props) {
   const latestPrice = readNumber(companyMeta.price ?? companyMeta.close ?? companyMeta.lastPrice);
   const changePct = readNumber(companyMeta.changePct ?? companyMeta.changePercent);
   const logoSrc = useMemo(() => {
-    const symbol = String(company.symbol ?? "").trim().toUpperCase();
+    if (typeof company.logoUrl === "string" && company.logoUrl.trim()) return company.logoUrl.trim();
+    const symbol = normalizeTickerSymbol(String(company.symbol ?? ""));
     if (!symbol) return undefined;
+    return getOptimizedLogoUrl(symbol);
+  }, [company.logoUrl, company.symbol]);
 
-    const [baseSymbol, exchangeFromSymbol] = symbol.split(".");
-    const exchange = String(company.exchange ?? exchangeFromSymbol ?? "US")
-      .trim()
-      .toUpperCase();
-    if (!baseSymbol || !exchange) return undefined;
+  const resolvedLogoSrc = logoFallbackUsed ? getLogoFallbackUrl(company.symbol) : logoSrc;
 
-    return `https://eodhd.com/img/logos/${encodeURIComponent(exchange)}/${encodeURIComponent(baseSymbol)}.png`;
-  }, [company.exchange, company.symbol]);
-  const showLogo = Boolean(logoSrc) && !logoFailed;
+  useEffect(() => {
+    setLogoFailed(false);
+    setLogoLoaded(false);
+    setLogoFallbackUsed(false);
+  }, [logoSrc]);
+
+  const fallbackInitials = useMemo(() => {
+    const source = (company.name || company.symbol).trim();
+    if (!source) return "NA";
+    const words = source.split(/\s+/).filter(Boolean);
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+    return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
+  }, [company.name, company.symbol]);
+
+  const showLogo = Boolean(resolvedLogoSrc) && !logoFailed;
 
   return (
     <Link
@@ -50,17 +63,35 @@ export function CompanyCard({ company }: Props) {
       <div className="absolute right-3 top-3 z-10">
         <WatchlistButton symbol={company.symbol} />
       </div>
-      <div className="flex h-28 items-center justify-center bg-bgSecondary p-4">
+      <div className="relative flex h-28 items-center justify-center bg-bgSecondary p-4">
         {showLogo ? (
-          <img
-            src={logoSrc}
-            alt={`${company.name} logo`}
-            className="h-16 w-16 object-contain"
-            loading="lazy"
-            onError={() => setLogoFailed(true)}
-          />
+          <>
+            {!logoLoaded ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-bgSecondary">
+                <div className="h-16 w-16 animate-pulse rounded-xl bg-bgTertiary" aria-hidden />
+              </div>
+            ) : null}
+            <img
+              src={resolvedLogoSrc}
+              alt={`${company.name} logo`}
+              className={`h-16 w-16 object-contain transition-opacity duration-200 ${logoLoaded ? "opacity-100" : "opacity-0"}`}
+              loading="lazy"
+              decoding="async"
+              onLoad={() => setLogoLoaded(true)}
+              onError={() => {
+                setLogoLoaded(false);
+                if (!logoFallbackUsed) {
+                  setLogoFallbackUsed(true);
+                  return;
+                }
+                setLogoFailed(true);
+              }}
+            />
+          </>
         ) : (
-          <BuildingOffice2Icon className="h-14 w-14 text-textMuted" aria-hidden />
+          <span className="flex h-16 w-16 items-center justify-center rounded-xl bg-bgTertiary text-lg font-bold uppercase text-textSecondary">
+            {fallbackInitials}
+          </span>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
