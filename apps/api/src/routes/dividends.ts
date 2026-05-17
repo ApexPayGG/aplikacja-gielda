@@ -99,7 +99,7 @@ async function calculateDividendHealthSafe(input: {
   cagr_5y: number;
 }): Promise<{ score: number; breakdown: Record<string, unknown> }> {
   try {
-    const module = (await import("../../../../packages/dividends/src/scoring")) as {
+    const module = ((await import("../../../../packages/dividends/src/scoring")) as unknown) as {
       calculateDividendHealth?: (i: typeof input) => { score: number; breakdown: Record<string, unknown> };
     };
     if (module.calculateDividendHealth) {

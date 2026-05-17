@@ -378,7 +378,7 @@ export function createAdminAffiliateRouter(): Router {
               : null,
           matchedClickId: matchedClick?.id ?? null,
           conversionDate: Number.isFinite(conversionDate.getTime()) ? conversionDate : new Date(),
-          rawBrokerData: payload,
+          rawBrokerData: payload as unknown as Prisma.InputJsonValue,
         },
       });
       res.json({ ok: true });

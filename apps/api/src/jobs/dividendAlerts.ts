@@ -83,7 +83,9 @@ export async function runDividendAlertsJob(depsInput?: Partial<DividendAlertsDep
   const deps: DividendAlertsDeps = depsInput
     ? ({
         db: depsInput.db ?? prisma,
-        alertQueue: depsInput.alertQueue ?? ({ add: async () => ({}) } as Pick<Queue, "add">),
+        alertQueue:
+          depsInput.alertQueue ??
+          (({ add: async () => ({}) } as unknown) as Pick<Queue, "add">),
         idempotencyStore:
           depsInput.idempotencyStore ??
           ({

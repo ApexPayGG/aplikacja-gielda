@@ -503,7 +503,7 @@ export async function runProcessSignalJob(
       score: existing?.score ?? 0,
     };
   }
-  const lock = await deps.idempotencyStore.set(lockKey, "1", "NX", "EX", 120);
+  const lock = await deps.idempotencyStore.set(lockKey, "1", "EX", 120, "NX");
   if (lock !== "OK") {
     const existing = await deps.db.signal.findUnique({ where: { id: input.signalId } });
     return {

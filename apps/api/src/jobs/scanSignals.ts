@@ -1,6 +1,7 @@
 import { Queue, Worker } from "bullmq";
 import type { Redis } from "ioredis";
 import pino from "pino";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "../db/index";
 import { processSignalQueue } from "../queues/processSignal";
 import { getCacheRedis } from "../redis";
@@ -290,7 +291,7 @@ export async function runScanSignalsJob(depsInput?: Partial<ScanSignalsDeps>): P
           exchange: "US",
           pattern_type: patternType,
           confidence,
-          technical_data: { anomalies, patterns, barsCount: bars.length },
+          technical_data: ({ anomalies, patterns, barsCount: bars.length } as unknown) as Prisma.InputJsonValue,
           historical_count: backtest.historical_count,
           win_rate: backtest.win_rate,
           avg_return_10d: backtest.avg_return_10d,
@@ -344,7 +345,9 @@ export function registerScanSignals(
     SCAN_SIGNALS_QUEUE_NAME,
     async (job) => {
       scanSignalsLogger.info({ msg: "start", jobId: job.id, name: job.name });
-      const result = await runScanSignalsJob({ alertQueue });
+      const result = await runScanSignalsJob(({
+        alertQueue,
+      } as unknown) as Partial<ScanSignalsDeps>);
       scanSignalsLogger.info({ msg: "end", jobId: job.id, ...result });
       return result;
     },

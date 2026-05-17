@@ -23,6 +23,7 @@ describe("signal DNA service", () => {
                 id: "hs1",
                 ticker: "AAPL",
                 pattern_type: "breakout",
+                marketRegime: null,
                 created_at: new Date("2026-04-20T00:00:00.000Z"),
                 technical_data: { rsi: 55, volume_ratio: 1.15, atr: 0.95 },
               };
@@ -32,6 +33,7 @@ describe("signal DNA service", () => {
                 id: "hs2",
                 ticker: "MSFT",
                 pattern_type: "breakout",
+                marketRegime: null,
                 created_at: new Date("2026-04-18T00:00:00.000Z"),
                 technical_data: { rsi: 54, volume_ratio: 1.4, atr: 1.3 },
               };
@@ -41,6 +43,7 @@ describe("signal DNA service", () => {
                 id: "hs3",
                 ticker: "NVDA",
                 pattern_type: "breakout",
+                marketRegime: null,
                 created_at: new Date("2026-04-15T00:00:00.000Z"),
                 technical_data: { rsi: 30, volume_ratio: 0.7, atr: 2.4 },
               };

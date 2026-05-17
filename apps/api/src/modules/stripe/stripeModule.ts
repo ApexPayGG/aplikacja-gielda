@@ -135,7 +135,8 @@ async function resolveSessionTier(
   const item = sub.items.data[0];
   const priceId = item?.price?.id;
   const tier = getTierFromPriceId(priceId) ?? "PRO";
-  return { tier, periodEnd: parsePeriodEnd(sub.current_period_end) };
+  const currentPeriodEnd = (sub as unknown as { current_period_end?: number }).current_period_end;
+  return { tier, periodEnd: parsePeriodEnd(currentPeriodEnd) };
 }
 
 export async function handleCheckoutSessionCompleted(session: any): Promise<void> {
