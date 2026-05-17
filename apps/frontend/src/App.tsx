@@ -46,6 +46,8 @@ import { PremiumCompanyAnalysis } from "./pages/PremiumCompanyAnalysis";
 import { WeeklyReviewPage } from "./pages/WeeklyReviewPage";
 import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 import { hasCompletedOnboarding } from "./utils/onboarding";
+import { NotFoundPage } from "./pages/NotFoundPage";
+import { ErrorPage } from "./pages/ErrorPage";
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { token, isLoading } = useAuth();
@@ -86,6 +88,8 @@ export default function App() {
             path="/onboarding"
             element={token && onboardingCompleted ? <Navigate to="/dashboard" replace /> : <OnboardingPage />}
           />
+          <Route path="/404" element={<NotFoundPage />} />
+          <Route path="/error" element={<ErrorPage />} />
 
           <Route path="/" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LandingPage />} />
           <Route path="/companies" element={<Home />} />
@@ -132,7 +136,7 @@ export default function App() {
           <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
           <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
           <Route path="/company/:symbol/premium" element={<ProtectedRoute><PremiumCompanyAnalysis /></ProtectedRoute>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
       </main>
     </div>

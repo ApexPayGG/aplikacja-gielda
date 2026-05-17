@@ -1,107 +1,184 @@
 import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { explainGlossaryTerm, type GlossaryExplainResponse } from "../services/api";
-import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { colors } from "../styles/designSystem";
 
-const POPULAR_TERMS = [
-  "RSI",
-  "MACD",
-  "P/E",
-  "EPS",
-  "EBITDA",
-  "dark pool",
-  "gamma squeeze",
-  "support",
-  "resistance",
-  "momentum",
-  "breakout",
-  "oversold",
-  "overbought",
-  "volume spike",
-  "earnings",
-  "dividend yield",
-  "market cap",
-  "short squeeze",
-  "bear market",
-  "bull market",
-] as const;
+type GlossaryCategory = "Techniczna" | "Fundamentalna" | "Psychologiczna" | "Broker";
+
+type GlossaryEntry = {
+  term: string;
+  definition: string;
+  category: GlossaryCategory;
+};
+
+const CATEGORIES: readonly GlossaryCategory[] = ["Techniczna", "Fundamentalna", "Psychologiczna", "Broker"];
+
+const GLOSSARY_ENTRIES: readonly GlossaryEntry[] = [
+  {
+    term: "Bid-Ask Spread",
+    definition: "Różnica między najlepszą ceną kupna i sprzedaży. Im mniejszy spread, tym zwykle wyższa płynność.",
+    category: "Broker",
+  },
+  {
+    term: "Breakout",
+    definition: "Wybicie ceny ponad opór lub poniżej wsparcia, często sygnalizujące rozpoczęcie silniejszego ruchu.",
+    category: "Techniczna",
+  },
+  {
+    term: "Dywersyfikacja",
+    definition: "Rozłożenie kapitału pomiędzy różne aktywa w celu ograniczania ryzyka pojedynczej pozycji.",
+    category: "Fundamentalna",
+  },
+  {
+    term: "EBITDA",
+    definition: "Wskaźnik zysku operacyjnego przed odsetkami, podatkami, amortyzacją i deprecjacją.",
+    category: "Fundamentalna",
+  },
+  {
+    term: "FOMO",
+    definition: "Fear Of Missing Out - presja wejścia w pozycję z obawy przed utratą okazji inwestycyjnej.",
+    category: "Psychologiczna",
+  },
+  {
+    term: "Leverage",
+    definition: "Dźwignia finansowa pozwalająca otworzyć większą pozycję przy mniejszym depozycie, zwiększając zysk i ryzyko.",
+    category: "Broker",
+  },
+  {
+    term: "MACD",
+    definition: "Wskaźnik momentum oparty o średnie kroczące, używany do oceny kierunku i siły trendu.",
+    category: "Techniczna",
+  },
+  {
+    term: "Margin Call",
+    definition: "Wezwanie brokera do uzupełnienia depozytu, gdy wartość zabezpieczenia spada poniżej wymaganego poziomu.",
+    category: "Broker",
+  },
+  {
+    term: "Overtrading",
+    definition: "Zbyt częste zawieranie transakcji pod wpływem emocji, zwykle prowadzące do pogorszenia wyników.",
+    category: "Psychologiczna",
+  },
+  {
+    term: "P/E",
+    definition: "Price to Earnings - relacja ceny akcji do zysku na akcję, używana w wycenie spółek.",
+    category: "Fundamentalna",
+  },
+  {
+    term: "RSI",
+    definition: "Relative Strength Index - oscylator wskazujący potencjalne strefy wykupienia i wyprzedania.",
+    category: "Techniczna",
+  },
+  {
+    term: "Stop Loss",
+    definition: "Zlecenie zabezpieczające, które automatycznie zamyka pozycję po osiągnięciu określonego poziomu straty.",
+    category: "Psychologiczna",
+  },
+];
 
 export function GlossaryPage() {
-  const { i18n, t } = useTranslation();
-  const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
-  const [payload, setPayload] = useState<GlossaryExplainResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<GlossaryCategory | null>(null);
 
-  const heading = useMemo(() => selectedTerm ?? t("glossary.selectPrompt"), [selectedTerm, t]);
+  const groupedEntries = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
 
-  async function handleTermClick(term: string): Promise<void> {
-    setSelectedTerm(term);
-    setLoading(true);
-    setError(null);
-    try {
-      const lang = (i18n.resolvedLanguage || i18n.language || "en").trim();
-      const response = await explainGlossaryTerm(term, lang);
-      setPayload(response);
-    } catch (e) {
-      setPayload(null);
-      setError(apiErrorMessage(e));
-    } finally {
-      setLoading(false);
-    }
-  }
+    const filteredEntries = GLOSSARY_ENTRIES.filter((entry) => {
+      const matchesCategory = !activeCategory || entry.category === activeCategory;
+      const matchesQuery =
+        normalizedQuery.length === 0 ||
+        entry.term.toLowerCase().includes(normalizedQuery) ||
+        entry.definition.toLowerCase().includes(normalizedQuery);
+
+      return matchesCategory && matchesQuery;
+    }).sort((a, b) => a.term.localeCompare(b.term, "pl"));
+
+    return filteredEntries.reduce<Record<string, GlossaryEntry[]>>((acc, entry) => {
+      const firstLetter = entry.term.charAt(0).toUpperCase();
+      acc[firstLetter] ??= [];
+      acc[firstLetter].push(entry);
+      return acc;
+    }, {});
+  }, [activeCategory, query]);
+
+  const alphabet = Object.keys(groupedEntries);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 text-slate-100">
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold text-white">{t("glossary.title")}</h1>
-        <p className="mt-2 text-sm text-slate-400">{t("glossary.subtitle")}</p>
-      </header>
+    <div className="relative min-h-screen overflow-hidden bg-bgSecondary px-4 py-10">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-72"
+        style={{
+          background: `linear-gradient(165deg, ${colors.brandDark}14 0%, ${colors.brandDark}00 70%)`,
+        }}
+      />
 
-      <div className="grid gap-6 md:grid-cols-[1.3fr_1fr]">
-        <section className="neo-panel rounded-xl p-4">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-brand-blue">
-            {t("glossary.popularTerms")}
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {POPULAR_TERMS.map((term) => (
-              <button
-                key={term}
-                type="button"
-                onClick={() => void handleTermClick(term)}
-                className={`rounded-full border px-3 py-1.5 text-sm transition ${
-                  selectedTerm === term
-                    ? "border-brand-green/60 bg-brand-green/12 text-brand-green"
-                    : "border-slate-700 bg-slate-900/60 text-slate-200 hover:border-brand-blue/60 hover:text-brand-blue"
-                }`}
-              >
-                {term}
-              </button>
-            ))}
+      <div className="relative z-10 mx-auto max-w-6xl">
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold text-brandDark">Słownik finansowy</h1>
+          <p className="mt-2 max-w-2xl text-sm text-textSecondary">
+            Najważniejsze pojęcia inwestycyjne zebrane w jednym miejscu - szybko wyszukuj terminy i ucz się języka
+            rynku.
+          </p>
+        </header>
+
+        <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-sm">
+          <label htmlFor="glossary-search" className="mb-2 block text-sm font-medium text-textSecondary">
+            Szukaj terminu
+          </label>
+          <input
+            id="glossary-search"
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Np. RSI, P/E, stop loss..."
+            className="w-full rounded-xl border border-border bg-bgPrimary px-4 py-3 text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/25"
+          />
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {CATEGORIES.map((category) => {
+              const isActive = activeCategory === category;
+
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => setActiveCategory((prev) => (prev === category ? null : category))}
+                  className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                    isActive
+                      ? "border-brandDark bg-brandDark text-white"
+                      : "border-borderStrong bg-bgPrimary text-textSecondary hover:border-brandDark hover:text-brandDark"
+                  }`}
+                >
+                  {category}
+                </button>
+              );
+            })}
           </div>
         </section>
 
-        <aside className="neo-panel rounded-xl border border-brand-green/35 p-4">
-          <h3 className="text-lg font-semibold text-white">{heading}</h3>
-          {loading && (
-            <div className="mt-3 inline-flex items-center gap-2 text-sm text-slate-300">
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-green/35 border-t-brand-green" />
-              {t("glossary.loading")}
-            </div>
+        <section className="mt-8 space-y-8">
+          {alphabet.length === 0 ? (
+            <p className="rounded-xl border border-border bg-bgPrimary px-4 py-3 text-sm text-textSecondary">
+              Brak wyników dla podanych filtrów.
+            </p>
+          ) : (
+            alphabet.map((letter) => (
+              <div key={letter}>
+                <h2 className="mb-3 text-lg font-semibold text-brandDark">{letter}</h2>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {groupedEntries[letter].map((entry) => (
+                    <article
+                      key={entry.term}
+                      className="rounded-xl border border-border bg-bgPrimary p-4 shadow-[0_6px_20px_rgba(13,13,26,0.06)]"
+                    >
+                      <h3 className="text-base font-bold text-brandDark">{entry.term}</h3>
+                      <p className="mt-2 text-sm leading-6 text-textSecondary">{entry.definition}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ))
           )}
-          {!loading && error && <p className="mt-3 text-sm text-brand-red">{error}</p>}
-          {!loading && !error && payload && (
-            <div className="mt-3 space-y-2 text-sm text-slate-200">
-              <p>{payload.explanation}</p>
-              <p className="text-slate-300">
-                {t("glossary.exampleLabel")}: {payload.example}
-              </p>
-            </div>
-          )}
-          {!loading && !error && !payload && (
-            <p className="mt-3 text-sm text-slate-400">{t("glossary.selectPrompt")}</p>
-          )}
-        </aside>
+        </section>
+
       </div>
     </div>
   );
