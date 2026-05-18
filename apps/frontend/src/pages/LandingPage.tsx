@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { type SVGProps, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { createStripeCheckoutSession, getLatestLiveQuote } from "../services/api";
@@ -16,38 +16,126 @@ const BRAND = {
 const ETORO_AFFILIATE_URL =
   "https://med.etoro.com/B9219_A129734_TClick_Sstockaipro-main.aspx";
 
-const solutionCards = [
+type SolutionIconId = "brief" | "coach" | "dna" | "premortem" | "globe" | "paper";
+
+const solutionCards: { iconId: SolutionIconId; title: string; body: string }[] = [
   {
-    icon: "🤖",
+    iconId: "brief",
     title: "AI Brief z narracją",
     body: "Nie sam score — pełne wyjaśnienie dlaczego warto lub nie. Claude Sonnet analizuje za Ciebie.",
   },
   {
-    icon: "🧠",
+    iconId: "coach",
     title: "Behavioral Coach",
     body: "Wykrywa wzorce Twoich błędów i interweniuje zanim popełnisz kolejny.",
   },
   {
-    icon: "🧬",
+    iconId: "dna",
     title: "Signal DNA",
     body: "Historyczne bliźniaki setupu. Jak ten układ kończył się w przeszłości — ze statystykami.",
   },
   {
-    icon: "⚠️",
+    iconId: "premortem",
     title: "Pre-Mortem AI",
     body: "Zanim kupisz — AI pokazuje najbardziej prawdopodobny scenariusz straty.",
   },
   {
-    icon: "🌍",
+    iconId: "globe",
     title: "130+ giełd",
     body: "GPW, NYSE, DAX, TSE, NSE i więcej. Wszystko w jednym interfejsie.",
   },
   {
-    icon: "🎮",
+    iconId: "paper",
     title: "Paper Trading",
     body: "Ćwicz bez ryzyka. Ucz się na błędach które nic nie kosztują.",
   },
 ];
+
+function IconProblemApps(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
+      <rect x="3" y="3" width="7" height="7" />
+      <rect x="14" y="3" width="7" height="7" />
+      <rect x="3" y="14" width="7" height="7" />
+      <rect x="14" y="14" width="7" height="7" />
+    </svg>
+  );
+}
+
+function IconProblemBrain(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
+      <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-1.96-3 2.5 2.5 0 0 1-1.32-4.24 3 3 0 0 1 .34-5.58 2.5 2.5 0 0 1 1.32-4.24A2.5 2.5 0 0 1 9.5 2" />
+      <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 1.96-3 2.5 2.5 0 0 0 1.32-4.24 3 3 0 0 0-.34-5.58 2.5 2.5 0 0 0-1.32-4.24A2.5 2.5 0 0 0 14.5 2" />
+    </svg>
+  );
+}
+
+function IconProblemTarget(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
+    </svg>
+  );
+}
+
+function SolutionCardIcon({ id, className }: { id: SolutionIconId; className?: string }) {
+  const cn = className ?? "h-7 w-7";
+  switch (id) {
+    case "brief":
+      return (
+        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+      );
+    case "coach":
+      return (
+        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      );
+    case "dna":
+      return (
+        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+          <path d="M2 15c6.667-6 13.333 0 20-6" />
+          <path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993" />
+          <path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993" />
+          <path d="m17 6-2.5-2.5" />
+          <path d="m14 8-1-1" />
+          <path d="m7 18 2.5 2.5" />
+          <path d="m10 16 1 1" />
+        </svg>
+      );
+    case "premortem":
+      return (
+        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      );
+    case "globe":
+      return (
+        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+          <circle cx="12" cy="12" r="10" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
+      );
+    case "paper":
+      return (
+        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+          <polyline points="16 7 22 7 22 13" />
+        </svg>
+      );
+  }
+}
 
 const pricingTiers = [
   {
@@ -95,15 +183,29 @@ const marqueeItems = [
   "GPW + NYSE + DAX",
 ];
 
+const TICKER_BAR_ITEMS = [
+  { symbol: "AAPL", price: "$300.23", change: "+0.78%", positive: true },
+  { symbol: "MSFT", price: "$421.92", change: "+1.85%", positive: true },
+  { symbol: "GOOGL", price: "$396.78", change: "+0.12%", positive: true },
+  { symbol: "NVDA", price: "$220.78", change: "+1.02%", positive: true },
+  { symbol: "BTC", price: "$67,420", change: "+2.34%", positive: true },
+  { symbol: "ETH", price: "$3,280", change: "+1.56%", positive: true },
+  { symbol: "EUR/USD", price: "1.0842", change: "-0.12%", positive: false },
+  { symbol: "USD/PLN", price: "3.9234", change: "+0.08%", positive: true },
+  { symbol: "WIG20", price: "2,234", change: "+0.45%", positive: true },
+  { symbol: "DAX", price: "18,340", change: "+0.67%", positive: true },
+  { symbol: "S&P500", price: "5,234", change: "+0.89%", positive: true },
+] as const;
+
 function toNumber(value: string | null | undefined): number | null {
   if (value == null) return null;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function changeBadgeClass(changePct: number | null): string {
-  if (changePct == null) return "bg-slate-100 text-slate-500";
-  return changePct >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700";
+function changeBadgeClassDashboard(changePct: number | null): string {
+  if (changePct == null) return "bg-white/10 text-white/50";
+  return changePct >= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400";
 }
 
 function isValidHeroQuoteArray(value: unknown): value is HeroQuote[] {
@@ -215,6 +317,19 @@ export function LandingPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) e.target.classList.add("visible");
+        });
+      },
+      { threshold: 0.1 },
+    );
+    document.querySelectorAll(".reveal, .reveal-left, .reveal-right").forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   const displayedQuotes = quotes.length > 0 ? quotes : emptyQuotes;
 
   const handleChoosePlan = async (plan: "pro" | "pro_plus"): Promise<void> => {
@@ -241,6 +356,7 @@ export function LandingPage() {
   };
 
   const marqueeTrack = [...marqueeItems, ...marqueeItems];
+  const tickerMarqueeTrack = [...TICKER_BAR_ITEMS, ...TICKER_BAR_ITEMS];
 
   return (
     <div className="min-h-screen bg-white text-slate-900 antialiased">
@@ -249,6 +365,32 @@ export function LandingPage() {
         description="Analiza akcji z AI, coaching behawioralny i ponad 130 giełd — GPW, NYSE, DAX i więcej w jednym miejscu."
         ogType="website"
       />
+
+      {/* ═══ TICKER BAR (demo quotes) ═══ */}
+      <div
+        className="h-10 overflow-hidden bg-[#0A0A0F]"
+        aria-label="Przykładowe notowania rynkowe — dane demo"
+      >
+        <div className="animate-marquee-ticker flex h-10 w-max items-center whitespace-nowrap">
+          {tickerMarqueeTrack.map((row, i) => (
+            <span key={`${row.symbol}-${i}`} className="inline-flex shrink-0 items-center">
+              <span className="inline-flex items-center gap-2 px-4">
+                <span className="text-xs text-white/60">{row.symbol}</span>
+                <span className="font-mono text-xs text-white">{row.price}</span>
+                <span
+                  className={`text-xs font-medium ${row.positive ? "text-emerald-400" : "text-red-400"}`}
+                >
+                  {row.change}
+                </span>
+              </span>
+              <span className="select-none text-white/20" aria-hidden>
+                |
+              </span>
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* ═══ NAVBAR ═══ */}
       <header
         className={`sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md transition-shadow duration-300 ${
@@ -303,57 +445,48 @@ export function LandingPage() {
         </div>
       </header>
 
-      {/* ═══ HERO — tight to marquee below; content anchored low to avoid dead space above bar ═══ */}
-      <section className="relative isolate flex min-h-[85vh] flex-col justify-end overflow-hidden pb-0">
+      {/* ═══ HERO ═══ */}
+      <section className="relative isolate flex min-h-[90vh] items-center overflow-hidden">
         <div
-          className="pointer-events-none absolute inset-0 -z-10"
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(45, 10, 107, 0.06), transparent 55%), radial-gradient(ellipse 60% 40% at 100% 50%, rgba(0, 201, 212, 0.06), transparent 50%), #ffffff",
-          }}
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_#7A0F9E15,_transparent_60%)]"
+          aria-hidden
+        />
+        <div
+          className="animate-float pointer-events-none absolute right-1/3 top-20 -z-10 h-96 w-96 rounded-full bg-[#00C9D4]/5 blur-3xl"
+          aria-hidden
+        />
+        <div
+          className="animate-float pointer-events-none absolute bottom-20 left-10 -z-10 h-64 w-64 rounded-full bg-[#7A0F9E]/[0.08] blur-3xl [animation-delay:1000ms]"
+          aria-hidden
         />
 
-        <svg
-          className="pointer-events-none absolute -right-24 top-24 -z-10 h-96 w-96 animate-float opacity-[0.05]"
-          aria-hidden
-          viewBox="0 0 200 200"
-        >
-          <circle cx="100" cy="100" r="90" fill={BRAND.dark} />
-        </svg>
-        <svg
-          className="pointer-events-none absolute -left-16 bottom-32 -z-10 h-72 w-72 animate-float opacity-[0.05] [animation-delay:1s]"
-          aria-hidden
-          viewBox="0 0 200 200"
-        >
-          <ellipse cx="100" cy="100" rx="95" ry="70" fill={BRAND.medium} />
-        </svg>
-
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-8 px-4 pb-3 pt-10 sm:gap-10 sm:pb-4 sm:pt-14 lg:grid-cols-[3fr_2fr] lg:gap-12 lg:pb-5 lg:pt-16">
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 lg:grid-cols-[3fr_2fr] lg:gap-12 lg:py-20">
           {/* Left column */}
           <div className="flex flex-col justify-center">
             <span
-              className="mb-6 inline-flex w-fit items-center rounded-full border px-4 py-1.5 text-xs font-semibold tracking-wide"
+              className="landing-hero-badge mb-6 inline-flex w-fit items-center rounded-full border px-4 py-1.5 text-xs font-semibold tracking-wide"
               style={{
                 backgroundColor: `${BRAND.dark}14`,
                 borderColor: `${BRAND.dark}33`,
                 color: BRAND.dark,
               }}
             >
-              🚀 AI-powered · 130+ giełd · 9 języków
+              AI-powered · 130+ giełd · 9 języków
             </span>
 
             <h1 className="text-5xl font-black leading-[1.05] tracking-tight text-[#1e1b4b] sm:text-6xl lg:text-7xl">
-              Inwestuj mądrzej.
-              <br />
-              <span style={{ color: BRAND.cyan }}>Nie więcej.</span>
+              <span className="landing-hero-h1-line1 block">Inwestuj mądrzej.</span>
+              <span className="landing-hero-h1-line2 mt-1 block" style={{ color: BRAND.cyan }}>
+                Nie więcej.
+              </span>
             </h1>
 
-            <p className="mt-6 max-w-lg text-xl leading-relaxed text-slate-600">
+            <p className="landing-hero-sub mt-6 max-w-lg text-xl leading-relaxed text-slate-600">
               Jedna platforma zamiast pięciu kart w przeglądarce. AI analizuje, coach pilnuje Twoich emocji — Ty
               podejmujesz świadome decyzje.
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="landing-hero-cta mt-10 flex flex-wrap items-center gap-4">
               <Link
                 to="/register"
                 className="inline-flex items-center gap-2 rounded-full px-8 py-4 text-lg font-semibold text-white shadow-lg transition hover:opacity-95"
@@ -365,11 +498,11 @@ export function LandingPage() {
                 href="#solution"
                 className="inline-flex items-center gap-2 rounded-full border border-[#2D0A6B]/20 px-6 py-4 text-lg font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5"
               >
-                Zobacz demo ▶
+                Zobacz demo
               </a>
             </div>
 
-            <div className="mt-10 flex items-center gap-4">
+            <div className="landing-hero-trust mt-10 flex items-center gap-4">
               <div className="flex -space-x-3">
                 <span
                   className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white text-xs font-bold text-white ring-2 ring-white"
@@ -397,39 +530,38 @@ export function LandingPage() {
           </div>
 
           {/* Right column — Live preview */}
-          <div className="flex flex-col justify-center">
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl">
+          <div className="landing-hero-dashboard flex flex-col justify-center">
+            <div className="rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl">
               <div className="mb-5 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-slate-800">Puls rynku na żywo</h2>
-                <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-600">
-                  <span className="pulse-dot inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                <h2 className="text-lg font-bold text-white">Puls rynku na żywo</h2>
+                <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
+                  <span className="pulse-dot inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />
                   Live
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                {displayedQuotes.map((row, index) => (
+                {displayedQuotes.map((row) => (
                   <div
                     key={row.ticker}
-                    className="opacity-0 animate-fadeInUp rounded-xl border border-gray-100 bg-slate-50/80 p-3 transition-transform hover:scale-[1.02]"
-                    style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "forwards" }}
+                    className="rounded-xl border border-white/10 bg-white/5 p-3 transition-transform hover:scale-[1.02]"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <span className="font-mono text-sm font-bold text-slate-900">{row.ticker}</span>
+                      <span className="font-mono text-sm font-bold text-white">{row.ticker}</span>
                       <span
-                        className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold ${changeBadgeClass(row.changePct)}`}
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold ${changeBadgeClassDashboard(row.changePct)}`}
                       >
                         {row.changePct == null ? "—" : `${row.changePct >= 0 ? "+" : ""}${row.changePct.toFixed(2)}%`}
                       </span>
                     </div>
-                    <p className="mt-2 text-lg font-semibold tabular-nums text-slate-900">
+                    <p className="mt-2 text-lg font-semibold tabular-nums text-white">
                       {row.price == null ? "—" : row.price.toFixed(2)}
                     </p>
                   </div>
                 ))}
               </div>
               {quotesLoading ? (
-                <p className="mt-3 text-center text-xs text-slate-400">{t("common.loading")}</p>
+                <p className="mt-3 text-center text-xs text-white/40">{t("common.loading")}</p>
               ) : null}
             </div>
           </div>
@@ -458,38 +590,46 @@ export function LandingPage() {
         </div>
 
         <div className="mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-3">
-          {[
-            {
-              emoji: "📱",
-              title: "5 aplikacji. Jeden chaos.",
-              body: "TradingView, Finviz, broker, Excel, Discord — otwarte jednocześnie. Decyzje na fragmentarycznych danych.",
-            },
-            {
-              emoji: "😰",
-              title: "Emocje niszczą portfel.",
-              body: "Strach, chciwość, FOMO. Badania potwierdzają — 80% strat to błędy psychologiczne, nie analityczne.",
-            },
-            {
-              emoji: "🎯",
-              title: "Sygnał bez kontekstu.",
-              body: "Widzisz setup ale nie wiesz: czy rynek sprzyja? Czy to właściwy moment? Czy masz przewagę?",
-            },
-          ].map((card) => (
-            <article
-              key={card.title}
-              className="group relative rounded-2xl border border-gray-100 bg-white p-8 shadow-md transition hover:-translate-y-1 hover:shadow-xl"
-            >
-              <div className="absolute left-8 right-8 top-0 h-[3px] rounded-b-full bg-red-500/90" />
-              <div
-                className="mt-4 flex h-[72px] w-[72px] items-center justify-center rounded-full text-4xl"
-                style={{ backgroundColor: `${BRAND.dark}14` }}
+          {(
+            [
+              {
+                icon: "apps" as const,
+                title: "5 aplikacji. Jeden chaos.",
+                body: "TradingView, Finviz, broker, Excel, Discord — otwarte jednocześnie. Decyzje na fragmentarycznych danych.",
+              },
+              {
+                icon: "brain" as const,
+                title: "Emocje niszczą portfel.",
+                body: "Strach, chciwość, FOMO. Badania potwierdzają — 80% strat to błędy psychologiczne, nie analityczne.",
+              },
+              {
+                icon: "target" as const,
+                title: "Sygnał bez kontekstu.",
+                body: "Widzisz setup ale nie wiesz: czy rynek sprzyja? Czy to właściwy moment? Czy masz przewagę?",
+              },
+            ] as const
+          ).map((card, index) => {
+            const staggerClass = index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
+            return (
+              <article
+                key={card.title}
+                className={`reveal group relative rounded-2xl border border-gray-100 bg-white p-8 shadow-md transition hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
               >
-                {card.emoji}
-              </div>
-              <h3 className="mt-6 text-xl font-bold text-slate-900">{card.title}</h3>
-              <p className="mt-3 text-base leading-relaxed text-slate-600">{card.body}</p>
-            </article>
-          ))}
+                <div className="absolute left-8 right-8 top-0 h-[3px] rounded-b-full bg-red-500/90" />
+                <div className="mt-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-red-50 text-red-600">
+                  {card.icon === "apps" ? (
+                    <IconProblemApps className="h-8 w-8 shrink-0" />
+                  ) : card.icon === "brain" ? (
+                    <IconProblemBrain className="h-8 w-8 shrink-0" />
+                  ) : (
+                    <IconProblemTarget className="h-8 w-8 shrink-0" />
+                  )}
+                </div>
+                <h3 className="mt-6 text-xl font-bold text-slate-900">{card.title}</h3>
+                <p className="mt-3 text-base leading-relaxed text-slate-600">{card.body}</p>
+              </article>
+            );
+          })}
         </div>
       </section>
 
@@ -507,22 +647,27 @@ export function LandingPage() {
         </div>
 
         <div className="mx-auto mt-16 grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {solutionCards.map((card) => (
-            <article
-              key={card.title}
-              className="rounded-xl border-x border-b border-gray-100 border-t-[3px] bg-white p-6 shadow-sm transition hover:border-[#00C9D4] hover:shadow-lg"
-              style={{ borderTopColor: BRAND.cyan }}
-            >
-              <div
-                className="flex h-14 w-14 items-center justify-center rounded-xl text-2xl"
-                style={{ backgroundColor: `${BRAND.cyan}26`, color: BRAND.cyan }}
+          {solutionCards.map((card, index) => {
+            const revealKind =
+              index % 3 === 0 ? "reveal-left" : index % 3 === 2 ? "reveal-right" : "reveal";
+            const staggerClass =
+              index % 3 === 0 ? "stagger-1" : index % 3 === 1 ? "stagger-2" : "stagger-3";
+            return (
+              <article
+                key={card.title}
+                className={`${revealKind} rounded-xl border-x border-b border-gray-100 border-t-[3px] bg-white p-6 shadow-sm transition hover:border-[#00C9D4] hover:shadow-lg ${staggerClass}`}
+                style={{ borderTopColor: BRAND.cyan }}
               >
-                {card.icon}
-              </div>
-              <h3 className="mt-4 text-lg font-bold text-slate-900">{card.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{card.body}</p>
-            </article>
-          ))}
+                <div
+                  className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#00C9D4]/10 text-[#00C9D4]"
+                >
+                  <SolutionCardIcon id={card.iconId} className="h-7 w-7 shrink-0" />
+                </div>
+                <h3 className="mt-4 text-lg font-bold text-slate-900">{card.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{card.body}</p>
+              </article>
+            );
+          })}
         </div>
       </section>
 
@@ -552,18 +697,25 @@ export function LandingPage() {
                 title: "Inwestuj mądrzej",
                 desc: "AI analizuje, coach uczy, Ty decydujesz.",
               },
-            ].map((item) => (
-              <div key={item.step} className="relative z-10 flex flex-col items-center text-center">
+            ].map((item, index) => {
+              const staggerClass =
+                index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
+              return (
                 <div
-                  className="flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold text-white"
-                  style={{ backgroundColor: BRAND.dark }}
+                  key={item.step}
+                  className={`reveal relative z-10 flex flex-col items-center text-center ${staggerClass}`}
                 >
-                  {item.step}
+                  <div
+                    className="flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold text-white"
+                    style={{ backgroundColor: BRAND.dark }}
+                  >
+                    {item.step}
+                  </div>
+                  <h3 className="mt-6 text-lg font-bold text-slate-900">{item.title}</h3>
+                  <p className="mt-2 text-sm text-slate-600">{item.desc}</p>
                 </div>
-                <h3 className="mt-6 text-lg font-bold text-slate-900">{item.title}</h3>
-                <p className="mt-2 text-sm text-slate-600">{item.desc}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -601,8 +753,13 @@ export function LandingPage() {
               name: "Clara",
               loc: "Madryt",
             },
-          ].map((item) => (
-            <blockquote key={item.name} className="rounded-2xl bg-white p-8 shadow-md">
+          ].map((item, index) => {
+            const staggerClass = index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
+            return (
+              <blockquote
+                key={item.name}
+                className={`reveal rounded-2xl bg-white p-8 shadow-md ${staggerClass}`}
+              >
               <p className="font-serif text-6xl leading-none" style={{ color: BRAND.cyan }}>
                 &ldquo;
               </p>
@@ -620,7 +777,8 @@ export function LandingPage() {
                 </div>
               </footer>
             </blockquote>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -789,8 +947,8 @@ export function LandingPage() {
         }}
       >
         <div className="mx-auto max-w-3xl">
-          <h2 className="text-4xl font-bold sm:text-5xl">Gotowy żeby inwestować mądrzej?</h2>
-          <p className="mt-4 text-lg text-white/80">
+          <h2 className="text-4xl font-bold text-white sm:text-5xl">Gotowy żeby inwestować mądrzej?</h2>
+          <p className="mt-4 text-lg text-white">
             Zacznij za darmo — bez karty kredytowej. Upgrade w każdej chwili.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
@@ -815,7 +973,12 @@ export function LandingPage() {
       <footer className="text-white" style={{ backgroundColor: BRAND.dark }}>
         <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 md:grid-cols-4">
           <div>
-            <img src="/logo.png" alt="StockAI Pro" className="h-9 w-36 object-contain brightness-0 invert" />
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-black text-white">
+                Stock<span className="text-[#00C9D4]">AI</span>
+              </span>
+              <span className="text-2xl font-semibold text-white/80">Pro</span>
+            </div>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
               Jedna platforma. Pełny obraz rynku. AI i coaching behawioralny dla świadomych inwestorów.
             </p>
