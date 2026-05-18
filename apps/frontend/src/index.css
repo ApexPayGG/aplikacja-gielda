@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -372,6 +372,16 @@ a {
     animation: none !important;
   }
 
+  .signal-wave-path {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  .timeline-line {
+    transition: none !important;
+    transform: scaleX(1) !important;
+  }
+
   .reveal,
   .reveal-left,
   .reveal-right {
@@ -645,4 +655,43 @@ a {
   position: relative;
   z-index: 1;
   margin: 2px;
+}
+
+@keyframes signal-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.signal-wave-path {
+  animation: signal-draw 3s ease-out forwards;
+}
+
+.hero-h1 {
+  font-size: clamp(3.5rem, 6vw, 5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.section-h2 {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.landing-body {
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+.timeline-line {
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 1s ease 0.5s;
+}
+
+.timeline-line.visible {
+  transform: scaleX(1);
 }

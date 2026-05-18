@@ -1,4 +1,4 @@
-import { type SVGProps, useEffect, useRef, useState, type RefObject } from "react";
+import { type SVGProps, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { createStripeCheckoutSession } from "../services/api";
@@ -191,6 +191,115 @@ const marqueeItems = [
   "GPW + NYSE + DAX",
 ];
 
+function SignalWave({
+  offset = 0,
+  opacity = 0.08,
+  color = BRAND.cyan,
+}: {
+  offset?: number;
+  opacity?: number;
+  color?: string;
+}) {
+  return (
+    <svg
+      className="pointer-events-none absolute inset-x-0 z-0 h-[120px] w-full overflow-visible"
+      style={{ top: offset, opacity }}
+      viewBox="0 0 1440 120"
+      preserveAspectRatio="none"
+      aria-hidden
+    >
+      <path
+        d="M0,60 C120,20 240,100 360,60 C480,20 600,100 720,60 C840,20 960,100 1080,60 C1200,20 1320,100 1440,60"
+        fill="none"
+        stroke={color}
+        strokeWidth={2}
+        strokeDasharray={2000}
+        strokeDashoffset={2000}
+        vectorEffect="nonScalingStroke"
+        className="signal-wave-path"
+      />
+    </svg>
+  );
+}
+
+function ParticleDots() {
+  const dots = useMemo(
+    () =>
+      Array.from({ length: 20 }, (_, i) => ({
+        x: ((i * 47) % 93) + 3,
+        y: ((i * 71) % 88) + 6,
+        size: 1 + (i % 4) * 0.65,
+        delay: (i * 0.21) % 3,
+        duration: 2 + (i % 5) * 0.35,
+      })),
+    [],
+  );
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
+      {dots.map((dot, i) => (
+        <div
+          key={i}
+          className="animate-float absolute rounded-full"
+          style={{
+            left: `${dot.x}%`,
+            top: `${dot.y}%`,
+            width: `${dot.size}px`,
+            height: `${dot.size}px`,
+            background: "rgba(255,255,255,0.3)",
+            animationDelay: `${dot.delay}s`,
+            animationDuration: `${dot.duration}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function IconStatGlobe(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  );
+}
+
+function IconStatCircuit(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="M9 9h6v6H9z" />
+      <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
+    </svg>
+  );
+}
+
+function IconStatLang(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+function IconStatUsers(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+const HOW_IT_WORKS_STEPS = [
+  { step: "1", title: "Zarejestruj się", desc: "30 sekund. Bez karty kredytowej." },
+  { step: "2", title: "Wybierz rynek", desc: "GPW, US, DAX — lub wszystkie naraz." },
+  { step: "3", title: "Inwestuj mądrzej", desc: "AI analizuje, coach uczy, Ty decydujesz." },
+] as const;
+
 const TICKER_BAR_ITEMS = [
   { symbol: "AAPL", price: "$300.23", change: "+0.78%", positive: true },
   { symbol: "MSFT", price: "$421.92", change: "+1.85%", positive: true },
@@ -260,17 +369,15 @@ function CandlestickChart() {
 }
 
 function FloatingCards() {
+  const cardShell =
+    "rounded-2xl shadow-[0_8px_32px_rgba(45,10,107,0.15)] border border-[rgba(45,10,107,0.08)] bg-white px-3 py-2 md:px-4 md:py-3";
+
   return (
     <>
       <div
-        className="animate-float absolute -left-4 top-16 z-20"
+        className={`animate-float absolute left-2 top-[5.25rem] z-20 origin-top-left scale-[0.78] sm:left-1 sm:top-16 sm:scale-90 md:-left-4 md:scale-100 ${cardShell}`}
         style={{
           animationDelay: "0s",
-          background: "white",
-          borderRadius: "16px",
-          padding: "12px 16px",
-          boxShadow: "0 8px 32px rgba(45,10,107,0.15)",
-          border: "1px solid rgba(45,10,107,0.08)",
         }}
       >
         <div className="flex items-center gap-2">
@@ -285,28 +392,20 @@ function FloatingCards() {
       </div>
 
       <div
-        className="animate-float absolute -right-4 bottom-24 z-20"
+        className={`animate-float absolute bottom-[7.25rem] right-2 z-20 origin-bottom-right scale-[0.78] sm:bottom-24 sm:right-1 sm:scale-90 md:-right-4 md:scale-100 ${cardShell}`}
         style={{
           animationDelay: "1.5s",
-          background: "white",
-          borderRadius: "16px",
-          padding: "12px 16px",
-          boxShadow: "0 8px 32px rgba(45,10,107,0.15)",
-          border: "1px solid rgba(45,10,107,0.08)",
         }}
       >
-        <div className="text-[11px] font-bold text-[#2D0A6B]">Coach Alert</div>
+        <div className="text-[11px] font-bold text-[#2D0A6B]">🧠 Coach Alert</div>
         <div className="mt-0.5 text-[10px] text-[#9B9BB5]">Unikasz FOMO dziś ✓</div>
       </div>
 
       <div
-        className="animate-float absolute right-0 top-4 z-20"
+        className="animate-float absolute right-2 top-[6rem] z-20 origin-top-right scale-[0.78] rounded-2xl px-3 py-2 shadow-[0_8px_32px_rgba(45,10,107,0.3)] sm:right-1 sm:top-6 sm:scale-90 md:right-0 md:top-4 md:scale-100 md:px-4 md:py-3"
         style={{
           animationDelay: "3s",
           background: "linear-gradient(135deg, #2D0A6B, #7A0F9E)",
-          borderRadius: "16px",
-          padding: "12px 16px",
-          boxShadow: "0 8px 32px rgba(45,10,107,0.3)",
         }}
       >
         <div className="text-[20px] font-black text-white">73%</div>
@@ -526,7 +625,7 @@ export function LandingPage() {
       },
       { threshold: 0.1 },
     );
-    document.querySelectorAll(".reveal, .reveal-left, .reveal-right").forEach((el) => observer.observe(el));
+    document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .timeline-line").forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
@@ -591,7 +690,7 @@ export function LandingPage() {
 
       {/* ═══ NAVBAR ═══ */}
       <header
-        className={`sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md transition-shadow duration-300 ${
+        className={`relative sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md transition-shadow duration-300 ${
           navScrolled ? "shadow-md" : "shadow-none"
         }`}
       >
@@ -658,6 +757,15 @@ export function LandingPage() {
             </Link>
           </div>
         </div>
+        {navScrolled ? (
+          <div
+            className="pointer-events-none absolute bottom-0 left-0 right-0 h-px"
+            style={{
+              background: "linear-gradient(90deg, transparent, #00C9D4 30%, #7A0F9E 70%, transparent)",
+            }}
+            aria-hidden
+          />
+        ) : null}
       </header>
 
       {/* ═══ HERO ═══ */}
@@ -692,14 +800,14 @@ export function LandingPage() {
               AI-powered · 130+ giełd · 9 języków
             </span>
 
-            <h1 className="text-5xl font-black leading-[1.05] tracking-tight text-[#1e1b4b] sm:text-6xl lg:text-7xl">
+            <h1 className="hero-h1 text-[#1e1b4b]">
               <span className="landing-hero-h1-line1 block">Inwestuj mądrzej.</span>
               <span className="landing-hero-h1-line2 mt-1 block" style={{ color: BRAND.cyan }}>
                 Nie więcej.
               </span>
             </h1>
 
-            <p className="landing-hero-sub mt-6 max-w-lg text-xl leading-relaxed text-slate-600">
+            <p className="landing-hero-sub landing-body mt-6 max-w-lg text-slate-600">
               Jedna platforma zamiast pięciu kart w przeglądarce. AI analizuje, coach pilnuje Twoich emocji — Ty
               podejmujesz świadome decyzje.
             </p>
@@ -776,25 +884,34 @@ export function LandingPage() {
       </section>
 
       {/* ═══ STATS COUNTERS ═══ */}
-      <section className="border-y border-gray-100 bg-white py-16">
-        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-10 px-4 md:grid-cols-4 md:gap-8">
-          <div ref={exchangesCounter.ref} className="text-center">
-            <div className="text-5xl font-black text-[#2D0A6B]">{exchangesCounter.count}+</div>
-            <p className="mt-2 text-slate-600">giełd</p>
+      <section
+        className="relative overflow-hidden border-y border-white/10 py-14 md:py-20"
+        style={{
+          background: "linear-gradient(135deg, #2D0A6B 0%, #1a0533 50%, #0a1628 100%)",
+        }}
+      >
+        <div className="relative z-10 mx-auto grid max-w-5xl grid-cols-2 divide-x divide-y divide-white/10 md:grid-cols-4 md:divide-y-0">
+          <div ref={exchangesCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
+            <IconStatGlobe className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
+            <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{exchangesCounter.count}+</div>
+            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">giełd</p>
           </div>
-          <div ref={modulesCounter.ref} className="text-center">
-            <div className="text-5xl font-black text-[#2D0A6B]">{modulesCounter.count}</div>
-            <p className="mt-2 text-slate-600">modułów AI</p>
+          <div ref={modulesCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
+            <IconStatCircuit className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
+            <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{modulesCounter.count}</div>
+            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">modułów AI</p>
           </div>
-          <div ref={langsCounter.ref} className="text-center">
-            <div className="text-5xl font-black text-[#2D0A6B]">{langsCounter.count}</div>
-            <p className="mt-2 text-slate-600">języków</p>
+          <div ref={langsCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
+            <IconStatLang className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
+            <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{langsCounter.count}</div>
+            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">języków</p>
           </div>
-          <div ref={investorsCounter.ref} className="text-center">
-            <div className="text-5xl font-black text-[#2D0A6B]">
+          <div ref={investorsCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
+            <IconStatUsers className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
+            <div className="text-5xl font-black tabular-nums text-white md:text-6xl">
               {investorsCounter.count.toLocaleString("pl-PL")}+
             </div>
-            <p className="mt-2 text-slate-600">inwestorów</p>
+            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">inwestorów</p>
           </div>
         </div>
       </section>
@@ -805,6 +922,7 @@ export function LandingPage() {
         className="relative scroll-mt-24 overflow-hidden px-4 py-20"
         style={{ background: "linear-gradient(180deg, #ffffff 0%, #faf8ff 100%)" }}
       >
+        <SignalWave offset={-40} opacity={0.12} />
         <div className="pointer-events-none absolute inset-0">
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[50%]"
@@ -817,8 +935,8 @@ export function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl font-bold text-slate-900 sm:text-5xl">Czy to brzmi znajomo?</h2>
-          <p className="mt-4 text-lg text-slate-600">Każdy retail inwestor zmaga się z tym samym.</p>
+          <h2 className="section-h2 text-slate-900">Czy to brzmi znajomo?</h2>
+          <p className="landing-body mt-4 text-slate-600">Każdy retail inwestor zmaga się z tym samym.</p>
         </div>
 
         <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-3">
@@ -845,12 +963,13 @@ export function LandingPage() {
             return (
               <article
                 key={card.title}
-                className={`reveal group relative rounded-2xl border border-gray-100 bg-white p-8 shadow-md transition hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
+                className={`reveal group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-8 shadow-md transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
               >
-                <div className="absolute left-8 right-8 top-0 h-[3px] rounded-b-full bg-red-500/90" />
+                <div className="absolute inset-x-0 top-0 flex justify-start px-8 pt-0">
+                  <div className="h-[3px] w-10 rounded-full bg-red-400 transition-all duration-300 ease-out group-hover:w-full" />
+                </div>
                 <div
-                  className="mb-6 mt-4 flex h-20 w-20 items-center justify-center rounded-2xl"
-                  style={{ background: "linear-gradient(135deg, #fee2e2, #fecaca)" }}
+                  className="mb-6 mt-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-red-50 transition-all duration-300 group-hover:scale-110 group-hover:bg-red-100"
                 >
                   {card.icon === "apps" ? (
                     <IconProblemApps className="h-8 w-8 shrink-0 text-red-500" />
@@ -861,7 +980,7 @@ export function LandingPage() {
                   )}
                 </div>
                 <h3 className="text-xl font-bold text-slate-900">{card.title}</h3>
-                <p className="mt-3 text-base leading-relaxed text-slate-600">{card.body}</p>
+                <p className="landing-body mt-3 text-slate-600">{card.body}</p>
               </article>
             );
           })}
@@ -871,21 +990,22 @@ export function LandingPage() {
       {/* ═══ SOLUTION ═══ */}
       <section
         id="solution"
-        className="scroll-mt-24 px-4 py-20"
+        className="relative scroll-mt-24 overflow-hidden px-4 py-20"
         style={{ background: "linear-gradient(180deg, #faf8ff 0%, #f0f9ff 50%, #faf8ff 100%)" }}
       >
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl font-bold text-slate-900 sm:text-5xl">
+        <SignalWave offset={20} opacity={0.1} />
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <h2 className="section-h2 text-slate-900">
             Jedno miejsce.
             <br />
             <span style={{ color: BRAND.cyan }}>Pełny obraz.</span>
           </h2>
-          <p className="mt-4 text-lg text-slate-600">
+          <p className="landing-body mt-4 text-slate-600">
             StockAI Pro zastępuje 5 narzędzi i dodaje to czego żadne z nich nie ma.
           </p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {solutionCards.map((card, index) => {
             const revealKind =
               index % 3 === 0 ? "reveal-left" : index % 3 === 2 ? "reveal-right" : "reveal";
@@ -894,17 +1014,23 @@ export function LandingPage() {
             return (
               <article
                 key={card.title}
-                className={`${revealKind} rounded-xl border-x border-b border-gray-100 border-t-[3px] bg-white p-6 shadow-sm transition hover:border-[#00C9D4] hover:shadow-lg ${staggerClass}`}
+                className={`${revealKind} group relative overflow-hidden rounded-xl border border-gray-100 border-t-[3px] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#00C9D4] hover:shadow-lg ${staggerClass}`}
                 style={{ borderTopColor: BRAND.cyan }}
               >
+                <span
+                  className="pointer-events-none absolute right-4 top-4 text-5xl font-black leading-none opacity-[0.05]"
+                  style={{ color: BRAND.dark }}
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <div
-                  className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl"
+                  className="relative z-[1] mb-5 flex h-16 w-16 items-center justify-center rounded-2xl"
                   style={{ background: "linear-gradient(135deg, #e0f7fa, #b2ebf2)" }}
                 >
                   <SolutionCardIcon id={card.iconId} className="h-7 w-7 shrink-0 text-[#00C9D4]" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">{card.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{card.body}</p>
+                <h3 className="relative z-[1] text-lg font-bold text-slate-900">{card.title}</h3>
+                <p className="landing-body relative z-[1] mt-2 text-slate-600">{card.body}</p>
               </article>
             );
           })}
@@ -912,41 +1038,16 @@ export function LandingPage() {
       </section>
 
       {/* ═══ HOW IT WORKS ═══ */}
-      <section id="how-it-works" className="scroll-mt-24 bg-white px-4 py-20">
-        <h2 className="text-center text-4xl font-bold text-slate-900 sm:text-5xl">Jak to działa?</h2>
+      <section id="how-it-works" className="relative scroll-mt-24 overflow-hidden bg-white px-4 py-20">
+        <h2 className="section-h2 text-center text-slate-900">Jak to działa?</h2>
 
-        <div className="relative mx-auto mt-16 max-w-5xl">
-          <div
-            className="absolute left-[16.67%] right-[16.67%] top-8 hidden h-[2px] md:block"
-            style={{
-              background: "linear-gradient(90deg, #2D0A6B, #00C9D4, #2D0A6B)",
-            }}
-          />
-          <div className="grid gap-12 md:grid-cols-3 md:gap-8">
-            {[
-              {
-                step: "1",
-                title: "Zarejestruj się",
-                desc: "30 sekund. Bez karty kredytowej.",
-              },
-              {
-                step: "2",
-                title: "Wybierz rynek",
-                desc: "GPW, US, DAX — lub wszystkie naraz.",
-              },
-              {
-                step: "3",
-                title: "Inwestuj mądrzej",
-                desc: "AI analizuje, coach uczy, Ty decydujesz.",
-              },
-            ].map((item, index) => {
+        <div className="mx-auto mt-16 md:hidden">
+          <div className="mx-auto grid max-w-lg gap-12">
+            {HOW_IT_WORKS_STEPS.map((item, index) => {
               const staggerClass =
                 index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
               return (
-                <div
-                  key={item.step}
-                  className={`reveal relative z-10 flex flex-col items-center text-center ${staggerClass}`}
-                >
+                <div key={item.step} className={`reveal flex flex-col items-center text-center ${staggerClass}`}>
                   <div
                     className="flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-white"
                     style={{
@@ -957,7 +1058,49 @@ export function LandingPage() {
                     {item.step}
                   </div>
                   <h3 className="mt-6 text-lg font-bold text-slate-900">{item.title}</h3>
-                  <p className="mt-2 text-sm text-slate-600">{item.desc}</p>
+                  <p className="landing-body mt-2 text-slate-600">{item.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="relative mx-auto mt-16 hidden max-w-5xl md:block">
+          <div className="flex items-start justify-between gap-2 px-2">
+            {HOW_IT_WORKS_STEPS.map((item, index) => {
+              const staggerClass =
+                index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
+              const connector =
+                index < HOW_IT_WORKS_STEPS.length - 1 ? (
+                  <div className="flex h-16 min-w-0 flex-[1] items-center px-2">
+                    <div
+                      className="timeline-line h-[2px] w-full rounded-full"
+                      style={{
+                        background:
+                          index === 0
+                            ? "linear-gradient(90deg, #2D0A6B, #00C9D4)"
+                            : "linear-gradient(90deg, #00C9D4, #2D0A6B)",
+                      }}
+                    />
+                  </div>
+                ) : null;
+
+              return (
+                <div key={item.step} className="contents">
+                  <div className={`reveal flex min-w-0 max-w-[30%] flex-[1.15] flex-col items-center text-center ${staggerClass}`}>
+                    <div
+                      className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-xl font-bold text-white"
+                      style={{
+                        background: "linear-gradient(135deg, #2D0A6B, #7A0F9E)",
+                        boxShadow: "0 0 30px rgba(122,15,158,0.3)",
+                      }}
+                    >
+                      {item.step}
+                    </div>
+                    <h3 className="mt-6 text-lg font-bold text-slate-900">{item.title}</h3>
+                    <p className="landing-body mt-2 text-slate-600">{item.desc}</p>
+                  </div>
+                  {connector}
                 </div>
               );
             })}
@@ -974,8 +1117,13 @@ export function LandingPage() {
       </section>
 
       {/* ═══ TESTIMONIALS ═══ */}
-      <section className="bg-gray-50 px-4 py-20">
-        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
+      <section className="relative overflow-hidden bg-gray-50 px-4 py-20">
+        <SignalWave offset={60} opacity={0.1} />
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <h2 className="section-h2 text-slate-900">Co mówią inwestorzy?</h2>
+          <p className="landing-body mt-4 text-slate-600">Krótkie historie z pierwszej linii — Spoiler: mniej chaosu.</p>
+        </div>
+        <div className="relative z-10 mx-auto mt-14 grid max-w-6xl gap-8 md:grid-cols-3">
           {[
             {
               quote:
@@ -1001,39 +1149,47 @@ export function LandingPage() {
           ].map((item, index) => {
             const staggerClass = index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
             return (
-              <blockquote
-                key={item.name}
-                className={`reveal relative rounded-2xl p-8 ${staggerClass}`}
-                style={{
-                  background: "rgba(255,255,255,0.8)",
-                  backdropFilter: "blur(20px)",
-                  border: "1px solid rgba(255,255,255,0.9)",
-                  boxShadow: "0 8px 32px rgba(45,10,107,0.08)",
-                }}
-              >
-                <p
-                  className="pointer-events-none absolute left-6 top-4 font-serif text-7xl opacity-30"
-                  style={{ color: BRAND.cyan }}
+              <div key={item.name} className={`reveal relative group ${staggerClass}`}>
+                <div
+                  className="pointer-events-none absolute inset-x-3 bottom-[-8px] -z-10 h-full scale-95 rounded-2xl"
+                  style={{
+                    background: "rgba(45,10,107,0.08)",
+                    filter: "blur(8px)",
+                  }}
                   aria-hidden
+                />
+                <blockquote
+                  className="relative z-10 rounded-2xl p-8 shadow-[0_8px_32px_rgba(45,10,107,0.08)] transition-[transform,box-shadow] duration-300 ease-out group-hover:-translate-y-2 group-hover:shadow-xl"
+                  style={{
+                    background: "rgba(255,255,255,0.8)",
+                    backdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255,255,255,0.9)",
+                  }}
                 >
-                  &ldquo;
-                </p>
-                <p className="relative z-10 text-lg leading-relaxed text-slate-900">{item.quote}</p>
-                <footer className="relative z-10 mt-6 flex items-center gap-3">
-                  <span
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-                    style={{
-                      background: `linear-gradient(135deg, ${BRAND.dark}, ${BRAND.medium})`,
-                    }}
+                  <p
+                    className="pointer-events-none absolute left-6 top-4 font-serif text-7xl opacity-30"
+                    style={{ color: BRAND.cyan }}
+                    aria-hidden
                   >
-                    {item.initials}
-                  </span>
-                  <div>
-                    <div className="font-bold text-slate-900">{item.name}</div>
-                    <div className="text-sm text-slate-500">{item.loc}</div>
-                  </div>
-                </footer>
-              </blockquote>
+                    &ldquo;
+                  </p>
+                  <p className="relative z-10 text-lg leading-relaxed text-slate-900">{item.quote}</p>
+                  <footer className="relative z-10 mt-6 flex items-center gap-3">
+                    <span
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+                      style={{
+                        background: `linear-gradient(135deg, ${BRAND.dark}, ${BRAND.medium})`,
+                      }}
+                    >
+                      {item.initials}
+                    </span>
+                    <div>
+                      <div className="font-bold text-slate-900">{item.name}</div>
+                      <div className="text-sm text-slate-500">{item.loc}</div>
+                    </div>
+                  </footer>
+                </blockquote>
+              </div>
             );
           })}
         </div>
@@ -1042,7 +1198,7 @@ export function LandingPage() {
       {/* ═══ PRICING ═══ */}
       <section id="pricing" className="scroll-mt-24 bg-white px-4 py-20">
         <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-4xl font-bold text-slate-900 sm:text-5xl">Prosty cennik.</h2>
+          <h2 className="section-h2 text-center text-slate-900">Prosty cennik.</h2>
 
           <div className="mt-10 flex justify-center">
             <div className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1">
@@ -1202,14 +1358,15 @@ export function LandingPage() {
 
       {/* ═══ FINAL CTA ═══ */}
       <section
-        className="px-4 py-20 text-center text-white"
+        className="relative overflow-hidden px-4 py-20 text-center text-white"
         style={{
           background: `linear-gradient(135deg, ${BRAND.dark} 0%, ${BRAND.medium} 100%)`,
         }}
       >
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-4xl font-bold text-white sm:text-5xl">Gotowy żeby inwestować mądrzej?</h2>
-          <p className="mt-4 text-lg text-white">
+        <ParticleDots />
+        <div className="relative z-10 mx-auto max-w-3xl">
+          <h2 className="section-h2 text-white">Gotowy żeby inwestować mądrzej?</h2>
+          <p className="landing-body mt-4 text-white/90">
             Zacznij za darmo — bez karty kredytowej. Upgrade w każdej chwili.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
