@@ -382,32 +382,8 @@ a {
     transform: scaleX(1) !important;
   }
 
-  .landing-icon-chaos-line-a,
-  .landing-icon-chaos-line-b,
-  .landing-icon-float-a,
-  .landing-icon-float-b,
-  .landing-icon-float-c,
-  .landing-icon-float-d,
-  .landing-icon-target-orbit,
-  .landing-icon-brain-pulse,
-  .landing-sol-signal-wave,
-  .landing-sol-coach-ring,
-  .landing-sol-coach-pointer,
-  .landing-sol-dna-strand,
-  .landing-sol-globe-orbit,
-  .landing-sol-chart-line {
+  .landing-how-float {
     animation: none !important;
-  }
-
-  .landing-sol-dna-strand {
-    stroke-dasharray: none !important;
-    stroke-dashoffset: 0 !important;
-  }
-
-  .landing-sol-signal-wave,
-  .landing-sol-chart-line {
-    stroke-dasharray: none !important;
-    stroke-dashoffset: 0 !important;
   }
 
   .reveal,
@@ -724,25 +700,7 @@ a {
   transform: scaleX(1);
 }
 
-/* Landing — illustrated icon motion (Signal DNA) */
-@keyframes landing-icon-chaos-shift {
-  0%,
-  100% {
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dashoffset: -16;
-  }
-}
-
-.landing-icon-chaos-line-a {
-  animation: landing-icon-chaos-shift 6.5s ease-in-out infinite;
-}
-
-.landing-icon-chaos-line-b {
-  animation: landing-icon-chaos-shift 8s ease-in-out infinite reverse;
-}
-
+/* Landing — step badge shell float (Icona PNG inside) */
 @keyframes landing-icon-tile-float {
   0%,
   100% {
@@ -753,119 +711,6 @@ a {
   }
 }
 
-.landing-icon-float-a {
-  animation: landing-icon-tile-float 5s ease-in-out infinite;
-}
-
-.landing-icon-float-b {
-  animation: landing-icon-tile-float 5.6s ease-in-out infinite 0.45s;
-}
-
-.landing-icon-float-c {
-  animation: landing-icon-tile-float 5.2s ease-in-out infinite 0.9s;
-}
-
-.landing-icon-float-d {
-  animation: landing-icon-tile-float 5.9s ease-in-out infinite 1.35s;
-}
-
-@keyframes landing-icon-orbit-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.landing-icon-target-orbit {
-  transform-origin: center;
-  transform-box: fill-box;
-  animation: landing-icon-orbit-spin 18s linear infinite;
-}
-
-@keyframes landing-icon-brain-lines {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.landing-icon-brain-pulse {
-  animation: landing-icon-brain-lines 2.8s ease-in-out infinite;
-}
-
-@keyframes landing-sol-wave-shift {
-  to {
-    stroke-dashoffset: -36;
-  }
-}
-
-.landing-sol-signal-wave {
-  stroke-dasharray: 9 9;
-  animation: landing-sol-wave-shift 2.4s linear infinite;
-}
-
-@keyframes landing-sol-ring-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.landing-sol-coach-ring {
-  transform-origin: center;
-  transform-box: fill-box;
-  animation: landing-sol-ring-spin 24s linear infinite;
-}
-
-@keyframes landing-sol-pointer-pulse {
-  0%,
-  100% {
-    opacity: 0.45;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.landing-sol-coach-pointer {
-  animation: landing-sol-pointer-pulse 2.2s ease-in-out infinite;
-}
-
-@keyframes landing-sol-dna-dash {
-  to {
-    stroke-dashoffset: -48;
-  }
-}
-
-.landing-sol-dna-strand {
-  stroke-dasharray: 8 12;
-  animation: landing-sol-dna-dash 3.2s linear infinite;
-}
-
-.landing-sol-dna-strand-delay {
-  animation-delay: -1.6s;
-}
-
-@keyframes landing-sol-globe-spin {
-  to {
-    transform: rotate(-360deg);
-  }
-}
-
-.landing-sol-globe-orbit {
-  transform-origin: center;
-  transform-box: fill-box;
-  animation: landing-sol-globe-spin 20s linear infinite;
-}
-
-@keyframes landing-sol-chart-dash {
-  to {
-    stroke-dashoffset: -40;
-  }
-}
-
-.landing-sol-chart-line {
-  stroke-dasharray: 14 8;
-  animation: landing-sol-chart-dash 3s ease-in-out infinite;
+.landing-how-float {
+  animation: landing-icon-tile-float 6s ease-in-out infinite;
 }
