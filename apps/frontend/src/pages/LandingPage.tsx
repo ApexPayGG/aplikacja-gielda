@@ -1,7 +1,7 @@
-import { type SVGProps, useEffect, useMemo, useState } from "react";
+import { type SVGProps, useEffect, useRef, useState, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { createStripeCheckoutSession, getLatestLiveQuote } from "../services/api";
+import { createStripeCheckoutSession } from "../services/api";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { SEOHead } from "../components/SEOHead";
@@ -166,13 +166,21 @@ const pricingTiers = [
 
 const HERO_TICKERS = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META", "JPM", "XOM", "V"] as const;
 
-type HeroQuote = {
-  ticker: string;
-  price: number | null;
-  changePct: number | null;
+type HeroTicker = (typeof HERO_TICKERS)[number];
+
+const INITIAL_HERO_PRICES: Record<HeroTicker, number> = {
+  AAPL: 300.23,
+  MSFT: 421.92,
+  GOOGL: 396.78,
+  AMZN: 265.82,
+  NVDA: 220.78,
+  TSLA: 433.45,
+  META: 603.0,
+  JPM: 304.88,
+  XOM: 150.63,
+  V: 326.42,
 };
 
-const HERO_QUOTES_CACHE_KEY = "landing.heroQuotes.v1";
 type BillingCycle = "monthly" | "yearly";
 
 const marqueeItems = [
@@ -197,57 +205,48 @@ const TICKER_BAR_ITEMS = [
   { symbol: "S&P500", price: "5,234", change: "+0.89%", positive: true },
 ] as const;
 
-function toNumber(value: string | null | undefined): number | null {
-  if (value == null) return null;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function changeBadgeClassDashboard(changePct: number | null): string {
-  if (changePct == null) return "bg-white/10 text-white/50";
-  return changePct >= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400";
-}
-
-function isValidHeroQuoteArray(value: unknown): value is HeroQuote[] {
-  if (!Array.isArray(value)) return false;
-  return value.every((row) => {
-    if (!row || typeof row !== "object") return false;
-    const candidate = row as Partial<HeroQuote>;
-    const isTickerValid = typeof candidate.ticker === "string" && candidate.ticker.length > 0;
-    const isPriceValid = candidate.price == null || typeof candidate.price === "number";
-    const isChangeValid = candidate.changePct == null || typeof candidate.changePct === "number";
-    return isTickerValid && isPriceValid && isChangeValid;
-  });
-}
-
-function readCachedHeroQuotes(): HeroQuote[] | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(HERO_QUOTES_CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as unknown;
-    return isValidHeroQuoteArray(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeCachedHeroQuotes(rows: HeroQuote[]): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(HERO_QUOTES_CACHE_KEY, JSON.stringify(rows));
-  } catch {
-    // Ignore storage write errors (private mode/full storage).
-  }
+function useCounter(target: number, duration = 2000): { count: number; ref: RefObject<HTMLDivElement> } {
+  const [count, setCount] = useState(0);
+  const startedRef = useRef(false);
+  const ref = useRef<HTMLDivElement>(null!);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || startedRef.current) return;
+        startedRef.current = true;
+        const start = Date.now();
+        const timer = window.setInterval(() => {
+          const elapsed = Date.now() - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          setCount(Math.floor(eased * target));
+          if (progress >= 1) window.clearInterval(timer);
+        }, 16);
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [target, duration]);
+  return { count, ref };
 }
 
 export function LandingPage() {
   const { t } = useTranslation("common");
-  const [quotes, setQuotes] = useState<HeroQuote[]>([]);
-  const [quotesLoading, setQuotesLoading] = useState(true);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<"pro" | "pro_plus" | null>(null);
   const [navScrolled, setNavScrolled] = useState(false);
+
+  const [heroPrices, setHeroPrices] = useState<Record<HeroTicker, number>>(() => ({ ...INITIAL_HERO_PRICES }));
+  const [heroPctByTicker, setHeroPctByTicker] = useState<Partial<Record<HeroTicker, number>>>({});
+  const [flashTicker, setFlashTicker] = useState<HeroTicker | null>(null);
+
+  const exchangesCounter = useCounter(130);
+  const modulesCounter = useCounter(27);
+  const langsCounter = useCounter(9);
+  const investorsCounter = useCounter(1200);
 
   useEffect(() => {
     document.title = "StockAI Pro — Platforma inwestycyjna nowej generacji";
@@ -262,15 +261,25 @@ export function LandingPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const emptyQuotes = useMemo<HeroQuote[]>(
-    () =>
-      HERO_TICKERS.map((ticker) => ({
-        ticker,
-        price: null,
-        changePct: null,
-      })),
-    [],
-  );
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setHeroPrices((prev) => {
+        const keys = [...HERO_TICKERS];
+        const randomKey = keys[Math.floor(Math.random() * keys.length)]!;
+        const oldVal = prev[randomKey];
+        const change = (Math.random() - 0.48) * 2;
+        const newVal = Number.parseFloat((oldVal * (1 + change / 100)).toFixed(2));
+        const pct = oldVal > 0 ? ((newVal - oldVal) / oldVal) * 100 : 0;
+        queueMicrotask(() => {
+          setHeroPctByTicker((p) => ({ ...p, [randomKey]: pct }));
+          setFlashTicker(randomKey);
+          window.setTimeout(() => setFlashTicker(null), 500);
+        });
+        return { ...prev, [randomKey]: newVal };
+      });
+    }, 2000);
+    return () => window.clearInterval(interval);
+  }, []);
 
   const pricingFeatures = (featuresKey: string): string[] => {
     const translated = t(featuresKey, { returnObjects: true });
@@ -279,43 +288,6 @@ export function LandingPage() {
     }
     return [];
   };
-
-  useEffect(() => {
-    let active = true;
-    const cached = readCachedHeroQuotes();
-    if (cached && cached.length > 0) {
-      setQuotes(cached);
-      setQuotesLoading(false);
-    }
-
-    async function loadQuotes(): Promise<void> {
-      setQuotesLoading(true);
-      const rows = await Promise.all(
-        HERO_TICKERS.map(async (ticker): Promise<HeroQuote> => {
-          try {
-            const { quote } = await getLatestLiveQuote(ticker);
-            const open = toNumber(quote.open);
-            const close = toNumber(quote.price);
-            const changePct =
-              close !== null && open !== null && open > 0 ? ((close - open) / open) * 100 : null;
-            return { ticker, price: close, changePct };
-          } catch {
-            return { ticker, price: null, changePct: null };
-          }
-        }),
-      );
-      if (!active) return;
-      setQuotes(rows);
-      if (rows.some((row) => row.price !== null || row.changePct !== null)) {
-        writeCachedHeroQuotes(rows);
-      }
-      setQuotesLoading(false);
-    }
-    void loadQuotes();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -329,8 +301,6 @@ export function LandingPage() {
     document.querySelectorAll(".reveal, .reveal-left, .reveal-right").forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
-
-  const displayedQuotes = quotes.length > 0 ? quotes : emptyQuotes;
 
   const handleChoosePlan = async (plan: "pro" | "pro_plus"): Promise<void> => {
     const userId =
@@ -398,14 +368,31 @@ export function LandingPage() {
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 md:py-4">
-          <Link to="/" className="flex shrink-0 items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="StockAI Pro"
-              className="h-10 w-auto max-w-[200px] object-contain md:h-12 md:max-w-[240px]"
-            />
-            <span className="hidden font-bold text-xl text-[#2D0A6B] sm:inline" aria-hidden="true">
-              StockAI Pro
+          <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="StockAI Pro — strona główna">
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-xl"
+              style={{ background: "linear-gradient(135deg, #2D0A6B, #7A0F9E)" }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden>
+                <polyline
+                  points="22 7 13.5 15.5 8.5 10.5 2 17"
+                  stroke="white"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <polyline
+                  points="16 7 22 7 22 13"
+                  stroke="#00C9D4"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <span className="text-xl font-black" style={{ color: "#2D0A6B" }}>
+              Stock<span style={{ color: "#00C9D4" }}>AI</span>
+              <span className="font-light"> Pro</span>
             </span>
           </Link>
 
@@ -446,21 +433,24 @@ export function LandingPage() {
       </header>
 
       {/* ═══ HERO ═══ */}
-      <section className="relative isolate flex min-h-[90vh] items-center overflow-hidden">
+      <section className="hero-gradient-bg relative isolate flex min-h-screen items-center overflow-hidden pt-20">
         <div
-          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_#7A0F9E15,_transparent_60%)]"
+          className="animate-float pointer-events-none absolute left-10 top-10 z-0 h-[500px] w-[500px] rounded-full opacity-20 blur-3xl"
+          style={{ background: "radial-gradient(circle, #7A0F9E, transparent)" }}
           aria-hidden
         />
         <div
-          className="animate-float pointer-events-none absolute right-1/3 top-20 -z-10 h-96 w-96 rounded-full bg-[#00C9D4]/5 blur-3xl"
+          className="animate-float pointer-events-none absolute right-0 top-1/2 z-0 h-[400px] w-[400px] -translate-y-1/2 rounded-full opacity-15 blur-3xl [animation-delay:2s]"
+          style={{ background: "radial-gradient(circle, #00C9D4, transparent)" }}
           aria-hidden
         />
         <div
-          className="animate-float pointer-events-none absolute bottom-20 left-10 -z-10 h-64 w-64 rounded-full bg-[#7A0F9E]/[0.08] blur-3xl [animation-delay:1000ms]"
+          className="animate-float pointer-events-none absolute bottom-0 left-1/3 z-0 h-[300px] w-[300px] rounded-full opacity-10 blur-3xl [animation-delay:4s]"
+          style={{ background: "radial-gradient(circle, #FFAE33, transparent)" }}
           aria-hidden
         />
 
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 lg:grid-cols-[3fr_2fr] lg:gap-12 lg:py-20">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 lg:grid-cols-[3fr_2fr] lg:gap-12 lg:py-20">
           {/* Left column */}
           <div className="flex flex-col justify-center">
             <span
@@ -529,42 +519,62 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* Right column — Live preview */}
+          {/* Right column — animated demo prices */}
           <div className="landing-hero-dashboard flex flex-col justify-center">
-            <div className="rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl">
-              <div className="mb-5 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-white">Puls rynku na żywo</h2>
-                <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
-                  <span className="pulse-dot inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                  Live
-                </span>
-              </div>
+            <div
+              className="relative overflow-hidden rounded-2xl shadow-2xl"
+              style={{
+                background: "linear-gradient(135deg, #0f0f1a 0%, #1a0533 50%, #0a1628 100%)",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+            >
+              <div className="p-6">
+                <div className="mb-5 flex items-center justify-between">
+                  <h2 className="text-lg font-bold text-white">Puls rynku na żywo</h2>
+                  <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
+                    <span className="pulse-dot inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                    Live
+                  </span>
+                </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                {displayedQuotes.map((row) => (
-                  <div
-                    key={row.ticker}
-                    className="rounded-xl border border-white/10 bg-white/5 p-3 transition-transform hover:scale-[1.02]"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="font-mono text-sm font-bold text-white">{row.ticker}</span>
-                      <span
-                        className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold ${changeBadgeClassDashboard(row.changePct)}`}
+                <div className="grid grid-cols-2 gap-3">
+                  {HERO_TICKERS.map((ticker) => {
+                    const price = heroPrices[ticker];
+                    const rawPct = heroPctByTicker[ticker];
+                    const pct = rawPct ?? 0;
+                    const showPct = rawPct !== undefined;
+                    return (
+                      <div
+                        key={ticker}
+                        className={`rounded-lg p-3 transition-all duration-500 hover:bg-white/5 ${
+                          flashTicker === ticker ? "price-updated" : ""
+                        }`}
                       >
-                        {row.changePct == null ? "—" : `${row.changePct >= 0 ? "+" : ""}${row.changePct.toFixed(2)}%`}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-lg font-semibold tabular-nums text-white">
-                      {row.price == null ? "—" : row.price.toFixed(2)}
-                    </p>
-                  </div>
-                ))}
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="font-mono text-xs text-gray-400">{ticker}</span>
+                          <span
+                            className={`text-xs font-medium tabular-nums ${showPct && pct >= 0 ? "text-emerald-400" : showPct ? "text-red-400" : "text-gray-500"}`}
+                          >
+                            {showPct ? `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%` : "—"}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-lg font-bold tabular-nums text-white transition-all duration-500">
+                          {price.toFixed(2)}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              {quotesLoading ? (
-                <p className="mt-3 text-center text-xs text-white/40">{t("common.loading")}</p>
-              ) : null}
             </div>
           </div>
+        </div>
+
+        <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 animate-bounce">
+          <span className="text-xs text-gray-400">Scroll</span>
+          <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
       </section>
 
@@ -579,6 +589,30 @@ export function LandingPage() {
               </span>
             </span>
           ))}
+        </div>
+      </section>
+
+      {/* ═══ STATS COUNTERS ═══ */}
+      <section className="border-y border-gray-100 bg-white py-16">
+        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-10 px-4 md:grid-cols-4 md:gap-8">
+          <div ref={exchangesCounter.ref} className="text-center">
+            <div className="text-5xl font-black text-[#2D0A6B]">{exchangesCounter.count}+</div>
+            <p className="mt-2 text-slate-600">giełd</p>
+          </div>
+          <div ref={modulesCounter.ref} className="text-center">
+            <div className="text-5xl font-black text-[#2D0A6B]">{modulesCounter.count}</div>
+            <p className="mt-2 text-slate-600">modułów AI</p>
+          </div>
+          <div ref={langsCounter.ref} className="text-center">
+            <div className="text-5xl font-black text-[#2D0A6B]">{langsCounter.count}</div>
+            <p className="mt-2 text-slate-600">języków</p>
+          </div>
+          <div ref={investorsCounter.ref} className="text-center">
+            <div className="text-5xl font-black text-[#2D0A6B]">
+              {investorsCounter.count.toLocaleString("pl-PL")}+
+            </div>
+            <p className="mt-2 text-slate-600">inwestorów</p>
+          </div>
         </div>
       </section>
 
@@ -616,16 +650,19 @@ export function LandingPage() {
                 className={`reveal group relative rounded-2xl border border-gray-100 bg-white p-8 shadow-md transition hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
               >
                 <div className="absolute left-8 right-8 top-0 h-[3px] rounded-b-full bg-red-500/90" />
-                <div className="mt-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-red-50 text-red-600">
+                <div
+                  className="mb-6 mt-4 flex h-20 w-20 items-center justify-center rounded-2xl"
+                  style={{ background: "linear-gradient(135deg, #fee2e2, #fecaca)" }}
+                >
                   {card.icon === "apps" ? (
-                    <IconProblemApps className="h-8 w-8 shrink-0" />
+                    <IconProblemApps className="h-8 w-8 shrink-0 text-red-500" />
                   ) : card.icon === "brain" ? (
-                    <IconProblemBrain className="h-8 w-8 shrink-0" />
+                    <IconProblemBrain className="h-8 w-8 shrink-0 text-red-500" />
                   ) : (
-                    <IconProblemTarget className="h-8 w-8 shrink-0" />
+                    <IconProblemTarget className="h-8 w-8 shrink-0 text-red-500" />
                   )}
                 </div>
-                <h3 className="mt-6 text-xl font-bold text-slate-900">{card.title}</h3>
+                <h3 className="text-xl font-bold text-slate-900">{card.title}</h3>
                 <p className="mt-3 text-base leading-relaxed text-slate-600">{card.body}</p>
               </article>
             );
@@ -659,11 +696,12 @@ export function LandingPage() {
                 style={{ borderTopColor: BRAND.cyan }}
               >
                 <div
-                  className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#00C9D4]/10 text-[#00C9D4]"
+                  className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl"
+                  style={{ background: "linear-gradient(135deg, #e0f7fa, #b2ebf2)" }}
                 >
-                  <SolutionCardIcon id={card.iconId} className="h-7 w-7 shrink-0" />
+                  <SolutionCardIcon id={card.iconId} className="h-7 w-7 shrink-0 text-[#00C9D4]" />
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-slate-900">{card.title}</h3>
+                <h3 className="text-lg font-bold text-slate-900">{card.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-600">{card.body}</p>
               </article>
             );
@@ -729,7 +767,7 @@ export function LandingPage() {
       </section>
 
       {/* ═══ TESTIMONIALS ═══ */}
-      <section className="bg-slate-50 px-4 py-20">
+      <section className="bg-gray-50 px-4 py-20">
         <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
           {[
             {
@@ -758,25 +796,37 @@ export function LandingPage() {
             return (
               <blockquote
                 key={item.name}
-                className={`reveal rounded-2xl bg-white p-8 shadow-md ${staggerClass}`}
+                className={`reveal relative rounded-2xl p-8 ${staggerClass}`}
+                style={{
+                  background: "rgba(255,255,255,0.8)",
+                  backdropFilter: "blur(20px)",
+                  border: "1px solid rgba(255,255,255,0.9)",
+                  boxShadow: "0 8px 32px rgba(45,10,107,0.08)",
+                }}
               >
-              <p className="font-serif text-6xl leading-none" style={{ color: BRAND.cyan }}>
-                &ldquo;
-              </p>
-              <p className="-mt-2 text-lg italic leading-relaxed text-slate-800">{item.quote}</p>
-              <footer className="mt-6 flex items-center gap-3">
-                <span
-                  className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-white"
-                  style={{ backgroundColor: BRAND.dark }}
+                <p
+                  className="pointer-events-none absolute left-6 top-4 font-serif text-7xl opacity-30"
+                  style={{ color: BRAND.cyan }}
+                  aria-hidden
                 >
-                  {item.initials}
-                </span>
-                <div>
-                  <div className="font-bold text-slate-900">{item.name}</div>
-                  <div className="text-sm text-slate-500">{item.loc}</div>
-                </div>
-              </footer>
-            </blockquote>
+                  &ldquo;
+                </p>
+                <p className="relative z-10 text-lg leading-relaxed text-slate-900">{item.quote}</p>
+                <footer className="relative z-10 mt-6 flex items-center gap-3">
+                  <span
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+                    style={{
+                      background: `linear-gradient(135deg, ${BRAND.dark}, ${BRAND.medium})`,
+                    }}
+                  >
+                    {item.initials}
+                  </span>
+                  <div>
+                    <div className="font-bold text-slate-900">{item.name}</div>
+                    <div className="text-sm text-slate-500">{item.loc}</div>
+                  </div>
+                </footer>
+              </blockquote>
             );
           })}
         </div>
@@ -843,12 +893,16 @@ export function LandingPage() {
                 return (
                   <article
                     key={tier.id}
-                    className="relative z-10 order-first rounded-2xl p-8 text-white shadow-2xl lg:order-none lg:scale-105"
-                    style={{ backgroundColor: BRAND.dark }}
+                    className="relative z-10 order-first rounded-2xl p-8 text-white lg:order-none lg:scale-105"
+                    style={{
+                      background: "linear-gradient(135deg, #2D0A6B 0%, #7A0F9E 100%)",
+                      boxShadow:
+                        "0 0 60px rgba(122,15,158,0.4), 0 20px 40px rgba(45,10,107,0.3)",
+                    }}
                   >
                     <span
                       className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold"
-                      style={{ backgroundColor: BRAND.cyan, color: BRAND.dark }}
+                      style={{ background: "#00C9D4", color: "#0A0A0F" }}
                     >
                       Najpopularniejszy
                     </span>

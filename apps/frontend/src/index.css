@@ -355,6 +355,14 @@ a {
     transform: none !important;
   }
 
+  .hero-gradient-bg {
+    animation: none !important;
+  }
+
+  .price-updated {
+    animation: none !important;
+  }
+
   .reveal,
   .reveal-left,
   .reveal-right {
@@ -549,4 +557,38 @@ a {
 .reveal-left.stagger-3,
 .reveal-right.stagger-3 {
   transition-delay: 0.3s;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-gradient-bg {
+  background: linear-gradient(-45deg, #ffffff, #f3e8ff, #e8f4fd, #fdf4ff, #f0fdf4);
+  background-size: 400% 400%;
+  animation: gradient-shift 10s ease infinite;
+}
+
+@keyframes price-flash {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.price-updated {
+  animation: price-flash 0.5s ease;
 }
