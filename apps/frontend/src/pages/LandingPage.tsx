@@ -1,4 +1,12 @@
-import { type SVGProps, useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import {
+  type SVGProps,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { createStripeCheckoutSession } from "../services/api";
@@ -51,89 +59,281 @@ const solutionCards: { iconId: SolutionIconId; title: string; body: string }[] =
   },
 ];
 
-function IconProblemApps(props: SVGProps<SVGSVGElement>) {
+function IconProblemApps({ className, ...props }: SVGProps<SVGSVGElement>) {
+  const cn = className ?? "h-[72px] w-[72px] shrink-0";
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
-      <rect x="3" y="3" width="7" height="7" />
-      <rect x="14" y="3" width="7" height="7" />
-      <rect x="3" y="14" width="7" height="7" />
-      <rect x="14" y="14" width="7" height="7" />
+    <svg viewBox="0 0 88 88" fill="none" className={cn} aria-hidden {...props}>
+      <defs>
+        <linearGradient id="prob-apps-g1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#fecdd3" />
+          <stop offset="55%" stopColor="#fb7185" />
+          <stop offset="100%" stopColor="#dc2626" />
+        </linearGradient>
+        <linearGradient id="prob-apps-g2" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#fecaca" />
+          <stop offset="100%" stopColor="#f43f5e" />
+        </linearGradient>
+        <filter id="prob-apps-soft" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.2" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <path
+        d="M10 30 Q44 12 78 28"
+        stroke="#fda4af"
+        strokeWidth="2"
+        strokeDasharray="5 6"
+        strokeLinecap="round"
+        opacity={0.55}
+        className="landing-icon-chaos-line-a"
+      />
+      <path
+        d="M78 52 Q42 68 12 48"
+        stroke="#fda4af"
+        strokeWidth="2"
+        strokeDasharray="4 7"
+        strokeLinecap="round"
+        opacity={0.45}
+        className="landing-icon-chaos-line-b"
+      />
+      <g className="landing-icon-float-a">
+        <rect x="8" y="14" width="28" height="22" rx="6" fill="url(#prob-apps-g1)" opacity={0.95} />
+        <rect x="12" y="18" width="18" height="3" rx="1.5" fill="white" fillOpacity={0.35} />
+        <rect x="12" y="24" width="14" height="3" rx="1.5" fill="white" fillOpacity={0.22} />
+      </g>
+      <g className="landing-icon-float-b">
+        <rect x="54" y="10" width="26" height="26" rx="6" fill="url(#prob-apps-g2)" opacity={0.92} transform="rotate(8 67 23)" />
+        <rect x="58" y="15" width="16" height="3" rx="1.5" fill="white" fillOpacity={0.3} transform="rotate(8 67 23)" />
+      </g>
+      <g className="landing-icon-float-c">
+        <rect x="14" y="54" width="26" height="22" rx="6" fill="#fecaca" stroke="#f87171" strokeWidth="1.5" />
+        <circle cx="27" cy="65" r="5" fill="#ef4444" fillOpacity={0.35} filter="url(#prob-apps-soft)" />
+      </g>
+      <g className="landing-icon-float-d">
+        <rect x="52" y="48" width="28" height="26" rx="6" fill="white" stroke="#f43f5e" strokeWidth="2" opacity={0.95} />
+        <path d="M58 58 L74 58 M58 64 H68" stroke="#fb7185" strokeWidth="2.5" strokeLinecap="round" />
+      </g>
+      <circle cx="44" cy="44" r="4" fill="#dc2626" opacity={0.85} className="landing-icon-pulse-dot">
+        <animate attributeName="opacity" values="0.35;1;0.35" dur="2s" repeatCount="indefinite" />
+      </circle>
     </svg>
   );
 }
 
-function IconProblemBrain(props: SVGProps<SVGSVGElement>) {
+function IconProblemBrain({ className, ...props }: SVGProps<SVGSVGElement>) {
+  const cn = className ?? "h-[72px] w-[72px] shrink-0";
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
-      <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-1.96-3 2.5 2.5 0 0 1-1.32-4.24 3 3 0 0 1 .34-5.58 2.5 2.5 0 0 1 1.32-4.24A2.5 2.5 0 0 1 9.5 2" />
-      <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 1.96-3 2.5 2.5 0 0 0 1.32-4.24 3 3 0 0 0-.34-5.58 2.5 2.5 0 0 0-1.32-4.24A2.5 2.5 0 0 0 14.5 2" />
+    <svg viewBox="0 0 88 88" fill="none" className={cn} aria-hidden {...props}>
+      <defs>
+        <linearGradient id="prob-brain-fill" x1="20%" y1="0%" x2="80%" y2="100%">
+          <stop offset="0%" stopColor="#fecdd3" />
+          <stop offset="50%" stopColor="#fda4af" />
+          <stop offset="100%" stopColor="#e11d48" />
+        </linearGradient>
+        <linearGradient id="prob-brain-circuit" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#fb7185" />
+          <stop offset="100%" stopColor="#be123c" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M44 20c-10 0-18 6-20 14a12 12 0 0 0-8 11c0 5 3 9 8 11-1 4 3 9 10 10 5 10 14 16 24 16 11 0 20-7 23-16 6-1 10-6 10-12 0-3-1-6-3-8 5-3 8-8 8-14 0-9-7-16-16-17-3-7-11-12-20-12h-8z"
+        fill="url(#prob-brain-fill)"
+        opacity={0.95}
+      />
+      <path
+        d="M32 40h10 M46 40h12 M34 50h10 M50 50h12 M38 60h16"
+        stroke="url(#prob-brain-circuit)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity={0.88}
+        className="landing-icon-brain-pulse"
+      />
+      <circle cx="38" cy="36" r="3.2" fill="white" fillOpacity={0.9}>
+        <animate attributeName="opacity" values="0.45;1;0.45" dur="1.9s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="54" cy="38" r="2.6" fill="#fff1f2">
+        <animate attributeName="opacity" values="0.35;0.95;0.35" dur="2.3s" repeatCount="indefinite" />
+      </circle>
+      <path d="M54 26 L66 20 L60 32 Z" fill="#fb7185" opacity={0.92} className="landing-icon-float-a" />
     </svg>
   );
 }
 
-function IconProblemTarget(props: SVGProps<SVGSVGElement>) {
+function IconProblemTarget({ className, ...props }: SVGProps<SVGSVGElement>) {
+  const cn = className ?? "h-[72px] w-[72px] shrink-0";
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="6" />
-      <circle cx="12" cy="12" r="2" />
+    <svg viewBox="0 0 88 88" fill="none" className={cn} aria-hidden {...props}>
+      <defs>
+        <linearGradient id="prob-target-ring" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#fecaca" />
+          <stop offset="100%" stopColor="#dc2626" />
+        </linearGradient>
+      </defs>
+      <circle cx="44" cy="44" r="34" stroke="#fecdd3" strokeWidth="2" opacity={0.75} />
+      <circle cx="44" cy="44" r="26" stroke="url(#prob-target-ring)" strokeWidth="2.5" opacity={0.55} />
+      <circle cx="44" cy="44" r="16" stroke="#f87171" strokeWidth="2.5" />
+      <circle cx="44" cy="44" r="6" fill="#dc2626" />
+      <circle cx="44" cy="44" r="30" stroke="#ef4444" strokeWidth="3" strokeDasharray="18 170" strokeLinecap="round" className="landing-icon-target-orbit" />
+      <path d="M44 12 L44 22 M72 44 L62 44 M44 76 L44 66 M16 44 L26 44" stroke="#fda4af" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
     </svg>
   );
 }
 
 function SolutionCardIcon({ id, className }: { id: SolutionIconId; className?: string }) {
-  const cn = className ?? "h-7 w-7";
+  const uid = useId().replace(/:/g, "");
+  const cn = className ?? "h-[52px] w-[52px] shrink-0";
+
   switch (id) {
     case "brief":
       return (
-        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        <svg className={cn} viewBox="0 0 96 96" fill="none" aria-hidden>
+          <defs>
+            <linearGradient id={`${uid}-bf-bg`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#e0f7fa" />
+              <stop offset="100%" stopColor="#b2ebf2" />
+            </linearGradient>
+            <linearGradient id={`${uid}-bf-wave`} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#2D0A6B" />
+              <stop offset="50%" stopColor="#00C9D4" />
+              <stop offset="100%" stopColor="#7A0F9E" />
+            </linearGradient>
+          </defs>
+          <rect x="14" y="12" width="68" height="72" rx="10" fill={`url(#${uid}-bf-bg)`} stroke="#80deea" strokeWidth="1.5" />
+          <path d="M26 32 Q48 22 70 32 T70 48 Q48 58 26 48 T26 32" fill="none" stroke={`url(#${uid}-bf-wave)`} strokeWidth="3" strokeLinecap="round" className="landing-sol-signal-wave" />
+          <path d="M26 58 H62 M26 68 H54" stroke="#00838f" strokeWidth="2.8" strokeLinecap="round" opacity={0.35} />
+          <circle cx="74" cy="26" r="10" fill="#2D0A6B" fillOpacity={0.12} />
+          <path d="M74 22v8 M70 26h8" stroke="#00C9D4" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
       );
     case "coach":
       return (
-        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        <svg className={cn} viewBox="0 0 96 96" fill="none" aria-hidden>
+          <defs>
+            <linearGradient id={`${uid}-ch-ring`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#00C9D4" />
+              <stop offset="100%" stopColor="#7A0F9E" />
+            </linearGradient>
+          </defs>
+          <ellipse cx="48" cy="48" rx="38" ry="38" stroke={`url(#${uid}-ch-ring)`} strokeWidth="2.5" strokeDasharray="10 14" opacity={0.55} className="landing-sol-coach-ring" />
+          <circle cx="48" cy="40" r="14" fill="#e0f7fa" stroke="#26c6da" strokeWidth="2" />
+          <path d="M34 56 Q48 48 62 56 V72 Q48 78 34 72 Z" fill="#b2ebf2" stroke="#00838f" strokeWidth="2" strokeLinejoin="round" opacity={0.95} />
+          <circle cx="43" cy="38" r="2.5" fill="#2D0A6B" />
+          <circle cx="53" cy="38" r="2.5" fill="#2D0A6B" />
+          <path d="M43 46 Q48 50 53 46" stroke="#2D0A6B" strokeWidth="2" strokeLinecap="round" />
+          <path d="M62 30 Q74 24 78 34" stroke="#00C9D4" strokeWidth="2.5" strokeLinecap="round" opacity={0.85} className="landing-sol-coach-pointer" />
         </svg>
       );
     case "dna":
       return (
-        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path d="M2 15c6.667-6 13.333 0 20-6" />
-          <path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993" />
-          <path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993" />
-          <path d="m17 6-2.5-2.5" />
-          <path d="m14 8-1-1" />
-          <path d="m7 18 2.5 2.5" />
-          <path d="m10 16 1 1" />
+        <svg className={cn} viewBox="0 0 96 96" fill="none" aria-hidden>
+          <defs>
+            <linearGradient id={`${uid}-dna-a`} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#2D0A6B" />
+              <stop offset="100%" stopColor="#00C9D4" />
+            </linearGradient>
+            <linearGradient id={`${uid}-dna-b`} x1="100%" y1="0%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#7A0F9E" />
+              <stop offset="100%" stopColor="#26c6da" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M30 22 Q48 38 30 54 Q48 70 30 78"
+            fill="none"
+            stroke={`url(#${uid}-dna-a)`}
+            strokeWidth="3"
+            strokeLinecap="round"
+            className="landing-sol-dna-strand"
+          />
+          <path
+            d="M66 22 Q48 38 66 54 Q48 70 66 78"
+            fill="none"
+            stroke={`url(#${uid}-dna-b)`}
+            strokeWidth="3"
+            strokeLinecap="round"
+            className="landing-sol-dna-strand landing-sol-dna-strand-delay"
+          />
+          <line x1="38" y1="36" x2="58" y2="36" stroke="#00C9D4" strokeWidth="2.5" strokeLinecap="round" opacity={0.55}>
+            <animate attributeName="opacity" values="0.3;0.95;0.3" dur="2.1s" repeatCount="indefinite" />
+          </line>
+          <line x1="34" y1="48" x2="62" y2="48" stroke="#00C9D4" strokeWidth="2.5" strokeLinecap="round" opacity={0.55}>
+            <animate attributeName="opacity" values="0.35;0.95;0.35" dur="2.4s" repeatCount="indefinite" />
+          </line>
+          <line x1="38" y1="62" x2="58" y2="62" stroke="#00C9D4" strokeWidth="2.5" strokeLinecap="round" opacity={0.55}>
+            <animate attributeName="opacity" values="0.4;0.95;0.4" dur="2.7s" repeatCount="indefinite" />
+          </line>
+          <circle cx="48" cy="28" r="4" fill="#2D0A6B" fillOpacity={0.85}>
+            <animate attributeName="r" values="3.6;4.8;3.6" dur="2.5s" repeatCount="indefinite" />
+          </circle>
         </svg>
       );
     case "premortem":
       return (
-        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-          <line x1="12" y1="9" x2="12" y2="13" />
-          <line x1="12" y1="17" x2="12.01" y2="17" />
+        <svg className={cn} viewBox="0 0 96 96" fill="none" aria-hidden>
+          <defs>
+            <linearGradient id={`${uid}-pm-sh`} x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stopColor="#fffde7" />
+              <stop offset="100%" stopColor="#ffecb3" />
+            </linearGradient>
+            <linearGradient id={`${uid}-pm-st`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FFAE33" />
+              <stop offset="100%" stopColor="#e53935" />
+            </linearGradient>
+          </defs>
+          <path d="M48 14 L78 28 V54 Q78 72 48 82 Q18 72 18 54 V28 Z" fill={`url(#${uid}-pm-sh)`} stroke={`url(#${uid}-pm-st)`} strokeWidth="3" strokeLinejoin="round" />
+          <path d="M48 34 V54 M48 62 V63.5" stroke="#c62828" strokeWidth="4" strokeLinecap="round" />
+          <circle cx="48" cy="72" r="3" fill="#e53935" opacity={0.85}>
+            <animate attributeName="opacity" values="0.5;1;0.5" dur="1.6s" repeatCount="indefinite" />
+          </circle>
         </svg>
       );
     case "globe":
       return (
-        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <circle cx="12" cy="12" r="10" />
-          <line x1="2" y1="12" x2="22" y2="12" />
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        <svg className={cn} viewBox="0 0 96 96" fill="none" aria-hidden>
+          <defs>
+            <linearGradient id={`${uid}-gl-fill`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#e3f2fd" />
+              <stop offset="100%" stopColor="#b2ebf2" />
+            </linearGradient>
+            <linearGradient id={`${uid}-gl-orbit`} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#00C9D4" />
+              <stop offset="100%" stopColor="#2D0A6B" />
+            </linearGradient>
+          </defs>
+          <circle cx="48" cy="48" r="34" fill={`url(#${uid}-gl-fill)`} stroke="#26c6da" strokeWidth="2" />
+          <ellipse cx="48" cy="48" rx="14" ry="34" stroke="#00838f" strokeWidth="1.8" opacity={0.45} />
+          <path d="M14 48 H82" stroke="#00838f" strokeWidth="1.8" opacity={0.4} />
+          <path d="M48 14 Q72 48 48 82 Q24 48 48 14" fill="none" stroke="#00838f" strokeWidth="1.5" opacity={0.35} />
+          <ellipse cx="48" cy="48" rx="38" ry="14" fill="none" stroke={`url(#${uid}-gl-orbit)`} strokeWidth="2.5" strokeDasharray="12 80" strokeLinecap="round" opacity={0.85} className="landing-sol-globe-orbit" />
+          <circle cx="62" cy="28" r="5" fill="#00C9D4" fillOpacity={0.35} />
         </svg>
       );
     case "paper":
       return (
-        <svg className={cn} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-          <polyline points="16 7 22 7 22 13" />
+        <svg className={cn} viewBox="0 0 96 96" fill="none" aria-hidden>
+          <defs>
+            <linearGradient id={`${uid}-pp-area`} x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#00C9D4" stopOpacity={0.08} />
+              <stop offset="100%" stopColor="#00C9D4" stopOpacity={0.38} />
+            </linearGradient>
+            <linearGradient id={`${uid}-pp-line`} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#2D0A6B" />
+              <stop offset="100%" stopColor="#00C9D4" />
+            </linearGradient>
+          </defs>
+          <rect x="16" y="14" width="64" height="68" rx="10" fill="white" stroke="#e0f7fa" strokeWidth="2" />
+          {[72, 58, 44, 30].map((y) => (
+            <line key={y} x1="26" y1={y} x2="78" y2={y} stroke="#eceff1" strokeWidth="1" />
+          ))}
+          <line x1="26" y1="72" x2="26" y2="26" stroke="#cfd8dc" strokeWidth="2" strokeLinecap="round" />
+          <path d="M28 62 L40 48 L52 54 L66 34 L74 38" fill={`url(#${uid}-pp-area)`} stroke={`url(#${uid}-pp-line)`} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="landing-sol-chart-line" />
+          <circle cx="74" cy="38" r="5" fill="#00C9D4" stroke="white" strokeWidth="2" />
         </svg>
       );
+    default:
+      return null;
   }
 }
 
@@ -972,11 +1172,11 @@ export function LandingPage() {
                   className="mb-6 mt-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-red-50 transition-all duration-300 group-hover:scale-110 group-hover:bg-red-100"
                 >
                   {card.icon === "apps" ? (
-                    <IconProblemApps className="h-8 w-8 shrink-0 text-red-500" />
+                    <IconProblemApps className="h-[72px] w-[72px] shrink-0" />
                   ) : card.icon === "brain" ? (
-                    <IconProblemBrain className="h-8 w-8 shrink-0 text-red-500" />
+                    <IconProblemBrain className="h-[72px] w-[72px] shrink-0" />
                   ) : (
-                    <IconProblemTarget className="h-8 w-8 shrink-0 text-red-500" />
+                    <IconProblemTarget className="h-[72px] w-[72px] shrink-0" />
                   )}
                 </div>
                 <h3 className="text-xl font-bold text-slate-900">{card.title}</h3>
@@ -1027,7 +1227,7 @@ export function LandingPage() {
                   className="relative z-[1] mb-5 flex h-16 w-16 items-center justify-center rounded-2xl"
                   style={{ background: "linear-gradient(135deg, #e0f7fa, #b2ebf2)" }}
                 >
-                  <SolutionCardIcon id={card.iconId} className="h-7 w-7 shrink-0 text-[#00C9D4]" />
+                  <SolutionCardIcon id={card.iconId} className="h-[52px] w-[52px] shrink-0" />
                 </div>
                 <h3 className="relative z-[1] text-lg font-bold text-slate-900">{card.title}</h3>
                 <p className="landing-body relative z-[1] mt-2 text-slate-600">{card.body}</p>
