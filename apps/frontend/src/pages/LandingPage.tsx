@@ -256,8 +256,15 @@ export function LandingPage() {
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 md:py-4">
-          <Link to="/" className="shrink-0">
-            <img src="/logo.png" alt="StockAI Pro" className="h-10 w-44 object-contain md:h-11 md:w-48" />
+          <Link to="/" className="flex shrink-0 items-center gap-2">
+            <img
+              src="/logo.png"
+              alt="StockAI Pro"
+              className="h-10 w-auto max-w-[200px] object-contain md:h-12 md:max-w-[240px]"
+            />
+            <span className="hidden font-bold text-xl text-[#2D0A6B] sm:inline" aria-hidden="true">
+              StockAI Pro
+            </span>
           </Link>
 
           <nav className="hidden flex-1 items-center justify-center gap-10 text-sm font-semibold text-[#2D0A6B]/90 md:flex">
@@ -296,8 +303,8 @@ export function LandingPage() {
         </div>
       </header>
 
-      {/* ═══ HERO ═══ */}
-      <section className="relative isolate min-h-[90vh] overflow-hidden">
+      {/* ═══ HERO — tight to marquee below; content anchored low to avoid dead space above bar ═══ */}
+      <section className="relative isolate flex min-h-[85vh] flex-col justify-end overflow-hidden pb-0">
         <div
           className="pointer-events-none absolute inset-0 -z-10"
           style={{
@@ -321,7 +328,7 @@ export function LandingPage() {
           <ellipse cx="100" cy="100" rx="95" ry="70" fill={BRAND.medium} />
         </svg>
 
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 lg:grid-cols-[3fr_2fr] lg:py-24">
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-8 px-4 pb-3 pt-10 sm:gap-10 sm:pb-4 sm:pt-14 lg:grid-cols-[3fr_2fr] lg:gap-12 lg:pb-5 lg:pt-16">
           {/* Left column */}
           <div className="flex flex-col justify-center">
             <span
@@ -429,8 +436,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ═══ SOCIAL PROOF MARQUEE ═══ */}
-      <section className="overflow-hidden py-4" style={{ backgroundColor: BRAND.dark }}>
+      {/* ═══ SOCIAL PROOF MARQUEE (flush under hero, zero vertical gap) ═══ */}
+      <section className="mt-0 overflow-hidden py-4" style={{ backgroundColor: BRAND.dark }}>
         <div className="animate-marquee flex w-max gap-8 whitespace-nowrap px-4 text-sm font-semibold text-white md:text-base">
           {marqueeTrack.map((item, i) => (
             <span key={`${item}-${i}`} className="inline-flex items-center gap-8">
@@ -444,7 +451,7 @@ export function LandingPage() {
       </section>
 
       {/* ═══ PROBLEM ═══ */}
-      <section id="problem" className="scroll-mt-24 bg-white px-4 py-24">
+      <section id="problem" className="scroll-mt-24 bg-white px-4 py-20">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-4xl font-bold text-slate-900 sm:text-5xl">Czy to brzmi znajomo?</h2>
           <p className="mt-4 text-lg text-slate-600">Każdy retail inwestor zmaga się z tym samym.</p>
@@ -487,7 +494,7 @@ export function LandingPage() {
       </section>
 
       {/* ═══ SOLUTION ═══ */}
-      <section id="solution" className="scroll-mt-24 bg-slate-50 px-4 py-24">
+      <section id="solution" className="scroll-mt-24 bg-slate-50 px-4 py-20">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-4xl font-bold text-slate-900 sm:text-5xl">
             Jedno miejsce.
@@ -520,7 +527,7 @@ export function LandingPage() {
       </section>
 
       {/* ═══ HOW IT WORKS ═══ */}
-      <section id="how-it-works" className="scroll-mt-24 bg-white px-4 py-24">
+      <section id="how-it-works" className="scroll-mt-24 bg-white px-4 py-20">
         <h2 className="text-center text-4xl font-bold text-slate-900 sm:text-5xl">Jak to działa?</h2>
 
         <div className="relative mx-auto mt-16 max-w-5xl">
@@ -562,7 +569,7 @@ export function LandingPage() {
       </section>
 
       {/* ═══ ETORO PARTNER ═══ */}
-      <section className="border-y border-slate-100 bg-white px-4 py-14">
+      <section className="border-y border-slate-100 bg-white px-4 py-20">
         <div className="mx-auto max-w-xl rounded-2xl border border-gray-100 bg-slate-50/90 p-8 shadow-sm">
           <p className="text-center text-sm font-semibold text-slate-800">{t("etoro.subtitle")}</p>
           <EtoroCTAButton sourcePage="landing_page" className="mx-auto mt-4 max-w-sm" />
@@ -570,7 +577,7 @@ export function LandingPage() {
       </section>
 
       {/* ═══ TESTIMONIALS ═══ */}
-      <section className="bg-slate-50 px-4 py-24">
+      <section className="bg-slate-50 px-4 py-20">
         <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
           {[
             {
@@ -618,7 +625,7 @@ export function LandingPage() {
       </section>
 
       {/* ═══ PRICING ═══ */}
-      <section id="pricing" className="scroll-mt-24 bg-white px-4 py-24">
+      <section id="pricing" className="scroll-mt-24 bg-white px-4 py-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center text-4xl font-bold text-slate-900 sm:text-5xl">Prosty cennik.</h2>
 
@@ -776,7 +783,7 @@ export function LandingPage() {
 
       {/* ═══ FINAL CTA ═══ */}
       <section
-        className="px-4 py-24 text-center text-white"
+        className="px-4 py-20 text-center text-white"
         style={{
           background: `linear-gradient(135deg, ${BRAND.dark} 0%, ${BRAND.medium} 100%)`,
         }}
@@ -806,7 +813,7 @@ export function LandingPage() {
 
       {/* ═══ FOOTER ═══ */}
       <footer className="text-white" style={{ backgroundColor: BRAND.dark }}>
-        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 md:grid-cols-4">
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 md:grid-cols-4">
           <div>
             <img src="/logo.png" alt="StockAI Pro" className="h-9 w-36 object-contain brightness-0 invert" />
             <p className="mt-4 text-sm leading-relaxed text-white/60">
