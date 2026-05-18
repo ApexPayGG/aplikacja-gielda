@@ -205,6 +205,234 @@ const TICKER_BAR_ITEMS = [
   { symbol: "S&P500", price: "5,234", change: "+0.89%", positive: true },
 ] as const;
 
+const CANDLES_DEMO = [
+  { x: 20, open: 60, close: 40, high: 30, low: 70, bull: true },
+  { x: 50, open: 40, close: 25, high: 15, low: 50, bull: true },
+  { x: 80, open: 35, close: 50, high: 25, low: 60, bull: false },
+  { x: 110, open: 45, close: 30, high: 20, low: 55, bull: true },
+  { x: 140, open: 30, close: 15, high: 8, low: 38, bull: true },
+  { x: 170, open: 20, close: 35, high: 12, low: 42, bull: false },
+  { x: 200, open: 30, close: 18, high: 10, low: 38, bull: true },
+  { x: 230, open: 22, close: 8, high: 2, low: 28, bull: true },
+] as const;
+
+function CandlestickChart() {
+  return (
+    <svg viewBox="0 0 280 100" className="h-40 w-full animate-fadeInUp" aria-hidden>
+      {CANDLES_DEMO.map((c, i) => (
+        <g
+          key={i}
+          className="animate-fadeInUp opacity-0"
+          style={{ animationDelay: `${i * 0.1}s`, animationFillMode: "forwards" }}
+        >
+          <line
+            x1={c.x}
+            y1={c.high}
+            x2={c.x}
+            y2={c.low}
+            stroke={c.bull ? "#00A86B" : "#E53935"}
+            strokeWidth={1}
+            opacity={0.6}
+          />
+          <rect
+            x={c.x - 6}
+            y={Math.min(c.open, c.close)}
+            width={12}
+            height={Math.max(Math.abs(c.close - c.open), 1)}
+            fill={c.bull ? "#00A86B" : "#E53935"}
+            rx={1}
+            opacity={0.8}
+          />
+        </g>
+      ))}
+      <polyline
+        points="20,55 50,37 80,42 110,32 140,22 170,25 200,18 230,10"
+        fill="none"
+        stroke="#00C9D4"
+        strokeWidth={1.5}
+        opacity={0.4}
+        strokeDasharray={300}
+        strokeDashoffset={300}
+        className="chart-draw-line"
+      />
+    </svg>
+  );
+}
+
+function FloatingCards() {
+  return (
+    <>
+      <div
+        className="animate-float absolute -left-4 top-16 z-20"
+        style={{
+          animationDelay: "0s",
+          background: "white",
+          borderRadius: "16px",
+          padding: "12px 16px",
+          boxShadow: "0 8px 32px rgba(45,10,107,0.15)",
+          border: "1px solid rgba(45,10,107,0.08)",
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <div
+            className="pulse-dot h-2 w-2 rounded-full bg-[#00A86B]"
+            style={{ boxShadow: "0 0 8px #00A86B" }}
+          />
+          <span className="text-[11px] font-bold text-[#2D0A6B]">AAPL</span>
+          <span className="text-[11px] font-semibold text-[#00A86B]">+2.4% ↑</span>
+        </div>
+        <div className="mt-0.5 text-[10px] text-[#9B9BB5]">AI Signal: BUY</div>
+      </div>
+
+      <div
+        className="animate-float absolute -right-4 bottom-24 z-20"
+        style={{
+          animationDelay: "1.5s",
+          background: "white",
+          borderRadius: "16px",
+          padding: "12px 16px",
+          boxShadow: "0 8px 32px rgba(45,10,107,0.15)",
+          border: "1px solid rgba(45,10,107,0.08)",
+        }}
+      >
+        <div className="text-[11px] font-bold text-[#2D0A6B]">Coach Alert</div>
+        <div className="mt-0.5 text-[10px] text-[#9B9BB5]">Unikasz FOMO dziś ✓</div>
+      </div>
+
+      <div
+        className="animate-float absolute right-0 top-4 z-20"
+        style={{
+          animationDelay: "3s",
+          background: "linear-gradient(135deg, #2D0A6B, #7A0F9E)",
+          borderRadius: "16px",
+          padding: "12px 16px",
+          boxShadow: "0 8px 32px rgba(45,10,107,0.3)",
+        }}
+      >
+        <div className="text-[20px] font-black text-white">73%</div>
+        <div className="text-[10px] text-white/60">Win Rate</div>
+      </div>
+    </>
+  );
+}
+
+function GlobalConnectionsSVG() {
+  const nodes = [
+    { x: 80, y: 200, label: "GPW" },
+    { x: 200, y: 80, label: "NYSE" },
+    { x: 380, y: 150, label: "DAX" },
+    { x: 420, y: 320, label: "TSE" },
+    { x: 150, y: 380, label: "LSE" },
+    { x: 300, y: 280, label: "NSE" },
+  ] as const;
+  const edges = [
+    [80, 200, 200, 80],
+    [200, 80, 380, 150],
+    [380, 150, 420, 320],
+    [420, 320, 150, 380],
+    [150, 380, 80, 200],
+    [200, 80, 300, 280],
+    [300, 280, 380, 150],
+    [80, 200, 300, 280],
+  ] as const;
+
+  return (
+    <svg
+      className="pointer-events-none absolute inset-0 z-0 h-full w-full"
+      style={{ opacity: 0.06 }}
+      viewBox="0 0 500 500"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden
+    >
+      {nodes.map((node, i) => (
+        <g key={i}>
+          <title>{node.label}</title>
+          <circle cx={node.x} cy={node.y} r={4} fill="#2D0A6B" />
+          <circle cx={node.x} cy={node.y} r={8} fill="none" stroke="#2D0A6B" strokeWidth={1} opacity={0.5} />
+        </g>
+      ))}
+      {edges.map(([x1, y1, x2, y2], i) => (
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#2D0A6B" strokeWidth={0.5} opacity={0.6} />
+      ))}
+      <circle r={3} fill="#00C9D4" opacity={0.8}>
+        <animateMotion dur="3s" repeatCount="indefinite" path="M80,200 L200,80 L380,150 L420,320 L150,380 L80,200" />
+      </circle>
+      <circle r={2} fill="#FFAE33" opacity={0.6}>
+        <animateMotion dur="4s" repeatCount="indefinite" begin="1s" path="M200,80 L300,280 L380,150 L80,200" />
+      </circle>
+    </svg>
+  );
+}
+
+type HeroVisualProps = {
+  heroPrices: Record<HeroTicker, number>;
+  heroPctByTicker: Partial<Record<HeroTicker, number>>;
+  flashTicker: HeroTicker | null;
+};
+
+function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProps) {
+  return (
+    <div className="landing-hero-dashboard relative h-[520px] w-full">
+      <GlobalConnectionsSVG />
+
+      <div className="absolute inset-0 z-[1] flex items-end justify-center opacity-20">
+        <CandlestickChart />
+      </div>
+
+      <div className="hero-card-glow absolute left-8 right-8 top-8 z-10 rounded-2xl">
+        <div
+          className="hero-card-glow-inner relative overflow-hidden rounded-[14px] shadow-[0_25px_50px_rgba(45,10,107,0.4),0_0_100px_rgba(0,201,212,0.05)]"
+          style={{
+            background: "linear-gradient(135deg, #0f0f1a 0%, #1a0533 50%, #0a1628 100%)",
+            border: "1px solid rgba(255,255,255,0.1)",
+          }}
+        >
+          <div className="p-6">
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-white">Puls rynku na żywo</h2>
+              <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
+                <span className="pulse-dot inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                Live
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {HERO_TICKERS.map((ticker) => {
+                const price = heroPrices[ticker];
+                const rawPct = heroPctByTicker[ticker];
+                const pct = rawPct ?? 0;
+                const showPct = rawPct !== undefined;
+                return (
+                  <div
+                    key={ticker}
+                    className={`rounded-lg p-3 transition-all duration-500 hover:bg-white/5 ${
+                      flashTicker === ticker ? "price-updated" : ""
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="font-mono text-xs text-gray-400">{ticker}</span>
+                      <span
+                        className={`text-xs font-medium tabular-nums ${showPct && pct >= 0 ? "text-emerald-400" : showPct ? "text-red-400" : "text-gray-500"}`}
+                      >
+                        {showPct ? `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%` : "—"}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-lg font-bold tabular-nums text-white transition-all duration-500">
+                      {price.toFixed(2)}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <FloatingCards />
+    </div>
+  );
+}
+
 function useCounter(target: number, duration = 2000): { count: number; ref: RefObject<HTMLDivElement> } {
   const [count, setCount] = useState(0);
   const startedRef = useRef(false);
@@ -433,7 +661,7 @@ export function LandingPage() {
       </header>
 
       {/* ═══ HERO ═══ */}
-      <section className="hero-gradient-bg relative isolate flex min-h-screen items-center overflow-hidden pt-20">
+      <section className="hero-gradient-bg relative isolate flex min-h-screen items-center overflow-x-hidden pt-20">
         <div
           className="animate-float pointer-events-none absolute left-10 top-10 z-0 h-[500px] w-[500px] rounded-full opacity-20 blur-3xl"
           style={{ background: "radial-gradient(circle, #7A0F9E, transparent)" }}
@@ -519,54 +747,9 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* Right column — animated demo prices */}
-          <div className="landing-hero-dashboard flex flex-col justify-center">
-            <div
-              className="relative overflow-hidden rounded-2xl shadow-2xl"
-              style={{
-                background: "linear-gradient(135deg, #0f0f1a 0%, #1a0533 50%, #0a1628 100%)",
-                border: "1px solid rgba(255,255,255,0.1)",
-              }}
-            >
-              <div className="p-6">
-                <div className="mb-5 flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-white">Puls rynku na żywo</h2>
-                  <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
-                    <span className="pulse-dot inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                    Live
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  {HERO_TICKERS.map((ticker) => {
-                    const price = heroPrices[ticker];
-                    const rawPct = heroPctByTicker[ticker];
-                    const pct = rawPct ?? 0;
-                    const showPct = rawPct !== undefined;
-                    return (
-                      <div
-                        key={ticker}
-                        className={`rounded-lg p-3 transition-all duration-500 hover:bg-white/5 ${
-                          flashTicker === ticker ? "price-updated" : ""
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="font-mono text-xs text-gray-400">{ticker}</span>
-                          <span
-                            className={`text-xs font-medium tabular-nums ${showPct && pct >= 0 ? "text-emerald-400" : showPct ? "text-red-400" : "text-gray-500"}`}
-                          >
-                            {showPct ? `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%` : "—"}
-                          </span>
-                        </div>
-                        <p className="mt-1 text-lg font-bold tabular-nums text-white transition-all duration-500">
-                          {price.toFixed(2)}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+          {/* Right column — Hero visual */}
+          <div className="flex flex-col justify-center">
+            <HeroVisual heroPrices={heroPrices} heroPctByTicker={heroPctByTicker} flashTicker={flashTicker} />
           </div>
         </div>
 
@@ -617,13 +800,28 @@ export function LandingPage() {
       </section>
 
       {/* ═══ PROBLEM ═══ */}
-      <section id="problem" className="scroll-mt-24 bg-white px-4 py-20">
-        <div className="mx-auto max-w-4xl text-center">
+      <section
+        id="problem"
+        className="relative scroll-mt-24 overflow-hidden px-4 py-20"
+        style={{ background: "linear-gradient(180deg, #ffffff 0%, #faf8ff 100%)" }}
+      >
+        <div className="pointer-events-none absolute inset-0">
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[50%]"
+            style={{
+              width: "800px",
+              height: "400px",
+              background: "radial-gradient(ellipse, rgba(122,15,158,0.04) 0%, transparent 70%)",
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
           <h2 className="text-4xl font-bold text-slate-900 sm:text-5xl">Czy to brzmi znajomo?</h2>
           <p className="mt-4 text-lg text-slate-600">Każdy retail inwestor zmaga się z tym samym.</p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-3">
+        <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-3">
           {(
             [
               {
@@ -671,7 +869,11 @@ export function LandingPage() {
       </section>
 
       {/* ═══ SOLUTION ═══ */}
-      <section id="solution" className="scroll-mt-24 bg-slate-50 px-4 py-20">
+      <section
+        id="solution"
+        className="scroll-mt-24 px-4 py-20"
+        style={{ background: "linear-gradient(180deg, #faf8ff 0%, #f0f9ff 50%, #faf8ff 100%)" }}
+      >
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-4xl font-bold text-slate-900 sm:text-5xl">
             Jedno miejsce.
@@ -715,8 +917,10 @@ export function LandingPage() {
 
         <div className="relative mx-auto mt-16 max-w-5xl">
           <div
-            className="absolute left-[16.67%] right-[16.67%] top-6 hidden h-0 border-t-2 border-dashed md:block"
-            style={{ borderColor: `${BRAND.cyan}4d` }}
+            className="absolute left-[16.67%] right-[16.67%] top-8 hidden h-[2px] md:block"
+            style={{
+              background: "linear-gradient(90deg, #2D0A6B, #00C9D4, #2D0A6B)",
+            }}
           />
           <div className="grid gap-12 md:grid-cols-3 md:gap-8">
             {[
@@ -744,8 +948,11 @@ export function LandingPage() {
                   className={`reveal relative z-10 flex flex-col items-center text-center ${staggerClass}`}
                 >
                   <div
-                    className="flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold text-white"
-                    style={{ backgroundColor: BRAND.dark }}
+                    className="flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-white"
+                    style={{
+                      background: "linear-gradient(135deg, #2D0A6B, #7A0F9E)",
+                      boxShadow: "0 0 30px rgba(122,15,158,0.3)",
+                    }}
                   >
                     {item.step}
                   </div>

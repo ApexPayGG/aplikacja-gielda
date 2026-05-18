@@ -363,6 +363,15 @@ a {
     animation: none !important;
   }
 
+  .chart-draw-line {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  .hero-card-glow::before {
+    animation: none !important;
+  }
+
   .reveal,
   .reveal-left,
   .reveal-right {
@@ -591,4 +600,49 @@ a {
 
 .price-updated {
   animation: price-flash 0.5s ease;
+}
+
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.chart-draw-line {
+  animation: draw-line 2s ease-out 0.5s forwards;
+}
+
+@keyframes border-rotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-card-glow {
+  position: relative;
+  isolation: isolate;
+  border-radius: 16px;
+}
+
+.hero-card-glow::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, #2d0a6b, #00c9d4, #7a0f9e, #ffae33, #2d0a6b);
+  background-size: 300% 100%;
+  animation: border-rotate 4s linear infinite;
+  z-index: 0;
+}
+
+.hero-card-glow-inner {
+  position: relative;
+  z-index: 1;
+  margin: 2px;
 }
