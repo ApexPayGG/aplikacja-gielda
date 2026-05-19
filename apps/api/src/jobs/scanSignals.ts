@@ -6,6 +6,7 @@ import { prisma } from "../db/index";
 import { processSignalQueue } from "../queues/processSignal";
 import { getCacheRedis } from "../redis";
 import { loadTopDividendSymbols } from "../services/dividendDataService";
+import { runIngestJob, STANDARD_INGEST_JOB_OPTIONS, WEEKDAY_REALTIME_CRON } from "./schedulerConfig";
 
 export const SCAN_SIGNALS_QUEUE_NAME = "scan-signals";
 export const ALERT_QUEUE_NAME = "alert-push";
@@ -332,24 +333,27 @@ export function registerScanSignals(
 ): { queue: Queue; worker: Worker; alertQueue: Queue } {
   const queue = new Queue(SCAN_SIGNALS_QUEUE_NAME, {
     connection: queueConnection,
-    defaultJobOptions: {
-      attempts: 2,
-      backoff: { type: "exponential", delay: 3000 },
-    },
+    defaultJobOptions: { ...STANDARD_INGEST_JOB_OPTIONS },
   });
   const alertQueue = new Queue(ALERT_QUEUE_NAME, {
     connection: queueConnection,
-    defaultJobOptions: { attempts: 3, backoff: { type: "exponential", delay: 2000 } },
+    defaultJobOptions: { ...STANDARD_INGEST_JOB_OPTIONS },
   });
   const worker = new Worker(
     SCAN_SIGNALS_QUEUE_NAME,
     async (job) => {
-      scanSignalsLogger.info({ msg: "start", jobId: job.id, name: job.name });
-      const result = await runScanSignalsJob(({
-        alertQueue,
-      } as unknown) as Partial<ScanSignalsDeps>);
-      scanSignalsLogger.info({ msg: "end", jobId: job.id, ...result });
-      return result;
+      const wrapped = await runIngestJob(
+        { queue: SCAN_SIGNALS_QUEUE_NAME, provider: "mixed", jobId: job.id, jobName: job.name },
+        async () => {
+          scanSignalsLogger.info({ msg: "start", jobId: job.id, name: job.name, provider: "finnhub/polygon/db" });
+          const result = await runScanSignalsJob(({
+            alertQueue,
+          } as unknown) as Partial<ScanSignalsDeps>);
+          scanSignalsLogger.info({ msg: "end", jobId: job.id, ...result });
+          return result;
+        },
+      );
+      return wrapped;
     },
     { connection: workerConnection },
   );
@@ -370,8 +374,11 @@ export async function scheduleScanSignalsJob(queue: Queue): Promise<void> {
     "scan",
     {},
     {
-      repeat: { every: 5 * 60 * 1000 },
-      jobId: "scan-signals-every-5-min",
+      repeat: {
+        pattern: WEEKDAY_REALTIME_CRON.EVERY_5_MIN,
+        tz: "Etc/UTC",
+      },
+      jobId: "scan-signals-weekday-5min",
     },
   );
 }

@@ -7,6 +7,7 @@ import { Prisma } from "@prisma/client";
 import { PolygonClient } from "../../../../packages/data/src/polygon/client";
 import { prisma } from "../db/index";
 import { createRedisConnection, getCacheRedis } from "../redis";
+import { runIngestJob, STANDARD_INGEST_JOB_OPTIONS, WEEKDAY_REALTIME_CRON } from "./schedulerConfig";
 
 export const FETCH_QUOTES_QUEUE_NAME = "fetch-quotes";
 export const FETCH_QUOTES_JOB_NAME = "fetch-quotes";
@@ -141,10 +142,7 @@ export function registerFetchPolygonQuotes(
 ): { queue: Queue; worker: Worker; dlq: Queue } {
   const queue = new Queue(FETCH_QUOTES_QUEUE_NAME, {
     connection: queueConnection,
-    defaultJobOptions: {
-      attempts: 2,
-      backoff: { type: "exponential", delay: 5000 },
-    },
+    defaultJobOptions: { ...STANDARD_INGEST_JOB_OPTIONS },
   });
   const dlq = new Queue(FETCH_QUOTES_DLQ_QUEUE_NAME, { connection: queueConnection });
 
@@ -152,20 +150,34 @@ export function registerFetchPolygonQuotes(
     FETCH_QUOTES_QUEUE_NAME,
     async (job) => {
       const traceId = randomUUID();
-      fetchPolygonQuotesLogger.info({ jobId: job.id, traceId }, "job start");
-      const polygon = new PolygonClient({
-        logger: fetchPolygonQuotesLogger.child({ traceId }),
-      });
-      const out = await runFetchPolygonQuotesJob({
-        db: prisma,
-        polygon,
-        dlq,
-        cache: getCacheRedis(),
-        topLimit: 100,
-        traceId,
-        ingestBucket: new Date(),
-      });
-      return out;
+      const wrapped = await runIngestJob(
+        {
+          queue: FETCH_QUOTES_QUEUE_NAME,
+          provider: "polygon",
+          jobId: job.id,
+          jobName: job.name,
+        },
+        async () => {
+          fetchPolygonQuotesLogger.info({ jobId: job.id, traceId, provider: "polygon" }, "job start");
+          const polygon = new PolygonClient({
+            logger: fetchPolygonQuotesLogger.child({ traceId }),
+          });
+          return runFetchPolygonQuotesJob({
+            db: prisma,
+            polygon,
+            dlq,
+            cache: getCacheRedis(),
+            topLimit: 100,
+            traceId,
+            ingestBucket: new Date(),
+          });
+        },
+      );
+      if ("skipped" in wrapped) {
+        fetchPolygonQuotesLogger.info({ jobId: job.id, traceId, ...wrapped }, "polygon ingest skipped");
+        return wrapped;
+      }
+      return wrapped;
     },
     { connection: workerConnection },
   );
@@ -185,8 +197,11 @@ export async function scheduleFetchPolygonQuotesJob(queue: Queue): Promise<void>
     FETCH_QUOTES_JOB_NAME,
     {},
     {
-      repeat: { every: 5 * 60 * 1000 },
-      jobId: "polygon-fetch-quotes-every-5-min",
+      repeat: {
+        pattern: WEEKDAY_REALTIME_CRON.EVERY_5_MIN,
+        tz: "Etc/UTC",
+      },
+      jobId: "polygon-fetch-quotes-weekday-5min",
     },
   );
 }

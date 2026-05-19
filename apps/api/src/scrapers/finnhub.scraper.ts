@@ -1,5 +1,6 @@
 import process from "node:process";
 import type { FinnhubDetailedQuote, FinnhubNewsItem, MarketQuote } from "../types/scraper.types";
+import { fetchWithProviderRetry } from "./httpRetry";
 
 const BASE = "https://finnhub.io/api/v1";
 
@@ -21,7 +22,7 @@ async function loadFinnhubQuoteDetailed(symbol: string): Promise<FinnhubDetailed
   if (!token) throw new Error("FINNHUB_API_KEY is not set");
 
   const url = `${BASE}/quote?symbol=${encodeURIComponent(symbol)}&token=${encodeURIComponent(token)}`;
-  const res = await fetch(url);
+  const res = await fetchWithProviderRetry("finnhub", url);
   if (!res.ok) throw new Error(`Finnhub HTTP ${res.status}: ${await res.text()}`);
 
   const data = (await res.json()) as FinnhubQuoteJson;
@@ -77,7 +78,7 @@ export async function fetchFinnhubCompanyNews(symbol: string, days = 7): Promise
   });
 
   const url = `${BASE}/company-news?${params.toString()}`;
-  const res = await fetch(url);
+  const res = await fetchWithProviderRetry("finnhub", url);
   if (!res.ok) throw new Error(`Finnhub company-news HTTP ${res.status}: ${await res.text()}`);
 
   const data = (await res.json()) as FinnhubNewsItem[];

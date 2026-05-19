@@ -27,13 +27,19 @@ import {
   scheduleOnboardingSequenceJob,
 } from "./modules/email/onboardingSequence";
 import { registerPortfolioSnapshots, scheduleDailyPortfolioSnapshotsJob } from "./jobs/portfolioSnapshots";
-import { registerFetchPolygonQuotes } from "./jobs/fetchPolygonQuotes";
+import { registerFetchPolygonQuotes, scheduleFetchPolygonQuotesJob } from "./jobs/fetchPolygonQuotes";
 import {
   registerEodhdGlobalImport,
   registerEodhdGpwImport,
   scheduleDailyEodhdGlobalImportJob,
   scheduleDailyEodhdGpwImportJob,
 } from "./jobs/eodhdImports";
+import {
+  ingestLogger,
+  runIngestJob,
+  STANDARD_INGEST_JOB_OPTIONS,
+  WEEKDAY_REALTIME_CRON,
+} from "./jobs/schedulerConfig";
 
 const QUEUE_NAME = "market-scrape";
 const SYMBOLS = ["AAPL", "GOOGL", "MSFT"] as const;
@@ -92,16 +98,24 @@ async function scrapeSymbol(symbol: string): Promise<void> {
 }
 
 async function runHourlyJob(): Promise<void> {
-  console.log(`[scheduler] hourly job start ${new Date().toISOString()}`);
-  for (const sym of SYMBOLS) {
-    try {
-      await scrapeSymbol(sym);
-    } catch (e) {
-      console.error(`[scheduler] FAILED ${sym}:`, e);
-    }
-    await sleep(2000);
-  }
-  console.log(`[scheduler] hourly job end ${new Date().toISOString()}`);
+  await runIngestJob(
+    { queue: QUEUE_NAME, provider: "finnhub+alpha_vantage", jobName: "hourly-scrape" },
+    async () => {
+      for (const sym of SYMBOLS) {
+        try {
+          await scrapeSymbol(sym);
+        } catch (e) {
+          ingestLogger.error({
+            event: "symbol_scrape_failed",
+            provider: "finnhub",
+            symbol: sym,
+            err: e instanceof Error ? e.message : String(e),
+          });
+        }
+        await sleep(2000);
+      }
+    },
+  );
 }
 
 /**
@@ -131,7 +145,10 @@ export async function startScheduler(): Promise<void> {
   const onboardingConn = createRedisConnection();
   const onboardingWorkerConn = createRedisConnection();
 
-  const queue = new Queue(QUEUE_NAME, { connection });
+  const queue = new Queue(QUEUE_NAME, {
+    connection,
+    defaultJobOptions: { ...STANDARD_INGEST_JOB_OPTIONS },
+  });
   const worker = new Worker(QUEUE_NAME, () => runHourlyJob(), { connection: duplicate });
 
   worker.on("failed", (job, err) => {
@@ -145,8 +162,11 @@ export async function startScheduler(): Promise<void> {
     "hourly-scrape",
     {},
     {
-      repeat: { every: 60 * 60 * 1000 },
-      jobId: "hourly-scrape-all",
+      repeat: {
+        pattern: WEEKDAY_REALTIME_CRON.HOURLY,
+        tz: "Etc/UTC",
+      },
+      jobId: "hourly-scrape-weekdays",
     },
   );
 
@@ -264,11 +284,23 @@ export async function startScheduler(): Promise<void> {
       fetchQuotesWorkerConn,
     );
     fetchQuotesWorker.on("failed", (job, err) => {
-      console.error(`[scheduler] polygon fetch quotes job ${job?.id} failed`, err);
+      ingestLogger.error({
+        event: "worker_job_failed",
+        queue: "fetch-quotes",
+        provider: "polygon",
+        jobId: job?.id,
+        err: err instanceof Error ? err.message : String(err),
+      });
     });
     fetchQuotesWorker.on("completed", (job) => {
-      console.log(`[scheduler] polygon fetch quotes job ${job.id} completed`);
+      ingestLogger.info({
+        event: "worker_job_completed",
+        queue: "fetch-quotes",
+        provider: "polygon",
+        jobId: job.id,
+      });
     });
+    await scheduleFetchPolygonQuotesJob(fetchQuotesQueue);
   } else {
     console.log("[scheduler] Polygon live quotes: disabled (POLYGON_API_KEY not set)");
   }
@@ -307,17 +339,16 @@ export async function startScheduler(): Promise<void> {
   console.log("[scheduler] Portfolio snapshots: daily @ 17:00 UTC (queue portfolio-snapshots)");
   console.log("[scheduler] Daily digest email: daily @ 08:00 UTC (queue daily-digest-email)");
   console.log("[scheduler] Onboarding email sequence: every 1 hour (queue onboarding-email-sequence)");
-  console.log("[scheduler] Fundamentals (EODHD): daily @ 03:00 UTC (queue fundamental-sync)");
-  console.log("[scheduler] EODHD GPW import: daily @ 01:30 UTC (queue eodhd-import-gpw)");
-  console.log("[scheduler] EODHD global import: daily @ 02:00 UTC (queue eodhd-import-global)");
-  console.log("[scheduler] Scan signals: every 5 minutes (queue scan-signals)");
+  console.log("[scheduler] Fundamentals (EODHD): weekdays @ 03:00 UTC (queue fundamental-sync)");
+  console.log("[scheduler] EODHD GPW import: weekdays @ 01:30 UTC (queue eodhd-import-gpw)");
+  console.log("[scheduler] EODHD global import: weekdays @ 02:00 UTC (queue eodhd-import-global)");
+  console.log("[scheduler] Market scrape: hourly Mon–Fri UTC (queue market-scrape; Finnhub + Alpha Vantage)");
+  console.log("[scheduler] Scan signals: every 5 min Mon–Fri UTC (queue scan-signals)");
   console.log("[scheduler] Discord signal alerts: dispatch + batch flush every 1 minute");
   console.log("[scheduler] Exit intelligence monitor: every 15 minutes (queue exit-monitor)");
   console.log("[scheduler] Alpha calendar: daily @ 07:00 UTC (queue alpha-calendar)");
   if (process.env.POLYGON_API_KEY) {
-    console.log(
-      "[scheduler] Polygon live quotes: worker ready (enqueue via GitHub cron or `npm run job:fetch-quotes`)",
-    );
+    console.log("[scheduler] Polygon live quotes: every 5 min Mon–Fri UTC (queue fetch-quotes)");
   }
 }
 

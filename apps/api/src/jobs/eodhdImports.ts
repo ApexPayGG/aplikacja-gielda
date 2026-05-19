@@ -4,6 +4,7 @@ import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import pino from "pino";
+import { runIngestJob, STANDARD_INGEST_JOB_OPTIONS, WEEKDAY_EOD_CRON } from "./schedulerConfig";
 
 export const EODHD_GPW_IMPORT_QUEUE_NAME = "eodhd-import-gpw";
 export const EODHD_GLOBAL_IMPORT_QUEUE_NAME = "eodhd-import-global";
@@ -49,19 +50,23 @@ export function registerEodhdGpwImport(
 ): { queue: Queue; worker: Worker } {
   const queue = new Queue(EODHD_GPW_IMPORT_QUEUE_NAME, {
     connection: queueConnection,
-    defaultJobOptions: {
-      attempts: 2,
-      backoff: { type: "exponential", delay: 10_000 },
-    },
+    defaultJobOptions: { ...STANDARD_INGEST_JOB_OPTIONS },
   });
 
   const worker = new Worker(
     EODHD_GPW_IMPORT_QUEUE_NAME,
     async (job) => {
-      eodhdImportLogger.info({ msg: "start_gpw", jobId: job.id, name: job.name });
-      await runTypescriptScript(GPW_SCRIPT);
-      eodhdImportLogger.info({ msg: "end_gpw", jobId: job.id });
-      return { ok: true };
+      const result = await runIngestJob(
+        { queue: EODHD_GPW_IMPORT_QUEUE_NAME, provider: "eodhd", jobId: job.id, jobName: job.name },
+        async () => {
+          eodhdImportLogger.info({ msg: "start_gpw", jobId: job.id, name: job.name, provider: "eodhd" });
+          await runTypescriptScript(GPW_SCRIPT);
+          eodhdImportLogger.info({ msg: "end_gpw", jobId: job.id, provider: "eodhd" });
+          return { ok: true };
+        },
+        { respectMarketHours: false },
+      );
+      return result;
     },
     { connection: workerConnection },
   );
@@ -83,19 +88,23 @@ export function registerEodhdGlobalImport(
 ): { queue: Queue; worker: Worker } {
   const queue = new Queue(EODHD_GLOBAL_IMPORT_QUEUE_NAME, {
     connection: queueConnection,
-    defaultJobOptions: {
-      attempts: 2,
-      backoff: { type: "exponential", delay: 10_000 },
-    },
+    defaultJobOptions: { ...STANDARD_INGEST_JOB_OPTIONS },
   });
 
   const worker = new Worker(
     EODHD_GLOBAL_IMPORT_QUEUE_NAME,
     async (job) => {
-      eodhdImportLogger.info({ msg: "start_global", jobId: job.id, name: job.name });
-      await runTypescriptScript(GLOBAL_SCRIPT);
-      eodhdImportLogger.info({ msg: "end_global", jobId: job.id });
-      return { ok: true };
+      const result = await runIngestJob(
+        { queue: EODHD_GLOBAL_IMPORT_QUEUE_NAME, provider: "eodhd", jobId: job.id, jobName: job.name },
+        async () => {
+          eodhdImportLogger.info({ msg: "start_global", jobId: job.id, name: job.name, provider: "eodhd" });
+          await runTypescriptScript(GLOBAL_SCRIPT);
+          eodhdImportLogger.info({ msg: "end_global", jobId: job.id, provider: "eodhd" });
+          return { ok: true };
+        },
+        { respectMarketHours: false },
+      );
+      return result;
     },
     { connection: workerConnection },
   );
@@ -118,10 +127,10 @@ export async function scheduleDailyEodhdGpwImportJob(queue: Queue): Promise<void
     {},
     {
       repeat: {
-        pattern: "30 1 * * *",
+        pattern: WEEKDAY_EOD_CRON.EODHD_GPW_0130,
         tz: "Etc/UTC",
       },
-      jobId: "daily-import-eodhd-gpw-0130-utc",
+      jobId: "daily-import-eodhd-gpw-weekdays-0130-utc",
     },
   );
 }
@@ -133,10 +142,10 @@ export async function scheduleDailyEodhdGlobalImportJob(queue: Queue): Promise<v
     {},
     {
       repeat: {
-        pattern: "0 2 * * *",
+        pattern: WEEKDAY_EOD_CRON.EODHD_GLOBAL_0200,
         tz: "Etc/UTC",
       },
-      jobId: "daily-import-eodhd-global-0200-utc",
+      jobId: "daily-import-eodhd-global-weekdays-0200-utc",
     },
   );
 }

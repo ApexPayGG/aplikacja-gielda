@@ -4,6 +4,7 @@ import pino from "pino";
 import { prisma } from "../db/index";
 import { discordBot } from "../integrations/discord";
 import { PortfolioService } from "../services/portfolioService";
+import { STANDARD_INGEST_JOB_OPTIONS, WEEKDAY_EOD_CRON } from "./schedulerConfig";
 
 export const PORTFOLIO_SNAPSHOTS_QUEUE_NAME = "portfolio-snapshots";
 export const PORTFOLIO_SNAPSHOTS_JOB_NAME = "portfolio:snapshots";
@@ -129,10 +130,7 @@ export function registerPortfolioSnapshots(
 ): { queue: Queue; worker: Worker } {
   const queue = new Queue(PORTFOLIO_SNAPSHOTS_QUEUE_NAME, {
     connection: queueConnection,
-    defaultJobOptions: {
-      attempts: 3,
-      backoff: { type: "exponential", delay: 4000 },
-    },
+    defaultJobOptions: { ...STANDARD_INGEST_JOB_OPTIONS },
   });
   const worker = new Worker(
     PORTFOLIO_SNAPSHOTS_QUEUE_NAME,
@@ -162,10 +160,10 @@ export async function scheduleDailyPortfolioSnapshotsJob(queue: Queue): Promise<
     {},
     {
       repeat: {
-        pattern: "0 17 * * *",
+        pattern: WEEKDAY_EOD_CRON.PORTFOLIO_1700,
         tz: "Etc/UTC",
       },
-      jobId: "daily-portfolio-snapshots-5pm-utc",
+      jobId: "daily-portfolio-snapshots-weekdays-5pm-utc",
     },
   );
 }
