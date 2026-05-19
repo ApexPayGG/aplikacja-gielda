@@ -2,6 +2,7 @@ import { SparklesIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { AIDisclaimer } from "../components/AIDisclaimer";
 import { BrokerIntegrationPaywall } from "../components/behavioral-coach/BrokerIntegrationPaywall";
 import { CoachEmotionHubSection } from "../components/behavioral-coach/CoachEmotionHubSection";
 import { CoachInterventionsSection } from "../components/behavioral-coach/CoachInterventionsSection";
@@ -239,6 +240,8 @@ export function BehavioralCoachPage() {
             <p className="mt-3 text-base leading-relaxed text-white/90">“{coach.aiDescription}”</p>
           </section>
         ) : null}
+
+        <AIDisclaimer variant="dark" />
       </div>
     </div>
   );

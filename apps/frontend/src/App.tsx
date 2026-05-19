@@ -1,6 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { AppLegalFooter } from "./components/AppLegalFooter";
 import { AppNavBar } from "./components/AppNavBar";
 import { CookieConsent } from "./components/CookieConsent";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -234,6 +235,7 @@ export default function App() {
           </Suspense>
         </ErrorBoundary>
       </main>
+      {token ? <AppLegalFooter /> : null}
       {cookieConsent === null ? <CookieConsent onConsent={setCookieConsent} /> : null}
       {token ? <MobileBottomNav /> : null}
       <KeyboardShortcutsHelp />

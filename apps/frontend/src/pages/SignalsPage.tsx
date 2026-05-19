@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { AIDisclaimer } from "../components/AIDisclaimer";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SignalsFilter } from "../components/SignalsFilter";
 import { ExportButton } from "../components/ExportButton";
@@ -340,8 +341,9 @@ export function SignalsPage() {
               Sygnały
             </h1>
             <p className="max-w-2xl text-sm" style={{ color: colors.textSecondary }}>
-              Przeglądaj aktywne setupy i ocenę ryzyka według nowego design systemu AMC Energy.
+              Przeglądaj aktywne setupy i ocenę ryzyka wspierane przez analizę AI StockAI Pro.
             </p>
+            <AIDisclaimer variant="compact" className="max-w-2xl" />
             <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Wyniki: {filteredSignals.length}
             </p>

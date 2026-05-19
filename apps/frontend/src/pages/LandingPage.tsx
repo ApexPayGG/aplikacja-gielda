@@ -1656,10 +1656,14 @@ export function LandingPage() {
             <h4 className="text-sm font-bold uppercase tracking-wide text-white">Legal</h4>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <span className="text-white/60">Regulamin — wkrótce</span>
+                <Link to="/terms" className="text-white/60 transition hover:text-white">
+                  Regulamin
+                </Link>
               </li>
               <li>
-                <span className="text-white/60">Polityka prywatności — wkrótce</span>
+                <Link to="/privacy" className="text-white/60 transition hover:text-white">
+                  Polityka prywatności
+                </Link>
               </li>
             </ul>
           </div>

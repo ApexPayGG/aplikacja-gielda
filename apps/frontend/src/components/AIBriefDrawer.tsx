@@ -8,6 +8,7 @@ import {
 import { useEffect, useId, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import type { Company } from "../services/api";
+import { AIDisclaimer } from "./AIDisclaimer";
 import { buildAIBriefInsight } from "../utils/aiBriefContent";
 import { getSector3dIconPath } from "../utils/sectorIcon3d";
 
@@ -174,7 +175,8 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
           </section>
         </div>
 
-        <footer className="relative shrink-0 border-t border-white/10 p-5 sm:px-6">
+        <footer className="relative shrink-0 space-y-4 border-t border-white/10 p-5 sm:px-6">
+          <AIDisclaimer variant="dark" />
           <Link
             to={premiumHref}
             onClick={onClose}

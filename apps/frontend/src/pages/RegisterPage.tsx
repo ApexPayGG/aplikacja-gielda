@@ -109,6 +109,17 @@ export function RegisterPage() {
                   {t("auth.loginLink", { defaultValue: "Masz już konto? Zaloguj się" })}
                 </Link>
               </p>
+              <p className="text-xs leading-relaxed text-textSecondary">
+                Rejestrując się, akceptujesz{" "}
+                <Link to="/terms" className="font-medium text-brandCyan hover:underline">
+                  Regulamin
+                </Link>{" "}
+                i{" "}
+                <Link to="/privacy" className="font-medium text-brandCyan hover:underline">
+                  Politykę prywatności
+                </Link>
+                .
+              </p>
             </form>
           </div>
 
