@@ -1,6 +1,8 @@
-import Anthropic from "@anthropic-ai/sdk";
+import Anthropic, { APIError } from "@anthropic-ai/sdk";
 import process from "node:process";
+import { buildFallbackBrief } from "../content/sectorFallbacks";
 import { REDIS_TTL_SEC, redisKeys } from "../config/redis";
+import { getCompanyBySymbol } from "../db/company-queries";
 import { getLatestIndicator, getLatestQuote, getRecentNews } from "../db/queries";
 import { getCacheRedis } from "../redis";
 const MODEL = "claude-sonnet-4-6";
@@ -143,6 +145,20 @@ async function writeAnalysisCache(cacheKey: string, payload: AnalysisResult): Pr
   }
 }
 
+function isLlmAuthOrConfigError(err: unknown): boolean {
+  if (err instanceof APIError && (err.status === 401 || err.status === 403)) return true;
+  if (err instanceof Error) {
+    const msg = err.message.toLowerCase();
+    return (
+      msg.includes("anthropic_api_key") ||
+      msg.includes("401") ||
+      msg.includes("authentication") ||
+      msg.includes("invalid x-api-key") ||
+      msg.includes("invalid api key")
+    );
+  }
+  return false;
+}
 /**
  * Claude Sonnet brief + optional Redis cache when REDIS_URL is set.
  * @param localeTag BCP 47 tag from the client (e.g. pl, de, en-GB). English locales → EN-only; others → locale + EN.
@@ -156,17 +172,28 @@ export async function analyzeStock(symbol: string, localeTag = "en"): Promise<An
   if (cached) return cached;
 
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
-  if (!apiKey) {
-    throw new Error(
-      "ANTHROPIC_API_KEY is not set. Add your Anthropic API key to apps/api/.env to enable the AI brief.",
-    );
-  }
 
-  const [quote, news, rsiRow] = await Promise.all([
+  const [quote, news, rsiRow, company] = await Promise.all([
     getLatestQuote(sym),
     getRecentNews(sym, 10),
     getLatestIndicator(sym, "RSI"),
+    getCompanyBySymbol(sym),
   ]);
+
+  const fallbackContext = {
+    symbol: sym,
+    companyName: company?.name,
+    sector: company?.sector,
+    industry: company?.industry,
+    localeTag: lang,
+    closePrice: quote?.close?.toString() ?? null,
+    rsi: rsiRow ? rsiRow.value.toString() : null,
+  };
+
+  if (!apiKey) {
+    console.warn(`[analysis] ANTHROPIC_API_KEY missing — serving sector fallback brief for ${sym}`);
+    return buildFallbackBrief(fallbackContext);
+  }
 
   const quoteJson = quote
     ? {
@@ -180,24 +207,39 @@ export async function analyzeStock(symbol: string, localeTag = "en"): Promise<An
   const newsTitles = news.map((n) => n.title);
   const rsi = rsiRow ? rsiRow.value.toString() : null;
 
-  const client = new Anthropic({ apiKey });
-  const msg = await client.messages.create({
-    model: MODEL,
-    max_tokens: 2048,
-    messages: [{ role: "user", content: buildPrompt(sym, quoteJson, newsTitles, rsi, lang) }],
-  });
+  try {
+    const client = new Anthropic({ apiKey });
+    const msg = await client.messages.create({
+      model: MODEL,
+      max_tokens: 2048,
+      messages: [{ role: "user", content: buildPrompt(sym, quoteJson, newsTitles, rsi, lang) }],
+    });
 
-  const block = msg.content[0];
-  const rawBrief = block.type === "text" ? block.text : "";
-  const updatedAt = new Date().toISOString();
-  const sections = parseBriefSections(rawBrief, lang);
-  const out: AnalysisResult = {
-    brief: joinBriefForLegacy(sections),
-    updatedAt,
-    requestedLang: lang,
-    sections,
-  };
+    const block = msg.content[0];
+    const rawBrief = block.type === "text" ? block.text : "";
+    const updatedAt = new Date().toISOString();
+    const sections = parseBriefSections(rawBrief, lang);
+    const out: AnalysisResult = {
+      brief: joinBriefForLegacy(sections),
+      updatedAt,
+      requestedLang: lang,
+      sections,
+    };
 
-  await writeAnalysisCache(cacheKey, out);
-  return out;
+    await writeAnalysisCache(cacheKey, out);
+    return out;
+  } catch (err) {
+    if (isLlmAuthOrConfigError(err)) {
+      console.warn(
+        `[analysis] LLM auth/config failure for ${sym} — serving sector fallback brief`,
+        err instanceof Error ? err.message : err,
+      );
+      return buildFallbackBrief(fallbackContext);
+    }
+    console.warn(
+      `[analysis] LLM request failed for ${sym} — serving sector fallback brief`,
+      err instanceof Error ? err.message : err,
+    );
+    return buildFallbackBrief(fallbackContext);
+  }
 }

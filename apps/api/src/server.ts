@@ -7,6 +7,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { Prisma } from "@prisma/client";
 import { analyzeStock } from "./ai/analysis";
+import { buildFallbackNews } from "./content/sectorFallbacks";
 import { cacheJsonGet, cacheJsonSet } from "./cache/jsonCache";
 import { REDIS_TTL_SEC, redisKeys } from "./config/redis";
 import { prisma } from "./db/index";
@@ -450,7 +451,20 @@ export function createApp(): express.Express {
         return;
       }
       const rows = await getRecentNews(sym, limit);
-      const payload = { symbol: sym, limit, count: rows.length, data: rows };
+      let data: unknown[] = rows;
+      if (rows.length === 0) {
+        const company = await getCompanyBySymbol(sym);
+        const lang = String(req.query.lang ?? "pl").trim() || "pl";
+        data = buildFallbackNews({
+          symbol: sym,
+          companyName: company?.name,
+          sector: company?.sector,
+          industry: company?.industry,
+          limit: Math.min(3, limit),
+          preferPolish: !lang.toLowerCase().startsWith("en"),
+        });
+      }
+      const payload = { symbol: sym, limit, count: data.length, data };
       await cacheJsonSet(cacheKey, payload, REDIS_TTL_SEC.NEWS);
       res.json(payload);
     } catch (e) {

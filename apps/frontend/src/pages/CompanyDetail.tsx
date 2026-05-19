@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { AnalysisBrief } from "../components/AnalysisBrief";
+import { CompanyPriceChart } from "../components/CompanyPriceChart";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
 import { WatchlistButton } from "../components/WatchlistButton";
@@ -10,6 +11,7 @@ import { colors } from "../styles/designSystem";
 import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
 import type { AnalysisResponse, Company, NewsRow, QuoteRow } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { buildSignalsFallbackNews } from "../utils/signalsFallback";
 
 function formatMarketCap(value: number, currency: string, locale: string): string {
   const amountFmt = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -151,6 +153,22 @@ export function CompanyDetail() {
     { label: "52w Low", value: formatPrice(trailingLow, currentLang) },
     { label: "Currency", value: parsedCurrency },
   ];
+  const sessionOhlc = latestQuote
+    ? {
+        open: Number(latestQuote.open),
+        high: Number(latestQuote.high),
+        low: Number(latestQuote.low),
+        close: Number(latestQuote.close),
+      }
+    : null;
+  const displayNews = useMemo(() => {
+    if (news.length > 0) return news;
+    return buildSignalsFallbackNews({
+      symbol: sym,
+      sector: company?.sector,
+      industry: company?.industry,
+    });
+  }, [news, sym, company?.sector, company?.industry]);
 
   useEffect(() => {
     if (!sym) return;
@@ -355,11 +373,8 @@ export function CompanyDetail() {
                   <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
                     Price Chart
                   </h2>
-                  <div
-                    className="mt-3 flex h-72 items-center justify-center rounded-lg border border-dashed text-sm"
-                    style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary, color: colors.textMuted }}
-                  >
-                    Chart placeholder (Bloomberg-style dense chart goes here)
+                  <div className="mt-3">
+                    <CompanyPriceChart quotes={sortedQuotes} sessionOhlc={sessionOhlc} />
                   </div>
                 </article>
 
@@ -461,13 +476,9 @@ export function CompanyDetail() {
                 Signals
               </h2>
               <ul className="mt-3 divide-y rounded-lg border" style={{ borderColor: colors.border }}>
-                {news.length === 0 ? (
-                  <li className="px-4 py-6 text-sm" style={{ color: colors.textMuted }}>
-                    {t("company.noNews", { defaultValue: "No signals available yet." })}
-                  </li>
-                ) : (
-                  news.map((n) => (
-                    <li key={`${n.id}-${n.timestamp}`} className="px-4 py-3" style={{ borderColor: colors.border }}>
+                {displayNews.map((n) => (
+                  <li key={`${n.id}-${n.timestamp}`} className="px-4 py-3" style={{ borderColor: colors.border }}>
+                    {n.url && n.url !== "#" ? (
                       <a
                         href={n.url}
                         target="_blank"
@@ -477,17 +488,23 @@ export function CompanyDetail() {
                       >
                         {n.title}
                       </a>
-                      <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
-                        {new Date(n.timestamp).toLocaleDateString(i18n.resolvedLanguage || "en", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}{" "}
-                        · {n.source}
+                    ) : (
+                      <p className="font-medium" style={{ color: colors.brandDark }}>
+                        {n.title}
                       </p>
-                    </li>
-                  ))
-                )}
+                    )}
+                    <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
+                      {new Date(n.timestamp).toLocaleDateString(i18n.resolvedLanguage || "en", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}{" "}
+                      · {n.source}
+                    </p>
+                  </li>
+                ))}
               </ul>
             </section>
           ) : null}
