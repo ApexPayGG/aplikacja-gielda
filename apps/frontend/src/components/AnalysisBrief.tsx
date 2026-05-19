@@ -1,6 +1,7 @@
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
-import type { AnalysisResponse, BriefSection } from "../services/api";
+import type { AnalysisResponse } from "../services/api";
+import { pickBriefSectionsForLocale } from "../utils/briefLocale";
 import { sanitizeApiErrorMessage } from "../utils/sanitizeApiErrorMessage";
 
 type Props = {
@@ -8,26 +9,6 @@ type Props = {
   loading?: boolean;
   error?: string | null;
 };
-
-function primaryLanguageBase(lang: string): string {
-  const trimmed = lang.trim();
-  if (!trimmed) return "en";
-  return trimmed.split(/[-_]/)[0]!.toLowerCase();
-}
-
-function isEnglishSection(section: BriefSection): boolean {
-  return section.lang === "en" || primaryLanguageBase(section.lang) === "en";
-}
-
-function localSectionHeading(section: BriefSection, uiLocale: string): string {
-  if (isEnglishSection(section)) return "";
-  try {
-    const code = primaryLanguageBase(section.lang);
-    return new Intl.DisplayNames([uiLocale], { type: "language" }).of(code) ?? section.lang;
-  } catch {
-    return section.lang;
-  }
-}
 
 export function AnalysisBrief({ analysis, loading, error }: Props) {
   const { t, i18n } = useTranslation();
@@ -64,39 +45,30 @@ export function AnalysisBrief({ analysis, loading, error }: Props) {
     return null;
   }
 
-  const sections: BriefSection[] =
+  const rawSections =
     analysis.sections && analysis.sections.length > 0
       ? analysis.sections
-      : [{ lang: analysis.requestedLang ?? "en", body: analysis.brief }];
+      : [{ lang: analysis.requestedLang ?? i18n.language, body: analysis.brief }];
 
-  const multiSection = sections.length > 1;
+  const sections = pickBriefSectionsForLocale(rawSections, i18n.language);
 
   return (
     <div className="rounded-2xl border border-surface-border bg-surface-elevated p-6">
-      <div className="mb-3 flex items-center gap-2 text-accent-muted">
-        <SparklesIcon className="h-5 w-5" />
+      <div className="mb-3 flex items-center gap-2 text-textPrimary">
+        <SparklesIcon className="h-5 w-5 text-brandDark" />
         <h3 className="text-sm font-semibold uppercase tracking-wide">
           {t("analysisBrief.title", { defaultValue: "AI brief" })}
         </h3>
       </div>
-      <p className="mb-4 text-xs text-slate-500">
+      <p className="mb-4 text-xs text-textSecondary">
         {t("analysisBrief.updated", { defaultValue: "Updated" })} {new Date(analysis.updatedAt).toLocaleString()}
       </p>
-      <div className="max-h-[480px] overflow-y-auto text-sm leading-relaxed text-slate-200">
-        {sections.map((sec, index) => {
-          const heading = isEnglishSection(sec)
-            ? t("analysisBrief.englishSection", { defaultValue: "English" })
-            : localSectionHeading(sec, i18n.language);
-          return (
-            <div key={`${sec.lang}-${index}`}>
-              {index > 0 ? <hr className="my-5 border-surface-border" /> : null}
-              {multiSection ? (
-                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">{heading}</h4>
-              ) : null}
-              <div className="whitespace-pre-wrap">{sec.body}</div>
-            </div>
-          );
-        })}
+      <div className="max-h-[480px] overflow-y-auto text-sm leading-relaxed text-textPrimary">
+        {sections.map((sec, index) => (
+          <div key={`${sec.lang}-${index}`} className="whitespace-pre-wrap">
+            {sec.body}
+          </div>
+        ))}
       </div>
     </div>
   );
