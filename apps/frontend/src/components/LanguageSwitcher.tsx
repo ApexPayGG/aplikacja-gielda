@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { CountryFlag } from "./CountryFlag";
 import { LANGUAGE_OPTIONS, resolveLanguageCode } from "../constants/languages";
 
 type LanguageSwitcherProps = {
@@ -18,9 +19,11 @@ export default function LanguageSwitcher({ variant = "default" }: LanguageSwitch
   if (variant === "landing") {
     return (
       <div className="relative inline-flex items-center">
-        <span className="pointer-events-none absolute left-3 text-base leading-none" aria-hidden>
-          {currentOption.flag}
-        </span>
+        <CountryFlag
+          countryCode={currentOption.countryCode}
+          className="pointer-events-none absolute left-2.5 z-10 h-3.5 w-[1.35rem] rounded-[2px] object-cover"
+          title={currentOption.label}
+        />
         <select
           value={value}
           onChange={(e) => void handleChange(e.target.value)}
@@ -29,7 +32,7 @@ export default function LanguageSwitcher({ variant = "default" }: LanguageSwitch
         >
           {LANGUAGE_OPTIONS.map((opt) => (
             <option key={opt.code} value={opt.code}>
-              {opt.flag} {opt.shortCode}
+              {opt.label}
             </option>
           ))}
         </select>
@@ -38,7 +41,8 @@ export default function LanguageSwitcher({ variant = "default" }: LanguageSwitch
   }
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
+      <CountryFlag countryCode={currentOption.countryCode} title={currentOption.label} />
       <select
         value={value}
         onChange={(e) => void handleChange(e.target.value)}
@@ -47,7 +51,7 @@ export default function LanguageSwitcher({ variant = "default" }: LanguageSwitch
       >
         {LANGUAGE_OPTIONS.map((opt) => (
           <option key={opt.code} value={opt.code}>
-            {opt.flag} {opt.label}
+            {opt.label}
           </option>
         ))}
       </select>

@@ -15,6 +15,7 @@ import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { SEOHead } from "../components/SEOHead";
+import { CountryFlag } from "../components/CountryFlag";
 import { LANGUAGE_OPTIONS, resolveLanguageCode } from "../constants/languages";
 
 const BRAND = {
@@ -557,13 +558,15 @@ function LandingFooterLanguages() {
           <button
             type="button"
             onClick={() => void handleChange(opt.code)}
-            className={
+            title={opt.label}
+            className={`inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 transition ${
               current === opt.code
-                ? "font-bold text-white"
-                : "cursor-pointer text-white/50 hover:text-white/80"
-            }
+                ? "bg-white/10 font-bold text-white"
+                : "cursor-pointer text-white/60 hover:bg-white/5 hover:text-white"
+            }`}
           >
-            {opt.flag} {opt.shortCode}
+            <CountryFlag countryCode={opt.countryCode} className="h-3.5 w-[1.35rem] rounded-[2px] object-cover shadow-sm" />
+            <span className="text-xs font-semibold tracking-wide">{opt.shortCode}</span>
           </button>
         </span>
       ))}
