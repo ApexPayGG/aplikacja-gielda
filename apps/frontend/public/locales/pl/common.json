@@ -455,6 +455,7 @@
     "footerCta": {
       "button": "Zacznij za darmo",
       "disclaimer": "Zacznij za darmo — bez karty kredytowej. Upgrade w każdej chwili.",
+      "pricing": "Zobacz cennik",
       "title": "Gotowy żeby inwestować mądrzej?"
     },
     "hero": {
@@ -540,12 +541,35 @@
       "languagesAria": "Wybierz język",
       "legal": "Informacje prawne",
       "legalEtoro": "Handel z eToro (partner)",
+      "privacy": "Polityka prywatności",
       "product": "Produkt",
       "productMarkets": "Rynki",
       "productPricing": "Cennik",
       "productSignals": "Sygnały",
       "solutionLink": "Rozwiązanie",
-      "tagline": "Jedna platforma. Pełny obraz rynku. AI i coaching behawioralny dla świadomych inwestorów."
+      "tagline": "Jedna platforma. Pełny obraz rynku. AI i coaching behawioralny dla świadomych inwestorów.",
+      "terms": "Regulamin"
+    },
+    "howItWorks": {
+      "title": "Jak to działa?",
+      "steps": [
+        {
+          "title": "Zarejestruj się",
+          "desc": "30 sekund. Bez karty kredytowej."
+        },
+        {
+          "title": "Wybierz rynek",
+          "desc": "GPW, US, DAX — lub wszystkie naraz."
+        },
+        {
+          "title": "Inwestuj mądrzej",
+          "desc": "AI analizuje, coach uczy, Ty decydujesz."
+        }
+      ]
+    },
+    "seo": {
+      "description": "Analiza akcji z AI, coaching behawioralny i ponad 130 giełd — GPW, NYSE, DAX i więcej w jednym miejscu.",
+      "title": "StockAI Pro — Platforma inwestycyjna nowej generacji"
     },
     "nav": {
       "features": "Funkcje",
@@ -568,12 +592,29 @@
       "modules": "modułów AI"
     },
     "socialProof": {
+      "marqueeMarkets": "GPW + NYSE + DAX",
       "stats": {
         "adFree": "100% bez reklam",
         "exchanges": "130+ giełd",
         "languages": "9 języków",
         "modules": "27 modułów AI"
       },
+      "testimonials": [
+        {
+          "author": "Kasia, Warszawa",
+          "quote": "Kiedyś skakałam między 5 aplikacjami. Teraz mam jeden ekran i wiem co robię."
+        },
+        {
+          "author": "Lukas, Berlin",
+          "quote": "Behavioral Coach pokazał mi że traciłem przez FOMO, nie przez złe sygnały."
+        },
+        {
+          "author": "Clara, Madryt",
+          "quote": "Pre-Mortem AI zmienił moje podejście do ryzyka. Teraz myślę zanim klikam."
+        }
+      ],
+      "testimonialsSubtitle": "Krótkie historie z pierwszej linii — mniej chaosu.",
+      "testimonialsTitle": "Co mówią inwestorzy?",
       "title": "Dołącz do inwestorów którzy już inwestują mądrzej"
     },
     "solution": {

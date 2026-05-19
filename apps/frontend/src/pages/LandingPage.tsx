@@ -15,6 +15,7 @@ import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { SEOHead } from "../components/SEOHead";
+import { LANGUAGE_OPTIONS, resolveLanguageCode } from "../constants/languages";
 
 const BRAND = {
   dark: "#2D0A6B",
@@ -27,40 +28,6 @@ const ETORO_AFFILIATE_URL =
   "https://med.etoro.com/B9219_A129734_TClick_Sstockaipro-main.aspx";
 
 type SolutionIconId = "brief" | "coach" | "dna" | "premortem" | "globe" | "paper";
-
-const SOLUTION_CARD_DEFS: { iconId: SolutionIconId; titleKey: string; bodyKey: string }[] = [
-  { iconId: "brief", titleKey: "landing.solution.features.aiBrief.title", bodyKey: "landing.solution.features.aiBrief.body" },
-  { iconId: "coach", titleKey: "landing.solution.features.behavioralCoach.title", bodyKey: "landing.solution.features.behavioralCoach.body" },
-  { iconId: "dna", titleKey: "landing.solution.features.signalDna.title", bodyKey: "landing.solution.features.signalDna.body" },
-  { iconId: "premortem", titleKey: "landing.solution.features.preMortemAi.title", bodyKey: "landing.solution.features.preMortemAi.body" },
-  { iconId: "globe", titleKey: "landing.solution.features.globalMarkets.title", bodyKey: "landing.solution.features.globalMarkets.body" },
-  { iconId: "paper", titleKey: "landing.solution.features.paperTrading.title", bodyKey: "landing.solution.features.paperTrading.body" },
-];
-
-const PROBLEM_CARD_DEFS = [
-  { icon: "apps" as const, titleKey: "landing.problem.cards.apps.title", bodyKey: "landing.problem.cards.apps.body" },
-  { icon: "brain" as const, titleKey: "landing.problem.cards.emotions.title", bodyKey: "landing.problem.cards.emotions.body" },
-  { icon: "target" as const, titleKey: "landing.problem.cards.context.title", bodyKey: "landing.problem.cards.context.body" },
-] as const;
-
-const LANDING_LANGUAGES = [
-  { code: "pl", label: "PL" },
-  { code: "en", label: "EN" },
-  { code: "de", label: "DE" },
-  { code: "es", label: "ES" },
-  { code: "ja", label: "JA" },
-  { code: "hi", label: "HI" },
-  { code: "ko", label: "KO" },
-  { code: "zh-TW", label: "ZH" },
-  { code: "fr", label: "FR" },
-] as const;
-
-function isLandingLanguageActive(code: string, resolved: string | undefined): boolean {
-  if (!resolved) return code === "en";
-  if (code === "zh-TW") return resolved.startsWith("zh");
-  return resolved === code || resolved.startsWith(`${code}-`);
-}
-
 
 const LANDING_ICONA = {
   problemApps: "/icons/icona/problem-apps.png",
@@ -123,13 +90,6 @@ const INITIAL_HERO_PRICES: Record<HeroTicker, number> = {
 };
 
 type BillingCycle = "monthly" | "yearly";
-
-const MARQUEE_ITEM_KEYS = [
-  "landing.socialProof.stats.exchanges",
-  "landing.socialProof.stats.modules",
-  "landing.socialProof.stats.languages",
-  "landing.socialProof.stats.adFree",
-] as const;
 
 function SignalWave({
   offset = 0,
@@ -233,12 +193,6 @@ function IconStatUsers(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
-
-const HOW_IT_WORKS_STEPS = [
-  { step: "1", title: "Zarejestruj się", desc: "30 sekund. Bez karty kredytowej." },
-  { step: "2", title: "Wybierz rynek", desc: "GPW, US, DAX — lub wszystkie naraz." },
-  { step: "3", title: "Inwestuj mądrzej", desc: "AI analizuje, coach uczy, Ty decydujesz." },
-] as const;
 
 const TICKER_BAR_ITEMS = [
   { symbol: "AAPL", price: "$300.23", change: "+0.78%", positive: true },
@@ -574,34 +528,42 @@ function WorldClockFace({ timeZone, now }: { timeZone: string; now: Date }) {
   );
 }
 
-function LandingFooterLanguages() {
-  const { i18n, t } = useTranslation("common");
-  const resolved = i18n.resolvedLanguage;
+type LandingTestimonial = { quote: string; author: string };
+type HowItWorksStep = { title: string; desc: string };
 
-  const handleChange = async (code: string): Promise<void> => {
+function parseTestimonialAuthor(author: string): { initials: string; name: string; loc: string } {
+  const [name = "", loc = ""] = author.split(",").map((part) => part.trim());
+  return { initials: (name.charAt(0) || "?").toUpperCase(), name, loc };
+}
+
+function LandingFooterLanguages() {
+  const { t, i18n } = useTranslation("common");
+  const current = resolveLanguageCode(i18n.resolvedLanguage);
+
+  const handleChange = async (code: string) => {
     await i18n.changeLanguage(code);
     localStorage.setItem("stockai.lang", code);
   };
 
   return (
     <div
-      className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm"
+      className="flex flex-wrap items-center justify-center gap-1 text-sm"
       aria-label={t("landing.footer.languagesAria")}
     >
-      {LANDING_LANGUAGES.map((lang, index) => (
-        <span key={lang.code} className="inline-flex items-center gap-2">
-          {index > 0 ? <span className="select-none text-white/30" aria-hidden>|</span> : null}
-          {isLandingLanguageActive(lang.code, resolved) ? (
-            <span className="font-bold text-white">{lang.label}</span>
-          ) : (
-            <button
-              type="button"
-              onClick={() => void handleChange(lang.code)}
-              className="cursor-pointer text-white/50 transition hover:text-white/80"
-            >
-              {lang.label}
-            </button>
-          )}
+      {LANGUAGE_OPTIONS.map((opt, index) => (
+        <span key={opt.code} className="inline-flex items-center gap-1">
+          {index > 0 ? <span className="text-white/30" aria-hidden>|</span> : null}
+          <button
+            type="button"
+            onClick={() => void handleChange(opt.code)}
+            className={
+              current === opt.code
+                ? "font-bold text-white"
+                : "cursor-pointer text-white/50 hover:text-white/80"
+            }
+          >
+            {opt.shortCode}
+          </button>
         </span>
       ))}
     </div>
@@ -611,7 +573,6 @@ function LandingFooterLanguages() {
 function WorldClocks() {
   const { t, i18n } = useTranslation("common");
   const [time, setTime] = useState(() => new Date());
-  const locale = i18n.resolvedLanguage?.startsWith("pl") ? "pl-PL" : "en-US";
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
@@ -642,7 +603,7 @@ function WorldClocks() {
           {WORLD_CLOCK_CITIES.map((city, i) => {
             const { hours } = getZonedTime(city.timezone, time);
             const isOpen = isExchangeOpenSimple(hours);
-            const timeStr = time.toLocaleTimeString(locale, {
+            const timeStr = time.toLocaleTimeString(i18n.language, {
               hour: "2-digit",
               minute: "2-digit",
               second: "2-digit",
@@ -704,6 +665,7 @@ type HeroVisualProps = {
 
 function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProps) {
   const { t } = useTranslation("common");
+
   return (
     <div className="landing-hero-dashboard relative min-h-[280px] w-full sm:min-h-[360px] md:min-h-[480px] lg:min-h-[520px]">
       <GlobalConnectionsSVG />
@@ -794,9 +756,23 @@ function useCounter(target: number, duration = 2000): { count: number; ref: RefO
   return { count, ref };
 }
 
+const SOLUTION_CARD_KEYS: { iconId: SolutionIconId; titleKey: string; bodyKey: string }[] = [
+  { iconId: "brief", titleKey: "landing.solution.features.aiBrief.title", bodyKey: "landing.solution.features.aiBrief.body" },
+  { iconId: "coach", titleKey: "landing.solution.features.behavioralCoach.title", bodyKey: "landing.solution.features.behavioralCoach.body" },
+  { iconId: "dna", titleKey: "landing.solution.features.signalDna.title", bodyKey: "landing.solution.features.signalDna.body" },
+  { iconId: "premortem", titleKey: "landing.solution.features.preMortemAi.title", bodyKey: "landing.solution.features.preMortemAi.body" },
+  { iconId: "globe", titleKey: "landing.solution.features.globalMarkets.title", bodyKey: "landing.solution.features.globalMarkets.body" },
+  { iconId: "paper", titleKey: "landing.solution.features.paperTrading.title", bodyKey: "landing.solution.features.paperTrading.body" },
+];
+
+const PROBLEM_CARD_KEYS = [
+  { icon: "apps" as const, cardKey: "apps" },
+  { icon: "brain" as const, cardKey: "emotions" },
+  { icon: "target" as const, cardKey: "context" },
+] as const;
+
 export function LandingPage() {
   const { t, i18n } = useTranslation("common");
-  const statsLocale = i18n.resolvedLanguage?.startsWith("pl") ? "pl-PL" : "en-US";
   const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<"pro" | "pro_plus" | null>(null);
@@ -813,9 +789,62 @@ export function LandingPage() {
   const langsCounter = useCounter(9);
   const investorsCounter = useCounter(1200);
 
+  const solutionCards = useMemo(
+    () =>
+      SOLUTION_CARD_KEYS.map((card) => ({
+        iconId: card.iconId,
+        title: t(card.titleKey),
+        body: t(card.bodyKey),
+      })),
+    [t, i18n.language],
+  );
+
+  const marqueeItems = useMemo(
+    () => [
+      t("landing.socialProof.stats.exchanges"),
+      t("landing.socialProof.stats.modules"),
+      t("landing.socialProof.stats.languages"),
+      t("landing.socialProof.stats.adFree"),
+      t("landing.socialProof.marqueeMarkets"),
+    ],
+    [t, i18n.language],
+  );
+
+  const howItWorksSteps = useMemo((): HowItWorksStep[] => {
+    const translated = t("landing.howItWorks.steps", { returnObjects: true });
+    if (Array.isArray(translated)) {
+      return translated.filter(
+        (item): item is HowItWorksStep =>
+          typeof item === "object" &&
+          item !== null &&
+          "title" in item &&
+          "desc" in item &&
+          typeof (item as HowItWorksStep).title === "string" &&
+          typeof (item as HowItWorksStep).desc === "string",
+      );
+    }
+    return [];
+  }, [t, i18n.language]);
+
+  const testimonials = useMemo((): LandingTestimonial[] => {
+    const translated = t("landing.socialProof.testimonials", { returnObjects: true });
+    if (Array.isArray(translated)) {
+      return translated.filter(
+        (item): item is LandingTestimonial =>
+          typeof item === "object" &&
+          item !== null &&
+          "quote" in item &&
+          "author" in item &&
+          typeof (item as LandingTestimonial).quote === "string" &&
+          typeof (item as LandingTestimonial).author === "string",
+      );
+    }
+    return [];
+  }, [t, i18n.language]);
+
   useEffect(() => {
-    document.title = "StockAI Pro — Platforma inwestycyjna nowej generacji";
-  }, []);
+    document.title = t("landing.seo.title");
+  }, [t, i18n.language]);
 
   useEffect(() => {
     const onScroll = (): void => {
@@ -890,7 +919,6 @@ export function LandingPage() {
     }
   };
 
-  const marqueeItems = MARQUEE_ITEM_KEYS.map((key) => t(key));
   const marqueeTrack = [...marqueeItems, ...marqueeItems];
   const tickerMarqueeTrack = [...TICKER_BAR_ITEMS, ...TICKER_BAR_ITEMS];
 
@@ -901,11 +929,7 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 antialiased">
-      <SEOHead
-        title="StockAI Pro — Platforma inwestycyjna nowej generacji"
-        description="Analiza akcji z AI, coaching behawioralny i ponad 130 giełd — GPW, NYSE, DAX i więcej w jednym miejscu."
-        ogType="website"
-      />
+      <SEOHead title={t("landing.seo.title")} description={t("landing.seo.description")} ogType="website" />
 
       {/* ═══ TICKER BAR (demo quotes) ═══ */}
       <div
@@ -1239,7 +1263,7 @@ export function LandingPage() {
           <div ref={investorsCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
             <IconStatUsers className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">
-              {investorsCounter.count.toLocaleString(statsLocale)}+
+              {investorsCounter.count.toLocaleString(i18n.language)}+
             </div>
             <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.investors")}</p>
           </div>
@@ -1270,11 +1294,13 @@ export function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-3">
-          {PROBLEM_CARD_DEFS.map((card, index) => {
+          {PROBLEM_CARD_KEYS.map((card, index) => {
             const staggerClass = index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
+            const title = t(`landing.problem.cards.${card.cardKey}.title`);
+            const body = t(`landing.problem.cards.${card.cardKey}.body`);
             return (
               <article
-                key={card.titleKey}
+                key={card.cardKey}
                 className={`reveal group relative overflow-hidden rounded-2xl border border-gray-100 border-l-4 border-l-[#2D0A6B] bg-white py-8 pl-6 pr-8 shadow-md transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
               >
                 <div className="mb-6 flex">
@@ -1294,15 +1320,15 @@ export function LandingPage() {
                           : LANDING_ICONA.problemTarget
                     }
                     alt=""
-                    className="h-10 w-10 object-contain"
+                    className="h-12 w-12 object-contain"
                     loading="lazy"
                     decoding="async"
                     aria-hidden
                   />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">{t(card.titleKey)}</h3>
-                <p className="landing-body mt-3 text-slate-600">{t(card.bodyKey)}</p>
+                <h3 className="text-xl font-bold text-slate-900">{title}</h3>
+                <p className="landing-body mt-3 text-slate-600">{body}</p>
               </article>
             );
           })}
@@ -1326,14 +1352,14 @@ export function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {SOLUTION_CARD_DEFS.map((card, index) => {
+          {solutionCards.map((card, index) => {
             const revealKind =
               index % 3 === 0 ? "reveal-left" : index % 3 === 2 ? "reveal-right" : "reveal";
             const staggerClass =
               index % 3 === 0 ? "stagger-1" : index % 3 === 1 ? "stagger-2" : "stagger-3";
             return (
               <article
-                key={card.titleKey}
+                key={card.title}
                 className={`${revealKind} group relative overflow-hidden rounded-xl border border-gray-100 border-t-[3px] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#00C9D4] hover:shadow-lg ${staggerClass}`}
                 style={{ borderTopColor: BRAND.cyan }}
               >
@@ -1352,8 +1378,8 @@ export function LandingPage() {
                     />
                   </div>
                 </div>
-                <h3 className="relative z-[1] text-lg font-bold text-slate-900">{t(card.titleKey)}</h3>
-                <p className="landing-body relative z-[1] mt-2 text-slate-600">{t(card.bodyKey)}</p>
+                <h3 className="relative z-[1] text-lg font-bold text-slate-900">{card.title}</h3>
+                <p className="landing-body relative z-[1] mt-2 text-slate-600">{card.body}</p>
               </article>
             );
           })}
@@ -1363,15 +1389,15 @@ export function LandingPage() {
       {/* ═══ HOW IT WORKS ═══ */}
       <section id="how-it-works" className="relative scroll-mt-24 overflow-hidden bg-white px-4 py-20">
         <SignalWave offset={-24} opacity={0.1} />
-        <h2 className="section-h2 relative z-10 text-center text-slate-900">Jak to działa?</h2>
+        <h2 className="section-h2 relative z-10 text-center text-slate-900">{t("landing.howItWorks.title")}</h2>
 
         <div className="relative z-10 mx-auto mt-16 md:hidden">
           <div className="mx-auto grid max-w-lg gap-12">
-            {HOW_IT_WORKS_STEPS.map((item, index) => {
+            {howItWorksSteps.map((item, index) => {
               const staggerClass =
                 index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
               return (
-                <div key={item.step} className={`group reveal flex flex-col items-center text-center ${staggerClass}`}>
+                <div key={`${item.title}-${index}`} className={`group reveal flex flex-col items-center text-center ${staggerClass}`}>
                   <div className="transition-transform duration-300 group-hover:-translate-y-2">
                     <HowItWorksStepBadge stepIndex={index} />
                   </div>
@@ -1385,11 +1411,11 @@ export function LandingPage() {
 
         <div className="relative z-10 mx-auto mt-16 hidden max-w-5xl md:block">
           <div className="flex items-start justify-between gap-2 px-2">
-            {HOW_IT_WORKS_STEPS.map((item, index) => {
+            {howItWorksSteps.map((item, index) => {
               const staggerClass =
                 index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
               const connector =
-                index < HOW_IT_WORKS_STEPS.length - 1 ? (
+                index < howItWorksSteps.length - 1 ? (
                   <div className="flex min-h-[92px] min-w-0 flex-[1] items-center px-2">
                     <div
                       className="timeline-line h-[2px] w-full rounded-full"
@@ -1404,7 +1430,7 @@ export function LandingPage() {
                 ) : null;
 
               return (
-                <div key={item.step} className="contents">
+                <div key={`${item.title}-${index}`} className="contents">
                   <div
                     className={`group reveal flex min-w-0 max-w-[30%] flex-[1.15] flex-col items-center text-center ${staggerClass}`}
                   >
@@ -1436,36 +1462,15 @@ export function LandingPage() {
       <section className="relative overflow-hidden bg-gray-50 px-4 py-20">
         <SignalWave offset={60} opacity={0.1} />
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <h2 className="section-h2 text-slate-900">Co mówią inwestorzy?</h2>
-          <p className="landing-body mt-4 text-slate-600">Krótkie historie z pierwszej linii — Spoiler: mniej chaosu.</p>
+          <h2 className="section-h2 text-slate-900">{t("landing.socialProof.testimonialsTitle")}</h2>
+          <p className="landing-body mt-4 text-slate-600">{t("landing.socialProof.testimonialsSubtitle")}</p>
         </div>
         <div className="relative z-10 mx-auto mt-14 grid max-w-6xl gap-8 md:grid-cols-3">
-          {[
-            {
-              quote:
-                "Kiedyś skakałam między 5 aplikacjami. Teraz mam jeden ekran i wiem co robię.",
-              initials: "K",
-              name: "Kasia",
-              loc: "Warszawa",
-            },
-            {
-              quote:
-                "Behavioral Coach pokazał mi że traciłem przez FOMO, nie przez złe sygnały.",
-              initials: "L",
-              name: "Lukas",
-              loc: "Berlin",
-            },
-            {
-              quote:
-                "Pre-Mortem AI zmienił moje podejście do ryzyka. Teraz myślę zanim klikam.",
-              initials: "C",
-              name: "Clara",
-              loc: "Madryt",
-            },
-          ].map((item, index) => {
+          {testimonials.map((item, index) => {
+            const { initials, name, loc } = parseTestimonialAuthor(item.author);
             const staggerClass = index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
             return (
-              <div key={item.name} className={`reveal relative group ${staggerClass}`}>
+              <div key={`${item.author}-${index}`} className={`reveal relative group ${staggerClass}`}>
                 <div
                   className="pointer-events-none absolute inset-x-3 bottom-[-8px] -z-10 h-full scale-95 rounded-2xl"
                   style={{
@@ -1497,11 +1502,11 @@ export function LandingPage() {
                         background: `linear-gradient(135deg, ${BRAND.dark}, ${BRAND.medium})`,
                       }}
                     >
-                      {item.initials}
+                      {initials}
                     </span>
                     <div>
-                      <div className="font-bold text-slate-900">{item.name}</div>
-                      <div className="text-sm text-slate-500">{item.loc}</div>
+                      <div className="font-bold text-slate-900">{name}</div>
+                      <div className="text-sm text-slate-500">{loc}</div>
                     </div>
                   </footer>
                 </blockquote>
@@ -1515,7 +1520,7 @@ export function LandingPage() {
       <section id="pricing" className="relative scroll-mt-24 overflow-hidden bg-white px-4 py-20">
         <SignalWave offset={-20} opacity={0.09} />
         <div className="relative z-10 mx-auto max-w-6xl">
-          <h2 className="section-h2 text-center text-slate-900">{t("landing.pricing.title")}.</h2>
+          <h2 className="section-h2 text-center text-slate-900">{t("landing.pricing.title")}</h2>
 
           <div className="mt-10 flex justify-center">
             <div className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1">
@@ -1549,7 +1554,7 @@ export function LandingPage() {
           </div>
 
           <p className="mt-6 text-center text-sm font-medium text-slate-700">
-            ⚡ Pierwsze 500 kont Pro w cenie $9/mo — na zawsze
+            ⚡ {t("landing.pricing.earlyAdopter")}
           </p>
 
           <div className="mt-10 grid grid-cols-1 items-stretch gap-6 sm:mt-14 sm:gap-8 md:grid-cols-2 lg:grid-cols-3 lg:items-center">
@@ -1584,12 +1589,12 @@ export function LandingPage() {
                       className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold"
                       style={{ background: "#00C9D4", color: "#0A0A0F" }}
                     >
-                      Najpopularniejszy
+                      {t("landing.pricing.popular")}
                     </span>
                     <h3 className="mt-4 text-xl font-bold">{t(tier.nameKey)}</h3>
                     <p className="mt-6 text-5xl font-bold">{priceDisplay}</p>
                     <p className="mt-2 font-semibold" style={{ color: BRAND.cyan }}>
-                      14 dni za darmo
+                      {t("landing.pricing.trial")}
                     </p>
                     {billingCycle === "yearly" ? (
                       <p className="mt-2 text-sm font-semibold text-emerald-300">
@@ -1696,7 +1701,7 @@ export function LandingPage() {
               href="#pricing"
               className="inline-flex rounded-full border-2 border-white/40 px-8 py-4 text-lg font-semibold text-white transition hover:bg-white/10"
             >
-              {t("landing.nav.pricing")}
+              {t("landing.footerCta.pricing")}
             </a>
           </div>
         </div>
@@ -1720,7 +1725,9 @@ export function LandingPage() {
                 decoding="async"
               />
             </Link>
-            <p className="mt-4 text-sm leading-relaxed text-white/60">{t("landing.footer.tagline")}</p>
+            <p className="mt-4 text-sm leading-relaxed text-white/60">
+              {t("landing.footer.tagline")}
+            </p>
           </div>
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wide text-white">{t("landing.footer.product")}</h4>
@@ -1767,12 +1774,12 @@ export function LandingPage() {
             <ul className="mt-4 space-y-2 text-sm">
               <li>
                 <Link to="/terms" className="text-white/60 transition hover:text-white">
-                  Regulamin
+                  {t("landing.footer.terms")}
                 </Link>
               </li>
               <li>
                 <Link to="/privacy" className="text-white/60 transition hover:text-white">
-                  Polityka prywatności
+                  {t("landing.footer.privacy")}
                 </Link>
               </li>
             </ul>

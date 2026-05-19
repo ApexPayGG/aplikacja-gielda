@@ -455,6 +455,7 @@
     "footerCta": {
       "button": "Create free account",
       "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
+      "pricing": "See pricing",
       "title": "Start your free account today"
     },
     "hero": {
@@ -483,12 +484,35 @@
       "languagesAria": "Choose language",
       "legal": "Legal",
       "legalEtoro": "Trade with eToro (partner)",
+      "privacy": "Privacy policy",
       "product": "Product",
       "productMarkets": "Markets",
       "productPricing": "Pricing",
       "productSignals": "Signals",
       "solutionLink": "Solution",
-      "tagline": "One platform. Full market picture. AI and behavioral coaching for informed investors."
+      "tagline": "One platform. Full market picture. AI and behavioral coaching for informed investors.",
+      "terms": "Terms of service"
+    },
+    "howItWorks": {
+      "title": "How it works?",
+      "steps": [
+        {
+          "title": "Sign up",
+          "desc": "30 seconds. No credit card."
+        },
+        {
+          "title": "Pick your market",
+          "desc": "GPW, US, DAX — or all at once."
+        },
+        {
+          "title": "Invest smarter",
+          "desc": "AI analyzes, coach teaches, you decide."
+        }
+      ]
+    },
+    "seo": {
+      "description": "AI stock analysis, behavioral coaching, and 130+ exchanges — GPW, NYSE, DAX and more in one place.",
+      "title": "StockAI Pro — Next-generation investing platform"
     },
     "stats": {
       "exchanges": "exchanges",
@@ -568,12 +592,29 @@
       "title": "You're losing money. You know why."
     },
     "socialProof": {
+      "marqueeMarkets": "GPW + NYSE + DAX",
       "stats": {
         "adFree": "100% ad-free",
         "exchanges": "130+ exchanges",
         "languages": "9 languages",
         "modules": "27 AI modules"
       },
+      "testimonials": [
+        {
+          "author": "Kasia, Warsaw",
+          "quote": "I used to jump between 5 apps. Now I have one screen and know what I'm doing."
+        },
+        {
+          "author": "Lukas, Berlin",
+          "quote": "Behavioral Coach showed me I was losing to FOMO, not bad signals."
+        },
+        {
+          "author": "Clara, Madrid",
+          "quote": "Pre-Mortem AI changed how I think about risk. I pause before I click."
+        }
+      ],
+      "testimonialsSubtitle": "Short stories from the front line — less chaos.",
+      "testimonialsTitle": "What investors say",
       "title": "Join our early access community"
     },
     "solution": {
