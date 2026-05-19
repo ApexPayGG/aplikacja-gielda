@@ -179,6 +179,21 @@
     "sell": "Sprzedaj"
   },
   "company": {
+    "dividend": {
+      "aiBrief": "Skrót AI o dywidendzie",
+      "amount": "Kwota / akcję",
+      "calendar": "Kalendarz wypłat",
+      "growthYears": "Lata wzrostu",
+      "healthScore": "Wskaźnik bezpieczeństwa",
+      "nextExDate": "Ostatnia data ex",
+      "noHistory": "Brak historii dywidend w bazie.",
+      "payoutRatio": "Wskaźnik wypłaty",
+      "subtitle": "Bezpieczeństwo dywidendy, ostatnia wypłata i daty ex.",
+      "title": "Podsumowanie dywidendy",
+      "trend": "Trend",
+      "unavailable": "Brak danych dywidendowych dla tego symbolu.",
+      "yield": "Stopa dywidendy"
+    },
     "backHome": "<- Powrót",
     "backToCompanies": "← Spółki",
     "chartTitle": "Cena zamknięcia - ostatnia historia",

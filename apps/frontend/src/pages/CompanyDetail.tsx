@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { AnalysisBrief } from "../components/AnalysisBrief";
+import { CompanyDividendPanel } from "../components/CompanyDividendPanel";
 import { CompanyPriceChart } from "../components/CompanyPriceChart";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
@@ -514,12 +515,7 @@ export function CompanyDetail() {
               className="rounded-xl border p-4"
               style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
             >
-              <h2 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>
-                Dividend
-              </h2>
-              <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
-                Dividend snapshot and payout calendar will be displayed here.
-              </p>
+              <CompanyDividendPanel symbol={sym} locale={currentLang} />
             </section>
           ) : null}
 

@@ -179,6 +179,21 @@
     "sell": "Sell"
   },
   "company": {
+    "dividend": {
+      "aiBrief": "AI dividend brief",
+      "amount": "Amount / share",
+      "calendar": "Payout calendar",
+      "growthYears": "Years of growth",
+      "healthScore": "Health score",
+      "nextExDate": "Latest ex-date",
+      "noHistory": "No dividend history rows yet.",
+      "payoutRatio": "Payout ratio",
+      "subtitle": "Health score, latest payout, and recent ex-dates.",
+      "title": "Dividend snapshot",
+      "trend": "Trend",
+      "unavailable": "Dividend data is not available for this symbol.",
+      "yield": "Dividend yield"
+    },
     "backHome": "<- Back home",
     "backToCompanies": "← Companies",
     "chartTitle": "Close - recent history",

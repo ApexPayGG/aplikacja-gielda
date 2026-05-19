@@ -1140,6 +1140,28 @@ export async function getAnalysis(symbol: string, lang = "pl"): Promise<Analysis
   return data;
 }
 
+export interface DividendHealthData {
+  ticker: string;
+  name: string;
+  dividendYield: number;
+  payoutRatio: number;
+  yearsOfGrowth: number;
+  exDate: string;
+  amount: number;
+  currency: string;
+  healthScore: number;
+  healthLabel: "SAFE" | "WATCH" | "RISKY";
+  trend: "GROWING" | "STABLE" | "DECLINING";
+  aiBreef: string;
+}
+
+export async function getDividendHealth(ticker: string): Promise<DividendHealthData> {
+  const { data } = await publicApi.get<DividendHealthData>(
+    `/dividend/${encodeURIComponent(ticker.trim().toUpperCase())}`,
+  );
+  return data;
+}
+
 export interface DividendHistoryItem {
   exDate: string;
   payDate: string;
@@ -1155,7 +1177,7 @@ export interface DividendHistoryResponse {
 }
 
 export async function getDividendHistory(symbol: string, years = 5): Promise<DividendHistoryResponse> {
-  const { data } = await api.get<DividendHistoryResponse>(`/dividends/${encodeURIComponent(symbol)}`, {
+  const { data } = await publicApi.get<DividendHistoryResponse>(`/dividends/${encodeURIComponent(symbol)}`, {
     params: { years },
   });
   return data;
