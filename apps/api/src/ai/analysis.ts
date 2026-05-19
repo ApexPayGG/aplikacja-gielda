@@ -3,7 +3,7 @@ import process from "node:process";
 import { buildFallbackBrief } from "../content/sectorFallbacks";
 import { REDIS_TTL_SEC, redisKeys } from "../config/redis";
 import { getCompanyBySymbol } from "../db/company-queries";
-import { getLatestIndicator, getLatestQuote, getRecentNews } from "../db/queries";
+import { getLatestIndicator, getLatestQuote, getQuoteHistory, getRecentNews } from "../db/queries";
 import { getCacheRedis } from "../redis";
 const MODEL = "claude-sonnet-4-6";
 
@@ -41,36 +41,38 @@ function languageNameForPrompt(localeTag: string): string {
   }
 }
 
-function buildPrompt(
-  symbol: string,
-  quoteJson: unknown,
-  newsTitles: string[],
-  rsi: string | null,
-  localeTag: string,
-): string {
-  const context = `Analyze ${symbol} based on the following context.
+type BriefMarketContext = {
+  symbol: string;
+  companyName?: string | null;
+  sector?: string | null;
+  industry?: string | null;
+  quoteJson: unknown;
+  newsTitles: string[];
+  rsi: string | null;
+  supportLevel: string | null;
+  resistanceLevel: string | null;
+  trendSummary: string | null;
+};
 
-Latest quote (DB): ${JSON.stringify(quoteJson)}
-Recent news headlines: ${newsTitles.join(" | ") || "(none)"}
-Latest RSI (if any): ${rsi ?? "(none)"}
+function buildBriefInstructions(localeTag: string): string {
+  const structure = `Write a substantive company investment brief (about 4–6 short paragraphs total) covering:
+1. Business overview and sector context (competitive dynamics, industry trends)
+2. Technical picture: interpret RSI, recent price trend, and support/resistance levels when provided
+3. Key risks and potential catalysts (earnings, regulation, macro, news themes)
+4. Balanced outlook — not personalized financial advice
 
-`;
+Use clear prose (not bullet lists unless necessary).`;
 
   if (isEnglishLocale(localeTag)) {
-    return (
-      context +
-      `Provide analysis in English only.
+    return `Provide analysis in English only.
 
-Write 2–4 short paragraphs in clear investment-brief style. This is not personalized financial advice.
+${structure}
 
-Output plain text only (no section markers).`
-    );
+Output plain text only (no section markers).`;
   }
 
   const langName = languageNameForPrompt(localeTag);
-  return (
-    context +
-    `Provide analysis in two sections:
+  return `Provide analysis in two sections:
 1. [${langName}] — full analysis in ${langName} (locale / BCP 47: ${localeTag})
 2. [English] — the same analysis in English
 
@@ -80,8 +82,42 @@ Use exactly this structure so the response can be parsed:
 ===ENGLISH===
 (second section only, in English)
 
-Each section should be 2–4 short paragraphs. This is not personalized financial advice.`
-  );
+${structure}`;
+}
+
+function buildPrompt(ctx: BriefMarketContext, localeTag: string): string {
+  const context = `Analyze ${ctx.symbol}${ctx.companyName ? ` (${ctx.companyName})` : ""} based on the following context.
+
+Company sector: ${ctx.sector ?? "(unknown)"}
+Industry: ${ctx.industry ?? "(unknown)"}
+Latest quote (DB): ${JSON.stringify(ctx.quoteJson)}
+Recent news headlines: ${ctx.newsTitles.join(" | ") || "(none)"}
+Latest RSI (if any): ${ctx.rsi ?? "(none)"}
+Estimated support (60-session low): ${ctx.supportLevel ?? "(none)"}
+Estimated resistance (60-session high): ${ctx.resistanceLevel ?? "(none)"}
+Price trend (recent sessions): ${ctx.trendSummary ?? "(none)"}
+
+`;
+
+  return context + buildBriefInstructions(localeTag);
+}
+
+function summarizePriceTrend(closes: number[]): string | null {
+  if (closes.length < 5) return null;
+  const recent = closes.slice(-20);
+  const first = recent[0]!;
+  const last = recent[recent.length - 1]!;
+  const changePct = ((last - first) / first) * 100;
+  const direction =
+    changePct > 2 ? "uptrend" : changePct < -2 ? "downtrend" : "sideways / range-bound";
+  return `${direction} (~${changePct.toFixed(1)}% over last ${recent.length} sessions)`;
+}
+
+function levelsFromQuoteHistory(closes: number[]): { support: string | null; resistance: string | null } {
+  if (closes.length === 0) return { support: null, resistance: null };
+  const support = Math.min(...closes);
+  const resistance = Math.max(...closes);
+  return { support: support.toFixed(2), resistance: resistance.toFixed(2) };
 }
 
 function parseBriefSections(raw: string, localeTag: string): BriefSection[] {
@@ -181,11 +217,12 @@ export async function analyzeStock(symbol: string, localeTag = "en"): Promise<An
 
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
 
-  const [quote, news, rsiRow, company] = await Promise.all([
+  const [quote, news, rsiRow, company, quoteHistory] = await Promise.all([
     getLatestQuote(sym),
     getRecentNews(sym, 10),
     getLatestIndicator(sym, "RSI"),
     getCompanyBySymbol(sym),
+    getQuoteHistory(sym, 60),
   ]);
 
   const fallbackContext = {
@@ -214,13 +251,29 @@ export async function analyzeStock(symbol: string, localeTag = "en"): Promise<An
 
   const newsTitles = news.map((n) => n.title);
   const rsi = rsiRow ? rsiRow.value.toString() : null;
+  const closes = quoteHistory.map((q) => Number(q.close)).filter((v) => Number.isFinite(v));
+  const { support, resistance } = levelsFromQuoteHistory(closes);
+  const trendSummary = summarizePriceTrend(closes);
+
+  const promptContext: BriefMarketContext = {
+    symbol: sym,
+    companyName: company?.name,
+    sector: company?.sector,
+    industry: company?.industry,
+    quoteJson,
+    newsTitles,
+    rsi,
+    supportLevel: support,
+    resistanceLevel: resistance,
+    trendSummary,
+  };
 
   try {
     const client = new Anthropic({ apiKey });
     const msg = await client.messages.create({
       model: MODEL,
-      max_tokens: 2048,
-      messages: [{ role: "user", content: buildPrompt(sym, quoteJson, newsTitles, rsi, lang) }],
+      max_tokens: 1500,
+      messages: [{ role: "user", content: buildPrompt(promptContext, lang) }],
     });
 
     const block = msg.content[0];
