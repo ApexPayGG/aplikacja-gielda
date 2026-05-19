@@ -1,7 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { SparklesIcon } from "@heroicons/react/24/solid";
 import { Link } from "react-router-dom";
 import type { Company } from "../services/api";
-import { getLogoFallbackUrl, getOptimizedLogoUrl, normalizeTickerSymbol } from "../utils/imageOptimization";
+import {
+  formatStockPrice,
+  isPremiumLockedSymbol,
+  mockQuoteFromSymbol,
+} from "../utils/companyCardDisplay";
+import { getSector3dIconPath } from "../utils/sectorIcon3d";
 import { WatchlistButton } from "./WatchlistButton";
 
 type Props = {
@@ -17,10 +22,10 @@ function readNumber(value: unknown): number | null {
   return null;
 }
 
+const GLASS_ICON_SHELL =
+  "flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#2D0A6B]/10 bg-[#2D0A6B]/5 p-2 shadow-sm backdrop-blur-sm";
+
 export function CompanyCard({ company }: Props) {
-  const [logoFailed, setLogoFailed] = useState(false);
-  const [logoLoaded, setLogoLoaded] = useState(false);
-  const [logoFallbackUsed, setLogoFallbackUsed] = useState(false);
   const companyMeta = company as Company & {
     price?: number | string | null;
     close?: number | string | null;
@@ -28,93 +33,94 @@ export function CompanyCard({ company }: Props) {
     changePct?: number | string | null;
     changePercent?: number | string | null;
   };
-  const latestPrice = readNumber(companyMeta.price ?? companyMeta.close ?? companyMeta.lastPrice);
-  const changePct = readNumber(companyMeta.changePct ?? companyMeta.changePercent);
-  const logoSrc = useMemo(() => {
-    if (typeof company.logoUrl === "string" && company.logoUrl.trim()) return company.logoUrl.trim();
-    const symbol = normalizeTickerSymbol(String(company.symbol ?? ""));
-    if (!symbol) return undefined;
-    return getOptimizedLogoUrl(symbol);
-  }, [company.logoUrl, company.symbol]);
 
-  const resolvedLogoSrc = logoFallbackUsed ? getLogoFallbackUrl(company.symbol) : logoSrc;
+  const apiPrice = readNumber(companyMeta.price ?? companyMeta.close ?? companyMeta.lastPrice);
+  const apiChangePct = readNumber(companyMeta.changePct ?? companyMeta.changePercent);
+  const mock = mockQuoteFromSymbol(company.symbol);
 
-  useEffect(() => {
-    setLogoFailed(false);
-    setLogoLoaded(false);
-    setLogoFallbackUsed(false);
-  }, [logoSrc]);
+  const latestPrice = apiPrice ?? mock.price;
+  const changePct = apiChangePct ?? mock.changePct;
+  const isLocked = isPremiumLockedSymbol(company.symbol);
+  const sectorIconSrc = getSector3dIconPath(company.sector, company.symbol);
+  const priceLabel = formatStockPrice(latestPrice, company.symbol);
+  const isPositive = changePct >= 0;
 
-  const fallbackInitials = useMemo(() => {
-    const source = (company.name || company.symbol).trim();
-    if (!source) return "NA";
-    const words = source.split(/\s+/).filter(Boolean);
-    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
-    return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
-  }, [company.name, company.symbol]);
-
-  const showLogo = Boolean(resolvedLogoSrc) && !logoFailed;
+  const cardTo = isLocked
+    ? `/company/${encodeURIComponent(company.symbol)}/premium`
+    : `/company/${encodeURIComponent(company.symbol)}`;
 
   return (
     <Link
-      to={`/company/${encodeURIComponent(company.symbol)}/premium`}
+      to={cardTo}
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-bgPrimary shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
     >
-      <div className="absolute right-3 top-3 z-10">
+      <div className="absolute right-3 top-3 z-20">
         <WatchlistButton symbol={company.symbol} />
       </div>
-      <div className="relative flex h-28 items-center justify-center bg-bgSecondary p-4">
-        {showLogo ? (
-          <>
-            {!logoLoaded ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-bgSecondary">
-                <div className="h-16 w-16 animate-pulse rounded-xl bg-bgTertiary" aria-hidden />
-              </div>
-            ) : null}
-            <img
-              src={resolvedLogoSrc}
-              alt={`${company.name} logo`}
-              className={`h-16 w-16 object-contain transition-opacity duration-200 ${logoLoaded ? "opacity-100" : "opacity-0"}`}
-              loading="lazy"
-              decoding="async"
-              onLoad={() => setLogoLoaded(true)}
-              onError={() => {
-                setLogoLoaded(false);
-                if (!logoFallbackUsed) {
-                  setLogoFallbackUsed(true);
-                  return;
-                }
-                setLogoFailed(true);
-              }}
-            />
-          </>
-        ) : (
-          <span className="flex h-16 w-16 items-center justify-center rounded-xl bg-bgTertiary text-lg font-bold uppercase text-textSecondary">
-            {fallbackInitials}
-          </span>
-        )}
+
+      <div className="relative flex h-28 items-center justify-center bg-gradient-to-b from-[#2D0A6B]/[0.04] to-transparent p-4">
+        <div className={GLASS_ICON_SHELL}>
+          <img
+            src={sectorIconSrc}
+            alt=""
+            className="h-full w-full object-contain"
+            loading="lazy"
+            decoding="async"
+            aria-hidden
+          />
+        </div>
       </div>
-      <div className="flex flex-1 flex-col gap-2 p-4">
+
+      <div className="relative flex flex-1 flex-col gap-2 p-4">
         <div>
           <p className="font-bold text-brandDark">{company.symbol}</p>
           <p className="line-clamp-1 text-sm text-textSecondary">{company.name}</p>
         </div>
-        <p className="font-mono text-3xl font-bold text-textPrimary">{latestPrice != null ? latestPrice.toFixed(2) : "n/a"}</p>
-        <span
-          className={`inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${
-            changePct == null
-              ? "bg-bgTertiary text-textMuted"
-              : changePct >= 0
-                ? "bg-positive/10 text-positive"
-                : "bg-negative/10 text-negative"
-          }`}
-        >
-          {changePct == null ? "—" : `${changePct >= 0 ? "+" : ""}${changePct.toFixed(2)}%`}
-        </span>
-        <span className="mt-1 inline-flex w-fit rounded-full bg-bgTertiary px-2.5 py-1 text-xs font-medium text-textSecondary">
+
+        <div className="relative">
+          {isLocked ? (
+            <div className="relative overflow-hidden rounded-xl">
+              <div className="pointer-events-none select-none blur-[3px]" aria-hidden>
+                <p className="font-mono text-3xl font-bold text-textPrimary">{priceLabel}</p>
+                <span
+                  className={`mt-2 inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    isPositive ? "bg-[#00C9D4]/10 text-[#00A86B]" : "bg-red-500/10 text-red-500"
+                  }`}
+                >
+                  {`${isPositive ? "+" : ""}${changePct.toFixed(2)}%`}
+                </span>
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-white/5 backdrop-blur-[2px]">
+                <span className="rounded-full border border-[#2D0A6B]/20 bg-[#2D0A6B] px-3 py-1 text-xs font-bold tracking-wide text-white shadow-sm">
+                  PRO
+                </span>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="font-mono text-3xl font-bold text-textPrimary">{priceLabel}</p>
+              <span
+                className={`mt-2 inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${
+                  isPositive ? "bg-[#00C9D4]/10 text-[#00A86B]" : "bg-red-500/10 text-red-500"
+                }`}
+              >
+                {`${isPositive ? "+" : ""}${changePct.toFixed(2)}%`}
+              </span>
+            </>
+          )}
+        </div>
+
+        <span className="mt-1 inline-flex w-fit rounded-full bg-[#2D0A6B]/5 px-2.5 py-1 text-xs font-medium text-[#2D0A6B]">
           {company.sector}
         </span>
         <p className="line-clamp-2 text-xs text-textMuted">{company.industry}</p>
+
+        {!isLocked ? (
+          <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-[#00C9D4] transition group-hover:text-[#2D0A6B]">
+            <SparklesIcon className="h-4 w-4" aria-hidden />
+            AI Brief
+          </span>
+        ) : null}
       </div>
     </Link>
   );

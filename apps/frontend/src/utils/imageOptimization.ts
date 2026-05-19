@@ -1,4 +1,4 @@
-const fallbackIcons = ["technology", "finance", "energy", "healthcare", "consumer", "industrial"] as const;
+import { getSector3dIconPath } from "./sectorIcon3d";
 
 const symbolDomainMap: Record<string, string> = {
   AAPL: "apple.com",
@@ -21,12 +21,10 @@ export function normalizeTickerSymbol(symbol: string): string {
   return normalized.split(".")[0]?.trim() ?? normalized;
 }
 
-export function getLogoFallbackUrl(symbol: string): string {
+export function getLogoFallbackUrl(symbol: string, sector?: string | null): string {
   const normalized = normalizeTickerSymbol(symbol);
-  if (!normalized) return "/icons/technology.svg";
-  const checksum = normalized.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
-  const icon = fallbackIcons[checksum % fallbackIcons.length];
-  return `/icons/${icon}.svg`;
+  if (!normalized) return getSector3dIconPath(sector, symbol);
+  return getSector3dIconPath(sector, symbol);
 }
 
 export function getOptimizedLogoUrl(symbol: string): string {
