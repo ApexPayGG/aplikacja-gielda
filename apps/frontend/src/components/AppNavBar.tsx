@@ -281,7 +281,11 @@ export function AppNavBar() {
     <nav className="relative z-20 border-b border-border bg-bgPrimary dark:border-gray-700 dark:bg-gray-900">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4">
         <Link to="/" className="shrink-0">
-          <img src="/logo.png" alt="StockAI Pro" className="h-8 w-40 object-cover object-center" />
+          <img
+            src="/logo.png"
+            alt="StockAI Pro"
+            className="h-8 w-auto max-w-[220px] object-contain object-left"
+          />
         </Link>
 
         <button

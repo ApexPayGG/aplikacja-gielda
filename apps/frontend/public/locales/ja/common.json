@@ -452,142 +452,215 @@
     "validationSymbol": "Please provide a valid symbol."
   },
   "landing": {
+    "footer": {
+      "company": "会社",
+      "copyright": "© 2026 StockAI Pro · 無断転載を禁じます",
+      "languagesAria": "言語を選択",
+      "legal": "法的情報",
+      "legalEtoro": "eToroで取引（パートナー）",
+      "privacy": "プライバシーポリシー",
+      "product": "製品",
+      "productMarkets": "市場",
+      "productPricing": "料金",
+      "productSignals": "シグナル",
+      "solutionLink": "ソリューション",
+      "tagline": "1つのプラットフォーム。市場の全体像。AIと行動コーチングで情報に基づいた投資を。",
+      "terms": "利用規約"
+    },
     "footerCta": {
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
-      "title": "Start your free account today"
+      "button": "無料で始める",
+      "disclaimer": "教育目的のサービスです。投資助言ではありません。投資にはリスクがあります。",
+      "pricing": "料金を見る",
+      "title": "今すぐ無料アカウントを作成"
     },
     "hero": {
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
-      "subtitle": "AIリサーチ · 行動コーチング · 12取引所 · 9言語",
-      "title": "次世代の投資プラットフォーム",
-      "widgetLive": "Live",
-      "widgetTitle": "Live market pulse"
+      "aiSignalBuy": "AIシグナル: 買い",
+      "badge": "AI搭載 · 130以上の取引所 · 9言語",
+      "coachAlertBody": "今日はFOMOを避けています ✓",
+      "coachAlertTitle": "コーチアラート",
+      "ctaPrimary": "無料で始める",
+      "ctaSecondary": "デモを見る",
+      "scrollHint": "スクロール",
+      "subtitle": "5つのブラウザタブの代わりに1つのプラットフォーム。AIが分析し、コーチが感情を守ります — あなたが情報に基づいた判断をします。",
+      "title": "もっと投資するのではなく、賢く投資する。",
+      "titleLine1": "もっと投資するのではなく、",
+      "titleLine2": "賢く投資する。",
+      "trust": "{{count}}人以上の投資家に参加",
+      "widgetLive": "ライブ",
+      "widgetTitle": "ライブ市場パルス",
+      "winRate": "勝率"
+    },
+    "howItWorks": {
+      "steps": [
+        {
+          "desc": "30秒。クレジットカード不要。",
+          "title": "登録"
+        },
+        {
+          "desc": "GPW、米国、DAX — またはすべて同時に。",
+          "title": "市場を選ぶ"
+        },
+        {
+          "desc": "AIが分析し、コーチが教え、あなたが決める。",
+          "title": "賢く投資"
+        }
+      ],
+      "title": "使い方"
+    },
+    "nav": {
+      "features": "機能",
+      "howItWorks": "使い方",
+      "markets": "市場",
+      "pricing": "料金",
+      "searchPlaceholder": "企業を検索... AAPL, PKN"
     },
     "pricing": {
       "badge": "先行ユーザー価格",
-      "earlyAdopter": "最初の500件のProアカウントはずっと$9/月で固定",
+      "checkoutError": "お支払いを開始できませんでした。",
+      "earlyAdopter": "最初の500件のProアカウントはずっと$9/月",
       "monthly": "月額",
       "popular": "一番人気",
       "save": "27%お得",
       "saveProPlus": "34%お得",
       "tiers": {
         "free": {
-          "body": "Basic features to start building consistency.",
-          "cta": "Start free",
+          "body": "一貫した取引習慣を築くための基本機能。",
+          "cta": "無料で始める",
           "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
+            "コアダッシュボード",
+            "基本AIシグナル",
+            "コミュニティアクセス"
           ],
           "name": "Free",
           "price": "$0/mo"
         },
         "pro": {
-          "body": "Full access for active investors.",
-          "cta": "Choose Pro",
+          "body": "アクティブな投資家向けのフルアクセス。",
+          "cta": "Proを選ぶ",
           "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
+            "全AIモジュール",
+            "行動コーチング",
+            "トレーダー心理プロファイル"
           ],
           "name": "Pro",
           "price": "$9/mo"
         },
         "proPlus": {
-          "body": "For power users and automation workflows.",
-          "cta": "Choose Pro+",
+          "body": "パワーユーザーと自動化ワークフロー向け。",
+          "cta": "Pro+を選ぶ",
           "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
+            "Proの全機能",
+            "APIアクセス",
+            "ブローカー連携"
           ],
           "name": "Pro+",
           "price": "$19/mo"
         }
       },
-      "title": "Simple pricing",
+      "title": "シンプルな料金プラン",
       "trial": "14日間無料",
       "yearly": "年額"
     },
     "problem": {
       "cards": {
         "apps": {
-          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity.",
-          "title": "You use 5-6 apps"
+          "body": "TradingView、Finviz、ブローカー、Excel、Discord — すべて同時に開いている。断片的なデータでの判断。",
+          "title": "5つのアプリ。ひとつの混乱。"
         },
         "context": {
-          "body": "シグナルは見えても、市場環境が合っているのか、今が適切なタイミングなのかが分かりません。",
-          "title": "相場の文脈が不足しています"
+          "body": "セットアップは見えても、市場環境が合っているのか、タイミングは適切か、優位性があるのかわからない。",
+          "title": "シグナルに文脈がない。"
         },
         "emotions": {
-          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes.",
-          "title": "Emotions cost you money"
+          "body": "恐怖、欲、FOMO。研究によると — 損失の80%は分析ミスではなく心理的ミスです。",
+          "title": "感情がポートフォリオを壊す。"
         },
         "memory": {
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade.",
-          "title": "No one remembers your mistakes"
+          "body": "フィードバックのループがなければ、同じ高コストなパターンがトレードごとに繰り返されます。",
+          "title": "誰もあなたのミスを覚えていない"
         }
       },
-      "title": "Why investors get stuck"
+      "subtitle": "すべての個人投資家が同じ課題に直面しています — 助けてくれる人はいません。",
+      "title": "お金を失っている。理由はわかっている。"
+    },
+    "seo": {
+      "description": "AI株式分析、行動コーチング、130以上の取引所 — GPW、NYSE、DAXなどを1か所で。",
+      "title": "StockAI Pro — 次世代の投資プラットフォーム"
     },
     "socialProof": {
+      "marqueeMarkets": "GPW + NYSE + DAX",
       "stats": {
         "adFree": "広告ゼロ（100%）",
         "exchanges": "130以上の取引所",
         "languages": "9言語",
         "modules": "27のAIモジュール"
       },
-      "subtitle": "Early access community growing every week.",
+      "subtitle": "早期アクセスコミュニティは毎週成長しています。",
       "testimonials": [
         {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
+          "author": "Kasia, ワルシャワ",
+          "quote": "以前は5つのアプリを行き来していました。今は1つの画面で、何をしているかわかります。"
         },
         {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
+          "author": "Lukas, ベルリン",
+          "quote": "行動コーチのおかげで、悪いシグナルではなくFOMOで負けていたと気づきました。"
         },
         {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
+          "author": "Clara, マドリード",
+          "quote": "プレモータムAIがリスクへの考え方を変えました。クリックする前に考えるようになりました。"
         }
       ],
-      "title": "Join our early access community"
+      "testimonialsSubtitle": "現場からの短いストーリー — スポイラー: 混乱が減る。",
+      "testimonialsTitle": "投資家の声",
+      "title": "早期アクセスコミュニティに参加"
     },
     "solution": {
       "features": {
         "aiBrief": {
-          "body": "スコアだけではなく、なぜ有望なのか、あるいはそうでないのかを丁寧に説明します。",
-          "title": "AI Brief（解説付き）"
+          "body": "スコアだけではなく、有望かどうかの理由を丁寧に解説します。",
+          "title": "AIブリーフ（解説付き）"
         },
         "behavioralCoach": {
-          "body": "あなたのミスを検出し、同じ失敗を繰り返さないようサポートします。",
-          "title": "Behavioral Coach"
+          "body": "あなたのミスを検出し、同じ失敗の繰り返しを防ぎます。",
+          "title": "行動コーチング"
         },
-        "brokerIntegration": "Broker Integration",
+        "brokerIntegration": "ブローカー連携",
         "globalMarkets": {
-          "body": "GPW、NYSE、DAX、TSE、NSE などに対応。アプリを切り替える必要はありません。",
-          "title": "12 Global Markets"
+          "body": "GPW、NYSE、DAX、TSE、NSEなど。アプリの切り替えは不要。",
+          "title": "130以上の取引所"
         },
-        "languages": "9 Languages",
+        "languages": "9言語",
         "paperTrading": {
-          "body": "リスクなく練習できます。コストのかからない失敗から学べます。",
-          "title": "Paper Trading"
+          "body": "リスクなく練習。コストのかからない失敗から学べます。",
+          "title": "ペーパートレード"
         },
         "preMortemAi": {
-          "body": "購入前に、AIが最も起こりやすい損失シナリオを示します。",
-          "title": "Pre-Mortem AI"
+          "body": "購入前に、最も起こりやすい損失シナリオをAIが提示します。",
+          "title": "プレモータムAI"
         },
-        "signalAnalysis": "AI Signal Analysis",
+        "signalAnalysis": "AIシグナル分析",
         "signalDna": {
-          "body": "過去の類似セットアップを提示し、このセットアップが過去にどう終わったかを示します。",
-          "title": "Signal DNA"
+          "body": "過去の類似セットアップを分析し、過去の結果を示します。",
+          "title": "シグナルDNA"
         },
-        "traderPsycheProfile": "Trader Psyche Profile"
+        "traderPsycheProfile": "トレーダー心理プロファイル"
       },
-      "title": "One platform built for investor growth"
+      "subtitle": "StockAI Proは5つのツールに代わり、どれにもない機能を追加します。",
+      "title": "ひとつの場所。",
+      "titleAccent": "全体像。"
+    },
+    "stats": {
+      "exchanges": "取引所",
+      "investors": "投資家",
+      "languages": "言語",
+      "modules": "AIモジュール"
+    },
+    "worldClocks": {
+      "closed": "● 閉場",
+      "open": "● 開場",
+      "subtitle": "StockAI Proは130以上の取引所を24時間監視します。",
+      "title": "市場は眠らない。",
+      "titleAccent": "あなたも眠る必要はない。"
     }
   },
   "mentor": {
@@ -1243,5 +1316,10 @@
     "subtitle": "Review your discipline and close the week with an AI growth letter.",
     "title": "Weekly Review",
     "weekOf": "Week of"
+  },
+  "legal": {
+    "ariaLabel": "投資に関する重要事項",
+    "investmentDisclaimer": "【重要】本サービス（StockAI Pro）において、人工知能（Claude AIを含む）が生成・提供する市場分析、シグナル、レポートその他の情報は、投資の教育および参考情報の提供を目的とするものであり、金融商品取引法に基づく投資助言・代理業の業務、または投資一任契約に該当するものではありません。株式、その他金融商品への投資には、価格変動等により元本を割り込むおそれがあり、損失が生じる場合があります。当社（AMC Energy Sp. z o.o.）は、本アプリケーションの情報に基づいてお客様が行った投資判断の結果について、いかなる保証もいたしません。投資に関する最終決定は、お客様ご自身の判断と責任において行ってください。",
+    "termsLink": "利用規約全文"
   }
 }

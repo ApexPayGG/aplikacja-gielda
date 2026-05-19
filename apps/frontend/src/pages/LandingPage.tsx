@@ -335,6 +335,7 @@ function CandlestickChart() {
 }
 
 function FloatingCards() {
+  const { t } = useTranslation("common");
   const cardShell =
     "rounded-2xl shadow-[0_8px_32px_rgba(45,10,107,0.15)] border border-[rgba(45,10,107,0.08)] bg-white px-3 py-2 md:px-4 md:py-3";
 
@@ -354,7 +355,7 @@ function FloatingCards() {
           <span className="text-[11px] font-bold text-[#2D0A6B]">AAPL</span>
           <span className="text-[11px] font-semibold text-[#00A86B]">+2.4% ↑</span>
         </div>
-        <div className="mt-0.5 text-[10px] text-[#9B9BB5]">AI Signal: BUY</div>
+        <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.aiSignalBuy")}</div>
       </div>
 
       <div
@@ -363,8 +364,8 @@ function FloatingCards() {
           animationDelay: "1.5s",
         }}
       >
-        <div className="text-[11px] font-bold text-[#2D0A6B]">🧠 Coach Alert</div>
-        <div className="mt-0.5 text-[10px] text-[#9B9BB5]">Unikasz FOMO dziś ✓</div>
+        <div className="text-[11px] font-bold text-[#2D0A6B]">🧠 {t("landing.hero.coachAlertTitle")}</div>
+        <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.coachAlertBody")}</div>
       </div>
 
       <div
@@ -375,7 +376,7 @@ function FloatingCards() {
         }}
       >
         <div className="text-[20px] font-black text-white">73%</div>
-        <div className="text-[10px] text-white/60">Win Rate</div>
+        <div className="text-[10px] text-white/60">{t("landing.hero.winRate")}</div>
       </div>
     </>
   );
@@ -562,7 +563,7 @@ function LandingFooterLanguages() {
                 : "cursor-pointer text-white/50 hover:text-white/80"
             }
           >
-            {opt.shortCode}
+            {opt.flag} {opt.shortCode}
           </button>
         </span>
       ))}
@@ -913,7 +914,7 @@ export function LandingPage() {
       window.location.href = url;
     } catch (error) {
       console.error("Failed to create Stripe Checkout session", error);
-      window.alert(t("landing.pricing.checkoutError", { defaultValue: "Nie udało się rozpocząć płatności." }));
+      window.alert(t("landing.pricing.checkoutError"));
     } finally {
       setCheckoutLoadingPlan(null);
     }
@@ -1015,7 +1016,7 @@ export function LandingPage() {
               to="/login"
               className="hidden min-h-11 items-center rounded-full border border-[#2D0A6B]/25 px-4 py-2 text-sm font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5 sm:inline-flex"
             >
-              {t("auth.loginButton", { defaultValue: "Zaloguj" })}
+              {t("auth.loginButton")}
             </Link>
             <Link
               to="/register"
@@ -1098,7 +1099,7 @@ export function LandingPage() {
                 className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#2D0A6B]/25 px-4 text-sm font-semibold text-[#2D0A6B]"
                 onClick={() => setMobileNavOpen(false)}
               >
-                {t("auth.loginButton", { defaultValue: "Zaloguj" })}
+                {t("auth.loginButton")}
               </Link>
               <Link
                 to="/register"
@@ -1536,7 +1537,7 @@ export function LandingPage() {
                     : { backgroundColor: "transparent" }
                 }
               >
-                {t("landing.pricing.monthly", { defaultValue: "Miesięcznie" })}
+                {t("landing.pricing.monthly")}
               </button>
               <button
                 type="button"
@@ -1548,7 +1549,7 @@ export function LandingPage() {
                   billingCycle === "yearly" ? { backgroundColor: BRAND.dark } : { backgroundColor: "transparent" }
                 }
               >
-                {t("landing.pricing.yearly", { defaultValue: "Rocznie" })}
+                {t("landing.pricing.yearly")}
               </button>
             </div>
           </div>

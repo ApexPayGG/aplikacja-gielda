@@ -452,21 +452,71 @@
     "validationSymbol": "Please provide a valid symbol."
   },
   "landing": {
+    "footer": {
+      "company": "कंपनी",
+      "copyright": "© 2026 StockAI Pro · All rights reserved",
+      "languagesAria": "भाषा चुनें",
+      "legal": "कानूनी",
+      "legalEtoro": "eToro के साथ ट्रेड (पार्टनर)",
+      "privacy": "गोपनीयता नीति",
+      "product": "उत्पाद",
+      "productMarkets": "बाज़ार",
+      "productPricing": "मूल्य",
+      "productSignals": "सिग्नल",
+      "solutionLink": "समाधान",
+      "tagline": "एक प्लेटफ़ॉर्म। पूरा बाज़ार चित्र। सूचित निवेशकों के लिए AI और व्यवहार कोचिंग।",
+      "terms": "सेवा की शर्तें"
+    },
     "footerCta": {
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
-      "title": "Start your free account today"
+      "button": "मुफ़्त खाता बनाएँ",
+      "disclaimer": "शैक्षिक उत्पाद। वित्तीय सलाह नहीं। निवेश में जोखिम है।",
+      "pricing": "मूल्य देखें",
+      "title": "आज ही अपना मुफ़्त खाता शुरू करें"
     },
     "hero": {
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
+      "aiSignalBuy": "AI सिग्नल: खरीदें",
+      "badge": "AI · 130+ एक्सचेंज · 9 भाषाएँ",
+      "coachAlertBody": "आज आप FOMO से बच रहे हैं ✓",
+      "coachAlertTitle": "कोच अलर्ट",
+      "ctaPrimary": "मुफ़्त शुरू करें",
+      "ctaSecondary": "डेमो देखें",
+      "scrollHint": "स्क्रॉल",
       "subtitle": "एआई रिसर्च · व्यवहारिक कोचिंग · 12 एक्सचेंज · 9 भाषाएँ",
       "title": "अगली पीढ़ी का निवेश प्लेटफ़ॉर्म",
-      "widgetLive": "Live",
-      "widgetTitle": "Live market pulse"
+      "titleLine1": "अधिक स्मार्ट निवेश करें।",
+      "titleLine2": "अधिक नहीं।",
+      "trust": "{{count}}+ निवेशकों से जुड़ें",
+      "widgetLive": "लाइव",
+      "widgetTitle": "लाइव मार्केट पल्स",
+      "winRate": "जीत दर"
+    },
+    "howItWorks": {
+      "steps": [
+        {
+          "desc": "30 सेकंड। क्रेडिट कार्ड नहीं।",
+          "title": "साइन अप"
+        },
+        {
+          "desc": "GPW, US, DAX — या सभी एक साथ।",
+          "title": "बाज़ार चुनें"
+        },
+        {
+          "desc": "AI विश्लेषण करता है, कोच सिखाता है, आप निर्णय लेते हैं।",
+          "title": "स्मार्ट निवेश"
+        }
+      ],
+      "title": "यह कैसे काम करता है?"
+    },
+    "nav": {
+      "features": "फ़ीचर्स",
+      "howItWorks": "यह कैसे काम करता है",
+      "markets": "बाज़ार",
+      "pricing": "मूल्य",
+      "searchPlaceholder": "कंपनी खोजें... AAPL, PKN"
     },
     "pricing": {
       "badge": "अर्ली एडॉप्टर कीमत",
+      "checkoutError": "चेकआउट शुरू नहीं हो सका।",
       "earlyAdopter": "पहले 500 Pro अकाउंट्स हमेशा के लिए $9/माह पर लॉक",
       "monthly": "मासिक",
       "popular": "सबसे लोकप्रिय",
@@ -474,40 +524,40 @@
       "saveProPlus": "34% बचाएं",
       "tiers": {
         "free": {
-          "body": "Basic features to start building consistency.",
-          "cta": "Start free",
+          "body": "निरंतरता बनाने के लिए बुनियादी सुविधाएँ।",
+          "cta": "मुफ़्त शुरू करें",
           "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
+            "कोर डैशबोर्ड",
+            "बुनियादी AI सिग्नल",
+            "कम्युनिटी एक्सेस"
           ],
           "name": "Free",
           "price": "$0/mo"
         },
         "pro": {
-          "body": "Full access for active investors.",
-          "cta": "Choose Pro",
+          "body": "सक्रिय निवेशकों के लिए पूर्ण पहुँच।",
+          "cta": "Pro चुनें",
           "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
+            "सभी AI मॉड्यूल",
+            "व्यवहार कोचिंग",
+            "ट्रेडर मनोविज्ञान प्रोफ़ाइल"
           ],
           "name": "Pro",
           "price": "$9/mo"
         },
         "proPlus": {
-          "body": "For power users and automation workflows.",
-          "cta": "Choose Pro+",
+          "body": "पावर यूज़र और ऑटोमेशन वर्कफ़्लो के लिए।",
+          "cta": "Pro+ चुनें",
           "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
+            "Pro की सभी सुविधाएँ",
+            "API एक्सेस",
+            "ब्रोकर एकीकरण"
           ],
           "name": "Pro+",
           "price": "$19/mo"
         }
       },
-      "title": "Simple pricing",
+      "title": "सरल मूल्य निर्धारण",
       "trial": "14 दिन मुफ्त",
       "yearly": "वार्षिक"
     },
@@ -526,68 +576,91 @@
           "title": "Emotions cost you money"
         },
         "memory": {
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade.",
-          "title": "No one remembers your mistakes"
+          "body": "फ़ीडबैक लूप के बिना, वही महँगे पैटर्न हर ट्रेड में दोहराए जाते हैं।",
+          "title": "कोई आपकी गलतियाँ याद नहीं रखता"
         }
       },
-      "title": "Why investors get stuck"
+      "subtitle": "हर रिटेल निवेशक एक जैसी समस्याओं से जूझता है — कोई मदद नहीं करता।",
+      "title": "आप पैसा खो रहे हैं। आप जानते हैं क्यों।"
+    },
+    "seo": {
+      "description": "AI स्टॉक विश्लेषण, व्यवहार कोचिंग और 130+ एक्सचेंज — GPW, NYSE, DAX एक जगह।",
+      "title": "StockAI Pro — अगली पीढ़ी का निवेश प्लेटफ़ॉर्म"
     },
     "socialProof": {
+      "marqueeMarkets": "GPW + NYSE + DAX",
       "stats": {
         "adFree": "100% विज्ञापन-मुक्त",
         "exchanges": "130+ एक्सचेंज",
         "languages": "9 भाषाएँ",
         "modules": "27 AI मॉड्यूल"
       },
-      "subtitle": "Early access community growing every week.",
+      "subtitle": "अर्ली एक्सेस समुदाय हर हफ़्ते बढ़ रहा है।",
       "testimonials": [
         {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
+          "author": "Kasia, वारसॉ",
+          "quote": "पहले मैं ऐप्स के बीच कूदती थी। अब एक स्क्रीन है और मुझे पता है क्या कर रही हूँ।"
         },
         {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
+          "author": "Lukas, बर्लिन",
+          "quote": "व्यवहार कोचिंग ने दिखाया कि मैं बुरे सिग्नल नहीं, FOMO से हार रही थी।"
         },
         {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
+          "author": "Clara, मैड्रिड",
+          "quote": "प्री-मॉर्टेम AI ने जोखिम के बारे में सोचना बदल दिया। क्लिक से पहले सोचती हूँ।"
         }
       ],
-      "title": "Join our early access community"
+      "testimonialsSubtitle": "मैदान से छोटी कहानियाँ — कम अराजकता।",
+      "testimonialsTitle": "निवेशक क्या कहते हैं",
+      "title": "हमारे अर्ली एक्सेस समुदाय से जुड़ें"
     },
     "solution": {
       "features": {
         "aiBrief": {
-          "body": "सिर्फ स्कोर नहीं — क्यों यह सही है या नहीं, इसकी पूरी व्याख्या।",
-          "title": "व्याख्या सहित AI Brief"
+          "body": "सिर्फ स्कोर नहीं — पूरा कारण बताता है।",
+          "title": "AI ब्रीफ (विवरण सहित)"
         },
         "behavioralCoach": {
-          "body": "यह आपकी गलतियों को पहचानता है और उन्हें दोहराने से रोकने में मदद करता है।",
-          "title": "Behavioral Coach"
+          "body": "आपकी गलतियाँ पकड़ता है और दोहराव रोकता है।",
+          "title": "व्यवहार कोचिंग"
         },
-        "brokerIntegration": "Broker Integration",
+        "brokerIntegration": "ब्रोकर एकीकरण",
         "globalMarkets": {
-          "body": "GPW, NYSE, DAX, TSE, NSE और भी बहुत कुछ। ऐप बदलने की ज़रूरत नहीं।",
-          "title": "12 Global Markets"
+          "body": "GPW, NYSE, DAX, TSE, NSE और अधिक।",
+          "title": "130+ एक्सचेंज"
         },
-        "languages": "9 Languages",
+        "languages": "9 भाषाएँ",
         "paperTrading": {
-          "body": "बिना जोखिम अभ्यास करें। ऐसी गलतियों से सीखें जिनकी कोई लागत नहीं।",
-          "title": "Paper Trading"
+          "body": "बिना जोखिम अभ्यास करें।",
+          "title": "पेपर ट्रेडिंग"
         },
         "preMortemAi": {
-          "body": "खरीदने से पहले AI सबसे संभावित नुकसान का परिदृश्य दिखाता है।",
-          "title": "Pre-Mortem AI"
+          "body": "खरीदने से पहले संभावित हानि का परिदृश्य।",
+          "title": "प्री-मॉर्टेम AI"
         },
-        "signalAnalysis": "AI Signal Analysis",
+        "signalAnalysis": "AI सिग्नल विश्लेषण",
         "signalDna": {
-          "body": "सेटअप के ऐतिहासिक जुड़वां — अतीत में ऐसे सेटअप का क्या परिणाम हुआ।",
-          "title": "Signal DNA"
+          "body": "ऐतिहासिक सेटअप समानता और परिणाम।",
+          "title": "सिग्नल DNA"
         },
-        "traderPsycheProfile": "Trader Psyche Profile"
+        "traderPsycheProfile": "ट्रेडर मनोविज्ञान प्रोफ़ाइल"
       },
-      "title": "One platform built for investor growth"
+      "subtitle": "StockAI Pro 5 टूल की जगह लेता है और जो किसी में नहीं वह जोड़ता है।",
+      "title": "एक जगह।",
+      "titleAccent": "पूरा चित्र।"
+    },
+    "stats": {
+      "exchanges": "एक्सचेंज",
+      "investors": "निवेशक",
+      "languages": "भाषाएँ",
+      "modules": "AI मॉड्यूल"
+    },
+    "worldClocks": {
+      "closed": "● बंद",
+      "open": "● खुला",
+      "subtitle": "StockAI Pro 130+ एक्सचेंज की 24/7 निगरानी करता है।",
+      "title": "बाज़ार कभी नहीं सोते।",
+      "titleAccent": "आपको भी नहीं।"
     }
   },
   "mentor": {
@@ -1243,5 +1316,10 @@
     "subtitle": "Review your discipline and close the week with an AI growth letter.",
     "title": "Weekly Review",
     "weekOf": "Week of"
+  },
+  "legal": {
+    "investmentDisclaimer": "कानूनी सूचना: StockAI Pro पर कृत्रिम बुद्धिमत्ता (Claude AI सहित) द्वारा उत्पन्न सभी विश्लेषण, बाज़ार संकेत और सामग्री केवल शैक्षिक और सूचनात्मक हैं। ये निवेश सिफ़ारिश या वित्तीय सलाह नहीं हैं। वित्तीय बाज़ारों में निवेश में पूंजी हानि का उच्च जोखिम है। AMC Energy Sp. z o.o. ऐप डेटा के आधार पर वित्तीय निर्णयों के लिए उत्तरदायी नहीं है।",
+    "termsLink": "पूर्ण नियम और शर्तें",
+    "ariaLabel": "निवेश कानूनी अस्वीकरण"
   }
 }

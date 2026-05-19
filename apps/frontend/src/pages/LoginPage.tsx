@@ -49,7 +49,11 @@ export function LoginPage() {
       <div className="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-10 lg:px-8">
         <div className="grid w-full overflow-hidden rounded-3xl bg-bgPrimary shadow-[0_24px_72px_rgba(45,10,107,0.2)] lg:grid-cols-2">
           <div className="p-6 sm:p-10">
-            <img src="/logo.png" alt="StockAI Pro" className="mb-8 h-10 w-48 object-cover object-center" />
+            <img
+              src="/logo.png"
+              alt="StockAI Pro"
+              className="mb-8 h-10 w-auto max-w-[min(100%,300px)] object-contain object-left"
+            />
             <form onSubmit={onSubmit} className="space-y-4">
               <div>
                 <h1 className="text-2xl font-bold text-textPrimary">

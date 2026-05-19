@@ -6,8 +6,9 @@ type LanguageSwitcherProps = {
 };
 
 export default function LanguageSwitcher({ variant = "default" }: LanguageSwitcherProps) {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
   const value = resolveLanguageCode(i18n.resolvedLanguage);
+  const currentOption = LANGUAGE_OPTIONS.find((opt) => opt.code === value) ?? LANGUAGE_OPTIONS[1];
 
   const handleChange = async (next: string) => {
     await i18n.changeLanguage(next);
@@ -17,8 +18,8 @@ export default function LanguageSwitcher({ variant = "default" }: LanguageSwitch
   if (variant === "landing") {
     return (
       <div className="relative inline-flex items-center">
-        <span className="pointer-events-none absolute left-3 text-sm" aria-hidden>
-          🌐
+        <span className="pointer-events-none absolute left-3 text-base leading-none" aria-hidden>
+          {currentOption.flag}
         </span>
         <select
           value={value}
@@ -28,7 +29,7 @@ export default function LanguageSwitcher({ variant = "default" }: LanguageSwitch
         >
           {LANGUAGE_OPTIONS.map((opt) => (
             <option key={opt.code} value={opt.code}>
-              {opt.shortCode}
+              {opt.flag} {opt.shortCode}
             </option>
           ))}
         </select>

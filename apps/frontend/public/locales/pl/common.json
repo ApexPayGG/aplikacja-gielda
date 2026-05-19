@@ -469,7 +469,11 @@
       "titleLine2": "Nie więcej.",
       "trust": "Dołącz do {{count}}+ inwestorów",
       "widgetLive": "Na żywo",
-      "widgetTitle": "Puls rynku na żywo"
+      "widgetTitle": "Puls rynku na żywo",
+      "coachAlertTitle": "Alert coacha",
+      "coachAlertBody": "Unikasz FOMO dziś ✓",
+      "aiSignalBuy": "Sygnał AI: KUP",
+      "winRate": "Win Rate"
     },
     "pricing": {
       "badge": "Cena dla pierwszych użytkowników",
@@ -515,7 +519,8 @@
       },
       "title": "Prosty cennik",
       "trial": "14 dni za darmo",
-      "yearly": "rocznie"
+      "yearly": "rocznie",
+      "checkoutError": "Nie udało się rozpocząć płatności."
     },
     "problem": {
       "cards": {
@@ -1302,5 +1307,10 @@
     "subtitle": "Podsumuj dyscyplinę i zakończ tydzień listem rozwojowym AI.",
     "title": "Weekly Review",
     "weekOf": "Tydzień od"
+  },
+  "legal": {
+    "investmentDisclaimer": "Zastrzeżenie prawne: Wszelkie analizy, sygnały rynkowe oraz materiały generowane przez sztuczną inteligencję (w tym Claude AI) na platformie StockAI Pro mają charakter wyłącznie edukacyjny i informacyjny. Nie stanowią one rekomendacji inwestycyjnych ani porad finansowych w rozumieniu przepisów prawa. Inwestowanie na rynkach finansowych wiąże się z wysokim ryzykiem utraty kapitału. AMC Energy Sp. z o.o. nie ponosi odpowiedzialności za decyzje finansowe podjęte na podstawie danych w aplikacji.",
+    "termsLink": "Pełny regulamin",
+    "ariaLabel": "Zastrzeżenie prawne inwestycyjne"
   }
 }

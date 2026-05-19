@@ -1,10 +1,27 @@
 import i18n from "i18next";
-import type { i18n as I18nApi } from "i18next";
-import Backend from "i18next-http-backend";
+import type { i18n as I18nApi, Resource } from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 
 const supportedLngs = ["pl", "en", "de", "es", "ja", "hi", "ko", "zh-TW", "fr"] as const;
+
+/** Eagerly bundle every `public/locales/<lng>/common.json` — avoids raw keys when HTTP locale fetch fails. */
+const localeModules = import.meta.glob("../../public/locales/*/common.json", {
+  eager: true,
+  import: "default",
+}) as Record<string, Record<string, unknown>>;
+
+function buildBundledResources(): Resource {
+  const resources: Resource = {};
+  for (const [path, data] of Object.entries(localeModules)) {
+    const lng = path.match(/locales\/(.+?)\/common\.json$/)?.[1];
+    if (!lng || !data) continue;
+    resources[lng] = { common: data };
+  }
+  return resources;
+}
+
+const bundledResources = buildBundledResources();
 
 /** Persisted UI language (`LanguageSwitcher` writes `stockai.lang`). */
 export function readStoredStockAiLang(): string | undefined {
@@ -28,24 +45,25 @@ export function resolveUiLocaleForCopy(i18next: I18nApi): string {
   return (lang || res || "en").trim();
 }
 
-void i18n
-  .use(Backend)
+const initialLng = readStoredStockAiLang() ?? "en";
+
+export const i18nReady = i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     supportedLngs: [...supportedLngs],
     fallbackLng: "en",
-    lng: readStoredStockAiLang() ?? "en",
+    lng: initialLng,
     defaultNS: "common",
     ns: ["common"],
+    resources: bundledResources,
     interpolation: { escapeValue: false },
+    returnEmptyString: false,
+    returnNull: false,
     detection: {
       order: ["localStorage", "navigator"],
       lookupLocalStorage: "stockai.lang",
       caches: ["localStorage"],
-    },
-    backend: {
-      loadPath: "/locales/{{lng}}/{{ns}}.json",
     },
     react: {
       useSuspense: false,

@@ -452,21 +452,71 @@
     "validationSymbol": "Please provide a valid symbol."
   },
   "landing": {
+    "footer": {
+      "company": "회사",
+      "copyright": "© 2026 StockAI Pro · 모든 권리 보유",
+      "languagesAria": "언어 선택",
+      "legal": "법적 정보",
+      "legalEtoro": "eToro로 거래 (파트너)",
+      "privacy": "개인정보 처리방침",
+      "product": "제품",
+      "productMarkets": "시장",
+      "productPricing": "요금",
+      "productSignals": "신호",
+      "solutionLink": "솔루션",
+      "tagline": "하나의 플랫폼. 시장 전체 그림. AI와 행동 코칭으로 정보에 기반한 투자.",
+      "terms": "이용약관"
+    },
     "footerCta": {
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
-      "title": "Start your free account today"
+      "button": "무료 계정 만들기",
+      "disclaimer": "교육용 제품입니다. 금융 자문이 아닙니다. 투자에는 위험이 따릅니다.",
+      "pricing": "요금 보기",
+      "title": "오늘 무료 계정을 시작하세요"
     },
     "hero": {
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
+      "aiSignalBuy": "AI 신호: 매수",
+      "badge": "AI · 130개 이상 거래소 · 9개 언어",
+      "coachAlertBody": "오늘 FOMO를 피하고 있습니다 ✓",
+      "coachAlertTitle": "코치 알림",
+      "ctaPrimary": "무료로 시작",
+      "ctaSecondary": "데모 보기",
+      "scrollHint": "스크롤",
       "subtitle": "AI 리서치 · 행동 코칭 · 12개 거래소 · 9개 언어",
       "title": "차세대 투자 플랫폼",
-      "widgetLive": "Live",
-      "widgetTitle": "Live market pulse"
+      "titleLine1": "더 똑똑하게 투자하세요.",
+      "titleLine2": "더 많이 말고.",
+      "trust": "{{count}}명 이상의 투자자와 함께",
+      "widgetLive": "실시간",
+      "widgetTitle": "실시간 시장 펄스",
+      "winRate": "승률"
+    },
+    "howItWorks": {
+      "steps": [
+        {
+          "desc": "30초. 신용카드 불필요.",
+          "title": "가입"
+        },
+        {
+          "desc": "GPW, 미국, DAX — 또는 모두 한 번에.",
+          "title": "시장 선택"
+        },
+        {
+          "desc": "AI가 분석하고, 코치가 가르치며, 당신이 결정합니다.",
+          "title": "더 똑똑하게 투자"
+        }
+      ],
+      "title": "작동 방식"
+    },
+    "nav": {
+      "features": "기능",
+      "howItWorks": "작동 방식",
+      "markets": "시장",
+      "pricing": "요금",
+      "searchPlaceholder": "기업 검색... AAPL, PKN"
     },
     "pricing": {
       "badge": "얼리 어답터 가격",
+      "checkoutError": "결제를 시작할 수 없습니다.",
       "earlyAdopter": "선착순 Pro 500계정은 평생 월 $9 고정",
       "monthly": "월간",
       "popular": "가장 인기",
@@ -474,40 +524,40 @@
       "saveProPlus": "34% 절약",
       "tiers": {
         "free": {
-          "body": "Basic features to start building consistency.",
-          "cta": "Start free",
+          "body": "꾸준한 투자 습관을 위한 기본 기능.",
+          "cta": "무료로 시작",
           "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
+            "코어 대시보드",
+            "기본 AI 신호",
+            "커뮤니티 액세스"
           ],
           "name": "Free",
           "price": "$0/mo"
         },
         "pro": {
-          "body": "Full access for active investors.",
-          "cta": "Choose Pro",
+          "body": "활성 투자자를 위한 전체 액세스.",
+          "cta": "Pro 선택",
           "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
+            "모든 AI 모듈",
+            "행동 코칭",
+            "트레이더 심리 프로필"
           ],
           "name": "Pro",
           "price": "$9/mo"
         },
         "proPlus": {
-          "body": "For power users and automation workflows.",
-          "cta": "Choose Pro+",
+          "body": "파워 유저 및 자동화 워크플로용.",
+          "cta": "Pro+ 선택",
           "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
+            "Pro의 모든 기능",
+            "API 액세스",
+            "브로커 연동"
           ],
           "name": "Pro+",
           "price": "$19/mo"
         }
       },
-      "title": "Simple pricing",
+      "title": "간단한 요금제",
       "trial": "14일 무료",
       "yearly": "연간"
     },
@@ -526,68 +576,91 @@
           "title": "Emotions cost you money"
         },
         "memory": {
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade.",
-          "title": "No one remembers your mistakes"
+          "body": "피드백 루프가 없으면 같은 비용 큰 패턴이 거래마다 반복됩니다.",
+          "title": "아무도 당신의 실수를 기억하지 않습니다"
         }
       },
-      "title": "Why investors get stuck"
+      "subtitle": "모든 개인 투자자가 같은 어려움을 겪습니다 — 도와주는 이가 없습니다.",
+      "title": "돈을 잃고 있습니다. 이유를 압니다."
+    },
+    "seo": {
+      "description": "AI 주식 분석, 행동 코칭, 130개 이상 거래소 — GPW, NYSE, DAX 등 한곳에서.",
+      "title": "StockAI Pro — 차세대 투자 플랫폼"
     },
     "socialProof": {
+      "marqueeMarkets": "GPW + NYSE + DAX",
       "stats": {
         "adFree": "100% 광고 없음",
         "exchanges": "130개+ 거래소",
         "languages": "9개 언어",
         "modules": "AI 모듈 27개"
       },
-      "subtitle": "Early access community growing every week.",
+      "subtitle": "얼리 액세스 커뮤니티가 매주 성장하고 있습니다.",
       "testimonials": [
         {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
+          "author": "Kasia, 바르샤바",
+          "quote": "예전엔 앱을 오갔습니다. 이제는 한 화면에서 무엇을 하는지 압니다."
         },
         {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
+          "author": "Lukas, 베를린",
+          "quote": "행동 코칭 덕분에 나쁜 신호가 아니라 FOMO로 잃고 있었음을 알았습니다."
         },
         {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
+          "author": "Clara, 마드리드",
+          "quote": "프리모텀 AI가 리스크에 대한 생각을 바꿨습니다. 클릭 전에 생각합니다."
         }
       ],
-      "title": "Join our early access community"
+      "testimonialsSubtitle": "현장의 짧은 이야기 — 스포일러: 혼란이 줄어듭니다.",
+      "testimonialsTitle": "투자자들의 이야기",
+      "title": "얼리 액세스 커뮤니티에 참여하세요"
     },
     "solution": {
       "features": {
         "aiBrief": {
-          "body": "점수만이 아니라, 왜 가치가 있는지 혹은 아닌지를 완전하게 설명합니다.",
-          "title": "서사가 포함된 AI Brief"
+          "body": "점수만이 아니라, 왜 유망한지 전체 설명을 제공합니다.",
+          "title": "AI 브리프(내러티브)"
         },
         "behavioralCoach": {
-          "body": "사용자의 실수를 감지하고 같은 실수를 반복하지 않도록 도와드립니다.",
-          "title": "Behavioral Coach"
+          "body": "실수를 감지하고 반복을 막아줍니다.",
+          "title": "행동 코칭"
         },
-        "brokerIntegration": "Broker Integration",
+        "brokerIntegration": "브로커 연동",
         "globalMarkets": {
-          "body": "GPW, NYSE, DAX, TSE, NSE 등 다양한 시장을 지원합니다. 앱을 전환할 필요가 없습니다.",
-          "title": "12 Global Markets"
+          "body": "GPW, NYSE, DAX, TSE, NSE 등. 앱 전환 불필요.",
+          "title": "130개 이상 거래소"
         },
-        "languages": "9 Languages",
+        "languages": "9개 언어",
         "paperTrading": {
-          "body": "위험 없이 연습하세요. 비용이 들지 않는 실수에서 배울 수 있습니다.",
-          "title": "Paper Trading"
+          "body": "리스크 없이 연습하세요.",
+          "title": "모의 거래"
         },
         "preMortemAi": {
-          "body": "매수 전에 AI가 가장 가능성 높은 손실 시나리오를 보여드립니다.",
-          "title": "Pre-Mortem AI"
+          "body": "매수 전 AI가 가장 가능성 높은 손실 시나리오를 보여줍니다.",
+          "title": "프리모텀 AI"
         },
-        "signalAnalysis": "AI Signal Analysis",
+        "signalAnalysis": "AI 신호 분석",
         "signalDna": {
-          "body": "과거의 유사한 셋업을 통해, 이 셋업이 과거에 어떻게 마무리되었는지 보여드립니다.",
-          "title": "Signal DNA"
+          "body": "과거 유사 셋업과 결과를 분석합니다.",
+          "title": "시그널 DNA"
         },
-        "traderPsycheProfile": "Trader Psyche Profile"
+        "traderPsycheProfile": "트레이더 심리 프로필"
       },
-      "title": "One platform built for investor growth"
+      "subtitle": "StockAI Pro는 5개 도구를 대체하고 어느 것도 없는 기능을 추가합니다.",
+      "title": "한곳에서.",
+      "titleAccent": "전체 그림."
+    },
+    "stats": {
+      "exchanges": "거래소",
+      "investors": "투자자",
+      "languages": "언어",
+      "modules": "AI 모듈"
+    },
+    "worldClocks": {
+      "closed": "● 마감",
+      "open": "● 개장",
+      "subtitle": "StockAI Pro는 130개 이상 거래소를 24시간 모니터링합니다.",
+      "title": "시장은 잠들지 않습니다.",
+      "titleAccent": "당신도 잠들 필요 없습니다."
     }
   },
   "mentor": {
@@ -1243,5 +1316,10 @@
     "subtitle": "Review your discipline and close the week with an AI growth letter.",
     "title": "Weekly Review",
     "weekOf": "Week of"
+  },
+  "legal": {
+    "investmentDisclaimer": "법적 고지: StockAI Pro의 인공지능(Claude AI 포함)이 생성한 분석, 시장 신호 및 자료는 교육 및 정보 제공 목적입니다. 투자 권유나 금융 자문이 아닙니다. 금융 시장 투자에는 높은 원금 손실 위험이 있습니다. AMC Energy Sp. z o.o.는 앱 데이터에 따른 금융 결정에 대해 책임지지 않습니다.",
+    "termsLink": "전체 이용약관",
+    "ariaLabel": "투자 법적 고지"
   }
 }

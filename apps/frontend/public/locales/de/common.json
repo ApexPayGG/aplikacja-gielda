@@ -455,15 +455,25 @@
     "footerCta": {
       "button": "Kostenloses Konto erstellen",
       "disclaimer": "Bildungsprodukt. Keine Finanzberatung. Investieren ist mit Risiken verbunden.",
-      "title": "Starte heute dein kostenloses Konto"
+      "title": "Starte heute dein kostenloses Konto",
+      "pricing": "Preise ansehen"
     },
     "hero": {
       "ctaPrimary": "Kostenlos starten",
       "ctaSecondary": "So funktioniert es",
-      "subtitle": "KI-Research · Verhaltenscoaching · 12 Börsen · 9 Sprachen",
+      "subtitle": "Eine Plattform statt fünf Browser-Tabs. KI analysiert, dein Coach hütet deine Emotionen — du triffst informierte Entscheidungen.",
       "title": "Investitionsplattform der nächsten Generation",
       "widgetLive": "Live",
-      "widgetTitle": "Live-Marktpuls"
+      "widgetTitle": "Live-Marktpuls",
+      "badge": "KI-gestützt · 130+ Börsen · 9 Sprachen",
+      "scrollHint": "Scrollen",
+      "titleLine1": "Klüger investieren.",
+      "titleLine2": "Nicht mehr.",
+      "trust": "Schließe dich {{count}}+ Investoren an",
+      "coachAlertTitle": "Coach-Alarm",
+      "coachAlertBody": "Du vermeidest heute FOMO ✓",
+      "aiSignalBuy": "KI-Signal: KAUF",
+      "winRate": "Trefferquote"
     },
     "pricing": {
       "badge": "Frühbucherpreis",
@@ -509,7 +519,8 @@
       },
       "title": "Einfache Preise",
       "trial": "14 Tage kostenlos",
-      "yearly": "jährlich"
+      "yearly": "jährlich",
+      "checkoutError": "Checkout konnte nicht gestartet werden."
     },
     "problem": {
       "cards": {
@@ -530,7 +541,8 @@
           "title": "Niemand merkt sich deine Fehler"
         }
       },
-      "title": "Warum Investoren stecken bleiben"
+      "title": "Du verlierst Geld. Du weißt warum.",
+      "subtitle": "Jeder Privatanleger kämpft mit denselben Dingen — und niemand hilft."
     },
     "socialProof": {
       "stats": {
@@ -554,7 +566,10 @@
           "author": "Clara, Madrid"
         }
       ],
-      "title": "Werde Teil unserer Early-Access-Community"
+      "title": "Werde Teil unserer Early-Access-Community",
+      "marqueeMarkets": "GPW + NYSE + DAX",
+      "testimonialsTitle": "Was Investoren sagen",
+      "testimonialsSubtitle": "Kurze Geschichten aus der Praxis — weniger Chaos."
     },
     "solution": {
       "features": {
@@ -569,7 +584,7 @@
         "brokerIntegration": "Broker-Integration",
         "globalMarkets": {
           "body": "GPW, NYSE, DAX, TSE, NSE und mehr. Kein Wechseln zwischen Apps.",
-          "title": "12 globale Märkte"
+          "title": "130+ Börsen"
         },
         "languages": "9 Sprachen",
         "paperTrading": {
@@ -587,7 +602,65 @@
         },
         "traderPsycheProfile": "Trader-Psychologieprofil"
       },
-      "title": "Eine Plattform für deinen Anlegerfortschritt"
+      "title": "Ein Ort.",
+      "subtitle": "StockAI Pro ersetzt 5 Tools und fügt hinzu, was keines hat.",
+      "titleAccent": "Volles Bild."
+    },
+    "nav": {
+      "features": "Funktionen",
+      "howItWorks": "So funktioniert's",
+      "markets": "Märkte",
+      "pricing": "Preise",
+      "searchPlaceholder": "Unternehmen suchen... AAPL, PKN"
+    },
+    "footer": {
+      "company": "Unternehmen",
+      "copyright": "© 2026 StockAI Pro · Alle Rechte vorbehalten",
+      "languagesAria": "Sprache wählen",
+      "legal": "Rechtliches",
+      "legalEtoro": "Mit eToro handeln (Partner)",
+      "privacy": "Datenschutz",
+      "product": "Produkt",
+      "productMarkets": "Märkte",
+      "productPricing": "Preise",
+      "productSignals": "Signale",
+      "solutionLink": "Lösung",
+      "tagline": "Eine Plattform. Volles Marktbild. KI und Verhaltenscoaching für informierte Investoren.",
+      "terms": "Nutzungsbedingungen"
+    },
+    "howItWorks": {
+      "title": "So funktioniert's?",
+      "steps": [
+        {
+          "title": "Registrieren",
+          "desc": "30 Sekunden. Keine Kreditkarte."
+        },
+        {
+          "title": "Markt wählen",
+          "desc": "GPW, US, DAX — oder alle auf einmal."
+        },
+        {
+          "title": "Klüger investieren",
+          "desc": "KI analysiert, Coach lehrt, du entscheidest."
+        }
+      ]
+    },
+    "seo": {
+      "description": "KI-Aktienanalyse, Verhaltenscoaching und 130+ Börsen — GPW, NYSE, DAX und mehr an einem Ort.",
+      "title": "StockAI Pro — Investitionsplattform der nächsten Generation"
+    },
+    "stats": {
+      "exchanges": "Börsen",
+      "investors": "Investoren",
+      "languages": "Sprachen",
+      "modules": "KI-Module"
+    },
+    "worldClocks": {
+      "closed": "● Geschlossen",
+      "open": "● Geöffnet",
+      "subtitle": "StockAI Pro überwacht 130+ Börsen rund um die Uhr.",
+      "title": "Märkte schlafen nie.",
+      "titleAccent": "Du musst es auch nicht."
     }
   },
   "mentor": {
@@ -1243,5 +1316,10 @@
     "subtitle": "Review your discipline and close the week with an AI growth letter.",
     "title": "Weekly Review",
     "weekOf": "Week of"
+  },
+  "legal": {
+    "investmentDisclaimer": "Rechtlicher Hinweis: Alle Analysen, Marktsignale und von künstlicher Intelligenz (einschließlich Claude AI) auf StockAI Pro erzeugten Inhalte dienen ausschließlich Bildungs- und Informationszwecken. Sie stellen keine Anlageempfehlung oder Finanzberatung dar. Investitionen an Finanzmärkten sind mit hohem Kapitalverlustrisiko verbunden. AMC Energy Sp. z o.o. haftet nicht für Finanzentscheidungen auf Basis der App-Daten.",
+    "termsLink": "Vollständige Nutzungsbedingungen",
+    "ariaLabel": "Rechtlicher Investitionshinweis"
   }
 }

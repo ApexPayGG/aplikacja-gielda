@@ -452,21 +452,71 @@
     "validationSymbol": "Please provide a valid symbol."
   },
   "landing": {
+    "footer": {
+      "company": "公司",
+      "copyright": "© 2026 StockAI Pro · 版權所有",
+      "languagesAria": "選擇語言",
+      "legal": "法律",
+      "legalEtoro": "透過 eToro 交易（合作夥伴）",
+      "privacy": "隱私權政策",
+      "product": "產品",
+      "productMarkets": "市場",
+      "productPricing": "價格",
+      "productSignals": "訊號",
+      "solutionLink": "解決方案",
+      "tagline": "一個平台。完整市場圖像。AI 與行為教練，助您做出明智投資。",
+      "terms": "服務條款"
+    },
     "footerCta": {
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
-      "title": "Start your free account today"
+      "button": "建立免費帳戶",
+      "disclaimer": "教育用途產品，非財務建議。投資涉及風險。",
+      "pricing": "查看價格",
+      "title": "今天就開始您的免費帳戶"
     },
     "hero": {
+      "aiSignalBuy": "AI 訊號：買進",
+      "badge": "AI · 130+ 交易所 · 9 種語言",
+      "coachAlertBody": "你今天避開了 FOMO ✓",
+      "coachAlertTitle": "教練提醒",
       "ctaPrimary": "Start for free",
       "ctaSecondary": "See how it works",
+      "scrollHint": "捲動",
       "subtitle": "AI 研究 · 行為教練 · 12 個交易所 · 9 種語言",
       "title": "新世代投資平台",
+      "titleLine1": "投資更聰明。",
+      "titleLine2": "不是更多。",
+      "trust": "加入 {{count}}+ 投資人",
       "widgetLive": "Live",
-      "widgetTitle": "Live market pulse"
+      "widgetTitle": "Live market pulse",
+      "winRate": "勝率"
+    },
+    "howItWorks": {
+      "steps": [
+        {
+          "desc": "30 秒。無需信用卡。",
+          "title": "註冊"
+        },
+        {
+          "desc": "GPW、美國、DAX — 或一次全部。",
+          "title": "選擇市場"
+        },
+        {
+          "desc": "AI 分析，教練指導，您做決定。",
+          "title": "更聰明投資"
+        }
+      ],
+      "title": "運作方式"
+    },
+    "nav": {
+      "features": "功能",
+      "howItWorks": "運作方式",
+      "markets": "市場",
+      "pricing": "價格",
+      "searchPlaceholder": "搜尋公司... AAPL, PKN"
     },
     "pricing": {
       "badge": "早鳥價格",
+      "checkoutError": "無法開始結帳。",
       "earlyAdopter": "前 500 個 Pro 帳戶永久鎖定每月 $9",
       "monthly": "每月",
       "popular": "最受歡迎",
@@ -474,40 +524,40 @@
       "saveProPlus": "省下 34%",
       "tiers": {
         "free": {
-          "body": "Basic features to start building consistency.",
-          "cta": "Start free",
+          "body": "建立穩定交易習慣的基礎功能。",
+          "cta": "免費開始",
           "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
+            "核心儀表板",
+            "基礎 AI 訊號",
+            "社群存取"
           ],
           "name": "Free",
           "price": "$0/mo"
         },
         "pro": {
-          "body": "Full access for active investors.",
-          "cta": "Choose Pro",
+          "body": "活躍投資人的完整存取。",
+          "cta": "選擇 Pro",
           "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
+            "所有 AI 模組",
+            "行為教練",
+            "交易者心理檔案"
           ],
           "name": "Pro",
           "price": "$9/mo"
         },
         "proPlus": {
-          "body": "For power users and automation workflows.",
-          "cta": "Choose Pro+",
+          "body": "進階使用者與自動化工作流程。",
+          "cta": "選擇 Pro+",
           "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
+            "Pro 全部功能",
+            "API 存取",
+            "券商整合"
           ],
           "name": "Pro+",
           "price": "$19/mo"
         }
       },
-      "title": "Simple pricing",
+      "title": "簡單定價",
       "trial": "14 天免費",
       "yearly": "每年"
     },
@@ -526,68 +576,91 @@
           "title": "Emotions cost you money"
         },
         "memory": {
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade.",
-          "title": "No one remembers your mistakes"
+          "body": "沒有回饋循環，相同的代價高昂模式會一再重複。",
+          "title": "沒人記得你的錯誤"
         }
       },
-      "title": "Why investors get stuck"
+      "subtitle": "每位散戶投資人都面臨相同困境 — 卻無人協助。",
+      "title": "您在虧錢。您知道原因。"
+    },
+    "seo": {
+      "description": "AI 股票分析、行為教練與 130+ 交易所 — GPW、NYSE、DAX 等一站搞定。",
+      "title": "StockAI Pro — 新世代投資平台"
     },
     "socialProof": {
+      "marqueeMarkets": "GPW + NYSE + DAX",
       "stats": {
         "adFree": "100% 無廣告",
         "exchanges": "130+ 交易所",
         "languages": "9 種語言",
         "modules": "27 個 AI 模組"
       },
-      "subtitle": "Early access community growing every week.",
+      "subtitle": "搶先體驗社群每週都在成長。",
       "testimonials": [
         {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
+          "author": "Kasia, 華沙",
+          "quote": "以前我在多個 App 之間切換。現在一個畫面就知道自己在做什麼。"
         },
         {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
+          "author": "Lukas, 柏林",
+          "quote": "行為教練讓我發現虧損來自 FOMO，而不是糟糕的訊號。"
         },
         {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
+          "author": "Clara, 馬德里",
+          "quote": "事前檢視 AI 改變了我對風險的看法。我會在點擊前先思考。"
         }
       ],
-      "title": "Join our early access community"
+      "testimonialsSubtitle": "第一線的短故事 — 劇透：更少混亂。",
+      "testimonialsTitle": "投資人怎麼說",
+      "title": "加入我們的搶先體驗社群"
     },
     "solution": {
       "features": {
         "aiBrief": {
-          "body": "不只是分數，而是完整解釋為何值得或不值得。",
-          "title": "含敘事的 AI Brief"
+          "body": "不只是分數，完整說明為何值得或不值得。",
+          "title": "AI 簡報（敘事版）"
         },
         "behavioralCoach": {
-          "body": "偵測你的錯誤，並協助你避免重複犯錯。",
-          "title": "Behavioral Coach"
+          "body": "偵測你的錯誤並避免重複。",
+          "title": "行為教練"
         },
-        "brokerIntegration": "Broker Integration",
+        "brokerIntegration": "券商整合",
         "globalMarkets": {
-          "body": "涵蓋 GPW、NYSE、DAX、TSE、NSE 等市場，無需切換應用程式。",
-          "title": "12 Global Markets"
+          "body": "GPW、NYSE、DAX、TSE、NSE 等，無需切換 App。",
+          "title": "130+ 交易所"
         },
-        "languages": "9 Languages",
+        "languages": "9 種語言",
         "paperTrading": {
-          "body": "零風險練習，從不需付出成本的錯誤中學習。",
-          "title": "Paper Trading"
+          "body": "零風險練習，從不花錢的錯誤中學習。",
+          "title": "模擬交易"
         },
         "preMortemAi": {
-          "body": "在你買入前，AI 會先顯示最可能的虧損情境。",
-          "title": "Pre-Mortem AI"
+          "body": "買入前，AI 顯示最可能的虧損情境。",
+          "title": "事前檢視 AI"
         },
-        "signalAnalysis": "AI Signal Analysis",
+        "signalAnalysis": "AI 訊號分析",
         "signalDna": {
-          "body": "歷史上的相似 setup：這種 setup 過去通常如何收場。",
-          "title": "Signal DNA"
+          "body": "歷史相似型態與過往結果。",
+          "title": "訊號 DNA"
         },
-        "traderPsycheProfile": "Trader Psyche Profile"
+        "traderPsycheProfile": "交易者心理檔案"
       },
-      "title": "One platform built for investor growth"
+      "subtitle": "StockAI Pro 取代 5 個工具，並加入它們都沒有的功能。",
+      "title": "一個地方。",
+      "titleAccent": "完整圖像。"
+    },
+    "stats": {
+      "exchanges": "交易所",
+      "investors": "投資人",
+      "languages": "語言",
+      "modules": "AI 模組"
+    },
+    "worldClocks": {
+      "closed": "● 休市",
+      "open": "● 開市",
+      "subtitle": "StockAI Pro 全天候監控 130+ 交易所。",
+      "title": "市場永不休眠。",
+      "titleAccent": "您也不必。"
     }
   },
   "mentor": {
@@ -1243,5 +1316,10 @@
     "subtitle": "Review your discipline and close the week with an AI growth letter.",
     "title": "Weekly Review",
     "weekOf": "Week of"
+  },
+  "legal": {
+    "investmentDisclaimer": "法律聲明：StockAI Pro 上由人工智慧（含 Claude AI）產生的分析、市場訊號與資料僅供教育與資訊用途，不構成投資建議或財務諮詢。投資金融市場具有高資本損失風險。AMC Energy Sp. z o.o. 對依據應用程式資料所做的財務決策不負責任。",
+    "termsLink": "完整服務條款",
+    "ariaLabel": "投資法律聲明"
   }
 }

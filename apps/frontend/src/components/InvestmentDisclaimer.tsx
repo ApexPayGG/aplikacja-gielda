@@ -1,7 +1,5 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-
-export const INVESTMENT_DISCLAIMER_TEXT =
-  "Zastrzeżenie prawne: Wszelkie analizy, sygnały rynkowe oraz materiały generowane przez sztuczną inteligencję (w tym Claude AI) na platformie StockAI Pro mają charakter wyłącznie edukacyjny i informacyjny. Nie stanowią one rekomendacji inwestycyjnych ani porad finansowych w rozumieniu przepisów prawa. Inwestowanie na rynkach finansowych wiąże się z wysokim ryzykiem utraty kapitału. AMC Energy Sp. z o.o. nie ponosi odpowiedzialności za decyzje finansowe podjęte na podstawie danych w aplikacji.";
 
 type Variant = "default" | "landing" | "drawer";
 
@@ -12,6 +10,8 @@ type Props = {
 };
 
 export function InvestmentDisclaimer({ variant = "default", className = "", showTermsLink = true }: Props) {
+  const { t } = useTranslation("common");
+
   const baseGlass =
     "rounded-xl border text-center text-[11px] leading-relaxed backdrop-blur-md sm:text-xs sm:leading-relaxed";
 
@@ -26,9 +26,9 @@ export function InvestmentDisclaimer({ variant = "default", className = "", show
     <aside
       className={`${baseGlass} ${variantClass} ${className}`}
       role="note"
-      aria-label="Zastrzeżenie prawne inwestycyjne"
+      aria-label={t("legal.ariaLabel")}
     >
-      <p>{INVESTMENT_DISCLAIMER_TEXT}</p>
+      <p>{t("legal.investmentDisclaimer")}</p>
       {showTermsLink ? (
         <p className="mt-2">
           <Link
@@ -39,7 +39,7 @@ export function InvestmentDisclaimer({ variant = "default", className = "", show
                 : "font-medium text-brandCyan underline-offset-2 hover:underline"
             }
           >
-            Pełny regulamin
+            {t("legal.termsLink")}
           </Link>
         </p>
       ) : null}

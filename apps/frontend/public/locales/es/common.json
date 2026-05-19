@@ -452,21 +452,71 @@
     "validationSymbol": "Please provide a valid symbol."
   },
   "landing": {
+    "footer": {
+      "company": "Empresa",
+      "copyright": "© 2026 StockAI Pro · Todos los derechos reservados",
+      "languagesAria": "Elegir idioma",
+      "legal": "Legal",
+      "legalEtoro": "Operar con eToro (socio)",
+      "privacy": "Política de privacidad",
+      "product": "Producto",
+      "productMarkets": "Mercados",
+      "productPricing": "Precios",
+      "productSignals": "Señales",
+      "solutionLink": "Solución",
+      "tagline": "Una plataforma. Visión completa del mercado. IA y coaching conductual para inversores informados.",
+      "terms": "Términos del servicio"
+    },
     "footerCta": {
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
-      "title": "Start your free account today"
+      "button": "Crear cuenta gratis",
+      "disclaimer": "Producto educativo. No es asesoramiento financiero. Invertir implica riesgos.",
+      "pricing": "Ver precios",
+      "title": "Empieza hoy tu cuenta gratuita"
     },
     "hero": {
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
-      "subtitle": "Investigación con IA · Coaching conductual · 12 bolsas · 9 idiomas",
+      "aiSignalBuy": "Señal IA: COMPRA",
+      "badge": "Con IA · 130+ bolsas · 9 idiomas",
+      "coachAlertBody": "Evitas el FOMO hoy ✓",
+      "coachAlertTitle": "Alerta del coach",
+      "ctaPrimary": "Empezar gratis",
+      "ctaSecondary": "Ver demo",
+      "scrollHint": "Desplazar",
+      "subtitle": "Una plataforma en lugar de cinco pestañas. La IA analiza, tu coach cuida tus emociones — tú decides con información.",
       "title": "Plataforma de inversión de nueva generación",
-      "widgetLive": "Live",
-      "widgetTitle": "Live market pulse"
+      "titleLine1": "Invierte más inteligente.",
+      "titleLine2": "No más.",
+      "trust": "Únete a {{count}}+ inversores",
+      "widgetLive": "En vivo",
+      "widgetTitle": "Pulso del mercado en vivo",
+      "winRate": "Tasa de acierto"
+    },
+    "howItWorks": {
+      "steps": [
+        {
+          "desc": "30 segundos. Sin tarjeta de crédito.",
+          "title": "Regístrate"
+        },
+        {
+          "desc": "GPW, EE. UU., DAX — o todos a la vez.",
+          "title": "Elige tu mercado"
+        },
+        {
+          "desc": "La IA analiza, el coach enseña, tú decides.",
+          "title": "Invierte mejor"
+        }
+      ],
+      "title": "¿Cómo funciona?"
+    },
+    "nav": {
+      "features": "Funciones",
+      "howItWorks": "Cómo funciona",
+      "markets": "Mercados",
+      "pricing": "Precios",
+      "searchPlaceholder": "Buscar empresa... AAPL, PKN"
     },
     "pricing": {
       "badge": "Precio Early Adopter",
+      "checkoutError": "No se pudo iniciar el pago.",
       "earlyAdopter": "Las primeras 500 cuentas Pro se mantienen en $9/mes para siempre",
       "monthly": "mensual",
       "popular": "Más popular",
@@ -474,40 +524,40 @@
       "saveProPlus": "Ahorra 34%",
       "tiers": {
         "free": {
-          "body": "Basic features to start building consistency.",
-          "cta": "Start free",
+          "body": "Funciones básicas para empezar a construir consistencia.",
+          "cta": "Empezar gratis",
           "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
+            "Panel principal",
+            "Señales IA básicas",
+            "Acceso a la comunidad"
           ],
           "name": "Free",
           "price": "$0/mo"
         },
         "pro": {
-          "body": "Full access for active investors.",
-          "cta": "Choose Pro",
+          "body": "Acceso completo para inversores activos.",
+          "cta": "Elegir Pro",
           "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
+            "Todos los módulos IA",
+            "Coaching conductual",
+            "Perfil psicológico del trader"
           ],
           "name": "Pro",
           "price": "$9/mo"
         },
         "proPlus": {
-          "body": "For power users and automation workflows.",
-          "cta": "Choose Pro+",
+          "body": "Para usuarios avanzados y flujos de automatización.",
+          "cta": "Elegir Pro+",
           "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
+            "Todo lo de Pro",
+            "Acceso API",
+            "Integración con bróker"
           ],
           "name": "Pro+",
           "price": "$19/mo"
         }
       },
-      "title": "Simple pricing",
+      "title": "Precios simples",
       "trial": "14 días gratis",
       "yearly": "anual"
     },
@@ -526,68 +576,91 @@
           "title": "Emotions cost you money"
         },
         "memory": {
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade.",
-          "title": "No one remembers your mistakes"
+          "body": "Sin un bucle de retroalimentación, los mismos patrones costosos se repiten operación tras operación.",
+          "title": "Nadie recuerda tus errores"
         }
       },
-      "title": "Why investors get stuck"
+      "subtitle": "Todo inversor minorista lucha con lo mismo — y nadie ayuda.",
+      "title": "Estás perdiendo dinero. Sabes por qué."
+    },
+    "seo": {
+      "description": "Análisis de acciones con IA, coaching conductual y 130+ bolsas — GPW, NYSE, DAX y más en un solo lugar.",
+      "title": "StockAI Pro — Plataforma de inversión de nueva generación"
     },
     "socialProof": {
+      "marqueeMarkets": "GPW + NYSE + DAX",
       "stats": {
         "adFree": "100 % sin anuncios",
         "exchanges": "130+ bolsas",
         "languages": "9 idiomas",
         "modules": "27 módulos de IA"
       },
-      "subtitle": "Early access community growing every week.",
+      "subtitle": "La comunidad de acceso anticipado crece cada semana.",
       "testimonials": [
         {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
+          "author": "Kasia, Varsovia",
+          "quote": "Antes saltaba entre apps. Ahora tengo una pantalla y sé lo que hago."
         },
         {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
+          "author": "Lukas, Berlín",
+          "quote": "El coaching conductual me mostró que perdía por FOMO, no por malas señales."
         },
         {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
+          "author": "Clara, Madrid",
+          "quote": "Pre-Mortem IA cambió mi forma de pensar el riesgo. Pienso antes de hacer clic."
         }
       ],
-      "title": "Join our early access community"
+      "testimonialsSubtitle": "Historias breves desde la trinchera — menos caos.",
+      "testimonialsTitle": "Qué dicen los inversores",
+      "title": "Únete a nuestra comunidad de acceso anticipado"
     },
     "solution": {
       "features": {
         "aiBrief": {
-          "body": "No solo una puntuación: una explicación completa de por qué vale la pena o no.",
+          "body": "No solo una puntuación: explicación completa del porqué.",
           "title": "AI Brief con narrativa"
         },
         "behavioralCoach": {
-          "body": "Detecta tus errores y te ayuda a no repetirlos.",
-          "title": "Behavioral Coach"
+          "body": "Detecta tus errores y evita repetirlos.",
+          "title": "Coaching conductual"
         },
-        "brokerIntegration": "Broker Integration",
+        "brokerIntegration": "Integración con bróker",
         "globalMarkets": {
-          "body": "GPW, NYSE, DAX, TSE, NSE y más. Sin cambiar de aplicación.",
-          "title": "12 Global Markets"
+          "body": "GPW, NYSE, DAX, TSE, NSE y más. Sin cambiar de app.",
+          "title": "130+ bolsas"
         },
-        "languages": "9 Languages",
+        "languages": "9 idiomas",
         "paperTrading": {
-          "body": "Practica sin riesgo. Aprende de errores que no cuestan nada.",
-          "title": "Paper Trading"
+          "body": "Practica sin riesgo. Aprende sin coste.",
+          "title": "Operaciones simuladas"
         },
         "preMortemAi": {
           "body": "Antes de comprar, la IA muestra el escenario de pérdida más probable.",
-          "title": "Pre-Mortem AI"
+          "title": "Pre-Mortem IA"
         },
-        "signalAnalysis": "AI Signal Analysis",
+        "signalAnalysis": "Análisis de señales IA",
         "signalDna": {
-          "body": "Gemelos históricos del setup: cómo terminó este setup en el pasado.",
+          "body": "Gemelos históricos del setup y resultados pasados.",
           "title": "Signal DNA"
         },
-        "traderPsycheProfile": "Trader Psyche Profile"
+        "traderPsycheProfile": "Perfil psicológico del trader"
       },
-      "title": "One platform built for investor growth"
+      "subtitle": "StockAI Pro sustituye 5 herramientas y añade lo que ninguna tiene.",
+      "title": "Un solo lugar.",
+      "titleAccent": "Visión completa."
+    },
+    "stats": {
+      "exchanges": "bolsas",
+      "investors": "inversores",
+      "languages": "idiomas",
+      "modules": "módulos IA"
+    },
+    "worldClocks": {
+      "closed": "● Cerrado",
+      "open": "● Abierto",
+      "subtitle": "StockAI Pro monitoriza 130+ bolsas las 24 horas.",
+      "title": "Los mercados no duermen.",
+      "titleAccent": "Tú tampoco tienes que hacerlo."
     }
   },
   "mentor": {
@@ -1243,5 +1316,10 @@
     "subtitle": "Review your discipline and close the week with an AI growth letter.",
     "title": "Weekly Review",
     "weekOf": "Week of"
+  },
+  "legal": {
+    "investmentDisclaimer": "Aviso legal: Todos los análisis, señales de mercado y materiales generados por inteligencia artificial (incluido Claude AI) en StockAI Pro son solo educativos e informativos. No constituyen recomendaciones de inversión ni asesoramiento financiero. Invertir en mercados financieros conlleva un alto riesgo de pérdida de capital. AMC Energy Sp. z o.o. no es responsable de decisiones financieras basadas en los datos de la aplicación.",
+    "termsLink": "Términos completos",
+    "ariaLabel": "Aviso legal de inversión"
   }
 }
