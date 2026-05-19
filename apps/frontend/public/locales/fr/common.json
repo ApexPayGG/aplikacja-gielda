@@ -1,1226 +1,85 @@
 {
-  "nav": {
-    "home": "Accueil",
-    "dashboard": "Tableau de bord",
-    "signals": "Signaux",
-    "dividend": "Dividende",
-    "dividendIntelligence": "Intelligence Dividende",
-    "paperTrading": "Paper Trading",
-    "mirrorTrading": "Mirror Trading",
-    "coach": "Coach",
-    "mistakeLibrary": "Bibliotheque d'erreurs",
-    "alphaCalendar": "Alpha Calendar",
-    "positionSize": "Calculateur",
-    "stressTest": "Test de stress",
-    "concentration": "Concentration",
-    "taxOptimizer": "PIT-38",
-    "markets": "Marchés",
-    "portfolio": "Portefeuille",
-    "tools": "Outils",
-    "menu": "Menu",
-    "premortem": "Pre-Mortem",
-    "correlation": "Corrélation",
-    "crowdWisdom": "Crowd Wisdom",
-    "glossary": "Glossary",
-    "skillTree": "Skill Tree",
-    "volatility": "Volatility Heat Map",
-    "psycheProfile": "My Psyche",
-    "weeklyReview": "Weekly Review",
-    "alpacaTrading": "Trading Alpaca",
-    "adminAffiliate": "Admin Affiliate"
-  },
-  "common": {
-    "search": "Rechercher",
-    "loading": "Chargement...",
-    "noData": "Aucune donnée disponible",
-    "error": "Erreur",
-    "retry": "Réessayer",
-    "save": "Enregistrer",
-    "cancel": "Annuler",
-    "close": "Fermer",
-    "open": "Ouvrir",
-    "buy": "Acheter",
-    "sell": "Vendre",
-    "apiMockBadge": "Mock fallback active",
-    "apiLiveBadge": "Live API",
-    "notAvailable": "n/a",
-    "high": "High",
-    "medium": "Medium",
-    "low": "Low"
-  },
-  "share": {
-    "button": "Share",
-    "twitter": "Twitter/X",
-    "linkedin": "LinkedIn",
-    "copy": "Copy link",
-    "whatsapp": "WhatsApp",
-    "copied": "Copied!"
-  },
-  "money": {
-    "gpwCaption": "Montants en PLN (notional GPW) ; l’USD affiché à côté est indicatif (≈ 3,95 PLN par USD, pas un cours temps réel)."
-  },
-  "analysisBrief": {
-    "title": "Brief IA",
-    "updated": "Mis à jour",
-    "englishSection": "Anglais"
-  },
-  "signals": {
-    "title": "Signaux",
-    "riskScore": "Score de Risque",
-    "winRate": "Win rate",
-    "avgReturn": "Rendement Moyen",
-    "confidence": "Confiance",
-    "regime": {
-      "title": "Live market regime engine",
-      "mode": "Mode",
-      "executionStyle": "Execution style",
-      "riskCap": "Risk cap / trade"
-    },
-    "entry": "Entry",
-    "stopLoss": "Stop Loss",
-    "takeProfit": "Take Profit",
-    "aiBreif": "AI Brief",
-    "dna": "Signal DNA",
-    "similarity": "Similarité",
-    "narrative": "Narratif",
-    "headline": "Titre",
-    "riskNote": "Note de Risque",
-    "preMortemFromSetup": "Pre-Mortem (from this setup)",
-    "noSignalSelected": "No signal selected.",
-    "unknownSetup": "Setup inconnu",
-    "autonomousWatchlist": "Autonomous watchlist",
-    "liveEngine": {
-      "label": "Live engine",
-      "polling": "Polling mode",
-      "sseUnavailable": "Updates every 15s (SSE unavailable)",
-      "lastUpdate": "Last: {{time}}",
-      "lastUpdateEmpty": "Last: --:--:--"
-    },
-    "liveWaiting": "Waiting for stream…",
-    "liveStreamUpdate": "Live stream update received",
-    "livePollingUpdate": "Polling update received",
-    "liveConnectedSse": "Connected to live stream",
-    "confidenceLabel": "Confidence: {{level}}",
-    "confidenceCue": {
-      "PRIME": "PRIME",
-      "STRONG": "STRONG",
-      "WATCH": "WATCH"
-    },
-    "regimeDetail": {
-      "TRENDING": {
-        "mode": "Trend acceleration",
-        "style": "Breakout continuation",
-        "riskCap": "1.25R"
-      },
-      "RISK_ON": {
-        "mode": "Pro-risk expansion",
-        "style": "Momentum basket",
-        "riskCap": "1.00R"
-      },
-      "RISK_OFF": {
-        "mode": "Capital defense",
-        "style": "Mean reversion only",
-        "riskCap": "0.50R"
-      },
-      "RANGING": {
-        "mode": "Neutral grid",
-        "style": "Range edges + quick exits",
-        "riskCap": "0.75R"
-      }
-    },
-    "marketRegime": {
-      "TRENDING": "Trending",
-      "RANGING": "Ranging",
-      "RISK_ON": "Risk-on",
-      "RISK_OFF": "Risk-off"
-    },
-    "signalType": {
-      "CRITICAL": "Critical",
-      "STANDARD": "Standard",
-      "RESEARCH": "Research"
-    },
-    "transport": {
-      "SSE": "SSE",
-      "POLLING": "Polling",
-      "OFFLINE": "Offline"
-    },
-    "copilotAction": {
-      "ENTER": "Enter",
-      "WAIT": "Wait",
-      "REDUCE": "Reduce"
-    },
-    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
-    "dnaWhySimilar": "Pourquoi c’est similaire :",
-    "dnaCounterpoint": "Mise en garde :",
-    "dnaExplain": {
-      "high": {
-        "why": "La structure des prix et le régime de volatilité sont quasi identiques.",
-        "counter": "Le contexte macro diffère ; évitez une position surdimensionnée."
-      },
-      "mid": {
-        "why": "Le profil momentum et la compression du volume rappellent des configurations gagnantes passées.",
-        "counter": "Le signal peut s’effacer vite sans volume de confirmation."
-      },
-      "low": {
-        "why": "Chevauchement partiel du setup avec une confiance plus faible.",
-        "counter": "Traitez comme preuve d’appoint, pas comme déclencheur principal."
-      }
-    },
-    "discordEmbedTitle": "Discord embed preview",
-    "discordRisk": "Risk {{score}}/100",
-    "trackRecordTitle": "Track Record",
-    "trackWinRate": "Win rate",
-    "trackAvgReturn": "Avg. return",
-    "trackMaxDd": "Max DD",
-    "trackTotalSignals": "Total signals",
-    "executionTitle": "Battle-tested execution simulator",
-    "executionEntry": "Entry",
-    "executionStop": "Stop",
-    "executionTarget": "Target",
-    "executionRr": "R:R",
-    "executionExpectedValue": "Expected value",
-    "executionWorstCase": "Worst case",
-    "mockNarrative": {
-      "headline": "{{ticker}} — setup : {{setup}}",
-      "body": "Le profil momentum de {{ticker}} s’aligne sur le régime {{regime}}. Le prix et le volume suggèrent un potentiel de continuation avec un risque maîtrisé si le niveau d’invalidation est respecté.",
-      "riskNote": "Attendez la confirmation de clôture de bougie et gardez une discipline stricte des stops."
-    },
-    "narrativeHeadlineFallback": "Narratif du signal : {{ticker}}",
-    "narrativeBodyFallback": "L’API n’a pas renvoyé le corps du narratif.",
-    "narrativeRiskNoteFallback": "L’API n’a pas renvoyé la note de risque.",
-    "narrativeConfidence": {
-      "HIGH": "High",
-      "MEDIUM": "Medium",
-      "LOW": "Low"
-    },
-    "mentor": {
-      "notFound": "Analysis unavailable"
-    },
-    "copilot": {
-      "title": "AI Copilot decision",
-      "conviction": "Conviction",
-      "invalidation": "Invalidation",
-      "invalidationBody": "Exit if the move reaches {{pct}}% from entry or the regime flips.",
-      "checkpoint": "Checkpoint",
-      "checkpointBody": "Re-evaluate after the session close and a fresh volume print.",
-      "enter": "Enter trade"
-    }
-  },
-  "reactions": {
-    "title": "Commentaires",
-    "postComment": "Publier le commentaire",
-    "placeholder": "Note (500 caractères max)…",
-    "charCount": "{{used}} / {{max}}",
-    "empty": "Pas encore de commentaires.",
-    "loading": "Chargement des commentaires…",
-    "posting": "Publication…"
-  },
-  "dividend": {
-    "title": "Screener de dividendes",
-    "history": "Historique des dividendes",
-    "symbol": "Symbol",
-    "yearsBack": "Années en arrière",
-    "fetch": "Récupérer",
-    "noData": "Aucune donnée – ajustez les filtres",
-    "screener": "Screener : croissance des dividendes (CAGR)",
-    "minYears": "Min. années d'historique",
-    "minYield": "Min. rendement %",
-    "refresh": "Actualiser",
-    "colSymbol": "Symbol",
-    "colYear": "Année",
-    "colAnnual": "Dividende annuel",
-    "colGrowth": "Croissance YoY %",
-    "colCagr": "CAGR 5Y %",
-    "colYield": "Yield %",
-    "yield": "Rendement du Dividende",
-    "health": "Score de Santé",
-    "years": "Années de Croissance",
-    "exDate": "Date Ex",
-    "payoutRatio": "Taux de Distribution",
-    "trend": "Tendance",
-    "safe": "Sûr",
-    "watch": "Surveiller",
-    "risky": "Risqué"
-  },
-  "paperTrading": {
-    "title": "Paper Trading",
-    "openPosition": "Ouvrir une Position",
-    "closePosition": "Fermer la Position",
-    "portfolio": "Portefeuille",
-    "history": "Historique des Trades",
-    "pnl": "P&L",
-    "direction": "Direction",
-    "quantity": "Quantité",
-    "entryPrice": "Prix d'Entrée",
-    "exitPrice": "Prix de Sortie",
-    "long": "Long",
-    "short": "Short"
-  },
-  "coach": {
-    "title": "Coach Comportemental",
-    "traderProfile": "Profil du Trader",
-    "avgWin": "Gain Moyen",
-    "avgLoss": "Perte Moyenne",
-    "biases": "Biais Détectés",
-    "noBiases": "Aucun biais détecté",
-    "cutsWinners": "Coupe les Gagnants Trop Tôt",
-    "holdsLosers": "Garde les Perdants Trop Longtemps",
-    "overtrading": "Overtrading",
-    "aiCoach": "Le Coach IA dit",
-    "avgHoldWin": "Durée moy. (gagnants)",
-    "avgHoldLoss": "Durée moy. (perdants)",
-    "biasCutsBody": "Vous fermez les gains après ~{{winHours}} h en moyenne, mais gardez les pertes ~{{lossHours}} h.",
-    "biasHoldsBody": "Perte moy. : {{lossPct}}%; durée en trades perdants : {{lossHours}} h.",
-    "biasOverBody": "Plus de {{maxTrades}} trades sur les dernières 24 h.",
-    "aiDescriptionEmpty": "Pas encore de contenu du coach IA.",
-    "chartAvgWin": "Avg. win %",
-    "chartAvgLoss": "Avg. loss %"
-  },
-  "cooldown": {
-    "title": "Pause après série de pertes",
-    "inactive": "Aucune pause active",
-    "unlocksIn": "Déverrouillage dans"
-  },
-  "alpha": {
-    "title": "Alpha Calendar",
-    "windows": "Fenêtres de Probabilité",
-    "probability": "Probabilité",
-    "historicalReturn": "Rendement Historique",
-    "earningsCycle": "Cycle des Résultats",
-    "seasonal": "Saisonnier",
-    "sectorRotation": "Rotation Sectorielle",
-    "regimeShift": "Changement de Régime",
-    "subtitleNext48h": "48 h suivantes",
-    "aiSummaryTitle": "Résumé IA",
-    "aiSummaryEmpty": "Aucun résumé IA disponible.",
-    "tickerLabel": "Ticker",
-    "tickerPlaceholder": "ex. AAPL",
-    "colStart": "Début",
-    "colEnd": "Fin",
-    "colDescription": "Description",
-    "emptyTickerRows": "Aucune fenêtre pour ce ticker."
-  },
-  "positionSize": {
-    "title": "Calculateur de taille de position",
-    "currency": "Devise du compte",
-    "currencyHint": "Saisies et résultats en PLN (notional GPW) ; l’USD affiché à côté est indicatif.",
-    "pln": "PLN",
-    "usd": "USD",
-    "accountSize": "Taille du compte",
-    "riskPercent": "Risque max. % du capital",
-    "entry": "Prix d'entrée",
-    "stop": "Stop Loss",
-    "conviction": "Conviction du setup",
-    "convictionLow": "Faible",
-    "convictionMedium": "Moyenne",
-    "convictionHigh": "Élevée",
-    "calculate": "Calculer",
-    "shares": "Actions à acheter",
-    "positionValue": "Valeur de la position",
-    "plannedRisk": "Risque planifié",
-    "actualRiskPct": "Risque réel % du capital",
-    "maxLoss": "Perte max. au stop",
-    "takeProfits": "Take profit (multiples R)",
-    "tp1": "1R",
-    "tp2": "2R",
-    "tp3": "3R",
-    "errorInvalid": "Saisissez des nombres positifs valides pour le compte, l'entrée et le stop.",
-    "copy": "Copier",
-    "copyAllTp": "Copier tous les TP",
-    "copyAriaTp": "Copier le prix {{label}}",
-    "copied": "Copié dans le presse-papiers",
-    "errorApi404": "API du calculateur introuvable (404). Démarrez l’API sur le port 3000 avec le dernier code, ou définissez VITE_API_BASE sur l’URL complète incluant /api."
-  },
-  "stressTest": {
-    "title": "Test de stress du portefeuille",
-    "empty": "Ouvrez des positions en Paper Trading pour voir les résultats.",
-    "currency": "Devise affichée",
-    "drop": "Chute du marché",
-    "portfolioLoss": "Perte du portefeuille",
-    "portfolioLossPct": "Perte du portefeuille %",
-    "positions": "Impact par ligne",
-    "currentValue": "Valeur actuelle",
-    "lossValue": "Perte / gain",
-    "newValue": "Valeur après choc",
-    "error404": "API de test de stress introuvable.",
-    "scenarios": {
-      "CRASH_2008": "Crise 2008 (−54%)",
-      "COVID_2020": "COVID 2020 (−34%)",
-      "DOT_COM_2001": "Dot-com 2001 (−49%)",
-      "CUSTOM": "Personnalisé (−{{drop}}%)"
-    }
-  },
-  "concentration": {
-    "title": "Concentration du portefeuille",
-    "empty": "Ouvrez des positions en Paper Trading pour voir l’analyse.",
-    "currency": "Devise affichée",
-    "scoreLabel": "Score de diversification (0–100)",
-    "totalValue": "Valeur totale du portefeuille",
-    "positionCount": "Trades paper ouverts",
-    "chartByStock": "Répartition par entreprise",
-    "chartBySector": "Répartition par secteur",
-    "positionsTable": "Positions et poids",
-    "colTicker": "Ticker",
-    "colSector": "Secteur",
-    "colValue": "Valeur",
-    "colWeight": "Poids %",
-    "value": "Valeur",
-    "warnings": {
-      "SINGLE_STOCK": "{{ticker}} représente {{weight}}% du portefeuille (max. recommandé {{maxStock}}%).",
-      "SINGLE_SECTOR": "Le secteur {{sector}} représente {{weight}}% du portefeuille (max. recommandé {{maxSector}}%).",
-      "TOP_HEAVY": "Les 3 principales valeurs représentent {{top3Share}}% du portefeuille."
-    }
-  },
-  "correlation": {
-    "title": "Correlation Scanner",
-    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
-    "mainSymbol": "Main symbol",
-    "portfolioSymbols": "Portfolio symbols (comma separated)",
-    "analyze": "Analyze correlation",
-    "validation": "Provide a main symbol and at least one portfolio symbol.",
-    "tableTitle": "Correlation results",
-    "colSymbol": "Symbol",
-    "colCorrelation": "Correlation",
-    "colWarning": "Warning",
-    "warningHighRisk": "High risk",
-    "warningLowRisk": "OK",
-    "highRiskPairs": "High-risk pairs (> 0.7)",
-    "noHighRiskPairs": "No high-risk pair detected.",
-    "aiInsight": "AI Insight"
-  },
-  "tax": {
-    "title": "Tax Optimizer",
-    "selectCountry": "Select your tax country",
-    "changeCountry": "Change",
-    "noTax": "No capital gains tax on listed stocks",
-    "customRate": "Custom tax rate (%)",
-    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor."
-  },
-  "taxOptimizer": {
-    "title": "Tax Optimizer",
-    "year": "Exercice",
-    "grossGains": "Gains bruts",
-    "losses": "Pertes",
-    "netIncome": "Revenu net",
-    "tax19": "Impôt Belka 19 %",
-    "toPay": "À payer",
-    "alreadyPaid": "Retenu chez le courtier (placeholder) : {{amount}}",
-    "netLossTaxNote": "Avec un résultat net négatif, la base fiscale de ce module est 0 (simplifié).",
-    "suggestionsTitle": "Suggestions d’optimisation",
-    "suggestions": {
-      "CLOSE_LOSS_BEFORE_YEAR_END": "Envisagez de clôturer {{ticker}} avant le 31.12 — une perte d’environ {{value}} PLN peut réduire l’impôt d’environ {{saving}} PLN.",
-      "CARRY_FORWARD_LOSS": "Pertes antérieures potentiellement non imputées (fenêtre 5 ans) — vérifiez avec un conseiller fiscal."
-    },
-    "closedTrades": "Trades papier clôturés",
-    "noTrades": "Aucun trade clôturé sur l’année sélectionnée.",
-    "colTicker": "Ticker",
-    "colOpen": "Ouverture",
-    "colClose": "Clôture",
-    "colPnl": "P&L",
-    "colPct": "%",
-    "disclaimer": "Résultats à titre informatif uniquement. Consultez un conseiller fiscal."
-  },
-  "mistakes": {
-    "title": "Mistake Library",
-    "analyzeButton": "Analyze my mistakes",
-    "analyzing": "Analyzing...",
-    "emptyType": "No mistakes in this category yet.",
-    "types": {
-      "EMOTIONAL": "EMOTIONAL",
-      "STRATEGY": "STRATEGY",
-      "TIMING": "TIMING"
-    },
-    "summary": {
-      "total": "Total",
-      "emotional": "Emotional",
-      "strategy": "Strategy",
-      "timing": "Timing"
-    },
-    "dnaRowLink": "Strategy DNA",
-    "dnaContextLink": "Open Strategy DNA with these symbols"
-  },
-  "premortem": {
-    "title": "Pre-Mortem AI",
-    "subtitle": "Run downside scenario analysis before opening a trade.",
-    "symbol": "Symbol",
-    "entry": "Entry",
-    "stopLoss": "Stop Loss",
-    "takeProfit": "Take Profit",
-    "quantity": "Quantity",
-    "runButton": "Run Pre-Mortem",
-    "lossScenario": "Most likely loss scenario",
-    "marketRegime": "Market Regime",
-    "proceed": "Proceed anyway",
-    "cancel": "Cancel trade"
-  },
-  "crowdwisdom": {
-    "title": "Crowd Wisdom Inverter",
-    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
-    "symbol": "Symbol",
-    "analyze": "Analyze",
-    "retailSentiment": "Retail Sentiment",
-    "insiderActivity": "Insider Activity",
-    "result": "Signal",
-    "divergence": "Divergence (insider - retail)",
-    "signalBuy": "Contrarian Buy",
-    "signalSell": "Contrarian Sell",
-    "signalNeutral": "Neutral"
-  },
-  "glossary": {
-    "title": "Translate Financial English",
-    "subtitle": "Click a market term to get a short explanation and practical example.",
-    "popularTerms": "Popular terms",
-    "loading": "Loading explanation...",
-    "exampleLabel": "Example",
-    "selectPrompt": "Select a term from the list to load its explanation."
-  },
-  "backtest": {
-    "title": "Walk-Forward Backtest",
-    "subtitle": "Fenêtres 30 jours ; signaux basés uniquement sur le passé ; résultat = clôture à J+5 vs. entrée.",
-    "symbol": "Symbole",
-    "strategy": "Stratégie",
-    "period": "Période",
-    "strategyRsi": "RSI survendu (< 30)",
-    "strategyBreakout": "Breakout (vs. plus haut 20 j.)",
-    "strategyVolume": "Pic de volume (> 2× moy. 20 j.)",
-    "months3": "3 mois",
-    "months6": "6 mois",
-    "months12": "12 mois",
-    "monthsSuffix": "mois",
-    "runButton": "Run backtest",
-    "resultsTitle": "Résultats",
-    "winRate": "Win rate",
-    "avgReturn": "Rendement moy.",
-    "totalTrades": "Nombre de trades",
-    "maxDrawdown": "Max drawdown",
-    "sharpeRatio": "Sharpe ratio",
-    "tradesTableTitle": "Trades",
-    "colDate": "Date",
-    "colAction": "Action",
-    "colPrice": "Prix",
-    "colOutcome": "Résultat (5 j.)"
-  },
-  "replay": {
-    "title": "Replay Mode",
-    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
-    "step1Title": "Step 1: choose company and date",
-    "step2Title": "Step 2: market snapshot",
-    "step3Title": "Step 3: make your decision",
-    "step4Title": "Step 4: AI result",
-    "symbol": "Company",
-    "date": "Historical date",
-    "loadSnapshot": "Load snapshot",
-    "priceChange5d": "Change after 5 days",
-    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
-    "action": "Direction",
-    "price": "Price",
-    "evaluate": "Evaluate decision",
-    "score": "Score",
-    "actualOutcome": "Actual outcome"
-  },
-  "reversescreener": {
-    "title": "Reverse Screener",
-    "subtitle": "Compare le setup OHLCV actuel à des jours historiques similaires sur d’autres tickers (RSI, volume vs. moy. 20j, perf. 1j, tendance, ATR/clôture — similarité type Signal DNA).",
-    "symbolLabel": "Ticker",
-    "symbolPlaceholder": "ex. MC",
-    "dateLabel": "Date d’ancrage (optionnel)",
-    "dateHint": "Vide = dernier cours disponible en base.",
-    "findButton": "Trouver des setups similaires",
-    "avgOutcomeLabel": "Performance moyenne des jumeaux",
-    "avgOutcomeHint": "Moyenne de (5j + 10j) / 2 sur les meilleurs matches — descriptif, pas une prévision.",
-    "currentSetup": "Setup à la date d’ancrage",
-    "volumeRatio": "Volume vs. moy. 20j",
-    "priceChange": "Variation de prix 1j",
-    "trend": "Tendance (MA10 vs MA20)",
-    "trend.up": "Haussière",
-    "trend.down": "Baissière",
-    "trend.flat": "Neutre",
-    "matchesTitle": "Top 5 correspondances historiques",
-    "similarity": "Similarité",
-    "outcome5d": "{{value}} après 5 jours",
-    "outcome10d": "{{value}} après 10 jours",
-    "noMatches": "Aucun setup similaire dans la fenêtre analysée.",
-    "errorSymbol": "Saisissez un symbole."
-  },
-  "trackrecord": {
-    "title": "Anonymous Track Record",
-    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Generate my Track Record",
-    "cardTitle": "Your public Track Record",
-    "winRate": "Win rate",
-    "totalTrades": "Total trades",
-    "avgReturn": "Average return",
-    "bestTradePct": "Best trade",
-    "worstTradePct": "Worst trade",
-    "generatedAt": "Generated at",
-    "shareLinkLabel": "Public link",
-    "copyButton": "Copy share link",
-    "copyFailed": "Failed to copy share link.",
-    "copied": "Link copied"
-  },
-  "digest": {
-    "title": "Daily Digest",
-    "subtitle": "Generate your AI market recap and send a test email instantly.",
-    "previewButton": "Preview my digest",
-    "sendButton": "Send test email",
-    "cardDateLabel": "Digest date",
-    "emptyState": "Click preview to generate today's digest.",
-    "emailSent": "Test email sent for {{date}}."
-  },
-  "strategydna": {
-    "title": "Strategy DNA Match",
-    "subtitle": "AI compares your paper trading style with legendary investors.",
-    "mainResultLabel": "Your style is",
-    "primary": "Primary match",
-    "secondary": "Secondary match",
-    "insightLabel": "AI Insight",
-    "notEnoughData": "You need at least 20 closed trades.",
-    "legends": {
-      "BUFFETT": "Buffett",
-      "LYNCH": "Lynch",
-      "GREENBLATT": "Greenblatt",
-      "SOROS": "Soros"
-    },
-    "fromMistakesTitle": "Context from Mistake Library",
-    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster."
-  },
-  "earnings": {
-    "title": "Earnings Surprise Predictor",
-    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "predictButton": "Predict",
-    "validationSymbol": "Please provide a valid symbol.",
-    "resultFor": "Prediction for",
-    "confidence": "Confidence",
-    "reasoning": "AI reasoning",
-    "nextDate": "Next earnings date",
-    "noDate": "Date unavailable"
-  },
-  "insider": {
-    "title": "Insider Mirror",
-    "subtitle": "Track recent buying and selling by company insiders.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchButton": "Mirror insiders",
-    "validationSymbol": "Please provide a valid symbol.",
-    "resultFor": "Insider activity for",
-    "insight": "AI Insight",
-    "transactionsTitle": "Transactions (last 30 days, > $50k)",
-    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
-    "colName": "Name",
-    "colRole": "Role",
-    "colAction": "Action",
-    "colValue": "Value",
-    "colDate": "Date",
-    "actionBuy": "BUY",
-    "actionSell": "SELL",
-    "sentimentBuy": "Net buying",
-    "sentimentSell": "Net selling",
-    "sentimentNeutral": "Neutral"
-  },
-  "mentor": {
-    "toggleLabel": "Mentor Mode",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "panelTitle": "AI Mentor",
-    "loading": "Generating mentor guidance...",
-    "riskCheckLabel": "Risk check",
-    "settingsTitle": "Mentor Mode Settings",
-    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
-    "currentStatus": "Current status",
-    "enableAction": "Enable",
-    "disableAction": "Disable",
-    "styleLabel": "Mentor style",
-    "styleSupportive": "Supportive",
-    "styleStrict": "Strict",
-    "guidanceUnavailable": "Les conseils du mentor ne sont pas encore disponibles (404 sur l’endpoint)."
-  },
-  "mirror": {
-    "title": "Mirror Trading",
-    "subtitle": "Suivez les traders ayant activé le mirror. Statistiques sur les trades paper clôturés.",
-    "topTraders": "Top traders",
-    "winRate": "Win rate",
-    "totalTrades": "Nombre de trades",
-    "followers": "Abonnés",
-    "follow": "Suivre",
-    "unfollow": "Ne plus suivre",
-    "myFollowing": "Mes suivis",
-    "loadError": "Impossible de charger les données mirror.",
-    "actionError": "Action échouée. Réessayez.",
-    "settingsTitle": "Enable Mirror Trading",
-    "settingsSubtitle": "Permettez à d’autres de suivre votre profil paper trading. Partage de revenus pour facturation future (0–50%).",
-    "toggleLabel": "Accepter les abonnés mirror",
-    "revenueShare": "Partage des revenus",
-    "revenueShareHint": "0–50%",
-    "saving": "Enregistrement…",
-    "saved": "Enregistré",
-    "noTopTraders": "Personne n’a encore activé le mirror trading.",
-    "itsYou": "Vous"
-  },
-  "discord": {
-    "title": "Discord Auto-Sync",
-    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
-    "webhookLabel": "Discord webhook URL",
-    "webhookPlaceholder": "https://discord.com/api/webhooks/...",
-    "saveButton": "Save",
-    "testButton": "Test webhook",
-    "active": "Webhook active",
-    "inactive": "Webhook inactive",
-    "loadError": "Failed to load webhook settings.",
-    "saveSuccess": "Webhook saved.",
-    "saveError": "Failed to save webhook.",
-    "testSuccess": "Test message sent.",
-    "testError": "Failed to send test message."
-  },
-  "emotional": {
-    "widgetTitle": "Emotional state",
-    "alertTitle": "Break recommended",
-    "lastChecked": "Last checked",
-    "level": {
-      "LOW": "Low",
-      "MEDIUM": "Medium",
-      "HIGH": "High"
-    }
-  },
-  "skilltree": {
-    "title": "Skill Tree",
-    "subtitle": "Unlock trading skills as your activity grows.",
-    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
-    "checkProgress": "Check progress",
-    "celebrationTitle": "New skills unlocked!",
-    "newlyUnlockedLabel": "Recently unlocked:",
-    "unlockedAt": "Unlocked: {{date}}",
-    "skills": {
-      "BASICS": {
-        "name": "Basics",
-        "description": "You understand how stocks and exchanges work.",
-        "condition": "Always unlocked"
-      },
-      "SUPPORT_RESISTANCE": {
-        "name": "Support & Resistance",
-        "description": "You understand support and resistance.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "RSI": {
-        "name": "RSI",
-        "description": "You understand RSI.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "MACD": {
-        "name": "MACD",
-        "description": "You understand MACD.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "FIBONACCI": {
-        "name": "Fibonacci",
-        "description": "You understand Fibonacci levels.",
-        "condition": "At least 10 closed paper trades"
-      },
-      "VOLUME": {
-        "name": "Volume",
-        "description": "You understand volume.",
-        "condition": "At least 10 closed paper trades"
-      },
-      "RISK_MANAGEMENT": {
-        "name": "Risk management",
-        "description": "You apply position sizing.",
-        "condition": "Position Size Calculator: at least 3 uses"
-      },
-      "BEHAVIORAL": {
-        "name": "Behavioral",
-        "description": "You keep emotions in check while trading.",
-        "condition": "At least 1 entry in Mistake Library"
-      },
-      "DIVERSIFICATION": {
-        "name": "Diversification",
-        "description": "You understand diversification.",
-        "condition": "At least 3 unique symbols in paper trades"
-      },
-      "STRATEGY": {
-        "name": "Strategy",
-        "description": "You follow a coherent strategy.",
-        "condition": "Min. 20 trades and win rate > 40%"
-      }
-    }
-  },
-  "volatility": {
-    "title": "Volatility Heat Map",
-    "subtitle": "Compare monthly volatility across years for a selected symbol.",
-    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchAction": "Load heat map",
-    "symbol": "Symbol",
-    "year": "Year",
-    "mostVolatileMonth": "Most volatile month",
-    "leastVolatileMonth": "Least volatile month",
-    "noData": "No data",
-    "legendTitle": "Legend",
-    "legendLow": "Low volatility",
-    "legendHigh": "High volatility",
-    "months": {
-      "jan": "Jan",
-      "feb": "Feb",
-      "mar": "Mar",
-      "apr": "Apr",
-      "may": "May",
-      "jun": "Jun",
-      "jul": "Jul",
-      "aug": "Aug",
-      "sep": "Sep",
-      "oct": "Oct",
-      "nov": "Nov",
-      "dec": "Dec"
-    },
-    "tooltip": {
-      "volatility": "Volatility",
-      "avgReturn": "Avg. return"
-    },
-    "errors": {
-      "symbolRequired": "Please enter a symbol."
-    }
-  },
-  "newshalflife": {
-    "title": "News Half-Life Score",
-    "subtitle": "Estimate how quickly each news item loses impact on price.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchButton": "Analyze news",
-    "mostImpactful": "Most impactful news",
-    "halfLifeDaysLabel": "Half-life: {{days}} days",
-    "halfLifeDaysBadge": "{{days}} days",
-    "expired": "Expired",
-    "categoryLabel": "Category",
-    "reasonLabel": "Reason",
-    "remainingLabel": "Time left",
-    "empty": "No recent news found for this symbol."
-  },
-  "pearls": {
-    "quoteFreshness": "Quote freshness",
-    "quoteChip": "{{age}} old · {{source}}",
-    "decisionTrailTitle": "Decision trail",
-    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
-    "receiptProceed": "Pre-Mortem → opened anyway",
-    "receiptLoss": "Closed at a loss",
-    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
-    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
-    "summaryTotal": "Recorded decisions",
-    "summaryProceedRate": "Pre-Mortem proceed rate",
-    "summaryWorstLoss": "Largest realized loss"
-  },
-  "dividendcompound": {
-    "title": "Calculateur d'Intérêts Composés sur Dividendes",
-    "subtitle": "Simulez la croissance du portefeuille avec et sans réinvestissement des dividendes.",
-    "initialAmount": "Capital initial (PLN)",
-    "monthlyContribution": "Versement mensuel (PLN)",
-    "dividendYield": "Rendement du dividende (%)",
-    "years": "Horizon (années)",
-    "yearsValue": "{{count}} ans",
-    "calculate": "Calculer",
-    "withReinvesting": "Avec réinvestissement",
-    "withoutReinvesting": "Sans réinvestissement",
-    "difference": "Différence (bonus composé)",
-    "chartTitle": "Valeur du portefeuille année par année",
-    "axisYear": "Année",
-    "tooltipYear": "Année {{year}}"
-  },
-  "psyche": {
-    "title": "Trader Psyche",
-    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
-    "refresh": "Refresh my profile",
-    "dnaTitle": "Trader DNA",
-    "growthScore": "Growth score",
-    "tradingStyle": "Trading style",
-    "topBiases": "Top biases",
-    "goodConditions": "Good conditions",
-    "badConditions": "Bad conditions",
-    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
-    "rulesTitle": "My trading rules",
-    "rulePlaceholder": "Add a rule",
-    "addRule": "Add rule",
-    "breaches": "Breaches",
-    "deleteRule": "Delete",
-    "decisionLogTitle": "Decision log (last 10)",
-    "colDate": "Date",
-    "colSymbol": "Symbol",
-    "colAction": "Action",
-    "colMood": "Mood",
-    "colCompliance": "Plan compliance",
-    "complianceYes": "Yes",
-    "complianceNo": "No",
-    "complianceUnknown": "—",
-    "emptyLogs": "No entries yet."
-  },
-  "home": {
-    "title": "Companies",
-    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
-    "searchPlaceholder": "Search by name or symbol...",
-    "emptySelectSector": "Choose a sector or run a search to see companies.",
-    "emptySector": "No companies in this sector yet.",
-    "sectorLabel": "Sector"
-  },
-  "sector": {
-    "all": "All",
-    "technology": "Technology",
-    "financialServices": "Financial Services",
-    "healthcare": "Healthcare",
-    "consumerCyclical": "Consumer Cyclical",
-    "industrials": "Industrials",
-    "energy": "Energy",
-    "communicationServices": "Communication Services",
-    "consumerDefensive": "Consumer Defensive",
-    "utilities": "Utilities",
-    "realEstate": "Real Estate",
-    "basicMaterials": "Basic Materials"
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
-    "companiesTitle": "Companies",
-    "companiesDesc": "Search and sector grid with logos.",
-    "signalsTitle": "Signals",
-    "signalsDesc": "Coming soon - screener and AI scores.",
-    "portfolioTitle": "Portfolio",
-    "portfolioDesc": "Coming soon - watchlists and alerts."
-  },
-  "watchlist": {
-    "follow": "♡ Follow",
-    "following": "♥ Following",
-    "yours": "Your watchlist",
-    "empty": "You are not observing any companies yet.",
-    "symbol": "Symbol",
-    "lastPrice": "Last price",
-    "changePct": "Change %"
-  },
-  "dividendsPage": {
-    "title": "Dividend screening (MVP)",
-    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
-    "historyTitle": "Dividend history",
-    "symbol": "Symbol",
-    "yearsBack": "Years back",
-    "fetch": "Fetch",
-    "exDate": "Ex-date",
-    "payDate": "Pay date",
-    "amount": "Amount",
-    "yield": "Yield %",
-    "emptyHistory": "No rows yet - run seed or change filters.",
-    "screenerTitle": "Screener: dividend growth (CAGR)",
-    "minYears": "Min. years of history",
-    "minYield": "Min. yield %",
-    "refresh": "Refresh",
-    "dataLocation": "in",
-    "screenerLoading": "Loading screener…",
-    "screenerEmpty": "No results for selected filters.",
-    "tableYear": "Year",
-    "tableAnnualDividend": "Annual dividend",
-    "tableGrowthYoy": "Growth YoY %",
-    "taxTitle": "Dividend tax (PIT 19%)",
-    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
-    "taxShares": "Number of shares",
-    "taxReferencePrice": "Price (reference)",
-    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
-    "taxYieldAlternative": "Alternative: annual yield % (optional)",
-    "taxYieldPlaceholder": "e.g. 2.5",
-    "taxCalculating": "Calculating…",
-    "taxCalculate": "Calculate",
-    "taxMethod": "Method",
-    "taxGrossDividend": "Gross dividend",
-    "taxRateLabel": "Tax ({{rate}}%)",
-    "taxNet": "Net"
-  },
-  "company": {
-    "loading": "Loading company...",
-    "backHome": "<- Back home",
-    "backToCompanies": "← Entreprises",
-    "sector": "Sector",
-    "industry": "Industry",
-    "website": "Website",
-    "chartTitle": "Close - recent history",
-    "close": "Close",
-    "noQuoteHistory": "No quote history yet.",
-    "recentNews": "Recent news",
-    "noNews": "No news rows in database yet."
-  },
-  "dividendIntelligence": {
-    "title": "Dividend Intelligence",
-    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
-    "symbol": "Symbol",
-    "sectorPercentile": "Sector percentile",
-    "vsPeers": "(vs peers in sector)"
-  },
   "affiliate": {
-    "disclosure": {
-      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
-      "title": "StockAI Pro transparency",
-      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
-      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider."
-    },
     "cta": {
       "buy_through": "Buy {{ticker}} via {{broker}}",
       "open_account": "Open account with {{broker}}",
       "other_options": "Other options ({{count}})"
     },
+    "disclosure": {
+      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider.",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
+      "title": "StockAI Pro transparency"
+    },
     "modal": {
-      "title": "Choose a broker",
-      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "close": "Close",
       "select": "Select",
-      "close": "Close"
-    }
-  },
-  "etoro": {
-    "cta": "Ouvrez un compte eToro",
-    "subtitle": "Négociez des actions via un courtier agréé",
-    "company": {
-      "title": "Trade this stock",
-      "button": "Open account on eToro",
-      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money."
-    },
-    "alpaca": {
-      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
-      "button": "Try eToro"
-    },
-    "settings": {
-      "sectionTitle": "Recommended Brokers",
-      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
-      "cardTitle": "eToro",
-      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
-      "button": "Learn more & open account"
+      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "title": "Choose a broker"
     }
   },
   "alpaca": {
-    "title": "Alpaca Trading",
-    "connectBanner": "Connect your Alpaca account in Settings",
     "account": "Account",
-    "modePaper": "PAPER",
-    "modeLive": "LIVE",
-    "buyingPower": "Buying power",
-    "portfolioValue": "Portfolio value",
-    "cash": "Cash",
-    "quickTrade": "Quick Trade",
-    "symbol": "Symbol",
-    "buy": "Buy",
-    "sell": "Sell",
-    "positions": "Positions",
-    "avgPrice": "Avg Price",
-    "currentPrice": "Current Price",
-    "noPositions": "No open positions",
-    "orders": "Orders",
-    "qty": "Qty",
-    "status": "Status",
-    "side": "Side",
-    "noOrders": "No recent orders",
-    "cancel": "Cancel",
-    "equityCurve": "Equity curve (30d)",
-    "confirmTrade": "Confirm Trade",
-    "premortem": "Pre-Mortem",
-    "confirm": "Confirm",
-    "settingsTitle": "Alpaca",
-    "settingsSubtitle": "Connect Alpaca API keys and choose account mode.",
     "apiKey": "API Key",
     "apiSecret": "API Secret",
+    "avgPrice": "Avg Price",
+    "buy": "Buy",
+    "buyingPower": "Buying power",
+    "cancel": "Cancel",
+    "cash": "Cash",
+    "confirm": "Confirm",
+    "confirmTrade": "Confirm Trade",
+    "connectBanner": "Connect your Alpaca account in Settings",
+    "connected": "Connected",
+    "connectionError": "Connection error",
+    "currentPrice": "Current Price",
+    "equityCurve": "Equity curve (30d)",
     "mode": "Mode",
-    "testConnection": "Test connection",
+    "modeLive": "LIVE",
+    "modePaper": "PAPER",
+    "noOrders": "No recent orders",
+    "noPositions": "No open positions",
+    "orders": "Orders",
+    "portfolioValue": "Portfolio value",
+    "positions": "Positions",
+    "premortem": "Pre-Mortem",
+    "qty": "Qty",
+    "quickTrade": "Quick Trade",
+    "sell": "Sell",
     "settingsLoadError": "Failed to load Alpaca settings.",
     "settingsSaved": "Saved",
     "settingsSaveError": "Failed to save Alpaca settings.",
-    "connected": "Connected",
-    "connectionError": "Connection error"
+    "settingsSubtitle": "Connect Alpaca API keys and choose account mode.",
+    "settingsTitle": "Alpaca",
+    "side": "Side",
+    "status": "Status",
+    "symbol": "Symbol",
+    "testConnection": "Test connection",
+    "title": "Alpaca Trading"
   },
-  "checkin": {
-    "title": "Daily Check-In",
-    "subtitle": "Set your mindset before the market opens.",
-    "moodLabel": "Mood",
-    "planLabel": "What is your plan today?",
-    "planPlaceholder": "Optional...",
-    "submit": "Start trading day",
-    "submitting": "Saving...",
-    "error": "Could not save check-in. Please try again.",
-    "risk": {
-      "LOW": "LOW",
-      "MEDIUM": "MEDIUM",
-      "HIGH": "HIGH"
-    }
+  "alpha": {
+    "aiSummaryEmpty": "Aucun résumé IA disponible.",
+    "aiSummaryTitle": "Résumé IA",
+    "colDescription": "Description",
+    "colEnd": "Fin",
+    "colStart": "Début",
+    "earningsCycle": "Cycle des Résultats",
+    "emptyTickerRows": "Aucune fenêtre pour ce ticker.",
+    "historicalReturn": "Rendement Historique",
+    "probability": "Probabilité",
+    "regimeShift": "Changement de Régime",
+    "seasonal": "Saisonnier",
+    "sectorRotation": "Rotation Sectorielle",
+    "subtitleNext48h": "48 h suivantes",
+    "tickerLabel": "Ticker",
+    "tickerPlaceholder": "ex. AAPL",
+    "title": "Alpha Calendar",
+    "windows": "Fenêtres de Probabilité"
   },
-  "reflection": {
-    "title": "Post-Trade Reflection",
-    "subtitle": "Close {{symbol}} and capture one quick reflection.",
-    "timer": "{{seconds}}s",
-    "followedPlan": "I traded according to my plan",
-    "yes": "Yes",
-    "no": "No",
-    "emotion": "Emotion",
-    "lesson": "What did I learn?",
-    "lessonPlaceholder": "Optional (max 100 characters)",
-    "saveAndClose": "Save & Close",
-    "skip": "Skip",
-    "aiTitle": "AI Insight",
-    "saveError": "Reflection was not saved.",
-    "emotions": {
-      "FRUSTRATION": "😤 Frustration",
-      "FEAR": "😰 Fear",
-      "CONFIDENT": "😊 Confident",
-      "NEUTRAL": "😐 Neutral",
-      "GREEDY": "🤑 Greedy"
-    }
-  },
-  "weekly": {
-    "title": "Weekly Review",
-    "subtitle": "Review your discipline and close the week with an AI growth letter.",
-    "submit": "Submit week",
-    "submitting": "Submitting...",
-    "generating": "Generating your letter...",
-    "aiLetterTitle": "Your AI Growth Letter",
-    "aiLetterEmpty": "No letter yet for this week.",
-    "historyTitle": "Last 8 weeks",
-    "emptyHistory": "No weekly reviews yet.",
-    "growthScore": "Growth score",
-    "weekOf": "Week of",
-    "questions": {
-      "q1": "Did you trade according to your rules?",
-      "q2": "Was there any overtrading or revenge trading moment?",
-      "q3": "How do you rate your stop-loss discipline?",
-      "q4": "What was your biggest lesson this week?",
-      "q5": "What will you do differently next week?"
-    },
-    "placeholders": {
-      "q4": "Describe your key lesson...",
-      "q5": "Describe your commitment for next week..."
-    }
-  },
-  "landing": {
-    "hero": {
-      "title": "Plateforme d'investissement nouvelle génération",
-      "subtitle": "Recherche IA · Coaching comportemental · 12 bourses · 9 langues",
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
-      "widgetTitle": "Live market pulse",
-      "widgetLive": "Live"
-    },
-    "problem": {
-      "title": "Why investors get stuck",
-      "cards": {
-        "apps": {
-          "title": "You use 5-6 apps",
-          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity."
-        },
-        "emotions": {
-          "title": "Emotions cost you money",
-          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes."
-        },
-        "memory": {
-          "title": "No one remembers your mistakes",
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
-        },
-        "context": {
-          "title": "Vous manquez de contexte",
-          "body": "Vous voyez un signal, mais vous ne savez pas si le marché est favorable ni si le timing est le bon."
-        }
-      }
-    },
-    "solution": {
-      "title": "One platform built for investor growth",
-      "features": {
-        "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": {
-          "title": "Behavioral Coach",
-          "body": "Détecte vos erreurs et vous aide à éviter de les répéter."
-        },
-        "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": {
-          "title": "12 Global Markets",
-          "body": "GPW, NYSE, DAX, TSE, NSE et plus encore. Sans changer d'application."
-        },
-        "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages",
-        "aiBrief": {
-          "title": "AI Brief avec narration",
-          "body": "Pas seulement un score : une explication complète de pourquoi c'est pertinent, ou non."
-        },
-        "signalDna": {
-          "title": "Signal DNA",
-          "body": "Des jumeaux historiques de setup : comment ce setup s'est terminé dans le passé."
-        },
-        "preMortemAi": {
-          "title": "Pre-Mortem AI",
-          "body": "Avant d'acheter, l'IA montre le scénario de perte le plus probable."
-        },
-        "paperTrading": {
-          "title": "Paper Trading",
-          "body": "Entraînez-vous sans risque. Apprenez d’erreurs qui ne coûtent rien."
-        }
-      }
-    },
-    "socialProof": {
-      "title": "Join our early access community",
-      "subtitle": "Early access community growing every week.",
-      "testimonials": [
-        {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
-        },
-        {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
-        },
-        {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
-        }
-      ],
-      "stats": {
-        "exchanges": "130+ bourses",
-        "modules": "27 modules IA",
-        "languages": "9 langues",
-        "adFree": "100 % sans publicité"
-      }
-    },
-    "pricing": {
-      "title": "Simple pricing",
-      "tiers": {
-        "free": {
-          "name": "Free",
-          "price": "$0/mo",
-          "body": "Basic features to start building consistency.",
-          "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
-          ],
-          "cta": "Start free"
-        },
-        "pro": {
-          "name": "Pro",
-          "price": "$9/mo",
-          "body": "Full access for active investors.",
-          "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
-          ],
-          "cta": "Choose Pro"
-        },
-        "proPlus": {
-          "name": "Pro+",
-          "price": "$19/mo",
-          "body": "For power users and automation workflows.",
-          "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
-          ],
-          "cta": "Choose Pro+"
-        }
-      },
-      "badge": "Prix Early Adopter",
-      "earlyAdopter": "Les 500 premiers comptes Pro restent à $9/mois pour toujours",
-      "monthly": "mensuel",
-      "yearly": "annuel",
-      "save": "Économisez 27%",
-      "saveProPlus": "Économisez 34%",
-      "popular": "Le plus populaire",
-      "trial": "14 jours gratuits"
-    },
-    "footerCta": {
-      "title": "Start your free account today",
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk."
-    }
+  "analysisBrief": {
+    "englishSection": "Anglais",
+    "title": "Brief IA",
+    "updated": "Mis à jour"
   },
   "auth": {
     "email": "E-mail",
@@ -1238,10 +97,1151 @@
     "registerLoading": "Inscription...",
     "registerTitle": "Inscription"
   },
+  "backtest": {
+    "avgReturn": "Rendement moy.",
+    "colAction": "Action",
+    "colDate": "Date",
+    "colOutcome": "Résultat (5 j.)",
+    "colPrice": "Prix",
+    "maxDrawdown": "Max drawdown",
+    "months12": "12 mois",
+    "months3": "3 mois",
+    "months6": "6 mois",
+    "monthsSuffix": "mois",
+    "period": "Période",
+    "resultsTitle": "Résultats",
+    "runButton": "Run backtest",
+    "sharpeRatio": "Sharpe ratio",
+    "strategy": "Stratégie",
+    "strategyBreakout": "Breakout (vs. plus haut 20 j.)",
+    "strategyRsi": "RSI survendu (< 30)",
+    "strategyVolume": "Pic de volume (> 2× moy. 20 j.)",
+    "subtitle": "Fenêtres 30 jours ; signaux basés uniquement sur le passé ; résultat = clôture à J+5 vs. entrée.",
+    "symbol": "Symbole",
+    "title": "Walk-Forward Backtest",
+    "totalTrades": "Nombre de trades",
+    "tradesTableTitle": "Trades",
+    "winRate": "Win rate"
+  },
+  "checkin": {
+    "error": "Could not save check-in. Please try again.",
+    "moodLabel": "Mood",
+    "planLabel": "What is your plan today?",
+    "planPlaceholder": "Optional...",
+    "risk": {
+      "HIGH": "HIGH",
+      "LOW": "LOW",
+      "MEDIUM": "MEDIUM"
+    },
+    "submit": "Start trading day",
+    "submitting": "Saving...",
+    "subtitle": "Set your mindset before the market opens.",
+    "title": "Daily Check-In"
+  },
+  "coach": {
+    "aiCoach": "Le Coach IA dit",
+    "aiDescriptionEmpty": "Pas encore de contenu du coach IA.",
+    "avgHoldLoss": "Durée moy. (perdants)",
+    "avgHoldWin": "Durée moy. (gagnants)",
+    "avgLoss": "Perte Moyenne",
+    "avgWin": "Gain Moyen",
+    "biasCutsBody": "Vous fermez les gains après ~{{winHours}} h en moyenne, mais gardez les pertes ~{{lossHours}} h.",
+    "biases": "Biais Détectés",
+    "biasHoldsBody": "Perte moy. : {{lossPct}}%; durée en trades perdants : {{lossHours}} h.",
+    "biasOverBody": "Plus de {{maxTrades}} trades sur les dernières 24 h.",
+    "chartAvgLoss": "Avg. loss %",
+    "chartAvgWin": "Avg. win %",
+    "cutsWinners": "Coupe les Gagnants Trop Tôt",
+    "holdsLosers": "Garde les Perdants Trop Longtemps",
+    "noBiases": "Aucun biais détecté",
+    "overtrading": "Overtrading",
+    "title": "Coach Comportemental",
+    "traderProfile": "Profil du Trader"
+  },
+  "common": {
+    "apiLiveBadge": "Live API",
+    "apiMockBadge": "Mock fallback active",
+    "buy": "Acheter",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "error": "Erreur",
+    "high": "High",
+    "loading": "Chargement...",
+    "low": "Low",
+    "medium": "Medium",
+    "noData": "Aucune donnée disponible",
+    "notAvailable": "n/a",
+    "open": "Ouvrir",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "search": "Rechercher",
+    "sell": "Vendre"
+  },
+  "company": {
+    "backHome": "<- Back home",
+    "backToCompanies": "← Entreprises",
+    "chartTitle": "Close - recent history",
+    "close": "Close",
+    "industry": "Industry",
+    "loading": "Loading company...",
+    "noNews": "No news rows in database yet.",
+    "noQuoteHistory": "No quote history yet.",
+    "recentNews": "Recent news",
+    "sector": "Sector",
+    "website": "Website"
+  },
+  "concentration": {
+    "chartBySector": "Répartition par secteur",
+    "chartByStock": "Répartition par entreprise",
+    "colSector": "Secteur",
+    "colTicker": "Ticker",
+    "colValue": "Valeur",
+    "colWeight": "Poids %",
+    "currency": "Devise affichée",
+    "empty": "Ouvrez des positions en Paper Trading pour voir l’analyse.",
+    "positionCount": "Trades paper ouverts",
+    "positionsTable": "Positions et poids",
+    "scoreLabel": "Score de diversification (0–100)",
+    "title": "Concentration du portefeuille",
+    "totalValue": "Valeur totale du portefeuille",
+    "value": "Valeur",
+    "warnings": {
+      "SINGLE_SECTOR": "Le secteur {{sector}} représente {{weight}}% du portefeuille (max. recommandé {{maxSector}}%).",
+      "SINGLE_STOCK": "{{ticker}} représente {{weight}}% du portefeuille (max. recommandé {{maxStock}}%).",
+      "TOP_HEAVY": "Les 3 principales valeurs représentent {{top3Share}}% du portefeuille."
+    }
+  },
   "cookie": {
-    "message": "Nous utilisons des cookies pour améliorer votre expérience. Vous pouvez tout accepter ou seulement les cookies nécessaires.",
     "acceptAll": "Tout accepter",
+    "message": "Nous utilisons des cookies pour améliorer votre expérience. Vous pouvez tout accepter ou seulement les cookies nécessaires.",
     "necessaryOnly": "Nécessaires uniquement",
     "privacyLink": "Politique de confidentialité"
+  },
+  "cooldown": {
+    "inactive": "Aucune pause active",
+    "title": "Pause après série de pertes",
+    "unlocksIn": "Déverrouillage dans"
+  },
+  "correlation": {
+    "aiInsight": "AI Insight",
+    "analyze": "Analyze correlation",
+    "colCorrelation": "Correlation",
+    "colSymbol": "Symbol",
+    "colWarning": "Warning",
+    "highRiskPairs": "High-risk pairs (> 0.7)",
+    "mainSymbol": "Main symbol",
+    "noHighRiskPairs": "No high-risk pair detected.",
+    "portfolioSymbols": "Portfolio symbols (comma separated)",
+    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
+    "tableTitle": "Correlation results",
+    "title": "Correlation Scanner",
+    "validation": "Provide a main symbol and at least one portfolio symbol.",
+    "warningHighRisk": "High risk",
+    "warningLowRisk": "OK"
+  },
+  "crowdwisdom": {
+    "analyze": "Analyze",
+    "divergence": "Divergence (insider - retail)",
+    "insiderActivity": "Insider Activity",
+    "result": "Signal",
+    "retailSentiment": "Retail Sentiment",
+    "signalBuy": "Contrarian Buy",
+    "signalNeutral": "Neutral",
+    "signalSell": "Contrarian Sell",
+    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
+    "symbol": "Symbol",
+    "title": "Crowd Wisdom Inverter"
+  },
+  "dashboard": {
+    "companiesDesc": "Search and sector grid with logos.",
+    "companiesTitle": "Companies",
+    "portfolioDesc": "Coming soon - watchlists and alerts.",
+    "portfolioTitle": "Portfolio",
+    "signalsDesc": "Coming soon - screener and AI scores.",
+    "signalsTitle": "Signals",
+    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
+    "title": "Dashboard"
+  },
+  "digest": {
+    "cardDateLabel": "Digest date",
+    "emailSent": "Test email sent for {{date}}.",
+    "emptyState": "Click preview to generate today's digest.",
+    "previewButton": "Preview my digest",
+    "sendButton": "Send test email",
+    "subtitle": "Generate your AI market recap and send a test email instantly.",
+    "title": "Daily Digest"
+  },
+  "discord": {
+    "active": "Webhook active",
+    "inactive": "Webhook inactive",
+    "loadError": "Failed to load webhook settings.",
+    "saveButton": "Save",
+    "saveError": "Failed to save webhook.",
+    "saveSuccess": "Webhook saved.",
+    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
+    "testButton": "Test webhook",
+    "testError": "Failed to send test message.",
+    "testSuccess": "Test message sent.",
+    "title": "Discord Auto-Sync",
+    "webhookLabel": "Discord webhook URL",
+    "webhookPlaceholder": "https://discord.com/api/webhooks/..."
+  },
+  "dividend": {
+    "colAnnual": "Dividende annuel",
+    "colCagr": "CAGR 5Y %",
+    "colGrowth": "Croissance YoY %",
+    "colSymbol": "Symbol",
+    "colYear": "Année",
+    "colYield": "Yield %",
+    "exDate": "Date Ex",
+    "fetch": "Récupérer",
+    "health": "Score de Santé",
+    "history": "Historique des dividendes",
+    "minYears": "Min. années d'historique",
+    "minYield": "Min. rendement %",
+    "noData": "Aucune donnée – ajustez les filtres",
+    "payoutRatio": "Taux de Distribution",
+    "refresh": "Actualiser",
+    "risky": "Risqué",
+    "safe": "Sûr",
+    "screener": "Screener : croissance des dividendes (CAGR)",
+    "symbol": "Symbol",
+    "title": "Screener de dividendes",
+    "trend": "Tendance",
+    "watch": "Surveiller",
+    "years": "Années de Croissance",
+    "yearsBack": "Années en arrière",
+    "yield": "Rendement du Dividende"
+  },
+  "dividendcompound": {
+    "axisYear": "Année",
+    "calculate": "Calculer",
+    "chartTitle": "Valeur du portefeuille année par année",
+    "difference": "Différence (bonus composé)",
+    "dividendYield": "Rendement du dividende (%)",
+    "initialAmount": "Capital initial (PLN)",
+    "monthlyContribution": "Versement mensuel (PLN)",
+    "subtitle": "Simulez la croissance du portefeuille avec et sans réinvestissement des dividendes.",
+    "title": "Calculateur d'Intérêts Composés sur Dividendes",
+    "tooltipYear": "Année {{year}}",
+    "withoutReinvesting": "Sans réinvestissement",
+    "withReinvesting": "Avec réinvestissement",
+    "years": "Horizon (années)",
+    "yearsValue": "{{count}} ans"
+  },
+  "dividendIntelligence": {
+    "sectorPercentile": "Sector percentile",
+    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
+    "symbol": "Symbol",
+    "title": "Dividend Intelligence",
+    "vsPeers": "(vs peers in sector)"
+  },
+  "dividendsPage": {
+    "amount": "Amount",
+    "dataLocation": "in",
+    "emptyHistory": "No rows yet - run seed or change filters.",
+    "exDate": "Ex-date",
+    "fetch": "Fetch",
+    "historyTitle": "Dividend history",
+    "minYears": "Min. years of history",
+    "minYield": "Min. yield %",
+    "payDate": "Pay date",
+    "refresh": "Refresh",
+    "screenerEmpty": "No results for selected filters.",
+    "screenerLoading": "Loading screener…",
+    "screenerTitle": "Screener: dividend growth (CAGR)",
+    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
+    "symbol": "Symbol",
+    "tableAnnualDividend": "Annual dividend",
+    "tableGrowthYoy": "Growth YoY %",
+    "tableYear": "Year",
+    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
+    "taxCalculate": "Calculate",
+    "taxCalculating": "Calculating…",
+    "taxGrossDividend": "Gross dividend",
+    "taxMethod": "Method",
+    "taxNet": "Net",
+    "taxRateLabel": "Tax ({{rate}}%)",
+    "taxReferencePrice": "Price (reference)",
+    "taxShares": "Number of shares",
+    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
+    "taxTitle": "Dividend tax (PIT 19%)",
+    "taxYieldAlternative": "Alternative: annual yield % (optional)",
+    "taxYieldPlaceholder": "e.g. 2.5",
+    "title": "Dividend screening (MVP)",
+    "yearsBack": "Years back",
+    "yield": "Yield %"
+  },
+  "earnings": {
+    "confidence": "Confidence",
+    "nextDate": "Next earnings date",
+    "noDate": "Date unavailable",
+    "predictButton": "Predict",
+    "reasoning": "AI reasoning",
+    "resultFor": "Prediction for",
+    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "Earnings Surprise Predictor",
+    "validationSymbol": "Please provide a valid symbol."
+  },
+  "emotional": {
+    "alertTitle": "Break recommended",
+    "lastChecked": "Last checked",
+    "level": {
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
+    },
+    "widgetTitle": "Emotional state"
+  },
+  "etoro": {
+    "alpaca": {
+      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
+      "button": "Try eToro"
+    },
+    "company": {
+      "button": "Open account on eToro",
+      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money.",
+      "title": "Trade this stock"
+    },
+    "cta": "Ouvrez un compte eToro",
+    "settings": {
+      "button": "Learn more & open account",
+      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
+      "cardTitle": "eToro",
+      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
+      "sectionTitle": "Recommended Brokers"
+    },
+    "subtitle": "Négociez des actions via un courtier agréé"
+  },
+  "glossary": {
+    "exampleLabel": "Example",
+    "loading": "Loading explanation...",
+    "popularTerms": "Popular terms",
+    "selectPrompt": "Select a term from the list to load its explanation.",
+    "subtitle": "Click a market term to get a short explanation and practical example.",
+    "title": "Translate Financial English"
+  },
+  "home": {
+    "emptySector": "No companies in this sector yet.",
+    "emptySelectSector": "Choose a sector or run a search to see companies.",
+    "searchPlaceholder": "Search by name or symbol...",
+    "sectorLabel": "Sector",
+    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
+    "title": "Companies"
+  },
+  "insider": {
+    "actionBuy": "BUY",
+    "actionSell": "SELL",
+    "colAction": "Action",
+    "colDate": "Date",
+    "colName": "Name",
+    "colRole": "Role",
+    "colValue": "Value",
+    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
+    "insight": "AI Insight",
+    "resultFor": "Insider activity for",
+    "searchButton": "Mirror insiders",
+    "sentimentBuy": "Net buying",
+    "sentimentNeutral": "Neutral",
+    "sentimentSell": "Net selling",
+    "subtitle": "Track recent buying and selling by company insiders.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "Insider Mirror",
+    "transactionsTitle": "Transactions (last 30 days, > $50k)",
+    "validationSymbol": "Please provide a valid symbol."
+  },
+  "landing": {
+    "footerCta": {
+      "button": "Create free account",
+      "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
+      "title": "Start your free account today"
+    },
+    "hero": {
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "See how it works",
+      "subtitle": "Recherche IA · Coaching comportemental · 12 bourses · 9 langues",
+      "title": "Plateforme d'investissement nouvelle génération",
+      "widgetLive": "Live",
+      "widgetTitle": "Live market pulse"
+    },
+    "pricing": {
+      "badge": "Prix Early Adopter",
+      "earlyAdopter": "Les 500 premiers comptes Pro restent à $9/mois pour toujours",
+      "monthly": "mensuel",
+      "popular": "Le plus populaire",
+      "save": "Économisez 27%",
+      "saveProPlus": "Économisez 34%",
+      "tiers": {
+        "free": {
+          "body": "Basic features to start building consistency.",
+          "cta": "Start free",
+          "features": [
+            "Core dashboard",
+            "Basic AI signals",
+            "Community access"
+          ],
+          "name": "Free",
+          "price": "$0/mo"
+        },
+        "pro": {
+          "body": "Full access for active investors.",
+          "cta": "Choose Pro",
+          "features": [
+            "All AI modules",
+            "Behavioral coaching",
+            "Trader psyche profile"
+          ],
+          "name": "Pro",
+          "price": "$9/mo"
+        },
+        "proPlus": {
+          "body": "For power users and automation workflows.",
+          "cta": "Choose Pro+",
+          "features": [
+            "Everything in Pro",
+            "API access",
+            "Broker integration"
+          ],
+          "name": "Pro+",
+          "price": "$19/mo"
+        }
+      },
+      "title": "Simple pricing",
+      "trial": "14 jours gratuits",
+      "yearly": "annuel"
+    },
+    "problem": {
+      "cards": {
+        "apps": {
+          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity.",
+          "title": "You use 5-6 apps"
+        },
+        "context": {
+          "body": "Vous voyez un signal, mais vous ne savez pas si le marché est favorable ni si le timing est le bon.",
+          "title": "Vous manquez de contexte"
+        },
+        "emotions": {
+          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes.",
+          "title": "Emotions cost you money"
+        },
+        "memory": {
+          "body": "Without a feedback loop, the same costly patterns repeat trade after trade.",
+          "title": "No one remembers your mistakes"
+        }
+      },
+      "title": "Why investors get stuck"
+    },
+    "socialProof": {
+      "stats": {
+        "adFree": "100 % sans publicité",
+        "exchanges": "130+ bourses",
+        "languages": "9 langues",
+        "modules": "27 modules IA"
+      },
+      "subtitle": "Early access community growing every week.",
+      "testimonials": [
+        {
+          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
+          "author": "Kasia, Warsaw"
+        },
+        {
+          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
+          "author": "Lukas, Berlin"
+        },
+        {
+          "quote": "The broker gateway plus AI context saves me time every single session.",
+          "author": "Clara, Madrid"
+        }
+      ],
+      "title": "Join our early access community"
+    },
+    "solution": {
+      "features": {
+        "aiBrief": {
+          "body": "Pas seulement un score : une explication complète de pourquoi c'est pertinent, ou non.",
+          "title": "AI Brief avec narration"
+        },
+        "behavioralCoach": {
+          "body": "Détecte vos erreurs et vous aide à éviter de les répéter.",
+          "title": "Behavioral Coach"
+        },
+        "brokerIntegration": "Broker Integration",
+        "globalMarkets": {
+          "body": "GPW, NYSE, DAX, TSE, NSE et plus encore. Sans changer d'application.",
+          "title": "12 Global Markets"
+        },
+        "languages": "9 Languages",
+        "paperTrading": {
+          "body": "Entraînez-vous sans risque. Apprenez d’erreurs qui ne coûtent rien.",
+          "title": "Paper Trading"
+        },
+        "preMortemAi": {
+          "body": "Avant d'acheter, l'IA montre le scénario de perte le plus probable.",
+          "title": "Pre-Mortem AI"
+        },
+        "signalAnalysis": "AI Signal Analysis",
+        "signalDna": {
+          "body": "Des jumeaux historiques de setup : comment ce setup s'est terminé dans le passé.",
+          "title": "Signal DNA"
+        },
+        "traderPsycheProfile": "Trader Psyche Profile"
+      },
+      "title": "One platform built for investor growth"
+    }
+  },
+  "mentor": {
+    "currentStatus": "Current status",
+    "disableAction": "Disable",
+    "disabled": "Disabled",
+    "enableAction": "Enable",
+    "enabled": "Enabled",
+    "guidanceUnavailable": "Les conseils du mentor ne sont pas encore disponibles (404 sur l’endpoint).",
+    "loading": "Generating mentor guidance...",
+    "panelTitle": "AI Mentor",
+    "riskCheckLabel": "Risk check",
+    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
+    "settingsTitle": "Mentor Mode Settings",
+    "styleLabel": "Mentor style",
+    "styleStrict": "Strict",
+    "styleSupportive": "Supportive",
+    "toggleLabel": "Mentor Mode"
+  },
+  "mirror": {
+    "actionError": "Action échouée. Réessayez.",
+    "follow": "Suivre",
+    "followers": "Abonnés",
+    "itsYou": "Vous",
+    "loadError": "Impossible de charger les données mirror.",
+    "myFollowing": "Mes suivis",
+    "noTopTraders": "Personne n’a encore activé le mirror trading.",
+    "revenueShare": "Partage des revenus",
+    "revenueShareHint": "0–50%",
+    "saved": "Enregistré",
+    "saving": "Enregistrement…",
+    "settingsSubtitle": "Permettez à d’autres de suivre votre profil paper trading. Partage de revenus pour facturation future (0–50%).",
+    "settingsTitle": "Enable Mirror Trading",
+    "subtitle": "Suivez les traders ayant activé le mirror. Statistiques sur les trades paper clôturés.",
+    "title": "Mirror Trading",
+    "toggleLabel": "Accepter les abonnés mirror",
+    "topTraders": "Top traders",
+    "totalTrades": "Nombre de trades",
+    "unfollow": "Ne plus suivre",
+    "winRate": "Win rate"
+  },
+  "mistakes": {
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "dnaContextLink": "Open Strategy DNA with these symbols",
+    "dnaRowLink": "Strategy DNA",
+    "emptyType": "No mistakes in this category yet.",
+    "summary": {
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing",
+      "total": "Total"
+    },
+    "title": "Mistake Library",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    }
+  },
+  "money": {
+    "gpwCaption": "Montants en PLN (notional GPW) ; l’USD affiché à côté est indicatif (≈ 3,95 PLN par USD, pas un cours temps réel)."
+  },
+  "nav": {
+    "adminAffiliate": "Admin Affiliate",
+    "alpacaTrading": "Trading Alpaca",
+    "alphaCalendar": "Alpha Calendar",
+    "coach": "Coach",
+    "concentration": "Concentration",
+    "correlation": "Corrélation",
+    "crowdWisdom": "Crowd Wisdom",
+    "dashboard": "Tableau de bord",
+    "dividend": "Dividende",
+    "dividendIntelligence": "Intelligence Dividende",
+    "glossary": "Glossary",
+    "home": "Accueil",
+    "markets": "Marchés",
+    "menu": "Menu",
+    "mirrorTrading": "Mirror Trading",
+    "mistakeLibrary": "Bibliotheque d'erreurs",
+    "paperTrading": "Paper Trading",
+    "portfolio": "Portefeuille",
+    "positionSize": "Calculateur",
+    "premortem": "Pre-Mortem",
+    "psycheProfile": "My Psyche",
+    "signals": "Signaux",
+    "skillTree": "Skill Tree",
+    "stressTest": "Test de stress",
+    "taxOptimizer": "PIT-38",
+    "tools": "Outils",
+    "volatility": "Volatility Heat Map",
+    "weeklyReview": "Weekly Review"
+  },
+  "newshalflife": {
+    "categoryLabel": "Category",
+    "empty": "No recent news found for this symbol.",
+    "expired": "Expired",
+    "halfLifeDaysBadge": "{{days}} days",
+    "halfLifeDaysLabel": "Half-life: {{days}} days",
+    "mostImpactful": "Most impactful news",
+    "reasonLabel": "Reason",
+    "remainingLabel": "Time left",
+    "searchButton": "Analyze news",
+    "subtitle": "Estimate how quickly each news item loses impact on price.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "News Half-Life Score"
+  },
+  "paperTrading": {
+    "closePosition": "Fermer la Position",
+    "direction": "Direction",
+    "entryPrice": "Prix d'Entrée",
+    "exitPrice": "Prix de Sortie",
+    "history": "Historique des Trades",
+    "long": "Long",
+    "openPosition": "Ouvrir une Position",
+    "pnl": "P&L",
+    "portfolio": "Portefeuille",
+    "quantity": "Quantité",
+    "short": "Short",
+    "title": "Paper Trading"
+  },
+  "pearls": {
+    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
+    "decisionTrailTitle": "Decision trail",
+    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
+    "quoteChip": "{{age}} old · {{source}}",
+    "quoteFreshness": "Quote freshness",
+    "receiptLoss": "Closed at a loss",
+    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
+    "receiptProceed": "Pre-Mortem → opened anyway",
+    "summaryProceedRate": "Pre-Mortem proceed rate",
+    "summaryTotal": "Recorded decisions",
+    "summaryWorstLoss": "Largest realized loss"
+  },
+  "positionSize": {
+    "accountSize": "Taille du compte",
+    "actualRiskPct": "Risque réel % du capital",
+    "calculate": "Calculer",
+    "conviction": "Conviction du setup",
+    "convictionHigh": "Élevée",
+    "convictionLow": "Faible",
+    "convictionMedium": "Moyenne",
+    "copied": "Copié dans le presse-papiers",
+    "copy": "Copier",
+    "copyAllTp": "Copier tous les TP",
+    "copyAriaTp": "Copier le prix {{label}}",
+    "currency": "Devise du compte",
+    "currencyHint": "Saisies et résultats en PLN (notional GPW) ; l’USD affiché à côté est indicatif.",
+    "entry": "Prix d'entrée",
+    "errorApi404": "API du calculateur introuvable (404). Démarrez l’API sur le port 3000 avec le dernier code, ou définissez VITE_API_BASE sur l’URL complète incluant /api.",
+    "errorInvalid": "Saisissez des nombres positifs valides pour le compte, l'entrée et le stop.",
+    "maxLoss": "Perte max. au stop",
+    "plannedRisk": "Risque planifié",
+    "pln": "PLN",
+    "positionValue": "Valeur de la position",
+    "riskPercent": "Risque max. % du capital",
+    "shares": "Actions à acheter",
+    "stop": "Stop Loss",
+    "takeProfits": "Take profit (multiples R)",
+    "title": "Calculateur de taille de position",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "usd": "USD"
+  },
+  "premortem": {
+    "cancel": "Cancel trade",
+    "entry": "Entry",
+    "lossScenario": "Most likely loss scenario",
+    "marketRegime": "Market Regime",
+    "proceed": "Proceed anyway",
+    "quantity": "Quantity",
+    "runButton": "Run Pre-Mortem",
+    "stopLoss": "Stop Loss",
+    "subtitle": "Run downside scenario analysis before opening a trade.",
+    "symbol": "Symbol",
+    "takeProfit": "Take Profit",
+    "title": "Pre-Mortem AI"
+  },
+  "psyche": {
+    "addRule": "Add rule",
+    "badConditions": "Bad conditions",
+    "breaches": "Breaches",
+    "colAction": "Action",
+    "colCompliance": "Plan compliance",
+    "colDate": "Date",
+    "colMood": "Mood",
+    "colSymbol": "Symbol",
+    "complianceNo": "No",
+    "complianceUnknown": "—",
+    "complianceYes": "Yes",
+    "decisionLogTitle": "Decision log (last 10)",
+    "deleteRule": "Delete",
+    "dnaTitle": "Trader DNA",
+    "emptyLogs": "No entries yet.",
+    "goodConditions": "Good conditions",
+    "growthScore": "Growth score",
+    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
+    "refresh": "Refresh my profile",
+    "rulePlaceholder": "Add a rule",
+    "rulesTitle": "My trading rules",
+    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
+    "title": "Trader Psyche",
+    "topBiases": "Top biases",
+    "tradingStyle": "Trading style"
+  },
+  "reactions": {
+    "charCount": "{{used}} / {{max}}",
+    "empty": "Pas encore de commentaires.",
+    "loading": "Chargement des commentaires…",
+    "placeholder": "Note (500 caractères max)…",
+    "postComment": "Publier le commentaire",
+    "posting": "Publication…",
+    "title": "Commentaires"
+  },
+  "reflection": {
+    "aiTitle": "AI Insight",
+    "emotion": "Emotion",
+    "emotions": {
+      "CONFIDENT": "😊 Confident",
+      "FEAR": "😰 Fear",
+      "FRUSTRATION": "😤 Frustration",
+      "GREEDY": "🤑 Greedy",
+      "NEUTRAL": "😐 Neutral"
+    },
+    "followedPlan": "I traded according to my plan",
+    "lesson": "What did I learn?",
+    "lessonPlaceholder": "Optional (max 100 characters)",
+    "no": "No",
+    "saveAndClose": "Save & Close",
+    "saveError": "Reflection was not saved.",
+    "skip": "Skip",
+    "subtitle": "Close {{symbol}} and capture one quick reflection.",
+    "timer": "{{seconds}}s",
+    "title": "Post-Trade Reflection",
+    "yes": "Yes"
+  },
+  "replay": {
+    "action": "Direction",
+    "actualOutcome": "Actual outcome",
+    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
+    "date": "Historical date",
+    "evaluate": "Evaluate decision",
+    "loadSnapshot": "Load snapshot",
+    "price": "Price",
+    "priceChange5d": "Change after 5 days",
+    "score": "Score",
+    "step1Title": "Step 1: choose company and date",
+    "step2Title": "Step 2: market snapshot",
+    "step3Title": "Step 3: make your decision",
+    "step4Title": "Step 4: AI result",
+    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
+    "symbol": "Company",
+    "title": "Replay Mode"
+  },
+  "reversescreener": {
+    "avgOutcomeHint": "Moyenne de (5j + 10j) / 2 sur les meilleurs matches — descriptif, pas une prévision.",
+    "avgOutcomeLabel": "Performance moyenne des jumeaux",
+    "currentSetup": "Setup à la date d’ancrage",
+    "dateHint": "Vide = dernier cours disponible en base.",
+    "dateLabel": "Date d’ancrage (optionnel)",
+    "errorSymbol": "Saisissez un symbole.",
+    "findButton": "Trouver des setups similaires",
+    "matchesTitle": "Top 5 correspondances historiques",
+    "noMatches": "Aucun setup similaire dans la fenêtre analysée.",
+    "outcome10d": "{{value}} après 10 jours",
+    "outcome5d": "{{value}} après 5 jours",
+    "priceChange": "Variation de prix 1j",
+    "similarity": "Similarité",
+    "subtitle": "Compare le setup OHLCV actuel à des jours historiques similaires sur d’autres tickers (RSI, volume vs. moy. 20j, perf. 1j, tendance, ATR/clôture — similarité type Signal DNA).",
+    "symbolLabel": "Ticker",
+    "symbolPlaceholder": "ex. MC",
+    "title": "Reverse Screener",
+    "trend": "Tendance (MA10 vs MA20)",
+    "trend.down": "Baissière",
+    "trend.flat": "Neutre",
+    "trend.up": "Haussière",
+    "volumeRatio": "Volume vs. moy. 20j"
+  },
+  "sector": {
+    "all": "All",
+    "basicMaterials": "Basic Materials",
+    "communicationServices": "Communication Services",
+    "consumerCyclical": "Consumer Cyclical",
+    "consumerDefensive": "Consumer Defensive",
+    "energy": "Energy",
+    "financialServices": "Financial Services",
+    "healthcare": "Healthcare",
+    "industrials": "Industrials",
+    "realEstate": "Real Estate",
+    "technology": "Technology",
+    "utilities": "Utilities"
+  },
+  "share": {
+    "button": "Share",
+    "copied": "Copied!",
+    "copy": "Copy link",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter/X",
+    "whatsapp": "WhatsApp"
+  },
+  "signals": {
+    "aiBreif": "AI Brief",
+    "autonomousWatchlist": "Autonomous watchlist",
+    "avgReturn": "Rendement Moyen",
+    "confidence": "Confiance",
+    "confidenceCue": {
+      "PRIME": "PRIME",
+      "STRONG": "STRONG",
+      "WATCH": "WATCH"
+    },
+    "confidenceLabel": "Confidence: {{level}}",
+    "copilot": {
+      "checkpoint": "Checkpoint",
+      "checkpointBody": "Re-evaluate after the session close and a fresh volume print.",
+      "conviction": "Conviction",
+      "enter": "Enter trade",
+      "invalidation": "Invalidation",
+      "invalidationBody": "Exit if the move reaches {{pct}}% from entry or the regime flips.",
+      "title": "AI Copilot decision"
+    },
+    "copilotAction": {
+      "ENTER": "Enter",
+      "REDUCE": "Reduce",
+      "WAIT": "Wait"
+    },
+    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
+    "discordEmbedTitle": "Discord embed preview",
+    "discordRisk": "Risk {{score}}/100",
+    "dna": "Signal DNA",
+    "dnaCounterpoint": "Mise en garde :",
+    "dnaExplain": {
+      "high": {
+        "counter": "Le contexte macro diffère ; évitez une position surdimensionnée.",
+        "why": "La structure des prix et le régime de volatilité sont quasi identiques."
+      },
+      "low": {
+        "counter": "Traitez comme preuve d’appoint, pas comme déclencheur principal.",
+        "why": "Chevauchement partiel du setup avec une confiance plus faible."
+      },
+      "mid": {
+        "counter": "Le signal peut s’effacer vite sans volume de confirmation.",
+        "why": "Le profil momentum et la compression du volume rappellent des configurations gagnantes passées."
+      }
+    },
+    "dnaWhySimilar": "Pourquoi c’est similaire :",
+    "entry": "Entry",
+    "executionEntry": "Entry",
+    "executionExpectedValue": "Expected value",
+    "executionRr": "R:R",
+    "executionStop": "Stop",
+    "executionTarget": "Target",
+    "executionTitle": "Battle-tested execution simulator",
+    "executionWorstCase": "Worst case",
+    "headline": "Titre",
+    "liveConnectedSse": "Connected to live stream",
+    "liveEngine": {
+      "label": "Live engine",
+      "lastUpdate": "Last: {{time}}",
+      "lastUpdateEmpty": "Last: --:--:--",
+      "polling": "Polling mode",
+      "sseUnavailable": "Updates every 15s (SSE unavailable)"
+    },
+    "livePollingUpdate": "Polling update received",
+    "liveStreamUpdate": "Live stream update received",
+    "liveWaiting": "Waiting for stream…",
+    "marketRegime": {
+      "RANGING": "Ranging",
+      "RISK_OFF": "Risk-off",
+      "RISK_ON": "Risk-on",
+      "TRENDING": "Trending"
+    },
+    "mentor": {
+      "notFound": "Analysis unavailable"
+    },
+    "mockNarrative": {
+      "body": "Le profil momentum de {{ticker}} s’aligne sur le régime {{regime}}. Le prix et le volume suggèrent un potentiel de continuation avec un risque maîtrisé si le niveau d’invalidation est respecté.",
+      "headline": "{{ticker}} — setup : {{setup}}",
+      "riskNote": "Attendez la confirmation de clôture de bougie et gardez une discipline stricte des stops."
+    },
+    "narrative": "Narratif",
+    "narrativeBodyFallback": "L’API n’a pas renvoyé le corps du narratif.",
+    "narrativeConfidence": {
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
+    },
+    "narrativeHeadlineFallback": "Narratif du signal : {{ticker}}",
+    "narrativeRiskNoteFallback": "L’API n’a pas renvoyé la note de risque.",
+    "noSignalSelected": "No signal selected.",
+    "preMortemFromSetup": "Pre-Mortem (from this setup)",
+    "regime": {
+      "executionStyle": "Execution style",
+      "mode": "Mode",
+      "riskCap": "Risk cap / trade",
+      "title": "Live market regime engine"
+    },
+    "regimeDetail": {
+      "RANGING": {
+        "mode": "Neutral grid",
+        "riskCap": "0.75R",
+        "style": "Range edges + quick exits"
+      },
+      "RISK_OFF": {
+        "mode": "Capital defense",
+        "riskCap": "0.50R",
+        "style": "Mean reversion only"
+      },
+      "RISK_ON": {
+        "mode": "Pro-risk expansion",
+        "riskCap": "1.00R",
+        "style": "Momentum basket"
+      },
+      "TRENDING": {
+        "mode": "Trend acceleration",
+        "riskCap": "1.25R",
+        "style": "Breakout continuation"
+      }
+    },
+    "riskNote": "Note de Risque",
+    "riskScore": "Score de Risque",
+    "signalType": {
+      "CRITICAL": "Critical",
+      "RESEARCH": "Research",
+      "STANDARD": "Standard"
+    },
+    "similarity": "Similarité",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "title": "Signaux",
+    "trackAvgReturn": "Avg. return",
+    "trackMaxDd": "Max DD",
+    "trackRecordTitle": "Track Record",
+    "trackTotalSignals": "Total signals",
+    "trackWinRate": "Win rate",
+    "transport": {
+      "OFFLINE": "Offline",
+      "POLLING": "Polling",
+      "SSE": "SSE"
+    },
+    "unknownSetup": "Setup inconnu",
+    "winRate": "Win rate"
+  },
+  "skilltree": {
+    "celebrationTitle": "New skills unlocked!",
+    "checkProgress": "Check progress",
+    "newlyUnlockedLabel": "Recently unlocked:",
+    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
+    "skills": {
+      "BASICS": {
+        "condition": "Always unlocked",
+        "description": "You understand how stocks and exchanges work.",
+        "name": "Basics"
+      },
+      "BEHAVIORAL": {
+        "condition": "At least 1 entry in Mistake Library",
+        "description": "You keep emotions in check while trading.",
+        "name": "Behavioral"
+      },
+      "DIVERSIFICATION": {
+        "condition": "At least 3 unique symbols in paper trades",
+        "description": "You understand diversification.",
+        "name": "Diversification"
+      },
+      "FIBONACCI": {
+        "condition": "At least 10 closed paper trades",
+        "description": "You understand Fibonacci levels.",
+        "name": "Fibonacci"
+      },
+      "MACD": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand MACD.",
+        "name": "MACD"
+      },
+      "RISK_MANAGEMENT": {
+        "condition": "Position Size Calculator: at least 3 uses",
+        "description": "You apply position sizing.",
+        "name": "Risk management"
+      },
+      "RSI": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand RSI.",
+        "name": "RSI"
+      },
+      "STRATEGY": {
+        "condition": "Min. 20 trades and win rate > 40%",
+        "description": "You follow a coherent strategy.",
+        "name": "Strategy"
+      },
+      "SUPPORT_RESISTANCE": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand support and resistance.",
+        "name": "Support & Resistance"
+      },
+      "VOLUME": {
+        "condition": "At least 10 closed paper trades",
+        "description": "You understand volume.",
+        "name": "Volume"
+      }
+    },
+    "subtitle": "Unlock trading skills as your activity grows.",
+    "title": "Skill Tree",
+    "unlockedAt": "Unlocked: {{date}}"
+  },
+  "strategydna": {
+    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster.",
+    "fromMistakesTitle": "Context from Mistake Library",
+    "insightLabel": "AI Insight",
+    "legends": {
+      "BUFFETT": "Buffett",
+      "GREENBLATT": "Greenblatt",
+      "LYNCH": "Lynch",
+      "SOROS": "Soros"
+    },
+    "mainResultLabel": "Your style is",
+    "notEnoughData": "You need at least 20 closed trades.",
+    "primary": "Primary match",
+    "secondary": "Secondary match",
+    "subtitle": "AI compares your paper trading style with legendary investors.",
+    "title": "Strategy DNA Match"
+  },
+  "stressTest": {
+    "currency": "Devise affichée",
+    "currentValue": "Valeur actuelle",
+    "drop": "Chute du marché",
+    "empty": "Ouvrez des positions en Paper Trading pour voir les résultats.",
+    "error404": "API de test de stress introuvable.",
+    "lossValue": "Perte / gain",
+    "newValue": "Valeur après choc",
+    "portfolioLoss": "Perte du portefeuille",
+    "portfolioLossPct": "Perte du portefeuille %",
+    "positions": "Impact par ligne",
+    "scenarios": {
+      "COVID_2020": "COVID 2020 (−34%)",
+      "CRASH_2008": "Crise 2008 (−54%)",
+      "CUSTOM": "Personnalisé (−{{drop}}%)",
+      "DOT_COM_2001": "Dot-com 2001 (−49%)"
+    },
+    "title": "Test de stress du portefeuille"
+  },
+  "tax": {
+    "changeCountry": "Change",
+    "customRate": "Custom tax rate (%)",
+    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor.",
+    "noTax": "No capital gains tax on listed stocks",
+    "selectCountry": "Select your tax country",
+    "title": "Tax Optimizer"
+  },
+  "taxOptimizer": {
+    "alreadyPaid": "Retenu chez le courtier (placeholder) : {{amount}}",
+    "closedTrades": "Trades papier clôturés",
+    "colClose": "Clôture",
+    "colOpen": "Ouverture",
+    "colPct": "%",
+    "colPnl": "P&L",
+    "colTicker": "Ticker",
+    "disclaimer": "Résultats à titre informatif uniquement. Consultez un conseiller fiscal.",
+    "grossGains": "Gains bruts",
+    "losses": "Pertes",
+    "netIncome": "Revenu net",
+    "netLossTaxNote": "Avec un résultat net négatif, la base fiscale de ce module est 0 (simplifié).",
+    "noTrades": "Aucun trade clôturé sur l’année sélectionnée.",
+    "suggestions": {
+      "CARRY_FORWARD_LOSS": "Pertes antérieures potentiellement non imputées (fenêtre 5 ans) — vérifiez avec un conseiller fiscal.",
+      "CLOSE_LOSS_BEFORE_YEAR_END": "Envisagez de clôturer {{ticker}} avant le 31.12 — une perte d’environ {{value}} PLN peut réduire l’impôt d’environ {{saving}} PLN."
+    },
+    "suggestionsTitle": "Suggestions d’optimisation",
+    "tax19": "Impôt Belka 19 %",
+    "title": "Tax Optimizer",
+    "toPay": "À payer",
+    "year": "Exercice"
+  },
+  "trackrecord": {
+    "avgReturn": "Average return",
+    "bestTradePct": "Best trade",
+    "cardTitle": "Your public Track Record",
+    "copied": "Link copied",
+    "copyButton": "Copy share link",
+    "copyFailed": "Failed to copy share link.",
+    "generateButton": "Generate my Track Record",
+    "generatedAt": "Generated at",
+    "shareLinkLabel": "Public link",
+    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
+    "title": "Anonymous Track Record",
+    "totalTrades": "Total trades",
+    "winRate": "Win rate",
+    "worstTradePct": "Worst trade"
+  },
+  "volatility": {
+    "errors": {
+      "symbolRequired": "Please enter a symbol."
+    },
+    "leastVolatileMonth": "Least volatile month",
+    "legendHigh": "High volatility",
+    "legendLow": "Low volatility",
+    "legendTitle": "Legend",
+    "months": {
+      "apr": "Apr",
+      "aug": "Aug",
+      "dec": "Dec",
+      "feb": "Feb",
+      "jan": "Jan",
+      "jul": "Jul",
+      "jun": "Jun",
+      "mar": "Mar",
+      "may": "May",
+      "nov": "Nov",
+      "oct": "Oct",
+      "sep": "Sep"
+    },
+    "mostVolatileMonth": "Most volatile month",
+    "noData": "No data",
+    "searchAction": "Load heat map",
+    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
+    "subtitle": "Compare monthly volatility across years for a selected symbol.",
+    "symbol": "Symbol",
+    "title": "Volatility Heat Map",
+    "tooltip": {
+      "avgReturn": "Avg. return",
+      "volatility": "Volatility"
+    },
+    "year": "Year"
+  },
+  "watchlist": {
+    "changePct": "Change %",
+    "empty": "You are not observing any companies yet.",
+    "follow": "♡ Follow",
+    "following": "♥ Following",
+    "lastPrice": "Last price",
+    "symbol": "Symbol",
+    "yours": "Your watchlist"
+  },
+  "weekly": {
+    "aiLetterEmpty": "No letter yet for this week.",
+    "aiLetterTitle": "Your AI Growth Letter",
+    "emptyHistory": "No weekly reviews yet.",
+    "generating": "Generating your letter...",
+    "growthScore": "Growth score",
+    "historyTitle": "Last 8 weeks",
+    "placeholders": {
+      "q4": "Describe your key lesson...",
+      "q5": "Describe your commitment for next week..."
+    },
+    "questions": {
+      "q1": "Did you trade according to your rules?",
+      "q2": "Was there any overtrading or revenge trading moment?",
+      "q3": "How do you rate your stop-loss discipline?",
+      "q4": "What was your biggest lesson this week?",
+      "q5": "What will you do differently next week?"
+    },
+    "submit": "Submit week",
+    "submitting": "Submitting...",
+    "subtitle": "Review your discipline and close the week with an AI growth letter.",
+    "title": "Weekly Review",
+    "weekOf": "Week of"
   }
 }

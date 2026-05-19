@@ -1,1226 +1,85 @@
 {
-  "nav": {
-    "home": "होम",
-    "dashboard": "डैशबोर्ड",
-    "signals": "बाज़ार",
-    "dividend": "डिविडेंड",
-    "dividendIntelligence": "डिविडेंड इंटेलिजेंस",
-    "paperTrading": "पेपर ट्रेडिंग",
-    "coach": "कोच",
-    "alphaCalendar": "Alpha Calendar",
-    "positionSize": "कैलकुलेटर",
-    "stressTest": "स्ट्रेस टेस्ट",
-    "concentration": "केंद्रीकरण",
-    "taxOptimizer": "PIT-38",
-    "markets": "बाज़ार",
-    "portfolio": "पोर्टफोलियो",
-    "tools": "उपकरण",
-    "menu": "मेनू",
-    "mistakeLibrary": "Mistake Library",
-    "premortem": "Pre-Mortem",
-    "correlation": "Correlation",
-    "crowdWisdom": "Crowd Wisdom",
-    "glossary": "Glossary",
-    "skillTree": "Skill Tree",
-    "volatility": "Volatility Heat Map",
-    "psycheProfile": "My Psyche",
-    "weeklyReview": "Weekly Review",
-    "mirrorTrading": "Mirror Trading",
-    "alpacaTrading": "Alpaca ट्रेडिंग",
-    "adminAffiliate": "Admin Affiliate"
-  },
-  "common": {
-    "search": "खोजें",
-    "loading": "लोड हो रहा है...",
-    "noData": "डेटा उपलब्ध नहीं है",
-    "error": "त्रुटि",
-    "retry": "फिर से प्रयास करें",
-    "save": "सहेजें",
-    "cancel": "रद्द करें",
-    "close": "बंद करें",
-    "open": "खोलें",
-    "buy": "खरीदें",
-    "sell": "बेचें",
-    "apiMockBadge": "Mock fallback active",
-    "apiLiveBadge": "Live API",
-    "notAvailable": "n/a",
-    "high": "उच्च",
-    "medium": "मध्यम",
-    "low": "निम्न"
-  },
-  "share": {
-    "button": "Share",
-    "twitter": "Twitter/X",
-    "linkedin": "LinkedIn",
-    "copy": "Copy link",
-    "whatsapp": "WhatsApp",
-    "copied": "Copied!"
-  },
-  "money": {
-    "gpwCaption": "राशि PLN में (GPW नोशनल); साथ का USD संकेतक है (≈ 3.95 PLN प्रति USD, लाइव दर नहीं)।"
-  },
-  "analysisBrief": {
-    "title": "AI ब्रीफ़",
-    "updated": "अपडेट",
-    "englishSection": "English"
-  },
-  "signals": {
-    "title": "सिग्नल्स",
-    "riskScore": "रिस्क स्कोर",
-    "winRate": "Win rate",
-    "avgReturn": "औसत रिटर्न",
-    "confidence": "विश्वास",
-    "regime": {
-      "title": "लाइव मार्केट रिजीम इंजन",
-      "mode": "मोड",
-      "executionStyle": "एग्जीक्यूशन स्टाइल",
-      "riskCap": "रिस्क कैप / ट्रेड"
-    },
-    "entry": "Entry",
-    "stopLoss": "Stop Loss",
-    "takeProfit": "Take Profit",
-    "aiBreif": "AI Brief",
-    "dna": "Signal DNA",
-    "similarity": "समानता",
-    "narrative": "नैरेटिव",
-    "headline": "हेडलाइन",
-    "riskNote": "रिस्क नोट",
-    "preMortemFromSetup": "Pre-Mortem (from this setup)",
-    "noSignalSelected": "No signal selected.",
-    "unknownSetup": "अज्ञात सेटअप",
-    "autonomousWatchlist": "Autonomous watchlist",
-    "liveEngine": {
-      "label": "लाइव इंजन",
-      "polling": "पोलिंग मोड",
-      "sseUnavailable": "हर 15s अपडेट",
-      "lastUpdate": "अंतिम: {{time}}",
-      "lastUpdateEmpty": "अंतिम: --:--:--"
-    },
-    "liveWaiting": "Waiting for stream…",
-    "liveStreamUpdate": "Live stream update received",
-    "livePollingUpdate": "Polling update received",
-    "liveConnectedSse": "Connected to live stream",
-    "confidenceLabel": "Confidence: {{level}}",
-    "confidenceCue": {
-      "PRIME": "PRIME",
-      "STRONG": "STRONG",
-      "WATCH": "WATCH"
-    },
-    "regimeDetail": {
-      "TRENDING": {
-        "mode": "Trend acceleration",
-        "style": "Breakout continuation",
-        "riskCap": "1.25R"
-      },
-      "RISK_ON": {
-        "mode": "Pro-risk expansion",
-        "style": "Momentum basket",
-        "riskCap": "1.00R"
-      },
-      "RISK_OFF": {
-        "mode": "Capital defense",
-        "style": "Mean reversion only",
-        "riskCap": "0.50R"
-      },
-      "RANGING": {
-        "mode": "Neutral grid",
-        "style": "Range edges + quick exits",
-        "riskCap": "0.75R"
-      }
-    },
-    "marketRegime": {
-      "TRENDING": "Trending",
-      "RANGING": "Ranging",
-      "RISK_ON": "Risk-on",
-      "RISK_OFF": "Risk-off"
-    },
-    "signalType": {
-      "CRITICAL": "Critical",
-      "STANDARD": "Standard",
-      "RESEARCH": "Research"
-    },
-    "transport": {
-      "SSE": "SSE",
-      "POLLING": "Polling",
-      "OFFLINE": "Offline"
-    },
-    "copilotAction": {
-      "ENTER": "Enter",
-      "WAIT": "Wait",
-      "REDUCE": "Reduce"
-    },
-    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
-    "dnaWhySimilar": "क्यों समान:",
-    "dnaCounterpoint": "विरोधाभास:",
-    "dnaExplain": {
-      "high": {
-        "why": "मूल्य संरचना और अस्थिरता शासन लगभग समान हैं।",
-        "counter": "मैक्रो संदर्भ भिन्न है; अत्यधिक बड़ी स्थिति से बचें।"
-      },
-      "mid": {
-        "why": "मोमेंटम प्रोफ़ाइल और वॉल्यूम संपीड़न ऐतिहासिक विजेताओं से मेल खाते हैं।",
-        "counter": "फॉलो-थ्रू वॉल्यूम के बिना संकेत जल्दी कमज़ोर हो सकता है।"
-      },
-      "low": {
-        "why": "कम विश्वास के साथ आंशिक सेटअप ओवरलैप।",
-        "counter": "सहायक साक्ष्य मानें, प्राथमिक ट्रिगर नहीं।"
-      }
-    },
-    "discordEmbedTitle": "Discord embed preview",
-    "discordRisk": "Risk {{score}}/100",
-    "trackRecordTitle": "Track Record",
-    "trackWinRate": "Win rate",
-    "trackAvgReturn": "Avg. return",
-    "trackMaxDd": "Max DD",
-    "trackTotalSignals": "Total signals",
-    "executionTitle": "Battle-tested execution simulator",
-    "executionEntry": "Entry",
-    "executionStop": "Stop",
-    "executionTarget": "Target",
-    "executionRr": "R:R",
-    "executionExpectedValue": "Expected value",
-    "executionWorstCase": "Worst case",
-    "mockNarrative": {
-      "headline": "{{ticker}} — सेटअप: {{setup}}",
-      "body": "{{ticker}} का momentum प्रोफ़ाइल {{regime}} से मेल खाता है। यदि invalidation स्तर का सम्मान हो तो कीमत और वॉल्यूम नियंत्रित नकारात्मक पक्ष के साथ जारी रहने की संभावना दर्शाते हैं।",
-      "riskNote": "कैंडल क्लोज़ की पुष्टि की प्रतीक्षा करें और स्टॉप अनुशासन सख्त रखें।"
-    },
-    "narrativeHeadlineFallback": "सिग्नल कथा: {{ticker}}",
-    "narrativeBodyFallback": "API ने कथा का मुख्य भाग नहीं लौटाया।",
-    "narrativeRiskNoteFallback": "API ने जोखिम नोट नहीं लौटाया।",
-    "narrativeConfidence": {
-      "HIGH": "उच्च",
-      "MEDIUM": "मध्यम",
-      "LOW": "निम्न"
-    },
-    "mentor": {
-      "notFound": "विश्लेषण उपलब्ध नहीं"
-    },
-    "copilot": {
-      "title": "AI Copilot निर्णय",
-      "conviction": "Conviction",
-      "invalidation": "Invalidation",
-      "invalidationBody": "यदि कीमत एंट्री से {{pct}}% तक जाती है या रिजीम बदल जाता है तो बाहर निकलें।",
-      "checkpoint": "Checkpoint",
-      "checkpointBody": "सत्र बंद होने और नए वॉल्यूम प्रिंट के बाद फिर से मूल्यांकन करें।",
-      "enter": "एंटर करें"
-    }
-  },
-  "reactions": {
-    "title": "टिप्पणियाँ",
-    "postComment": "टिप्पणी पोस्ट करें",
-    "placeholder": "नोट लिखें (अधिकतम 500 अक्षर)…",
-    "charCount": "{{used}} / {{max}}",
-    "empty": "अभी कोई टिप्पणी नहीं।",
-    "loading": "टिप्पणियाँ लोड हो रही हैं…",
-    "posting": "पोस्ट हो रहा है…"
-  },
-  "dividend": {
-    "title": "डिविडेंड स्क्रीनर",
-    "history": "डिविडेंड इतिहास",
-    "symbol": "Symbol",
-    "yearsBack": "पिछले वर्ष",
-    "fetch": "लाएँ",
-    "noData": "कोई डेटा नहीं – फ़िल्टर बदलें",
-    "screener": "Screener: डिविडेंड ग्रोथ (CAGR)",
-    "minYears": "न्यूनतम इतिहास वर्ष",
-    "minYield": "न्यूनतम यील्ड %",
-    "refresh": "रीफ़्रेश",
-    "colSymbol": "Symbol",
-    "colYear": "वर्ष",
-    "colAnnual": "वार्षिक डिविडेंड",
-    "colGrowth": "वृद्धि YoY %",
-    "colCagr": "CAGR 5Y %",
-    "colYield": "Yield %",
-    "yield": "डिविडेंड यील्ड",
-    "health": "हेल्थ स्कोर",
-    "years": "ग्रोथ के वर्ष",
-    "exDate": "एक्स-डेट",
-    "payoutRatio": "पेआउट रेशियो",
-    "trend": "ट्रेंड",
-    "safe": "सुरक्षित",
-    "watch": "निगरानी",
-    "risky": "जोखिमपूर्ण"
-  },
-  "paperTrading": {
-    "title": "Paper Trading",
-    "openPosition": "पोज़िशन खोलें",
-    "closePosition": "पोज़िशन बंद करें",
-    "portfolio": "पोर्टफोलियो",
-    "history": "ट्रेड हिस्ट्री",
-    "pnl": "P&L",
-    "direction": "दिशा",
-    "quantity": "मात्रा",
-    "entryPrice": "एंट्री प्राइस",
-    "exitPrice": "एग्ज़िट प्राइस",
-    "long": "Long",
-    "short": "Short"
-  },
-  "coach": {
-    "title": "व्यवहारिक कोच",
-    "traderProfile": "ट्रेडर प्रोफाइल",
-    "avgWin": "औसत जीत",
-    "avgLoss": "औसत नुकसान",
-    "biases": "पहचाने गए बायस",
-    "noBiases": "कोई बायस नहीं मिला",
-    "cutsWinners": "मुनाफ़ा जल्दी काटते हैं",
-    "holdsLosers": "घाटे वाली पोज़िशन ज़्यादा देर रखते हैं",
-    "overtrading": "Overtrading",
-    "aiCoach": "AI कोच कहता है",
-    "avgHoldWin": "औसत होल्ड (विजेता)",
-    "avgHoldLoss": "औसत होल्ड (हारे हुए)",
-    "biasCutsBody": "आप औसतन ~{{winHours}} घंटे में विजेता बंद करते हैं, पर हार ~{{lossHours}} घंटे तक पकड़े रहते हैं।",
-    "biasHoldsBody": "औसत नुकसान: {{lossPct}}%; हार वाले ट्रेड में समय: {{lossHours}} घंटे।",
-    "biasOverBody": "पिछले 24 घंटों में {{maxTrades}} से अधिक ट्रेड।",
-    "aiDescriptionEmpty": "AI कोच सामग्री अभी तक नहीं है।",
-    "chartAvgWin": "Avg. win %",
-    "chartAvgLoss": "Avg. loss %"
-  },
-  "cooldown": {
-    "title": "हार की श्रृंखला Cool-Down",
-    "inactive": "कोई सक्रिय Cool-Down नहीं",
-    "unlocksIn": "अनलॉक होगा"
-  },
-  "alpha": {
-    "title": "Alpha Calendar",
-    "windows": "प्रायिकता विंडोज़",
-    "probability": "प्रायिकता",
-    "historicalReturn": "ऐतिहासिक रिटर्न",
-    "earningsCycle": "अर्निंग्स साइकिल",
-    "seasonal": "सीज़नल",
-    "sectorRotation": "सेक्टर रोटेशन",
-    "regimeShift": "रेजीम शिफ्ट",
-    "subtitleNext48h": "अगले 48 घंटे",
-    "aiSummaryTitle": "AI सारांश",
-    "aiSummaryEmpty": "कोई AI सारांश उपलब्ध नहीं।",
-    "tickerLabel": "Ticker",
-    "tickerPlaceholder": "जैसे AAPL",
-    "colStart": "शुरुआत",
-    "colEnd": "समाप्ति",
-    "colDescription": "विवरण",
-    "emptyTickerRows": "इस टिकर के लिए कोई विंडो नहीं।"
-  },
-  "positionSize": {
-    "title": "पोज़िशन साइज़ कैलकुलेटर",
-    "currency": "खाता मुद्रा",
-    "currencyHint": "इनपुट और परिणाम PLN (GPW नोशनल) मानकर; साथ का USD संकेतक है।",
-    "pln": "PLN",
-    "usd": "USD",
-    "accountSize": "खाते का आकार",
-    "riskPercent": "अधिकतम जोखिम % पूंजी",
-    "entry": "प्रवेश मूल्य",
-    "stop": "Stop Loss",
-    "conviction": "सेटअप विश्वास",
-    "convictionLow": "कम",
-    "convictionMedium": "मध्यम",
-    "convictionHigh": "उच्च",
-    "calculate": "गणना करें",
-    "shares": "खरीदने के लिए शेयर",
-    "positionValue": "पोज़िशन मूल्य",
-    "plannedRisk": "नियोजित जोखिम",
-    "actualRiskPct": "वास्तविक जोखिम % पूंजी",
-    "maxLoss": "स्टॉप पर अधिकतम हानि",
-    "takeProfits": "टेक प्रॉफिट (R गुणक)",
-    "tp1": "1R",
-    "tp2": "2R",
-    "tp3": "3R",
-    "errorInvalid": "खाता, प्रवेश और स्टॉप के लिए वैध धनात्मक संख्याएँ दर्ज करें।",
-    "copy": "कॉपी",
-    "copyAllTp": "सभी TP स्तर कॉपी करें",
-    "copyAriaTp": "{{label}} मूल्य कॉपी करें",
-    "copied": "क्लिपबोर्ड पर कॉपी हो गया",
-    "errorApi404": "कैलकुलेटर API नहीं मिला (404)। नवीनतम कोड के साथ पोर्ट 3000 पर API चालू करें, या VITE_API_BASE में /api सहित पूर्ण URL सेट करें।"
-  },
-  "stressTest": {
-    "title": "पोर्टफोलियो स्ट्रेस टेस्ट",
-    "empty": "परिणाम देखने के लिए पेपर ट्रेडिंग में पोज़िशन खोलें।",
-    "currency": "प्रदर्शन मुद्रा",
-    "drop": "बाजार गिरावट",
-    "portfolioLoss": "पोर्टफोलियो हानि",
-    "portfolioLossPct": "पोर्टफोलियो हानि %",
-    "positions": "प्रति स्टॉक प्रभाव",
-    "currentValue": "वर्तमान मूल्य",
-    "lossValue": "हानि / लाभ",
-    "newValue": "झटके के बाद मूल्य",
-    "error404": "स्ट्रेस टेस्ट API नहीं मिला।",
-    "scenarios": {
-      "CRASH_2008": "2008 संकट (−54%)",
-      "COVID_2020": "2020 COVID (−34%)",
-      "DOT_COM_2001": "2001 डॉट-कॉम (−49%)",
-      "CUSTOM": "कस्टम (−{{drop}}%)"
-    }
-  },
-  "concentration": {
-    "title": "पोर्टफोलियो केंद्रीकरण",
-    "empty": "विश्लेषण देखने के लिए पेपर ट्रेडिंग में पोज़िशन खोलें।",
-    "currency": "प्रदर्शन मुद्रा",
-    "scoreLabel": "विविधीकरण स्कोर (0–100)",
-    "totalValue": "कुल पोर्टफोलियो मूल्य",
-    "positionCount": "खुले पेपर ट्रेड",
-    "chartByStock": "कंपनी अनुसार आवंटन",
-    "chartBySector": "सेक्टर अनुसार आवंटन",
-    "positionsTable": "पोज़िशन और वज़न",
-    "colTicker": "टिकर",
-    "colSector": "सेक्टर",
-    "colValue": "मूल्य",
-    "colWeight": "वज़न %",
-    "value": "मूल्य",
-    "warnings": {
-      "SINGLE_STOCK": "{{ticker}} पोर्टफोलियो का {{weight}}% है (अनुशंसित अधिकतम {{maxStock}}%)।",
-      "SINGLE_SECTOR": "सेक्टर {{sector}} {{weight}}% है (अनुशंसित अधिकतम {{maxSector}}%)।",
-      "TOP_HEAVY": "शीर्ष 3 होल्डिंग्स {{top3Share}}% हैं।"
-    }
-  },
-  "correlation": {
-    "title": "Correlation Scanner",
-    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
-    "mainSymbol": "Main symbol",
-    "portfolioSymbols": "Portfolio symbols (comma separated)",
-    "analyze": "Analyze correlation",
-    "validation": "Provide a main symbol and at least one portfolio symbol.",
-    "tableTitle": "Correlation results",
-    "colSymbol": "Symbol",
-    "colCorrelation": "Correlation",
-    "colWarning": "Warning",
-    "warningHighRisk": "High risk",
-    "warningLowRisk": "OK",
-    "highRiskPairs": "High-risk pairs (> 0.7)",
-    "noHighRiskPairs": "No high-risk pair detected.",
-    "aiInsight": "AI Insight"
-  },
-  "tax": {
-    "title": "Tax Optimizer",
-    "selectCountry": "Select your tax country",
-    "changeCountry": "Change",
-    "noTax": "No capital gains tax on listed stocks",
-    "customRate": "Custom tax rate (%)",
-    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor."
-  },
-  "taxOptimizer": {
-    "title": "Tax Optimizer",
-    "year": "कर वर्ष",
-    "grossGains": "सकल लाभ",
-    "losses": "हानि",
-    "netIncome": "शुद्ध आय",
-    "tax19": "Belka कर 19%",
-    "toPay": "देय कर",
-    "alreadyPaid": "ब्रोकर पर कटौती (प्लेसहोल्डर): {{amount}}",
-    "netLossTaxNote": "शुद्ध हानि पर इस मॉड्यूल में कर आधार 0 है (सरलीकृत)।",
-    "suggestionsTitle": "अनुकूलन सुझाव",
-    "suggestions": {
-      "CLOSE_LOSS_BEFORE_YEAR_END": "31.12 से पहले {{ticker}} बंद करने पर विचार करें — ~{{value}} PLN हानि से ~{{saving}} PLN कर कम हो सकता है।",
-      "CARRY_FORWARD_LOSS": "पिछले वर्षों की अप्रयुक्त हानि (5 वर्ष) — कर सलाहकार से पुष्टि करें।"
-    },
-    "closedTrades": "बंद पेपर ट्रेड",
-    "noTrades": "चयनित वर्ष में कोई बंद ट्रेड नहीं।",
-    "colTicker": "टिकर",
-    "colOpen": "खुलना",
-    "colClose": "बंद",
-    "colPnl": "P&L",
-    "colPct": "%",
-    "disclaimer": "परिणाम केवल सूचनात्मक हैं। कर सलाहकार से परामर्श करें।"
-  },
-  "mistakes": {
-    "title": "Mistake Library",
-    "analyzeButton": "Analyze my mistakes",
-    "analyzing": "Analyzing...",
-    "emptyType": "No mistakes in this category yet.",
-    "types": {
-      "EMOTIONAL": "EMOTIONAL",
-      "STRATEGY": "STRATEGY",
-      "TIMING": "TIMING"
-    },
-    "summary": {
-      "total": "Total",
-      "emotional": "Emotional",
-      "strategy": "Strategy",
-      "timing": "Timing"
-    },
-    "dnaRowLink": "Strategy DNA",
-    "dnaContextLink": "Open Strategy DNA with these symbols"
-  },
-  "premortem": {
-    "title": "Pre-Mortem AI",
-    "subtitle": "Run downside scenario analysis before opening a trade.",
-    "symbol": "Symbol",
-    "entry": "Entry",
-    "stopLoss": "Stop Loss",
-    "takeProfit": "Take Profit",
-    "quantity": "Quantity",
-    "runButton": "Run Pre-Mortem",
-    "lossScenario": "Most likely loss scenario",
-    "marketRegime": "Market Regime",
-    "proceed": "Proceed anyway",
-    "cancel": "Cancel trade"
-  },
-  "crowdwisdom": {
-    "title": "Crowd Wisdom Inverter",
-    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
-    "symbol": "Symbol",
-    "analyze": "Analyze",
-    "retailSentiment": "Retail Sentiment",
-    "insiderActivity": "Insider Activity",
-    "result": "Signal",
-    "divergence": "Divergence (insider - retail)",
-    "signalBuy": "Contrarian Buy",
-    "signalSell": "Contrarian Sell",
-    "signalNeutral": "Neutral"
-  },
-  "glossary": {
-    "title": "Translate Financial English",
-    "subtitle": "Click a market term to get a short explanation and practical example.",
-    "popularTerms": "Popular terms",
-    "loading": "Loading explanation...",
-    "exampleLabel": "Example",
-    "selectPrompt": "Select a term from the list to load its explanation."
-  },
-  "backtest": {
-    "title": "Walk-Forward Backtest",
-    "subtitle": "30-दिन की खिड़कियाँ; सिग्नल केवल अतीत के डेटा से; परिणाम = 5 ट्रेडिंग दिनों बाद बंद vs प्रवेश।",
-    "symbol": "प्रतीक",
-    "strategy": "रणनीति",
-    "period": "अवधि",
-    "strategyRsi": "RSI ओवरसोल्ड (< 30)",
-    "strategyBreakout": "ब्रेकआउट (20-दिन उच्च)",
-    "strategyVolume": "वॉल्यम स्पाइक (> 2× 20-दिन औसत)",
-    "months3": "3 महीने",
-    "months6": "6 महीने",
-    "months12": "12 महीने",
-    "monthsSuffix": "महीने",
-    "runButton": "Run backtest",
-    "resultsTitle": "परिणाम",
-    "winRate": "Win rate",
-    "avgReturn": "औसत रिटर्न",
-    "totalTrades": "कुल ट्रेड",
-    "maxDrawdown": "Max drawdown",
-    "sharpeRatio": "Sharpe ratio",
-    "tradesTableTitle": "ट्रेड",
-    "colDate": "तारीख",
-    "colAction": "कार्रवाई",
-    "colPrice": "मूल्य",
-    "colOutcome": "परिणाम (5दि.)"
-  },
-  "replay": {
-    "title": "Replay Mode",
-    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
-    "step1Title": "Step 1: choose company and date",
-    "step2Title": "Step 2: market snapshot",
-    "step3Title": "Step 3: make your decision",
-    "step4Title": "Step 4: AI result",
-    "symbol": "Company",
-    "date": "Historical date",
-    "loadSnapshot": "Load snapshot",
-    "priceChange5d": "Change after 5 days",
-    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
-    "action": "Direction",
-    "price": "Price",
-    "evaluate": "Evaluate decision",
-    "score": "Score",
-    "actualOutcome": "Actual outcome"
-  },
-  "reversescreener": {
-    "title": "Reverse Screener",
-    "subtitle": "वर्तमान OHLCV सेटअप को अन्य टिकरों के समान ऐतिहासिक दिनों से मिलाएँ (RSI, 20d औसत बनाम वॉल्यूम, 1d रिटर्न, ट्रेंड, ATR/क्लोज़ — Signal DNA जैसी समानता)।",
-    "symbolLabel": "टिकर",
-    "symbolPlaceholder": "उदा. RELIANCE",
-    "dateLabel": "लंगर तिथि (वैकल्पिक)",
-    "dateHint": "खाली = डेटाबेस में नवीनतम कोट दिन।",
-    "findButton": "समान सेटअप खोजें",
-    "avgOutcomeLabel": "जुड़वाँ औसत परिणाम",
-    "avgOutcomeHint": "शीर्ष मिलान पर (5d + 10d)/2 का औसत — वर्णनात्मक, पूर्वानुमान नहीं।",
-    "currentSetup": "लंगर दिन पर सेटअप",
-    "volumeRatio": "वॉल्यूम बनाम 20d औसत",
-    "priceChange": "1d मूल्य परिवर्तन",
-    "trend": "ट्रेंड (MA10 बनाम MA20)",
-    "trend.up": "ऊपर",
-    "trend.down": "नीचे",
-    "trend.flat": "सपाट",
-    "matchesTitle": "शीर्ष 5 ऐतिहासिक मिलान",
-    "similarity": "समानता",
-    "outcome5d": "5 दिन बाद {{value}}",
-    "outcome10d": "10 दिन बाद {{value}}",
-    "noMatches": "स्कैन विंडो में कोई समान सेटअप नहीं।",
-    "errorSymbol": "कृपया टिकर दर्ज करें।"
-  },
-  "trackrecord": {
-    "title": "Anonymous Track Record",
-    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Generate my Track Record",
-    "cardTitle": "Your public Track Record",
-    "winRate": "Win rate",
-    "totalTrades": "Total trades",
-    "avgReturn": "Average return",
-    "bestTradePct": "Best trade",
-    "worstTradePct": "Worst trade",
-    "generatedAt": "Generated at",
-    "shareLinkLabel": "Public link",
-    "copyButton": "Copy share link",
-    "copyFailed": "Failed to copy share link.",
-    "copied": "Link copied"
-  },
-  "digest": {
-    "title": "Daily Digest",
-    "subtitle": "Generate your AI market recap and send a test email instantly.",
-    "previewButton": "Preview my digest",
-    "sendButton": "Send test email",
-    "cardDateLabel": "Digest date",
-    "emptyState": "Click preview to generate today's digest.",
-    "emailSent": "Test email sent for {{date}}."
-  },
-  "strategydna": {
-    "title": "Strategy DNA Match",
-    "subtitle": "AI compares your paper trading style with legendary investors.",
-    "mainResultLabel": "Your style is",
-    "primary": "Primary match",
-    "secondary": "Secondary match",
-    "insightLabel": "AI Insight",
-    "notEnoughData": "You need at least 20 closed trades.",
-    "legends": {
-      "BUFFETT": "Buffett",
-      "LYNCH": "Lynch",
-      "GREENBLATT": "Greenblatt",
-      "SOROS": "Soros"
-    },
-    "fromMistakesTitle": "Context from Mistake Library",
-    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster."
-  },
-  "earnings": {
-    "title": "Earnings Surprise Predictor",
-    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "predictButton": "Predict",
-    "validationSymbol": "Please provide a valid symbol.",
-    "resultFor": "Prediction for",
-    "confidence": "Confidence",
-    "reasoning": "AI reasoning",
-    "nextDate": "Next earnings date",
-    "noDate": "Date unavailable"
-  },
-  "insider": {
-    "title": "Insider Mirror",
-    "subtitle": "Track recent buying and selling by company insiders.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchButton": "Mirror insiders",
-    "validationSymbol": "Please provide a valid symbol.",
-    "resultFor": "Insider activity for",
-    "insight": "AI Insight",
-    "transactionsTitle": "Transactions (last 30 days, > $50k)",
-    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
-    "colName": "Name",
-    "colRole": "Role",
-    "colAction": "Action",
-    "colValue": "Value",
-    "colDate": "Date",
-    "actionBuy": "BUY",
-    "actionSell": "SELL",
-    "sentimentBuy": "Net buying",
-    "sentimentSell": "Net selling",
-    "sentimentNeutral": "Neutral"
-  },
-  "mentor": {
-    "toggleLabel": "Mentor Mode",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "panelTitle": "AI Mentor",
-    "loading": "Generating mentor guidance...",
-    "riskCheckLabel": "Risk check",
-    "settingsTitle": "Mentor Mode Settings",
-    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
-    "currentStatus": "Current status",
-    "enableAction": "Enable",
-    "disableAction": "Disable",
-    "styleLabel": "Mentor style",
-    "styleSupportive": "Supportive",
-    "styleStrict": "Strict",
-    "guidanceUnavailable": "मेंटर मार्गदर्शन अभी उपलब्ध नहीं है (एंडपॉइंट ने 404 लौटाया)।"
-  },
-  "mirror": {
-    "title": "Mirror Trading",
-    "subtitle": "जिन ट्रेडर्स ने मिरर शेयरिंग चालू की है, उन्हें फॉलो करें। आँकड़े बंद पेपर ट्रेड्स से।",
-    "topTraders": "शीर्ष ट्रेडर",
-    "winRate": "Win rate",
-    "totalTrades": "कुल ट्रेड",
-    "followers": "फॉलोअर",
-    "follow": "फॉलो",
-    "unfollow": "अनफॉलो",
-    "myFollowing": "मेरे फॉलो",
-    "loadError": "मिरर डेटा लोड नहीं हो सका।",
-    "actionError": "क्रिया विफल। फिर कोशिश करें।",
-    "settingsTitle": "Enable Mirror Trading",
-    "settingsSubtitle": "दूसरों को आपका पेपर ट्रेडिंग प्रोफ़ाइल फॉलो करने दें। राजस्व हिस्सा भविष्य के बिलिंग के लिए (0–50%)।",
-    "toggleLabel": "मिरर फॉलोअर स्वीकार करें",
-    "revenueShare": "राजस्व हिस्सा",
-    "revenueShareHint": "0–50%",
-    "saving": "सेव हो रहा है…",
-    "saved": "सेव हो गया",
-    "noTopTraders": "अभी किसी ने मिरर ट्रेडिंग चालू नहीं की।",
-    "itsYou": "आप"
-  },
-  "discord": {
-    "title": "Discord Auto-Sync",
-    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
-    "webhookLabel": "Discord webhook URL",
-    "webhookPlaceholder": "https://discord.com/api/webhooks/...",
-    "saveButton": "Save",
-    "testButton": "Test webhook",
-    "active": "Webhook active",
-    "inactive": "Webhook inactive",
-    "loadError": "Failed to load webhook settings.",
-    "saveSuccess": "Webhook saved.",
-    "saveError": "Failed to save webhook.",
-    "testSuccess": "Test message sent.",
-    "testError": "Failed to send test message."
-  },
-  "emotional": {
-    "widgetTitle": "Emotional state",
-    "alertTitle": "Break recommended",
-    "lastChecked": "Last checked",
-    "level": {
-      "LOW": "Low",
-      "MEDIUM": "Medium",
-      "HIGH": "High"
-    }
-  },
-  "skilltree": {
-    "title": "Skill Tree",
-    "subtitle": "Unlock trading skills as your activity grows.",
-    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
-    "checkProgress": "Check progress",
-    "celebrationTitle": "New skills unlocked!",
-    "newlyUnlockedLabel": "Recently unlocked:",
-    "unlockedAt": "Unlocked: {{date}}",
-    "skills": {
-      "BASICS": {
-        "name": "Basics",
-        "description": "You understand how stocks and exchanges work.",
-        "condition": "Always unlocked"
-      },
-      "SUPPORT_RESISTANCE": {
-        "name": "Support & Resistance",
-        "description": "You understand support and resistance.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "RSI": {
-        "name": "RSI",
-        "description": "You understand RSI.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "MACD": {
-        "name": "MACD",
-        "description": "You understand MACD.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "FIBONACCI": {
-        "name": "Fibonacci",
-        "description": "You understand Fibonacci levels.",
-        "condition": "At least 10 closed paper trades"
-      },
-      "VOLUME": {
-        "name": "Volume",
-        "description": "You understand volume.",
-        "condition": "At least 10 closed paper trades"
-      },
-      "RISK_MANAGEMENT": {
-        "name": "Risk management",
-        "description": "You apply position sizing.",
-        "condition": "Position Size Calculator: at least 3 uses"
-      },
-      "BEHAVIORAL": {
-        "name": "Behavioral",
-        "description": "You keep emotions in check while trading.",
-        "condition": "At least 1 entry in Mistake Library"
-      },
-      "DIVERSIFICATION": {
-        "name": "Diversification",
-        "description": "You understand diversification.",
-        "condition": "At least 3 unique symbols in paper trades"
-      },
-      "STRATEGY": {
-        "name": "Strategy",
-        "description": "You follow a coherent strategy.",
-        "condition": "Min. 20 trades and win rate > 40%"
-      }
-    }
-  },
-  "volatility": {
-    "title": "Volatility Heat Map",
-    "subtitle": "Compare monthly volatility across years for a selected symbol.",
-    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchAction": "Load heat map",
-    "symbol": "Symbol",
-    "year": "Year",
-    "mostVolatileMonth": "Most volatile month",
-    "leastVolatileMonth": "Least volatile month",
-    "noData": "No data",
-    "legendTitle": "Legend",
-    "legendLow": "Low volatility",
-    "legendHigh": "High volatility",
-    "months": {
-      "jan": "Jan",
-      "feb": "Feb",
-      "mar": "Mar",
-      "apr": "Apr",
-      "may": "May",
-      "jun": "Jun",
-      "jul": "Jul",
-      "aug": "Aug",
-      "sep": "Sep",
-      "oct": "Oct",
-      "nov": "Nov",
-      "dec": "Dec"
-    },
-    "tooltip": {
-      "volatility": "Volatility",
-      "avgReturn": "Avg. return"
-    },
-    "errors": {
-      "symbolRequired": "Please enter a symbol."
-    }
-  },
-  "newshalflife": {
-    "title": "News Half-Life Score",
-    "subtitle": "Estimate how quickly each news item loses impact on price.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchButton": "Analyze news",
-    "mostImpactful": "Most impactful news",
-    "halfLifeDaysLabel": "Half-life: {{days}} days",
-    "halfLifeDaysBadge": "{{days}} days",
-    "expired": "Expired",
-    "categoryLabel": "Category",
-    "reasonLabel": "Reason",
-    "remainingLabel": "Time left",
-    "empty": "No recent news found for this symbol."
-  },
-  "pearls": {
-    "quoteFreshness": "Quote freshness",
-    "quoteChip": "{{age}} old · {{source}}",
-    "decisionTrailTitle": "Decision trail",
-    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
-    "receiptProceed": "Pre-Mortem → opened anyway",
-    "receiptLoss": "Closed at a loss",
-    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
-    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
-    "summaryTotal": "Recorded decisions",
-    "summaryProceedRate": "Pre-Mortem proceed rate",
-    "summaryWorstLoss": "Largest realized loss"
-  },
-  "dividendcompound": {
-    "title": "लाभांश चक्रवृद्धि कैलकुलेटर",
-    "subtitle": "लाभांश पुनर्निवेश के साथ बनाम बिना पोर्टफोलियो वृद्धि का अनुकरण करें।",
-    "initialAmount": "प्रारंभिक राशि (PLN)",
-    "monthlyContribution": "मासिक योगदान (PLN)",
-    "dividendYield": "लाभांश यील्ड (%)",
-    "years": "अवधि (वर्ष)",
-    "yearsValue": "{{count}} वर्ष",
-    "calculate": "गणना करें",
-    "withReinvesting": "पुनर्निवेश के साथ",
-    "withoutReinvesting": "पुनर्निवेश के बिना",
-    "difference": "अंतर (चक्रवृद्धि बोनस)",
-    "chartTitle": "वर्ष दर वर्ष पोर्टफोलियो मूल्य",
-    "axisYear": "वर्ष",
-    "tooltipYear": "वर्ष {{year}}"
-  },
-  "psyche": {
-    "title": "Trader Psyche",
-    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
-    "refresh": "Refresh my profile",
-    "dnaTitle": "Trader DNA",
-    "growthScore": "Growth score",
-    "tradingStyle": "Trading style",
-    "topBiases": "Top biases",
-    "goodConditions": "Good conditions",
-    "badConditions": "Bad conditions",
-    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
-    "rulesTitle": "My trading rules",
-    "rulePlaceholder": "Add a rule",
-    "addRule": "Add rule",
-    "breaches": "Breaches",
-    "deleteRule": "Delete",
-    "decisionLogTitle": "Decision log (last 10)",
-    "colDate": "Date",
-    "colSymbol": "Symbol",
-    "colAction": "Action",
-    "colMood": "Mood",
-    "colCompliance": "Plan compliance",
-    "complianceYes": "Yes",
-    "complianceNo": "No",
-    "complianceUnknown": "—",
-    "emptyLogs": "No entries yet."
-  },
-  "home": {
-    "title": "Companies",
-    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
-    "searchPlaceholder": "Search by name or symbol...",
-    "emptySelectSector": "Choose a sector or run a search to see companies.",
-    "emptySector": "No companies in this sector yet.",
-    "sectorLabel": "Sector"
-  },
-  "sector": {
-    "all": "All",
-    "technology": "Technology",
-    "financialServices": "Financial Services",
-    "healthcare": "Healthcare",
-    "consumerCyclical": "Consumer Cyclical",
-    "industrials": "Industrials",
-    "energy": "Energy",
-    "communicationServices": "Communication Services",
-    "consumerDefensive": "Consumer Defensive",
-    "utilities": "Utilities",
-    "realEstate": "Real Estate",
-    "basicMaterials": "Basic Materials"
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
-    "companiesTitle": "Companies",
-    "companiesDesc": "Search and sector grid with logos.",
-    "signalsTitle": "Signals",
-    "signalsDesc": "Coming soon - screener and AI scores.",
-    "portfolioTitle": "Portfolio",
-    "portfolioDesc": "Coming soon - watchlists and alerts."
-  },
-  "watchlist": {
-    "follow": "♡ Follow",
-    "following": "♥ Following",
-    "yours": "Your watchlist",
-    "empty": "You are not observing any companies yet.",
-    "symbol": "Symbol",
-    "lastPrice": "Last price",
-    "changePct": "Change %"
-  },
-  "dividendsPage": {
-    "title": "Dividend screening (MVP)",
-    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
-    "historyTitle": "Dividend history",
-    "symbol": "Symbol",
-    "yearsBack": "Years back",
-    "fetch": "Fetch",
-    "exDate": "Ex-date",
-    "payDate": "Pay date",
-    "amount": "Amount",
-    "yield": "Yield %",
-    "emptyHistory": "No rows yet - run seed or change filters.",
-    "screenerTitle": "Screener: dividend growth (CAGR)",
-    "minYears": "Min. years of history",
-    "minYield": "Min. yield %",
-    "refresh": "Refresh",
-    "dataLocation": "in",
-    "screenerLoading": "Loading screener…",
-    "screenerEmpty": "No results for selected filters.",
-    "tableYear": "Year",
-    "tableAnnualDividend": "Annual dividend",
-    "tableGrowthYoy": "Growth YoY %",
-    "taxTitle": "Dividend tax (PIT 19%)",
-    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
-    "taxShares": "Number of shares",
-    "taxReferencePrice": "Price (reference)",
-    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
-    "taxYieldAlternative": "Alternative: annual yield % (optional)",
-    "taxYieldPlaceholder": "e.g. 2.5",
-    "taxCalculating": "Calculating…",
-    "taxCalculate": "Calculate",
-    "taxMethod": "Method",
-    "taxGrossDividend": "Gross dividend",
-    "taxRateLabel": "Tax ({{rate}}%)",
-    "taxNet": "Net"
-  },
-  "company": {
-    "loading": "Loading company...",
-    "backHome": "<- Back home",
-    "backToCompanies": "← कंपनियाँ",
-    "sector": "Sector",
-    "industry": "Industry",
-    "website": "Website",
-    "chartTitle": "Close - recent history",
-    "close": "Close",
-    "noQuoteHistory": "No quote history yet.",
-    "recentNews": "Recent news",
-    "noNews": "No news rows in database yet."
-  },
-  "dividendIntelligence": {
-    "title": "Dividend Intelligence",
-    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
-    "symbol": "Symbol",
-    "sectorPercentile": "Sector percentile",
-    "vsPeers": "(vs peers in sector)"
-  },
   "affiliate": {
-    "disclosure": {
-      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
-      "title": "StockAI Pro transparency",
-      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
-      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider."
-    },
     "cta": {
       "buy_through": "Buy {{ticker}} via {{broker}}",
       "open_account": "Open account with {{broker}}",
       "other_options": "Other options ({{count}})"
     },
+    "disclosure": {
+      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider.",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
+      "title": "StockAI Pro transparency"
+    },
     "modal": {
-      "title": "Choose a broker",
-      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "close": "Close",
       "select": "Select",
-      "close": "Close"
-    }
-  },
-  "etoro": {
-    "cta": "eToro पर खाता खोलें",
-    "subtitle": "लाइसेंस प्राप्त ब्रोकर के साथ शेयर ट्रेड करें",
-    "company": {
-      "title": "Trade this stock",
-      "button": "Open account on eToro",
-      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money."
-    },
-    "alpaca": {
-      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
-      "button": "Try eToro"
-    },
-    "settings": {
-      "sectionTitle": "Recommended Brokers",
-      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
-      "cardTitle": "eToro",
-      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
-      "button": "Learn more & open account"
+      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "title": "Choose a broker"
     }
   },
   "alpaca": {
-    "title": "Alpaca Trading",
-    "connectBanner": "Connect your Alpaca account in Settings",
     "account": "Account",
-    "modePaper": "PAPER",
-    "modeLive": "LIVE",
-    "buyingPower": "Buying power",
-    "portfolioValue": "Portfolio value",
-    "cash": "Cash",
-    "quickTrade": "Quick Trade",
-    "symbol": "Symbol",
-    "buy": "Buy",
-    "sell": "Sell",
-    "positions": "Positions",
-    "avgPrice": "Avg Price",
-    "currentPrice": "Current Price",
-    "noPositions": "No open positions",
-    "orders": "Orders",
-    "qty": "Qty",
-    "status": "Status",
-    "side": "Side",
-    "noOrders": "No recent orders",
-    "cancel": "Cancel",
-    "equityCurve": "Equity curve (30d)",
-    "confirmTrade": "Confirm Trade",
-    "premortem": "Pre-Mortem",
-    "confirm": "Confirm",
-    "settingsTitle": "Alpaca",
-    "settingsSubtitle": "Connect Alpaca API keys and choose account mode.",
     "apiKey": "API Key",
     "apiSecret": "API Secret",
+    "avgPrice": "Avg Price",
+    "buy": "Buy",
+    "buyingPower": "Buying power",
+    "cancel": "Cancel",
+    "cash": "Cash",
+    "confirm": "Confirm",
+    "confirmTrade": "Confirm Trade",
+    "connectBanner": "Connect your Alpaca account in Settings",
+    "connected": "Connected",
+    "connectionError": "Connection error",
+    "currentPrice": "Current Price",
+    "equityCurve": "Equity curve (30d)",
     "mode": "Mode",
-    "testConnection": "Test connection",
+    "modeLive": "LIVE",
+    "modePaper": "PAPER",
+    "noOrders": "No recent orders",
+    "noPositions": "No open positions",
+    "orders": "Orders",
+    "portfolioValue": "Portfolio value",
+    "positions": "Positions",
+    "premortem": "Pre-Mortem",
+    "qty": "Qty",
+    "quickTrade": "Quick Trade",
+    "sell": "Sell",
     "settingsLoadError": "Failed to load Alpaca settings.",
     "settingsSaved": "Saved",
     "settingsSaveError": "Failed to save Alpaca settings.",
-    "connected": "Connected",
-    "connectionError": "Connection error"
+    "settingsSubtitle": "Connect Alpaca API keys and choose account mode.",
+    "settingsTitle": "Alpaca",
+    "side": "Side",
+    "status": "Status",
+    "symbol": "Symbol",
+    "testConnection": "Test connection",
+    "title": "Alpaca Trading"
   },
-  "checkin": {
-    "title": "Daily Check-In",
-    "subtitle": "Set your mindset before the market opens.",
-    "moodLabel": "Mood",
-    "planLabel": "What is your plan today?",
-    "planPlaceholder": "Optional...",
-    "submit": "Start trading day",
-    "submitting": "Saving...",
-    "error": "Could not save check-in. Please try again.",
-    "risk": {
-      "LOW": "LOW",
-      "MEDIUM": "MEDIUM",
-      "HIGH": "HIGH"
-    }
+  "alpha": {
+    "aiSummaryEmpty": "कोई AI सारांश उपलब्ध नहीं।",
+    "aiSummaryTitle": "AI सारांश",
+    "colDescription": "विवरण",
+    "colEnd": "समाप्ति",
+    "colStart": "शुरुआत",
+    "earningsCycle": "अर्निंग्स साइकिल",
+    "emptyTickerRows": "इस टिकर के लिए कोई विंडो नहीं।",
+    "historicalReturn": "ऐतिहासिक रिटर्न",
+    "probability": "प्रायिकता",
+    "regimeShift": "रेजीम शिफ्ट",
+    "seasonal": "सीज़नल",
+    "sectorRotation": "सेक्टर रोटेशन",
+    "subtitleNext48h": "अगले 48 घंटे",
+    "tickerLabel": "Ticker",
+    "tickerPlaceholder": "जैसे AAPL",
+    "title": "Alpha Calendar",
+    "windows": "प्रायिकता विंडोज़"
   },
-  "reflection": {
-    "title": "Post-Trade Reflection",
-    "subtitle": "Close {{symbol}} and capture one quick reflection.",
-    "timer": "{{seconds}}s",
-    "followedPlan": "I traded according to my plan",
-    "yes": "Yes",
-    "no": "No",
-    "emotion": "Emotion",
-    "lesson": "What did I learn?",
-    "lessonPlaceholder": "Optional (max 100 characters)",
-    "saveAndClose": "Save & Close",
-    "skip": "Skip",
-    "aiTitle": "AI Insight",
-    "saveError": "Reflection was not saved.",
-    "emotions": {
-      "FRUSTRATION": "😤 Frustration",
-      "FEAR": "😰 Fear",
-      "CONFIDENT": "😊 Confident",
-      "NEUTRAL": "😐 Neutral",
-      "GREEDY": "🤑 Greedy"
-    }
-  },
-  "weekly": {
-    "title": "Weekly Review",
-    "subtitle": "Review your discipline and close the week with an AI growth letter.",
-    "submit": "Submit week",
-    "submitting": "Submitting...",
-    "generating": "Generating your letter...",
-    "aiLetterTitle": "Your AI Growth Letter",
-    "aiLetterEmpty": "No letter yet for this week.",
-    "historyTitle": "Last 8 weeks",
-    "emptyHistory": "No weekly reviews yet.",
-    "growthScore": "Growth score",
-    "weekOf": "Week of",
-    "questions": {
-      "q1": "Did you trade according to your rules?",
-      "q2": "Was there any overtrading or revenge trading moment?",
-      "q3": "How do you rate your stop-loss discipline?",
-      "q4": "What was your biggest lesson this week?",
-      "q5": "What will you do differently next week?"
-    },
-    "placeholders": {
-      "q4": "Describe your key lesson...",
-      "q5": "Describe your commitment for next week..."
-    }
-  },
-  "landing": {
-    "hero": {
-      "title": "अगली पीढ़ी का निवेश प्लेटफ़ॉर्म",
-      "subtitle": "एआई रिसर्च · व्यवहारिक कोचिंग · 12 एक्सचेंज · 9 भाषाएँ",
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
-      "widgetTitle": "Live market pulse",
-      "widgetLive": "Live"
-    },
-    "problem": {
-      "title": "Why investors get stuck",
-      "cards": {
-        "apps": {
-          "title": "You use 5-6 apps",
-          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity."
-        },
-        "emotions": {
-          "title": "Emotions cost you money",
-          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes."
-        },
-        "memory": {
-          "title": "No one remembers your mistakes",
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
-        },
-        "context": {
-          "title": "आपके पास संदर्भ की कमी है",
-          "body": "आपको संकेत दिखता है, लेकिन यह नहीं पता चलता कि बाजार अनुकूल है या यह सही समय है।"
-        }
-      }
-    },
-    "solution": {
-      "title": "One platform built for investor growth",
-      "features": {
-        "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": {
-          "title": "Behavioral Coach",
-          "body": "यह आपकी गलतियों को पहचानता है और उन्हें दोहराने से रोकने में मदद करता है।"
-        },
-        "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": {
-          "title": "12 Global Markets",
-          "body": "GPW, NYSE, DAX, TSE, NSE और भी बहुत कुछ। ऐप बदलने की ज़रूरत नहीं।"
-        },
-        "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages",
-        "aiBrief": {
-          "title": "व्याख्या सहित AI Brief",
-          "body": "सिर्फ स्कोर नहीं — क्यों यह सही है या नहीं, इसकी पूरी व्याख्या।"
-        },
-        "signalDna": {
-          "title": "Signal DNA",
-          "body": "सेटअप के ऐतिहासिक जुड़वां — अतीत में ऐसे सेटअप का क्या परिणाम हुआ।"
-        },
-        "preMortemAi": {
-          "title": "Pre-Mortem AI",
-          "body": "खरीदने से पहले AI सबसे संभावित नुकसान का परिदृश्य दिखाता है।"
-        },
-        "paperTrading": {
-          "title": "Paper Trading",
-          "body": "बिना जोखिम अभ्यास करें। ऐसी गलतियों से सीखें जिनकी कोई लागत नहीं।"
-        }
-      }
-    },
-    "socialProof": {
-      "title": "Join our early access community",
-      "subtitle": "Early access community growing every week.",
-      "testimonials": [
-        {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
-        },
-        {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
-        },
-        {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
-        }
-      ],
-      "stats": {
-        "exchanges": "130+ एक्सचेंज",
-        "modules": "27 AI मॉड्यूल",
-        "languages": "9 भाषाएँ",
-        "adFree": "100% विज्ञापन-मुक्त"
-      }
-    },
-    "pricing": {
-      "title": "Simple pricing",
-      "tiers": {
-        "free": {
-          "name": "Free",
-          "price": "$0/mo",
-          "body": "Basic features to start building consistency.",
-          "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
-          ],
-          "cta": "Start free"
-        },
-        "pro": {
-          "name": "Pro",
-          "price": "$9/mo",
-          "body": "Full access for active investors.",
-          "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
-          ],
-          "cta": "Choose Pro"
-        },
-        "proPlus": {
-          "name": "Pro+",
-          "price": "$19/mo",
-          "body": "For power users and automation workflows.",
-          "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
-          ],
-          "cta": "Choose Pro+"
-        }
-      },
-      "badge": "अर्ली एडॉप्टर कीमत",
-      "earlyAdopter": "पहले 500 Pro अकाउंट्स हमेशा के लिए $9/माह पर लॉक",
-      "monthly": "मासिक",
-      "yearly": "वार्षिक",
-      "save": "27% बचाएं",
-      "saveProPlus": "34% बचाएं",
-      "popular": "सबसे लोकप्रिय",
-      "trial": "14 दिन मुफ्त"
-    },
-    "footerCta": {
-      "title": "Start your free account today",
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk."
-    }
+  "analysisBrief": {
+    "englishSection": "English",
+    "title": "AI ब्रीफ़",
+    "updated": "अपडेट"
   },
   "auth": {
     "email": "ईमेल",
@@ -1238,10 +97,1151 @@
     "registerLoading": "खाता बनाया जा रहा है...",
     "registerTitle": "साइन अप"
   },
+  "backtest": {
+    "avgReturn": "औसत रिटर्न",
+    "colAction": "कार्रवाई",
+    "colDate": "तारीख",
+    "colOutcome": "परिणाम (5दि.)",
+    "colPrice": "मूल्य",
+    "maxDrawdown": "Max drawdown",
+    "months12": "12 महीने",
+    "months3": "3 महीने",
+    "months6": "6 महीने",
+    "monthsSuffix": "महीने",
+    "period": "अवधि",
+    "resultsTitle": "परिणाम",
+    "runButton": "Run backtest",
+    "sharpeRatio": "Sharpe ratio",
+    "strategy": "रणनीति",
+    "strategyBreakout": "ब्रेकआउट (20-दिन उच्च)",
+    "strategyRsi": "RSI ओवरसोल्ड (< 30)",
+    "strategyVolume": "वॉल्यम स्पाइक (> 2× 20-दिन औसत)",
+    "subtitle": "30-दिन की खिड़कियाँ; सिग्नल केवल अतीत के डेटा से; परिणाम = 5 ट्रेडिंग दिनों बाद बंद vs प्रवेश।",
+    "symbol": "प्रतीक",
+    "title": "Walk-Forward Backtest",
+    "totalTrades": "कुल ट्रेड",
+    "tradesTableTitle": "ट्रेड",
+    "winRate": "Win rate"
+  },
+  "checkin": {
+    "error": "Could not save check-in. Please try again.",
+    "moodLabel": "Mood",
+    "planLabel": "What is your plan today?",
+    "planPlaceholder": "Optional...",
+    "risk": {
+      "HIGH": "HIGH",
+      "LOW": "LOW",
+      "MEDIUM": "MEDIUM"
+    },
+    "submit": "Start trading day",
+    "submitting": "Saving...",
+    "subtitle": "Set your mindset before the market opens.",
+    "title": "Daily Check-In"
+  },
+  "coach": {
+    "aiCoach": "AI कोच कहता है",
+    "aiDescriptionEmpty": "AI कोच सामग्री अभी तक नहीं है।",
+    "avgHoldLoss": "औसत होल्ड (हारे हुए)",
+    "avgHoldWin": "औसत होल्ड (विजेता)",
+    "avgLoss": "औसत नुकसान",
+    "avgWin": "औसत जीत",
+    "biasCutsBody": "आप औसतन ~{{winHours}} घंटे में विजेता बंद करते हैं, पर हार ~{{lossHours}} घंटे तक पकड़े रहते हैं।",
+    "biases": "पहचाने गए बायस",
+    "biasHoldsBody": "औसत नुकसान: {{lossPct}}%; हार वाले ट्रेड में समय: {{lossHours}} घंटे।",
+    "biasOverBody": "पिछले 24 घंटों में {{maxTrades}} से अधिक ट्रेड।",
+    "chartAvgLoss": "Avg. loss %",
+    "chartAvgWin": "Avg. win %",
+    "cutsWinners": "मुनाफ़ा जल्दी काटते हैं",
+    "holdsLosers": "घाटे वाली पोज़िशन ज़्यादा देर रखते हैं",
+    "noBiases": "कोई बायस नहीं मिला",
+    "overtrading": "Overtrading",
+    "title": "व्यवहारिक कोच",
+    "traderProfile": "ट्रेडर प्रोफाइल"
+  },
+  "common": {
+    "apiLiveBadge": "Live API",
+    "apiMockBadge": "Mock fallback active",
+    "buy": "खरीदें",
+    "cancel": "रद्द करें",
+    "close": "बंद करें",
+    "error": "त्रुटि",
+    "high": "उच्च",
+    "loading": "लोड हो रहा है...",
+    "low": "निम्न",
+    "medium": "मध्यम",
+    "noData": "डेटा उपलब्ध नहीं है",
+    "notAvailable": "n/a",
+    "open": "खोलें",
+    "retry": "फिर से प्रयास करें",
+    "save": "सहेजें",
+    "search": "खोजें",
+    "sell": "बेचें"
+  },
+  "company": {
+    "backHome": "<- Back home",
+    "backToCompanies": "← कंपनियाँ",
+    "chartTitle": "Close - recent history",
+    "close": "Close",
+    "industry": "Industry",
+    "loading": "Loading company...",
+    "noNews": "No news rows in database yet.",
+    "noQuoteHistory": "No quote history yet.",
+    "recentNews": "Recent news",
+    "sector": "Sector",
+    "website": "Website"
+  },
+  "concentration": {
+    "chartBySector": "सेक्टर अनुसार आवंटन",
+    "chartByStock": "कंपनी अनुसार आवंटन",
+    "colSector": "सेक्टर",
+    "colTicker": "टिकर",
+    "colValue": "मूल्य",
+    "colWeight": "वज़न %",
+    "currency": "प्रदर्शन मुद्रा",
+    "empty": "विश्लेषण देखने के लिए पेपर ट्रेडिंग में पोज़िशन खोलें।",
+    "positionCount": "खुले पेपर ट्रेड",
+    "positionsTable": "पोज़िशन और वज़न",
+    "scoreLabel": "विविधीकरण स्कोर (0–100)",
+    "title": "पोर्टफोलियो केंद्रीकरण",
+    "totalValue": "कुल पोर्टफोलियो मूल्य",
+    "value": "मूल्य",
+    "warnings": {
+      "SINGLE_SECTOR": "सेक्टर {{sector}} {{weight}}% है (अनुशंसित अधिकतम {{maxSector}}%)।",
+      "SINGLE_STOCK": "{{ticker}} पोर्टफोलियो का {{weight}}% है (अनुशंसित अधिकतम {{maxStock}}%)।",
+      "TOP_HEAVY": "शीर्ष 3 होल्डिंग्स {{top3Share}}% हैं।"
+    }
+  },
   "cookie": {
-    "message": "हम आपके अनुभव को बेहतर बनाने के लिए कुकीज़ का उपयोग करते हैं। आप सभी कुकीज़ या केवल आवश्यक कुकीज़ स्वीकार कर सकते हैं।",
     "acceptAll": "सभी स्वीकार करें",
+    "message": "हम आपके अनुभव को बेहतर बनाने के लिए कुकीज़ का उपयोग करते हैं। आप सभी कुकीज़ या केवल आवश्यक कुकीज़ स्वीकार कर सकते हैं।",
     "necessaryOnly": "केवल आवश्यक",
     "privacyLink": "गोपनीयता नीति"
+  },
+  "cooldown": {
+    "inactive": "कोई सक्रिय Cool-Down नहीं",
+    "title": "हार की श्रृंखला Cool-Down",
+    "unlocksIn": "अनलॉक होगा"
+  },
+  "correlation": {
+    "aiInsight": "AI Insight",
+    "analyze": "Analyze correlation",
+    "colCorrelation": "Correlation",
+    "colSymbol": "Symbol",
+    "colWarning": "Warning",
+    "highRiskPairs": "High-risk pairs (> 0.7)",
+    "mainSymbol": "Main symbol",
+    "noHighRiskPairs": "No high-risk pair detected.",
+    "portfolioSymbols": "Portfolio symbols (comma separated)",
+    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
+    "tableTitle": "Correlation results",
+    "title": "Correlation Scanner",
+    "validation": "Provide a main symbol and at least one portfolio symbol.",
+    "warningHighRisk": "High risk",
+    "warningLowRisk": "OK"
+  },
+  "crowdwisdom": {
+    "analyze": "Analyze",
+    "divergence": "Divergence (insider - retail)",
+    "insiderActivity": "Insider Activity",
+    "result": "Signal",
+    "retailSentiment": "Retail Sentiment",
+    "signalBuy": "Contrarian Buy",
+    "signalNeutral": "Neutral",
+    "signalSell": "Contrarian Sell",
+    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
+    "symbol": "Symbol",
+    "title": "Crowd Wisdom Inverter"
+  },
+  "dashboard": {
+    "companiesDesc": "Search and sector grid with logos.",
+    "companiesTitle": "Companies",
+    "portfolioDesc": "Coming soon - watchlists and alerts.",
+    "portfolioTitle": "Portfolio",
+    "signalsDesc": "Coming soon - screener and AI scores.",
+    "signalsTitle": "Signals",
+    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
+    "title": "Dashboard"
+  },
+  "digest": {
+    "cardDateLabel": "Digest date",
+    "emailSent": "Test email sent for {{date}}.",
+    "emptyState": "Click preview to generate today's digest.",
+    "previewButton": "Preview my digest",
+    "sendButton": "Send test email",
+    "subtitle": "Generate your AI market recap and send a test email instantly.",
+    "title": "Daily Digest"
+  },
+  "discord": {
+    "active": "Webhook active",
+    "inactive": "Webhook inactive",
+    "loadError": "Failed to load webhook settings.",
+    "saveButton": "Save",
+    "saveError": "Failed to save webhook.",
+    "saveSuccess": "Webhook saved.",
+    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
+    "testButton": "Test webhook",
+    "testError": "Failed to send test message.",
+    "testSuccess": "Test message sent.",
+    "title": "Discord Auto-Sync",
+    "webhookLabel": "Discord webhook URL",
+    "webhookPlaceholder": "https://discord.com/api/webhooks/..."
+  },
+  "dividend": {
+    "colAnnual": "वार्षिक डिविडेंड",
+    "colCagr": "CAGR 5Y %",
+    "colGrowth": "वृद्धि YoY %",
+    "colSymbol": "Symbol",
+    "colYear": "वर्ष",
+    "colYield": "Yield %",
+    "exDate": "एक्स-डेट",
+    "fetch": "लाएँ",
+    "health": "हेल्थ स्कोर",
+    "history": "डिविडेंड इतिहास",
+    "minYears": "न्यूनतम इतिहास वर्ष",
+    "minYield": "न्यूनतम यील्ड %",
+    "noData": "कोई डेटा नहीं – फ़िल्टर बदलें",
+    "payoutRatio": "पेआउट रेशियो",
+    "refresh": "रीफ़्रेश",
+    "risky": "जोखिमपूर्ण",
+    "safe": "सुरक्षित",
+    "screener": "Screener: डिविडेंड ग्रोथ (CAGR)",
+    "symbol": "Symbol",
+    "title": "डिविडेंड स्क्रीनर",
+    "trend": "ट्रेंड",
+    "watch": "निगरानी",
+    "years": "ग्रोथ के वर्ष",
+    "yearsBack": "पिछले वर्ष",
+    "yield": "डिविडेंड यील्ड"
+  },
+  "dividendcompound": {
+    "axisYear": "वर्ष",
+    "calculate": "गणना करें",
+    "chartTitle": "वर्ष दर वर्ष पोर्टफोलियो मूल्य",
+    "difference": "अंतर (चक्रवृद्धि बोनस)",
+    "dividendYield": "लाभांश यील्ड (%)",
+    "initialAmount": "प्रारंभिक राशि (PLN)",
+    "monthlyContribution": "मासिक योगदान (PLN)",
+    "subtitle": "लाभांश पुनर्निवेश के साथ बनाम बिना पोर्टफोलियो वृद्धि का अनुकरण करें।",
+    "title": "लाभांश चक्रवृद्धि कैलकुलेटर",
+    "tooltipYear": "वर्ष {{year}}",
+    "withoutReinvesting": "पुनर्निवेश के बिना",
+    "withReinvesting": "पुनर्निवेश के साथ",
+    "years": "अवधि (वर्ष)",
+    "yearsValue": "{{count}} वर्ष"
+  },
+  "dividendIntelligence": {
+    "sectorPercentile": "Sector percentile",
+    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
+    "symbol": "Symbol",
+    "title": "Dividend Intelligence",
+    "vsPeers": "(vs peers in sector)"
+  },
+  "dividendsPage": {
+    "amount": "Amount",
+    "dataLocation": "in",
+    "emptyHistory": "No rows yet - run seed or change filters.",
+    "exDate": "Ex-date",
+    "fetch": "Fetch",
+    "historyTitle": "Dividend history",
+    "minYears": "Min. years of history",
+    "minYield": "Min. yield %",
+    "payDate": "Pay date",
+    "refresh": "Refresh",
+    "screenerEmpty": "No results for selected filters.",
+    "screenerLoading": "Loading screener…",
+    "screenerTitle": "Screener: dividend growth (CAGR)",
+    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
+    "symbol": "Symbol",
+    "tableAnnualDividend": "Annual dividend",
+    "tableGrowthYoy": "Growth YoY %",
+    "tableYear": "Year",
+    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
+    "taxCalculate": "Calculate",
+    "taxCalculating": "Calculating…",
+    "taxGrossDividend": "Gross dividend",
+    "taxMethod": "Method",
+    "taxNet": "Net",
+    "taxRateLabel": "Tax ({{rate}}%)",
+    "taxReferencePrice": "Price (reference)",
+    "taxShares": "Number of shares",
+    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
+    "taxTitle": "Dividend tax (PIT 19%)",
+    "taxYieldAlternative": "Alternative: annual yield % (optional)",
+    "taxYieldPlaceholder": "e.g. 2.5",
+    "title": "Dividend screening (MVP)",
+    "yearsBack": "Years back",
+    "yield": "Yield %"
+  },
+  "earnings": {
+    "confidence": "Confidence",
+    "nextDate": "Next earnings date",
+    "noDate": "Date unavailable",
+    "predictButton": "Predict",
+    "reasoning": "AI reasoning",
+    "resultFor": "Prediction for",
+    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "Earnings Surprise Predictor",
+    "validationSymbol": "Please provide a valid symbol."
+  },
+  "emotional": {
+    "alertTitle": "Break recommended",
+    "lastChecked": "Last checked",
+    "level": {
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
+    },
+    "widgetTitle": "Emotional state"
+  },
+  "etoro": {
+    "alpaca": {
+      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
+      "button": "Try eToro"
+    },
+    "company": {
+      "button": "Open account on eToro",
+      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money.",
+      "title": "Trade this stock"
+    },
+    "cta": "eToro पर खाता खोलें",
+    "settings": {
+      "button": "Learn more & open account",
+      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
+      "cardTitle": "eToro",
+      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
+      "sectionTitle": "Recommended Brokers"
+    },
+    "subtitle": "लाइसेंस प्राप्त ब्रोकर के साथ शेयर ट्रेड करें"
+  },
+  "glossary": {
+    "exampleLabel": "Example",
+    "loading": "Loading explanation...",
+    "popularTerms": "Popular terms",
+    "selectPrompt": "Select a term from the list to load its explanation.",
+    "subtitle": "Click a market term to get a short explanation and practical example.",
+    "title": "Translate Financial English"
+  },
+  "home": {
+    "emptySector": "No companies in this sector yet.",
+    "emptySelectSector": "Choose a sector or run a search to see companies.",
+    "searchPlaceholder": "Search by name or symbol...",
+    "sectorLabel": "Sector",
+    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
+    "title": "Companies"
+  },
+  "insider": {
+    "actionBuy": "BUY",
+    "actionSell": "SELL",
+    "colAction": "Action",
+    "colDate": "Date",
+    "colName": "Name",
+    "colRole": "Role",
+    "colValue": "Value",
+    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
+    "insight": "AI Insight",
+    "resultFor": "Insider activity for",
+    "searchButton": "Mirror insiders",
+    "sentimentBuy": "Net buying",
+    "sentimentNeutral": "Neutral",
+    "sentimentSell": "Net selling",
+    "subtitle": "Track recent buying and selling by company insiders.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "Insider Mirror",
+    "transactionsTitle": "Transactions (last 30 days, > $50k)",
+    "validationSymbol": "Please provide a valid symbol."
+  },
+  "landing": {
+    "footerCta": {
+      "button": "Create free account",
+      "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
+      "title": "Start your free account today"
+    },
+    "hero": {
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "See how it works",
+      "subtitle": "एआई रिसर्च · व्यवहारिक कोचिंग · 12 एक्सचेंज · 9 भाषाएँ",
+      "title": "अगली पीढ़ी का निवेश प्लेटफ़ॉर्म",
+      "widgetLive": "Live",
+      "widgetTitle": "Live market pulse"
+    },
+    "pricing": {
+      "badge": "अर्ली एडॉप्टर कीमत",
+      "earlyAdopter": "पहले 500 Pro अकाउंट्स हमेशा के लिए $9/माह पर लॉक",
+      "monthly": "मासिक",
+      "popular": "सबसे लोकप्रिय",
+      "save": "27% बचाएं",
+      "saveProPlus": "34% बचाएं",
+      "tiers": {
+        "free": {
+          "body": "Basic features to start building consistency.",
+          "cta": "Start free",
+          "features": [
+            "Core dashboard",
+            "Basic AI signals",
+            "Community access"
+          ],
+          "name": "Free",
+          "price": "$0/mo"
+        },
+        "pro": {
+          "body": "Full access for active investors.",
+          "cta": "Choose Pro",
+          "features": [
+            "All AI modules",
+            "Behavioral coaching",
+            "Trader psyche profile"
+          ],
+          "name": "Pro",
+          "price": "$9/mo"
+        },
+        "proPlus": {
+          "body": "For power users and automation workflows.",
+          "cta": "Choose Pro+",
+          "features": [
+            "Everything in Pro",
+            "API access",
+            "Broker integration"
+          ],
+          "name": "Pro+",
+          "price": "$19/mo"
+        }
+      },
+      "title": "Simple pricing",
+      "trial": "14 दिन मुफ्त",
+      "yearly": "वार्षिक"
+    },
+    "problem": {
+      "cards": {
+        "apps": {
+          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity.",
+          "title": "You use 5-6 apps"
+        },
+        "context": {
+          "body": "आपको संकेत दिखता है, लेकिन यह नहीं पता चलता कि बाजार अनुकूल है या यह सही समय है।",
+          "title": "आपके पास संदर्भ की कमी है"
+        },
+        "emotions": {
+          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes.",
+          "title": "Emotions cost you money"
+        },
+        "memory": {
+          "body": "Without a feedback loop, the same costly patterns repeat trade after trade.",
+          "title": "No one remembers your mistakes"
+        }
+      },
+      "title": "Why investors get stuck"
+    },
+    "socialProof": {
+      "stats": {
+        "adFree": "100% विज्ञापन-मुक्त",
+        "exchanges": "130+ एक्सचेंज",
+        "languages": "9 भाषाएँ",
+        "modules": "27 AI मॉड्यूल"
+      },
+      "subtitle": "Early access community growing every week.",
+      "testimonials": [
+        {
+          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
+          "author": "Kasia, Warsaw"
+        },
+        {
+          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
+          "author": "Lukas, Berlin"
+        },
+        {
+          "quote": "The broker gateway plus AI context saves me time every single session.",
+          "author": "Clara, Madrid"
+        }
+      ],
+      "title": "Join our early access community"
+    },
+    "solution": {
+      "features": {
+        "aiBrief": {
+          "body": "सिर्फ स्कोर नहीं — क्यों यह सही है या नहीं, इसकी पूरी व्याख्या।",
+          "title": "व्याख्या सहित AI Brief"
+        },
+        "behavioralCoach": {
+          "body": "यह आपकी गलतियों को पहचानता है और उन्हें दोहराने से रोकने में मदद करता है।",
+          "title": "Behavioral Coach"
+        },
+        "brokerIntegration": "Broker Integration",
+        "globalMarkets": {
+          "body": "GPW, NYSE, DAX, TSE, NSE और भी बहुत कुछ। ऐप बदलने की ज़रूरत नहीं।",
+          "title": "12 Global Markets"
+        },
+        "languages": "9 Languages",
+        "paperTrading": {
+          "body": "बिना जोखिम अभ्यास करें। ऐसी गलतियों से सीखें जिनकी कोई लागत नहीं।",
+          "title": "Paper Trading"
+        },
+        "preMortemAi": {
+          "body": "खरीदने से पहले AI सबसे संभावित नुकसान का परिदृश्य दिखाता है।",
+          "title": "Pre-Mortem AI"
+        },
+        "signalAnalysis": "AI Signal Analysis",
+        "signalDna": {
+          "body": "सेटअप के ऐतिहासिक जुड़वां — अतीत में ऐसे सेटअप का क्या परिणाम हुआ।",
+          "title": "Signal DNA"
+        },
+        "traderPsycheProfile": "Trader Psyche Profile"
+      },
+      "title": "One platform built for investor growth"
+    }
+  },
+  "mentor": {
+    "currentStatus": "Current status",
+    "disableAction": "Disable",
+    "disabled": "Disabled",
+    "enableAction": "Enable",
+    "enabled": "Enabled",
+    "guidanceUnavailable": "मेंटर मार्गदर्शन अभी उपलब्ध नहीं है (एंडपॉइंट ने 404 लौटाया)।",
+    "loading": "Generating mentor guidance...",
+    "panelTitle": "AI Mentor",
+    "riskCheckLabel": "Risk check",
+    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
+    "settingsTitle": "Mentor Mode Settings",
+    "styleLabel": "Mentor style",
+    "styleStrict": "Strict",
+    "styleSupportive": "Supportive",
+    "toggleLabel": "Mentor Mode"
+  },
+  "mirror": {
+    "actionError": "क्रिया विफल। फिर कोशिश करें।",
+    "follow": "फॉलो",
+    "followers": "फॉलोअर",
+    "itsYou": "आप",
+    "loadError": "मिरर डेटा लोड नहीं हो सका।",
+    "myFollowing": "मेरे फॉलो",
+    "noTopTraders": "अभी किसी ने मिरर ट्रेडिंग चालू नहीं की।",
+    "revenueShare": "राजस्व हिस्सा",
+    "revenueShareHint": "0–50%",
+    "saved": "सेव हो गया",
+    "saving": "सेव हो रहा है…",
+    "settingsSubtitle": "दूसरों को आपका पेपर ट्रेडिंग प्रोफ़ाइल फॉलो करने दें। राजस्व हिस्सा भविष्य के बिलिंग के लिए (0–50%)।",
+    "settingsTitle": "Enable Mirror Trading",
+    "subtitle": "जिन ट्रेडर्स ने मिरर शेयरिंग चालू की है, उन्हें फॉलो करें। आँकड़े बंद पेपर ट्रेड्स से।",
+    "title": "Mirror Trading",
+    "toggleLabel": "मिरर फॉलोअर स्वीकार करें",
+    "topTraders": "शीर्ष ट्रेडर",
+    "totalTrades": "कुल ट्रेड",
+    "unfollow": "अनफॉलो",
+    "winRate": "Win rate"
+  },
+  "mistakes": {
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "dnaContextLink": "Open Strategy DNA with these symbols",
+    "dnaRowLink": "Strategy DNA",
+    "emptyType": "No mistakes in this category yet.",
+    "summary": {
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing",
+      "total": "Total"
+    },
+    "title": "Mistake Library",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    }
+  },
+  "money": {
+    "gpwCaption": "राशि PLN में (GPW नोशनल); साथ का USD संकेतक है (≈ 3.95 PLN प्रति USD, लाइव दर नहीं)।"
+  },
+  "nav": {
+    "adminAffiliate": "Admin Affiliate",
+    "alpacaTrading": "Alpaca ट्रेडिंग",
+    "alphaCalendar": "Alpha Calendar",
+    "coach": "कोच",
+    "concentration": "केंद्रीकरण",
+    "correlation": "Correlation",
+    "crowdWisdom": "Crowd Wisdom",
+    "dashboard": "डैशबोर्ड",
+    "dividend": "डिविडेंड",
+    "dividendIntelligence": "डिविडेंड इंटेलिजेंस",
+    "glossary": "Glossary",
+    "home": "होम",
+    "markets": "बाज़ार",
+    "menu": "मेनू",
+    "mirrorTrading": "Mirror Trading",
+    "mistakeLibrary": "Mistake Library",
+    "paperTrading": "पेपर ट्रेडिंग",
+    "portfolio": "पोर्टफोलियो",
+    "positionSize": "कैलकुलेटर",
+    "premortem": "Pre-Mortem",
+    "psycheProfile": "My Psyche",
+    "signals": "बाज़ार",
+    "skillTree": "Skill Tree",
+    "stressTest": "स्ट्रेस टेस्ट",
+    "taxOptimizer": "PIT-38",
+    "tools": "उपकरण",
+    "volatility": "Volatility Heat Map",
+    "weeklyReview": "Weekly Review"
+  },
+  "newshalflife": {
+    "categoryLabel": "Category",
+    "empty": "No recent news found for this symbol.",
+    "expired": "Expired",
+    "halfLifeDaysBadge": "{{days}} days",
+    "halfLifeDaysLabel": "Half-life: {{days}} days",
+    "mostImpactful": "Most impactful news",
+    "reasonLabel": "Reason",
+    "remainingLabel": "Time left",
+    "searchButton": "Analyze news",
+    "subtitle": "Estimate how quickly each news item loses impact on price.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "News Half-Life Score"
+  },
+  "paperTrading": {
+    "closePosition": "पोज़िशन बंद करें",
+    "direction": "दिशा",
+    "entryPrice": "एंट्री प्राइस",
+    "exitPrice": "एग्ज़िट प्राइस",
+    "history": "ट्रेड हिस्ट्री",
+    "long": "Long",
+    "openPosition": "पोज़िशन खोलें",
+    "pnl": "P&L",
+    "portfolio": "पोर्टफोलियो",
+    "quantity": "मात्रा",
+    "short": "Short",
+    "title": "Paper Trading"
+  },
+  "pearls": {
+    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
+    "decisionTrailTitle": "Decision trail",
+    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
+    "quoteChip": "{{age}} old · {{source}}",
+    "quoteFreshness": "Quote freshness",
+    "receiptLoss": "Closed at a loss",
+    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
+    "receiptProceed": "Pre-Mortem → opened anyway",
+    "summaryProceedRate": "Pre-Mortem proceed rate",
+    "summaryTotal": "Recorded decisions",
+    "summaryWorstLoss": "Largest realized loss"
+  },
+  "positionSize": {
+    "accountSize": "खाते का आकार",
+    "actualRiskPct": "वास्तविक जोखिम % पूंजी",
+    "calculate": "गणना करें",
+    "conviction": "सेटअप विश्वास",
+    "convictionHigh": "उच्च",
+    "convictionLow": "कम",
+    "convictionMedium": "मध्यम",
+    "copied": "क्लिपबोर्ड पर कॉपी हो गया",
+    "copy": "कॉपी",
+    "copyAllTp": "सभी TP स्तर कॉपी करें",
+    "copyAriaTp": "{{label}} मूल्य कॉपी करें",
+    "currency": "खाता मुद्रा",
+    "currencyHint": "इनपुट और परिणाम PLN (GPW नोशनल) मानकर; साथ का USD संकेतक है।",
+    "entry": "प्रवेश मूल्य",
+    "errorApi404": "कैलकुलेटर API नहीं मिला (404)। नवीनतम कोड के साथ पोर्ट 3000 पर API चालू करें, या VITE_API_BASE में /api सहित पूर्ण URL सेट करें।",
+    "errorInvalid": "खाता, प्रवेश और स्टॉप के लिए वैध धनात्मक संख्याएँ दर्ज करें।",
+    "maxLoss": "स्टॉप पर अधिकतम हानि",
+    "plannedRisk": "नियोजित जोखिम",
+    "pln": "PLN",
+    "positionValue": "पोज़िशन मूल्य",
+    "riskPercent": "अधिकतम जोखिम % पूंजी",
+    "shares": "खरीदने के लिए शेयर",
+    "stop": "Stop Loss",
+    "takeProfits": "टेक प्रॉफिट (R गुणक)",
+    "title": "पोज़िशन साइज़ कैलकुलेटर",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "usd": "USD"
+  },
+  "premortem": {
+    "cancel": "Cancel trade",
+    "entry": "Entry",
+    "lossScenario": "Most likely loss scenario",
+    "marketRegime": "Market Regime",
+    "proceed": "Proceed anyway",
+    "quantity": "Quantity",
+    "runButton": "Run Pre-Mortem",
+    "stopLoss": "Stop Loss",
+    "subtitle": "Run downside scenario analysis before opening a trade.",
+    "symbol": "Symbol",
+    "takeProfit": "Take Profit",
+    "title": "Pre-Mortem AI"
+  },
+  "psyche": {
+    "addRule": "Add rule",
+    "badConditions": "Bad conditions",
+    "breaches": "Breaches",
+    "colAction": "Action",
+    "colCompliance": "Plan compliance",
+    "colDate": "Date",
+    "colMood": "Mood",
+    "colSymbol": "Symbol",
+    "complianceNo": "No",
+    "complianceUnknown": "—",
+    "complianceYes": "Yes",
+    "decisionLogTitle": "Decision log (last 10)",
+    "deleteRule": "Delete",
+    "dnaTitle": "Trader DNA",
+    "emptyLogs": "No entries yet.",
+    "goodConditions": "Good conditions",
+    "growthScore": "Growth score",
+    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
+    "refresh": "Refresh my profile",
+    "rulePlaceholder": "Add a rule",
+    "rulesTitle": "My trading rules",
+    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
+    "title": "Trader Psyche",
+    "topBiases": "Top biases",
+    "tradingStyle": "Trading style"
+  },
+  "reactions": {
+    "charCount": "{{used}} / {{max}}",
+    "empty": "अभी कोई टिप्पणी नहीं।",
+    "loading": "टिप्पणियाँ लोड हो रही हैं…",
+    "placeholder": "नोट लिखें (अधिकतम 500 अक्षर)…",
+    "postComment": "टिप्पणी पोस्ट करें",
+    "posting": "पोस्ट हो रहा है…",
+    "title": "टिप्पणियाँ"
+  },
+  "reflection": {
+    "aiTitle": "AI Insight",
+    "emotion": "Emotion",
+    "emotions": {
+      "CONFIDENT": "😊 Confident",
+      "FEAR": "😰 Fear",
+      "FRUSTRATION": "😤 Frustration",
+      "GREEDY": "🤑 Greedy",
+      "NEUTRAL": "😐 Neutral"
+    },
+    "followedPlan": "I traded according to my plan",
+    "lesson": "What did I learn?",
+    "lessonPlaceholder": "Optional (max 100 characters)",
+    "no": "No",
+    "saveAndClose": "Save & Close",
+    "saveError": "Reflection was not saved.",
+    "skip": "Skip",
+    "subtitle": "Close {{symbol}} and capture one quick reflection.",
+    "timer": "{{seconds}}s",
+    "title": "Post-Trade Reflection",
+    "yes": "Yes"
+  },
+  "replay": {
+    "action": "Direction",
+    "actualOutcome": "Actual outcome",
+    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
+    "date": "Historical date",
+    "evaluate": "Evaluate decision",
+    "loadSnapshot": "Load snapshot",
+    "price": "Price",
+    "priceChange5d": "Change after 5 days",
+    "score": "Score",
+    "step1Title": "Step 1: choose company and date",
+    "step2Title": "Step 2: market snapshot",
+    "step3Title": "Step 3: make your decision",
+    "step4Title": "Step 4: AI result",
+    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
+    "symbol": "Company",
+    "title": "Replay Mode"
+  },
+  "reversescreener": {
+    "avgOutcomeHint": "शीर्ष मिलान पर (5d + 10d)/2 का औसत — वर्णनात्मक, पूर्वानुमान नहीं।",
+    "avgOutcomeLabel": "जुड़वाँ औसत परिणाम",
+    "currentSetup": "लंगर दिन पर सेटअप",
+    "dateHint": "खाली = डेटाबेस में नवीनतम कोट दिन।",
+    "dateLabel": "लंगर तिथि (वैकल्पिक)",
+    "errorSymbol": "कृपया टिकर दर्ज करें।",
+    "findButton": "समान सेटअप खोजें",
+    "matchesTitle": "शीर्ष 5 ऐतिहासिक मिलान",
+    "noMatches": "स्कैन विंडो में कोई समान सेटअप नहीं।",
+    "outcome10d": "10 दिन बाद {{value}}",
+    "outcome5d": "5 दिन बाद {{value}}",
+    "priceChange": "1d मूल्य परिवर्तन",
+    "similarity": "समानता",
+    "subtitle": "वर्तमान OHLCV सेटअप को अन्य टिकरों के समान ऐतिहासिक दिनों से मिलाएँ (RSI, 20d औसत बनाम वॉल्यूम, 1d रिटर्न, ट्रेंड, ATR/क्लोज़ — Signal DNA जैसी समानता)।",
+    "symbolLabel": "टिकर",
+    "symbolPlaceholder": "उदा. RELIANCE",
+    "title": "Reverse Screener",
+    "trend": "ट्रेंड (MA10 बनाम MA20)",
+    "trend.down": "नीचे",
+    "trend.flat": "सपाट",
+    "trend.up": "ऊपर",
+    "volumeRatio": "वॉल्यूम बनाम 20d औसत"
+  },
+  "sector": {
+    "all": "All",
+    "basicMaterials": "Basic Materials",
+    "communicationServices": "Communication Services",
+    "consumerCyclical": "Consumer Cyclical",
+    "consumerDefensive": "Consumer Defensive",
+    "energy": "Energy",
+    "financialServices": "Financial Services",
+    "healthcare": "Healthcare",
+    "industrials": "Industrials",
+    "realEstate": "Real Estate",
+    "technology": "Technology",
+    "utilities": "Utilities"
+  },
+  "share": {
+    "button": "Share",
+    "copied": "Copied!",
+    "copy": "Copy link",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter/X",
+    "whatsapp": "WhatsApp"
+  },
+  "signals": {
+    "aiBreif": "AI Brief",
+    "autonomousWatchlist": "Autonomous watchlist",
+    "avgReturn": "औसत रिटर्न",
+    "confidence": "विश्वास",
+    "confidenceCue": {
+      "PRIME": "PRIME",
+      "STRONG": "STRONG",
+      "WATCH": "WATCH"
+    },
+    "confidenceLabel": "Confidence: {{level}}",
+    "copilot": {
+      "checkpoint": "Checkpoint",
+      "checkpointBody": "सत्र बंद होने और नए वॉल्यूम प्रिंट के बाद फिर से मूल्यांकन करें।",
+      "conviction": "Conviction",
+      "enter": "एंटर करें",
+      "invalidation": "Invalidation",
+      "invalidationBody": "यदि कीमत एंट्री से {{pct}}% तक जाती है या रिजीम बदल जाता है तो बाहर निकलें।",
+      "title": "AI Copilot निर्णय"
+    },
+    "copilotAction": {
+      "ENTER": "Enter",
+      "REDUCE": "Reduce",
+      "WAIT": "Wait"
+    },
+    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
+    "discordEmbedTitle": "Discord embed preview",
+    "discordRisk": "Risk {{score}}/100",
+    "dna": "Signal DNA",
+    "dnaCounterpoint": "विरोधाभास:",
+    "dnaExplain": {
+      "high": {
+        "counter": "मैक्रो संदर्भ भिन्न है; अत्यधिक बड़ी स्थिति से बचें।",
+        "why": "मूल्य संरचना और अस्थिरता शासन लगभग समान हैं।"
+      },
+      "low": {
+        "counter": "सहायक साक्ष्य मानें, प्राथमिक ट्रिगर नहीं।",
+        "why": "कम विश्वास के साथ आंशिक सेटअप ओवरलैप।"
+      },
+      "mid": {
+        "counter": "फॉलो-थ्रू वॉल्यूम के बिना संकेत जल्दी कमज़ोर हो सकता है।",
+        "why": "मोमेंटम प्रोफ़ाइल और वॉल्यूम संपीड़न ऐतिहासिक विजेताओं से मेल खाते हैं।"
+      }
+    },
+    "dnaWhySimilar": "क्यों समान:",
+    "entry": "Entry",
+    "executionEntry": "Entry",
+    "executionExpectedValue": "Expected value",
+    "executionRr": "R:R",
+    "executionStop": "Stop",
+    "executionTarget": "Target",
+    "executionTitle": "Battle-tested execution simulator",
+    "executionWorstCase": "Worst case",
+    "headline": "हेडलाइन",
+    "liveConnectedSse": "Connected to live stream",
+    "liveEngine": {
+      "label": "लाइव इंजन",
+      "lastUpdate": "अंतिम: {{time}}",
+      "lastUpdateEmpty": "अंतिम: --:--:--",
+      "polling": "पोलिंग मोड",
+      "sseUnavailable": "हर 15s अपडेट"
+    },
+    "livePollingUpdate": "Polling update received",
+    "liveStreamUpdate": "Live stream update received",
+    "liveWaiting": "Waiting for stream…",
+    "marketRegime": {
+      "RANGING": "Ranging",
+      "RISK_OFF": "Risk-off",
+      "RISK_ON": "Risk-on",
+      "TRENDING": "Trending"
+    },
+    "mentor": {
+      "notFound": "विश्लेषण उपलब्ध नहीं"
+    },
+    "mockNarrative": {
+      "body": "{{ticker}} का momentum प्रोफ़ाइल {{regime}} से मेल खाता है। यदि invalidation स्तर का सम्मान हो तो कीमत और वॉल्यूम नियंत्रित नकारात्मक पक्ष के साथ जारी रहने की संभावना दर्शाते हैं।",
+      "headline": "{{ticker}} — सेटअप: {{setup}}",
+      "riskNote": "कैंडल क्लोज़ की पुष्टि की प्रतीक्षा करें और स्टॉप अनुशासन सख्त रखें।"
+    },
+    "narrative": "नैरेटिव",
+    "narrativeBodyFallback": "API ने कथा का मुख्य भाग नहीं लौटाया।",
+    "narrativeConfidence": {
+      "HIGH": "उच्च",
+      "LOW": "निम्न",
+      "MEDIUM": "मध्यम"
+    },
+    "narrativeHeadlineFallback": "सिग्नल कथा: {{ticker}}",
+    "narrativeRiskNoteFallback": "API ने जोखिम नोट नहीं लौटाया।",
+    "noSignalSelected": "No signal selected.",
+    "preMortemFromSetup": "Pre-Mortem (from this setup)",
+    "regime": {
+      "executionStyle": "एग्जीक्यूशन स्टाइल",
+      "mode": "मोड",
+      "riskCap": "रिस्क कैप / ट्रेड",
+      "title": "लाइव मार्केट रिजीम इंजन"
+    },
+    "regimeDetail": {
+      "RANGING": {
+        "mode": "Neutral grid",
+        "riskCap": "0.75R",
+        "style": "Range edges + quick exits"
+      },
+      "RISK_OFF": {
+        "mode": "Capital defense",
+        "riskCap": "0.50R",
+        "style": "Mean reversion only"
+      },
+      "RISK_ON": {
+        "mode": "Pro-risk expansion",
+        "riskCap": "1.00R",
+        "style": "Momentum basket"
+      },
+      "TRENDING": {
+        "mode": "Trend acceleration",
+        "riskCap": "1.25R",
+        "style": "Breakout continuation"
+      }
+    },
+    "riskNote": "रिस्क नोट",
+    "riskScore": "रिस्क स्कोर",
+    "signalType": {
+      "CRITICAL": "Critical",
+      "RESEARCH": "Research",
+      "STANDARD": "Standard"
+    },
+    "similarity": "समानता",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "title": "सिग्नल्स",
+    "trackAvgReturn": "Avg. return",
+    "trackMaxDd": "Max DD",
+    "trackRecordTitle": "Track Record",
+    "trackTotalSignals": "Total signals",
+    "trackWinRate": "Win rate",
+    "transport": {
+      "OFFLINE": "Offline",
+      "POLLING": "Polling",
+      "SSE": "SSE"
+    },
+    "unknownSetup": "अज्ञात सेटअप",
+    "winRate": "Win rate"
+  },
+  "skilltree": {
+    "celebrationTitle": "New skills unlocked!",
+    "checkProgress": "Check progress",
+    "newlyUnlockedLabel": "Recently unlocked:",
+    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
+    "skills": {
+      "BASICS": {
+        "condition": "Always unlocked",
+        "description": "You understand how stocks and exchanges work.",
+        "name": "Basics"
+      },
+      "BEHAVIORAL": {
+        "condition": "At least 1 entry in Mistake Library",
+        "description": "You keep emotions in check while trading.",
+        "name": "Behavioral"
+      },
+      "DIVERSIFICATION": {
+        "condition": "At least 3 unique symbols in paper trades",
+        "description": "You understand diversification.",
+        "name": "Diversification"
+      },
+      "FIBONACCI": {
+        "condition": "At least 10 closed paper trades",
+        "description": "You understand Fibonacci levels.",
+        "name": "Fibonacci"
+      },
+      "MACD": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand MACD.",
+        "name": "MACD"
+      },
+      "RISK_MANAGEMENT": {
+        "condition": "Position Size Calculator: at least 3 uses",
+        "description": "You apply position sizing.",
+        "name": "Risk management"
+      },
+      "RSI": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand RSI.",
+        "name": "RSI"
+      },
+      "STRATEGY": {
+        "condition": "Min. 20 trades and win rate > 40%",
+        "description": "You follow a coherent strategy.",
+        "name": "Strategy"
+      },
+      "SUPPORT_RESISTANCE": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand support and resistance.",
+        "name": "Support & Resistance"
+      },
+      "VOLUME": {
+        "condition": "At least 10 closed paper trades",
+        "description": "You understand volume.",
+        "name": "Volume"
+      }
+    },
+    "subtitle": "Unlock trading skills as your activity grows.",
+    "title": "Skill Tree",
+    "unlockedAt": "Unlocked: {{date}}"
+  },
+  "strategydna": {
+    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster.",
+    "fromMistakesTitle": "Context from Mistake Library",
+    "insightLabel": "AI Insight",
+    "legends": {
+      "BUFFETT": "Buffett",
+      "GREENBLATT": "Greenblatt",
+      "LYNCH": "Lynch",
+      "SOROS": "Soros"
+    },
+    "mainResultLabel": "Your style is",
+    "notEnoughData": "You need at least 20 closed trades.",
+    "primary": "Primary match",
+    "secondary": "Secondary match",
+    "subtitle": "AI compares your paper trading style with legendary investors.",
+    "title": "Strategy DNA Match"
+  },
+  "stressTest": {
+    "currency": "प्रदर्शन मुद्रा",
+    "currentValue": "वर्तमान मूल्य",
+    "drop": "बाजार गिरावट",
+    "empty": "परिणाम देखने के लिए पेपर ट्रेडिंग में पोज़िशन खोलें।",
+    "error404": "स्ट्रेस टेस्ट API नहीं मिला।",
+    "lossValue": "हानि / लाभ",
+    "newValue": "झटके के बाद मूल्य",
+    "portfolioLoss": "पोर्टफोलियो हानि",
+    "portfolioLossPct": "पोर्टफोलियो हानि %",
+    "positions": "प्रति स्टॉक प्रभाव",
+    "scenarios": {
+      "COVID_2020": "2020 COVID (−34%)",
+      "CRASH_2008": "2008 संकट (−54%)",
+      "CUSTOM": "कस्टम (−{{drop}}%)",
+      "DOT_COM_2001": "2001 डॉट-कॉम (−49%)"
+    },
+    "title": "पोर्टफोलियो स्ट्रेस टेस्ट"
+  },
+  "tax": {
+    "changeCountry": "Change",
+    "customRate": "Custom tax rate (%)",
+    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor.",
+    "noTax": "No capital gains tax on listed stocks",
+    "selectCountry": "Select your tax country",
+    "title": "Tax Optimizer"
+  },
+  "taxOptimizer": {
+    "alreadyPaid": "ब्रोकर पर कटौती (प्लेसहोल्डर): {{amount}}",
+    "closedTrades": "बंद पेपर ट्रेड",
+    "colClose": "बंद",
+    "colOpen": "खुलना",
+    "colPct": "%",
+    "colPnl": "P&L",
+    "colTicker": "टिकर",
+    "disclaimer": "परिणाम केवल सूचनात्मक हैं। कर सलाहकार से परामर्श करें।",
+    "grossGains": "सकल लाभ",
+    "losses": "हानि",
+    "netIncome": "शुद्ध आय",
+    "netLossTaxNote": "शुद्ध हानि पर इस मॉड्यूल में कर आधार 0 है (सरलीकृत)।",
+    "noTrades": "चयनित वर्ष में कोई बंद ट्रेड नहीं।",
+    "suggestions": {
+      "CARRY_FORWARD_LOSS": "पिछले वर्षों की अप्रयुक्त हानि (5 वर्ष) — कर सलाहकार से पुष्टि करें।",
+      "CLOSE_LOSS_BEFORE_YEAR_END": "31.12 से पहले {{ticker}} बंद करने पर विचार करें — ~{{value}} PLN हानि से ~{{saving}} PLN कर कम हो सकता है।"
+    },
+    "suggestionsTitle": "अनुकूलन सुझाव",
+    "tax19": "Belka कर 19%",
+    "title": "Tax Optimizer",
+    "toPay": "देय कर",
+    "year": "कर वर्ष"
+  },
+  "trackrecord": {
+    "avgReturn": "Average return",
+    "bestTradePct": "Best trade",
+    "cardTitle": "Your public Track Record",
+    "copied": "Link copied",
+    "copyButton": "Copy share link",
+    "copyFailed": "Failed to copy share link.",
+    "generateButton": "Generate my Track Record",
+    "generatedAt": "Generated at",
+    "shareLinkLabel": "Public link",
+    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
+    "title": "Anonymous Track Record",
+    "totalTrades": "Total trades",
+    "winRate": "Win rate",
+    "worstTradePct": "Worst trade"
+  },
+  "volatility": {
+    "errors": {
+      "symbolRequired": "Please enter a symbol."
+    },
+    "leastVolatileMonth": "Least volatile month",
+    "legendHigh": "High volatility",
+    "legendLow": "Low volatility",
+    "legendTitle": "Legend",
+    "months": {
+      "apr": "Apr",
+      "aug": "Aug",
+      "dec": "Dec",
+      "feb": "Feb",
+      "jan": "Jan",
+      "jul": "Jul",
+      "jun": "Jun",
+      "mar": "Mar",
+      "may": "May",
+      "nov": "Nov",
+      "oct": "Oct",
+      "sep": "Sep"
+    },
+    "mostVolatileMonth": "Most volatile month",
+    "noData": "No data",
+    "searchAction": "Load heat map",
+    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
+    "subtitle": "Compare monthly volatility across years for a selected symbol.",
+    "symbol": "Symbol",
+    "title": "Volatility Heat Map",
+    "tooltip": {
+      "avgReturn": "Avg. return",
+      "volatility": "Volatility"
+    },
+    "year": "Year"
+  },
+  "watchlist": {
+    "changePct": "Change %",
+    "empty": "You are not observing any companies yet.",
+    "follow": "♡ Follow",
+    "following": "♥ Following",
+    "lastPrice": "Last price",
+    "symbol": "Symbol",
+    "yours": "Your watchlist"
+  },
+  "weekly": {
+    "aiLetterEmpty": "No letter yet for this week.",
+    "aiLetterTitle": "Your AI Growth Letter",
+    "emptyHistory": "No weekly reviews yet.",
+    "generating": "Generating your letter...",
+    "growthScore": "Growth score",
+    "historyTitle": "Last 8 weeks",
+    "placeholders": {
+      "q4": "Describe your key lesson...",
+      "q5": "Describe your commitment for next week..."
+    },
+    "questions": {
+      "q1": "Did you trade according to your rules?",
+      "q2": "Was there any overtrading or revenge trading moment?",
+      "q3": "How do you rate your stop-loss discipline?",
+      "q4": "What was your biggest lesson this week?",
+      "q5": "What will you do differently next week?"
+    },
+    "submit": "Submit week",
+    "submitting": "Submitting...",
+    "subtitle": "Review your discipline and close the week with an AI growth letter.",
+    "title": "Weekly Review",
+    "weekOf": "Week of"
   }
 }

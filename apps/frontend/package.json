@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "i18n:sync": "node scripts/sync-locale-jargon.mjs",
+    "i18n:sync": "node ../../scripts/translate-locales.mjs",
+    "i18n:jargon": "node scripts/sync-locale-jargon.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview"
   },

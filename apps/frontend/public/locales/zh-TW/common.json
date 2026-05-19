@@ -1,1226 +1,85 @@
 {
-  "nav": {
-    "home": "首頁",
-    "dashboard": "儀表板",
-    "signals": "訊號",
-    "dividend": "股息",
-    "dividendIntelligence": "股息智慧",
-    "paperTrading": "模擬交易",
-    "mirrorTrading": "Mirror Trading",
-    "coach": "教練",
-    "alphaCalendar": "Alpha Calendar",
-    "positionSize": "計算機",
-    "stressTest": "壓力測試",
-    "concentration": "集中度",
-    "taxOptimizer": "PIT-38",
-    "markets": "市場",
-    "portfolio": "投組",
-    "tools": "工具",
-    "menu": "選單",
-    "mistakeLibrary": "Mistake Library",
-    "premortem": "Pre-Mortem",
-    "correlation": "相關性",
-    "crowdWisdom": "Crowd Wisdom",
-    "glossary": "Glossary",
-    "skillTree": "Skill Tree",
-    "volatility": "Volatility Heat Map",
-    "psycheProfile": "My Psyche",
-    "weeklyReview": "Weekly Review",
-    "alpacaTrading": "Alpaca 交易",
-    "adminAffiliate": "Admin Affiliate"
-  },
-  "common": {
-    "search": "搜尋",
-    "loading": "載入中...",
-    "noData": "目前沒有資料",
-    "error": "錯誤",
-    "retry": "重試",
-    "save": "儲存",
-    "cancel": "取消",
-    "close": "關閉",
-    "open": "開啟",
-    "buy": "買入",
-    "sell": "賣出",
-    "apiMockBadge": "Mock fallback active",
-    "apiLiveBadge": "Live API",
-    "notAvailable": "n/a",
-    "high": "High",
-    "medium": "Medium",
-    "low": "Low"
-  },
-  "share": {
-    "button": "Share",
-    "twitter": "Twitter/X",
-    "linkedin": "LinkedIn",
-    "copy": "Copy link",
-    "whatsapp": "WhatsApp",
-    "copied": "Copied!"
-  },
-  "money": {
-    "gpwCaption": "金額為 PLN（GPW 名目）；旁邊的 USD 為參考（約 3.95 PLN 兌 1 USD，非即時匯率）。"
-  },
-  "analysisBrief": {
-    "title": "AI 摘要",
-    "updated": "更新時間",
-    "englishSection": "English"
-  },
-  "signals": {
-    "title": "訊號",
-    "riskScore": "風險分數",
-    "winRate": "Win rate",
-    "avgReturn": "平均報酬",
-    "confidence": "信心",
-    "regime": {
-      "title": "Live market regime engine",
-      "mode": "Mode",
-      "executionStyle": "Execution style",
-      "riskCap": "Risk cap / trade"
-    },
-    "entry": "Entry",
-    "stopLoss": "Stop Loss",
-    "takeProfit": "Take Profit",
-    "aiBreif": "AI Brief",
-    "dna": "Signal DNA",
-    "similarity": "相似度",
-    "narrative": "敘事",
-    "headline": "標題",
-    "riskNote": "風險提示",
-    "preMortemFromSetup": "Pre-Mortem (from this setup)",
-    "noSignalSelected": "No signal selected.",
-    "unknownSetup": "未知的標的型態",
-    "autonomousWatchlist": "Autonomous watchlist",
-    "liveEngine": {
-      "label": "Live engine",
-      "polling": "Polling mode",
-      "sseUnavailable": "Updates every 15s (SSE unavailable)",
-      "lastUpdate": "Last: {{time}}",
-      "lastUpdateEmpty": "Last: --:--:--"
-    },
-    "liveWaiting": "Waiting for stream…",
-    "liveStreamUpdate": "Live stream update received",
-    "livePollingUpdate": "Polling update received",
-    "liveConnectedSse": "Connected to live stream",
-    "confidenceLabel": "Confidence: {{level}}",
-    "confidenceCue": {
-      "PRIME": "PRIME",
-      "STRONG": "STRONG",
-      "WATCH": "WATCH"
-    },
-    "regimeDetail": {
-      "TRENDING": {
-        "mode": "Trend acceleration",
-        "style": "Breakout continuation",
-        "riskCap": "1.25R"
-      },
-      "RISK_ON": {
-        "mode": "Pro-risk expansion",
-        "style": "Momentum basket",
-        "riskCap": "1.00R"
-      },
-      "RISK_OFF": {
-        "mode": "Capital defense",
-        "style": "Mean reversion only",
-        "riskCap": "0.50R"
-      },
-      "RANGING": {
-        "mode": "Neutral grid",
-        "style": "Range edges + quick exits",
-        "riskCap": "0.75R"
-      }
-    },
-    "marketRegime": {
-      "TRENDING": "Trending",
-      "RANGING": "Ranging",
-      "RISK_ON": "Risk-on",
-      "RISK_OFF": "Risk-off"
-    },
-    "signalType": {
-      "CRITICAL": "Critical",
-      "STANDARD": "Standard",
-      "RESEARCH": "Research"
-    },
-    "transport": {
-      "SSE": "SSE",
-      "POLLING": "Polling",
-      "OFFLINE": "Offline"
-    },
-    "copilotAction": {
-      "ENTER": "Enter",
-      "WAIT": "Wait",
-      "REDUCE": "Reduce"
-    },
-    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
-    "dnaWhySimilar": "為何相似：",
-    "dnaCounterpoint": "反面觀點：",
-    "dnaExplain": {
-      "high": {
-        "why": "價格結構與波動率型態幾乎一致。",
-        "counter": "總經背景不同；避免部位過大。"
-      },
-      "mid": {
-        "why": "動能輪廓與量能壓縮符合歷史勝出樣本。",
-        "counter": "若缺乏量能延續，訊號可能快速轉弱。"
-      },
-      "low": {
-        "why": "信心較低下的部分型態重疊。",
-        "counter": "僅作輔助依據，勿視為主要觸發條件。"
-      }
-    },
-    "discordEmbedTitle": "Discord embed preview",
-    "discordRisk": "Risk {{score}}/100",
-    "trackRecordTitle": "Track Record",
-    "trackWinRate": "Win rate",
-    "trackAvgReturn": "Avg. return",
-    "trackMaxDd": "Max DD",
-    "trackTotalSignals": "Total signals",
-    "executionTitle": "Battle-tested execution simulator",
-    "executionEntry": "Entry",
-    "executionStop": "Stop",
-    "executionTarget": "Target",
-    "executionRr": "R:R",
-    "executionExpectedValue": "Expected value",
-    "executionWorstCase": "Worst case",
-    "mockNarrative": {
-      "headline": "{{ticker}} — 型態：{{setup}}",
-      "body": "{{ticker}} 的動能輪廓與 {{regime}} 一致。價量結構在遵守 invalidation 位階的前提下，暗示有延續空間且下行風險受控。",
-      "riskNote": "等待 K 線收盤確認，並維持嚴格的停損紀律。"
-    },
-    "narrativeHeadlineFallback": "訊號敘事：{{ticker}}",
-    "narrativeBodyFallback": "API 未回傳敘事內文。",
-    "narrativeRiskNoteFallback": "API 未回傳風險備註。",
-    "narrativeConfidence": {
-      "HIGH": "High",
-      "MEDIUM": "Medium",
-      "LOW": "Low"
-    },
-    "mentor": {
-      "notFound": "Analysis unavailable"
-    },
-    "copilot": {
-      "title": "AI Copilot decision",
-      "conviction": "Conviction",
-      "invalidation": "Invalidation",
-      "invalidationBody": "Exit if the move reaches {{pct}}% from entry or the regime flips.",
-      "checkpoint": "Checkpoint",
-      "checkpointBody": "Re-evaluate after the session close and a fresh volume print.",
-      "enter": "Enter trade"
-    }
-  },
-  "reactions": {
-    "title": "留言",
-    "postComment": "發表留言",
-    "placeholder": "撰寫備註（最多 500 字）…",
-    "charCount": "{{used}} / {{max}}",
-    "empty": "尚無留言。",
-    "loading": "載入留言中…",
-    "posting": "發表中…"
-  },
-  "dividend": {
-    "title": "股利篩選",
-    "history": "股利歷史",
-    "symbol": "Symbol",
-    "yearsBack": "回溯年數",
-    "fetch": "取得",
-    "noData": "沒有資料 - 請調整篩選條件",
-    "screener": "篩選器: 股利成長 (CAGR)",
-    "minYears": "最少年數",
-    "minYield": "最低殖利率 %",
-    "refresh": "更新",
-    "colSymbol": "Symbol",
-    "colYear": "年份",
-    "colAnnual": "年度股利",
-    "colGrowth": "成長 YoY %",
-    "colCagr": "CAGR 5Y %",
-    "colYield": "Yield %",
-    "yield": "股息殖利率",
-    "health": "健康分數",
-    "years": "成長年數",
-    "exDate": "除息日",
-    "payoutRatio": "派息率",
-    "trend": "趨勢",
-    "safe": "安全",
-    "watch": "觀察",
-    "risky": "高風險"
-  },
-  "paperTrading": {
-    "title": "Paper Trading",
-    "openPosition": "開啟倉位",
-    "closePosition": "關閉倉位",
-    "portfolio": "投資組合",
-    "history": "交易歷史",
-    "pnl": "P&L",
-    "direction": "方向",
-    "quantity": "數量",
-    "entryPrice": "進場價",
-    "exitPrice": "出場價",
-    "long": "Long",
-    "short": "Short"
-  },
-  "coach": {
-    "title": "行為教練",
-    "traderProfile": "交易者檔案",
-    "avgWin": "平均獲利",
-    "avgLoss": "平均虧損",
-    "biases": "偵測偏誤",
-    "noBiases": "未偵測到偏誤",
-    "cutsWinners": "過早了結獲利",
-    "holdsLosers": "虧損持有過久",
-    "overtrading": "Overtrading",
-    "aiCoach": "AI 教練建議",
-    "avgHoldWin": "平均持有（獲利）",
-    "avgHoldLoss": "平均持有（虧損）",
-    "biasCutsBody": "您平均約 {{winHours}} 小時就平掉獲利部位，但虧損會抱約 {{lossHours}} 小時。",
-    "biasHoldsBody": "平均虧損：{{lossPct}}%；虧損交易持有時間：{{lossHours}} 小時。",
-    "biasOverBody": "最近 24 小時內超過 {{maxTrades}} 筆交易。",
-    "aiDescriptionEmpty": "尚無 AI 教練內容。",
-    "chartAvgWin": "Avg. win %",
-    "chartAvgLoss": "Avg. loss %"
-  },
-  "cooldown": {
-    "title": "連敗冷卻",
-    "inactive": "目前沒有啟用冷卻",
-    "unlocksIn": "解鎖倒數"
-  },
-  "alpha": {
-    "title": "Alpha Calendar",
-    "windows": "機率視窗",
-    "probability": "機率",
-    "historicalReturn": "歷史報酬",
-    "earningsCycle": "財報週期",
-    "seasonal": "季節性",
-    "sectorRotation": "產業輪動",
-    "regimeShift": "狀態轉換",
-    "subtitleNext48h": "接下來 48 小時",
-    "aiSummaryTitle": "AI 摘要",
-    "aiSummaryEmpty": "尚無 AI 摘要。",
-    "tickerLabel": "Ticker",
-    "tickerPlaceholder": "例如 AAPL",
-    "colStart": "開始",
-    "colEnd": "結束",
-    "colDescription": "說明",
-    "emptyTickerRows": "此代號沒有時間窗口。"
-  },
-  "positionSize": {
-    "title": "部位大小計算機",
-    "currency": "帳戶幣別",
-    "currencyHint": "輸入與結果以 PLN（GPW 名目）計算；旁邊的 USD 為參考換算。",
-    "pln": "PLN",
-    "usd": "USD",
-    "accountSize": "帳戶資金",
-    "riskPercent": "最大風險 %（占資金）",
-    "entry": "進場價",
-    "stop": "Stop Loss",
-    "conviction": "設定信心",
-    "convictionLow": "低",
-    "convictionMedium": "中",
-    "convictionHigh": "高",
-    "calculate": "計算",
-    "shares": "建議買入股數",
-    "positionValue": "部位價值",
-    "plannedRisk": "計畫風險金額",
-    "actualRiskPct": "實際風險 %（占資金）",
-    "maxLoss": "停損時最大虧損",
-    "takeProfits": "獲利了結（R 倍數）",
-    "tp1": "1R",
-    "tp2": "2R",
-    "tp3": "3R",
-    "errorInvalid": "請輸入帳戶、進場與停損的有效正數。",
-    "copy": "複製",
-    "copyAllTp": "複製全部 TP 位階",
-    "copyAriaTp": "複製 {{label}} 價格",
-    "copied": "已複製到剪貼簿",
-    "errorApi404": "找不到計算 API (404)。請在連接埠 3000 啟動最新版 API，或將 VITE_API_BASE 設為包含 /api 的完整網址。"
-  },
-  "stressTest": {
-    "title": "投組壓力測試",
-    "empty": "請先在模擬交易中開倉，才能看到結果。",
-    "currency": "顯示幣別",
-    "drop": "市場跌幅",
-    "portfolioLoss": "投組虧損",
-    "portfolioLossPct": "投組虧損 %",
-    "positions": "個股影響",
-    "currentValue": "目前價值",
-    "lossValue": "虧損 / 獲利",
-    "newValue": "衝擊後價值",
-    "error404": "找不到壓力測試 API。",
-    "scenarios": {
-      "CRASH_2008": "2008 金融海嘯 (−54%)",
-      "COVID_2020": "2020 COVID (−34%)",
-      "DOT_COM_2001": "2001 網路泡沫 (−49%)",
-      "CUSTOM": "自訂 (−{{drop}}%)"
-    }
-  },
-  "concentration": {
-    "title": "投組集中度分析",
-    "empty": "請先在模擬交易中開倉，才能看到分析。",
-    "currency": "顯示幣別",
-    "scoreLabel": "分散評分（0–100）",
-    "totalValue": "投組總值",
-    "positionCount": "未平倉模擬部位數",
-    "chartByStock": "依公司配置",
-    "chartBySector": "依產業配置",
-    "positionsTable": "部位與權重",
-    "colTicker": "代號",
-    "colSector": "產業",
-    "colValue": "金額",
-    "colWeight": "權重 %",
-    "value": "金額",
-    "warnings": {
-      "SINGLE_STOCK": "{{ticker}} 占投組 {{weight}}%（建議上限 {{maxStock}}%）。",
-      "SINGLE_SECTOR": "{{sector}} 產業占 {{weight}}%（建議上限 {{maxSector}}%）。",
-      "TOP_HEAVY": "前三大標的合計 {{top3Share}}%。"
-    }
-  },
-  "correlation": {
-    "title": "Correlation Scanner",
-    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
-    "mainSymbol": "Main symbol",
-    "portfolioSymbols": "Portfolio symbols (comma separated)",
-    "analyze": "Analyze correlation",
-    "validation": "Provide a main symbol and at least one portfolio symbol.",
-    "tableTitle": "Correlation results",
-    "colSymbol": "Symbol",
-    "colCorrelation": "Correlation",
-    "colWarning": "Warning",
-    "warningHighRisk": "High risk",
-    "warningLowRisk": "OK",
-    "highRiskPairs": "High-risk pairs (> 0.7)",
-    "noHighRiskPairs": "No high-risk pair detected.",
-    "aiInsight": "AI Insight"
-  },
-  "tax": {
-    "title": "Tax Optimizer",
-    "selectCountry": "Select your tax country",
-    "changeCountry": "Change",
-    "noTax": "No capital gains tax on listed stocks",
-    "customRate": "Custom tax rate (%)",
-    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor."
-  },
-  "taxOptimizer": {
-    "title": "Tax Optimizer",
-    "year": "課稅年度",
-    "grossGains": "總獲利",
-    "losses": "虧損",
-    "netIncome": "淨所得",
-    "tax19": "Belka 稅 19%",
-    "toPay": "應納稅額",
-    "alreadyPaid": "券商預扣（占位）: {{amount}}",
-    "netLossTaxNote": "淨虧損年度時，本模組課稅基礎為 0（簡化）。",
-    "suggestionsTitle": "優化建議",
-    "suggestions": {
-      "CLOSE_LOSS_BEFORE_YEAR_END": "考慮在 12/31 前平倉 {{ticker}} — 約 {{value}} PLN 虧損可能減少約 {{saving}} PLN 稅負。",
-      "CARRY_FORWARD_LOSS": "可能有前五年未抵減虧損 — 請與稅務顧問確認。"
-    },
-    "closedTrades": "已平倉模擬交易",
-    "noTrades": "所選年度沒有已平倉交易。",
-    "colTicker": "代號",
-    "colOpen": "開倉",
-    "colClose": "平倉",
-    "colPnl": "損益",
-    "colPct": "%",
-    "disclaimer": "結果僅供參考，請諮詢合格稅務顧問。"
-  },
-  "mistakes": {
-    "title": "Mistake Library",
-    "analyzeButton": "Analyze my mistakes",
-    "analyzing": "Analyzing...",
-    "emptyType": "No mistakes in this category yet.",
-    "types": {
-      "EMOTIONAL": "EMOTIONAL",
-      "STRATEGY": "STRATEGY",
-      "TIMING": "TIMING"
-    },
-    "summary": {
-      "total": "Total",
-      "emotional": "Emotional",
-      "strategy": "Strategy",
-      "timing": "Timing"
-    },
-    "dnaRowLink": "Strategy DNA",
-    "dnaContextLink": "Open Strategy DNA with these symbols"
-  },
-  "premortem": {
-    "title": "Pre-Mortem AI",
-    "subtitle": "Run downside scenario analysis before opening a trade.",
-    "symbol": "Symbol",
-    "entry": "Entry",
-    "stopLoss": "Stop Loss",
-    "takeProfit": "Take Profit",
-    "quantity": "Quantity",
-    "runButton": "Run Pre-Mortem",
-    "lossScenario": "Most likely loss scenario",
-    "marketRegime": "Market Regime",
-    "proceed": "Proceed anyway",
-    "cancel": "Cancel trade"
-  },
-  "crowdwisdom": {
-    "title": "Crowd Wisdom Inverter",
-    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
-    "symbol": "Symbol",
-    "analyze": "Analyze",
-    "retailSentiment": "Retail Sentiment",
-    "insiderActivity": "Insider Activity",
-    "result": "Signal",
-    "divergence": "Divergence (insider - retail)",
-    "signalBuy": "Contrarian Buy",
-    "signalSell": "Contrarian Sell",
-    "signalNeutral": "Neutral"
-  },
-  "glossary": {
-    "title": "Translate Financial English",
-    "subtitle": "Click a market term to get a short explanation and practical example.",
-    "popularTerms": "Popular terms",
-    "loading": "Loading explanation...",
-    "exampleLabel": "Example",
-    "selectPrompt": "Select a term from the list to load its explanation."
-  },
-  "backtest": {
-    "title": "Walk-Forward Backtest",
-    "subtitle": "30 天視窗；訊號只用過去資料；結果為 5 個交易日後收盤價對進場價。",
-    "symbol": "代號",
-    "strategy": "策略",
-    "period": "期間",
-    "strategyRsi": "RSI 超賣（< 30）",
-    "strategyBreakout": "突破（對 20 日高）",
-    "strategyVolume": "量能激增（> 2× 20 日均量）",
-    "months3": "3 個月",
-    "months6": "6 個月",
-    "months12": "12 個月",
-    "monthsSuffix": "個月",
-    "runButton": "Run backtest",
-    "resultsTitle": "結果",
-    "winRate": "Win rate",
-    "avgReturn": "平均報酬",
-    "totalTrades": "總交易次數",
-    "maxDrawdown": "Max drawdown",
-    "sharpeRatio": "Sharpe ratio",
-    "tradesTableTitle": "交易",
-    "colDate": "日期",
-    "colAction": "動作",
-    "colPrice": "價格",
-    "colOutcome": "結果（5 日）"
-  },
-  "replay": {
-    "title": "Replay Mode",
-    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
-    "step1Title": "Step 1: choose company and date",
-    "step2Title": "Step 2: market snapshot",
-    "step3Title": "Step 3: make your decision",
-    "step4Title": "Step 4: AI result",
-    "symbol": "Company",
-    "date": "Historical date",
-    "loadSnapshot": "Load snapshot",
-    "priceChange5d": "Change after 5 days",
-    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
-    "action": "Direction",
-    "price": "Price",
-    "evaluate": "Evaluate decision",
-    "score": "Score",
-    "actualOutcome": "Actual outcome"
-  },
-  "reversescreener": {
-    "title": "Reverse Screener",
-    "subtitle": "將目前 OHLCV 型態與其他標的的相似歷史日比對（RSI、量能 vs 20 日均、單日報酬、趨勢、ATR/收盤 — Signal DNA 風格相似度）。",
-    "symbolLabel": "代號",
-    "symbolPlaceholder": "例：2330",
-    "dateLabel": "錨定日期（選填）",
-    "dateHint": "留空則使用資料庫最新報價日。",
-    "findButton": "尋找相似型態",
-    "avgOutcomeLabel": "雙胞胎平均結果",
-    "avgOutcomeHint": "前幾名匹配的 (5日+10日)/2 平均 — 僅供描述，非預測。",
-    "currentSetup": "錨定日型態",
-    "volumeRatio": "量能 vs 20 日均",
-    "priceChange": "單日價格變化",
-    "trend": "趨勢（MA10 vs MA20）",
-    "trend.up": "上升",
-    "trend.down": "下降",
-    "trend.flat": "盤整",
-    "matchesTitle": "歷史前 5 名匹配",
-    "similarity": "相似度",
-    "outcome5d": "5 日後 {{value}}",
-    "outcome10d": "10 日後 {{value}}",
-    "noMatches": "搜尋區間內找不到相似型態。",
-    "errorSymbol": "請輸入股票代號。"
-  },
-  "trackrecord": {
-    "title": "Anonymous Track Record",
-    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Generate my Track Record",
-    "cardTitle": "Your public Track Record",
-    "winRate": "Win rate",
-    "totalTrades": "Total trades",
-    "avgReturn": "Average return",
-    "bestTradePct": "Best trade",
-    "worstTradePct": "Worst trade",
-    "generatedAt": "Generated at",
-    "shareLinkLabel": "Public link",
-    "copyButton": "Copy share link",
-    "copyFailed": "Failed to copy share link.",
-    "copied": "Link copied"
-  },
-  "digest": {
-    "title": "Daily Digest",
-    "subtitle": "Generate your AI market recap and send a test email instantly.",
-    "previewButton": "Preview my digest",
-    "sendButton": "Send test email",
-    "cardDateLabel": "Digest date",
-    "emptyState": "Click preview to generate today's digest.",
-    "emailSent": "Test email sent for {{date}}."
-  },
-  "strategydna": {
-    "title": "Strategy DNA Match",
-    "subtitle": "AI compares your paper trading style with legendary investors.",
-    "mainResultLabel": "Your style is",
-    "primary": "Primary match",
-    "secondary": "Secondary match",
-    "insightLabel": "AI Insight",
-    "notEnoughData": "You need at least 20 closed trades.",
-    "legends": {
-      "BUFFETT": "Buffett",
-      "LYNCH": "Lynch",
-      "GREENBLATT": "Greenblatt",
-      "SOROS": "Soros"
-    },
-    "fromMistakesTitle": "Context from Mistake Library",
-    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster."
-  },
-  "earnings": {
-    "title": "Earnings Surprise Predictor",
-    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "predictButton": "Predict",
-    "validationSymbol": "Please provide a valid symbol.",
-    "resultFor": "Prediction for",
-    "confidence": "Confidence",
-    "reasoning": "AI reasoning",
-    "nextDate": "Next earnings date",
-    "noDate": "Date unavailable"
-  },
-  "insider": {
-    "title": "Insider Mirror",
-    "subtitle": "Track recent buying and selling by company insiders.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchButton": "Mirror insiders",
-    "validationSymbol": "Please provide a valid symbol.",
-    "resultFor": "Insider activity for",
-    "insight": "AI Insight",
-    "transactionsTitle": "Transactions (last 30 days, > $50k)",
-    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
-    "colName": "Name",
-    "colRole": "Role",
-    "colAction": "Action",
-    "colValue": "Value",
-    "colDate": "Date",
-    "actionBuy": "BUY",
-    "actionSell": "SELL",
-    "sentimentBuy": "Net buying",
-    "sentimentSell": "Net selling",
-    "sentimentNeutral": "Neutral"
-  },
-  "mentor": {
-    "toggleLabel": "Mentor Mode",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "panelTitle": "AI Mentor",
-    "loading": "Generating mentor guidance...",
-    "riskCheckLabel": "Risk check",
-    "settingsTitle": "Mentor Mode Settings",
-    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
-    "currentStatus": "Current status",
-    "enableAction": "Enable",
-    "disableAction": "Disable",
-    "styleLabel": "Mentor style",
-    "styleSupportive": "Supportive",
-    "styleStrict": "Strict",
-    "guidanceUnavailable": "導師建議尚不可用（端點回傳 404）。"
-  },
-  "mirror": {
-    "title": "Mirror Trading",
-    "subtitle": "跟隨已開啟鏡像分享的交易者。數據來自已平倉的模擬交易。",
-    "topTraders": "頂尖交易者",
-    "winRate": "Win rate",
-    "totalTrades": "總交易數",
-    "followers": "跟隨者",
-    "follow": "跟隨",
-    "unfollow": "取消跟隨",
-    "myFollowing": "我的跟隨",
-    "loadError": "無法載入鏡像資料。",
-    "actionError": "操作失敗，請再試一次。",
-    "settingsTitle": "Enable Mirror Trading",
-    "settingsSubtitle": "允許他人跟隨您的模擬交易檔案。收益分成供未來結算用（0–50%）。",
-    "toggleLabel": "接受鏡像跟隨者",
-    "revenueShare": "收益分成",
-    "revenueShareHint": "0–50%",
-    "saving": "儲存中…",
-    "saved": "已儲存",
-    "noTopTraders": "尚無人啟用鏡像交易。",
-    "itsYou": "您"
-  },
-  "discord": {
-    "title": "Discord Auto-Sync",
-    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
-    "webhookLabel": "Discord webhook URL",
-    "webhookPlaceholder": "https://discord.com/api/webhooks/...",
-    "saveButton": "Save",
-    "testButton": "Test webhook",
-    "active": "Webhook active",
-    "inactive": "Webhook inactive",
-    "loadError": "Failed to load webhook settings.",
-    "saveSuccess": "Webhook saved.",
-    "saveError": "Failed to save webhook.",
-    "testSuccess": "Test message sent.",
-    "testError": "Failed to send test message."
-  },
-  "emotional": {
-    "widgetTitle": "Emotional state",
-    "alertTitle": "Break recommended",
-    "lastChecked": "Last checked",
-    "level": {
-      "LOW": "Low",
-      "MEDIUM": "Medium",
-      "HIGH": "High"
-    }
-  },
-  "skilltree": {
-    "title": "Skill Tree",
-    "subtitle": "Unlock trading skills as your activity grows.",
-    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
-    "checkProgress": "Check progress",
-    "celebrationTitle": "New skills unlocked!",
-    "newlyUnlockedLabel": "Recently unlocked:",
-    "unlockedAt": "Unlocked: {{date}}",
-    "skills": {
-      "BASICS": {
-        "name": "Basics",
-        "description": "You understand how stocks and exchanges work.",
-        "condition": "Always unlocked"
-      },
-      "SUPPORT_RESISTANCE": {
-        "name": "Support & Resistance",
-        "description": "You understand support and resistance.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "RSI": {
-        "name": "RSI",
-        "description": "You understand RSI.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "MACD": {
-        "name": "MACD",
-        "description": "You understand MACD.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "FIBONACCI": {
-        "name": "Fibonacci",
-        "description": "You understand Fibonacci levels.",
-        "condition": "At least 10 closed paper trades"
-      },
-      "VOLUME": {
-        "name": "Volume",
-        "description": "You understand volume.",
-        "condition": "At least 10 closed paper trades"
-      },
-      "RISK_MANAGEMENT": {
-        "name": "Risk management",
-        "description": "You apply position sizing.",
-        "condition": "Position Size Calculator: at least 3 uses"
-      },
-      "BEHAVIORAL": {
-        "name": "Behavioral",
-        "description": "You keep emotions in check while trading.",
-        "condition": "At least 1 entry in Mistake Library"
-      },
-      "DIVERSIFICATION": {
-        "name": "Diversification",
-        "description": "You understand diversification.",
-        "condition": "At least 3 unique symbols in paper trades"
-      },
-      "STRATEGY": {
-        "name": "Strategy",
-        "description": "You follow a coherent strategy.",
-        "condition": "Min. 20 trades and win rate > 40%"
-      }
-    }
-  },
-  "volatility": {
-    "title": "Volatility Heat Map",
-    "subtitle": "Compare monthly volatility across years for a selected symbol.",
-    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchAction": "Load heat map",
-    "symbol": "Symbol",
-    "year": "Year",
-    "mostVolatileMonth": "Most volatile month",
-    "leastVolatileMonth": "Least volatile month",
-    "noData": "No data",
-    "legendTitle": "Legend",
-    "legendLow": "Low volatility",
-    "legendHigh": "High volatility",
-    "months": {
-      "jan": "Jan",
-      "feb": "Feb",
-      "mar": "Mar",
-      "apr": "Apr",
-      "may": "May",
-      "jun": "Jun",
-      "jul": "Jul",
-      "aug": "Aug",
-      "sep": "Sep",
-      "oct": "Oct",
-      "nov": "Nov",
-      "dec": "Dec"
-    },
-    "tooltip": {
-      "volatility": "Volatility",
-      "avgReturn": "Avg. return"
-    },
-    "errors": {
-      "symbolRequired": "Please enter a symbol."
-    }
-  },
-  "newshalflife": {
-    "title": "News Half-Life Score",
-    "subtitle": "Estimate how quickly each news item loses impact on price.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchButton": "Analyze news",
-    "mostImpactful": "Most impactful news",
-    "halfLifeDaysLabel": "Half-life: {{days}} days",
-    "halfLifeDaysBadge": "{{days}} days",
-    "expired": "Expired",
-    "categoryLabel": "Category",
-    "reasonLabel": "Reason",
-    "remainingLabel": "Time left",
-    "empty": "No recent news found for this symbol."
-  },
-  "pearls": {
-    "quoteFreshness": "Quote freshness",
-    "quoteChip": "{{age}} old · {{source}}",
-    "decisionTrailTitle": "Decision trail",
-    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
-    "receiptProceed": "Pre-Mortem → opened anyway",
-    "receiptLoss": "Closed at a loss",
-    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
-    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
-    "summaryTotal": "Recorded decisions",
-    "summaryProceedRate": "Pre-Mortem proceed rate",
-    "summaryWorstLoss": "Largest realized loss"
-  },
-  "dividendcompound": {
-    "title": "股息複利計算機",
-    "subtitle": "模擬有無再投資股息的投資組合成長。",
-    "initialAmount": "初始金額 (PLN)",
-    "monthlyContribution": "每月投入 (PLN)",
-    "dividendYield": "股息殖利率 (%)",
-    "years": "期間 (年)",
-    "yearsValue": "{{count}} 年",
-    "calculate": "計算",
-    "withReinvesting": "再投資",
-    "withoutReinvesting": "不再投資",
-    "difference": "差額 (複利效果)",
-    "chartTitle": "逐年投資組合價值",
-    "axisYear": "年份",
-    "tooltipYear": "第 {{year}} 年"
-  },
-  "psyche": {
-    "title": "Trader Psyche",
-    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
-    "refresh": "Refresh my profile",
-    "dnaTitle": "Trader DNA",
-    "growthScore": "Growth score",
-    "tradingStyle": "Trading style",
-    "topBiases": "Top biases",
-    "goodConditions": "Good conditions",
-    "badConditions": "Bad conditions",
-    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
-    "rulesTitle": "My trading rules",
-    "rulePlaceholder": "Add a rule",
-    "addRule": "Add rule",
-    "breaches": "Breaches",
-    "deleteRule": "Delete",
-    "decisionLogTitle": "Decision log (last 10)",
-    "colDate": "Date",
-    "colSymbol": "Symbol",
-    "colAction": "Action",
-    "colMood": "Mood",
-    "colCompliance": "Plan compliance",
-    "complianceYes": "Yes",
-    "complianceNo": "No",
-    "complianceUnknown": "—",
-    "emptyLogs": "No entries yet."
-  },
-  "home": {
-    "title": "Companies",
-    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
-    "searchPlaceholder": "Search by name or symbol...",
-    "emptySelectSector": "Choose a sector or run a search to see companies.",
-    "emptySector": "No companies in this sector yet.",
-    "sectorLabel": "Sector"
-  },
-  "sector": {
-    "all": "All",
-    "technology": "Technology",
-    "financialServices": "Financial Services",
-    "healthcare": "Healthcare",
-    "consumerCyclical": "Consumer Cyclical",
-    "industrials": "Industrials",
-    "energy": "Energy",
-    "communicationServices": "Communication Services",
-    "consumerDefensive": "Consumer Defensive",
-    "utilities": "Utilities",
-    "realEstate": "Real Estate",
-    "basicMaterials": "Basic Materials"
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
-    "companiesTitle": "Companies",
-    "companiesDesc": "Search and sector grid with logos.",
-    "signalsTitle": "Signals",
-    "signalsDesc": "Coming soon - screener and AI scores.",
-    "portfolioTitle": "Portfolio",
-    "portfolioDesc": "Coming soon - watchlists and alerts."
-  },
-  "watchlist": {
-    "follow": "♡ Follow",
-    "following": "♥ Following",
-    "yours": "Your watchlist",
-    "empty": "You are not observing any companies yet.",
-    "symbol": "Symbol",
-    "lastPrice": "Last price",
-    "changePct": "Change %"
-  },
-  "dividendsPage": {
-    "title": "Dividend screening (MVP)",
-    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
-    "historyTitle": "Dividend history",
-    "symbol": "Symbol",
-    "yearsBack": "Years back",
-    "fetch": "Fetch",
-    "exDate": "Ex-date",
-    "payDate": "Pay date",
-    "amount": "Amount",
-    "yield": "Yield %",
-    "emptyHistory": "No rows yet - run seed or change filters.",
-    "screenerTitle": "Screener: dividend growth (CAGR)",
-    "minYears": "Min. years of history",
-    "minYield": "Min. yield %",
-    "refresh": "Refresh",
-    "dataLocation": "in",
-    "screenerLoading": "Loading screener…",
-    "screenerEmpty": "No results for selected filters.",
-    "tableYear": "Year",
-    "tableAnnualDividend": "Annual dividend",
-    "tableGrowthYoy": "Growth YoY %",
-    "taxTitle": "Dividend tax (PIT 19%)",
-    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
-    "taxShares": "Number of shares",
-    "taxReferencePrice": "Price (reference)",
-    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
-    "taxYieldAlternative": "Alternative: annual yield % (optional)",
-    "taxYieldPlaceholder": "e.g. 2.5",
-    "taxCalculating": "Calculating…",
-    "taxCalculate": "Calculate",
-    "taxMethod": "Method",
-    "taxGrossDividend": "Gross dividend",
-    "taxRateLabel": "Tax ({{rate}}%)",
-    "taxNet": "Net"
-  },
-  "company": {
-    "loading": "Loading company...",
-    "backHome": "<- Back home",
-    "backToCompanies": "← 公司",
-    "sector": "Sector",
-    "industry": "Industry",
-    "website": "Website",
-    "chartTitle": "Close - recent history",
-    "close": "Close",
-    "noQuoteHistory": "No quote history yet.",
-    "recentNews": "Recent news",
-    "noNews": "No news rows in database yet."
-  },
-  "dividendIntelligence": {
-    "title": "Dividend Intelligence",
-    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
-    "symbol": "Symbol",
-    "sectorPercentile": "Sector percentile",
-    "vsPeers": "(vs peers in sector)"
-  },
   "affiliate": {
-    "disclosure": {
-      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
-      "title": "StockAI Pro transparency",
-      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
-      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider."
-    },
     "cta": {
       "buy_through": "Buy {{ticker}} via {{broker}}",
       "open_account": "Open account with {{broker}}",
       "other_options": "Other options ({{count}})"
     },
+    "disclosure": {
+      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider.",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
+      "title": "StockAI Pro transparency"
+    },
     "modal": {
-      "title": "Choose a broker",
-      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "close": "Close",
       "select": "Select",
-      "close": "Close"
-    }
-  },
-  "etoro": {
-    "cta": "在 eToro 開立帳戶",
-    "subtitle": "透過持牌經紀商交易股票",
-    "company": {
-      "title": "Trade this stock",
-      "button": "Open account on eToro",
-      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money."
-    },
-    "alpaca": {
-      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
-      "button": "Try eToro"
-    },
-    "settings": {
-      "sectionTitle": "Recommended Brokers",
-      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
-      "cardTitle": "eToro",
-      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
-      "button": "Learn more & open account"
+      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "title": "Choose a broker"
     }
   },
   "alpaca": {
-    "title": "Alpaca Trading",
-    "connectBanner": "Connect your Alpaca account in Settings",
     "account": "Account",
-    "modePaper": "PAPER",
-    "modeLive": "LIVE",
-    "buyingPower": "Buying power",
-    "portfolioValue": "Portfolio value",
-    "cash": "Cash",
-    "quickTrade": "Quick Trade",
-    "symbol": "Symbol",
-    "buy": "Buy",
-    "sell": "Sell",
-    "positions": "Positions",
-    "avgPrice": "Avg Price",
-    "currentPrice": "Current Price",
-    "noPositions": "No open positions",
-    "orders": "Orders",
-    "qty": "Qty",
-    "status": "Status",
-    "side": "Side",
-    "noOrders": "No recent orders",
-    "cancel": "Cancel",
-    "equityCurve": "Equity curve (30d)",
-    "confirmTrade": "Confirm Trade",
-    "premortem": "Pre-Mortem",
-    "confirm": "Confirm",
-    "settingsTitle": "Alpaca",
-    "settingsSubtitle": "Connect Alpaca API keys and choose account mode.",
     "apiKey": "API Key",
     "apiSecret": "API Secret",
+    "avgPrice": "Avg Price",
+    "buy": "Buy",
+    "buyingPower": "Buying power",
+    "cancel": "Cancel",
+    "cash": "Cash",
+    "confirm": "Confirm",
+    "confirmTrade": "Confirm Trade",
+    "connectBanner": "Connect your Alpaca account in Settings",
+    "connected": "Connected",
+    "connectionError": "Connection error",
+    "currentPrice": "Current Price",
+    "equityCurve": "Equity curve (30d)",
     "mode": "Mode",
-    "testConnection": "Test connection",
+    "modeLive": "LIVE",
+    "modePaper": "PAPER",
+    "noOrders": "No recent orders",
+    "noPositions": "No open positions",
+    "orders": "Orders",
+    "portfolioValue": "Portfolio value",
+    "positions": "Positions",
+    "premortem": "Pre-Mortem",
+    "qty": "Qty",
+    "quickTrade": "Quick Trade",
+    "sell": "Sell",
     "settingsLoadError": "Failed to load Alpaca settings.",
     "settingsSaved": "Saved",
     "settingsSaveError": "Failed to save Alpaca settings.",
-    "connected": "Connected",
-    "connectionError": "Connection error"
+    "settingsSubtitle": "Connect Alpaca API keys and choose account mode.",
+    "settingsTitle": "Alpaca",
+    "side": "Side",
+    "status": "Status",
+    "symbol": "Symbol",
+    "testConnection": "Test connection",
+    "title": "Alpaca Trading"
   },
-  "checkin": {
-    "title": "Daily Check-In",
-    "subtitle": "Set your mindset before the market opens.",
-    "moodLabel": "Mood",
-    "planLabel": "What is your plan today?",
-    "planPlaceholder": "Optional...",
-    "submit": "Start trading day",
-    "submitting": "Saving...",
-    "error": "Could not save check-in. Please try again.",
-    "risk": {
-      "LOW": "LOW",
-      "MEDIUM": "MEDIUM",
-      "HIGH": "HIGH"
-    }
+  "alpha": {
+    "aiSummaryEmpty": "尚無 AI 摘要。",
+    "aiSummaryTitle": "AI 摘要",
+    "colDescription": "說明",
+    "colEnd": "結束",
+    "colStart": "開始",
+    "earningsCycle": "財報週期",
+    "emptyTickerRows": "此代號沒有時間窗口。",
+    "historicalReturn": "歷史報酬",
+    "probability": "機率",
+    "regimeShift": "狀態轉換",
+    "seasonal": "季節性",
+    "sectorRotation": "產業輪動",
+    "subtitleNext48h": "接下來 48 小時",
+    "tickerLabel": "Ticker",
+    "tickerPlaceholder": "例如 AAPL",
+    "title": "Alpha Calendar",
+    "windows": "機率視窗"
   },
-  "reflection": {
-    "title": "Post-Trade Reflection",
-    "subtitle": "Close {{symbol}} and capture one quick reflection.",
-    "timer": "{{seconds}}s",
-    "followedPlan": "I traded according to my plan",
-    "yes": "Yes",
-    "no": "No",
-    "emotion": "Emotion",
-    "lesson": "What did I learn?",
-    "lessonPlaceholder": "Optional (max 100 characters)",
-    "saveAndClose": "Save & Close",
-    "skip": "Skip",
-    "aiTitle": "AI Insight",
-    "saveError": "Reflection was not saved.",
-    "emotions": {
-      "FRUSTRATION": "😤 Frustration",
-      "FEAR": "😰 Fear",
-      "CONFIDENT": "😊 Confident",
-      "NEUTRAL": "😐 Neutral",
-      "GREEDY": "🤑 Greedy"
-    }
-  },
-  "weekly": {
-    "title": "Weekly Review",
-    "subtitle": "Review your discipline and close the week with an AI growth letter.",
-    "submit": "Submit week",
-    "submitting": "Submitting...",
-    "generating": "Generating your letter...",
-    "aiLetterTitle": "Your AI Growth Letter",
-    "aiLetterEmpty": "No letter yet for this week.",
-    "historyTitle": "Last 8 weeks",
-    "emptyHistory": "No weekly reviews yet.",
-    "growthScore": "Growth score",
-    "weekOf": "Week of",
-    "questions": {
-      "q1": "Did you trade according to your rules?",
-      "q2": "Was there any overtrading or revenge trading moment?",
-      "q3": "How do you rate your stop-loss discipline?",
-      "q4": "What was your biggest lesson this week?",
-      "q5": "What will you do differently next week?"
-    },
-    "placeholders": {
-      "q4": "Describe your key lesson...",
-      "q5": "Describe your commitment for next week..."
-    }
-  },
-  "landing": {
-    "hero": {
-      "title": "新世代投資平台",
-      "subtitle": "AI 研究 · 行為教練 · 12 個交易所 · 9 種語言",
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
-      "widgetTitle": "Live market pulse",
-      "widgetLive": "Live"
-    },
-    "problem": {
-      "title": "Why investors get stuck",
-      "cards": {
-        "apps": {
-          "title": "You use 5-6 apps",
-          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity."
-        },
-        "emotions": {
-          "title": "Emotions cost you money",
-          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes."
-        },
-        "memory": {
-          "title": "No one remembers your mistakes",
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
-        },
-        "context": {
-          "title": "你缺乏市場脈絡",
-          "body": "你看到了訊號，但不知道市場是否配合、現在是否是正確時機。"
-        }
-      }
-    },
-    "solution": {
-      "title": "One platform built for investor growth",
-      "features": {
-        "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": {
-          "title": "Behavioral Coach",
-          "body": "偵測你的錯誤，並協助你避免重複犯錯。"
-        },
-        "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": {
-          "title": "12 Global Markets",
-          "body": "涵蓋 GPW、NYSE、DAX、TSE、NSE 等市場，無需切換應用程式。"
-        },
-        "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages",
-        "aiBrief": {
-          "title": "含敘事的 AI Brief",
-          "body": "不只是分數，而是完整解釋為何值得或不值得。"
-        },
-        "signalDna": {
-          "title": "Signal DNA",
-          "body": "歷史上的相似 setup：這種 setup 過去通常如何收場。"
-        },
-        "preMortemAi": {
-          "title": "Pre-Mortem AI",
-          "body": "在你買入前，AI 會先顯示最可能的虧損情境。"
-        },
-        "paperTrading": {
-          "title": "Paper Trading",
-          "body": "零風險練習，從不需付出成本的錯誤中學習。"
-        }
-      }
-    },
-    "socialProof": {
-      "title": "Join our early access community",
-      "subtitle": "Early access community growing every week.",
-      "testimonials": [
-        {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
-        },
-        {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
-        },
-        {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
-        }
-      ],
-      "stats": {
-        "exchanges": "130+ 交易所",
-        "modules": "27 個 AI 模組",
-        "languages": "9 種語言",
-        "adFree": "100% 無廣告"
-      }
-    },
-    "pricing": {
-      "title": "Simple pricing",
-      "tiers": {
-        "free": {
-          "name": "Free",
-          "price": "$0/mo",
-          "body": "Basic features to start building consistency.",
-          "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
-          ],
-          "cta": "Start free"
-        },
-        "pro": {
-          "name": "Pro",
-          "price": "$9/mo",
-          "body": "Full access for active investors.",
-          "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
-          ],
-          "cta": "Choose Pro"
-        },
-        "proPlus": {
-          "name": "Pro+",
-          "price": "$19/mo",
-          "body": "For power users and automation workflows.",
-          "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
-          ],
-          "cta": "Choose Pro+"
-        }
-      },
-      "badge": "早鳥價格",
-      "earlyAdopter": "前 500 個 Pro 帳戶永久鎖定每月 $9",
-      "monthly": "每月",
-      "yearly": "每年",
-      "save": "省下 27%",
-      "saveProPlus": "省下 34%",
-      "popular": "最受歡迎",
-      "trial": "14 天免費"
-    },
-    "footerCta": {
-      "title": "Start your free account today",
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk."
-    }
+  "analysisBrief": {
+    "englishSection": "English",
+    "title": "AI 摘要",
+    "updated": "更新時間"
   },
   "auth": {
     "email": "電子郵件",
@@ -1238,10 +97,1151 @@
     "registerLoading": "註冊中...",
     "registerTitle": "註冊"
   },
+  "backtest": {
+    "avgReturn": "平均報酬",
+    "colAction": "動作",
+    "colDate": "日期",
+    "colOutcome": "結果（5 日）",
+    "colPrice": "價格",
+    "maxDrawdown": "Max drawdown",
+    "months12": "12 個月",
+    "months3": "3 個月",
+    "months6": "6 個月",
+    "monthsSuffix": "個月",
+    "period": "期間",
+    "resultsTitle": "結果",
+    "runButton": "Run backtest",
+    "sharpeRatio": "Sharpe ratio",
+    "strategy": "策略",
+    "strategyBreakout": "突破（對 20 日高）",
+    "strategyRsi": "RSI 超賣（< 30）",
+    "strategyVolume": "量能激增（> 2× 20 日均量）",
+    "subtitle": "30 天視窗；訊號只用過去資料；結果為 5 個交易日後收盤價對進場價。",
+    "symbol": "代號",
+    "title": "Walk-Forward Backtest",
+    "totalTrades": "總交易次數",
+    "tradesTableTitle": "交易",
+    "winRate": "Win rate"
+  },
+  "checkin": {
+    "error": "Could not save check-in. Please try again.",
+    "moodLabel": "Mood",
+    "planLabel": "What is your plan today?",
+    "planPlaceholder": "Optional...",
+    "risk": {
+      "HIGH": "HIGH",
+      "LOW": "LOW",
+      "MEDIUM": "MEDIUM"
+    },
+    "submit": "Start trading day",
+    "submitting": "Saving...",
+    "subtitle": "Set your mindset before the market opens.",
+    "title": "Daily Check-In"
+  },
+  "coach": {
+    "aiCoach": "AI 教練建議",
+    "aiDescriptionEmpty": "尚無 AI 教練內容。",
+    "avgHoldLoss": "平均持有（虧損）",
+    "avgHoldWin": "平均持有（獲利）",
+    "avgLoss": "平均虧損",
+    "avgWin": "平均獲利",
+    "biasCutsBody": "您平均約 {{winHours}} 小時就平掉獲利部位，但虧損會抱約 {{lossHours}} 小時。",
+    "biases": "偵測偏誤",
+    "biasHoldsBody": "平均虧損：{{lossPct}}%；虧損交易持有時間：{{lossHours}} 小時。",
+    "biasOverBody": "最近 24 小時內超過 {{maxTrades}} 筆交易。",
+    "chartAvgLoss": "Avg. loss %",
+    "chartAvgWin": "Avg. win %",
+    "cutsWinners": "過早了結獲利",
+    "holdsLosers": "虧損持有過久",
+    "noBiases": "未偵測到偏誤",
+    "overtrading": "Overtrading",
+    "title": "行為教練",
+    "traderProfile": "交易者檔案"
+  },
+  "common": {
+    "apiLiveBadge": "Live API",
+    "apiMockBadge": "Mock fallback active",
+    "buy": "買入",
+    "cancel": "取消",
+    "close": "關閉",
+    "error": "錯誤",
+    "high": "High",
+    "loading": "載入中...",
+    "low": "Low",
+    "medium": "Medium",
+    "noData": "目前沒有資料",
+    "notAvailable": "n/a",
+    "open": "開啟",
+    "retry": "重試",
+    "save": "儲存",
+    "search": "搜尋",
+    "sell": "賣出"
+  },
+  "company": {
+    "backHome": "<- Back home",
+    "backToCompanies": "← 公司",
+    "chartTitle": "Close - recent history",
+    "close": "Close",
+    "industry": "Industry",
+    "loading": "Loading company...",
+    "noNews": "No news rows in database yet.",
+    "noQuoteHistory": "No quote history yet.",
+    "recentNews": "Recent news",
+    "sector": "Sector",
+    "website": "Website"
+  },
+  "concentration": {
+    "chartBySector": "依產業配置",
+    "chartByStock": "依公司配置",
+    "colSector": "產業",
+    "colTicker": "代號",
+    "colValue": "金額",
+    "colWeight": "權重 %",
+    "currency": "顯示幣別",
+    "empty": "請先在模擬交易中開倉，才能看到分析。",
+    "positionCount": "未平倉模擬部位數",
+    "positionsTable": "部位與權重",
+    "scoreLabel": "分散評分（0–100）",
+    "title": "投組集中度分析",
+    "totalValue": "投組總值",
+    "value": "金額",
+    "warnings": {
+      "SINGLE_SECTOR": "{{sector}} 產業占 {{weight}}%（建議上限 {{maxSector}}%）。",
+      "SINGLE_STOCK": "{{ticker}} 占投組 {{weight}}%（建議上限 {{maxStock}}%）。",
+      "TOP_HEAVY": "前三大標的合計 {{top3Share}}%。"
+    }
+  },
   "cookie": {
-    "message": "我們使用 Cookie 來改善您的使用體驗。您可以接受全部或僅接受必要 Cookie。",
     "acceptAll": "接受全部",
+    "message": "我們使用 Cookie 來改善您的使用體驗。您可以接受全部或僅接受必要 Cookie。",
     "necessaryOnly": "僅必要",
     "privacyLink": "隱私權政策"
+  },
+  "cooldown": {
+    "inactive": "目前沒有啟用冷卻",
+    "title": "連敗冷卻",
+    "unlocksIn": "解鎖倒數"
+  },
+  "correlation": {
+    "aiInsight": "AI Insight",
+    "analyze": "Analyze correlation",
+    "colCorrelation": "Correlation",
+    "colSymbol": "Symbol",
+    "colWarning": "Warning",
+    "highRiskPairs": "High-risk pairs (> 0.7)",
+    "mainSymbol": "Main symbol",
+    "noHighRiskPairs": "No high-risk pair detected.",
+    "portfolioSymbols": "Portfolio symbols (comma separated)",
+    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
+    "tableTitle": "Correlation results",
+    "title": "Correlation Scanner",
+    "validation": "Provide a main symbol and at least one portfolio symbol.",
+    "warningHighRisk": "High risk",
+    "warningLowRisk": "OK"
+  },
+  "crowdwisdom": {
+    "analyze": "Analyze",
+    "divergence": "Divergence (insider - retail)",
+    "insiderActivity": "Insider Activity",
+    "result": "Signal",
+    "retailSentiment": "Retail Sentiment",
+    "signalBuy": "Contrarian Buy",
+    "signalNeutral": "Neutral",
+    "signalSell": "Contrarian Sell",
+    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
+    "symbol": "Symbol",
+    "title": "Crowd Wisdom Inverter"
+  },
+  "dashboard": {
+    "companiesDesc": "Search and sector grid with logos.",
+    "companiesTitle": "Companies",
+    "portfolioDesc": "Coming soon - watchlists and alerts.",
+    "portfolioTitle": "Portfolio",
+    "signalsDesc": "Coming soon - screener and AI scores.",
+    "signalsTitle": "Signals",
+    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
+    "title": "Dashboard"
+  },
+  "digest": {
+    "cardDateLabel": "Digest date",
+    "emailSent": "Test email sent for {{date}}.",
+    "emptyState": "Click preview to generate today's digest.",
+    "previewButton": "Preview my digest",
+    "sendButton": "Send test email",
+    "subtitle": "Generate your AI market recap and send a test email instantly.",
+    "title": "Daily Digest"
+  },
+  "discord": {
+    "active": "Webhook active",
+    "inactive": "Webhook inactive",
+    "loadError": "Failed to load webhook settings.",
+    "saveButton": "Save",
+    "saveError": "Failed to save webhook.",
+    "saveSuccess": "Webhook saved.",
+    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
+    "testButton": "Test webhook",
+    "testError": "Failed to send test message.",
+    "testSuccess": "Test message sent.",
+    "title": "Discord Auto-Sync",
+    "webhookLabel": "Discord webhook URL",
+    "webhookPlaceholder": "https://discord.com/api/webhooks/..."
+  },
+  "dividend": {
+    "colAnnual": "年度股利",
+    "colCagr": "CAGR 5Y %",
+    "colGrowth": "成長 YoY %",
+    "colSymbol": "Symbol",
+    "colYear": "年份",
+    "colYield": "Yield %",
+    "exDate": "除息日",
+    "fetch": "取得",
+    "health": "健康分數",
+    "history": "股利歷史",
+    "minYears": "最少年數",
+    "minYield": "最低殖利率 %",
+    "noData": "沒有資料 - 請調整篩選條件",
+    "payoutRatio": "派息率",
+    "refresh": "更新",
+    "risky": "高風險",
+    "safe": "安全",
+    "screener": "篩選器: 股利成長 (CAGR)",
+    "symbol": "Symbol",
+    "title": "股利篩選",
+    "trend": "趨勢",
+    "watch": "觀察",
+    "years": "成長年數",
+    "yearsBack": "回溯年數",
+    "yield": "股息殖利率"
+  },
+  "dividendcompound": {
+    "axisYear": "年份",
+    "calculate": "計算",
+    "chartTitle": "逐年投資組合價值",
+    "difference": "差額 (複利效果)",
+    "dividendYield": "股息殖利率 (%)",
+    "initialAmount": "初始金額 (PLN)",
+    "monthlyContribution": "每月投入 (PLN)",
+    "subtitle": "模擬有無再投資股息的投資組合成長。",
+    "title": "股息複利計算機",
+    "tooltipYear": "第 {{year}} 年",
+    "withoutReinvesting": "不再投資",
+    "withReinvesting": "再投資",
+    "years": "期間 (年)",
+    "yearsValue": "{{count}} 年"
+  },
+  "dividendIntelligence": {
+    "sectorPercentile": "Sector percentile",
+    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
+    "symbol": "Symbol",
+    "title": "Dividend Intelligence",
+    "vsPeers": "(vs peers in sector)"
+  },
+  "dividendsPage": {
+    "amount": "Amount",
+    "dataLocation": "in",
+    "emptyHistory": "No rows yet - run seed or change filters.",
+    "exDate": "Ex-date",
+    "fetch": "Fetch",
+    "historyTitle": "Dividend history",
+    "minYears": "Min. years of history",
+    "minYield": "Min. yield %",
+    "payDate": "Pay date",
+    "refresh": "Refresh",
+    "screenerEmpty": "No results for selected filters.",
+    "screenerLoading": "Loading screener…",
+    "screenerTitle": "Screener: dividend growth (CAGR)",
+    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
+    "symbol": "Symbol",
+    "tableAnnualDividend": "Annual dividend",
+    "tableGrowthYoy": "Growth YoY %",
+    "tableYear": "Year",
+    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
+    "taxCalculate": "Calculate",
+    "taxCalculating": "Calculating…",
+    "taxGrossDividend": "Gross dividend",
+    "taxMethod": "Method",
+    "taxNet": "Net",
+    "taxRateLabel": "Tax ({{rate}}%)",
+    "taxReferencePrice": "Price (reference)",
+    "taxShares": "Number of shares",
+    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
+    "taxTitle": "Dividend tax (PIT 19%)",
+    "taxYieldAlternative": "Alternative: annual yield % (optional)",
+    "taxYieldPlaceholder": "e.g. 2.5",
+    "title": "Dividend screening (MVP)",
+    "yearsBack": "Years back",
+    "yield": "Yield %"
+  },
+  "earnings": {
+    "confidence": "Confidence",
+    "nextDate": "Next earnings date",
+    "noDate": "Date unavailable",
+    "predictButton": "Predict",
+    "reasoning": "AI reasoning",
+    "resultFor": "Prediction for",
+    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "Earnings Surprise Predictor",
+    "validationSymbol": "Please provide a valid symbol."
+  },
+  "emotional": {
+    "alertTitle": "Break recommended",
+    "lastChecked": "Last checked",
+    "level": {
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
+    },
+    "widgetTitle": "Emotional state"
+  },
+  "etoro": {
+    "alpaca": {
+      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
+      "button": "Try eToro"
+    },
+    "company": {
+      "button": "Open account on eToro",
+      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money.",
+      "title": "Trade this stock"
+    },
+    "cta": "在 eToro 開立帳戶",
+    "settings": {
+      "button": "Learn more & open account",
+      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
+      "cardTitle": "eToro",
+      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
+      "sectionTitle": "Recommended Brokers"
+    },
+    "subtitle": "透過持牌經紀商交易股票"
+  },
+  "glossary": {
+    "exampleLabel": "Example",
+    "loading": "Loading explanation...",
+    "popularTerms": "Popular terms",
+    "selectPrompt": "Select a term from the list to load its explanation.",
+    "subtitle": "Click a market term to get a short explanation and practical example.",
+    "title": "Translate Financial English"
+  },
+  "home": {
+    "emptySector": "No companies in this sector yet.",
+    "emptySelectSector": "Choose a sector or run a search to see companies.",
+    "searchPlaceholder": "Search by name or symbol...",
+    "sectorLabel": "Sector",
+    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
+    "title": "Companies"
+  },
+  "insider": {
+    "actionBuy": "BUY",
+    "actionSell": "SELL",
+    "colAction": "Action",
+    "colDate": "Date",
+    "colName": "Name",
+    "colRole": "Role",
+    "colValue": "Value",
+    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
+    "insight": "AI Insight",
+    "resultFor": "Insider activity for",
+    "searchButton": "Mirror insiders",
+    "sentimentBuy": "Net buying",
+    "sentimentNeutral": "Neutral",
+    "sentimentSell": "Net selling",
+    "subtitle": "Track recent buying and selling by company insiders.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "Insider Mirror",
+    "transactionsTitle": "Transactions (last 30 days, > $50k)",
+    "validationSymbol": "Please provide a valid symbol."
+  },
+  "landing": {
+    "footerCta": {
+      "button": "Create free account",
+      "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
+      "title": "Start your free account today"
+    },
+    "hero": {
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "See how it works",
+      "subtitle": "AI 研究 · 行為教練 · 12 個交易所 · 9 種語言",
+      "title": "新世代投資平台",
+      "widgetLive": "Live",
+      "widgetTitle": "Live market pulse"
+    },
+    "pricing": {
+      "badge": "早鳥價格",
+      "earlyAdopter": "前 500 個 Pro 帳戶永久鎖定每月 $9",
+      "monthly": "每月",
+      "popular": "最受歡迎",
+      "save": "省下 27%",
+      "saveProPlus": "省下 34%",
+      "tiers": {
+        "free": {
+          "body": "Basic features to start building consistency.",
+          "cta": "Start free",
+          "features": [
+            "Core dashboard",
+            "Basic AI signals",
+            "Community access"
+          ],
+          "name": "Free",
+          "price": "$0/mo"
+        },
+        "pro": {
+          "body": "Full access for active investors.",
+          "cta": "Choose Pro",
+          "features": [
+            "All AI modules",
+            "Behavioral coaching",
+            "Trader psyche profile"
+          ],
+          "name": "Pro",
+          "price": "$9/mo"
+        },
+        "proPlus": {
+          "body": "For power users and automation workflows.",
+          "cta": "Choose Pro+",
+          "features": [
+            "Everything in Pro",
+            "API access",
+            "Broker integration"
+          ],
+          "name": "Pro+",
+          "price": "$19/mo"
+        }
+      },
+      "title": "Simple pricing",
+      "trial": "14 天免費",
+      "yearly": "每年"
+    },
+    "problem": {
+      "cards": {
+        "apps": {
+          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity.",
+          "title": "You use 5-6 apps"
+        },
+        "context": {
+          "body": "你看到了訊號，但不知道市場是否配合、現在是否是正確時機。",
+          "title": "你缺乏市場脈絡"
+        },
+        "emotions": {
+          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes.",
+          "title": "Emotions cost you money"
+        },
+        "memory": {
+          "body": "Without a feedback loop, the same costly patterns repeat trade after trade.",
+          "title": "No one remembers your mistakes"
+        }
+      },
+      "title": "Why investors get stuck"
+    },
+    "socialProof": {
+      "stats": {
+        "adFree": "100% 無廣告",
+        "exchanges": "130+ 交易所",
+        "languages": "9 種語言",
+        "modules": "27 個 AI 模組"
+      },
+      "subtitle": "Early access community growing every week.",
+      "testimonials": [
+        {
+          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
+          "author": "Kasia, Warsaw"
+        },
+        {
+          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
+          "author": "Lukas, Berlin"
+        },
+        {
+          "quote": "The broker gateway plus AI context saves me time every single session.",
+          "author": "Clara, Madrid"
+        }
+      ],
+      "title": "Join our early access community"
+    },
+    "solution": {
+      "features": {
+        "aiBrief": {
+          "body": "不只是分數，而是完整解釋為何值得或不值得。",
+          "title": "含敘事的 AI Brief"
+        },
+        "behavioralCoach": {
+          "body": "偵測你的錯誤，並協助你避免重複犯錯。",
+          "title": "Behavioral Coach"
+        },
+        "brokerIntegration": "Broker Integration",
+        "globalMarkets": {
+          "body": "涵蓋 GPW、NYSE、DAX、TSE、NSE 等市場，無需切換應用程式。",
+          "title": "12 Global Markets"
+        },
+        "languages": "9 Languages",
+        "paperTrading": {
+          "body": "零風險練習，從不需付出成本的錯誤中學習。",
+          "title": "Paper Trading"
+        },
+        "preMortemAi": {
+          "body": "在你買入前，AI 會先顯示最可能的虧損情境。",
+          "title": "Pre-Mortem AI"
+        },
+        "signalAnalysis": "AI Signal Analysis",
+        "signalDna": {
+          "body": "歷史上的相似 setup：這種 setup 過去通常如何收場。",
+          "title": "Signal DNA"
+        },
+        "traderPsycheProfile": "Trader Psyche Profile"
+      },
+      "title": "One platform built for investor growth"
+    }
+  },
+  "mentor": {
+    "currentStatus": "Current status",
+    "disableAction": "Disable",
+    "disabled": "Disabled",
+    "enableAction": "Enable",
+    "enabled": "Enabled",
+    "guidanceUnavailable": "導師建議尚不可用（端點回傳 404）。",
+    "loading": "Generating mentor guidance...",
+    "panelTitle": "AI Mentor",
+    "riskCheckLabel": "Risk check",
+    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
+    "settingsTitle": "Mentor Mode Settings",
+    "styleLabel": "Mentor style",
+    "styleStrict": "Strict",
+    "styleSupportive": "Supportive",
+    "toggleLabel": "Mentor Mode"
+  },
+  "mirror": {
+    "actionError": "操作失敗，請再試一次。",
+    "follow": "跟隨",
+    "followers": "跟隨者",
+    "itsYou": "您",
+    "loadError": "無法載入鏡像資料。",
+    "myFollowing": "我的跟隨",
+    "noTopTraders": "尚無人啟用鏡像交易。",
+    "revenueShare": "收益分成",
+    "revenueShareHint": "0–50%",
+    "saved": "已儲存",
+    "saving": "儲存中…",
+    "settingsSubtitle": "允許他人跟隨您的模擬交易檔案。收益分成供未來結算用（0–50%）。",
+    "settingsTitle": "Enable Mirror Trading",
+    "subtitle": "跟隨已開啟鏡像分享的交易者。數據來自已平倉的模擬交易。",
+    "title": "Mirror Trading",
+    "toggleLabel": "接受鏡像跟隨者",
+    "topTraders": "頂尖交易者",
+    "totalTrades": "總交易數",
+    "unfollow": "取消跟隨",
+    "winRate": "Win rate"
+  },
+  "mistakes": {
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "dnaContextLink": "Open Strategy DNA with these symbols",
+    "dnaRowLink": "Strategy DNA",
+    "emptyType": "No mistakes in this category yet.",
+    "summary": {
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing",
+      "total": "Total"
+    },
+    "title": "Mistake Library",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    }
+  },
+  "money": {
+    "gpwCaption": "金額為 PLN（GPW 名目）；旁邊的 USD 為參考（約 3.95 PLN 兌 1 USD，非即時匯率）。"
+  },
+  "nav": {
+    "adminAffiliate": "Admin Affiliate",
+    "alpacaTrading": "Alpaca 交易",
+    "alphaCalendar": "Alpha Calendar",
+    "coach": "教練",
+    "concentration": "集中度",
+    "correlation": "相關性",
+    "crowdWisdom": "Crowd Wisdom",
+    "dashboard": "儀表板",
+    "dividend": "股息",
+    "dividendIntelligence": "股息智慧",
+    "glossary": "Glossary",
+    "home": "首頁",
+    "markets": "市場",
+    "menu": "選單",
+    "mirrorTrading": "Mirror Trading",
+    "mistakeLibrary": "Mistake Library",
+    "paperTrading": "模擬交易",
+    "portfolio": "投組",
+    "positionSize": "計算機",
+    "premortem": "Pre-Mortem",
+    "psycheProfile": "My Psyche",
+    "signals": "訊號",
+    "skillTree": "Skill Tree",
+    "stressTest": "壓力測試",
+    "taxOptimizer": "PIT-38",
+    "tools": "工具",
+    "volatility": "Volatility Heat Map",
+    "weeklyReview": "Weekly Review"
+  },
+  "newshalflife": {
+    "categoryLabel": "Category",
+    "empty": "No recent news found for this symbol.",
+    "expired": "Expired",
+    "halfLifeDaysBadge": "{{days}} days",
+    "halfLifeDaysLabel": "Half-life: {{days}} days",
+    "mostImpactful": "Most impactful news",
+    "reasonLabel": "Reason",
+    "remainingLabel": "Time left",
+    "searchButton": "Analyze news",
+    "subtitle": "Estimate how quickly each news item loses impact on price.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "News Half-Life Score"
+  },
+  "paperTrading": {
+    "closePosition": "關閉倉位",
+    "direction": "方向",
+    "entryPrice": "進場價",
+    "exitPrice": "出場價",
+    "history": "交易歷史",
+    "long": "Long",
+    "openPosition": "開啟倉位",
+    "pnl": "P&L",
+    "portfolio": "投資組合",
+    "quantity": "數量",
+    "short": "Short",
+    "title": "Paper Trading"
+  },
+  "pearls": {
+    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
+    "decisionTrailTitle": "Decision trail",
+    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
+    "quoteChip": "{{age}} old · {{source}}",
+    "quoteFreshness": "Quote freshness",
+    "receiptLoss": "Closed at a loss",
+    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
+    "receiptProceed": "Pre-Mortem → opened anyway",
+    "summaryProceedRate": "Pre-Mortem proceed rate",
+    "summaryTotal": "Recorded decisions",
+    "summaryWorstLoss": "Largest realized loss"
+  },
+  "positionSize": {
+    "accountSize": "帳戶資金",
+    "actualRiskPct": "實際風險 %（占資金）",
+    "calculate": "計算",
+    "conviction": "設定信心",
+    "convictionHigh": "高",
+    "convictionLow": "低",
+    "convictionMedium": "中",
+    "copied": "已複製到剪貼簿",
+    "copy": "複製",
+    "copyAllTp": "複製全部 TP 位階",
+    "copyAriaTp": "複製 {{label}} 價格",
+    "currency": "帳戶幣別",
+    "currencyHint": "輸入與結果以 PLN（GPW 名目）計算；旁邊的 USD 為參考換算。",
+    "entry": "進場價",
+    "errorApi404": "找不到計算 API (404)。請在連接埠 3000 啟動最新版 API，或將 VITE_API_BASE 設為包含 /api 的完整網址。",
+    "errorInvalid": "請輸入帳戶、進場與停損的有效正數。",
+    "maxLoss": "停損時最大虧損",
+    "plannedRisk": "計畫風險金額",
+    "pln": "PLN",
+    "positionValue": "部位價值",
+    "riskPercent": "最大風險 %（占資金）",
+    "shares": "建議買入股數",
+    "stop": "Stop Loss",
+    "takeProfits": "獲利了結（R 倍數）",
+    "title": "部位大小計算機",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "usd": "USD"
+  },
+  "premortem": {
+    "cancel": "Cancel trade",
+    "entry": "Entry",
+    "lossScenario": "Most likely loss scenario",
+    "marketRegime": "Market Regime",
+    "proceed": "Proceed anyway",
+    "quantity": "Quantity",
+    "runButton": "Run Pre-Mortem",
+    "stopLoss": "Stop Loss",
+    "subtitle": "Run downside scenario analysis before opening a trade.",
+    "symbol": "Symbol",
+    "takeProfit": "Take Profit",
+    "title": "Pre-Mortem AI"
+  },
+  "psyche": {
+    "addRule": "Add rule",
+    "badConditions": "Bad conditions",
+    "breaches": "Breaches",
+    "colAction": "Action",
+    "colCompliance": "Plan compliance",
+    "colDate": "Date",
+    "colMood": "Mood",
+    "colSymbol": "Symbol",
+    "complianceNo": "No",
+    "complianceUnknown": "—",
+    "complianceYes": "Yes",
+    "decisionLogTitle": "Decision log (last 10)",
+    "deleteRule": "Delete",
+    "dnaTitle": "Trader DNA",
+    "emptyLogs": "No entries yet.",
+    "goodConditions": "Good conditions",
+    "growthScore": "Growth score",
+    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
+    "refresh": "Refresh my profile",
+    "rulePlaceholder": "Add a rule",
+    "rulesTitle": "My trading rules",
+    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
+    "title": "Trader Psyche",
+    "topBiases": "Top biases",
+    "tradingStyle": "Trading style"
+  },
+  "reactions": {
+    "charCount": "{{used}} / {{max}}",
+    "empty": "尚無留言。",
+    "loading": "載入留言中…",
+    "placeholder": "撰寫備註（最多 500 字）…",
+    "postComment": "發表留言",
+    "posting": "發表中…",
+    "title": "留言"
+  },
+  "reflection": {
+    "aiTitle": "AI Insight",
+    "emotion": "Emotion",
+    "emotions": {
+      "CONFIDENT": "😊 Confident",
+      "FEAR": "😰 Fear",
+      "FRUSTRATION": "😤 Frustration",
+      "GREEDY": "🤑 Greedy",
+      "NEUTRAL": "😐 Neutral"
+    },
+    "followedPlan": "I traded according to my plan",
+    "lesson": "What did I learn?",
+    "lessonPlaceholder": "Optional (max 100 characters)",
+    "no": "No",
+    "saveAndClose": "Save & Close",
+    "saveError": "Reflection was not saved.",
+    "skip": "Skip",
+    "subtitle": "Close {{symbol}} and capture one quick reflection.",
+    "timer": "{{seconds}}s",
+    "title": "Post-Trade Reflection",
+    "yes": "Yes"
+  },
+  "replay": {
+    "action": "Direction",
+    "actualOutcome": "Actual outcome",
+    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
+    "date": "Historical date",
+    "evaluate": "Evaluate decision",
+    "loadSnapshot": "Load snapshot",
+    "price": "Price",
+    "priceChange5d": "Change after 5 days",
+    "score": "Score",
+    "step1Title": "Step 1: choose company and date",
+    "step2Title": "Step 2: market snapshot",
+    "step3Title": "Step 3: make your decision",
+    "step4Title": "Step 4: AI result",
+    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
+    "symbol": "Company",
+    "title": "Replay Mode"
+  },
+  "reversescreener": {
+    "avgOutcomeHint": "前幾名匹配的 (5日+10日)/2 平均 — 僅供描述，非預測。",
+    "avgOutcomeLabel": "雙胞胎平均結果",
+    "currentSetup": "錨定日型態",
+    "dateHint": "留空則使用資料庫最新報價日。",
+    "dateLabel": "錨定日期（選填）",
+    "errorSymbol": "請輸入股票代號。",
+    "findButton": "尋找相似型態",
+    "matchesTitle": "歷史前 5 名匹配",
+    "noMatches": "搜尋區間內找不到相似型態。",
+    "outcome10d": "10 日後 {{value}}",
+    "outcome5d": "5 日後 {{value}}",
+    "priceChange": "單日價格變化",
+    "similarity": "相似度",
+    "subtitle": "將目前 OHLCV 型態與其他標的的相似歷史日比對（RSI、量能 vs 20 日均、單日報酬、趨勢、ATR/收盤 — Signal DNA 風格相似度）。",
+    "symbolLabel": "代號",
+    "symbolPlaceholder": "例：2330",
+    "title": "Reverse Screener",
+    "trend": "趨勢（MA10 vs MA20）",
+    "trend.down": "下降",
+    "trend.flat": "盤整",
+    "trend.up": "上升",
+    "volumeRatio": "量能 vs 20 日均"
+  },
+  "sector": {
+    "all": "All",
+    "basicMaterials": "Basic Materials",
+    "communicationServices": "Communication Services",
+    "consumerCyclical": "Consumer Cyclical",
+    "consumerDefensive": "Consumer Defensive",
+    "energy": "Energy",
+    "financialServices": "Financial Services",
+    "healthcare": "Healthcare",
+    "industrials": "Industrials",
+    "realEstate": "Real Estate",
+    "technology": "Technology",
+    "utilities": "Utilities"
+  },
+  "share": {
+    "button": "Share",
+    "copied": "Copied!",
+    "copy": "Copy link",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter/X",
+    "whatsapp": "WhatsApp"
+  },
+  "signals": {
+    "aiBreif": "AI Brief",
+    "autonomousWatchlist": "Autonomous watchlist",
+    "avgReturn": "平均報酬",
+    "confidence": "信心",
+    "confidenceCue": {
+      "PRIME": "PRIME",
+      "STRONG": "STRONG",
+      "WATCH": "WATCH"
+    },
+    "confidenceLabel": "Confidence: {{level}}",
+    "copilot": {
+      "checkpoint": "Checkpoint",
+      "checkpointBody": "Re-evaluate after the session close and a fresh volume print.",
+      "conviction": "Conviction",
+      "enter": "Enter trade",
+      "invalidation": "Invalidation",
+      "invalidationBody": "Exit if the move reaches {{pct}}% from entry or the regime flips.",
+      "title": "AI Copilot decision"
+    },
+    "copilotAction": {
+      "ENTER": "Enter",
+      "REDUCE": "Reduce",
+      "WAIT": "Wait"
+    },
+    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
+    "discordEmbedTitle": "Discord embed preview",
+    "discordRisk": "Risk {{score}}/100",
+    "dna": "Signal DNA",
+    "dnaCounterpoint": "反面觀點：",
+    "dnaExplain": {
+      "high": {
+        "counter": "總經背景不同；避免部位過大。",
+        "why": "價格結構與波動率型態幾乎一致。"
+      },
+      "low": {
+        "counter": "僅作輔助依據，勿視為主要觸發條件。",
+        "why": "信心較低下的部分型態重疊。"
+      },
+      "mid": {
+        "counter": "若缺乏量能延續，訊號可能快速轉弱。",
+        "why": "動能輪廓與量能壓縮符合歷史勝出樣本。"
+      }
+    },
+    "dnaWhySimilar": "為何相似：",
+    "entry": "Entry",
+    "executionEntry": "Entry",
+    "executionExpectedValue": "Expected value",
+    "executionRr": "R:R",
+    "executionStop": "Stop",
+    "executionTarget": "Target",
+    "executionTitle": "Battle-tested execution simulator",
+    "executionWorstCase": "Worst case",
+    "headline": "標題",
+    "liveConnectedSse": "Connected to live stream",
+    "liveEngine": {
+      "label": "Live engine",
+      "lastUpdate": "Last: {{time}}",
+      "lastUpdateEmpty": "Last: --:--:--",
+      "polling": "Polling mode",
+      "sseUnavailable": "Updates every 15s (SSE unavailable)"
+    },
+    "livePollingUpdate": "Polling update received",
+    "liveStreamUpdate": "Live stream update received",
+    "liveWaiting": "Waiting for stream…",
+    "marketRegime": {
+      "RANGING": "Ranging",
+      "RISK_OFF": "Risk-off",
+      "RISK_ON": "Risk-on",
+      "TRENDING": "Trending"
+    },
+    "mentor": {
+      "notFound": "Analysis unavailable"
+    },
+    "mockNarrative": {
+      "body": "{{ticker}} 的動能輪廓與 {{regime}} 一致。價量結構在遵守 invalidation 位階的前提下，暗示有延續空間且下行風險受控。",
+      "headline": "{{ticker}} — 型態：{{setup}}",
+      "riskNote": "等待 K 線收盤確認，並維持嚴格的停損紀律。"
+    },
+    "narrative": "敘事",
+    "narrativeBodyFallback": "API 未回傳敘事內文。",
+    "narrativeConfidence": {
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
+    },
+    "narrativeHeadlineFallback": "訊號敘事：{{ticker}}",
+    "narrativeRiskNoteFallback": "API 未回傳風險備註。",
+    "noSignalSelected": "No signal selected.",
+    "preMortemFromSetup": "Pre-Mortem (from this setup)",
+    "regime": {
+      "executionStyle": "Execution style",
+      "mode": "Mode",
+      "riskCap": "Risk cap / trade",
+      "title": "Live market regime engine"
+    },
+    "regimeDetail": {
+      "RANGING": {
+        "mode": "Neutral grid",
+        "riskCap": "0.75R",
+        "style": "Range edges + quick exits"
+      },
+      "RISK_OFF": {
+        "mode": "Capital defense",
+        "riskCap": "0.50R",
+        "style": "Mean reversion only"
+      },
+      "RISK_ON": {
+        "mode": "Pro-risk expansion",
+        "riskCap": "1.00R",
+        "style": "Momentum basket"
+      },
+      "TRENDING": {
+        "mode": "Trend acceleration",
+        "riskCap": "1.25R",
+        "style": "Breakout continuation"
+      }
+    },
+    "riskNote": "風險提示",
+    "riskScore": "風險分數",
+    "signalType": {
+      "CRITICAL": "Critical",
+      "RESEARCH": "Research",
+      "STANDARD": "Standard"
+    },
+    "similarity": "相似度",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "title": "訊號",
+    "trackAvgReturn": "Avg. return",
+    "trackMaxDd": "Max DD",
+    "trackRecordTitle": "Track Record",
+    "trackTotalSignals": "Total signals",
+    "trackWinRate": "Win rate",
+    "transport": {
+      "OFFLINE": "Offline",
+      "POLLING": "Polling",
+      "SSE": "SSE"
+    },
+    "unknownSetup": "未知的標的型態",
+    "winRate": "Win rate"
+  },
+  "skilltree": {
+    "celebrationTitle": "New skills unlocked!",
+    "checkProgress": "Check progress",
+    "newlyUnlockedLabel": "Recently unlocked:",
+    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
+    "skills": {
+      "BASICS": {
+        "condition": "Always unlocked",
+        "description": "You understand how stocks and exchanges work.",
+        "name": "Basics"
+      },
+      "BEHAVIORAL": {
+        "condition": "At least 1 entry in Mistake Library",
+        "description": "You keep emotions in check while trading.",
+        "name": "Behavioral"
+      },
+      "DIVERSIFICATION": {
+        "condition": "At least 3 unique symbols in paper trades",
+        "description": "You understand diversification.",
+        "name": "Diversification"
+      },
+      "FIBONACCI": {
+        "condition": "At least 10 closed paper trades",
+        "description": "You understand Fibonacci levels.",
+        "name": "Fibonacci"
+      },
+      "MACD": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand MACD.",
+        "name": "MACD"
+      },
+      "RISK_MANAGEMENT": {
+        "condition": "Position Size Calculator: at least 3 uses",
+        "description": "You apply position sizing.",
+        "name": "Risk management"
+      },
+      "RSI": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand RSI.",
+        "name": "RSI"
+      },
+      "STRATEGY": {
+        "condition": "Min. 20 trades and win rate > 40%",
+        "description": "You follow a coherent strategy.",
+        "name": "Strategy"
+      },
+      "SUPPORT_RESISTANCE": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand support and resistance.",
+        "name": "Support & Resistance"
+      },
+      "VOLUME": {
+        "condition": "At least 10 closed paper trades",
+        "description": "You understand volume.",
+        "name": "Volume"
+      }
+    },
+    "subtitle": "Unlock trading skills as your activity grows.",
+    "title": "Skill Tree",
+    "unlockedAt": "Unlocked: {{date}}"
+  },
+  "strategydna": {
+    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster.",
+    "fromMistakesTitle": "Context from Mistake Library",
+    "insightLabel": "AI Insight",
+    "legends": {
+      "BUFFETT": "Buffett",
+      "GREENBLATT": "Greenblatt",
+      "LYNCH": "Lynch",
+      "SOROS": "Soros"
+    },
+    "mainResultLabel": "Your style is",
+    "notEnoughData": "You need at least 20 closed trades.",
+    "primary": "Primary match",
+    "secondary": "Secondary match",
+    "subtitle": "AI compares your paper trading style with legendary investors.",
+    "title": "Strategy DNA Match"
+  },
+  "stressTest": {
+    "currency": "顯示幣別",
+    "currentValue": "目前價值",
+    "drop": "市場跌幅",
+    "empty": "請先在模擬交易中開倉，才能看到結果。",
+    "error404": "找不到壓力測試 API。",
+    "lossValue": "虧損 / 獲利",
+    "newValue": "衝擊後價值",
+    "portfolioLoss": "投組虧損",
+    "portfolioLossPct": "投組虧損 %",
+    "positions": "個股影響",
+    "scenarios": {
+      "COVID_2020": "2020 COVID (−34%)",
+      "CRASH_2008": "2008 金融海嘯 (−54%)",
+      "CUSTOM": "自訂 (−{{drop}}%)",
+      "DOT_COM_2001": "2001 網路泡沫 (−49%)"
+    },
+    "title": "投組壓力測試"
+  },
+  "tax": {
+    "changeCountry": "Change",
+    "customRate": "Custom tax rate (%)",
+    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor.",
+    "noTax": "No capital gains tax on listed stocks",
+    "selectCountry": "Select your tax country",
+    "title": "Tax Optimizer"
+  },
+  "taxOptimizer": {
+    "alreadyPaid": "券商預扣（占位）: {{amount}}",
+    "closedTrades": "已平倉模擬交易",
+    "colClose": "平倉",
+    "colOpen": "開倉",
+    "colPct": "%",
+    "colPnl": "損益",
+    "colTicker": "代號",
+    "disclaimer": "結果僅供參考，請諮詢合格稅務顧問。",
+    "grossGains": "總獲利",
+    "losses": "虧損",
+    "netIncome": "淨所得",
+    "netLossTaxNote": "淨虧損年度時，本模組課稅基礎為 0（簡化）。",
+    "noTrades": "所選年度沒有已平倉交易。",
+    "suggestions": {
+      "CARRY_FORWARD_LOSS": "可能有前五年未抵減虧損 — 請與稅務顧問確認。",
+      "CLOSE_LOSS_BEFORE_YEAR_END": "考慮在 12/31 前平倉 {{ticker}} — 約 {{value}} PLN 虧損可能減少約 {{saving}} PLN 稅負。"
+    },
+    "suggestionsTitle": "優化建議",
+    "tax19": "Belka 稅 19%",
+    "title": "Tax Optimizer",
+    "toPay": "應納稅額",
+    "year": "課稅年度"
+  },
+  "trackrecord": {
+    "avgReturn": "Average return",
+    "bestTradePct": "Best trade",
+    "cardTitle": "Your public Track Record",
+    "copied": "Link copied",
+    "copyButton": "Copy share link",
+    "copyFailed": "Failed to copy share link.",
+    "generateButton": "Generate my Track Record",
+    "generatedAt": "Generated at",
+    "shareLinkLabel": "Public link",
+    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
+    "title": "Anonymous Track Record",
+    "totalTrades": "Total trades",
+    "winRate": "Win rate",
+    "worstTradePct": "Worst trade"
+  },
+  "volatility": {
+    "errors": {
+      "symbolRequired": "Please enter a symbol."
+    },
+    "leastVolatileMonth": "Least volatile month",
+    "legendHigh": "High volatility",
+    "legendLow": "Low volatility",
+    "legendTitle": "Legend",
+    "months": {
+      "apr": "Apr",
+      "aug": "Aug",
+      "dec": "Dec",
+      "feb": "Feb",
+      "jan": "Jan",
+      "jul": "Jul",
+      "jun": "Jun",
+      "mar": "Mar",
+      "may": "May",
+      "nov": "Nov",
+      "oct": "Oct",
+      "sep": "Sep"
+    },
+    "mostVolatileMonth": "Most volatile month",
+    "noData": "No data",
+    "searchAction": "Load heat map",
+    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
+    "subtitle": "Compare monthly volatility across years for a selected symbol.",
+    "symbol": "Symbol",
+    "title": "Volatility Heat Map",
+    "tooltip": {
+      "avgReturn": "Avg. return",
+      "volatility": "Volatility"
+    },
+    "year": "Year"
+  },
+  "watchlist": {
+    "changePct": "Change %",
+    "empty": "You are not observing any companies yet.",
+    "follow": "♡ Follow",
+    "following": "♥ Following",
+    "lastPrice": "Last price",
+    "symbol": "Symbol",
+    "yours": "Your watchlist"
+  },
+  "weekly": {
+    "aiLetterEmpty": "No letter yet for this week.",
+    "aiLetterTitle": "Your AI Growth Letter",
+    "emptyHistory": "No weekly reviews yet.",
+    "generating": "Generating your letter...",
+    "growthScore": "Growth score",
+    "historyTitle": "Last 8 weeks",
+    "placeholders": {
+      "q4": "Describe your key lesson...",
+      "q5": "Describe your commitment for next week..."
+    },
+    "questions": {
+      "q1": "Did you trade according to your rules?",
+      "q2": "Was there any overtrading or revenge trading moment?",
+      "q3": "How do you rate your stop-loss discipline?",
+      "q4": "What was your biggest lesson this week?",
+      "q5": "What will you do differently next week?"
+    },
+    "submit": "Submit week",
+    "submitting": "Submitting...",
+    "subtitle": "Review your discipline and close the week with an AI growth letter.",
+    "title": "Weekly Review",
+    "weekOf": "Week of"
   }
 }

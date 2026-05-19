@@ -1,1226 +1,85 @@
 {
-  "nav": {
-    "home": "ホーム",
-    "dashboard": "ダッシュボード",
-    "signals": "シグナル",
-    "dividend": "配当",
-    "dividendIntelligence": "配当インテリジェンス",
-    "paperTrading": "ペーパートレード",
-    "mirrorTrading": "Mirror Trading",
-    "coach": "コーチ",
-    "alphaCalendar": "Alpha Calendar",
-    "positionSize": "計算機",
-    "stressTest": "ストレステスト",
-    "concentration": "集中度",
-    "taxOptimizer": "PIT-38",
-    "markets": "マーケット",
-    "portfolio": "ポートフォリオ",
-    "tools": "ツール",
-    "menu": "メニュー",
-    "mistakeLibrary": "Mistake Library",
-    "premortem": "Pre-Mortem",
-    "correlation": "相関",
-    "crowdWisdom": "Crowd Wisdom",
-    "glossary": "Glossary",
-    "skillTree": "Skill Tree",
-    "volatility": "Volatility Heat Map",
-    "psycheProfile": "My Psyche",
-    "weeklyReview": "Weekly Review",
-    "alpacaTrading": "Alpaca取引",
-    "adminAffiliate": "Admin Affiliate"
-  },
-  "common": {
-    "search": "検索",
-    "loading": "読み込み中...",
-    "noData": "データがありません",
-    "error": "エラー",
-    "retry": "再試行",
-    "save": "保存",
-    "cancel": "キャンセル",
-    "close": "閉じる",
-    "open": "開く",
-    "buy": "買い",
-    "sell": "売り",
-    "apiMockBadge": "Mock fallback active",
-    "apiLiveBadge": "Live API",
-    "notAvailable": "n/a",
-    "high": "High",
-    "medium": "Medium",
-    "low": "Low"
-  },
-  "share": {
-    "button": "Share",
-    "twitter": "Twitter/X",
-    "linkedin": "LinkedIn",
-    "copy": "Copy link",
-    "whatsapp": "WhatsApp",
-    "copied": "Copied!"
-  },
-  "money": {
-    "gpwCaption": "金額はPLN（GPW想定）。横のUSDは目安です（約3.95 PLN = 1 USD、ライブ為替ではありません）。"
-  },
-  "analysisBrief": {
-    "title": "AIブリーフ",
-    "updated": "更新",
-    "englishSection": "English"
-  },
-  "signals": {
-    "title": "シグナル",
-    "riskScore": "リスクスコア",
-    "winRate": "Win rate",
-    "avgReturn": "平均リターン",
-    "confidence": "信頼度",
-    "regime": {
-      "title": "Live market regime engine",
-      "mode": "Mode",
-      "executionStyle": "Execution style",
-      "riskCap": "Risk cap / trade"
-    },
-    "entry": "Entry",
-    "stopLoss": "Stop Loss",
-    "takeProfit": "Take Profit",
-    "aiBreif": "AI Brief",
-    "dna": "Signal DNA",
-    "similarity": "類似度",
-    "narrative": "ナラティブ",
-    "headline": "見出し",
-    "riskNote": "リスクメモ",
-    "preMortemFromSetup": "Pre-Mortem (from this setup)",
-    "noSignalSelected": "No signal selected.",
-    "unknownSetup": "不明なセットアップ",
-    "autonomousWatchlist": "Autonomous watchlist",
-    "liveEngine": {
-      "label": "Live engine",
-      "polling": "Polling mode",
-      "sseUnavailable": "Updates every 15s (SSE unavailable)",
-      "lastUpdate": "Last: {{time}}",
-      "lastUpdateEmpty": "Last: --:--:--"
-    },
-    "liveWaiting": "Waiting for stream…",
-    "liveStreamUpdate": "Live stream update received",
-    "livePollingUpdate": "Polling update received",
-    "liveConnectedSse": "Connected to live stream",
-    "confidenceLabel": "Confidence: {{level}}",
-    "confidenceCue": {
-      "PRIME": "PRIME",
-      "STRONG": "STRONG",
-      "WATCH": "WATCH"
-    },
-    "regimeDetail": {
-      "TRENDING": {
-        "mode": "Trend acceleration",
-        "style": "Breakout continuation",
-        "riskCap": "1.25R"
-      },
-      "RISK_ON": {
-        "mode": "Pro-risk expansion",
-        "style": "Momentum basket",
-        "riskCap": "1.00R"
-      },
-      "RISK_OFF": {
-        "mode": "Capital defense",
-        "style": "Mean reversion only",
-        "riskCap": "0.50R"
-      },
-      "RANGING": {
-        "mode": "Neutral grid",
-        "style": "Range edges + quick exits",
-        "riskCap": "0.75R"
-      }
-    },
-    "marketRegime": {
-      "TRENDING": "Trending",
-      "RANGING": "Ranging",
-      "RISK_ON": "Risk-on",
-      "RISK_OFF": "Risk-off"
-    },
-    "signalType": {
-      "CRITICAL": "Critical",
-      "STANDARD": "Standard",
-      "RESEARCH": "Research"
-    },
-    "transport": {
-      "SSE": "SSE",
-      "POLLING": "Polling",
-      "OFFLINE": "Offline"
-    },
-    "copilotAction": {
-      "ENTER": "Enter",
-      "WAIT": "Wait",
-      "REDUCE": "Reduce"
-    },
-    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
-    "dnaWhySimilar": "類似の理由:",
-    "dnaCounterpoint": "留意点:",
-    "dnaExplain": {
-      "high": {
-        "why": "価格構造とボラティリティ・レジームがほぼ同一です。",
-        "counter": "マクロ環境は異なります。過大なポジションは避けてください。"
-      },
-      "mid": {
-        "why": "モメンタムと出来高の圧縮が過去の勝ちパターンと一致します。",
-        "counter": "継続的な出来高がなければシグナルはすぐ弱まる可能性があります。"
-      },
-      "low": {
-        "why": "信頼度がやや低い部分的重なりです。",
-        "counter": "補助的な根拠として扱い、主トリガーとしないでください。"
-      }
-    },
-    "discordEmbedTitle": "Discord embed preview",
-    "discordRisk": "Risk {{score}}/100",
-    "trackRecordTitle": "Track Record",
-    "trackWinRate": "Win rate",
-    "trackAvgReturn": "Avg. return",
-    "trackMaxDd": "Max DD",
-    "trackTotalSignals": "Total signals",
-    "executionTitle": "Battle-tested execution simulator",
-    "executionEntry": "Entry",
-    "executionStop": "Stop",
-    "executionTarget": "Target",
-    "executionRr": "R:R",
-    "executionExpectedValue": "Expected value",
-    "executionWorstCase": "Worst case",
-    "mockNarrative": {
-      "headline": "{{ticker}} — セットアップ: {{setup}}",
-      "body": "{{ticker}} のモメンタムは {{regime}} と整合します。価格と出来高は、invalidation レベルが守られれば抑制された下振れリスクで継続余地を示唆します。",
-      "riskNote": "ローソク足の確定を待ち、ストップの規律を厳守してください。"
-    },
-    "narrativeHeadlineFallback": "シグナル叙述: {{ticker}}",
-    "narrativeBodyFallback": "API から叙述本文が返されませんでした。",
-    "narrativeRiskNoteFallback": "API からリスクノートが返されませんでした。",
-    "narrativeConfidence": {
-      "HIGH": "High",
-      "MEDIUM": "Medium",
-      "LOW": "Low"
-    },
-    "mentor": {
-      "notFound": "Analysis unavailable"
-    },
-    "copilot": {
-      "title": "AI Copilot decision",
-      "conviction": "Conviction",
-      "invalidation": "Invalidation",
-      "invalidationBody": "Exit if the move reaches {{pct}}% from entry or the regime flips.",
-      "checkpoint": "Checkpoint",
-      "checkpointBody": "Re-evaluate after the session close and a fresh volume print.",
-      "enter": "Enter trade"
-    }
-  },
-  "reactions": {
-    "title": "コメント",
-    "postComment": "コメントを投稿",
-    "placeholder": "メモを入力（最大500文字）…",
-    "charCount": "{{used}} / {{max}}",
-    "empty": "コメントはまだありません。",
-    "loading": "読み込み中…",
-    "posting": "投稿中…"
-  },
-  "dividend": {
-    "title": "配当スクリーナー",
-    "history": "配当履歴",
-    "symbol": "Symbol",
-    "yearsBack": "遡る年数",
-    "fetch": "取得",
-    "noData": "データなし - フィルターを調整してください",
-    "screener": "スクリーナー: 配当成長 (CAGR)",
-    "minYears": "最小履歴年数",
-    "minYield": "最小利回り %",
-    "refresh": "更新",
-    "colSymbol": "Symbol",
-    "colYear": "年",
-    "colAnnual": "年間配当",
-    "colGrowth": "成長 YoY %",
-    "colCagr": "CAGR 5Y %",
-    "colYield": "Yield %",
-    "yield": "配当利回り",
-    "health": "健全性スコア",
-    "years": "増配年数",
-    "exDate": "権利落ち日",
-    "payoutRatio": "配当性向",
-    "trend": "トレンド",
-    "safe": "安全",
-    "watch": "監視",
-    "risky": "リスク高"
-  },
-  "paperTrading": {
-    "title": "Paper Trading",
-    "openPosition": "ポジションを開く",
-    "closePosition": "ポジションを閉じる",
-    "portfolio": "ポートフォリオ",
-    "history": "取引履歴",
-    "pnl": "P&L",
-    "direction": "方向",
-    "quantity": "数量",
-    "entryPrice": "エントリー価格",
-    "exitPrice": "決済価格",
-    "long": "Long",
-    "short": "Short"
-  },
-  "coach": {
-    "title": "行動コーチ",
-    "traderProfile": "トレーダープロファイル",
-    "avgWin": "平均利益",
-    "avgLoss": "平均損失",
-    "biases": "検出されたバイアス",
-    "noBiases": "バイアスは検出されませんでした",
-    "cutsWinners": "利益確定が早すぎる",
-    "holdsLosers": "損失を長く保持しすぎる",
-    "overtrading": "Overtrading",
-    "aiCoach": "AIコーチのコメント",
-    "avgHoldWin": "平均保有（利益）",
-    "avgHoldLoss": "平均保有（損失）",
-    "biasCutsBody": "利益は平均約{{winHours}}時間で決済していますが、損失は約{{lossHours}}時間保有しています。",
-    "biasHoldsBody": "平均損失: {{lossPct}}%; 損失トレードの保有: {{lossHours}}時間。",
-    "biasOverBody": "過去24時間に{{maxTrades}}件を超える取引があります。",
-    "aiDescriptionEmpty": "AIコーチの解説はまだありません。",
-    "chartAvgWin": "Avg. win %",
-    "chartAvgLoss": "Avg. loss %"
-  },
-  "cooldown": {
-    "title": "連続損失クールダウン",
-    "inactive": "クールダウンは有効ではありません",
-    "unlocksIn": "解除まで"
-  },
-  "alpha": {
-    "title": "Alpha Calendar",
-    "windows": "確率ウィンドウ",
-    "probability": "確率",
-    "historicalReturn": "過去リターン",
-    "earningsCycle": "決算サイクル",
-    "seasonal": "季節性",
-    "sectorRotation": "セクターローテーション",
-    "regimeShift": "レジームシフト",
-    "subtitleNext48h": "今後48時間",
-    "aiSummaryTitle": "AIサマリー",
-    "aiSummaryEmpty": "AIサマリーはありません。",
-    "tickerLabel": "Ticker",
-    "tickerPlaceholder": "例: AAPL",
-    "colStart": "開始",
-    "colEnd": "終了",
-    "colDescription": "説明",
-    "emptyTickerRows": "このティッカーのウィンドウはありません。"
-  },
-  "positionSize": {
-    "title": "ポジションサイズ計算機",
-    "currency": "口座通貨",
-    "currencyHint": "入力と結果はPLN（GPW想定）として扱います。横のUSDは参考値です。",
-    "pln": "PLN",
-    "usd": "USD",
-    "accountSize": "口座資金",
-    "riskPercent": "最大リスク %（資金比）",
-    "entry": "エントリー価格",
-    "stop": "Stop Loss",
-    "conviction": "セットアップの確信度",
-    "convictionLow": "低",
-    "convictionMedium": "中",
-    "convictionHigh": "高",
-    "calculate": "計算",
-    "shares": "買付株数",
-    "positionValue": "ポジション評価額",
-    "plannedRisk": "計画リスク額",
-    "actualRiskPct": "実際のリスク %（資金比）",
-    "maxLoss": "ストップ時の最大損失",
-    "takeProfits": "利確（R倍）",
-    "tp1": "1R",
-    "tp2": "2R",
-    "tp3": "3R",
-    "errorInvalid": "口座・エントリー・ストップに有効な正の数を入力してください。",
-    "copy": "コピー",
-    "copyAllTp": "全TPレベルをコピー",
-    "copyAriaTp": "{{label}} の価格をコピー",
-    "copied": "クリップボードにコピーしました",
-    "errorApi404": "計算APIが見つかりません (404)。最新コードでポート3000のAPIを起動するか、VITE_API_BASE を /api を含む完全なURLに設定してください。"
-  },
-  "stressTest": {
-    "title": "ポートフォリオストレステスト",
-    "empty": "結果を表示するにはペーパートレードでポジションを開いてください。",
-    "currency": "表示通貨",
-    "drop": "市場下落",
-    "portfolioLoss": "ポートフォリオ損失",
-    "portfolioLossPct": "ポートフォリオ損失 %",
-    "positions": "銘柄別インパクト",
-    "currentValue": "現在価値",
-    "lossValue": "損失 / 利益",
-    "newValue": "ショック後の価値",
-    "error404": "ストレステストAPIが見つかりません。",
-    "scenarios": {
-      "CRASH_2008": "2008年危機 (−54%)",
-      "COVID_2020": "2020年COVID (−34%)",
-      "DOT_COM_2001": "2001年ドットコム (−49%)",
-      "CUSTOM": "カスタム (−{{drop}}%)"
-    }
-  },
-  "concentration": {
-    "title": "ポートフォリオ集中度",
-    "empty": "分析を表示するにはペーパートレードでポジションを開いてください。",
-    "currency": "表示通貨",
-    "scoreLabel": "分散スコア（0–100）",
-    "totalValue": "ポートフォリオ総額",
-    "positionCount": "未決済ペーパートレード数",
-    "chartByStock": "銘柄別配分",
-    "chartBySector": "セクター別配分",
-    "positionsTable": "ポジションと比率",
-    "colTicker": "ティッカー",
-    "colSector": "セクター",
-    "colValue": "金額",
-    "colWeight": "比率 %",
-    "value": "金額",
-    "warnings": {
-      "SINGLE_STOCK": "{{ticker}} がポートフォリオの {{weight}}%（推奨上限 {{maxStock}}%）。",
-      "SINGLE_SECTOR": "セクター {{sector}} が {{weight}}%（推奨上限 {{maxSector}}%）。",
-      "TOP_HEAVY": "上位3銘柄が {{top3Share}}% を占めています。"
-    }
-  },
-  "correlation": {
-    "title": "Correlation Scanner",
-    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
-    "mainSymbol": "Main symbol",
-    "portfolioSymbols": "Portfolio symbols (comma separated)",
-    "analyze": "Analyze correlation",
-    "validation": "Provide a main symbol and at least one portfolio symbol.",
-    "tableTitle": "Correlation results",
-    "colSymbol": "Symbol",
-    "colCorrelation": "Correlation",
-    "colWarning": "Warning",
-    "warningHighRisk": "High risk",
-    "warningLowRisk": "OK",
-    "highRiskPairs": "High-risk pairs (> 0.7)",
-    "noHighRiskPairs": "No high-risk pair detected.",
-    "aiInsight": "AI Insight"
-  },
-  "tax": {
-    "title": "Tax Optimizer",
-    "selectCountry": "Select your tax country",
-    "changeCountry": "Change",
-    "noTax": "No capital gains tax on listed stocks",
-    "customRate": "Custom tax rate (%)",
-    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor."
-  },
-  "taxOptimizer": {
-    "title": "Tax Optimizer",
-    "year": "課税年度",
-    "grossGains": "総利益",
-    "losses": "損失",
-    "netIncome": "純所得",
-    "tax19": "Belka税 19%",
-    "toPay": "納付額",
-    "alreadyPaid": "証券会社での源泉（プレースホルダー）: {{amount}}",
-    "netLossTaxNote": "純損失の年はこのモジュール上の課税標準は0です（簡易）。",
-    "suggestionsTitle": "最適化のヒント",
-    "suggestions": {
-      "CLOSE_LOSS_BEFORE_YEAR_END": "12/31前に {{ticker}} を検討 — 約 {{value}} PLN の損失で税約 {{saving}} PLN 削減の可能性。",
-      "CARRY_FORWARD_LOSS": "過去5年の繰越損失の可能性 — 税理士に確認してください。"
-    },
-    "closedTrades": "決済済みペーパー取引",
-    "noTrades": "選択年に決済済み取引はありません。",
-    "colTicker": "銘柄",
-    "colOpen": "建玉",
-    "colClose": "決済",
-    "colPnl": "損益",
-    "colPct": "%",
-    "disclaimer": "結果は参考情報です。税務アドバイザーにご相談ください。"
-  },
-  "mistakes": {
-    "title": "Mistake Library",
-    "analyzeButton": "Analyze my mistakes",
-    "analyzing": "Analyzing...",
-    "emptyType": "No mistakes in this category yet.",
-    "types": {
-      "EMOTIONAL": "EMOTIONAL",
-      "STRATEGY": "STRATEGY",
-      "TIMING": "TIMING"
-    },
-    "summary": {
-      "total": "Total",
-      "emotional": "Emotional",
-      "strategy": "Strategy",
-      "timing": "Timing"
-    },
-    "dnaRowLink": "Strategy DNA",
-    "dnaContextLink": "Open Strategy DNA with these symbols"
-  },
-  "premortem": {
-    "title": "Pre-Mortem AI",
-    "subtitle": "Run downside scenario analysis before opening a trade.",
-    "symbol": "Symbol",
-    "entry": "Entry",
-    "stopLoss": "Stop Loss",
-    "takeProfit": "Take Profit",
-    "quantity": "Quantity",
-    "runButton": "Run Pre-Mortem",
-    "lossScenario": "Most likely loss scenario",
-    "marketRegime": "Market Regime",
-    "proceed": "Proceed anyway",
-    "cancel": "Cancel trade"
-  },
-  "crowdwisdom": {
-    "title": "Crowd Wisdom Inverter",
-    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
-    "symbol": "Symbol",
-    "analyze": "Analyze",
-    "retailSentiment": "Retail Sentiment",
-    "insiderActivity": "Insider Activity",
-    "result": "Signal",
-    "divergence": "Divergence (insider - retail)",
-    "signalBuy": "Contrarian Buy",
-    "signalSell": "Contrarian Sell",
-    "signalNeutral": "Neutral"
-  },
-  "glossary": {
-    "title": "Translate Financial English",
-    "subtitle": "Click a market term to get a short explanation and practical example.",
-    "popularTerms": "Popular terms",
-    "loading": "Loading explanation...",
-    "exampleLabel": "Example",
-    "selectPrompt": "Select a term from the list to load its explanation."
-  },
-  "backtest": {
-    "title": "Walk-Forward Backtest",
-    "subtitle": "30日ウィンドウ。シグナルは過去データのみ。成果は5営業日後の終値とエントリー比較。",
-    "symbol": "銘柄",
-    "strategy": "戦略",
-    "period": "期間",
-    "strategyRsi": "RSI売られすぎ（<30）",
-    "strategyBreakout": "ブレイクアウト（20日高値）",
-    "strategyVolume": "出来高急増（20日均の2倍超）",
-    "months3": "3か月",
-    "months6": "6か月",
-    "months12": "12か月",
-    "monthsSuffix": "か月",
-    "runButton": "Run backtest",
-    "resultsTitle": "結果",
-    "winRate": "Win rate",
-    "avgReturn": "平均リターン",
-    "totalTrades": "取引数",
-    "maxDrawdown": "Max drawdown",
-    "sharpeRatio": "Sharpe ratio",
-    "tradesTableTitle": "取引一覧",
-    "colDate": "日付",
-    "colAction": "売買",
-    "colPrice": "価格",
-    "colOutcome": "結果（5日）"
-  },
-  "replay": {
-    "title": "Replay Mode",
-    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
-    "step1Title": "Step 1: choose company and date",
-    "step2Title": "Step 2: market snapshot",
-    "step3Title": "Step 3: make your decision",
-    "step4Title": "Step 4: AI result",
-    "symbol": "Company",
-    "date": "Historical date",
-    "loadSnapshot": "Load snapshot",
-    "priceChange5d": "Change after 5 days",
-    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
-    "action": "Direction",
-    "price": "Price",
-    "evaluate": "Evaluate decision",
-    "score": "Score",
-    "actualOutcome": "Actual outcome"
-  },
-  "reversescreener": {
-    "title": "Reverse Screener",
-    "subtitle": "現在のOHLCVセットアップを他銘柄の類似した過去日と照合（RSI・20日平均比ボリューム・1日リターン・トレンド・ATR/終値 — Signal DNA風の類似度）。",
-    "symbolLabel": "ティッカー",
-    "symbolPlaceholder": "例: 7203",
-    "dateLabel": "基準日（任意）",
-    "dateHint": "未入力の場合はDB上の最新日付を使用。",
-    "findButton": "類似セットアップを検索",
-    "avgOutcomeLabel": "ツイン平均リターン",
-    "avgOutcomeHint": "上位一致の (5日+10日)/2 の平均 — 説明用で予測ではありません。",
-    "currentSetup": "基準日のセットアップ",
-    "volumeRatio": "出来高 vs 20日平均",
-    "priceChange": "1日価格変化",
-    "trend": "トレンド（MA10 vs MA20）",
-    "trend.up": "上昇",
-    "trend.down": "下落",
-    "trend.flat": "横ばい",
-    "matchesTitle": "過去トップ5一致",
-    "similarity": "類似度",
-    "outcome5d": "5日後 {{value}}",
-    "outcome10d": "10日後 {{value}}",
-    "noMatches": "検索範囲に類似セットアップはありません。",
-    "errorSymbol": "ティッカーを入力してください。"
-  },
-  "trackrecord": {
-    "title": "Anonymous Track Record",
-    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Generate my Track Record",
-    "cardTitle": "Your public Track Record",
-    "winRate": "Win rate",
-    "totalTrades": "Total trades",
-    "avgReturn": "Average return",
-    "bestTradePct": "Best trade",
-    "worstTradePct": "Worst trade",
-    "generatedAt": "Generated at",
-    "shareLinkLabel": "Public link",
-    "copyButton": "Copy share link",
-    "copyFailed": "Failed to copy share link.",
-    "copied": "Link copied"
-  },
-  "digest": {
-    "title": "Daily Digest",
-    "subtitle": "Generate your AI market recap and send a test email instantly.",
-    "previewButton": "Preview my digest",
-    "sendButton": "Send test email",
-    "cardDateLabel": "Digest date",
-    "emptyState": "Click preview to generate today's digest.",
-    "emailSent": "Test email sent for {{date}}."
-  },
-  "strategydna": {
-    "title": "Strategy DNA Match",
-    "subtitle": "AI compares your paper trading style with legendary investors.",
-    "mainResultLabel": "Your style is",
-    "primary": "Primary match",
-    "secondary": "Secondary match",
-    "insightLabel": "AI Insight",
-    "notEnoughData": "You need at least 20 closed trades.",
-    "legends": {
-      "BUFFETT": "Buffett",
-      "LYNCH": "Lynch",
-      "GREENBLATT": "Greenblatt",
-      "SOROS": "Soros"
-    },
-    "fromMistakesTitle": "Context from Mistake Library",
-    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster."
-  },
-  "earnings": {
-    "title": "Earnings Surprise Predictor",
-    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "predictButton": "Predict",
-    "validationSymbol": "Please provide a valid symbol.",
-    "resultFor": "Prediction for",
-    "confidence": "Confidence",
-    "reasoning": "AI reasoning",
-    "nextDate": "Next earnings date",
-    "noDate": "Date unavailable"
-  },
-  "insider": {
-    "title": "Insider Mirror",
-    "subtitle": "Track recent buying and selling by company insiders.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchButton": "Mirror insiders",
-    "validationSymbol": "Please provide a valid symbol.",
-    "resultFor": "Insider activity for",
-    "insight": "AI Insight",
-    "transactionsTitle": "Transactions (last 30 days, > $50k)",
-    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
-    "colName": "Name",
-    "colRole": "Role",
-    "colAction": "Action",
-    "colValue": "Value",
-    "colDate": "Date",
-    "actionBuy": "BUY",
-    "actionSell": "SELL",
-    "sentimentBuy": "Net buying",
-    "sentimentSell": "Net selling",
-    "sentimentNeutral": "Neutral"
-  },
-  "mentor": {
-    "toggleLabel": "Mentor Mode",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "panelTitle": "AI Mentor",
-    "loading": "Generating mentor guidance...",
-    "riskCheckLabel": "Risk check",
-    "settingsTitle": "Mentor Mode Settings",
-    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
-    "currentStatus": "Current status",
-    "enableAction": "Enable",
-    "disableAction": "Disable",
-    "styleLabel": "Mentor style",
-    "styleSupportive": "Supportive",
-    "styleStrict": "Strict",
-    "guidanceUnavailable": "メンターのガイダンスはまだ利用できません（エンドポイントが 404 を返しました）。"
-  },
-  "mirror": {
-    "title": "Mirror Trading",
-    "subtitle": "ミラー共有を有効にしたトレーダーをフォロー。統計は決済済みペーパートレード由来です。",
-    "topTraders": "トップトレーダー",
-    "winRate": "Win rate",
-    "totalTrades": "総トレード数",
-    "followers": "フォロワー",
-    "follow": "フォロー",
-    "unfollow": "フォロー解除",
-    "myFollowing": "フォロー中",
-    "loadError": "ミラーデータを読み込めませんでした。",
-    "actionError": "操作に失敗しました。再試行してください。",
-    "settingsTitle": "Enable Mirror Trading",
-    "settingsSubtitle": "他ユーザーにペーパートレードプロフィールのフォローを許可。収益シェアは将来の課金用に保存（0〜50%）。",
-    "toggleLabel": "ミラーフォロワーを受け入れる",
-    "revenueShare": "収益シェア",
-    "revenueShareHint": "0〜50%",
-    "saving": "保存中…",
-    "saved": "保存しました",
-    "noTopTraders": "ミラートレードを有効にしたトレーダーはまだいません。",
-    "itsYou": "あなた"
-  },
-  "discord": {
-    "title": "Discord Auto-Sync",
-    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
-    "webhookLabel": "Discord webhook URL",
-    "webhookPlaceholder": "https://discord.com/api/webhooks/...",
-    "saveButton": "Save",
-    "testButton": "Test webhook",
-    "active": "Webhook active",
-    "inactive": "Webhook inactive",
-    "loadError": "Failed to load webhook settings.",
-    "saveSuccess": "Webhook saved.",
-    "saveError": "Failed to save webhook.",
-    "testSuccess": "Test message sent.",
-    "testError": "Failed to send test message."
-  },
-  "emotional": {
-    "widgetTitle": "Emotional state",
-    "alertTitle": "Break recommended",
-    "lastChecked": "Last checked",
-    "level": {
-      "LOW": "Low",
-      "MEDIUM": "Medium",
-      "HIGH": "High"
-    }
-  },
-  "skilltree": {
-    "title": "Skill Tree",
-    "subtitle": "Unlock trading skills as your activity grows.",
-    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
-    "checkProgress": "Check progress",
-    "celebrationTitle": "New skills unlocked!",
-    "newlyUnlockedLabel": "Recently unlocked:",
-    "unlockedAt": "Unlocked: {{date}}",
-    "skills": {
-      "BASICS": {
-        "name": "Basics",
-        "description": "You understand how stocks and exchanges work.",
-        "condition": "Always unlocked"
-      },
-      "SUPPORT_RESISTANCE": {
-        "name": "Support & Resistance",
-        "description": "You understand support and resistance.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "RSI": {
-        "name": "RSI",
-        "description": "You understand RSI.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "MACD": {
-        "name": "MACD",
-        "description": "You understand MACD.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "FIBONACCI": {
-        "name": "Fibonacci",
-        "description": "You understand Fibonacci levels.",
-        "condition": "At least 10 closed paper trades"
-      },
-      "VOLUME": {
-        "name": "Volume",
-        "description": "You understand volume.",
-        "condition": "At least 10 closed paper trades"
-      },
-      "RISK_MANAGEMENT": {
-        "name": "Risk management",
-        "description": "You apply position sizing.",
-        "condition": "Position Size Calculator: at least 3 uses"
-      },
-      "BEHAVIORAL": {
-        "name": "Behavioral",
-        "description": "You keep emotions in check while trading.",
-        "condition": "At least 1 entry in Mistake Library"
-      },
-      "DIVERSIFICATION": {
-        "name": "Diversification",
-        "description": "You understand diversification.",
-        "condition": "At least 3 unique symbols in paper trades"
-      },
-      "STRATEGY": {
-        "name": "Strategy",
-        "description": "You follow a coherent strategy.",
-        "condition": "Min. 20 trades and win rate > 40%"
-      }
-    }
-  },
-  "volatility": {
-    "title": "Volatility Heat Map",
-    "subtitle": "Compare monthly volatility across years for a selected symbol.",
-    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchAction": "Load heat map",
-    "symbol": "Symbol",
-    "year": "Year",
-    "mostVolatileMonth": "Most volatile month",
-    "leastVolatileMonth": "Least volatile month",
-    "noData": "No data",
-    "legendTitle": "Legend",
-    "legendLow": "Low volatility",
-    "legendHigh": "High volatility",
-    "months": {
-      "jan": "Jan",
-      "feb": "Feb",
-      "mar": "Mar",
-      "apr": "Apr",
-      "may": "May",
-      "jun": "Jun",
-      "jul": "Jul",
-      "aug": "Aug",
-      "sep": "Sep",
-      "oct": "Oct",
-      "nov": "Nov",
-      "dec": "Dec"
-    },
-    "tooltip": {
-      "volatility": "Volatility",
-      "avgReturn": "Avg. return"
-    },
-    "errors": {
-      "symbolRequired": "Please enter a symbol."
-    }
-  },
-  "newshalflife": {
-    "title": "News Half-Life Score",
-    "subtitle": "Estimate how quickly each news item loses impact on price.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchButton": "Analyze news",
-    "mostImpactful": "Most impactful news",
-    "halfLifeDaysLabel": "Half-life: {{days}} days",
-    "halfLifeDaysBadge": "{{days}} days",
-    "expired": "Expired",
-    "categoryLabel": "Category",
-    "reasonLabel": "Reason",
-    "remainingLabel": "Time left",
-    "empty": "No recent news found for this symbol."
-  },
-  "pearls": {
-    "quoteFreshness": "Quote freshness",
-    "quoteChip": "{{age}} old · {{source}}",
-    "decisionTrailTitle": "Decision trail",
-    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
-    "receiptProceed": "Pre-Mortem → opened anyway",
-    "receiptLoss": "Closed at a loss",
-    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
-    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
-    "summaryTotal": "Recorded decisions",
-    "summaryProceedRate": "Pre-Mortem proceed rate",
-    "summaryWorstLoss": "Largest realized loss"
-  },
-  "dividendcompound": {
-    "title": "配当複利計算機",
-    "subtitle": "配当再投資ありとなしのポートフォリオ成長をシミュレーション。",
-    "initialAmount": "初期金額 (PLN)",
-    "monthlyContribution": "毎月の積立 (PLN)",
-    "dividendYield": "配当利回り (%)",
-    "years": "期間 (年)",
-    "yearsValue": "{{count}} 年",
-    "calculate": "計算",
-    "withReinvesting": "再投資あり",
-    "withoutReinvesting": "再投資なし",
-    "difference": "差額 (複利効果)",
-    "chartTitle": "年ごとのポートフォリオ価値",
-    "axisYear": "年",
-    "tooltipYear": "{{year}} 年目"
-  },
-  "psyche": {
-    "title": "Trader Psyche",
-    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
-    "refresh": "Refresh my profile",
-    "dnaTitle": "Trader DNA",
-    "growthScore": "Growth score",
-    "tradingStyle": "Trading style",
-    "topBiases": "Top biases",
-    "goodConditions": "Good conditions",
-    "badConditions": "Bad conditions",
-    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
-    "rulesTitle": "My trading rules",
-    "rulePlaceholder": "Add a rule",
-    "addRule": "Add rule",
-    "breaches": "Breaches",
-    "deleteRule": "Delete",
-    "decisionLogTitle": "Decision log (last 10)",
-    "colDate": "Date",
-    "colSymbol": "Symbol",
-    "colAction": "Action",
-    "colMood": "Mood",
-    "colCompliance": "Plan compliance",
-    "complianceYes": "Yes",
-    "complianceNo": "No",
-    "complianceUnknown": "—",
-    "emptyLogs": "No entries yet."
-  },
-  "home": {
-    "title": "Companies",
-    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
-    "searchPlaceholder": "Search by name or symbol...",
-    "emptySelectSector": "Choose a sector or run a search to see companies.",
-    "emptySector": "No companies in this sector yet.",
-    "sectorLabel": "Sector"
-  },
-  "sector": {
-    "all": "All",
-    "technology": "Technology",
-    "financialServices": "Financial Services",
-    "healthcare": "Healthcare",
-    "consumerCyclical": "Consumer Cyclical",
-    "industrials": "Industrials",
-    "energy": "Energy",
-    "communicationServices": "Communication Services",
-    "consumerDefensive": "Consumer Defensive",
-    "utilities": "Utilities",
-    "realEstate": "Real Estate",
-    "basicMaterials": "Basic Materials"
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
-    "companiesTitle": "Companies",
-    "companiesDesc": "Search and sector grid with logos.",
-    "signalsTitle": "Signals",
-    "signalsDesc": "Coming soon - screener and AI scores.",
-    "portfolioTitle": "Portfolio",
-    "portfolioDesc": "Coming soon - watchlists and alerts."
-  },
-  "watchlist": {
-    "follow": "♡ Follow",
-    "following": "♥ Following",
-    "yours": "Your watchlist",
-    "empty": "You are not observing any companies yet.",
-    "symbol": "Symbol",
-    "lastPrice": "Last price",
-    "changePct": "Change %"
-  },
-  "dividendsPage": {
-    "title": "Dividend screening (MVP)",
-    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
-    "historyTitle": "Dividend history",
-    "symbol": "Symbol",
-    "yearsBack": "Years back",
-    "fetch": "Fetch",
-    "exDate": "Ex-date",
-    "payDate": "Pay date",
-    "amount": "Amount",
-    "yield": "Yield %",
-    "emptyHistory": "No rows yet - run seed or change filters.",
-    "screenerTitle": "Screener: dividend growth (CAGR)",
-    "minYears": "Min. years of history",
-    "minYield": "Min. yield %",
-    "refresh": "Refresh",
-    "dataLocation": "in",
-    "screenerLoading": "Loading screener…",
-    "screenerEmpty": "No results for selected filters.",
-    "tableYear": "Year",
-    "tableAnnualDividend": "Annual dividend",
-    "tableGrowthYoy": "Growth YoY %",
-    "taxTitle": "Dividend tax (PIT 19%)",
-    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
-    "taxShares": "Number of shares",
-    "taxReferencePrice": "Price (reference)",
-    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
-    "taxYieldAlternative": "Alternative: annual yield % (optional)",
-    "taxYieldPlaceholder": "e.g. 2.5",
-    "taxCalculating": "Calculating…",
-    "taxCalculate": "Calculate",
-    "taxMethod": "Method",
-    "taxGrossDividend": "Gross dividend",
-    "taxRateLabel": "Tax ({{rate}}%)",
-    "taxNet": "Net"
-  },
-  "company": {
-    "loading": "Loading company...",
-    "backHome": "<- Back home",
-    "backToCompanies": "← 企業",
-    "sector": "Sector",
-    "industry": "Industry",
-    "website": "Website",
-    "chartTitle": "Close - recent history",
-    "close": "Close",
-    "noQuoteHistory": "No quote history yet.",
-    "recentNews": "Recent news",
-    "noNews": "No news rows in database yet."
-  },
-  "dividendIntelligence": {
-    "title": "Dividend Intelligence",
-    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
-    "symbol": "Symbol",
-    "sectorPercentile": "Sector percentile",
-    "vsPeers": "(vs peers in sector)"
-  },
   "affiliate": {
-    "disclosure": {
-      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
-      "title": "StockAI Pro transparency",
-      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
-      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider."
-    },
     "cta": {
       "buy_through": "Buy {{ticker}} via {{broker}}",
       "open_account": "Open account with {{broker}}",
       "other_options": "Other options ({{count}})"
     },
+    "disclosure": {
+      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider.",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
+      "title": "StockAI Pro transparency"
+    },
     "modal": {
-      "title": "Choose a broker",
-      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "close": "Close",
       "select": "Select",
-      "close": "Close"
-    }
-  },
-  "etoro": {
-    "cta": "eToroで口座を開設",
-    "subtitle": "認可を受けたブローカーで株式を取引",
-    "company": {
-      "title": "Trade this stock",
-      "button": "Open account on eToro",
-      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money."
-    },
-    "alpaca": {
-      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
-      "button": "Try eToro"
-    },
-    "settings": {
-      "sectionTitle": "Recommended Brokers",
-      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
-      "cardTitle": "eToro",
-      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
-      "button": "Learn more & open account"
+      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "title": "Choose a broker"
     }
   },
   "alpaca": {
-    "title": "Alpaca Trading",
-    "connectBanner": "Connect your Alpaca account in Settings",
     "account": "Account",
-    "modePaper": "PAPER",
-    "modeLive": "LIVE",
-    "buyingPower": "Buying power",
-    "portfolioValue": "Portfolio value",
-    "cash": "Cash",
-    "quickTrade": "Quick Trade",
-    "symbol": "Symbol",
-    "buy": "Buy",
-    "sell": "Sell",
-    "positions": "Positions",
-    "avgPrice": "Avg Price",
-    "currentPrice": "Current Price",
-    "noPositions": "No open positions",
-    "orders": "Orders",
-    "qty": "Qty",
-    "status": "Status",
-    "side": "Side",
-    "noOrders": "No recent orders",
-    "cancel": "Cancel",
-    "equityCurve": "Equity curve (30d)",
-    "confirmTrade": "Confirm Trade",
-    "premortem": "Pre-Mortem",
-    "confirm": "Confirm",
-    "settingsTitle": "Alpaca",
-    "settingsSubtitle": "Connect Alpaca API keys and choose account mode.",
     "apiKey": "API Key",
     "apiSecret": "API Secret",
+    "avgPrice": "Avg Price",
+    "buy": "Buy",
+    "buyingPower": "Buying power",
+    "cancel": "Cancel",
+    "cash": "Cash",
+    "confirm": "Confirm",
+    "confirmTrade": "Confirm Trade",
+    "connectBanner": "Connect your Alpaca account in Settings",
+    "connected": "Connected",
+    "connectionError": "Connection error",
+    "currentPrice": "Current Price",
+    "equityCurve": "Equity curve (30d)",
     "mode": "Mode",
-    "testConnection": "Test connection",
+    "modeLive": "LIVE",
+    "modePaper": "PAPER",
+    "noOrders": "No recent orders",
+    "noPositions": "No open positions",
+    "orders": "Orders",
+    "portfolioValue": "Portfolio value",
+    "positions": "Positions",
+    "premortem": "Pre-Mortem",
+    "qty": "Qty",
+    "quickTrade": "Quick Trade",
+    "sell": "Sell",
     "settingsLoadError": "Failed to load Alpaca settings.",
     "settingsSaved": "Saved",
     "settingsSaveError": "Failed to save Alpaca settings.",
-    "connected": "Connected",
-    "connectionError": "Connection error"
+    "settingsSubtitle": "Connect Alpaca API keys and choose account mode.",
+    "settingsTitle": "Alpaca",
+    "side": "Side",
+    "status": "Status",
+    "symbol": "Symbol",
+    "testConnection": "Test connection",
+    "title": "Alpaca Trading"
   },
-  "checkin": {
-    "title": "Daily Check-In",
-    "subtitle": "Set your mindset before the market opens.",
-    "moodLabel": "Mood",
-    "planLabel": "What is your plan today?",
-    "planPlaceholder": "Optional...",
-    "submit": "Start trading day",
-    "submitting": "Saving...",
-    "error": "Could not save check-in. Please try again.",
-    "risk": {
-      "LOW": "LOW",
-      "MEDIUM": "MEDIUM",
-      "HIGH": "HIGH"
-    }
+  "alpha": {
+    "aiSummaryEmpty": "AIサマリーはありません。",
+    "aiSummaryTitle": "AIサマリー",
+    "colDescription": "説明",
+    "colEnd": "終了",
+    "colStart": "開始",
+    "earningsCycle": "決算サイクル",
+    "emptyTickerRows": "このティッカーのウィンドウはありません。",
+    "historicalReturn": "過去リターン",
+    "probability": "確率",
+    "regimeShift": "レジームシフト",
+    "seasonal": "季節性",
+    "sectorRotation": "セクターローテーション",
+    "subtitleNext48h": "今後48時間",
+    "tickerLabel": "Ticker",
+    "tickerPlaceholder": "例: AAPL",
+    "title": "Alpha Calendar",
+    "windows": "確率ウィンドウ"
   },
-  "reflection": {
-    "title": "Post-Trade Reflection",
-    "subtitle": "Close {{symbol}} and capture one quick reflection.",
-    "timer": "{{seconds}}s",
-    "followedPlan": "I traded according to my plan",
-    "yes": "Yes",
-    "no": "No",
-    "emotion": "Emotion",
-    "lesson": "What did I learn?",
-    "lessonPlaceholder": "Optional (max 100 characters)",
-    "saveAndClose": "Save & Close",
-    "skip": "Skip",
-    "aiTitle": "AI Insight",
-    "saveError": "Reflection was not saved.",
-    "emotions": {
-      "FRUSTRATION": "😤 Frustration",
-      "FEAR": "😰 Fear",
-      "CONFIDENT": "😊 Confident",
-      "NEUTRAL": "😐 Neutral",
-      "GREEDY": "🤑 Greedy"
-    }
-  },
-  "weekly": {
-    "title": "Weekly Review",
-    "subtitle": "Review your discipline and close the week with an AI growth letter.",
-    "submit": "Submit week",
-    "submitting": "Submitting...",
-    "generating": "Generating your letter...",
-    "aiLetterTitle": "Your AI Growth Letter",
-    "aiLetterEmpty": "No letter yet for this week.",
-    "historyTitle": "Last 8 weeks",
-    "emptyHistory": "No weekly reviews yet.",
-    "growthScore": "Growth score",
-    "weekOf": "Week of",
-    "questions": {
-      "q1": "Did you trade according to your rules?",
-      "q2": "Was there any overtrading or revenge trading moment?",
-      "q3": "How do you rate your stop-loss discipline?",
-      "q4": "What was your biggest lesson this week?",
-      "q5": "What will you do differently next week?"
-    },
-    "placeholders": {
-      "q4": "Describe your key lesson...",
-      "q5": "Describe your commitment for next week..."
-    }
-  },
-  "landing": {
-    "hero": {
-      "title": "次世代の投資プラットフォーム",
-      "subtitle": "AIリサーチ · 行動コーチング · 12取引所 · 9言語",
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
-      "widgetTitle": "Live market pulse",
-      "widgetLive": "Live"
-    },
-    "problem": {
-      "title": "Why investors get stuck",
-      "cards": {
-        "apps": {
-          "title": "You use 5-6 apps",
-          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity."
-        },
-        "emotions": {
-          "title": "Emotions cost you money",
-          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes."
-        },
-        "memory": {
-          "title": "No one remembers your mistakes",
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
-        },
-        "context": {
-          "title": "相場の文脈が不足しています",
-          "body": "シグナルは見えても、市場環境が合っているのか、今が適切なタイミングなのかが分かりません。"
-        }
-      }
-    },
-    "solution": {
-      "title": "One platform built for investor growth",
-      "features": {
-        "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": {
-          "title": "Behavioral Coach",
-          "body": "あなたのミスを検出し、同じ失敗を繰り返さないようサポートします。"
-        },
-        "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": {
-          "title": "12 Global Markets",
-          "body": "GPW、NYSE、DAX、TSE、NSE などに対応。アプリを切り替える必要はありません。"
-        },
-        "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages",
-        "aiBrief": {
-          "title": "AI Brief（解説付き）",
-          "body": "スコアだけではなく、なぜ有望なのか、あるいはそうでないのかを丁寧に説明します。"
-        },
-        "signalDna": {
-          "title": "Signal DNA",
-          "body": "過去の類似セットアップを提示し、このセットアップが過去にどう終わったかを示します。"
-        },
-        "preMortemAi": {
-          "title": "Pre-Mortem AI",
-          "body": "購入前に、AIが最も起こりやすい損失シナリオを示します。"
-        },
-        "paperTrading": {
-          "title": "Paper Trading",
-          "body": "リスクなく練習できます。コストのかからない失敗から学べます。"
-        }
-      }
-    },
-    "socialProof": {
-      "title": "Join our early access community",
-      "subtitle": "Early access community growing every week.",
-      "testimonials": [
-        {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
-        },
-        {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
-        },
-        {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
-        }
-      ],
-      "stats": {
-        "exchanges": "130以上の取引所",
-        "modules": "27のAIモジュール",
-        "languages": "9言語",
-        "adFree": "広告ゼロ（100%）"
-      }
-    },
-    "pricing": {
-      "title": "Simple pricing",
-      "tiers": {
-        "free": {
-          "name": "Free",
-          "price": "$0/mo",
-          "body": "Basic features to start building consistency.",
-          "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
-          ],
-          "cta": "Start free"
-        },
-        "pro": {
-          "name": "Pro",
-          "price": "$9/mo",
-          "body": "Full access for active investors.",
-          "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
-          ],
-          "cta": "Choose Pro"
-        },
-        "proPlus": {
-          "name": "Pro+",
-          "price": "$19/mo",
-          "body": "For power users and automation workflows.",
-          "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
-          ],
-          "cta": "Choose Pro+"
-        }
-      },
-      "badge": "先行ユーザー価格",
-      "earlyAdopter": "最初の500件のProアカウントはずっと$9/月で固定",
-      "monthly": "月額",
-      "yearly": "年額",
-      "save": "27%お得",
-      "saveProPlus": "34%お得",
-      "popular": "一番人気",
-      "trial": "14日間無料"
-    },
-    "footerCta": {
-      "title": "Start your free account today",
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk."
-    }
+  "analysisBrief": {
+    "englishSection": "English",
+    "title": "AIブリーフ",
+    "updated": "更新"
   },
   "auth": {
     "email": "メールアドレス",
@@ -1238,10 +97,1151 @@
     "registerLoading": "登録中...",
     "registerTitle": "新規登録"
   },
+  "backtest": {
+    "avgReturn": "平均リターン",
+    "colAction": "売買",
+    "colDate": "日付",
+    "colOutcome": "結果（5日）",
+    "colPrice": "価格",
+    "maxDrawdown": "Max drawdown",
+    "months12": "12か月",
+    "months3": "3か月",
+    "months6": "6か月",
+    "monthsSuffix": "か月",
+    "period": "期間",
+    "resultsTitle": "結果",
+    "runButton": "Run backtest",
+    "sharpeRatio": "Sharpe ratio",
+    "strategy": "戦略",
+    "strategyBreakout": "ブレイクアウト（20日高値）",
+    "strategyRsi": "RSI売られすぎ（<30）",
+    "strategyVolume": "出来高急増（20日均の2倍超）",
+    "subtitle": "30日ウィンドウ。シグナルは過去データのみ。成果は5営業日後の終値とエントリー比較。",
+    "symbol": "銘柄",
+    "title": "Walk-Forward Backtest",
+    "totalTrades": "取引数",
+    "tradesTableTitle": "取引一覧",
+    "winRate": "Win rate"
+  },
+  "checkin": {
+    "error": "Could not save check-in. Please try again.",
+    "moodLabel": "Mood",
+    "planLabel": "What is your plan today?",
+    "planPlaceholder": "Optional...",
+    "risk": {
+      "HIGH": "HIGH",
+      "LOW": "LOW",
+      "MEDIUM": "MEDIUM"
+    },
+    "submit": "Start trading day",
+    "submitting": "Saving...",
+    "subtitle": "Set your mindset before the market opens.",
+    "title": "Daily Check-In"
+  },
+  "coach": {
+    "aiCoach": "AIコーチのコメント",
+    "aiDescriptionEmpty": "AIコーチの解説はまだありません。",
+    "avgHoldLoss": "平均保有（損失）",
+    "avgHoldWin": "平均保有（利益）",
+    "avgLoss": "平均損失",
+    "avgWin": "平均利益",
+    "biasCutsBody": "利益は平均約{{winHours}}時間で決済していますが、損失は約{{lossHours}}時間保有しています。",
+    "biases": "検出されたバイアス",
+    "biasHoldsBody": "平均損失: {{lossPct}}%; 損失トレードの保有: {{lossHours}}時間。",
+    "biasOverBody": "過去24時間に{{maxTrades}}件を超える取引があります。",
+    "chartAvgLoss": "Avg. loss %",
+    "chartAvgWin": "Avg. win %",
+    "cutsWinners": "利益確定が早すぎる",
+    "holdsLosers": "損失を長く保持しすぎる",
+    "noBiases": "バイアスは検出されませんでした",
+    "overtrading": "Overtrading",
+    "title": "行動コーチ",
+    "traderProfile": "トレーダープロファイル"
+  },
+  "common": {
+    "apiLiveBadge": "Live API",
+    "apiMockBadge": "Mock fallback active",
+    "buy": "買い",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "error": "エラー",
+    "high": "High",
+    "loading": "読み込み中...",
+    "low": "Low",
+    "medium": "Medium",
+    "noData": "データがありません",
+    "notAvailable": "n/a",
+    "open": "開く",
+    "retry": "再試行",
+    "save": "保存",
+    "search": "検索",
+    "sell": "売り"
+  },
+  "company": {
+    "backHome": "<- Back home",
+    "backToCompanies": "← 企業",
+    "chartTitle": "Close - recent history",
+    "close": "Close",
+    "industry": "Industry",
+    "loading": "Loading company...",
+    "noNews": "No news rows in database yet.",
+    "noQuoteHistory": "No quote history yet.",
+    "recentNews": "Recent news",
+    "sector": "Sector",
+    "website": "Website"
+  },
+  "concentration": {
+    "chartBySector": "セクター別配分",
+    "chartByStock": "銘柄別配分",
+    "colSector": "セクター",
+    "colTicker": "ティッカー",
+    "colValue": "金額",
+    "colWeight": "比率 %",
+    "currency": "表示通貨",
+    "empty": "分析を表示するにはペーパートレードでポジションを開いてください。",
+    "positionCount": "未決済ペーパートレード数",
+    "positionsTable": "ポジションと比率",
+    "scoreLabel": "分散スコア（0–100）",
+    "title": "ポートフォリオ集中度",
+    "totalValue": "ポートフォリオ総額",
+    "value": "金額",
+    "warnings": {
+      "SINGLE_SECTOR": "セクター {{sector}} が {{weight}}%（推奨上限 {{maxSector}}%）。",
+      "SINGLE_STOCK": "{{ticker}} がポートフォリオの {{weight}}%（推奨上限 {{maxStock}}%）。",
+      "TOP_HEAVY": "上位3銘柄が {{top3Share}}% を占めています。"
+    }
+  },
   "cookie": {
-    "message": "当サイトでは体験向上のために Cookie を使用します。すべてを許可するか、必要なものだけを許可できます。",
     "acceptAll": "すべて許可",
+    "message": "当サイトでは体験向上のために Cookie を使用します。すべてを許可するか、必要なものだけを許可できます。",
     "necessaryOnly": "必要なもののみ",
     "privacyLink": "プライバシーポリシー"
+  },
+  "cooldown": {
+    "inactive": "クールダウンは有効ではありません",
+    "title": "連続損失クールダウン",
+    "unlocksIn": "解除まで"
+  },
+  "correlation": {
+    "aiInsight": "AI Insight",
+    "analyze": "Analyze correlation",
+    "colCorrelation": "Correlation",
+    "colSymbol": "Symbol",
+    "colWarning": "Warning",
+    "highRiskPairs": "High-risk pairs (> 0.7)",
+    "mainSymbol": "Main symbol",
+    "noHighRiskPairs": "No high-risk pair detected.",
+    "portfolioSymbols": "Portfolio symbols (comma separated)",
+    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
+    "tableTitle": "Correlation results",
+    "title": "Correlation Scanner",
+    "validation": "Provide a main symbol and at least one portfolio symbol.",
+    "warningHighRisk": "High risk",
+    "warningLowRisk": "OK"
+  },
+  "crowdwisdom": {
+    "analyze": "Analyze",
+    "divergence": "Divergence (insider - retail)",
+    "insiderActivity": "Insider Activity",
+    "result": "Signal",
+    "retailSentiment": "Retail Sentiment",
+    "signalBuy": "Contrarian Buy",
+    "signalNeutral": "Neutral",
+    "signalSell": "Contrarian Sell",
+    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
+    "symbol": "Symbol",
+    "title": "Crowd Wisdom Inverter"
+  },
+  "dashboard": {
+    "companiesDesc": "Search and sector grid with logos.",
+    "companiesTitle": "Companies",
+    "portfolioDesc": "Coming soon - watchlists and alerts.",
+    "portfolioTitle": "Portfolio",
+    "signalsDesc": "Coming soon - screener and AI scores.",
+    "signalsTitle": "Signals",
+    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
+    "title": "Dashboard"
+  },
+  "digest": {
+    "cardDateLabel": "Digest date",
+    "emailSent": "Test email sent for {{date}}.",
+    "emptyState": "Click preview to generate today's digest.",
+    "previewButton": "Preview my digest",
+    "sendButton": "Send test email",
+    "subtitle": "Generate your AI market recap and send a test email instantly.",
+    "title": "Daily Digest"
+  },
+  "discord": {
+    "active": "Webhook active",
+    "inactive": "Webhook inactive",
+    "loadError": "Failed to load webhook settings.",
+    "saveButton": "Save",
+    "saveError": "Failed to save webhook.",
+    "saveSuccess": "Webhook saved.",
+    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
+    "testButton": "Test webhook",
+    "testError": "Failed to send test message.",
+    "testSuccess": "Test message sent.",
+    "title": "Discord Auto-Sync",
+    "webhookLabel": "Discord webhook URL",
+    "webhookPlaceholder": "https://discord.com/api/webhooks/..."
+  },
+  "dividend": {
+    "colAnnual": "年間配当",
+    "colCagr": "CAGR 5Y %",
+    "colGrowth": "成長 YoY %",
+    "colSymbol": "Symbol",
+    "colYear": "年",
+    "colYield": "Yield %",
+    "exDate": "権利落ち日",
+    "fetch": "取得",
+    "health": "健全性スコア",
+    "history": "配当履歴",
+    "minYears": "最小履歴年数",
+    "minYield": "最小利回り %",
+    "noData": "データなし - フィルターを調整してください",
+    "payoutRatio": "配当性向",
+    "refresh": "更新",
+    "risky": "リスク高",
+    "safe": "安全",
+    "screener": "スクリーナー: 配当成長 (CAGR)",
+    "symbol": "Symbol",
+    "title": "配当スクリーナー",
+    "trend": "トレンド",
+    "watch": "監視",
+    "years": "増配年数",
+    "yearsBack": "遡る年数",
+    "yield": "配当利回り"
+  },
+  "dividendcompound": {
+    "axisYear": "年",
+    "calculate": "計算",
+    "chartTitle": "年ごとのポートフォリオ価値",
+    "difference": "差額 (複利効果)",
+    "dividendYield": "配当利回り (%)",
+    "initialAmount": "初期金額 (PLN)",
+    "monthlyContribution": "毎月の積立 (PLN)",
+    "subtitle": "配当再投資ありとなしのポートフォリオ成長をシミュレーション。",
+    "title": "配当複利計算機",
+    "tooltipYear": "{{year}} 年目",
+    "withoutReinvesting": "再投資なし",
+    "withReinvesting": "再投資あり",
+    "years": "期間 (年)",
+    "yearsValue": "{{count}} 年"
+  },
+  "dividendIntelligence": {
+    "sectorPercentile": "Sector percentile",
+    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
+    "symbol": "Symbol",
+    "title": "Dividend Intelligence",
+    "vsPeers": "(vs peers in sector)"
+  },
+  "dividendsPage": {
+    "amount": "Amount",
+    "dataLocation": "in",
+    "emptyHistory": "No rows yet - run seed or change filters.",
+    "exDate": "Ex-date",
+    "fetch": "Fetch",
+    "historyTitle": "Dividend history",
+    "minYears": "Min. years of history",
+    "minYield": "Min. yield %",
+    "payDate": "Pay date",
+    "refresh": "Refresh",
+    "screenerEmpty": "No results for selected filters.",
+    "screenerLoading": "Loading screener…",
+    "screenerTitle": "Screener: dividend growth (CAGR)",
+    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
+    "symbol": "Symbol",
+    "tableAnnualDividend": "Annual dividend",
+    "tableGrowthYoy": "Growth YoY %",
+    "tableYear": "Year",
+    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
+    "taxCalculate": "Calculate",
+    "taxCalculating": "Calculating…",
+    "taxGrossDividend": "Gross dividend",
+    "taxMethod": "Method",
+    "taxNet": "Net",
+    "taxRateLabel": "Tax ({{rate}}%)",
+    "taxReferencePrice": "Price (reference)",
+    "taxShares": "Number of shares",
+    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
+    "taxTitle": "Dividend tax (PIT 19%)",
+    "taxYieldAlternative": "Alternative: annual yield % (optional)",
+    "taxYieldPlaceholder": "e.g. 2.5",
+    "title": "Dividend screening (MVP)",
+    "yearsBack": "Years back",
+    "yield": "Yield %"
+  },
+  "earnings": {
+    "confidence": "Confidence",
+    "nextDate": "Next earnings date",
+    "noDate": "Date unavailable",
+    "predictButton": "Predict",
+    "reasoning": "AI reasoning",
+    "resultFor": "Prediction for",
+    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "Earnings Surprise Predictor",
+    "validationSymbol": "Please provide a valid symbol."
+  },
+  "emotional": {
+    "alertTitle": "Break recommended",
+    "lastChecked": "Last checked",
+    "level": {
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
+    },
+    "widgetTitle": "Emotional state"
+  },
+  "etoro": {
+    "alpaca": {
+      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
+      "button": "Try eToro"
+    },
+    "company": {
+      "button": "Open account on eToro",
+      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money.",
+      "title": "Trade this stock"
+    },
+    "cta": "eToroで口座を開設",
+    "settings": {
+      "button": "Learn more & open account",
+      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
+      "cardTitle": "eToro",
+      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
+      "sectionTitle": "Recommended Brokers"
+    },
+    "subtitle": "認可を受けたブローカーで株式を取引"
+  },
+  "glossary": {
+    "exampleLabel": "Example",
+    "loading": "Loading explanation...",
+    "popularTerms": "Popular terms",
+    "selectPrompt": "Select a term from the list to load its explanation.",
+    "subtitle": "Click a market term to get a short explanation and practical example.",
+    "title": "Translate Financial English"
+  },
+  "home": {
+    "emptySector": "No companies in this sector yet.",
+    "emptySelectSector": "Choose a sector or run a search to see companies.",
+    "searchPlaceholder": "Search by name or symbol...",
+    "sectorLabel": "Sector",
+    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
+    "title": "Companies"
+  },
+  "insider": {
+    "actionBuy": "BUY",
+    "actionSell": "SELL",
+    "colAction": "Action",
+    "colDate": "Date",
+    "colName": "Name",
+    "colRole": "Role",
+    "colValue": "Value",
+    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
+    "insight": "AI Insight",
+    "resultFor": "Insider activity for",
+    "searchButton": "Mirror insiders",
+    "sentimentBuy": "Net buying",
+    "sentimentNeutral": "Neutral",
+    "sentimentSell": "Net selling",
+    "subtitle": "Track recent buying and selling by company insiders.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "Insider Mirror",
+    "transactionsTitle": "Transactions (last 30 days, > $50k)",
+    "validationSymbol": "Please provide a valid symbol."
+  },
+  "landing": {
+    "footerCta": {
+      "button": "Create free account",
+      "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
+      "title": "Start your free account today"
+    },
+    "hero": {
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "See how it works",
+      "subtitle": "AIリサーチ · 行動コーチング · 12取引所 · 9言語",
+      "title": "次世代の投資プラットフォーム",
+      "widgetLive": "Live",
+      "widgetTitle": "Live market pulse"
+    },
+    "pricing": {
+      "badge": "先行ユーザー価格",
+      "earlyAdopter": "最初の500件のProアカウントはずっと$9/月で固定",
+      "monthly": "月額",
+      "popular": "一番人気",
+      "save": "27%お得",
+      "saveProPlus": "34%お得",
+      "tiers": {
+        "free": {
+          "body": "Basic features to start building consistency.",
+          "cta": "Start free",
+          "features": [
+            "Core dashboard",
+            "Basic AI signals",
+            "Community access"
+          ],
+          "name": "Free",
+          "price": "$0/mo"
+        },
+        "pro": {
+          "body": "Full access for active investors.",
+          "cta": "Choose Pro",
+          "features": [
+            "All AI modules",
+            "Behavioral coaching",
+            "Trader psyche profile"
+          ],
+          "name": "Pro",
+          "price": "$9/mo"
+        },
+        "proPlus": {
+          "body": "For power users and automation workflows.",
+          "cta": "Choose Pro+",
+          "features": [
+            "Everything in Pro",
+            "API access",
+            "Broker integration"
+          ],
+          "name": "Pro+",
+          "price": "$19/mo"
+        }
+      },
+      "title": "Simple pricing",
+      "trial": "14日間無料",
+      "yearly": "年額"
+    },
+    "problem": {
+      "cards": {
+        "apps": {
+          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity.",
+          "title": "You use 5-6 apps"
+        },
+        "context": {
+          "body": "シグナルは見えても、市場環境が合っているのか、今が適切なタイミングなのかが分かりません。",
+          "title": "相場の文脈が不足しています"
+        },
+        "emotions": {
+          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes.",
+          "title": "Emotions cost you money"
+        },
+        "memory": {
+          "body": "Without a feedback loop, the same costly patterns repeat trade after trade.",
+          "title": "No one remembers your mistakes"
+        }
+      },
+      "title": "Why investors get stuck"
+    },
+    "socialProof": {
+      "stats": {
+        "adFree": "広告ゼロ（100%）",
+        "exchanges": "130以上の取引所",
+        "languages": "9言語",
+        "modules": "27のAIモジュール"
+      },
+      "subtitle": "Early access community growing every week.",
+      "testimonials": [
+        {
+          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
+          "author": "Kasia, Warsaw"
+        },
+        {
+          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
+          "author": "Lukas, Berlin"
+        },
+        {
+          "quote": "The broker gateway plus AI context saves me time every single session.",
+          "author": "Clara, Madrid"
+        }
+      ],
+      "title": "Join our early access community"
+    },
+    "solution": {
+      "features": {
+        "aiBrief": {
+          "body": "スコアだけではなく、なぜ有望なのか、あるいはそうでないのかを丁寧に説明します。",
+          "title": "AI Brief（解説付き）"
+        },
+        "behavioralCoach": {
+          "body": "あなたのミスを検出し、同じ失敗を繰り返さないようサポートします。",
+          "title": "Behavioral Coach"
+        },
+        "brokerIntegration": "Broker Integration",
+        "globalMarkets": {
+          "body": "GPW、NYSE、DAX、TSE、NSE などに対応。アプリを切り替える必要はありません。",
+          "title": "12 Global Markets"
+        },
+        "languages": "9 Languages",
+        "paperTrading": {
+          "body": "リスクなく練習できます。コストのかからない失敗から学べます。",
+          "title": "Paper Trading"
+        },
+        "preMortemAi": {
+          "body": "購入前に、AIが最も起こりやすい損失シナリオを示します。",
+          "title": "Pre-Mortem AI"
+        },
+        "signalAnalysis": "AI Signal Analysis",
+        "signalDna": {
+          "body": "過去の類似セットアップを提示し、このセットアップが過去にどう終わったかを示します。",
+          "title": "Signal DNA"
+        },
+        "traderPsycheProfile": "Trader Psyche Profile"
+      },
+      "title": "One platform built for investor growth"
+    }
+  },
+  "mentor": {
+    "currentStatus": "Current status",
+    "disableAction": "Disable",
+    "disabled": "Disabled",
+    "enableAction": "Enable",
+    "enabled": "Enabled",
+    "guidanceUnavailable": "メンターのガイダンスはまだ利用できません（エンドポイントが 404 を返しました）。",
+    "loading": "Generating mentor guidance...",
+    "panelTitle": "AI Mentor",
+    "riskCheckLabel": "Risk check",
+    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
+    "settingsTitle": "Mentor Mode Settings",
+    "styleLabel": "Mentor style",
+    "styleStrict": "Strict",
+    "styleSupportive": "Supportive",
+    "toggleLabel": "Mentor Mode"
+  },
+  "mirror": {
+    "actionError": "操作に失敗しました。再試行してください。",
+    "follow": "フォロー",
+    "followers": "フォロワー",
+    "itsYou": "あなた",
+    "loadError": "ミラーデータを読み込めませんでした。",
+    "myFollowing": "フォロー中",
+    "noTopTraders": "ミラートレードを有効にしたトレーダーはまだいません。",
+    "revenueShare": "収益シェア",
+    "revenueShareHint": "0〜50%",
+    "saved": "保存しました",
+    "saving": "保存中…",
+    "settingsSubtitle": "他ユーザーにペーパートレードプロフィールのフォローを許可。収益シェアは将来の課金用に保存（0〜50%）。",
+    "settingsTitle": "Enable Mirror Trading",
+    "subtitle": "ミラー共有を有効にしたトレーダーをフォロー。統計は決済済みペーパートレード由来です。",
+    "title": "Mirror Trading",
+    "toggleLabel": "ミラーフォロワーを受け入れる",
+    "topTraders": "トップトレーダー",
+    "totalTrades": "総トレード数",
+    "unfollow": "フォロー解除",
+    "winRate": "Win rate"
+  },
+  "mistakes": {
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "dnaContextLink": "Open Strategy DNA with these symbols",
+    "dnaRowLink": "Strategy DNA",
+    "emptyType": "No mistakes in this category yet.",
+    "summary": {
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing",
+      "total": "Total"
+    },
+    "title": "Mistake Library",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    }
+  },
+  "money": {
+    "gpwCaption": "金額はPLN（GPW想定）。横のUSDは目安です（約3.95 PLN = 1 USD、ライブ為替ではありません）。"
+  },
+  "nav": {
+    "adminAffiliate": "Admin Affiliate",
+    "alpacaTrading": "Alpaca取引",
+    "alphaCalendar": "Alpha Calendar",
+    "coach": "コーチ",
+    "concentration": "集中度",
+    "correlation": "相関",
+    "crowdWisdom": "Crowd Wisdom",
+    "dashboard": "ダッシュボード",
+    "dividend": "配当",
+    "dividendIntelligence": "配当インテリジェンス",
+    "glossary": "Glossary",
+    "home": "ホーム",
+    "markets": "マーケット",
+    "menu": "メニュー",
+    "mirrorTrading": "Mirror Trading",
+    "mistakeLibrary": "Mistake Library",
+    "paperTrading": "ペーパートレード",
+    "portfolio": "ポートフォリオ",
+    "positionSize": "計算機",
+    "premortem": "Pre-Mortem",
+    "psycheProfile": "My Psyche",
+    "signals": "シグナル",
+    "skillTree": "Skill Tree",
+    "stressTest": "ストレステスト",
+    "taxOptimizer": "PIT-38",
+    "tools": "ツール",
+    "volatility": "Volatility Heat Map",
+    "weeklyReview": "Weekly Review"
+  },
+  "newshalflife": {
+    "categoryLabel": "Category",
+    "empty": "No recent news found for this symbol.",
+    "expired": "Expired",
+    "halfLifeDaysBadge": "{{days}} days",
+    "halfLifeDaysLabel": "Half-life: {{days}} days",
+    "mostImpactful": "Most impactful news",
+    "reasonLabel": "Reason",
+    "remainingLabel": "Time left",
+    "searchButton": "Analyze news",
+    "subtitle": "Estimate how quickly each news item loses impact on price.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "News Half-Life Score"
+  },
+  "paperTrading": {
+    "closePosition": "ポジションを閉じる",
+    "direction": "方向",
+    "entryPrice": "エントリー価格",
+    "exitPrice": "決済価格",
+    "history": "取引履歴",
+    "long": "Long",
+    "openPosition": "ポジションを開く",
+    "pnl": "P&L",
+    "portfolio": "ポートフォリオ",
+    "quantity": "数量",
+    "short": "Short",
+    "title": "Paper Trading"
+  },
+  "pearls": {
+    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
+    "decisionTrailTitle": "Decision trail",
+    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
+    "quoteChip": "{{age}} old · {{source}}",
+    "quoteFreshness": "Quote freshness",
+    "receiptLoss": "Closed at a loss",
+    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
+    "receiptProceed": "Pre-Mortem → opened anyway",
+    "summaryProceedRate": "Pre-Mortem proceed rate",
+    "summaryTotal": "Recorded decisions",
+    "summaryWorstLoss": "Largest realized loss"
+  },
+  "positionSize": {
+    "accountSize": "口座資金",
+    "actualRiskPct": "実際のリスク %（資金比）",
+    "calculate": "計算",
+    "conviction": "セットアップの確信度",
+    "convictionHigh": "高",
+    "convictionLow": "低",
+    "convictionMedium": "中",
+    "copied": "クリップボードにコピーしました",
+    "copy": "コピー",
+    "copyAllTp": "全TPレベルをコピー",
+    "copyAriaTp": "{{label}} の価格をコピー",
+    "currency": "口座通貨",
+    "currencyHint": "入力と結果はPLN（GPW想定）として扱います。横のUSDは参考値です。",
+    "entry": "エントリー価格",
+    "errorApi404": "計算APIが見つかりません (404)。最新コードでポート3000のAPIを起動するか、VITE_API_BASE を /api を含む完全なURLに設定してください。",
+    "errorInvalid": "口座・エントリー・ストップに有効な正の数を入力してください。",
+    "maxLoss": "ストップ時の最大損失",
+    "plannedRisk": "計画リスク額",
+    "pln": "PLN",
+    "positionValue": "ポジション評価額",
+    "riskPercent": "最大リスク %（資金比）",
+    "shares": "買付株数",
+    "stop": "Stop Loss",
+    "takeProfits": "利確（R倍）",
+    "title": "ポジションサイズ計算機",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "usd": "USD"
+  },
+  "premortem": {
+    "cancel": "Cancel trade",
+    "entry": "Entry",
+    "lossScenario": "Most likely loss scenario",
+    "marketRegime": "Market Regime",
+    "proceed": "Proceed anyway",
+    "quantity": "Quantity",
+    "runButton": "Run Pre-Mortem",
+    "stopLoss": "Stop Loss",
+    "subtitle": "Run downside scenario analysis before opening a trade.",
+    "symbol": "Symbol",
+    "takeProfit": "Take Profit",
+    "title": "Pre-Mortem AI"
+  },
+  "psyche": {
+    "addRule": "Add rule",
+    "badConditions": "Bad conditions",
+    "breaches": "Breaches",
+    "colAction": "Action",
+    "colCompliance": "Plan compliance",
+    "colDate": "Date",
+    "colMood": "Mood",
+    "colSymbol": "Symbol",
+    "complianceNo": "No",
+    "complianceUnknown": "—",
+    "complianceYes": "Yes",
+    "decisionLogTitle": "Decision log (last 10)",
+    "deleteRule": "Delete",
+    "dnaTitle": "Trader DNA",
+    "emptyLogs": "No entries yet.",
+    "goodConditions": "Good conditions",
+    "growthScore": "Growth score",
+    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
+    "refresh": "Refresh my profile",
+    "rulePlaceholder": "Add a rule",
+    "rulesTitle": "My trading rules",
+    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
+    "title": "Trader Psyche",
+    "topBiases": "Top biases",
+    "tradingStyle": "Trading style"
+  },
+  "reactions": {
+    "charCount": "{{used}} / {{max}}",
+    "empty": "コメントはまだありません。",
+    "loading": "読み込み中…",
+    "placeholder": "メモを入力（最大500文字）…",
+    "postComment": "コメントを投稿",
+    "posting": "投稿中…",
+    "title": "コメント"
+  },
+  "reflection": {
+    "aiTitle": "AI Insight",
+    "emotion": "Emotion",
+    "emotions": {
+      "CONFIDENT": "😊 Confident",
+      "FEAR": "😰 Fear",
+      "FRUSTRATION": "😤 Frustration",
+      "GREEDY": "🤑 Greedy",
+      "NEUTRAL": "😐 Neutral"
+    },
+    "followedPlan": "I traded according to my plan",
+    "lesson": "What did I learn?",
+    "lessonPlaceholder": "Optional (max 100 characters)",
+    "no": "No",
+    "saveAndClose": "Save & Close",
+    "saveError": "Reflection was not saved.",
+    "skip": "Skip",
+    "subtitle": "Close {{symbol}} and capture one quick reflection.",
+    "timer": "{{seconds}}s",
+    "title": "Post-Trade Reflection",
+    "yes": "Yes"
+  },
+  "replay": {
+    "action": "Direction",
+    "actualOutcome": "Actual outcome",
+    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
+    "date": "Historical date",
+    "evaluate": "Evaluate decision",
+    "loadSnapshot": "Load snapshot",
+    "price": "Price",
+    "priceChange5d": "Change after 5 days",
+    "score": "Score",
+    "step1Title": "Step 1: choose company and date",
+    "step2Title": "Step 2: market snapshot",
+    "step3Title": "Step 3: make your decision",
+    "step4Title": "Step 4: AI result",
+    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
+    "symbol": "Company",
+    "title": "Replay Mode"
+  },
+  "reversescreener": {
+    "avgOutcomeHint": "上位一致の (5日+10日)/2 の平均 — 説明用で予測ではありません。",
+    "avgOutcomeLabel": "ツイン平均リターン",
+    "currentSetup": "基準日のセットアップ",
+    "dateHint": "未入力の場合はDB上の最新日付を使用。",
+    "dateLabel": "基準日（任意）",
+    "errorSymbol": "ティッカーを入力してください。",
+    "findButton": "類似セットアップを検索",
+    "matchesTitle": "過去トップ5一致",
+    "noMatches": "検索範囲に類似セットアップはありません。",
+    "outcome10d": "10日後 {{value}}",
+    "outcome5d": "5日後 {{value}}",
+    "priceChange": "1日価格変化",
+    "similarity": "類似度",
+    "subtitle": "現在のOHLCVセットアップを他銘柄の類似した過去日と照合（RSI・20日平均比ボリューム・1日リターン・トレンド・ATR/終値 — Signal DNA風の類似度）。",
+    "symbolLabel": "ティッカー",
+    "symbolPlaceholder": "例: 7203",
+    "title": "Reverse Screener",
+    "trend": "トレンド（MA10 vs MA20）",
+    "trend.down": "下落",
+    "trend.flat": "横ばい",
+    "trend.up": "上昇",
+    "volumeRatio": "出来高 vs 20日平均"
+  },
+  "sector": {
+    "all": "All",
+    "basicMaterials": "Basic Materials",
+    "communicationServices": "Communication Services",
+    "consumerCyclical": "Consumer Cyclical",
+    "consumerDefensive": "Consumer Defensive",
+    "energy": "Energy",
+    "financialServices": "Financial Services",
+    "healthcare": "Healthcare",
+    "industrials": "Industrials",
+    "realEstate": "Real Estate",
+    "technology": "Technology",
+    "utilities": "Utilities"
+  },
+  "share": {
+    "button": "Share",
+    "copied": "Copied!",
+    "copy": "Copy link",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter/X",
+    "whatsapp": "WhatsApp"
+  },
+  "signals": {
+    "aiBreif": "AI Brief",
+    "autonomousWatchlist": "Autonomous watchlist",
+    "avgReturn": "平均リターン",
+    "confidence": "信頼度",
+    "confidenceCue": {
+      "PRIME": "PRIME",
+      "STRONG": "STRONG",
+      "WATCH": "WATCH"
+    },
+    "confidenceLabel": "Confidence: {{level}}",
+    "copilot": {
+      "checkpoint": "Checkpoint",
+      "checkpointBody": "Re-evaluate after the session close and a fresh volume print.",
+      "conviction": "Conviction",
+      "enter": "Enter trade",
+      "invalidation": "Invalidation",
+      "invalidationBody": "Exit if the move reaches {{pct}}% from entry or the regime flips.",
+      "title": "AI Copilot decision"
+    },
+    "copilotAction": {
+      "ENTER": "Enter",
+      "REDUCE": "Reduce",
+      "WAIT": "Wait"
+    },
+    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
+    "discordEmbedTitle": "Discord embed preview",
+    "discordRisk": "Risk {{score}}/100",
+    "dna": "Signal DNA",
+    "dnaCounterpoint": "留意点:",
+    "dnaExplain": {
+      "high": {
+        "counter": "マクロ環境は異なります。過大なポジションは避けてください。",
+        "why": "価格構造とボラティリティ・レジームがほぼ同一です。"
+      },
+      "low": {
+        "counter": "補助的な根拠として扱い、主トリガーとしないでください。",
+        "why": "信頼度がやや低い部分的重なりです。"
+      },
+      "mid": {
+        "counter": "継続的な出来高がなければシグナルはすぐ弱まる可能性があります。",
+        "why": "モメンタムと出来高の圧縮が過去の勝ちパターンと一致します。"
+      }
+    },
+    "dnaWhySimilar": "類似の理由:",
+    "entry": "Entry",
+    "executionEntry": "Entry",
+    "executionExpectedValue": "Expected value",
+    "executionRr": "R:R",
+    "executionStop": "Stop",
+    "executionTarget": "Target",
+    "executionTitle": "Battle-tested execution simulator",
+    "executionWorstCase": "Worst case",
+    "headline": "見出し",
+    "liveConnectedSse": "Connected to live stream",
+    "liveEngine": {
+      "label": "Live engine",
+      "lastUpdate": "Last: {{time}}",
+      "lastUpdateEmpty": "Last: --:--:--",
+      "polling": "Polling mode",
+      "sseUnavailable": "Updates every 15s (SSE unavailable)"
+    },
+    "livePollingUpdate": "Polling update received",
+    "liveStreamUpdate": "Live stream update received",
+    "liveWaiting": "Waiting for stream…",
+    "marketRegime": {
+      "RANGING": "Ranging",
+      "RISK_OFF": "Risk-off",
+      "RISK_ON": "Risk-on",
+      "TRENDING": "Trending"
+    },
+    "mentor": {
+      "notFound": "Analysis unavailable"
+    },
+    "mockNarrative": {
+      "body": "{{ticker}} のモメンタムは {{regime}} と整合します。価格と出来高は、invalidation レベルが守られれば抑制された下振れリスクで継続余地を示唆します。",
+      "headline": "{{ticker}} — セットアップ: {{setup}}",
+      "riskNote": "ローソク足の確定を待ち、ストップの規律を厳守してください。"
+    },
+    "narrative": "ナラティブ",
+    "narrativeBodyFallback": "API から叙述本文が返されませんでした。",
+    "narrativeConfidence": {
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
+    },
+    "narrativeHeadlineFallback": "シグナル叙述: {{ticker}}",
+    "narrativeRiskNoteFallback": "API からリスクノートが返されませんでした。",
+    "noSignalSelected": "No signal selected.",
+    "preMortemFromSetup": "Pre-Mortem (from this setup)",
+    "regime": {
+      "executionStyle": "Execution style",
+      "mode": "Mode",
+      "riskCap": "Risk cap / trade",
+      "title": "Live market regime engine"
+    },
+    "regimeDetail": {
+      "RANGING": {
+        "mode": "Neutral grid",
+        "riskCap": "0.75R",
+        "style": "Range edges + quick exits"
+      },
+      "RISK_OFF": {
+        "mode": "Capital defense",
+        "riskCap": "0.50R",
+        "style": "Mean reversion only"
+      },
+      "RISK_ON": {
+        "mode": "Pro-risk expansion",
+        "riskCap": "1.00R",
+        "style": "Momentum basket"
+      },
+      "TRENDING": {
+        "mode": "Trend acceleration",
+        "riskCap": "1.25R",
+        "style": "Breakout continuation"
+      }
+    },
+    "riskNote": "リスクメモ",
+    "riskScore": "リスクスコア",
+    "signalType": {
+      "CRITICAL": "Critical",
+      "RESEARCH": "Research",
+      "STANDARD": "Standard"
+    },
+    "similarity": "類似度",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "title": "シグナル",
+    "trackAvgReturn": "Avg. return",
+    "trackMaxDd": "Max DD",
+    "trackRecordTitle": "Track Record",
+    "trackTotalSignals": "Total signals",
+    "trackWinRate": "Win rate",
+    "transport": {
+      "OFFLINE": "Offline",
+      "POLLING": "Polling",
+      "SSE": "SSE"
+    },
+    "unknownSetup": "不明なセットアップ",
+    "winRate": "Win rate"
+  },
+  "skilltree": {
+    "celebrationTitle": "New skills unlocked!",
+    "checkProgress": "Check progress",
+    "newlyUnlockedLabel": "Recently unlocked:",
+    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
+    "skills": {
+      "BASICS": {
+        "condition": "Always unlocked",
+        "description": "You understand how stocks and exchanges work.",
+        "name": "Basics"
+      },
+      "BEHAVIORAL": {
+        "condition": "At least 1 entry in Mistake Library",
+        "description": "You keep emotions in check while trading.",
+        "name": "Behavioral"
+      },
+      "DIVERSIFICATION": {
+        "condition": "At least 3 unique symbols in paper trades",
+        "description": "You understand diversification.",
+        "name": "Diversification"
+      },
+      "FIBONACCI": {
+        "condition": "At least 10 closed paper trades",
+        "description": "You understand Fibonacci levels.",
+        "name": "Fibonacci"
+      },
+      "MACD": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand MACD.",
+        "name": "MACD"
+      },
+      "RISK_MANAGEMENT": {
+        "condition": "Position Size Calculator: at least 3 uses",
+        "description": "You apply position sizing.",
+        "name": "Risk management"
+      },
+      "RSI": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand RSI.",
+        "name": "RSI"
+      },
+      "STRATEGY": {
+        "condition": "Min. 20 trades and win rate > 40%",
+        "description": "You follow a coherent strategy.",
+        "name": "Strategy"
+      },
+      "SUPPORT_RESISTANCE": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand support and resistance.",
+        "name": "Support & Resistance"
+      },
+      "VOLUME": {
+        "condition": "At least 10 closed paper trades",
+        "description": "You understand volume.",
+        "name": "Volume"
+      }
+    },
+    "subtitle": "Unlock trading skills as your activity grows.",
+    "title": "Skill Tree",
+    "unlockedAt": "Unlocked: {{date}}"
+  },
+  "strategydna": {
+    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster.",
+    "fromMistakesTitle": "Context from Mistake Library",
+    "insightLabel": "AI Insight",
+    "legends": {
+      "BUFFETT": "Buffett",
+      "GREENBLATT": "Greenblatt",
+      "LYNCH": "Lynch",
+      "SOROS": "Soros"
+    },
+    "mainResultLabel": "Your style is",
+    "notEnoughData": "You need at least 20 closed trades.",
+    "primary": "Primary match",
+    "secondary": "Secondary match",
+    "subtitle": "AI compares your paper trading style with legendary investors.",
+    "title": "Strategy DNA Match"
+  },
+  "stressTest": {
+    "currency": "表示通貨",
+    "currentValue": "現在価値",
+    "drop": "市場下落",
+    "empty": "結果を表示するにはペーパートレードでポジションを開いてください。",
+    "error404": "ストレステストAPIが見つかりません。",
+    "lossValue": "損失 / 利益",
+    "newValue": "ショック後の価値",
+    "portfolioLoss": "ポートフォリオ損失",
+    "portfolioLossPct": "ポートフォリオ損失 %",
+    "positions": "銘柄別インパクト",
+    "scenarios": {
+      "COVID_2020": "2020年COVID (−34%)",
+      "CRASH_2008": "2008年危機 (−54%)",
+      "CUSTOM": "カスタム (−{{drop}}%)",
+      "DOT_COM_2001": "2001年ドットコム (−49%)"
+    },
+    "title": "ポートフォリオストレステスト"
+  },
+  "tax": {
+    "changeCountry": "Change",
+    "customRate": "Custom tax rate (%)",
+    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor.",
+    "noTax": "No capital gains tax on listed stocks",
+    "selectCountry": "Select your tax country",
+    "title": "Tax Optimizer"
+  },
+  "taxOptimizer": {
+    "alreadyPaid": "証券会社での源泉（プレースホルダー）: {{amount}}",
+    "closedTrades": "決済済みペーパー取引",
+    "colClose": "決済",
+    "colOpen": "建玉",
+    "colPct": "%",
+    "colPnl": "損益",
+    "colTicker": "銘柄",
+    "disclaimer": "結果は参考情報です。税務アドバイザーにご相談ください。",
+    "grossGains": "総利益",
+    "losses": "損失",
+    "netIncome": "純所得",
+    "netLossTaxNote": "純損失の年はこのモジュール上の課税標準は0です（簡易）。",
+    "noTrades": "選択年に決済済み取引はありません。",
+    "suggestions": {
+      "CARRY_FORWARD_LOSS": "過去5年の繰越損失の可能性 — 税理士に確認してください。",
+      "CLOSE_LOSS_BEFORE_YEAR_END": "12/31前に {{ticker}} を検討 — 約 {{value}} PLN の損失で税約 {{saving}} PLN 削減の可能性。"
+    },
+    "suggestionsTitle": "最適化のヒント",
+    "tax19": "Belka税 19%",
+    "title": "Tax Optimizer",
+    "toPay": "納付額",
+    "year": "課税年度"
+  },
+  "trackrecord": {
+    "avgReturn": "Average return",
+    "bestTradePct": "Best trade",
+    "cardTitle": "Your public Track Record",
+    "copied": "Link copied",
+    "copyButton": "Copy share link",
+    "copyFailed": "Failed to copy share link.",
+    "generateButton": "Generate my Track Record",
+    "generatedAt": "Generated at",
+    "shareLinkLabel": "Public link",
+    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
+    "title": "Anonymous Track Record",
+    "totalTrades": "Total trades",
+    "winRate": "Win rate",
+    "worstTradePct": "Worst trade"
+  },
+  "volatility": {
+    "errors": {
+      "symbolRequired": "Please enter a symbol."
+    },
+    "leastVolatileMonth": "Least volatile month",
+    "legendHigh": "High volatility",
+    "legendLow": "Low volatility",
+    "legendTitle": "Legend",
+    "months": {
+      "apr": "Apr",
+      "aug": "Aug",
+      "dec": "Dec",
+      "feb": "Feb",
+      "jan": "Jan",
+      "jul": "Jul",
+      "jun": "Jun",
+      "mar": "Mar",
+      "may": "May",
+      "nov": "Nov",
+      "oct": "Oct",
+      "sep": "Sep"
+    },
+    "mostVolatileMonth": "Most volatile month",
+    "noData": "No data",
+    "searchAction": "Load heat map",
+    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
+    "subtitle": "Compare monthly volatility across years for a selected symbol.",
+    "symbol": "Symbol",
+    "title": "Volatility Heat Map",
+    "tooltip": {
+      "avgReturn": "Avg. return",
+      "volatility": "Volatility"
+    },
+    "year": "Year"
+  },
+  "watchlist": {
+    "changePct": "Change %",
+    "empty": "You are not observing any companies yet.",
+    "follow": "♡ Follow",
+    "following": "♥ Following",
+    "lastPrice": "Last price",
+    "symbol": "Symbol",
+    "yours": "Your watchlist"
+  },
+  "weekly": {
+    "aiLetterEmpty": "No letter yet for this week.",
+    "aiLetterTitle": "Your AI Growth Letter",
+    "emptyHistory": "No weekly reviews yet.",
+    "generating": "Generating your letter...",
+    "growthScore": "Growth score",
+    "historyTitle": "Last 8 weeks",
+    "placeholders": {
+      "q4": "Describe your key lesson...",
+      "q5": "Describe your commitment for next week..."
+    },
+    "questions": {
+      "q1": "Did you trade according to your rules?",
+      "q2": "Was there any overtrading or revenge trading moment?",
+      "q3": "How do you rate your stop-loss discipline?",
+      "q4": "What was your biggest lesson this week?",
+      "q5": "What will you do differently next week?"
+    },
+    "submit": "Submit week",
+    "submitting": "Submitting...",
+    "subtitle": "Review your discipline and close the week with an AI growth letter.",
+    "title": "Weekly Review",
+    "weekOf": "Week of"
   }
 }

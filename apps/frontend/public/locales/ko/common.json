@@ -1,1226 +1,85 @@
 {
-  "nav": {
-    "home": "홈",
-    "dashboard": "대시보드",
-    "signals": "시그널",
-    "dividend": "배당",
-    "dividendIntelligence": "배당 인텔리전스",
-    "paperTrading": "페이퍼 트레이딩",
-    "mirrorTrading": "Mirror Trading",
-    "coach": "코치",
-    "alphaCalendar": "Alpha Calendar",
-    "positionSize": "계산기",
-    "stressTest": "스트레스 테스트",
-    "concentration": "집중도",
-    "taxOptimizer": "PIT-38",
-    "markets": "마켓",
-    "portfolio": "포트폴리오",
-    "tools": "도구",
-    "menu": "메뉴",
-    "mistakeLibrary": "Mistake Library",
-    "premortem": "Pre-Mortem",
-    "correlation": "상관관계",
-    "crowdWisdom": "Crowd Wisdom",
-    "glossary": "Glossary",
-    "skillTree": "Skill Tree",
-    "volatility": "Volatility Heat Map",
-    "psycheProfile": "My Psyche",
-    "weeklyReview": "Weekly Review",
-    "alpacaTrading": "Alpaca 트레이딩",
-    "adminAffiliate": "Admin Affiliate"
-  },
-  "common": {
-    "search": "검색",
-    "loading": "로딩 중...",
-    "noData": "데이터가 없습니다",
-    "error": "오류",
-    "retry": "다시 시도",
-    "save": "저장",
-    "cancel": "취소",
-    "close": "닫기",
-    "open": "열기",
-    "buy": "매수",
-    "sell": "매도",
-    "apiMockBadge": "Mock fallback active",
-    "apiLiveBadge": "Live API",
-    "notAvailable": "n/a",
-    "high": "High",
-    "medium": "Medium",
-    "low": "Low"
-  },
-  "share": {
-    "button": "Share",
-    "twitter": "Twitter/X",
-    "linkedin": "LinkedIn",
-    "copy": "Copy link",
-    "whatsapp": "WhatsApp",
-    "copied": "Copied!"
-  },
-  "money": {
-    "gpwCaption": "금액은 PLN(GPW 기준). 옆 USD는 참고용입니다(약 3.95 PLN당 1 USD, 실시간 환율 아님)."
-  },
-  "analysisBrief": {
-    "title": "AI 브리핑",
-    "updated": "업데이트",
-    "englishSection": "English"
-  },
-  "signals": {
-    "title": "시그널",
-    "riskScore": "리스크 점수",
-    "winRate": "Win rate",
-    "avgReturn": "평균 수익률",
-    "confidence": "신뢰도",
-    "regime": {
-      "title": "Live market regime engine",
-      "mode": "Mode",
-      "executionStyle": "Execution style",
-      "riskCap": "Risk cap / trade"
-    },
-    "entry": "Entry",
-    "stopLoss": "Stop Loss",
-    "takeProfit": "Take Profit",
-    "aiBreif": "AI Brief",
-    "dna": "Signal DNA",
-    "similarity": "유사도",
-    "narrative": "내러티브",
-    "headline": "헤드라인",
-    "riskNote": "리스크 노트",
-    "preMortemFromSetup": "Pre-Mortem (from this setup)",
-    "noSignalSelected": "No signal selected.",
-    "unknownSetup": "알 수 없는 셋업",
-    "autonomousWatchlist": "Autonomous watchlist",
-    "liveEngine": {
-      "label": "Live engine",
-      "polling": "Polling mode",
-      "sseUnavailable": "Updates every 15s (SSE unavailable)",
-      "lastUpdate": "Last: {{time}}",
-      "lastUpdateEmpty": "Last: --:--:--"
-    },
-    "liveWaiting": "Waiting for stream…",
-    "liveStreamUpdate": "Live stream update received",
-    "livePollingUpdate": "Polling update received",
-    "liveConnectedSse": "Connected to live stream",
-    "confidenceLabel": "Confidence: {{level}}",
-    "confidenceCue": {
-      "PRIME": "PRIME",
-      "STRONG": "STRONG",
-      "WATCH": "WATCH"
-    },
-    "regimeDetail": {
-      "TRENDING": {
-        "mode": "Trend acceleration",
-        "style": "Breakout continuation",
-        "riskCap": "1.25R"
-      },
-      "RISK_ON": {
-        "mode": "Pro-risk expansion",
-        "style": "Momentum basket",
-        "riskCap": "1.00R"
-      },
-      "RISK_OFF": {
-        "mode": "Capital defense",
-        "style": "Mean reversion only",
-        "riskCap": "0.50R"
-      },
-      "RANGING": {
-        "mode": "Neutral grid",
-        "style": "Range edges + quick exits",
-        "riskCap": "0.75R"
-      }
-    },
-    "marketRegime": {
-      "TRENDING": "Trending",
-      "RANGING": "Ranging",
-      "RISK_ON": "Risk-on",
-      "RISK_OFF": "Risk-off"
-    },
-    "signalType": {
-      "CRITICAL": "Critical",
-      "STANDARD": "Standard",
-      "RESEARCH": "Research"
-    },
-    "transport": {
-      "SSE": "SSE",
-      "POLLING": "Polling",
-      "OFFLINE": "Offline"
-    },
-    "copilotAction": {
-      "ENTER": "Enter",
-      "WAIT": "Wait",
-      "REDUCE": "Reduce"
-    },
-    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
-    "dnaWhySimilar": "유사한 이유:",
-    "dnaCounterpoint": "반론:",
-    "dnaExplain": {
-      "high": {
-        "why": "가격 구조와 변동성 체제가 거의 동일합니다.",
-        "counter": "거시 맥락은 다릅니다. 과도한 포지션은 피하세요."
-      },
-      "mid": {
-        "why": "모멘텀 프로필과 거래량 압축이 과거 수익 패턴과 맞습니다.",
-        "counter": "거래량 추세가 이어지지 않으면 신호가 빠르게 약해질 수 있습니다."
-      },
-      "low": {
-        "why": "낮은 신뢰도에서의 부분적 셋업 겹침입니다.",
-        "counter": "보조 근거로만 보고 주요 진입 신호로 삼지 마세요."
-      }
-    },
-    "discordEmbedTitle": "Discord embed preview",
-    "discordRisk": "Risk {{score}}/100",
-    "trackRecordTitle": "Track Record",
-    "trackWinRate": "Win rate",
-    "trackAvgReturn": "Avg. return",
-    "trackMaxDd": "Max DD",
-    "trackTotalSignals": "Total signals",
-    "executionTitle": "Battle-tested execution simulator",
-    "executionEntry": "Entry",
-    "executionStop": "Stop",
-    "executionTarget": "Target",
-    "executionRr": "R:R",
-    "executionExpectedValue": "Expected value",
-    "executionWorstCase": "Worst case",
-    "mockNarrative": {
-      "headline": "{{ticker}} — 셋업: {{setup}}",
-      "body": "{{ticker}}의 모멘텀 프로필은 {{regime}} 체제와 맞습니다. 가격·거래량은 invalidation 수준이 지켜지면 통제된 하방 리스크 속 연속 가능성을 시사합니다.",
-      "riskNote": "캔들 마감 확인을 기다리고 스탑 규율을 엄격히 지키세요."
-    },
-    "narrativeHeadlineFallback": "시그널 내러티브: {{ticker}}",
-    "narrativeBodyFallback": "API가 내러티브 본문을 반환하지 않았습니다.",
-    "narrativeRiskNoteFallback": "API가 리스크 노트를 반환하지 않았습니다.",
-    "narrativeConfidence": {
-      "HIGH": "High",
-      "MEDIUM": "Medium",
-      "LOW": "Low"
-    },
-    "mentor": {
-      "notFound": "Analysis unavailable"
-    },
-    "copilot": {
-      "title": "AI Copilot decision",
-      "conviction": "Conviction",
-      "invalidation": "Invalidation",
-      "invalidationBody": "Exit if the move reaches {{pct}}% from entry or the regime flips.",
-      "checkpoint": "Checkpoint",
-      "checkpointBody": "Re-evaluate after the session close and a fresh volume print.",
-      "enter": "Enter trade"
-    }
-  },
-  "reactions": {
-    "title": "댓글",
-    "postComment": "댓글 게시",
-    "placeholder": "메모 입력(최대 500자)…",
-    "charCount": "{{used}} / {{max}}",
-    "empty": "아직 댓글이 없습니다.",
-    "loading": "댓글 불러오는 중…",
-    "posting": "게시 중…"
-  },
-  "dividend": {
-    "title": "배당 스크리닝",
-    "history": "배당 이력",
-    "symbol": "Symbol",
-    "yearsBack": "과거 연수",
-    "fetch": "조회",
-    "noData": "데이터 없음 – 필터를 조정하세요",
-    "screener": "스크리너: 배당 성장 (CAGR)",
-    "minYears": "최소 이력 연수",
-    "minYield": "최소 수익률 %",
-    "refresh": "새로고침",
-    "colSymbol": "Symbol",
-    "colYear": "연도",
-    "colAnnual": "연간 배당금",
-    "colGrowth": "성장 YoY %",
-    "colCagr": "CAGR 5Y %",
-    "colYield": "Yield %",
-    "yield": "배당 수익률",
-    "health": "건강 점수",
-    "years": "성장 연수",
-    "exDate": "배당락일",
-    "payoutRatio": "배당성향",
-    "trend": "추세",
-    "safe": "안전",
-    "watch": "관찰",
-    "risky": "위험"
-  },
-  "paperTrading": {
-    "title": "Paper Trading",
-    "openPosition": "포지션 열기",
-    "closePosition": "포지션 닫기",
-    "portfolio": "포트폴리오",
-    "history": "거래 이력",
-    "pnl": "P&L",
-    "direction": "방향",
-    "quantity": "수량",
-    "entryPrice": "진입가",
-    "exitPrice": "청산가",
-    "long": "Long",
-    "short": "Short"
-  },
-  "coach": {
-    "title": "행동 코치",
-    "traderProfile": "트레이더 프로필",
-    "avgWin": "평균 수익",
-    "avgLoss": "평균 손실",
-    "biases": "감지된 편향",
-    "noBiases": "감지된 편향이 없습니다",
-    "cutsWinners": "수익 포지션을 너무 빨리 청산",
-    "holdsLosers": "손실 포지션을 너무 오래 보유",
-    "overtrading": "Overtrading",
-    "aiCoach": "AI 코치의 조언",
-    "avgHoldWin": "평균 보유 (수익)",
-    "avgHoldLoss": "평균 보유 (손실)",
-    "biasCutsBody": "평균 {{winHours}}시간에 수익을 마감하지만 손실은 {{lossHours}}시간 보유합니다.",
-    "biasHoldsBody": "평균 손실: {{lossPct}}%; 손실 트레이드 보유 시간: {{lossHours}}시간.",
-    "biasOverBody": "지난 24시간에 {{maxTrades}}건이 넘는 거래입니다.",
-    "aiDescriptionEmpty": "AI 코치 내용이 아직 없습니다.",
-    "chartAvgWin": "Avg. win %",
-    "chartAvgLoss": "Avg. loss %"
-  },
-  "cooldown": {
-    "title": "연속 손실 쿨다운",
-    "inactive": "활성화된 쿨다운이 없습니다",
-    "unlocksIn": "해제까지"
-  },
-  "alpha": {
-    "title": "Alpha Calendar",
-    "windows": "확률 윈도우",
-    "probability": "확률",
-    "historicalReturn": "과거 수익률",
-    "earningsCycle": "실적 사이클",
-    "seasonal": "계절성",
-    "sectorRotation": "섹터 로테이션",
-    "regimeShift": "레짐 전환",
-    "subtitleNext48h": "다음 48시간",
-    "aiSummaryTitle": "AI 요약",
-    "aiSummaryEmpty": "사용 가능한 AI 요약이 없습니다.",
-    "tickerLabel": "Ticker",
-    "tickerPlaceholder": "예: AAPL",
-    "colStart": "시작",
-    "colEnd": "종료",
-    "colDescription": "설명",
-    "emptyTickerRows": "이 티커에 대한 윈도우가 없습니다."
-  },
-  "positionSize": {
-    "title": "포지션 크기 계산기",
-    "currency": "계좌 통화",
-    "currencyHint": "입력과 결과는 PLN(GPW 기준)으로 처리하며, 옆 USD는 참고용입니다.",
-    "pln": "PLN",
-    "usd": "USD",
-    "accountSize": "계좌 자금",
-    "riskPercent": "최대 리스크 % (자본 대비)",
-    "entry": "진입가",
-    "stop": "Stop Loss",
-    "conviction": "셋업 확신도",
-    "convictionLow": "낮음",
-    "convictionMedium": "보통",
-    "convictionHigh": "높음",
-    "calculate": "계산",
-    "shares": "매수할 주식 수",
-    "positionValue": "포지션 가치",
-    "plannedRisk": "계획된 리스크",
-    "actualRiskPct": "실제 리스크 % (자본 대비)",
-    "maxLoss": "스탑 시 최대 손실",
-    "takeProfits": "익절 (R 배수)",
-    "tp1": "1R",
-    "tp2": "2R",
-    "tp3": "3R",
-    "errorInvalid": "계좌, 진입가, 스탑에 유효한 양수를 입력하세요.",
-    "copy": "복사",
-    "copyAllTp": "모든 TP 구간 복사",
-    "copyAriaTp": "{{label}} 가격 복사",
-    "copied": "클립보드에 복사됨",
-    "errorApi404": "계산 API를 찾을 수 없습니다(404). 최신 코드로 3000번 포트에서 API를 실행하거나 VITE_API_BASE를 /api가 포함된 전체 URL로 설정하세요."
-  },
-  "stressTest": {
-    "title": "포트폴리오 스트레스 테스트",
-    "empty": "결과를 보려면 페이퍼 트레이딩에서 포지션을 여세요.",
-    "currency": "표시 통화",
-    "drop": "시장 하락",
-    "portfolioLoss": "포트폴리오 손실",
-    "portfolioLossPct": "포트폴리오 손실 %",
-    "positions": "종목별 영향",
-    "currentValue": "현재 가치",
-    "lossValue": "손실 / 이익",
-    "newValue": "쇼크 후 가치",
-    "error404": "스트레스 테스트 API를 찾을 수 없습니다.",
-    "scenarios": {
-      "CRASH_2008": "2008 위기 (−54%)",
-      "COVID_2020": "2020 코로나 (−34%)",
-      "DOT_COM_2001": "2001 닷컴 (−49%)",
-      "CUSTOM": "사용자 정의 (−{{drop}}%)"
-    }
-  },
-  "concentration": {
-    "title": "포트폴리오 집중도",
-    "empty": "분석을 보려면 페이퍼 트레이딩에서 포지션을 여세요.",
-    "currency": "표시 통화",
-    "scoreLabel": "분산 점수 (0–100)",
-    "totalValue": "포트폴리오 총액",
-    "positionCount": "미결제 페이퍼 트레이드",
-    "chartByStock": "종목별 배분",
-    "chartBySector": "섹터별 배분",
-    "positionsTable": "포지션 및 비중",
-    "colTicker": "티커",
-    "colSector": "섹터",
-    "colValue": "금액",
-    "colWeight": "비중 %",
-    "value": "금액",
-    "warnings": {
-      "SINGLE_STOCK": "{{ticker}}가 포트폴리오의 {{weight}}%입니다(권장 최대 {{maxStock}}%).",
-      "SINGLE_SECTOR": "{{sector}} 섹터가 {{weight}}%입니다(권장 최대 {{maxSector}}%).",
-      "TOP_HEAVY": "상위 3종목이 {{top3Share}}%를 차지합니다."
-    }
-  },
-  "correlation": {
-    "title": "Correlation Scanner",
-    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
-    "mainSymbol": "Main symbol",
-    "portfolioSymbols": "Portfolio symbols (comma separated)",
-    "analyze": "Analyze correlation",
-    "validation": "Provide a main symbol and at least one portfolio symbol.",
-    "tableTitle": "Correlation results",
-    "colSymbol": "Symbol",
-    "colCorrelation": "Correlation",
-    "colWarning": "Warning",
-    "warningHighRisk": "High risk",
-    "warningLowRisk": "OK",
-    "highRiskPairs": "High-risk pairs (> 0.7)",
-    "noHighRiskPairs": "No high-risk pair detected.",
-    "aiInsight": "AI Insight"
-  },
-  "tax": {
-    "title": "Tax Optimizer",
-    "selectCountry": "Select your tax country",
-    "changeCountry": "Change",
-    "noTax": "No capital gains tax on listed stocks",
-    "customRate": "Custom tax rate (%)",
-    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor."
-  },
-  "taxOptimizer": {
-    "title": "Tax Optimizer",
-    "year": "과세 연도",
-    "grossGains": "총 이익",
-    "losses": "손실",
-    "netIncome": "순소득",
-    "tax19": "Belka 세 19%",
-    "toPay": "납부액",
-    "alreadyPaid": "브로커 원천징수(플레이스홀더): {{amount}}",
-    "netLossTaxNote": "순손실 연도에는 이 모듈의 과세표준이 0입니다(단순화).",
-    "suggestionsTitle": "최적화 제안",
-    "suggestions": {
-      "CLOSE_LOSS_BEFORE_YEAR_END": "12/31 전 {{ticker}} 청산 검토 — 약 {{value}} PLN 손실로 세금 약 {{saving}} PLN 절감 가능.",
-      "CARRY_FORWARD_LOSS": "이전 연도 이월 손실 가능성(5년) — 세무사와 확인하세요."
-    },
-    "closedTrades": "청산된 페이퍼 거래",
-    "noTrades": "선택한 연도에 청산 거래가 없습니다.",
-    "colTicker": "티커",
-    "colOpen": "진입",
-    "colClose": "청산",
-    "colPnl": "손익",
-    "colPct": "%",
-    "disclaimer": "참고용입니다. 세무 전문가와 상담하세요."
-  },
-  "mistakes": {
-    "title": "Mistake Library",
-    "analyzeButton": "Analyze my mistakes",
-    "analyzing": "Analyzing...",
-    "emptyType": "No mistakes in this category yet.",
-    "types": {
-      "EMOTIONAL": "EMOTIONAL",
-      "STRATEGY": "STRATEGY",
-      "TIMING": "TIMING"
-    },
-    "summary": {
-      "total": "Total",
-      "emotional": "Emotional",
-      "strategy": "Strategy",
-      "timing": "Timing"
-    },
-    "dnaRowLink": "Strategy DNA",
-    "dnaContextLink": "Open Strategy DNA with these symbols"
-  },
-  "premortem": {
-    "title": "Pre-Mortem AI",
-    "subtitle": "Run downside scenario analysis before opening a trade.",
-    "symbol": "Symbol",
-    "entry": "Entry",
-    "stopLoss": "Stop Loss",
-    "takeProfit": "Take Profit",
-    "quantity": "Quantity",
-    "runButton": "Run Pre-Mortem",
-    "lossScenario": "Most likely loss scenario",
-    "marketRegime": "Market Regime",
-    "proceed": "Proceed anyway",
-    "cancel": "Cancel trade"
-  },
-  "crowdwisdom": {
-    "title": "Crowd Wisdom Inverter",
-    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
-    "symbol": "Symbol",
-    "analyze": "Analyze",
-    "retailSentiment": "Retail Sentiment",
-    "insiderActivity": "Insider Activity",
-    "result": "Signal",
-    "divergence": "Divergence (insider - retail)",
-    "signalBuy": "Contrarian Buy",
-    "signalSell": "Contrarian Sell",
-    "signalNeutral": "Neutral"
-  },
-  "glossary": {
-    "title": "Translate Financial English",
-    "subtitle": "Click a market term to get a short explanation and practical example.",
-    "popularTerms": "Popular terms",
-    "loading": "Loading explanation...",
-    "exampleLabel": "Example",
-    "selectPrompt": "Select a term from the list to load its explanation."
-  },
-  "backtest": {
-    "title": "Walk-Forward Backtest",
-    "subtitle": "30일 구간. 시그널은 과거 데이터만 사용. 결과는 5거래일 후 종가 대비 진입가.",
-    "symbol": "심볼",
-    "strategy": "전략",
-    "period": "기간",
-    "strategyRsi": "RSI 과매도 (< 30)",
-    "strategyBreakout": "돌파 (20일 고점 대비)",
-    "strategyVolume": "거래량 급증 (20일 평균의 2배 초과)",
-    "months3": "3개월",
-    "months6": "6개월",
-    "months12": "12개월",
-    "monthsSuffix": "개월",
-    "runButton": "Run backtest",
-    "resultsTitle": "결과",
-    "winRate": "Win rate",
-    "avgReturn": "평균 수익률",
-    "totalTrades": "총 거래",
-    "maxDrawdown": "Max drawdown",
-    "sharpeRatio": "Sharpe ratio",
-    "tradesTableTitle": "거래 내역",
-    "colDate": "날짜",
-    "colAction": "동작",
-    "colPrice": "가격",
-    "colOutcome": "결과(5일)"
-  },
-  "replay": {
-    "title": "Replay Mode",
-    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
-    "step1Title": "Step 1: choose company and date",
-    "step2Title": "Step 2: market snapshot",
-    "step3Title": "Step 3: make your decision",
-    "step4Title": "Step 4: AI result",
-    "symbol": "Company",
-    "date": "Historical date",
-    "loadSnapshot": "Load snapshot",
-    "priceChange5d": "Change after 5 days",
-    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
-    "action": "Direction",
-    "price": "Price",
-    "evaluate": "Evaluate decision",
-    "score": "Score",
-    "actualOutcome": "Actual outcome"
-  },
-  "reversescreener": {
-    "title": "Reverse Screener",
-    "subtitle": "현재 OHLCV 셋업을 다른 티커의 유사 과거일과 매칭(RSI, 20일 대비 거래량, 1일 수익률, 추세, ATR/종가 — Signal DNA 유사도).",
-    "symbolLabel": "티커",
-    "symbolPlaceholder": "예: 005930",
-    "dateLabel": "기준일 (선택)",
-    "dateHint": "비우면 DB의 최신 시세 날짜를 사용합니다.",
-    "findButton": "유사 셋업 찾기",
-    "avgOutcomeLabel": "트윈 평균 결과",
-    "avgOutcomeHint": "상위 매칭의 (5일+10일)/2 평균 — 설명용이며 예측이 아닙니다.",
-    "currentSetup": "기준일 셋업",
-    "volumeRatio": "거래량 vs 20일 평균",
-    "priceChange": "1일 가격 변화",
-    "trend": "추세 (MA10 vs MA20)",
-    "trend.up": "상승",
-    "trend.down": "하락",
-    "trend.flat": "횡보",
-    "matchesTitle": "과거 상위 5개 매칭",
-    "similarity": "유사도",
-    "outcome5d": "5일 후 {{value}}",
-    "outcome10d": "10일 후 {{value}}",
-    "noMatches": "검색 구간에 유사 셋업이 없습니다.",
-    "errorSymbol": "티커를 입력하세요."
-  },
-  "trackrecord": {
-    "title": "Anonymous Track Record",
-    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
-    "generateButton": "Generate my Track Record",
-    "cardTitle": "Your public Track Record",
-    "winRate": "Win rate",
-    "totalTrades": "Total trades",
-    "avgReturn": "Average return",
-    "bestTradePct": "Best trade",
-    "worstTradePct": "Worst trade",
-    "generatedAt": "Generated at",
-    "shareLinkLabel": "Public link",
-    "copyButton": "Copy share link",
-    "copyFailed": "Failed to copy share link.",
-    "copied": "Link copied"
-  },
-  "digest": {
-    "title": "Daily Digest",
-    "subtitle": "Generate your AI market recap and send a test email instantly.",
-    "previewButton": "Preview my digest",
-    "sendButton": "Send test email",
-    "cardDateLabel": "Digest date",
-    "emptyState": "Click preview to generate today's digest.",
-    "emailSent": "Test email sent for {{date}}."
-  },
-  "strategydna": {
-    "title": "Strategy DNA Match",
-    "subtitle": "AI compares your paper trading style with legendary investors.",
-    "mainResultLabel": "Your style is",
-    "primary": "Primary match",
-    "secondary": "Secondary match",
-    "insightLabel": "AI Insight",
-    "notEnoughData": "You need at least 20 closed trades.",
-    "legends": {
-      "BUFFETT": "Buffett",
-      "LYNCH": "Lynch",
-      "GREENBLATT": "Greenblatt",
-      "SOROS": "Soros"
-    },
-    "fromMistakesTitle": "Context from Mistake Library",
-    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster."
-  },
-  "earnings": {
-    "title": "Earnings Surprise Predictor",
-    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "predictButton": "Predict",
-    "validationSymbol": "Please provide a valid symbol.",
-    "resultFor": "Prediction for",
-    "confidence": "Confidence",
-    "reasoning": "AI reasoning",
-    "nextDate": "Next earnings date",
-    "noDate": "Date unavailable"
-  },
-  "insider": {
-    "title": "Insider Mirror",
-    "subtitle": "Track recent buying and selling by company insiders.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchButton": "Mirror insiders",
-    "validationSymbol": "Please provide a valid symbol.",
-    "resultFor": "Insider activity for",
-    "insight": "AI Insight",
-    "transactionsTitle": "Transactions (last 30 days, > $50k)",
-    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
-    "colName": "Name",
-    "colRole": "Role",
-    "colAction": "Action",
-    "colValue": "Value",
-    "colDate": "Date",
-    "actionBuy": "BUY",
-    "actionSell": "SELL",
-    "sentimentBuy": "Net buying",
-    "sentimentSell": "Net selling",
-    "sentimentNeutral": "Neutral"
-  },
-  "mentor": {
-    "toggleLabel": "Mentor Mode",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "panelTitle": "AI Mentor",
-    "loading": "Generating mentor guidance...",
-    "riskCheckLabel": "Risk check",
-    "settingsTitle": "Mentor Mode Settings",
-    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
-    "currentStatus": "Current status",
-    "enableAction": "Enable",
-    "disableAction": "Disable",
-    "styleLabel": "Mentor style",
-    "styleSupportive": "Supportive",
-    "styleStrict": "Strict",
-    "guidanceUnavailable": "멘토 가이드가 아직 제공되지 않습니다(엔드포인트 404)."
-  },
-  "mirror": {
-    "title": "Mirror Trading",
-    "subtitle": "미러 공유를 켠 트레이더를 팔로우하세요. 지표는 종료된 페이퍼 트레이드 기준입니다.",
-    "topTraders": "상위 트레이더",
-    "winRate": "Win rate",
-    "totalTrades": "총 거래 수",
-    "followers": "팔로워",
-    "follow": "팔로우",
-    "unfollow": "언팔로우",
-    "myFollowing": "내 팔로잉",
-    "loadError": "미러 데이터를 불러오지 못했습니다.",
-    "actionError": "작업에 실패했습니다. 다시 시도하세요.",
-    "settingsTitle": "Enable Mirror Trading",
-    "settingsSubtitle": "다른 사람이 내 페이퍼 트레이딩 프로필을 팔로우하도록 허용합니다. 수익 배분은 향후 정산용(0–50%).",
-    "toggleLabel": "미러 팔로워 허용",
-    "revenueShare": "수익 배분",
-    "revenueShareHint": "0–50%",
-    "saving": "저장 중…",
-    "saved": "저장됨",
-    "noTopTraders": "아직 미러 트레이딩을 켠 트레이더가 없습니다.",
-    "itsYou": "나"
-  },
-  "discord": {
-    "title": "Discord Auto-Sync",
-    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
-    "webhookLabel": "Discord webhook URL",
-    "webhookPlaceholder": "https://discord.com/api/webhooks/...",
-    "saveButton": "Save",
-    "testButton": "Test webhook",
-    "active": "Webhook active",
-    "inactive": "Webhook inactive",
-    "loadError": "Failed to load webhook settings.",
-    "saveSuccess": "Webhook saved.",
-    "saveError": "Failed to save webhook.",
-    "testSuccess": "Test message sent.",
-    "testError": "Failed to send test message."
-  },
-  "emotional": {
-    "widgetTitle": "Emotional state",
-    "alertTitle": "Break recommended",
-    "lastChecked": "Last checked",
-    "level": {
-      "LOW": "Low",
-      "MEDIUM": "Medium",
-      "HIGH": "High"
-    }
-  },
-  "skilltree": {
-    "title": "Skill Tree",
-    "subtitle": "Unlock trading skills as your activity grows.",
-    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
-    "checkProgress": "Check progress",
-    "celebrationTitle": "New skills unlocked!",
-    "newlyUnlockedLabel": "Recently unlocked:",
-    "unlockedAt": "Unlocked: {{date}}",
-    "skills": {
-      "BASICS": {
-        "name": "Basics",
-        "description": "You understand how stocks and exchanges work.",
-        "condition": "Always unlocked"
-      },
-      "SUPPORT_RESISTANCE": {
-        "name": "Support & Resistance",
-        "description": "You understand support and resistance.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "RSI": {
-        "name": "RSI",
-        "description": "You understand RSI.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "MACD": {
-        "name": "MACD",
-        "description": "You understand MACD.",
-        "condition": "At least 5 closed paper trades"
-      },
-      "FIBONACCI": {
-        "name": "Fibonacci",
-        "description": "You understand Fibonacci levels.",
-        "condition": "At least 10 closed paper trades"
-      },
-      "VOLUME": {
-        "name": "Volume",
-        "description": "You understand volume.",
-        "condition": "At least 10 closed paper trades"
-      },
-      "RISK_MANAGEMENT": {
-        "name": "Risk management",
-        "description": "You apply position sizing.",
-        "condition": "Position Size Calculator: at least 3 uses"
-      },
-      "BEHAVIORAL": {
-        "name": "Behavioral",
-        "description": "You keep emotions in check while trading.",
-        "condition": "At least 1 entry in Mistake Library"
-      },
-      "DIVERSIFICATION": {
-        "name": "Diversification",
-        "description": "You understand diversification.",
-        "condition": "At least 3 unique symbols in paper trades"
-      },
-      "STRATEGY": {
-        "name": "Strategy",
-        "description": "You follow a coherent strategy.",
-        "condition": "Min. 20 trades and win rate > 40%"
-      }
-    }
-  },
-  "volatility": {
-    "title": "Volatility Heat Map",
-    "subtitle": "Compare monthly volatility across years for a selected symbol.",
-    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchAction": "Load heat map",
-    "symbol": "Symbol",
-    "year": "Year",
-    "mostVolatileMonth": "Most volatile month",
-    "leastVolatileMonth": "Least volatile month",
-    "noData": "No data",
-    "legendTitle": "Legend",
-    "legendLow": "Low volatility",
-    "legendHigh": "High volatility",
-    "months": {
-      "jan": "Jan",
-      "feb": "Feb",
-      "mar": "Mar",
-      "apr": "Apr",
-      "may": "May",
-      "jun": "Jun",
-      "jul": "Jul",
-      "aug": "Aug",
-      "sep": "Sep",
-      "oct": "Oct",
-      "nov": "Nov",
-      "dec": "Dec"
-    },
-    "tooltip": {
-      "volatility": "Volatility",
-      "avgReturn": "Avg. return"
-    },
-    "errors": {
-      "symbolRequired": "Please enter a symbol."
-    }
-  },
-  "newshalflife": {
-    "title": "News Half-Life Score",
-    "subtitle": "Estimate how quickly each news item loses impact on price.",
-    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
-    "searchButton": "Analyze news",
-    "mostImpactful": "Most impactful news",
-    "halfLifeDaysLabel": "Half-life: {{days}} days",
-    "halfLifeDaysBadge": "{{days}} days",
-    "expired": "Expired",
-    "categoryLabel": "Category",
-    "reasonLabel": "Reason",
-    "remainingLabel": "Time left",
-    "empty": "No recent news found for this symbol."
-  },
-  "pearls": {
-    "quoteFreshness": "Quote freshness",
-    "quoteChip": "{{age}} old · {{source}}",
-    "decisionTrailTitle": "Decision trail",
-    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
-    "receiptProceed": "Pre-Mortem → opened anyway",
-    "receiptLoss": "Closed at a loss",
-    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
-    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
-    "summaryTotal": "Recorded decisions",
-    "summaryProceedRate": "Pre-Mortem proceed rate",
-    "summaryWorstLoss": "Largest realized loss"
-  },
-  "dividendcompound": {
-    "title": "배당 복리 계산기",
-    "subtitle": "배당 재투자 여부에 따른 포트폴리오 성장을 시뮬레이션합니다.",
-    "initialAmount": "초기 금액 (PLN)",
-    "monthlyContribution": "월 적립금 (PLN)",
-    "dividendYield": "배당 수익률 (%)",
-    "years": "기간 (년)",
-    "yearsValue": "{{count}}년",
-    "calculate": "계산",
-    "withReinvesting": "재투자 포함",
-    "withoutReinvesting": "재투자 미포함",
-    "difference": "차이 (복리 효과)",
-    "chartTitle": "연도별 포트폴리오 가치",
-    "axisYear": "연도",
-    "tooltipYear": "{{year}}년차"
-  },
-  "psyche": {
-    "title": "Trader Psyche",
-    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
-    "refresh": "Refresh my profile",
-    "dnaTitle": "Trader DNA",
-    "growthScore": "Growth score",
-    "tradingStyle": "Trading style",
-    "topBiases": "Top biases",
-    "goodConditions": "Good conditions",
-    "badConditions": "Bad conditions",
-    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
-    "rulesTitle": "My trading rules",
-    "rulePlaceholder": "Add a rule",
-    "addRule": "Add rule",
-    "breaches": "Breaches",
-    "deleteRule": "Delete",
-    "decisionLogTitle": "Decision log (last 10)",
-    "colDate": "Date",
-    "colSymbol": "Symbol",
-    "colAction": "Action",
-    "colMood": "Mood",
-    "colCompliance": "Plan compliance",
-    "complianceYes": "Yes",
-    "complianceNo": "No",
-    "complianceUnknown": "—",
-    "emptyLogs": "No entries yet."
-  },
-  "home": {
-    "title": "Companies",
-    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
-    "searchPlaceholder": "Search by name or symbol...",
-    "emptySelectSector": "Choose a sector or run a search to see companies.",
-    "emptySector": "No companies in this sector yet.",
-    "sectorLabel": "Sector"
-  },
-  "sector": {
-    "all": "All",
-    "technology": "Technology",
-    "financialServices": "Financial Services",
-    "healthcare": "Healthcare",
-    "consumerCyclical": "Consumer Cyclical",
-    "industrials": "Industrials",
-    "energy": "Energy",
-    "communicationServices": "Communication Services",
-    "consumerDefensive": "Consumer Defensive",
-    "utilities": "Utilities",
-    "realEstate": "Real Estate",
-    "basicMaterials": "Basic Materials"
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
-    "companiesTitle": "Companies",
-    "companiesDesc": "Search and sector grid with logos.",
-    "signalsTitle": "Signals",
-    "signalsDesc": "Coming soon - screener and AI scores.",
-    "portfolioTitle": "Portfolio",
-    "portfolioDesc": "Coming soon - watchlists and alerts."
-  },
-  "watchlist": {
-    "follow": "♡ Follow",
-    "following": "♥ Following",
-    "yours": "Your watchlist",
-    "empty": "You are not observing any companies yet.",
-    "symbol": "Symbol",
-    "lastPrice": "Last price",
-    "changePct": "Change %"
-  },
-  "dividendsPage": {
-    "title": "Dividend screening (MVP)",
-    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
-    "historyTitle": "Dividend history",
-    "symbol": "Symbol",
-    "yearsBack": "Years back",
-    "fetch": "Fetch",
-    "exDate": "Ex-date",
-    "payDate": "Pay date",
-    "amount": "Amount",
-    "yield": "Yield %",
-    "emptyHistory": "No rows yet - run seed or change filters.",
-    "screenerTitle": "Screener: dividend growth (CAGR)",
-    "minYears": "Min. years of history",
-    "minYield": "Min. yield %",
-    "refresh": "Refresh",
-    "dataLocation": "in",
-    "screenerLoading": "Loading screener…",
-    "screenerEmpty": "No results for selected filters.",
-    "tableYear": "Year",
-    "tableAnnualDividend": "Annual dividend",
-    "tableGrowthYoy": "Growth YoY %",
-    "taxTitle": "Dividend tax (PIT 19%)",
-    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
-    "taxShares": "Number of shares",
-    "taxReferencePrice": "Price (reference)",
-    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
-    "taxYieldAlternative": "Alternative: annual yield % (optional)",
-    "taxYieldPlaceholder": "e.g. 2.5",
-    "taxCalculating": "Calculating…",
-    "taxCalculate": "Calculate",
-    "taxMethod": "Method",
-    "taxGrossDividend": "Gross dividend",
-    "taxRateLabel": "Tax ({{rate}}%)",
-    "taxNet": "Net"
-  },
-  "company": {
-    "loading": "Loading company...",
-    "backHome": "<- Back home",
-    "backToCompanies": "← 기업",
-    "sector": "Sector",
-    "industry": "Industry",
-    "website": "Website",
-    "chartTitle": "Close - recent history",
-    "close": "Close",
-    "noQuoteHistory": "No quote history yet.",
-    "recentNews": "Recent news",
-    "noNews": "No news rows in database yet."
-  },
-  "dividendIntelligence": {
-    "title": "Dividend Intelligence",
-    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
-    "symbol": "Symbol",
-    "sectorPercentile": "Sector percentile",
-    "vsPeers": "(vs peers in sector)"
-  },
   "affiliate": {
-    "disclosure": {
-      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
-      "title": "StockAI Pro transparency",
-      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
-      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider."
-    },
     "cta": {
       "buy_through": "Buy {{ticker}} via {{broker}}",
       "open_account": "Open account with {{broker}}",
       "other_options": "Other options ({{count}})"
     },
+    "disclosure": {
+      "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider.",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
+      "title": "StockAI Pro transparency"
+    },
     "modal": {
-      "title": "Choose a broker",
-      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "close": "Close",
       "select": "Select",
-      "close": "Close"
-    }
-  },
-  "etoro": {
-    "cta": "eToro 계좌 개설",
-    "subtitle": "라이선스 보유 브로커를 통해 주식을 거래하세요",
-    "company": {
-      "title": "Trade this stock",
-      "button": "Open account on eToro",
-      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money."
-    },
-    "alpaca": {
-      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
-      "button": "Try eToro"
-    },
-    "settings": {
-      "sectionTitle": "Recommended Brokers",
-      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
-      "cardTitle": "eToro",
-      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
-      "button": "Learn more & open account"
+      "subtitle": "Each broker below supports this instrument. Choose based on your preferences.",
+      "title": "Choose a broker"
     }
   },
   "alpaca": {
-    "title": "Alpaca Trading",
-    "connectBanner": "Connect your Alpaca account in Settings",
     "account": "Account",
-    "modePaper": "PAPER",
-    "modeLive": "LIVE",
-    "buyingPower": "Buying power",
-    "portfolioValue": "Portfolio value",
-    "cash": "Cash",
-    "quickTrade": "Quick Trade",
-    "symbol": "Symbol",
-    "buy": "Buy",
-    "sell": "Sell",
-    "positions": "Positions",
-    "avgPrice": "Avg Price",
-    "currentPrice": "Current Price",
-    "noPositions": "No open positions",
-    "orders": "Orders",
-    "qty": "Qty",
-    "status": "Status",
-    "side": "Side",
-    "noOrders": "No recent orders",
-    "cancel": "Cancel",
-    "equityCurve": "Equity curve (30d)",
-    "confirmTrade": "Confirm Trade",
-    "premortem": "Pre-Mortem",
-    "confirm": "Confirm",
-    "settingsTitle": "Alpaca",
-    "settingsSubtitle": "Connect Alpaca API keys and choose account mode.",
     "apiKey": "API Key",
     "apiSecret": "API Secret",
+    "avgPrice": "Avg Price",
+    "buy": "Buy",
+    "buyingPower": "Buying power",
+    "cancel": "Cancel",
+    "cash": "Cash",
+    "confirm": "Confirm",
+    "confirmTrade": "Confirm Trade",
+    "connectBanner": "Connect your Alpaca account in Settings",
+    "connected": "Connected",
+    "connectionError": "Connection error",
+    "currentPrice": "Current Price",
+    "equityCurve": "Equity curve (30d)",
     "mode": "Mode",
-    "testConnection": "Test connection",
+    "modeLive": "LIVE",
+    "modePaper": "PAPER",
+    "noOrders": "No recent orders",
+    "noPositions": "No open positions",
+    "orders": "Orders",
+    "portfolioValue": "Portfolio value",
+    "positions": "Positions",
+    "premortem": "Pre-Mortem",
+    "qty": "Qty",
+    "quickTrade": "Quick Trade",
+    "sell": "Sell",
     "settingsLoadError": "Failed to load Alpaca settings.",
     "settingsSaved": "Saved",
     "settingsSaveError": "Failed to save Alpaca settings.",
-    "connected": "Connected",
-    "connectionError": "Connection error"
+    "settingsSubtitle": "Connect Alpaca API keys and choose account mode.",
+    "settingsTitle": "Alpaca",
+    "side": "Side",
+    "status": "Status",
+    "symbol": "Symbol",
+    "testConnection": "Test connection",
+    "title": "Alpaca Trading"
   },
-  "checkin": {
-    "title": "Daily Check-In",
-    "subtitle": "Set your mindset before the market opens.",
-    "moodLabel": "Mood",
-    "planLabel": "What is your plan today?",
-    "planPlaceholder": "Optional...",
-    "submit": "Start trading day",
-    "submitting": "Saving...",
-    "error": "Could not save check-in. Please try again.",
-    "risk": {
-      "LOW": "LOW",
-      "MEDIUM": "MEDIUM",
-      "HIGH": "HIGH"
-    }
+  "alpha": {
+    "aiSummaryEmpty": "사용 가능한 AI 요약이 없습니다.",
+    "aiSummaryTitle": "AI 요약",
+    "colDescription": "설명",
+    "colEnd": "종료",
+    "colStart": "시작",
+    "earningsCycle": "실적 사이클",
+    "emptyTickerRows": "이 티커에 대한 윈도우가 없습니다.",
+    "historicalReturn": "과거 수익률",
+    "probability": "확률",
+    "regimeShift": "레짐 전환",
+    "seasonal": "계절성",
+    "sectorRotation": "섹터 로테이션",
+    "subtitleNext48h": "다음 48시간",
+    "tickerLabel": "Ticker",
+    "tickerPlaceholder": "예: AAPL",
+    "title": "Alpha Calendar",
+    "windows": "확률 윈도우"
   },
-  "reflection": {
-    "title": "Post-Trade Reflection",
-    "subtitle": "Close {{symbol}} and capture one quick reflection.",
-    "timer": "{{seconds}}s",
-    "followedPlan": "I traded according to my plan",
-    "yes": "Yes",
-    "no": "No",
-    "emotion": "Emotion",
-    "lesson": "What did I learn?",
-    "lessonPlaceholder": "Optional (max 100 characters)",
-    "saveAndClose": "Save & Close",
-    "skip": "Skip",
-    "aiTitle": "AI Insight",
-    "saveError": "Reflection was not saved.",
-    "emotions": {
-      "FRUSTRATION": "😤 Frustration",
-      "FEAR": "😰 Fear",
-      "CONFIDENT": "😊 Confident",
-      "NEUTRAL": "😐 Neutral",
-      "GREEDY": "🤑 Greedy"
-    }
-  },
-  "weekly": {
-    "title": "Weekly Review",
-    "subtitle": "Review your discipline and close the week with an AI growth letter.",
-    "submit": "Submit week",
-    "submitting": "Submitting...",
-    "generating": "Generating your letter...",
-    "aiLetterTitle": "Your AI Growth Letter",
-    "aiLetterEmpty": "No letter yet for this week.",
-    "historyTitle": "Last 8 weeks",
-    "emptyHistory": "No weekly reviews yet.",
-    "growthScore": "Growth score",
-    "weekOf": "Week of",
-    "questions": {
-      "q1": "Did you trade according to your rules?",
-      "q2": "Was there any overtrading or revenge trading moment?",
-      "q3": "How do you rate your stop-loss discipline?",
-      "q4": "What was your biggest lesson this week?",
-      "q5": "What will you do differently next week?"
-    },
-    "placeholders": {
-      "q4": "Describe your key lesson...",
-      "q5": "Describe your commitment for next week..."
-    }
-  },
-  "landing": {
-    "hero": {
-      "title": "차세대 투자 플랫폼",
-      "subtitle": "AI 리서치 · 행동 코칭 · 12개 거래소 · 9개 언어",
-      "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
-      "widgetTitle": "Live market pulse",
-      "widgetLive": "Live"
-    },
-    "problem": {
-      "title": "Why investors get stuck",
-      "cards": {
-        "apps": {
-          "title": "You use 5-6 apps",
-          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity."
-        },
-        "emotions": {
-          "title": "Emotions cost you money",
-          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes."
-        },
-        "memory": {
-          "title": "No one remembers your mistakes",
-          "body": "Without a feedback loop, the same costly patterns repeat trade after trade."
-        },
-        "context": {
-          "title": "맥락이 부족하십니다",
-          "body": "신호는 보이지만, 시장이 이를 뒷받침하는지 지금이 적절한 시점인지 알기 어렵습니다."
-        }
-      }
-    },
-    "solution": {
-      "title": "One platform built for investor growth",
-      "features": {
-        "signalAnalysis": "AI Signal Analysis",
-        "behavioralCoach": {
-          "title": "Behavioral Coach",
-          "body": "사용자의 실수를 감지하고 같은 실수를 반복하지 않도록 도와드립니다."
-        },
-        "traderPsycheProfile": "Trader Psyche Profile",
-        "globalMarkets": {
-          "title": "12 Global Markets",
-          "body": "GPW, NYSE, DAX, TSE, NSE 등 다양한 시장을 지원합니다. 앱을 전환할 필요가 없습니다."
-        },
-        "brokerIntegration": "Broker Integration",
-        "languages": "9 Languages",
-        "aiBrief": {
-          "title": "서사가 포함된 AI Brief",
-          "body": "점수만이 아니라, 왜 가치가 있는지 혹은 아닌지를 완전하게 설명합니다."
-        },
-        "signalDna": {
-          "title": "Signal DNA",
-          "body": "과거의 유사한 셋업을 통해, 이 셋업이 과거에 어떻게 마무리되었는지 보여드립니다."
-        },
-        "preMortemAi": {
-          "title": "Pre-Mortem AI",
-          "body": "매수 전에 AI가 가장 가능성 높은 손실 시나리오를 보여드립니다."
-        },
-        "paperTrading": {
-          "title": "Paper Trading",
-          "body": "위험 없이 연습하세요. 비용이 들지 않는 실수에서 배울 수 있습니다."
-        }
-      }
-    },
-    "socialProof": {
-      "title": "Join our early access community",
-      "subtitle": "Early access community growing every week.",
-      "testimonials": [
-        {
-          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
-          "author": "Kasia, Warsaw"
-        },
-        {
-          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
-          "author": "Lukas, Berlin"
-        },
-        {
-          "quote": "The broker gateway plus AI context saves me time every single session.",
-          "author": "Clara, Madrid"
-        }
-      ],
-      "stats": {
-        "exchanges": "130개+ 거래소",
-        "modules": "AI 모듈 27개",
-        "languages": "9개 언어",
-        "adFree": "100% 광고 없음"
-      }
-    },
-    "pricing": {
-      "title": "Simple pricing",
-      "tiers": {
-        "free": {
-          "name": "Free",
-          "price": "$0/mo",
-          "body": "Basic features to start building consistency.",
-          "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
-          ],
-          "cta": "Start free"
-        },
-        "pro": {
-          "name": "Pro",
-          "price": "$9/mo",
-          "body": "Full access for active investors.",
-          "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
-          ],
-          "cta": "Choose Pro"
-        },
-        "proPlus": {
-          "name": "Pro+",
-          "price": "$19/mo",
-          "body": "For power users and automation workflows.",
-          "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
-          ],
-          "cta": "Choose Pro+"
-        }
-      },
-      "badge": "얼리 어답터 가격",
-      "earlyAdopter": "선착순 Pro 500계정은 평생 월 $9 고정",
-      "monthly": "월간",
-      "yearly": "연간",
-      "save": "27% 절약",
-      "saveProPlus": "34% 절약",
-      "popular": "가장 인기",
-      "trial": "14일 무료"
-    },
-    "footerCta": {
-      "title": "Start your free account today",
-      "button": "Create free account",
-      "disclaimer": "Educational product. Not financial advice. Investing involves risk."
-    }
+  "analysisBrief": {
+    "englishSection": "English",
+    "title": "AI 브리핑",
+    "updated": "업데이트"
   },
   "auth": {
     "email": "이메일",
@@ -1238,10 +97,1151 @@
     "registerLoading": "회원가입 중...",
     "registerTitle": "회원가입"
   },
+  "backtest": {
+    "avgReturn": "평균 수익률",
+    "colAction": "동작",
+    "colDate": "날짜",
+    "colOutcome": "결과(5일)",
+    "colPrice": "가격",
+    "maxDrawdown": "Max drawdown",
+    "months12": "12개월",
+    "months3": "3개월",
+    "months6": "6개월",
+    "monthsSuffix": "개월",
+    "period": "기간",
+    "resultsTitle": "결과",
+    "runButton": "Run backtest",
+    "sharpeRatio": "Sharpe ratio",
+    "strategy": "전략",
+    "strategyBreakout": "돌파 (20일 고점 대비)",
+    "strategyRsi": "RSI 과매도 (< 30)",
+    "strategyVolume": "거래량 급증 (20일 평균의 2배 초과)",
+    "subtitle": "30일 구간. 시그널은 과거 데이터만 사용. 결과는 5거래일 후 종가 대비 진입가.",
+    "symbol": "심볼",
+    "title": "Walk-Forward Backtest",
+    "totalTrades": "총 거래",
+    "tradesTableTitle": "거래 내역",
+    "winRate": "Win rate"
+  },
+  "checkin": {
+    "error": "Could not save check-in. Please try again.",
+    "moodLabel": "Mood",
+    "planLabel": "What is your plan today?",
+    "planPlaceholder": "Optional...",
+    "risk": {
+      "HIGH": "HIGH",
+      "LOW": "LOW",
+      "MEDIUM": "MEDIUM"
+    },
+    "submit": "Start trading day",
+    "submitting": "Saving...",
+    "subtitle": "Set your mindset before the market opens.",
+    "title": "Daily Check-In"
+  },
+  "coach": {
+    "aiCoach": "AI 코치의 조언",
+    "aiDescriptionEmpty": "AI 코치 내용이 아직 없습니다.",
+    "avgHoldLoss": "평균 보유 (손실)",
+    "avgHoldWin": "평균 보유 (수익)",
+    "avgLoss": "평균 손실",
+    "avgWin": "평균 수익",
+    "biasCutsBody": "평균 {{winHours}}시간에 수익을 마감하지만 손실은 {{lossHours}}시간 보유합니다.",
+    "biases": "감지된 편향",
+    "biasHoldsBody": "평균 손실: {{lossPct}}%; 손실 트레이드 보유 시간: {{lossHours}}시간.",
+    "biasOverBody": "지난 24시간에 {{maxTrades}}건이 넘는 거래입니다.",
+    "chartAvgLoss": "Avg. loss %",
+    "chartAvgWin": "Avg. win %",
+    "cutsWinners": "수익 포지션을 너무 빨리 청산",
+    "holdsLosers": "손실 포지션을 너무 오래 보유",
+    "noBiases": "감지된 편향이 없습니다",
+    "overtrading": "Overtrading",
+    "title": "행동 코치",
+    "traderProfile": "트레이더 프로필"
+  },
+  "common": {
+    "apiLiveBadge": "Live API",
+    "apiMockBadge": "Mock fallback active",
+    "buy": "매수",
+    "cancel": "취소",
+    "close": "닫기",
+    "error": "오류",
+    "high": "High",
+    "loading": "로딩 중...",
+    "low": "Low",
+    "medium": "Medium",
+    "noData": "데이터가 없습니다",
+    "notAvailable": "n/a",
+    "open": "열기",
+    "retry": "다시 시도",
+    "save": "저장",
+    "search": "검색",
+    "sell": "매도"
+  },
+  "company": {
+    "backHome": "<- Back home",
+    "backToCompanies": "← 기업",
+    "chartTitle": "Close - recent history",
+    "close": "Close",
+    "industry": "Industry",
+    "loading": "Loading company...",
+    "noNews": "No news rows in database yet.",
+    "noQuoteHistory": "No quote history yet.",
+    "recentNews": "Recent news",
+    "sector": "Sector",
+    "website": "Website"
+  },
+  "concentration": {
+    "chartBySector": "섹터별 배분",
+    "chartByStock": "종목별 배분",
+    "colSector": "섹터",
+    "colTicker": "티커",
+    "colValue": "금액",
+    "colWeight": "비중 %",
+    "currency": "표시 통화",
+    "empty": "분석을 보려면 페이퍼 트레이딩에서 포지션을 여세요.",
+    "positionCount": "미결제 페이퍼 트레이드",
+    "positionsTable": "포지션 및 비중",
+    "scoreLabel": "분산 점수 (0–100)",
+    "title": "포트폴리오 집중도",
+    "totalValue": "포트폴리오 총액",
+    "value": "금액",
+    "warnings": {
+      "SINGLE_SECTOR": "{{sector}} 섹터가 {{weight}}%입니다(권장 최대 {{maxSector}}%).",
+      "SINGLE_STOCK": "{{ticker}}가 포트폴리오의 {{weight}}%입니다(권장 최대 {{maxStock}}%).",
+      "TOP_HEAVY": "상위 3종목이 {{top3Share}}%를 차지합니다."
+    }
+  },
   "cookie": {
-    "message": "더 나은 사용 경험을 위해 쿠키를 사용합니다. 모든 쿠키 또는 필수 쿠키만 허용할 수 있습니다.",
     "acceptAll": "모두 허용",
+    "message": "더 나은 사용 경험을 위해 쿠키를 사용합니다. 모든 쿠키 또는 필수 쿠키만 허용할 수 있습니다.",
     "necessaryOnly": "필수만",
     "privacyLink": "개인정보처리방침"
+  },
+  "cooldown": {
+    "inactive": "활성화된 쿨다운이 없습니다",
+    "title": "연속 손실 쿨다운",
+    "unlocksIn": "해제까지"
+  },
+  "correlation": {
+    "aiInsight": "AI Insight",
+    "analyze": "Analyze correlation",
+    "colCorrelation": "Correlation",
+    "colSymbol": "Symbol",
+    "colWarning": "Warning",
+    "highRiskPairs": "High-risk pairs (> 0.7)",
+    "mainSymbol": "Main symbol",
+    "noHighRiskPairs": "No high-risk pair detected.",
+    "portfolioSymbols": "Portfolio symbols (comma separated)",
+    "subtitle": "Check Pearson correlation between your main ticker and portfolio symbols.",
+    "tableTitle": "Correlation results",
+    "title": "Correlation Scanner",
+    "validation": "Provide a main symbol and at least one portfolio symbol.",
+    "warningHighRisk": "High risk",
+    "warningLowRisk": "OK"
+  },
+  "crowdwisdom": {
+    "analyze": "Analyze",
+    "divergence": "Divergence (insider - retail)",
+    "insiderActivity": "Insider Activity",
+    "result": "Signal",
+    "retailSentiment": "Retail Sentiment",
+    "signalBuy": "Contrarian Buy",
+    "signalNeutral": "Neutral",
+    "signalSell": "Contrarian Sell",
+    "subtitle": "Compare retail mood with insider behavior and extract a contrarian clue.",
+    "symbol": "Symbol",
+    "title": "Crowd Wisdom Inverter"
+  },
+  "dashboard": {
+    "companiesDesc": "Search and sector grid with logos.",
+    "companiesTitle": "Companies",
+    "portfolioDesc": "Coming soon - watchlists and alerts.",
+    "portfolioTitle": "Portfolio",
+    "signalsDesc": "Coming soon - screener and AI scores.",
+    "signalsTitle": "Signals",
+    "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
+    "title": "Dashboard"
+  },
+  "digest": {
+    "cardDateLabel": "Digest date",
+    "emailSent": "Test email sent for {{date}}.",
+    "emptyState": "Click preview to generate today's digest.",
+    "previewButton": "Preview my digest",
+    "sendButton": "Send test email",
+    "subtitle": "Generate your AI market recap and send a test email instantly.",
+    "title": "Daily Digest"
+  },
+  "discord": {
+    "active": "Webhook active",
+    "inactive": "Webhook inactive",
+    "loadError": "Failed to load webhook settings.",
+    "saveButton": "Save",
+    "saveError": "Failed to save webhook.",
+    "saveSuccess": "Webhook saved.",
+    "subtitle": "Send automatic paper trade open/close updates to your Discord webhook.",
+    "testButton": "Test webhook",
+    "testError": "Failed to send test message.",
+    "testSuccess": "Test message sent.",
+    "title": "Discord Auto-Sync",
+    "webhookLabel": "Discord webhook URL",
+    "webhookPlaceholder": "https://discord.com/api/webhooks/..."
+  },
+  "dividend": {
+    "colAnnual": "연간 배당금",
+    "colCagr": "CAGR 5Y %",
+    "colGrowth": "성장 YoY %",
+    "colSymbol": "Symbol",
+    "colYear": "연도",
+    "colYield": "Yield %",
+    "exDate": "배당락일",
+    "fetch": "조회",
+    "health": "건강 점수",
+    "history": "배당 이력",
+    "minYears": "최소 이력 연수",
+    "minYield": "최소 수익률 %",
+    "noData": "데이터 없음 – 필터를 조정하세요",
+    "payoutRatio": "배당성향",
+    "refresh": "새로고침",
+    "risky": "위험",
+    "safe": "안전",
+    "screener": "스크리너: 배당 성장 (CAGR)",
+    "symbol": "Symbol",
+    "title": "배당 스크리닝",
+    "trend": "추세",
+    "watch": "관찰",
+    "years": "성장 연수",
+    "yearsBack": "과거 연수",
+    "yield": "배당 수익률"
+  },
+  "dividendcompound": {
+    "axisYear": "연도",
+    "calculate": "계산",
+    "chartTitle": "연도별 포트폴리오 가치",
+    "difference": "차이 (복리 효과)",
+    "dividendYield": "배당 수익률 (%)",
+    "initialAmount": "초기 금액 (PLN)",
+    "monthlyContribution": "월 적립금 (PLN)",
+    "subtitle": "배당 재투자 여부에 따른 포트폴리오 성장을 시뮬레이션합니다.",
+    "title": "배당 복리 계산기",
+    "tooltipYear": "{{year}}년차",
+    "withoutReinvesting": "재투자 미포함",
+    "withReinvesting": "재투자 포함",
+    "years": "기간 (년)",
+    "yearsValue": "{{count}}년"
+  },
+  "dividendIntelligence": {
+    "sectorPercentile": "Sector percentile",
+    "subtitle": "Safety score, trend, sector and latest alerts. Enter ticker - data refreshes with debounce:",
+    "symbol": "Symbol",
+    "title": "Dividend Intelligence",
+    "vsPeers": "(vs peers in sector)"
+  },
+  "dividendsPage": {
+    "amount": "Amount",
+    "dataLocation": "in",
+    "emptyHistory": "No rows yet - run seed or change filters.",
+    "exDate": "Ex-date",
+    "fetch": "Fetch",
+    "historyTitle": "Dividend history",
+    "minYears": "Min. years of history",
+    "minYield": "Min. yield %",
+    "payDate": "Pay date",
+    "refresh": "Refresh",
+    "screenerEmpty": "No results for selected filters.",
+    "screenerLoading": "Loading screener…",
+    "screenerTitle": "Screener: dividend growth (CAGR)",
+    "subtitle": "Dividend history (mock seed), growth screener and 19% tax calculator (estimate). Data:",
+    "symbol": "Symbol",
+    "tableAnnualDividend": "Annual dividend",
+    "tableGrowthYoy": "Growth YoY %",
+    "tableYear": "Year",
+    "taxAnnualDividendPerShare": "Annual dividend / share (USD)",
+    "taxCalculate": "Calculate",
+    "taxCalculating": "Calculating…",
+    "taxGrossDividend": "Gross dividend",
+    "taxMethod": "Method",
+    "taxNet": "Net",
+    "taxRateLabel": "Tax ({{rate}}%)",
+    "taxReferencePrice": "Price (reference)",
+    "taxShares": "Number of shares",
+    "taxSubtitle": "Gross estimate: shares × dividend per share or shares × price × (yield % / 100) — fill yield only if you don't use DPS.",
+    "taxTitle": "Dividend tax (PIT 19%)",
+    "taxYieldAlternative": "Alternative: annual yield % (optional)",
+    "taxYieldPlaceholder": "e.g. 2.5",
+    "title": "Dividend screening (MVP)",
+    "yearsBack": "Years back",
+    "yield": "Yield %"
+  },
+  "earnings": {
+    "confidence": "Confidence",
+    "nextDate": "Next earnings date",
+    "noDate": "Date unavailable",
+    "predictButton": "Predict",
+    "reasoning": "AI reasoning",
+    "resultFor": "Prediction for",
+    "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "Earnings Surprise Predictor",
+    "validationSymbol": "Please provide a valid symbol."
+  },
+  "emotional": {
+    "alertTitle": "Break recommended",
+    "lastChecked": "Last checked",
+    "level": {
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
+    },
+    "widgetTitle": "Emotional state"
+  },
+  "etoro": {
+    "alpaca": {
+      "banner": "Don't have a US broker? Try eToro — trade stocks commission-free",
+      "button": "Try eToro"
+    },
+    "company": {
+      "button": "Open account on eToro",
+      "disclaimer": "CFDs involve risk. 76% of retail accounts lose money.",
+      "title": "Trade this stock"
+    },
+    "cta": "eToro 계좌 개설",
+    "settings": {
+      "button": "Learn more & open account",
+      "cardDescription": "Multi-asset broker with a simple account opening flow and stock access.",
+      "cardTitle": "eToro",
+      "sectionSubtitle": "Explore trusted brokers integrated with StockAI affiliate tracking.",
+      "sectionTitle": "Recommended Brokers"
+    },
+    "subtitle": "라이선스 보유 브로커를 통해 주식을 거래하세요"
+  },
+  "glossary": {
+    "exampleLabel": "Example",
+    "loading": "Loading explanation...",
+    "popularTerms": "Popular terms",
+    "selectPrompt": "Select a term from the list to load its explanation.",
+    "subtitle": "Click a market term to get a short explanation and practical example.",
+    "title": "Translate Financial English"
+  },
+  "home": {
+    "emptySector": "No companies in this sector yet.",
+    "emptySelectSector": "Choose a sector or run a search to see companies.",
+    "searchPlaceholder": "Search by name or symbol...",
+    "sectorLabel": "Sector",
+    "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
+    "title": "Companies"
+  },
+  "insider": {
+    "actionBuy": "BUY",
+    "actionSell": "SELL",
+    "colAction": "Action",
+    "colDate": "Date",
+    "colName": "Name",
+    "colRole": "Role",
+    "colValue": "Value",
+    "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
+    "insight": "AI Insight",
+    "resultFor": "Insider activity for",
+    "searchButton": "Mirror insiders",
+    "sentimentBuy": "Net buying",
+    "sentimentNeutral": "Neutral",
+    "sentimentSell": "Net selling",
+    "subtitle": "Track recent buying and selling by company insiders.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "Insider Mirror",
+    "transactionsTitle": "Transactions (last 30 days, > $50k)",
+    "validationSymbol": "Please provide a valid symbol."
+  },
+  "landing": {
+    "footerCta": {
+      "button": "Create free account",
+      "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
+      "title": "Start your free account today"
+    },
+    "hero": {
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "See how it works",
+      "subtitle": "AI 리서치 · 행동 코칭 · 12개 거래소 · 9개 언어",
+      "title": "차세대 투자 플랫폼",
+      "widgetLive": "Live",
+      "widgetTitle": "Live market pulse"
+    },
+    "pricing": {
+      "badge": "얼리 어답터 가격",
+      "earlyAdopter": "선착순 Pro 500계정은 평생 월 $9 고정",
+      "monthly": "월간",
+      "popular": "가장 인기",
+      "save": "27% 절약",
+      "saveProPlus": "34% 절약",
+      "tiers": {
+        "free": {
+          "body": "Basic features to start building consistency.",
+          "cta": "Start free",
+          "features": [
+            "Core dashboard",
+            "Basic AI signals",
+            "Community access"
+          ],
+          "name": "Free",
+          "price": "$0/mo"
+        },
+        "pro": {
+          "body": "Full access for active investors.",
+          "cta": "Choose Pro",
+          "features": [
+            "All AI modules",
+            "Behavioral coaching",
+            "Trader psyche profile"
+          ],
+          "name": "Pro",
+          "price": "$9/mo"
+        },
+        "proPlus": {
+          "body": "For power users and automation workflows.",
+          "cta": "Choose Pro+",
+          "features": [
+            "Everything in Pro",
+            "API access",
+            "Broker integration"
+          ],
+          "name": "Pro+",
+          "price": "$19/mo"
+        }
+      },
+      "title": "Simple pricing",
+      "trial": "14일 무료",
+      "yearly": "연간"
+    },
+    "problem": {
+      "cards": {
+        "apps": {
+          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity.",
+          "title": "You use 5-6 apps"
+        },
+        "context": {
+          "body": "신호는 보이지만, 시장이 이를 뒷받침하는지 지금이 적절한 시점인지 알기 어렵습니다.",
+          "title": "맥락이 부족하십니다"
+        },
+        "emotions": {
+          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes.",
+          "title": "Emotions cost you money"
+        },
+        "memory": {
+          "body": "Without a feedback loop, the same costly patterns repeat trade after trade.",
+          "title": "No one remembers your mistakes"
+        }
+      },
+      "title": "Why investors get stuck"
+    },
+    "socialProof": {
+      "stats": {
+        "adFree": "100% 광고 없음",
+        "exchanges": "130개+ 거래소",
+        "languages": "9개 언어",
+        "modules": "AI 모듈 27개"
+      },
+      "subtitle": "Early access community growing every week.",
+      "testimonials": [
+        {
+          "quote": "I used to jump between apps. Now I execute one process from signal to reflection.",
+          "author": "Kasia, Warsaw"
+        },
+        {
+          "quote": "Behavioral nudges helped me stop revenge trading. My risk discipline finally feels real.",
+          "author": "Lukas, Berlin"
+        },
+        {
+          "quote": "The broker gateway plus AI context saves me time every single session.",
+          "author": "Clara, Madrid"
+        }
+      ],
+      "title": "Join our early access community"
+    },
+    "solution": {
+      "features": {
+        "aiBrief": {
+          "body": "점수만이 아니라, 왜 가치가 있는지 혹은 아닌지를 완전하게 설명합니다.",
+          "title": "서사가 포함된 AI Brief"
+        },
+        "behavioralCoach": {
+          "body": "사용자의 실수를 감지하고 같은 실수를 반복하지 않도록 도와드립니다.",
+          "title": "Behavioral Coach"
+        },
+        "brokerIntegration": "Broker Integration",
+        "globalMarkets": {
+          "body": "GPW, NYSE, DAX, TSE, NSE 등 다양한 시장을 지원합니다. 앱을 전환할 필요가 없습니다.",
+          "title": "12 Global Markets"
+        },
+        "languages": "9 Languages",
+        "paperTrading": {
+          "body": "위험 없이 연습하세요. 비용이 들지 않는 실수에서 배울 수 있습니다.",
+          "title": "Paper Trading"
+        },
+        "preMortemAi": {
+          "body": "매수 전에 AI가 가장 가능성 높은 손실 시나리오를 보여드립니다.",
+          "title": "Pre-Mortem AI"
+        },
+        "signalAnalysis": "AI Signal Analysis",
+        "signalDna": {
+          "body": "과거의 유사한 셋업을 통해, 이 셋업이 과거에 어떻게 마무리되었는지 보여드립니다.",
+          "title": "Signal DNA"
+        },
+        "traderPsycheProfile": "Trader Psyche Profile"
+      },
+      "title": "One platform built for investor growth"
+    }
+  },
+  "mentor": {
+    "currentStatus": "Current status",
+    "disableAction": "Disable",
+    "disabled": "Disabled",
+    "enableAction": "Enable",
+    "enabled": "Enabled",
+    "guidanceUnavailable": "멘토 가이드가 아직 제공되지 않습니다(엔드포인트 404).",
+    "loading": "Generating mentor guidance...",
+    "panelTitle": "AI Mentor",
+    "riskCheckLabel": "Risk check",
+    "settingsSubtitle": "Control how AI mentoring appears on the Signals page.",
+    "settingsTitle": "Mentor Mode Settings",
+    "styleLabel": "Mentor style",
+    "styleStrict": "Strict",
+    "styleSupportive": "Supportive",
+    "toggleLabel": "Mentor Mode"
+  },
+  "mirror": {
+    "actionError": "작업에 실패했습니다. 다시 시도하세요.",
+    "follow": "팔로우",
+    "followers": "팔로워",
+    "itsYou": "나",
+    "loadError": "미러 데이터를 불러오지 못했습니다.",
+    "myFollowing": "내 팔로잉",
+    "noTopTraders": "아직 미러 트레이딩을 켠 트레이더가 없습니다.",
+    "revenueShare": "수익 배분",
+    "revenueShareHint": "0–50%",
+    "saved": "저장됨",
+    "saving": "저장 중…",
+    "settingsSubtitle": "다른 사람이 내 페이퍼 트레이딩 프로필을 팔로우하도록 허용합니다. 수익 배분은 향후 정산용(0–50%).",
+    "settingsTitle": "Enable Mirror Trading",
+    "subtitle": "미러 공유를 켠 트레이더를 팔로우하세요. 지표는 종료된 페이퍼 트레이드 기준입니다.",
+    "title": "Mirror Trading",
+    "toggleLabel": "미러 팔로워 허용",
+    "topTraders": "상위 트레이더",
+    "totalTrades": "총 거래 수",
+    "unfollow": "언팔로우",
+    "winRate": "Win rate"
+  },
+  "mistakes": {
+    "analyzeButton": "Analyze my mistakes",
+    "analyzing": "Analyzing...",
+    "dnaContextLink": "Open Strategy DNA with these symbols",
+    "dnaRowLink": "Strategy DNA",
+    "emptyType": "No mistakes in this category yet.",
+    "summary": {
+      "emotional": "Emotional",
+      "strategy": "Strategy",
+      "timing": "Timing",
+      "total": "Total"
+    },
+    "title": "Mistake Library",
+    "types": {
+      "EMOTIONAL": "EMOTIONAL",
+      "STRATEGY": "STRATEGY",
+      "TIMING": "TIMING"
+    }
+  },
+  "money": {
+    "gpwCaption": "금액은 PLN(GPW 기준). 옆 USD는 참고용입니다(약 3.95 PLN당 1 USD, 실시간 환율 아님)."
+  },
+  "nav": {
+    "adminAffiliate": "Admin Affiliate",
+    "alpacaTrading": "Alpaca 트레이딩",
+    "alphaCalendar": "Alpha Calendar",
+    "coach": "코치",
+    "concentration": "집중도",
+    "correlation": "상관관계",
+    "crowdWisdom": "Crowd Wisdom",
+    "dashboard": "대시보드",
+    "dividend": "배당",
+    "dividendIntelligence": "배당 인텔리전스",
+    "glossary": "Glossary",
+    "home": "홈",
+    "markets": "마켓",
+    "menu": "메뉴",
+    "mirrorTrading": "Mirror Trading",
+    "mistakeLibrary": "Mistake Library",
+    "paperTrading": "페이퍼 트레이딩",
+    "portfolio": "포트폴리오",
+    "positionSize": "계산기",
+    "premortem": "Pre-Mortem",
+    "psycheProfile": "My Psyche",
+    "signals": "시그널",
+    "skillTree": "Skill Tree",
+    "stressTest": "스트레스 테스트",
+    "taxOptimizer": "PIT-38",
+    "tools": "도구",
+    "volatility": "Volatility Heat Map",
+    "weeklyReview": "Weekly Review"
+  },
+  "newshalflife": {
+    "categoryLabel": "Category",
+    "empty": "No recent news found for this symbol.",
+    "expired": "Expired",
+    "halfLifeDaysBadge": "{{days}} days",
+    "halfLifeDaysLabel": "Half-life: {{days}} days",
+    "mostImpactful": "Most impactful news",
+    "reasonLabel": "Reason",
+    "remainingLabel": "Time left",
+    "searchButton": "Analyze news",
+    "subtitle": "Estimate how quickly each news item loses impact on price.",
+    "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
+    "title": "News Half-Life Score"
+  },
+  "paperTrading": {
+    "closePosition": "포지션 닫기",
+    "direction": "방향",
+    "entryPrice": "진입가",
+    "exitPrice": "청산가",
+    "history": "거래 이력",
+    "long": "Long",
+    "openPosition": "포지션 열기",
+    "pnl": "P&L",
+    "portfolio": "포트폴리오",
+    "quantity": "수량",
+    "short": "Short",
+    "title": "Paper Trading"
+  },
+  "pearls": {
+    "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
+    "decisionTrailTitle": "Decision trail",
+    "premortemPrefilledRegime": "Form prefilled from Signals. Signal regime hint: {{regime}} (still verify levels before trading).",
+    "quoteChip": "{{age}} old · {{source}}",
+    "quoteFreshness": "Quote freshness",
+    "receiptLoss": "Closed at a loss",
+    "receiptLossDetail": "PnL {{pnl}} ({{pct}}%)",
+    "receiptProceed": "Pre-Mortem → opened anyway",
+    "summaryProceedRate": "Pre-Mortem proceed rate",
+    "summaryTotal": "Recorded decisions",
+    "summaryWorstLoss": "Largest realized loss"
+  },
+  "positionSize": {
+    "accountSize": "계좌 자금",
+    "actualRiskPct": "실제 리스크 % (자본 대비)",
+    "calculate": "계산",
+    "conviction": "셋업 확신도",
+    "convictionHigh": "높음",
+    "convictionLow": "낮음",
+    "convictionMedium": "보통",
+    "copied": "클립보드에 복사됨",
+    "copy": "복사",
+    "copyAllTp": "모든 TP 구간 복사",
+    "copyAriaTp": "{{label}} 가격 복사",
+    "currency": "계좌 통화",
+    "currencyHint": "입력과 결과는 PLN(GPW 기준)으로 처리하며, 옆 USD는 참고용입니다.",
+    "entry": "진입가",
+    "errorApi404": "계산 API를 찾을 수 없습니다(404). 최신 코드로 3000번 포트에서 API를 실행하거나 VITE_API_BASE를 /api가 포함된 전체 URL로 설정하세요.",
+    "errorInvalid": "계좌, 진입가, 스탑에 유효한 양수를 입력하세요.",
+    "maxLoss": "스탑 시 최대 손실",
+    "plannedRisk": "계획된 리스크",
+    "pln": "PLN",
+    "positionValue": "포지션 가치",
+    "riskPercent": "최대 리스크 % (자본 대비)",
+    "shares": "매수할 주식 수",
+    "stop": "Stop Loss",
+    "takeProfits": "익절 (R 배수)",
+    "title": "포지션 크기 계산기",
+    "tp1": "1R",
+    "tp2": "2R",
+    "tp3": "3R",
+    "usd": "USD"
+  },
+  "premortem": {
+    "cancel": "Cancel trade",
+    "entry": "Entry",
+    "lossScenario": "Most likely loss scenario",
+    "marketRegime": "Market Regime",
+    "proceed": "Proceed anyway",
+    "quantity": "Quantity",
+    "runButton": "Run Pre-Mortem",
+    "stopLoss": "Stop Loss",
+    "subtitle": "Run downside scenario analysis before opening a trade.",
+    "symbol": "Symbol",
+    "takeProfit": "Take Profit",
+    "title": "Pre-Mortem AI"
+  },
+  "psyche": {
+    "addRule": "Add rule",
+    "badConditions": "Bad conditions",
+    "breaches": "Breaches",
+    "colAction": "Action",
+    "colCompliance": "Plan compliance",
+    "colDate": "Date",
+    "colMood": "Mood",
+    "colSymbol": "Symbol",
+    "complianceNo": "No",
+    "complianceUnknown": "—",
+    "complianceYes": "Yes",
+    "decisionLogTitle": "Decision log (last 10)",
+    "deleteRule": "Delete",
+    "dnaTitle": "Trader DNA",
+    "emptyLogs": "No entries yet.",
+    "goodConditions": "Good conditions",
+    "growthScore": "Growth score",
+    "noProfile": "No AI profile yet. Tap “Refresh my profile” to generate one from your recent activity.",
+    "refresh": "Refresh my profile",
+    "rulePlaceholder": "Add a rule",
+    "rulesTitle": "My trading rules",
+    "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
+    "title": "Trader Psyche",
+    "topBiases": "Top biases",
+    "tradingStyle": "Trading style"
+  },
+  "reactions": {
+    "charCount": "{{used}} / {{max}}",
+    "empty": "아직 댓글이 없습니다.",
+    "loading": "댓글 불러오는 중…",
+    "placeholder": "메모 입력(최대 500자)…",
+    "postComment": "댓글 게시",
+    "posting": "게시 중…",
+    "title": "댓글"
+  },
+  "reflection": {
+    "aiTitle": "AI Insight",
+    "emotion": "Emotion",
+    "emotions": {
+      "CONFIDENT": "😊 Confident",
+      "FEAR": "😰 Fear",
+      "FRUSTRATION": "😤 Frustration",
+      "GREEDY": "🤑 Greedy",
+      "NEUTRAL": "😐 Neutral"
+    },
+    "followedPlan": "I traded according to my plan",
+    "lesson": "What did I learn?",
+    "lessonPlaceholder": "Optional (max 100 characters)",
+    "no": "No",
+    "saveAndClose": "Save & Close",
+    "saveError": "Reflection was not saved.",
+    "skip": "Skip",
+    "subtitle": "Close {{symbol}} and capture one quick reflection.",
+    "timer": "{{seconds}}s",
+    "title": "Post-Trade Reflection",
+    "yes": "Yes"
+  },
+  "replay": {
+    "action": "Direction",
+    "actualOutcome": "Actual outcome",
+    "contextHint": "The snapshot shows market data exactly as it looked on that day.",
+    "date": "Historical date",
+    "evaluate": "Evaluate decision",
+    "loadSnapshot": "Load snapshot",
+    "price": "Price",
+    "priceChange5d": "Change after 5 days",
+    "score": "Score",
+    "step1Title": "Step 1: choose company and date",
+    "step2Title": "Step 2: market snapshot",
+    "step3Title": "Step 3: make your decision",
+    "step4Title": "Step 4: AI result",
+    "subtitle": "Practice trading decisions on historical data and get AI feedback.",
+    "symbol": "Company",
+    "title": "Replay Mode"
+  },
+  "reversescreener": {
+    "avgOutcomeHint": "상위 매칭의 (5일+10일)/2 평균 — 설명용이며 예측이 아닙니다.",
+    "avgOutcomeLabel": "트윈 평균 결과",
+    "currentSetup": "기준일 셋업",
+    "dateHint": "비우면 DB의 최신 시세 날짜를 사용합니다.",
+    "dateLabel": "기준일 (선택)",
+    "errorSymbol": "티커를 입력하세요.",
+    "findButton": "유사 셋업 찾기",
+    "matchesTitle": "과거 상위 5개 매칭",
+    "noMatches": "검색 구간에 유사 셋업이 없습니다.",
+    "outcome10d": "10일 후 {{value}}",
+    "outcome5d": "5일 후 {{value}}",
+    "priceChange": "1일 가격 변화",
+    "similarity": "유사도",
+    "subtitle": "현재 OHLCV 셋업을 다른 티커의 유사 과거일과 매칭(RSI, 20일 대비 거래량, 1일 수익률, 추세, ATR/종가 — Signal DNA 유사도).",
+    "symbolLabel": "티커",
+    "symbolPlaceholder": "예: 005930",
+    "title": "Reverse Screener",
+    "trend": "추세 (MA10 vs MA20)",
+    "trend.down": "하락",
+    "trend.flat": "횡보",
+    "trend.up": "상승",
+    "volumeRatio": "거래량 vs 20일 평균"
+  },
+  "sector": {
+    "all": "All",
+    "basicMaterials": "Basic Materials",
+    "communicationServices": "Communication Services",
+    "consumerCyclical": "Consumer Cyclical",
+    "consumerDefensive": "Consumer Defensive",
+    "energy": "Energy",
+    "financialServices": "Financial Services",
+    "healthcare": "Healthcare",
+    "industrials": "Industrials",
+    "realEstate": "Real Estate",
+    "technology": "Technology",
+    "utilities": "Utilities"
+  },
+  "share": {
+    "button": "Share",
+    "copied": "Copied!",
+    "copy": "Copy link",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter/X",
+    "whatsapp": "WhatsApp"
+  },
+  "signals": {
+    "aiBreif": "AI Brief",
+    "autonomousWatchlist": "Autonomous watchlist",
+    "avgReturn": "평균 수익률",
+    "confidence": "신뢰도",
+    "confidenceCue": {
+      "PRIME": "PRIME",
+      "STRONG": "STRONG",
+      "WATCH": "WATCH"
+    },
+    "confidenceLabel": "Confidence: {{level}}",
+    "copilot": {
+      "checkpoint": "Checkpoint",
+      "checkpointBody": "Re-evaluate after the session close and a fresh volume print.",
+      "conviction": "Conviction",
+      "enter": "Enter trade",
+      "invalidation": "Invalidation",
+      "invalidationBody": "Exit if the move reaches {{pct}}% from entry or the regime flips.",
+      "title": "AI Copilot decision"
+    },
+    "copilotAction": {
+      "ENTER": "Enter",
+      "REDUCE": "Reduce",
+      "WAIT": "Wait"
+    },
+    "copilotThesisFallback": "{{setup}} — consistent with {{regime}} regime",
+    "discordEmbedTitle": "Discord embed preview",
+    "discordRisk": "Risk {{score}}/100",
+    "dna": "Signal DNA",
+    "dnaCounterpoint": "반론:",
+    "dnaExplain": {
+      "high": {
+        "counter": "거시 맥락은 다릅니다. 과도한 포지션은 피하세요.",
+        "why": "가격 구조와 변동성 체제가 거의 동일합니다."
+      },
+      "low": {
+        "counter": "보조 근거로만 보고 주요 진입 신호로 삼지 마세요.",
+        "why": "낮은 신뢰도에서의 부분적 셋업 겹침입니다."
+      },
+      "mid": {
+        "counter": "거래량 추세가 이어지지 않으면 신호가 빠르게 약해질 수 있습니다.",
+        "why": "모멘텀 프로필과 거래량 압축이 과거 수익 패턴과 맞습니다."
+      }
+    },
+    "dnaWhySimilar": "유사한 이유:",
+    "entry": "Entry",
+    "executionEntry": "Entry",
+    "executionExpectedValue": "Expected value",
+    "executionRr": "R:R",
+    "executionStop": "Stop",
+    "executionTarget": "Target",
+    "executionTitle": "Battle-tested execution simulator",
+    "executionWorstCase": "Worst case",
+    "headline": "헤드라인",
+    "liveConnectedSse": "Connected to live stream",
+    "liveEngine": {
+      "label": "Live engine",
+      "lastUpdate": "Last: {{time}}",
+      "lastUpdateEmpty": "Last: --:--:--",
+      "polling": "Polling mode",
+      "sseUnavailable": "Updates every 15s (SSE unavailable)"
+    },
+    "livePollingUpdate": "Polling update received",
+    "liveStreamUpdate": "Live stream update received",
+    "liveWaiting": "Waiting for stream…",
+    "marketRegime": {
+      "RANGING": "Ranging",
+      "RISK_OFF": "Risk-off",
+      "RISK_ON": "Risk-on",
+      "TRENDING": "Trending"
+    },
+    "mentor": {
+      "notFound": "Analysis unavailable"
+    },
+    "mockNarrative": {
+      "body": "{{ticker}}의 모멘텀 프로필은 {{regime}} 체제와 맞습니다. 가격·거래량은 invalidation 수준이 지켜지면 통제된 하방 리스크 속 연속 가능성을 시사합니다.",
+      "headline": "{{ticker}} — 셋업: {{setup}}",
+      "riskNote": "캔들 마감 확인을 기다리고 스탑 규율을 엄격히 지키세요."
+    },
+    "narrative": "내러티브",
+    "narrativeBodyFallback": "API가 내러티브 본문을 반환하지 않았습니다.",
+    "narrativeConfidence": {
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
+    },
+    "narrativeHeadlineFallback": "시그널 내러티브: {{ticker}}",
+    "narrativeRiskNoteFallback": "API가 리스크 노트를 반환하지 않았습니다.",
+    "noSignalSelected": "No signal selected.",
+    "preMortemFromSetup": "Pre-Mortem (from this setup)",
+    "regime": {
+      "executionStyle": "Execution style",
+      "mode": "Mode",
+      "riskCap": "Risk cap / trade",
+      "title": "Live market regime engine"
+    },
+    "regimeDetail": {
+      "RANGING": {
+        "mode": "Neutral grid",
+        "riskCap": "0.75R",
+        "style": "Range edges + quick exits"
+      },
+      "RISK_OFF": {
+        "mode": "Capital defense",
+        "riskCap": "0.50R",
+        "style": "Mean reversion only"
+      },
+      "RISK_ON": {
+        "mode": "Pro-risk expansion",
+        "riskCap": "1.00R",
+        "style": "Momentum basket"
+      },
+      "TRENDING": {
+        "mode": "Trend acceleration",
+        "riskCap": "1.25R",
+        "style": "Breakout continuation"
+      }
+    },
+    "riskNote": "리스크 노트",
+    "riskScore": "리스크 점수",
+    "signalType": {
+      "CRITICAL": "Critical",
+      "RESEARCH": "Research",
+      "STANDARD": "Standard"
+    },
+    "similarity": "유사도",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "title": "시그널",
+    "trackAvgReturn": "Avg. return",
+    "trackMaxDd": "Max DD",
+    "trackRecordTitle": "Track Record",
+    "trackTotalSignals": "Total signals",
+    "trackWinRate": "Win rate",
+    "transport": {
+      "OFFLINE": "Offline",
+      "POLLING": "Polling",
+      "SSE": "SSE"
+    },
+    "unknownSetup": "알 수 없는 셋업",
+    "winRate": "Win rate"
+  },
+  "skilltree": {
+    "celebrationTitle": "New skills unlocked!",
+    "checkProgress": "Check progress",
+    "newlyUnlockedLabel": "Recently unlocked:",
+    "progressLabel": "{{unlocked}}/{{total}} skills unlocked",
+    "skills": {
+      "BASICS": {
+        "condition": "Always unlocked",
+        "description": "You understand how stocks and exchanges work.",
+        "name": "Basics"
+      },
+      "BEHAVIORAL": {
+        "condition": "At least 1 entry in Mistake Library",
+        "description": "You keep emotions in check while trading.",
+        "name": "Behavioral"
+      },
+      "DIVERSIFICATION": {
+        "condition": "At least 3 unique symbols in paper trades",
+        "description": "You understand diversification.",
+        "name": "Diversification"
+      },
+      "FIBONACCI": {
+        "condition": "At least 10 closed paper trades",
+        "description": "You understand Fibonacci levels.",
+        "name": "Fibonacci"
+      },
+      "MACD": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand MACD.",
+        "name": "MACD"
+      },
+      "RISK_MANAGEMENT": {
+        "condition": "Position Size Calculator: at least 3 uses",
+        "description": "You apply position sizing.",
+        "name": "Risk management"
+      },
+      "RSI": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand RSI.",
+        "name": "RSI"
+      },
+      "STRATEGY": {
+        "condition": "Min. 20 trades and win rate > 40%",
+        "description": "You follow a coherent strategy.",
+        "name": "Strategy"
+      },
+      "SUPPORT_RESISTANCE": {
+        "condition": "At least 5 closed paper trades",
+        "description": "You understand support and resistance.",
+        "name": "Support & Resistance"
+      },
+      "VOLUME": {
+        "condition": "At least 10 closed paper trades",
+        "description": "You understand volume.",
+        "name": "Volume"
+      }
+    },
+    "subtitle": "Unlock trading skills as your activity grows.",
+    "title": "Skill Tree",
+    "unlockedAt": "Unlocked: {{date}}"
+  },
+  "strategydna": {
+    "fromMistakesBody": "You opened this page from mistake tickets. Symbols: {{symbols}}. Compare your DNA profile with where losses cluster.",
+    "fromMistakesTitle": "Context from Mistake Library",
+    "insightLabel": "AI Insight",
+    "legends": {
+      "BUFFETT": "Buffett",
+      "GREENBLATT": "Greenblatt",
+      "LYNCH": "Lynch",
+      "SOROS": "Soros"
+    },
+    "mainResultLabel": "Your style is",
+    "notEnoughData": "You need at least 20 closed trades.",
+    "primary": "Primary match",
+    "secondary": "Secondary match",
+    "subtitle": "AI compares your paper trading style with legendary investors.",
+    "title": "Strategy DNA Match"
+  },
+  "stressTest": {
+    "currency": "표시 통화",
+    "currentValue": "현재 가치",
+    "drop": "시장 하락",
+    "empty": "결과를 보려면 페이퍼 트레이딩에서 포지션을 여세요.",
+    "error404": "스트레스 테스트 API를 찾을 수 없습니다.",
+    "lossValue": "손실 / 이익",
+    "newValue": "쇼크 후 가치",
+    "portfolioLoss": "포트폴리오 손실",
+    "portfolioLossPct": "포트폴리오 손실 %",
+    "positions": "종목별 영향",
+    "scenarios": {
+      "COVID_2020": "2020 코로나 (−34%)",
+      "CRASH_2008": "2008 위기 (−54%)",
+      "CUSTOM": "사용자 정의 (−{{drop}}%)",
+      "DOT_COM_2001": "2001 닷컴 (−49%)"
+    },
+    "title": "포트폴리오 스트레스 테스트"
+  },
+  "tax": {
+    "changeCountry": "Change",
+    "customRate": "Custom tax rate (%)",
+    "disclaimer": "Results are for informational purposes only. Consult a qualified tax advisor.",
+    "noTax": "No capital gains tax on listed stocks",
+    "selectCountry": "Select your tax country",
+    "title": "Tax Optimizer"
+  },
+  "taxOptimizer": {
+    "alreadyPaid": "브로커 원천징수(플레이스홀더): {{amount}}",
+    "closedTrades": "청산된 페이퍼 거래",
+    "colClose": "청산",
+    "colOpen": "진입",
+    "colPct": "%",
+    "colPnl": "손익",
+    "colTicker": "티커",
+    "disclaimer": "참고용입니다. 세무 전문가와 상담하세요.",
+    "grossGains": "총 이익",
+    "losses": "손실",
+    "netIncome": "순소득",
+    "netLossTaxNote": "순손실 연도에는 이 모듈의 과세표준이 0입니다(단순화).",
+    "noTrades": "선택한 연도에 청산 거래가 없습니다.",
+    "suggestions": {
+      "CARRY_FORWARD_LOSS": "이전 연도 이월 손실 가능성(5년) — 세무사와 확인하세요.",
+      "CLOSE_LOSS_BEFORE_YEAR_END": "12/31 전 {{ticker}} 청산 검토 — 약 {{value}} PLN 손실로 세금 약 {{saving}} PLN 절감 가능."
+    },
+    "suggestionsTitle": "최적화 제안",
+    "tax19": "Belka 세 19%",
+    "title": "Tax Optimizer",
+    "toPay": "납부액",
+    "year": "과세 연도"
+  },
+  "trackrecord": {
+    "avgReturn": "Average return",
+    "bestTradePct": "Best trade",
+    "cardTitle": "Your public Track Record",
+    "copied": "Link copied",
+    "copyButton": "Copy share link",
+    "copyFailed": "Failed to copy share link.",
+    "generateButton": "Generate my Track Record",
+    "generatedAt": "Generated at",
+    "shareLinkLabel": "Public link",
+    "subtitle": "Generate a public, anonymous summary of your closed paper trades.",
+    "title": "Anonymous Track Record",
+    "totalTrades": "Total trades",
+    "winRate": "Win rate",
+    "worstTradePct": "Worst trade"
+  },
+  "volatility": {
+    "errors": {
+      "symbolRequired": "Please enter a symbol."
+    },
+    "leastVolatileMonth": "Least volatile month",
+    "legendHigh": "High volatility",
+    "legendLow": "Low volatility",
+    "legendTitle": "Legend",
+    "months": {
+      "apr": "Apr",
+      "aug": "Aug",
+      "dec": "Dec",
+      "feb": "Feb",
+      "jan": "Jan",
+      "jul": "Jul",
+      "jun": "Jun",
+      "mar": "Mar",
+      "may": "May",
+      "nov": "Nov",
+      "oct": "Oct",
+      "sep": "Sep"
+    },
+    "mostVolatileMonth": "Most volatile month",
+    "noData": "No data",
+    "searchAction": "Load heat map",
+    "searchPlaceholder": "Enter symbol (e.g. AAPL)",
+    "subtitle": "Compare monthly volatility across years for a selected symbol.",
+    "symbol": "Symbol",
+    "title": "Volatility Heat Map",
+    "tooltip": {
+      "avgReturn": "Avg. return",
+      "volatility": "Volatility"
+    },
+    "year": "Year"
+  },
+  "watchlist": {
+    "changePct": "Change %",
+    "empty": "You are not observing any companies yet.",
+    "follow": "♡ Follow",
+    "following": "♥ Following",
+    "lastPrice": "Last price",
+    "symbol": "Symbol",
+    "yours": "Your watchlist"
+  },
+  "weekly": {
+    "aiLetterEmpty": "No letter yet for this week.",
+    "aiLetterTitle": "Your AI Growth Letter",
+    "emptyHistory": "No weekly reviews yet.",
+    "generating": "Generating your letter...",
+    "growthScore": "Growth score",
+    "historyTitle": "Last 8 weeks",
+    "placeholders": {
+      "q4": "Describe your key lesson...",
+      "q5": "Describe your commitment for next week..."
+    },
+    "questions": {
+      "q1": "Did you trade according to your rules?",
+      "q2": "Was there any overtrading or revenge trading moment?",
+      "q3": "How do you rate your stop-loss discipline?",
+      "q4": "What was your biggest lesson this week?",
+      "q5": "What will you do differently next week?"
+    },
+    "submit": "Submit week",
+    "submitting": "Submitting...",
+    "subtitle": "Review your discipline and close the week with an AI growth letter.",
+    "title": "Weekly Review",
+    "weekOf": "Week of"
   }
 }
