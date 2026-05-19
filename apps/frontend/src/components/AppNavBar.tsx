@@ -33,7 +33,7 @@ const portfolioLinks: { to: string; labelKey: string }[] = [
   { to: "/paper-trading", labelKey: "nav.paperTrading" },
   { to: "/alpaca", labelKey: "nav.alpacaTrading" },
   { to: "/mirror-trading", labelKey: "nav.mirrorTrading" },
-  { to: "/coach", labelKey: "nav.coach" },
+  { to: "/behavioral-coach", labelKey: "nav.coach" },
   { to: "/mistake-library", labelKey: "nav.mistakeLibrary" },
   { to: "/psyche-profile", labelKey: "nav.psycheProfile" },
   { to: "/weekly-review", labelKey: "nav.weeklyReview" },
@@ -55,7 +55,13 @@ const toolsLinks: { to: string; labelKey: string }[] = [
 ];
 
 function isMarketsPath(pathname: string): boolean {
-  return pathname.startsWith("/signals") || pathname.startsWith("/dividend") || pathname.startsWith("/alpha");
+  return (
+    pathname.startsWith("/signals") ||
+    pathname.startsWith("/dividend") ||
+    pathname.startsWith("/alpha") ||
+    pathname.startsWith("/companies") ||
+    pathname.startsWith("/company/")
+  );
 }
 
 function isPortfolioPath(pathname: string): boolean {
@@ -63,6 +69,7 @@ function isPortfolioPath(pathname: string): boolean {
     pathname.startsWith("/paper-trading") ||
     pathname.startsWith("/alpaca") ||
     pathname.startsWith("/mirror-trading") ||
+    pathname.startsWith("/behavioral-coach") ||
     pathname.startsWith("/coach") ||
     pathname.startsWith("/mistake-library") ||
     pathname.startsWith("/psyche-profile") ||
@@ -210,6 +217,18 @@ export function AppNavBar() {
 
   const mobileDrawerLinks: MobileDrawerLink[] = [
     {
+      to: "/dashboard",
+      label: t("nav.dashboard"),
+      icon: ChartBarSquareIcon,
+      isActive: (path) => path.startsWith("/dashboard"),
+    },
+    {
+      to: "/companies",
+      label: t("nav.companies", { defaultValue: "Companies" }),
+      icon: ChartBarSquareIcon,
+      isActive: (path) => path.startsWith("/companies") || path.startsWith("/company/"),
+    },
+    {
       to: "/about",
       label: t("nav.about", { defaultValue: "O nas" }),
       icon: InformationCircleIcon,
@@ -326,6 +345,9 @@ export function AppNavBar() {
           <NavLink to="/dashboard" className={({ isActive }) => navLinkClass(isActive)}>
             {t("nav.dashboard")}
           </NavLink>
+          <NavLink to="/companies" className={({ isActive }) => navLinkClass(isActive)}>
+            {t("nav.companies", { defaultValue: "Companies" })}
+          </NavLink>
           <DesktopDropdown
             id="markets"
             labelKey="nav.markets"
@@ -353,7 +375,7 @@ export function AppNavBar() {
         </div>
 
         <div className="hidden shrink-0 items-center gap-3 md:flex">
-          <p className="text-xs text-textMuted">Naciśnij ? aby zobaczyć skróty</p>
+          <p className="text-xs text-textMuted">{t("nav.shortcutsHint", { defaultValue: "Press ? for keyboard shortcuts" })}</p>
           <NotificationsCenter />
           <ThemeToggle />
           {user ? (

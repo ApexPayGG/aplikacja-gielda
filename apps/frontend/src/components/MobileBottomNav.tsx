@@ -10,7 +10,13 @@ type BottomNavItem = {
 };
 
 function isMarketsPath(pathname: string): boolean {
-  return pathname.startsWith("/signals") || pathname.startsWith("/dividend") || pathname.startsWith("/alpha");
+  return (
+    pathname.startsWith("/signals") ||
+    pathname.startsWith("/dividend") ||
+    pathname.startsWith("/alpha") ||
+    pathname.startsWith("/companies") ||
+    pathname.startsWith("/company/")
+  );
 }
 
 function isPortfolioPath(pathname: string): boolean {
@@ -18,6 +24,7 @@ function isPortfolioPath(pathname: string): boolean {
     pathname.startsWith("/paper-trading") ||
     pathname.startsWith("/alpaca") ||
     pathname.startsWith("/mirror-trading") ||
+    pathname.startsWith("/behavioral-coach") ||
     pathname.startsWith("/coach") ||
     pathname.startsWith("/mistake-library") ||
     pathname.startsWith("/psyche-profile") ||
@@ -47,7 +54,7 @@ export function MobileBottomNav() {
   const { pathname } = useLocation();
 
   const items: BottomNavItem[] = [
-    { to: "/dashboard", labelKey: "nav.home", icon: HomeIcon, isActive: (path) => path.startsWith("/dashboard") },
+    { to: "/dashboard", labelKey: "nav.dashboard", icon: HomeIcon, isActive: (path) => path.startsWith("/dashboard") },
     { to: "/signals", labelKey: "nav.markets", icon: ChartBarSquareIcon, isActive: isMarketsPath },
     { to: "/paper-trading", labelKey: "nav.portfolio", icon: BriefcaseIcon, isActive: isPortfolioPath },
     { to: "/position-size", labelKey: "nav.tools", icon: WrenchScrewdriverIcon, isActive: isToolsPath },

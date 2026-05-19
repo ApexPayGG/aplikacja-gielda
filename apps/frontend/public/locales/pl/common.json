@@ -96,7 +96,12 @@
     "registerButton": "Utwórz konto",
     "registerLink": "Nie masz konta? Zarejestruj się",
     "registerLoading": "Rejestracja...",
-    "registerTitle": "Rejestracja"
+    "registerTitle": "Rejestracja",
+    "loginSubtitle": "Zaloguj się, aby kontynuować pracę z platformą.",
+    "verifyEmailSuccess": "Email zweryfikowany! Możesz się zalogować.",
+    "forgotPassword": "Nie pamiętasz hasła?",
+    "loginContinueCheckout": "Zaloguj się, aby dokończyć subskrypcję.",
+    "verifyEmailFirst": "Zweryfikuj adres e-mail — sprawdź skrzynkę i kliknij link aktywacyjny."
   },
   "backtest": {
     "avgReturn": "Śr. zwrot",
@@ -209,7 +214,20 @@
     "noQuoteHistory": "Brak historii notowań.",
     "recentNews": "Najnowsze wiadomości",
     "sector": "Sektor",
-    "website": "Strona WWW"
+    "website": "Strona WWW",
+    "notFound": "Nie znaleziono spółki",
+    "lastClose": "Ostatnie zamknięcie",
+    "premiumAnalysis": "Analiza Premium",
+    "priceChart": "Wykres ceny",
+    "ohlcSession": "Ostatnia sesja (OHLCV)",
+    "fundamentals": "Fundamenty",
+    "tabs": {
+      "overview": "Przegląd",
+      "aiBrief": "AI Brief",
+      "signals": "Sygnały",
+      "dividend": "Dywidenda",
+      "premiumAnalysis": "Analiza Premium"
+    }
   },
   "concentration": {
     "chartBySector": "Podział wg sektora",
@@ -279,9 +297,19 @@
     "portfolioDesc": "Wkrótce - watchlisty i alerty.",
     "portfolioTitle": "Portfel",
     "signalsDesc": "Wkrótce - screener i oceny AI.",
-    "signalsTitle": "Sygnały",
+    "signalsTitle": "Ostatnie sygnały",
     "subtitle": "Centrum podglądu StockAI Pro. Użyj przeglądarki spółek, aby pobierać dane z API.",
-    "title": "Panel"
+    "title": "Panel",
+    "greeting": "Dzień dobry, {{name}}",
+    "watchlistTitle": "Watchlista",
+    "watchlistCount": "{{count}} spółek",
+    "signalsEmpty": "Brak sygnałów w ostatnim odczycie.",
+    "signalLong": "LONG",
+    "signalShort": "SHORT",
+    "statSignals": "Aktywne sygnały",
+    "statWatchlist": "Na watchliście",
+    "statWinRate": "Win rate",
+    "statStreak": "Seria wzrostów"
   },
   "digest": {
     "cardDateLabel": "Data digestu",
@@ -449,7 +477,9 @@
     "searchPlaceholder": "Szukaj po nazwie lub tickerze...",
     "sectorLabel": "Sektor",
     "subtitle": "Szukaj po nazwie lub tickerze albo filtruj po sektorze. Karty prowadzą do notowań, newsów i briefu AI.",
-    "title": "Spółki"
+    "title": "Spółki",
+    "retry": "Spróbuj ponownie",
+    "partialError": "Część sektorów nie załadowała się. Pokazuję dostępne wyniki."
   },
   "insider": {
     "actionBuy": "KUP",
@@ -764,7 +794,9 @@
     "taxOptimizer": "PIT-38",
     "tools": "Narzędzia",
     "volatility": "Volatility Heat Map",
-    "weeklyReview": "Weekly Review"
+    "weeklyReview": "Weekly Review",
+    "shortcutsHint": "Naciśnij ? aby zobaczyć skróty",
+    "companies": "Spółki"
   },
   "newshalflife": {
     "categoryLabel": "Kategoria",

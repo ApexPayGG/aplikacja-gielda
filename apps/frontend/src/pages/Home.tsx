@@ -104,10 +104,23 @@ export function Home() {
 
       {error && (
         <div
-          className="mb-6 rounded-xl border px-4 py-3 text-sm"
+          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm"
           style={{ borderColor: colors.negative, backgroundColor: "rgba(229,57,53,0.08)", color: colors.negative }}
         >
-          {error}
+          <span>
+            {companies.length > 0
+              ? t("home.partialError", {
+                  defaultValue: "Some sectors failed to load. Showing available results.",
+                })
+              : error}
+          </span>
+          <button
+            type="button"
+            onClick={() => void loadCompanies()}
+            className="rounded-lg border border-current px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition hover:bg-white/10"
+          >
+            {t("home.retry", { defaultValue: "Try again" })}
+          </button>
         </div>
       )}
 

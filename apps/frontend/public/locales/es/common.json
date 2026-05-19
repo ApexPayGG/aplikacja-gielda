@@ -95,7 +95,12 @@
     "registerButton": "Crear cuenta",
     "registerLink": "¿No tienes una cuenta? Regístrate",
     "registerLoading": "Registrando cuenta...",
-    "registerTitle": "Registro"
+    "registerTitle": "Registro",
+    "loginSubtitle": "Sign in to continue on StockAI Pro.",
+    "verifyEmailSuccess": "Email verified! You can sign in now.",
+    "forgotPassword": "Forgot password?",
+    "loginContinueCheckout": "Sign in to complete your subscription.",
+    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link."
   },
   "backtest": {
     "avgReturn": "Rentab. media",
@@ -188,7 +193,20 @@
     "noQuoteHistory": "No quote history yet.",
     "recentNews": "Recent news",
     "sector": "Sector",
-    "website": "Website"
+    "website": "Website",
+    "notFound": "Company not found",
+    "lastClose": "Last close",
+    "premiumAnalysis": "Premium Analysis",
+    "priceChart": "Price chart",
+    "ohlcSession": "Latest session (OHLCV)",
+    "fundamentals": "Fundamentals",
+    "tabs": {
+      "overview": "Overview",
+      "aiBrief": "AI Brief",
+      "signals": "Signals",
+      "dividend": "Dividend",
+      "premiumAnalysis": "Premium Analysis"
+    }
   },
   "concentration": {
     "chartBySector": "Asignación por sector",
@@ -258,9 +276,19 @@
     "portfolioDesc": "Coming soon - watchlists and alerts.",
     "portfolioTitle": "Portfolio",
     "signalsDesc": "Coming soon - screener and AI scores.",
-    "signalsTitle": "Signals",
+    "signalsTitle": "Recent signals",
     "subtitle": "Overview hub for StockAI Pro. Use the company browser for live data from your API.",
-    "title": "Dashboard"
+    "title": "Dashboard",
+    "greeting": "Good morning, {{name}}",
+    "watchlistTitle": "Watchlist",
+    "watchlistCount": "{{count}} companies",
+    "signalsEmpty": "No signals in the latest snapshot.",
+    "signalLong": "LONG",
+    "signalShort": "SHORT",
+    "statSignals": "Active signals",
+    "statWatchlist": "On watchlist",
+    "statWinRate": "Win rate",
+    "statStreak": "Positive streak"
   },
   "digest": {
     "cardDateLabel": "Digest date",
@@ -428,7 +456,9 @@
     "searchPlaceholder": "Search by name or symbol...",
     "sectorLabel": "Sector",
     "subtitle": "Search by name or symbol, or filter by sector. Cards link to full quote, news, and AI brief.",
-    "title": "Companies"
+    "title": "Companies",
+    "retry": "Try again",
+    "partialError": "Some sectors failed to load. Showing available results."
   },
   "insider": {
     "actionBuy": "BUY",
@@ -752,7 +782,9 @@
     "taxOptimizer": "PIT-38",
     "tools": "Herramientas",
     "volatility": "Volatility Heat Map",
-    "weeklyReview": "Weekly Review"
+    "weeklyReview": "Weekly Review",
+    "shortcutsHint": "Press ? for keyboard shortcuts",
+    "companies": "Companies"
   },
   "newshalflife": {
     "categoryLabel": "Category",

@@ -87,14 +87,6 @@ function toEtoroMarket(exchangeRaw?: string | null): "US" | "EU" | null {
 
 type CompanyTabId = "overview" | "ai-brief" | "signals" | "dividend" | "premium-analysis";
 
-const tabs: Array<{ id: CompanyTabId; label: string }> = [
-  { id: "overview", label: "Overview" },
-  { id: "ai-brief", label: "AI Brief" },
-  { id: "signals", label: "Signals" },
-  { id: "dividend", label: "Dividend" },
-  { id: "premium-analysis", label: "Premium Analysis" },
-];
-
 export function CompanyDetail() {
   const { t, i18n } = useTranslation();
   const { symbol = "" } = useParams();
@@ -111,6 +103,16 @@ export function CompanyDetail() {
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [analysisLimit, setAnalysisLimit] = useState<BriefLimitReached | null>(null);
   const [activeTab, setActiveTab] = useState<CompanyTabId>("overview");
+  const tabs = useMemo(
+    (): Array<{ id: CompanyTabId; label: string }> => [
+      { id: "overview", label: t("company.tabs.overview", { defaultValue: "Overview" }) },
+      { id: "ai-brief", label: t("company.tabs.aiBrief", { defaultValue: "AI Brief" }) },
+      { id: "signals", label: t("company.tabs.signals", { defaultValue: "Signals" }) },
+      { id: "dividend", label: t("company.tabs.dividend", { defaultValue: "Dividend" }) },
+      { id: "premium-analysis", label: t("company.tabs.premiumAnalysis", { defaultValue: "Premium Analysis" }) },
+    ],
+    [t],
+  );
   const companyName = company?.name?.trim() || sym;
   const seoTitle = `${sym} — ${companyName} | StockAI Pro`;
   const seoDescription = `AI analysis of ${companyName}. Risk score, signals, dividend data and Premium Analysis.`;
@@ -250,9 +252,9 @@ export function CompanyDetail() {
       <>
         <SEOHead title={seoTitle} description={seoDescription} structuredData={seoStructuredData} />
         <div className="mx-auto max-w-4xl px-4 py-20">
-          <p className="text-red-300">{error ?? "Company not found"}</p>
-          <Link to="/" className="mt-4 inline-block hover:underline" style={{ color: colors.brandMedium }}>
-            {t("company.backHome", { defaultValue: "<- Back home" })}
+          <p className="text-red-300">{error ?? t("company.notFound", { defaultValue: "Company not found" })}</p>
+          <Link to="/companies" className="mt-4 inline-block hover:underline" style={{ color: colors.brandMedium }}>
+            {t("company.backToCompanies", { defaultValue: "← Companies" })}
           </Link>
         </div>
       </>
@@ -263,9 +265,9 @@ export function CompanyDetail() {
     <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary, color: colors.textPrimary }}>
       <SEOHead title={seoTitle} description={seoDescription} structuredData={seoStructuredData} />
       <div className="mx-auto max-w-[1280px] px-4 py-6 lg:px-6">
-        <Link to="/" className="mb-4 inline-block text-sm hover:underline" style={{ color: colors.brandMedium }}>
-        {t("company.backToCompanies", { defaultValue: "← Companies" })}
-      </Link>
+        <Link to="/companies" className="mb-4 inline-block text-sm hover:underline" style={{ color: colors.brandMedium }}>
+          {t("company.backToCompanies", { defaultValue: "← Companies" })}
+        </Link>
 
         <section
           className="rounded-2xl border p-4 shadow-sm lg:p-5"
@@ -322,7 +324,7 @@ export function CompanyDetail() {
             </div>
             <div className="w-full max-w-sm lg:text-right">
               <p className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: colors.textMuted }}>
-                Last Close
+                {t("company.lastClose", { defaultValue: "Last close" })}
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-2 lg:justify-end">
                 <span className="font-mono text-4xl font-semibold" style={{ color: colors.brandDark }}>
@@ -349,20 +351,26 @@ export function CompanyDetail() {
                   backgroundImage: `linear-gradient(90deg, ${colors.brandDark} 0%, ${colors.brandMedium} 100%)`,
                 }}
               >
-                Premium Analysis
+                {t("company.premiumAnalysis", { defaultValue: "Premium Analysis" })}
               </Link>
             </div>
           </div>
         </section>
 
         <div className="mt-4 border-b" style={{ borderColor: colors.border }}>
-          <nav className="-mb-px flex flex-wrap gap-2">
+          <nav
+            role="tablist"
+            aria-label={t("company.tabsLabel", { defaultValue: "Company sections" })}
+            className="-mb-px flex flex-wrap gap-2"
+          >
             {tabs.map((tab) => {
               const isActive = tab.id === activeTab;
               return (
                 <button
                   key={tab.id}
                   type="button"
+                  role="tab"
+                  aria-selected={isActive}
                   onClick={() => setActiveTab(tab.id)}
                   className="rounded-t-lg border px-4 py-2 text-sm font-semibold transition"
                   style={{
@@ -387,7 +395,7 @@ export function CompanyDetail() {
                   style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
                 >
                   <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-                    Price Chart
+                    {t("company.priceChart", { defaultValue: "Price chart" })}
                   </h2>
                   <div className="mt-3">
                     <CompanyPriceChart quotes={sortedQuotes} sessionOhlc={sessionOhlc} />
@@ -399,7 +407,7 @@ export function CompanyDetail() {
                   style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
                 >
                   <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-                    OHLCV (Latest Session)
+                    {t("company.ohlcSession", { defaultValue: "Latest session (OHLCV)" })}
                   </h2>
                   <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
                     {[

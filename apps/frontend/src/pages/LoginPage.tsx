@@ -1,20 +1,30 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
+function safeRedirectPath(from: unknown): string {
+  if (typeof from !== "string" || !from.startsWith("/") || from.startsWith("//")) {
+    return "/dashboard";
+  }
+  return from;
+}
+
 export function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [params] = useSearchParams();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const redirectFrom = safeRedirectPath((location.state as { from?: string } | null)?.from);
+  const isCheckoutReturn = redirectFrom.startsWith("/pricing");
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -23,11 +33,11 @@ export function LoginPage() {
     try {
       await login(email, password);
       trackEvent("login");
-      navigate("/", { replace: true });
+      navigate(redirectFrom, { replace: true });
     } catch (e) {
       const message = apiErrorMessage(e);
       if (message === "Please verify your email first") {
-        setError("Sprawdź skrzynkę i kliknij link aktywacyjny");
+        setError(t("auth.verifyEmailFirst", { defaultValue: "Please verify your email first. Check your inbox for the activation link." }));
         return;
       }
       setError(message);
@@ -59,12 +69,20 @@ export function LoginPage() {
                 <h1 className="text-2xl font-bold text-textPrimary">
                   {t("auth.loginTitle", { defaultValue: "Logowanie" })}
                 </h1>
-                <p className="mt-1 text-sm text-textSecondary">Zaloguj się, aby kontynuować pracę z platformą.</p>
+                <p className="mt-1 text-sm text-textSecondary">
+                  {t("auth.loginSubtitle", { defaultValue: "Sign in to continue on StockAI Pro." })}
+                </p>
               </div>
+
+              {isCheckoutReturn ? (
+                <p className="rounded-xl border border-brandCyan/30 bg-brandCyan/10 px-3 py-2 text-sm text-brandDark">
+                  {t("auth.loginContinueCheckout", { defaultValue: "Sign in to complete your subscription." })}
+                </p>
+              ) : null}
 
               {params.get("verified") === "true" ? (
                 <p className="rounded-xl border border-positive/30 bg-positive/10 px-3 py-2 text-sm text-positive">
-                  Email zweryfikowany! Możesz się zalogować.
+                  {t("auth.verifyEmailSuccess", { defaultValue: "Email verified! You can sign in now." })}
                 </p>
               ) : null}
 
@@ -92,7 +110,7 @@ export function LoginPage() {
 
               <p className="text-right text-sm text-textSecondary">
                 <Link to="/forgot-password" className="font-medium text-brandCyan">
-                  Nie pamiętasz hasła?
+                  {t("auth.forgotPassword", { defaultValue: "Forgot password?" })}
                 </Link>
               </p>
 

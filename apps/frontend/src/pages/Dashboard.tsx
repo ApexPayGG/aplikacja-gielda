@@ -14,7 +14,7 @@ import { EmotionalStateWidget } from "../components/EmotionalStateWidget";
 import { useAuth } from "../context/AuthContext";
 import { getCompanyDetail, getLatestQuoteBySymbol, getWatchlist } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
-import { formatCurrency, formatDate, formatNumber, formatPercent } from "../utils/formatters";
+import { formatCurrency, formatNumber, formatPercent } from "../utils/formatters";
 
 type WatchedCompany = {
   symbol: string;
@@ -42,7 +42,7 @@ function makeFallbackLogo(symbol: string, exchange?: string | null): string | nu
 }
 
 export function Dashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [watchlistRows, setWatchlistRows] = useState<WatchedCompany[]>([]);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
@@ -127,29 +127,31 @@ export function Dashboard() {
     return raw.split(/\s+/)[0];
   }, [user?.name]);
 
-  const todayLabel = useMemo(
-    () => formatDate(new Date(), "pl-PL"),
-    [],
-  );
+  const todayLabel = useMemo(() => {
+    const locale = i18n.resolvedLanguage || i18n.language || "en";
+    return new Intl.DateTimeFormat(locale, { weekday: "long", year: "numeric", month: "long", day: "numeric" }).format(
+      new Date(),
+    );
+  }, [i18n.language, i18n.resolvedLanguage]);
 
   const statCards: Array<{ label: string; value: string; trend: TrendTone }> = [
     {
-      label: "Aktywne sygnały",
+      label: t("dashboard.statSignals", { defaultValue: "Active signals" }),
       value: String(quickStats.signalCount),
       trend: quickStats.signalCount > 0 ? "up" : "flat",
     },
     {
-      label: "Spółki w watchliście",
+      label: t("dashboard.statWatchlist", { defaultValue: "On watchlist" }),
       value: String(quickStats.watchlistCount),
       trend: quickStats.watchlistCount > 0 ? "up" : "flat",
     },
     {
-      label: "Win rate",
+      label: t("dashboard.statWinRate", { defaultValue: "Win rate" }),
       value: `${formatNumber(quickStats.winRate, 1)}%`,
       trend: quickStats.winRate >= 50 ? "up" : "down",
     },
     {
-      label: "Streak",
+      label: t("dashboard.statStreak", { defaultValue: "Positive streak" }),
       value: String(quickStats.streak),
       trend: quickStats.streak > 0 ? "up" : "down",
     },
@@ -181,7 +183,9 @@ export function Dashboard() {
           <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-textPrimary md:text-3xl">Dzień dobry, {firstName}</h1>
+                <h1 className="text-2xl font-bold text-textPrimary md:text-3xl">
+                  {t("dashboard.greeting", { name: firstName, defaultValue: "Good morning, {{name}}" })}
+                </h1>
                 <p className="mt-1 text-sm capitalize text-textSecondary">{todayLabel}</p>
               </div>
               <Link
@@ -207,8 +211,12 @@ export function Dashboard() {
 
           <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="text-base font-semibold uppercase tracking-wide text-textPrimary">Watchlista</h2>
-              <span className="text-xs font-medium text-textSecondary">{quickStats.watchlistCount} spółek</span>
+              <h2 className="text-base font-semibold uppercase tracking-wide text-textPrimary">
+                {t("dashboard.watchlistTitle", { defaultValue: "Watchlist" })}
+              </h2>
+              <span className="text-xs font-medium text-textSecondary">
+                {t("dashboard.watchlistCount", { count: quickStats.watchlistCount, defaultValue: "{{count}} companies" })}
+              </span>
             </div>
 
             {watchlistLoading && (
@@ -235,7 +243,7 @@ export function Dashboard() {
                   return (
                     <Link
                       key={row.symbol}
-                      to={`/company/${encodeURIComponent(row.symbol)}/premium`}
+                      to={`/company/${encodeURIComponent(row.symbol)}`}
                       className="flex min-w-[220px] snap-start flex-col rounded-xl border border-border bg-bgSecondary/60 p-4 transition hover:-translate-y-0.5 hover:border-borderStrong hover:shadow-sm"
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -277,7 +285,9 @@ export function Dashboard() {
 
           <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="text-base font-semibold uppercase tracking-wide text-textPrimary">Ostatnie sygnały</h2>
+              <h2 className="text-base font-semibold uppercase tracking-wide text-textPrimary">
+                {t("dashboard.signalsTitle", { defaultValue: "Recent signals" })}
+              </h2>
               <FireIcon className="h-5 w-5 text-brandGold" />
             </div>
 
@@ -289,7 +299,7 @@ export function Dashboard() {
 
             {!watchlistLoading && !watchlistError && latestSignals.length === 0 && (
               <p className="rounded-xl border border-border bg-bgSecondary px-4 py-3 text-sm text-textSecondary">
-                Brak sygnałów w ostatnim odczycie.
+                {t("dashboard.signalsEmpty", { defaultValue: "No signals in the latest snapshot." })}
               </p>
             )}
 
@@ -309,7 +319,9 @@ export function Dashboard() {
                             isPositive ? "bg-positive/10 text-positive" : "bg-negative/10 text-negative"
                           }`}
                         >
-                          {isPositive ? "LONG" : "SHORT"}
+                          {isPositive
+                            ? t("dashboard.signalLong", { defaultValue: "LONG" })
+                            : t("dashboard.signalShort", { defaultValue: "SHORT" })}
                         </span>
                         <span className={`text-sm font-semibold ${isPositive ? "text-positive" : "text-negative"}`}>
                           {formatChange(row.changePct)}

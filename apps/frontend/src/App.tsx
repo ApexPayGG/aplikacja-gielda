@@ -95,7 +95,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
     return <LoadingScreen />;
   }
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: `${location.pathname}${location.search}` }} />;
   }
   if (!onboardingCompleted && !location.pathname.startsWith("/onboarding")) {
     return <Navigate to="/onboarding" replace />;
