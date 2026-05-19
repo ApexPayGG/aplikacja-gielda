@@ -9,6 +9,7 @@ type CompanySearchAutocompleteProps = {
   initialValue?: string;
   limit?: number;
   navigateOnSelect?: boolean;
+  compact?: boolean;
   onQueryChange?: (query: string) => void;
   onSelectCompany?: (company: CompanySearchSuggestion) => void;
 };
@@ -21,6 +22,7 @@ export function CompanySearchAutocomplete({
   initialValue = "",
   limit = DEFAULT_LIMIT,
   navigateOnSelect = true,
+  compact = false,
   onQueryChange,
   onSelectCompany,
 }: CompanySearchAutocompleteProps) {
@@ -134,7 +136,7 @@ export function CompanySearchAutocomplete({
     <div ref={rootRef} className="relative w-full">
       <div className="relative">
         <MagnifyingGlassIcon
-          className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2"
+          className={`pointer-events-none absolute top-1/2 -translate-y-1/2 ${compact ? "left-3 h-4 w-4" : "left-4 h-5 w-5"}`}
           style={{ color: colors.brandDark }}
         />
         <input
@@ -149,7 +151,9 @@ export function CompanySearchAutocomplete({
           onFocus={() => setIsOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="h-12 w-full rounded-2xl border pl-12 pr-4 text-sm shadow-sm outline-none transition"
+          className={`w-full border shadow-sm outline-none transition ${
+            compact ? "h-10 rounded-xl pl-10 pr-3 text-sm" : "h-12 rounded-2xl pl-12 pr-4 text-sm"
+          }`}
           style={{
             borderColor: colors.border,
             color: colors.textPrimary,

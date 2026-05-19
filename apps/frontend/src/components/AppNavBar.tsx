@@ -9,6 +9,7 @@ import {
   UserCircleIcon,
   WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
+import { GlobalSearchBar } from "./GlobalSearchBar";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { NotificationsCenter } from "./NotificationsCenter";
 import { ThemeToggle } from "./ThemeToggle";
@@ -307,9 +308,13 @@ export function AppNavBar() {
           />
         </Link>
 
-        <button
+        <GlobalSearchBar variant="desktop" />
+
+        <div className="ml-auto flex shrink-0 items-center gap-2 md:hidden">
+          <GlobalSearchBar variant="mobile" />
+          <button
           type="button"
-          className="ml-auto inline-flex h-11 w-11 flex-col items-center justify-center rounded-lg border border-border md:hidden"
+          className="inline-flex h-11 w-11 flex-col items-center justify-center rounded-lg border border-border"
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav-panel"
           onClick={() => setMobileOpen((v) => !v)}
@@ -333,9 +338,10 @@ export function AppNavBar() {
             }`}
           />
           <span className="sr-only">{t("nav.menu")}</span>
-        </button>
+          </button>
+        </div>
 
-        <div className="hidden min-w-0 flex-1 items-center gap-x-1 gap-y-2 md:flex md:gap-x-3">
+        <div className="hidden min-w-0 shrink-0 items-center gap-x-1 gap-y-2 md:flex md:gap-x-3">
           <NavLink to="/" end className={({ isActive }) => navLinkClass(isActive)}>
             {t("nav.home")}
           </NavLink>

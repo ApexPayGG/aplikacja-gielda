@@ -118,7 +118,7 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
 
           <div>
             <label className={`mb-1 block ${compact ? "text-xs" : "text-sm"} text-textSecondary`}>
-              {t("checkin.planLabel", { defaultValue: "What is your plan today?" })}
+              {t("dashboard.checkIn.planPlaceholder", { defaultValue: "What is your plan today?" })}
             </label>
             <textarea
               value={plan}

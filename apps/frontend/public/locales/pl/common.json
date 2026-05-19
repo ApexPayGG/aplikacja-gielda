@@ -323,8 +323,13 @@
       "ctaSignals": "Zobacz sygnały",
       "popularLabel": "Popularne na start"
     },
-    "emptyWatchlistCta": "Dodaj pierwszą spółkę",
-    "emptySignalsHint": "Sygnały pojawią się, gdy spółka z watchlisty zmieni się o ±2% w sesji."
+    "emptyWatchlistCta": "Przeglądaj spółki",
+    "emptySignalsHint": "Sygnały pojawią się, gdy spółka z watchlisty zmieni się o ±2% w sesji.",
+    "emptyWatchlistTitle": "🔍 Znajdź swoją pierwszą spółkę",
+    "signalsWaiting": "Brak sygnałów — rynek czeka na setup",
+    "checkIn": {
+      "planPlaceholder": "Jaki jest Twój plan na dziś?"
+    }
   },
   "digest": {
     "cardDateLabel": "Data digestu",
@@ -811,7 +816,8 @@
     "volatility": "Volatility Heat Map",
     "weeklyReview": "Weekly Review",
     "shortcutsHint": "Naciśnij ? aby zobaczyć skróty",
-    "companies": "Spółki"
+    "companies": "Spółki",
+    "searchPlaceholder": "Szukaj spółki..."
   },
   "newshalflife": {
     "categoryLabel": "Kategoria",

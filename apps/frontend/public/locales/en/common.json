@@ -323,8 +323,13 @@
       "ctaSignals": "View signals",
       "popularLabel": "Popular to start"
     },
-    "emptyWatchlistCta": "Add your first company",
-    "emptySignalsHint": "Signals appear when your watchlist moves ±2% intraday."
+    "emptyWatchlistCta": "Browse companies",
+    "emptySignalsHint": "Signals appear when your watchlist moves ±2% intraday.",
+    "emptyWatchlistTitle": "🔍 Find your first company",
+    "signalsWaiting": "No signals — the market is waiting for a setup",
+    "checkIn": {
+      "planPlaceholder": "What is your plan today?"
+    }
   },
   "digest": {
     "cardDateLabel": "Digest date",
@@ -811,7 +816,8 @@
     "volatility": "Volatility Heat Map",
     "weeklyReview": "Weekly Review",
     "shortcutsHint": "Press ? for keyboard shortcuts",
-    "companies": "Companies"
+    "companies": "Companies",
+    "searchPlaceholder": "Search company..."
   },
   "newshalflife": {
     "categoryLabel": "Category",

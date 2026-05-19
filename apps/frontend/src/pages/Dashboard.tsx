@@ -9,9 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { DailyCheckInWidget } from "../components/DailyCheckInWidget";
-import { DashboardWelcomeHero } from "../components/DashboardWelcomeHero";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
-import { EmotionalStateWidget } from "../components/EmotionalStateWidget";
 import { useAuth } from "../context/AuthContext";
 import { getCompanyDetail, getLatestQuoteBySymbol, getWatchlist } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -220,10 +218,6 @@ export function Dashboard() {
             ) : null}
           </section>
 
-          {isEmptyDashboard ? <DashboardWelcomeHero /> : null}
-
-          {!isEmptyDashboard ? (
-          <>
           <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between gap-3">
               <h2 className="text-base font-semibold uppercase tracking-wide text-textPrimary">
@@ -245,9 +239,20 @@ export function Dashboard() {
             )}
 
             {!watchlistLoading && !watchlistError && watchlistRows.length === 0 && (
-              <p className="rounded-xl border border-border bg-bgSecondary px-4 py-3 text-sm text-textSecondary">
-                {t("watchlist.empty", { defaultValue: "You are not observing any companies yet." })}
-              </p>
+              <div className="rounded-xl border border-dashed border-brandDark/25 bg-gradient-to-br from-brandDark/[0.04] to-bgSecondary/80 px-5 py-6 text-center">
+                <p className="text-base font-semibold text-textPrimary">
+                  {t("dashboard.emptyWatchlistTitle", { defaultValue: "🔍 Find your first company" })}
+                </p>
+                <p className="mt-2 text-sm text-textSecondary">
+                  {t("watchlist.empty", { defaultValue: "You are not observing any companies yet." })}
+                </p>
+                <Link
+                  to="/companies"
+                  className="mt-4 inline-flex rounded-lg bg-brandDark px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
+                >
+                  {t("dashboard.emptyWatchlistCta", { defaultValue: "Browse companies" })}
+                </Link>
+              </div>
             )}
 
             {!watchlistLoading && !watchlistError && watchlistRows.length > 0 && (
@@ -313,9 +318,11 @@ export function Dashboard() {
             )}
 
             {!watchlistLoading && !watchlistError && latestSignals.length === 0 && (
-              <p className="rounded-xl border border-border bg-bgSecondary px-4 py-3 text-sm text-textSecondary">
-                {t("dashboard.signalsEmpty", { defaultValue: "No signals in the latest snapshot." })}
-              </p>
+              <div className="rounded-xl border border-border bg-bgSecondary/80 px-4 py-4 text-sm text-textSecondary">
+                <p className="font-medium text-textPrimary">
+                  {t("dashboard.signalsWaiting", { defaultValue: "No signals — the market is waiting for a setup" })}
+                </p>
+              </div>
             )}
 
             {!watchlistLoading && !watchlistError && latestSignals.length > 0 && (
@@ -348,13 +355,10 @@ export function Dashboard() {
               </ul>
             )}
           </section>
-          </>
-          ) : null}
         </div>
 
         <aside className="space-y-4 xl:sticky xl:top-20 xl:self-start">
           <DailyCheckInWidget compact />
-          <EmotionalStateWidget variant="compact" />
         </aside>
       </div>
 
