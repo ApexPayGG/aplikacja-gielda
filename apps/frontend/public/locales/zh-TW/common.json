@@ -1321,5 +1321,75 @@
     "investmentDisclaimer": "法律聲明：StockAI Pro 上由人工智慧（含 Claude AI）產生的分析、市場訊號與資料僅供教育與資訊用途，不構成投資建議或財務諮詢。投資金融市場具有高資本損失風險。AMC Energy Sp. z o.o. 對依據應用程式資料所做的財務決策不負責任。",
     "termsLink": "完整服務條款",
     "ariaLabel": "投資法律聲明"
+  },
+  "onboarding": {
+    "skip": "略過",
+    "step": "步驟 {{current}}/{{total}}",
+    "defaultName": "投資人",
+    "welcome": {
+      "title": "歡迎使用 StockAI Pro，{{name}}！",
+      "body": "StockAI Pro 整合市場分析、訊號與 AI 支援，協助投資人做出更好、更快的決策。我們會為您個人化體驗。"
+    },
+    "markets": {
+      "title": "您對哪些市場感興趣？",
+      "error": "請至少選擇一個市場以繼續。",
+      "options": {
+        "gpw": "GPW",
+        "nyse_nasdaq": "NYSE/NASDAQ",
+        "dax": "DAX",
+        "lse": "LSE",
+        "asia": "亞洲",
+        "other": "其他"
+      }
+    },
+    "style": {
+      "title": "您的投資風格是？",
+      "error": "請選擇投資風格以繼續。",
+      "swing": {
+        "icon": "📈",
+        "title": "波段交易（數日–數週）",
+        "description": "持倉數日至數週。"
+      },
+      "longterm": {
+        "icon": "💼",
+        "title": "長期（數月–數年）",
+        "description": "以數月或數年為投資視野。"
+      },
+      "daytrader": {
+        "icon": "⚡",
+        "title": "當沖（日內）",
+        "description": "當日決策與交易。"
+      },
+      "learning": {
+        "icon": "🔰",
+        "title": "尚在學習",
+        "description": "逐步建立基礎並認識市場。"
+      }
+    },
+    "ready": {
+      "title": "您的個人檔案已就緒",
+      "subtitle": "以下三項功能可協助您立即開始：",
+      "explore": "查看 →"
+    },
+    "features": {
+      "signals": {
+        "title": "Signals",
+        "description": "查看最新投資訊號並設定提醒。"
+      },
+      "behavioralCoach": {
+        "title": "Behavioral Coach",
+        "description": "分析決策並減少重複的行為偏差。"
+      },
+      "paperTrading": {
+        "title": "Paper Trading",
+        "description": "以虛擬資金無風險測試策略。"
+      }
+    },
+    "nav": {
+      "back": "← 返回",
+      "start": "開始 →",
+      "next": "下一步 →",
+      "dashboard": "前往儀表板 →"
+    }
   }
 }

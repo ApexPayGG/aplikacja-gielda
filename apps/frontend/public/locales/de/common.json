@@ -1321,5 +1321,75 @@
     "ariaLabel": "Rechtlicher Investitionshinweis",
     "investmentDisclaimer": "Rechtlicher Hinweis: Alle Analysen, Marktsignale und von der künstlichen Intelligenz (einschließlich Claude AI) auf der Plattform StockAI Pro generierten Materialien dienen ausschließlich Bildungs- und Informationszwecken. Sie stellen keine Anlageberatung oder Finanzempfehlungen im Sinne des Gesetzes dar. Investitionen an den Finanzmärkten sind mit einem hohen Risiko des Kapitalverlusts verbunden. AMC Energy Sp. z o.o. übernimmt keine Haftung für finanzielle Entscheidungen, die auf Basis der Daten in der Anwendung getroffen werden.",
     "termsLink": "Vollständige Nutzungsbedingungen"
+  },
+  "onboarding": {
+    "skip": "Überspringen",
+    "step": "Schritt {{current}}/{{total}}",
+    "defaultName": "Investor",
+    "welcome": {
+      "title": "Willkommen bei StockAI Pro, {{name}}!",
+      "body": "StockAI Pro verbindet Marktanalytik, Signale und KI-Unterstützung für Anleger. Wir personalisieren Ihr Erlebnis, damit Sie schneller bessere Entscheidungen treffen."
+    },
+    "markets": {
+      "title": "Für welche Märkte interessieren Sie sich?",
+      "error": "Wählen Sie mindestens einen Markt, um fortzufahren.",
+      "options": {
+        "gpw": "GPW",
+        "nyse_nasdaq": "NYSE/NASDAQ",
+        "dax": "DAX",
+        "lse": "LSE",
+        "asia": "Asien",
+        "other": "Sonstige"
+      }
+    },
+    "style": {
+      "title": "Welcher Anlagestil passt zu Ihnen?",
+      "error": "Wählen Sie einen Anlagestil, um fortzufahren.",
+      "swing": {
+        "icon": "📈",
+        "title": "Swing-Trader (Tage–Wochen)",
+        "description": "Positionen über einige Tage bis Wochen."
+      },
+      "longterm": {
+        "icon": "💼",
+        "title": "Langfristig (Monate–Jahre)",
+        "description": "Investieren über Monate oder Jahre."
+      },
+      "daytrader": {
+        "icon": "⚡",
+        "title": "Daytrader (Intraday)",
+        "description": "Entscheidungen und Trades am selben Tag."
+      },
+      "learning": {
+        "icon": "🔰",
+        "title": "Ich lerne noch",
+        "description": "Grundlagen aufbauen und den Markt Schritt für Schritt kennenlernen."
+      }
+    },
+    "ready": {
+      "title": "Ihr Profil ist bereit",
+      "subtitle": "Drei Funktionen, mit denen Sie sofort starten können:",
+      "explore": "Entdecken →"
+    },
+    "features": {
+      "signals": {
+        "title": "Signals",
+        "description": "Aktuelle Investment-Signale prüfen und eigene Alerts setzen."
+      },
+      "behavioralCoach": {
+        "title": "Behavioral Coach",
+        "description": "Entscheidungen analysieren und wiederkehrende Verhaltensfehler vermeiden."
+      },
+      "paperTrading": {
+        "title": "Paper Trading",
+        "description": "Strategien risikofrei mit virtuellem Kapital testen."
+      }
+    },
+    "nav": {
+      "back": "← Zurück",
+      "start": "Los geht's →",
+      "next": "Weiter →",
+      "dashboard": "Zum Dashboard →"
+    }
   }
 }

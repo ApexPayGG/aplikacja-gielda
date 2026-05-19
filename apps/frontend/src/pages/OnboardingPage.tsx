@@ -1,61 +1,40 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
 import { saveOnboardingPreferences, type InvestmentStyle } from "../utils/onboarding";
 
 type WizardStep = 1 | 2 | 3 | 4;
 
-const MARKET_OPTIONS = ["GPW", "NYSE/NASDAQ", "DAX", "LSE", "Azja", "Inne"];
+const MARKET_IDS = ["gpw", "nyse_nasdaq", "dax", "lse", "asia", "other"] as const;
+type MarketId = (typeof MARKET_IDS)[number];
 
-const STYLE_OPTIONS: Array<{ id: InvestmentStyle; icon: string; title: string; description: string }> = [
-  {
-    id: "swing",
-    icon: "📈",
-    title: "Swing trader (dni-tygodnie)",
-    description: "Pozycje trzymane od kilku dni do kilku tygodni.",
-  },
-  {
-    id: "longterm",
-    icon: "💼",
-    title: "Długoterminowy (miesiące-lata)",
-    description: "Inwestowanie na horyzont miesięcy lub lat.",
-  },
-  { id: "daytrader", icon: "⚡", title: "Daytrader (intraday)", description: "Decyzje i transakcje realizowane intraday." },
-  { id: "learning", icon: "🔰", title: "Uczę się dopiero", description: "Buduję fundamenty i poznaję rynek krok po kroku." },
-];
+const STYLE_IDS: InvestmentStyle[] = ["swing", "longterm", "daytrader", "learning"];
 
-const RECOMMENDED_FEATURES = [
-  {
-    title: "Signals",
-    description: "Przejrzyj bieżące sygnały inwestycyjne i ustaw własne alerty.",
-    href: "/signals",
-  },
-  {
-    title: "Behavioral Coach",
-    description: "Analizuj decyzje i eliminuj powtarzające się błędy behawioralne.",
-    href: "/behavioral-coach",
-  },
-  {
-    title: "Paper Trading",
-    description: "Testuj strategie bez ryzyka na wirtualnym kapitale.",
-    href: "/paper-trading",
-  },
-];
+const FEATURE_IDS = ["signals", "behavioralCoach", "paperTrading"] as const;
+type FeatureId = (typeof FEATURE_IDS)[number];
+
+const FEATURE_HREFS: Record<FeatureId, string> = {
+  signals: "/signals",
+  behavioralCoach: "/behavioral-coach",
+  paperTrading: "/paper-trading",
+};
 
 export function OnboardingPage() {
+  const { t } = useTranslation("common");
   const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState<WizardStep>(1);
-  const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
+  const [selectedMarkets, setSelectedMarkets] = useState<MarketId[]>([]);
   const [selectedStyle, setSelectedStyle] = useState<InvestmentStyle | null>(null);
   const [marketError, setMarketError] = useState<string | null>(null);
   const [styleError, setStyleError] = useState<string | null>(null);
 
   const progressPercent = useMemo(() => (step / 4) * 100, [step]);
-  const firstName = user?.name?.trim() || "Inwestorze";
+  const firstName = user?.name?.trim() || t("onboarding.defaultName", { defaultValue: "Investor" });
 
-  function handleToggleMarket(market: string): void {
+  function handleToggleMarket(market: MarketId): void {
     setMarketError(null);
     setSelectedMarkets((previous) =>
       previous.includes(market) ? previous.filter((item) => item !== market) : [...previous, market],
@@ -68,12 +47,12 @@ export function OnboardingPage() {
 
   function goNext(): void {
     if (step === 2 && selectedMarkets.length === 0) {
-      setMarketError("Wybierz co najmniej jeden rynek, aby przejść dalej.");
+      setMarketError(t("onboarding.markets.error", { defaultValue: "Select at least one market to continue." }));
       return;
     }
 
     if (step === 3 && !selectedStyle) {
-      setStyleError("Wybierz styl inwestowania, aby kontynuować.");
+      setStyleError(t("onboarding.style.error", { defaultValue: "Select an investment style to continue." }));
       return;
     }
 
@@ -99,14 +78,14 @@ export function OnboardingPage() {
       <div className="mx-auto w-full max-w-4xl">
         <div className="mb-4 flex justify-end">
           <Link to="/dashboard" className="text-sm font-medium text-brandCyan transition hover:brightness-90">
-            Pomiń
+            {t("onboarding.skip", { defaultValue: "Skip" })}
           </Link>
         </div>
 
         <div className="rounded-3xl border border-border bg-bgPrimary p-6 shadow-[0_24px_72px_rgba(45,10,107,0.16)] sm:p-8">
           <div className="mb-8">
             <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.08em] text-textMuted">
-              <span>Krok {step}/4</span>
+              <span>{t("onboarding.step", { current: step, total: 4, defaultValue: "Step {{current}}/{{total}}" })}</span>
               <span>{Math.round(progressPercent)}%</span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-bgTertiary">
@@ -120,25 +99,34 @@ export function OnboardingPage() {
           {step === 1 ? (
             <section className="space-y-5 text-center">
               <img src="/logo.png" alt="StockAI Pro" className="mx-auto h-20 w-auto object-contain" />
-              <h1 className="text-3xl font-bold text-textPrimary">Witaj w StockAI Pro, {firstName}!</h1>
+              <h1 className="text-3xl font-bold text-textPrimary">
+                {t("onboarding.welcome.title", {
+                  name: firstName,
+                  defaultValue: "Welcome to StockAI Pro, {{name}}!",
+                })}
+              </h1>
               <p className="mx-auto max-w-2xl text-base text-textSecondary">
-                StockAI Pro to platforma, która łączy analitykę rynku, sygnały i wsparcie AI dla inwestora.
-                Personalizujemy doświadczenie, aby szybciej prowadzić Cię do trafniejszych decyzji.
+                {t("onboarding.welcome.body", {
+                  defaultValue:
+                    "StockAI Pro combines market analytics, signals, and AI support for investors. We personalize your experience to help you make better decisions faster.",
+                })}
               </p>
             </section>
           ) : null}
 
           {step === 2 ? (
             <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-textPrimary">Którymi rynkami jesteś zainteresowany?</h2>
+              <h2 className="text-2xl font-bold text-textPrimary">
+                {t("onboarding.markets.title", { defaultValue: "Which markets are you interested in?" })}
+              </h2>
               <div className="flex flex-wrap gap-3">
-                {MARKET_OPTIONS.map((market) => {
-                  const selected = selectedMarkets.includes(market);
+                {MARKET_IDS.map((marketId) => {
+                  const selected = selectedMarkets.includes(marketId);
                   return (
                     <button
-                      key={market}
+                      key={marketId}
                       type="button"
-                      onClick={() => handleToggleMarket(market)}
+                      onClick={() => handleToggleMarket(marketId)}
                       className="rounded-full border px-4 py-2 text-sm font-semibold transition"
                       style={{
                         borderColor: selected ? colors.brandCyan : colors.borderStrong,
@@ -146,7 +134,7 @@ export function OnboardingPage() {
                         color: colors.textPrimary,
                       }}
                     >
-                      {market}
+                      {t(`onboarding.markets.options.${marketId}`, { defaultValue: marketId })}
                     </button>
                   );
                 })}
@@ -157,16 +145,18 @@ export function OnboardingPage() {
 
           {step === 3 ? (
             <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-textPrimary">Jaki masz styl inwestowania?</h2>
+              <h2 className="text-2xl font-bold text-textPrimary">
+                {t("onboarding.style.title", { defaultValue: "What is your investment style?" })}
+              </h2>
               <div className="grid gap-4 sm:grid-cols-2">
-                {STYLE_OPTIONS.map((option) => {
-                  const selected = selectedStyle === option.id;
+                {STYLE_IDS.map((styleId) => {
+                  const selected = selectedStyle === styleId;
                   return (
                     <button
-                      key={option.id}
+                      key={styleId}
                       type="button"
                       onClick={() => {
-                        setSelectedStyle(option.id);
+                        setSelectedStyle(styleId);
                         setStyleError(null);
                       }}
                       className="rounded-2xl border p-4 text-left transition hover:shadow-sm"
@@ -175,9 +165,13 @@ export function OnboardingPage() {
                         backgroundColor: colors.bgPrimary,
                       }}
                     >
-                      <p className="text-2xl">{option.icon}</p>
-                      <p className="mt-2 text-base font-semibold text-textPrimary">{option.title}</p>
-                      <p className="mt-1 text-sm text-textSecondary">{option.description}</p>
+                      <p className="text-2xl">{t(`onboarding.style.${styleId}.icon`, { defaultValue: "📈" })}</p>
+                      <p className="mt-2 text-base font-semibold text-textPrimary">
+                        {t(`onboarding.style.${styleId}.title`, { defaultValue: styleId })}
+                      </p>
+                      <p className="mt-1 text-sm text-textSecondary">
+                        {t(`onboarding.style.${styleId}.description`, { defaultValue: "" })}
+                      </p>
                     </button>
                   );
                 })}
@@ -188,20 +182,30 @@ export function OnboardingPage() {
 
           {step === 4 ? (
             <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-textPrimary">Twój profil jest gotowy</h2>
+              <h2 className="text-2xl font-bold text-textPrimary">
+                {t("onboarding.ready.title", { defaultValue: "Your profile is ready" })}
+              </h2>
               <p className="text-sm text-textSecondary">
-                Oto trzy funkcje, które najlepiej pomogą Ci wystartować już teraz:
+                {t("onboarding.ready.subtitle", {
+                  defaultValue: "Here are three features to help you get started right away:",
+                })}
               </p>
               <div className="grid gap-4 md:grid-cols-3">
-                {RECOMMENDED_FEATURES.map((feature) => (
+                {FEATURE_IDS.map((featureId) => (
                   <Link
-                    key={feature.href}
-                    to={feature.href}
+                    key={featureId}
+                    to={FEATURE_HREFS[featureId]}
                     className="rounded-2xl border border-border bg-bgPrimary p-4 transition hover:-translate-y-0.5 hover:shadow-sm"
                   >
-                    <p className="text-base font-semibold text-textPrimary">{feature.title}</p>
-                    <p className="mt-1 text-sm text-textSecondary">{feature.description}</p>
-                    <p className="mt-4 text-sm font-semibold text-brandCyan">Sprawdź →</p>
+                    <p className="text-base font-semibold text-textPrimary">
+                      {t(`onboarding.features.${featureId}.title`, { defaultValue: featureId })}
+                    </p>
+                    <p className="mt-1 text-sm text-textSecondary">
+                      {t(`onboarding.features.${featureId}.description`, { defaultValue: "" })}
+                    </p>
+                    <p className="mt-4 text-sm font-semibold text-brandCyan">
+                      {t("onboarding.ready.explore", { defaultValue: "Explore →" })}
+                    </p>
                   </Link>
                 ))}
               </div>
@@ -215,7 +219,7 @@ export function OnboardingPage() {
               className="rounded-lg px-3 py-2 text-sm font-semibold text-textSecondary transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-0"
               disabled={step === 1}
             >
-              ← Wstecz
+              {t("onboarding.nav.back", { defaultValue: "← Back" })}
             </button>
 
             <button
@@ -224,10 +228,10 @@ export function OnboardingPage() {
               className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
               style={{ backgroundColor: colors.brandDark }}
             >
-              {step === 1 ? "Zaczynamy →" : null}
-              {step === 2 ? "Dalej →" : null}
-              {step === 3 ? "Dalej →" : null}
-              {step === 4 ? "Przejdź do Dashboard →" : null}
+              {step === 1 ? t("onboarding.nav.start", { defaultValue: "Let's go →" }) : null}
+              {step === 2 ? t("onboarding.nav.next", { defaultValue: "Next →" }) : null}
+              {step === 3 ? t("onboarding.nav.next", { defaultValue: "Next →" }) : null}
+              {step === 4 ? t("onboarding.nav.dashboard", { defaultValue: "Go to Dashboard →" }) : null}
             </button>
           </div>
         </div>

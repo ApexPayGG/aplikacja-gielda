@@ -1321,5 +1321,75 @@
     "investmentDisclaimer": "Mention légale : Toutes les analyses, signaux de marché et contenus générés par l'intelligence artificielle (dont Claude AI) sur StockAI Pro sont à titre éducatif et informatif uniquement. Ils ne constituent pas des recommandations d'investissement ni des conseils financiers. Investir sur les marchés financiers comporte un risque élevé de perte en capital. AMC Energy Sp. z o.o. n'est pas responsable des décisions financières prises sur la base des données de l'application.",
     "termsLink": "Conditions complètes",
     "ariaLabel": "Mention légale d'investissement"
+  },
+  "onboarding": {
+    "skip": "Passer",
+    "step": "Étape {{current}}/{{total}}",
+    "defaultName": "Investisseur",
+    "welcome": {
+      "title": "Bienvenue sur StockAI Pro, {{name}} !",
+      "body": "StockAI Pro combine analyse de marché, signaux et assistance IA pour les investisseurs. Nous personnalisons votre expérience pour vous aider à décider plus vite et mieux."
+    },
+    "markets": {
+      "title": "Quels marchés vous intéressent ?",
+      "error": "Sélectionnez au moins un marché pour continuer.",
+      "options": {
+        "gpw": "GPW",
+        "nyse_nasdaq": "NYSE/NASDAQ",
+        "dax": "DAX",
+        "lse": "LSE",
+        "asia": "Asie",
+        "other": "Autres"
+      }
+    },
+    "style": {
+      "title": "Quel est votre style d'investissement ?",
+      "error": "Choisissez un style d'investissement pour continuer.",
+      "swing": {
+        "icon": "📈",
+        "title": "Swing trader (jours–semaines)",
+        "description": "Positions détenues de quelques jours à quelques semaines."
+      },
+      "longterm": {
+        "icon": "💼",
+        "title": "Long terme (mois–années)",
+        "description": "Investir sur un horizon de mois ou d'années."
+      },
+      "daytrader": {
+        "icon": "⚡",
+        "title": "Day trader (intraday)",
+        "description": "Décisions et transactions réalisées dans la journée."
+      },
+      "learning": {
+        "icon": "🔰",
+        "title": "Je débute",
+        "description": "Je construis les bases et découvre le marché pas à pas."
+      }
+    },
+    "ready": {
+      "title": "Votre profil est prêt",
+      "subtitle": "Trois fonctionnalités pour bien démarrer dès maintenant :",
+      "explore": "Découvrir →"
+    },
+    "features": {
+      "signals": {
+        "title": "Signals",
+        "description": "Consultez les signaux d'investissement et créez vos alertes."
+      },
+      "behavioralCoach": {
+        "title": "Behavioral Coach",
+        "description": "Analysez vos décisions et réduisez les erreurs comportementales."
+      },
+      "paperTrading": {
+        "title": "Paper Trading",
+        "description": "Testez des stratégies sans risque avec un capital virtuel."
+      }
+    },
+    "nav": {
+      "back": "← Retour",
+      "start": "C'est parti →",
+      "next": "Suivant →",
+      "dashboard": "Aller au tableau de bord →"
+    }
   }
 }
