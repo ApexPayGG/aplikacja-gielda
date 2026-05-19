@@ -4,15 +4,21 @@ export type ApiEmotion = "FEAR" | "NEUTRAL" | "GREED" | "CONFIDENCE";
 
 const API_EMOTIONS = new Set<ApiEmotion>(["FEAR", "NEUTRAL", "GREED", "CONFIDENCE"]);
 
-export const DEFAULT_PSYCHE_SCORES = {
+export type PsycheScoresPayload = {
+  fomoScore: number;
+  discipline: number;
+  greedControl: number;
+  patience: number;
+  growthScore: number;
+};
+
+export const DEFAULT_PSYCHE_SCORES: PsycheScoresPayload = {
   fomoScore: 50,
   discipline: 50,
   greedControl: 50,
   patience: 50,
   growthScore: 50,
-} as const;
-
-export type PsycheScoresPayload = typeof DEFAULT_PSYCHE_SCORES;
+};
 
 function clampScore(value: unknown, fallback = 50): number {
   const n = Number(value);

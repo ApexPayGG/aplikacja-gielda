@@ -121,7 +121,11 @@ async function fetchQuotesForTicker(
   if (primaryRows.length > 0) return primaryRows as QuoteRow[];
 
   // Fallback: try symbol + exchange suffix from companies table.
-  const companyAccessor = (deps.db as unknown as { company?: { findFirst?: Function } }).company;
+  type CompanyFindFirst = (args: {
+    where: Record<string, unknown>;
+    select: { exchange: true };
+  }) => Promise<{ exchange: string } | null>;
+  const companyAccessor = (deps.db as unknown as { company?: { findFirst?: CompanyFindFirst } }).company;
   const companyRow = companyAccessor?.findFirst
     ? (await companyAccessor.findFirst({
         where: {
