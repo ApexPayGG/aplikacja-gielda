@@ -79,6 +79,7 @@
   "analysisBrief": {
     "englishSection": "English",
     "title": "AI brief",
+    "unavailable": "AI brief is temporarily unavailable. Sector-based context may still apply — please try again shortly.",
     "updated": "Updated"
   },
   "auth": {

@@ -79,6 +79,7 @@
   "analysisBrief": {
     "englishSection": "English",
     "title": "Brief AI",
+    "unavailable": "Skrót AI jest chwilowo niedostępny. Kontekst sektorowy może nadal obowiązywać — spróbuj ponownie za chwilę.",
     "updated": "Aktualizacja"
   },
   "auth": {

@@ -1099,31 +1099,37 @@ export async function analyzeBehavioralMistakes(userId: string): Promise<{ analy
 }
 
 export async function getCompanyBrief(symbol: string, lang: string): Promise<AnalysisResponse> {
-  try {
-    const { data } = await api.get<AnalysisResponse>(`/brief/${encodeURIComponent(symbol)}`, {
-      params: { lang },
-    });
-    return data;
-  } catch (error) {
-    if (error instanceof AxiosError && error.response?.status === 404) {
-      try {
-        // Backward compatibility for API versions that still expose /companies/:symbol/brief.
-        const { data } = await api.get<AnalysisResponse>(`/companies/${encodeURIComponent(symbol)}/brief`, {
-          params: { lang },
-        });
-        return data;
-      } catch (fallbackError) {
-        if (fallbackError instanceof AxiosError && fallbackError.response?.status === 404) {
-          const { data } = await api.get<AnalysisResponse>(`/analysis/${encodeURIComponent(symbol)}`, {
-            params: { lang },
-          });
-          return data;
-        }
-        throw fallbackError;
+  const sym = encodeURIComponent(symbol.trim().toUpperCase());
+  const params = { lang };
+  const paths = [
+    `/companies/${sym}/brief`,
+    `/brief/${sym}`,
+    `/analysis/${sym}`,
+  ] as const;
+
+  let lastError: unknown;
+  for (const path of paths) {
+    try {
+      // Public market brief — no JWT (avoids spurious 401 from stale tokens on shared routes).
+      const { data } = await publicApi.get<AnalysisResponse>(path, { params });
+      return data;
+    } catch (error) {
+      lastError = error;
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        continue;
       }
+      // Retry next path on auth/upstream failures (e.g. misrouted /brief).
+      if (
+        error instanceof AxiosError &&
+        error.response?.status != null &&
+        [401, 403, 502, 503].includes(error.response.status)
+      ) {
+        continue;
+      }
+      throw error;
     }
-    throw error;
   }
+  throw lastError ?? new Error("Brief unavailable");
 }
 
 /** @deprecated Prefer getCompanyBrief(symbol, lang) for i18n-aware briefs */

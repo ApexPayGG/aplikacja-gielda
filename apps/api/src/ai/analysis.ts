@@ -147,6 +147,13 @@ async function writeAnalysisCache(cacheKey: string, payload: AnalysisResult): Pr
 
 function isLlmAuthOrConfigError(err: unknown): boolean {
   if (err instanceof APIError && (err.status === 401 || err.status === 403)) return true;
+  if (err && typeof err === "object" && "error" in err) {
+    const nested = (err as { error?: { type?: string; message?: string } }).error;
+    const nestedMsg = String(nested?.message ?? "").toLowerCase();
+    if (nested?.type === "authentication_error" || nestedMsg.includes("invalid x-api-key")) {
+      return true;
+    }
+  }
   if (err instanceof Error) {
     const msg = err.message.toLowerCase();
     return (
@@ -154,7 +161,8 @@ function isLlmAuthOrConfigError(err: unknown): boolean {
       msg.includes("401") ||
       msg.includes("authentication") ||
       msg.includes("invalid x-api-key") ||
-      msg.includes("invalid api key")
+      msg.includes("invalid api key") ||
+      msg.includes("authentication_error")
     );
   }
   return false;

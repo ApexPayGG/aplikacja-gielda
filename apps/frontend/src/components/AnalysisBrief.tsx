@@ -1,6 +1,7 @@
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import type { AnalysisResponse, BriefSection } from "../services/api";
+import { sanitizeApiErrorMessage } from "../utils/sanitizeApiErrorMessage";
 
 type Props = {
   analysis: AnalysisResponse | null;
@@ -45,9 +46,16 @@ export function AnalysisBrief({ analysis, loading, error }: Props) {
   }
 
   if (error) {
+    const safe = sanitizeApiErrorMessage(error);
     return (
-      <div className="rounded-2xl border border-red-900/50 bg-red-950/30 p-4 text-sm text-red-200">
-        {error}
+      <div className="rounded-2xl border border-amber-900/40 bg-amber-950/20 p-4 text-sm text-amber-100">
+        <p>
+          {safe ||
+            t("analysisBrief.unavailable", {
+              defaultValue:
+                "AI brief is temporarily unavailable. Showing sector-based context when possible — try again in a moment.",
+            })}
+        </p>
       </div>
     );
   }

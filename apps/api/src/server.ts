@@ -383,7 +383,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.get("/api/companies/:symbol/brief", async (req: Request, res: Response, next: NextFunction) => {
+  const handleCompanyBrief = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const sym = (req.params.symbol ?? "").trim().toUpperCase();
       if (!sym) return res.status(400).json({ error: "Missing symbol" });
@@ -393,7 +393,10 @@ export function createApp(): express.Express {
     } catch (e) {
       next(e);
     }
-  });
+  };
+
+  app.get("/api/brief/:symbol", handleCompanyBrief);
+  app.get("/api/companies/:symbol/brief", handleCompanyBrief);
 
   app.get("/api/companies/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {
