@@ -1110,13 +1110,16 @@ export async function getCompanyBrief(symbol: string, lang: string): Promise<Ana
   let lastError: unknown;
   for (const path of paths) {
     try {
-      // Public market brief — no JWT (avoids spurious 401 from stale tokens on shared routes).
-      const { data } = await publicApi.get<AnalysisResponse>(path, { params });
+      // Send JWT when present so PRO tier bypasses FREE daily limit.
+      const { data } = await api.get<AnalysisResponse>(path, { params });
       return data;
     } catch (error) {
       lastError = error;
       if (error instanceof AxiosError && error.response?.status === 404) {
         continue;
+      }
+      if (error instanceof AxiosError && error.response?.status === 429) {
+        throw error;
       }
       // Retry next path on auth/upstream failures (e.g. misrouted /brief).
       if (

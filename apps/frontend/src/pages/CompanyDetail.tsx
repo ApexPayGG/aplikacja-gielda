@@ -1,8 +1,9 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { AnalysisBrief } from "../components/AnalysisBrief";
+import { AnalysisBrief, type BriefLimitReached } from "../components/AnalysisBrief";
 import { CompanyDividendPanel } from "../components/CompanyDividendPanel";
 import { CompanyPriceChart } from "../components/CompanyPriceChart";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
@@ -108,6 +109,7 @@ export function CompanyDetail() {
   const [analysisLoading, setAnalysisLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [analysisLimit, setAnalysisLimit] = useState<BriefLimitReached | null>(null);
   const [activeTab, setActiveTab] = useState<CompanyTabId>("overview");
   const companyName = company?.name?.trim() || sym;
   const seoTitle = `${sym} — ${companyName} | StockAI Pro`;
@@ -205,11 +207,24 @@ export function CompanyDetail() {
     (async () => {
       setAnalysisLoading(true);
       setAnalysisError(null);
+      setAnalysisLimit(null);
       try {
         const a = await getCompanyBrief(sym, currentLang);
         if (!cancelled) setAnalysis(a);
       } catch (e) {
-        if (!cancelled) setAnalysisError(apiErrorMessage(e));
+        if (!cancelled) {
+          if (axios.isAxiosError(e) && e.response?.status === 429) {
+            const body = e.response.data as { error?: string; limit?: number };
+            if (body?.error === "LIMIT_REACHED") {
+              setAnalysis(null);
+              setAnalysisLimit({ limit: typeof body.limit === "number" ? body.limit : 3 });
+              setAnalysisError(null);
+              return;
+            }
+          }
+          setAnalysisLimit(null);
+          setAnalysisError(apiErrorMessage(e));
+        }
       } finally {
         if (!cancelled) setAnalysisLoading(false);
       }
@@ -464,7 +479,12 @@ export function CompanyDetail() {
               className="rounded-xl border p-4"
               style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
             >
-              <AnalysisBrief analysis={analysis} loading={analysisLoading} error={analysisError} />
+              <AnalysisBrief
+                analysis={analysis}
+                loading={analysisLoading}
+                error={analysisError}
+                limitReached={analysisLimit}
+              />
             </section>
           ) : null}
 

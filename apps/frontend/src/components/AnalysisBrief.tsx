@@ -1,17 +1,45 @@
 import { SparklesIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { AnalysisResponse } from "../services/api";
 import { pickBriefSectionsForLocale } from "../utils/briefLocale";
 import { sanitizeApiErrorMessage } from "../utils/sanitizeApiErrorMessage";
 
+export type BriefLimitReached = {
+  limit: number;
+};
+
 type Props = {
   analysis: AnalysisResponse | null;
   loading?: boolean;
   error?: string | null;
+  limitReached?: BriefLimitReached | null;
 };
 
-export function AnalysisBrief({ analysis, loading, error }: Props) {
+export function AnalysisBrief({ analysis, loading, error, limitReached }: Props) {
   const { t, i18n } = useTranslation();
+
+  if (limitReached) {
+    const limit = limitReached.limit;
+    return (
+      <div className="rounded-2xl border border-brandGold/40 bg-amber-50 p-6 text-sm text-textPrimary">
+        <p>
+          {t("analysisBrief.limitReached", {
+            defaultValue:
+              "Wykorzystałeś dzienny limit ({{used}}/{{limit}}). Przejdź na Pro aby uzyskać nieograniczony dostęp.",
+            used: limit,
+            limit,
+          })}
+        </p>
+        <Link
+          to="/pricing"
+          className="mt-4 inline-flex rounded-lg bg-brandDark px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+        >
+          {t("analysisBrief.upgradeCta", { defaultValue: "Zobacz plany Pro" })}
+        </Link>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

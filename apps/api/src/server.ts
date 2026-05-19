@@ -6,7 +6,6 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { Prisma } from "@prisma/client";
-import { analyzeStock } from "./ai/analysis";
 import { buildFallbackNews } from "./content/sectorFallbacks";
 import { cacheJsonGet, cacheJsonSet } from "./cache/jsonCache";
 import { REDIS_TTL_SEC, redisKeys } from "./config/redis";
@@ -58,6 +57,8 @@ import { createBacktestRouter } from "./routes/backtest";
 import { createPortfolioRouter } from "./routes/portfolio";
 import { createPaperTradingRouter } from "./routes/paperTrading";
 import { createExitIntelligenceRouter } from "./routes/exitIntelligence";
+import { createAnalysisRouter, createCompanyBriefHandler } from "./routes/analysis";
+import { optionalAuth } from "./modules/auth/authMiddleware";
 import { createQuotesRouter } from "./routes/quotes";
 import { createAlphaJournalRouter } from "./routes/alphaJournal";
 import { createAlphaCalendarRouter } from "./routes/alphaCalendar";
@@ -383,20 +384,10 @@ export function createApp(): express.Express {
     }
   });
 
-  const handleCompanyBrief = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const sym = (req.params.symbol ?? "").trim().toUpperCase();
-      if (!sym) return res.status(400).json({ error: "Missing symbol" });
-      const lang = String(req.query.lang ?? "en").trim() || "en";
-      const result = await analyzeStock(sym, lang);
-      res.json(result);
-    } catch (e) {
-      next(e);
-    }
-  };
-
-  app.get("/api/brief/:symbol", handleCompanyBrief);
-  app.get("/api/companies/:symbol/brief", handleCompanyBrief);
+  const handleCompanyBrief = createCompanyBriefHandler({ prisma });
+  app.use("/api/brief", createAnalysisRouter({ prisma }));
+  app.use("/api/analysis", createAnalysisRouter({ prisma }));
+  app.get("/api/companies/:symbol/brief", optionalAuth, handleCompanyBrief);
 
   app.get("/api/companies/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -481,16 +472,6 @@ export function createApp(): express.Express {
       const row = await getLatestIndicator(req.params.symbol ?? "", ind);
       if (!row) return res.status(404).json({ error: "No indicator row found" });
       res.json(row);
-    } catch (e) {
-      next(e);
-    }
-  });
-
-  app.get("/api/analysis/:symbol", async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const lang = String(req.query.lang ?? "pl").trim() || "pl";
-      const result = await analyzeStock(req.params.symbol ?? "", lang);
-      res.json(result);
     } catch (e) {
       next(e);
     }
