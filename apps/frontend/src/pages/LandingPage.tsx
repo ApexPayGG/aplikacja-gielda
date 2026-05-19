@@ -267,12 +267,22 @@ const CANDLES_DEMO = [
 function HowItWorksStepBadge({ stepIndex }: { stepIndex: number }) {
   const label = String(stepIndex + 1);
 
-  const shell =
-    "landing-how-float relative flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-visible rounded-2xl ring-2 ring-white/30";
+  const accentRing = [
+    "shadow-[0_0_0_1px_rgba(6,182,212,0.35)]",
+    "shadow-[0_0_0_1px_rgba(167,139,250,0.35)]",
+    "shadow-[0_0_0_1px_rgba(34,211,238,0.4)]",
+  ][stepIndex] ?? "shadow-[0_0_0_1px_rgba(255,255,255,0.12)]";
+
+  const shell = [
+    "landing-how-float relative flex h-[92px] w-[92px] shrink-0 items-center justify-center overflow-visible rounded-2xl",
+    "border border-white/15 bg-gradient-to-br from-[#2D0A6B]/55 via-[#3b0764]/40 to-[#0f172a]/50 backdrop-blur-md",
+    "shadow-[0_14px_44px_rgba(45,10,107,0.42),inset_0_1px_0_rgba(255,255,255,0.14)]",
+    accentRing,
+  ].join(" ");
 
   const numBadge = (
     <span
-      className="absolute -bottom-2 -right-2 flex h-9 min-w-[2.25rem] items-center justify-center rounded-full bg-white px-2 text-sm font-black shadow-lg"
+      className="absolute -bottom-2 -right-2 flex h-9 min-w-[2.25rem] items-center justify-center rounded-full border border-white/25 bg-white/95 px-2 text-sm font-black shadow-lg backdrop-blur-sm"
       style={{ color: BRAND.dark, boxShadow: "0 10px 28px rgba(45,10,107,0.22)" }}
       aria-hidden
     >
@@ -280,28 +290,12 @@ function HowItWorksStepBadge({ stepIndex }: { stepIndex: number }) {
     </span>
   );
 
-  const palettes = [
-    {
-      background: `linear-gradient(145deg, ${BRAND.dark} 0%, ${BRAND.medium} 100%)`,
-      boxShadow: "0 0 38px rgba(122,15,158,0.42)",
-    },
-    {
-      background: `linear-gradient(145deg, ${BRAND.medium} 0%, ${BRAND.dark} 100%)`,
-      boxShadow: "0 0 38px rgba(122,15,158,0.42)",
-    },
-    {
-      background: `linear-gradient(145deg, ${BRAND.dark} 0%, ${BRAND.medium} 70%, #0e7490 100%)`,
-      boxShadow: "0 0 40px rgba(0,201,212,0.32)",
-    },
-  ];
-  const style = palettes[stepIndex] ?? palettes[0];
-
   return (
-    <div className={shell} style={style}>
+    <div className={shell}>
       <img
         src={LANDING_ICONA.howSteps[stepIndex] ?? LANDING_ICONA.howSteps[0]}
         alt=""
-        className="h-[62px] w-[62px] object-contain drop-shadow-md"
+        className="h-[64px] w-[64px] object-contain drop-shadow-lg"
         decoding="async"
         aria-hidden
       />
@@ -1149,15 +1143,11 @@ export function LandingPage() {
             return (
               <article
                 key={card.title}
-                className={`reveal group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-8 shadow-md transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
+                className={`reveal group relative overflow-hidden rounded-2xl border border-gray-100 border-l-4 border-l-[#2D0A6B] bg-white py-8 pl-6 pr-8 shadow-md transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
               >
-                <div className="absolute inset-x-0 top-0 flex justify-start px-8 pt-0">
-                  <div className="h-[3px] w-10 rounded-full bg-red-400 transition-all duration-300 ease-out group-hover:w-full" />
-                </div>
-                <div
-                  className="mb-6 mt-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-red-50 transition-all duration-300 group-hover:scale-110 group-hover:bg-red-100"
-                >
-                                    <img
+                <div className="mb-6 flex">
+                  <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-[#2D0A6B]/20 bg-[#2D0A6B]/10 shadow-[0_8px_24px_rgba(45,10,107,0.2)] backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-2">
+                    <img
                     src={
                       card.icon === "apps"
                         ? LANDING_ICONA.problemApps
@@ -1166,11 +1156,12 @@ export function LandingPage() {
                           : LANDING_ICONA.problemTarget
                     }
                     alt=""
-                    className="h-[72px] w-[72px] object-contain"
+                    className="h-12 w-12 object-contain"
                     loading="lazy"
                     decoding="async"
                     aria-hidden
                   />
+                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-slate-900">{card.title}</h3>
                 <p className="landing-body mt-3 text-slate-600">{card.body}</p>
@@ -1210,24 +1201,20 @@ export function LandingPage() {
                 className={`${revealKind} group relative overflow-hidden rounded-xl border border-gray-100 border-t-[3px] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#00C9D4] hover:shadow-lg ${staggerClass}`}
                 style={{ borderTopColor: BRAND.cyan }}
               >
-                <span
-                  className="pointer-events-none absolute right-4 top-4 text-5xl font-black leading-none opacity-[0.05]"
-                  style={{ color: BRAND.dark }}
-                >
+                <span className="pointer-events-none absolute right-4 top-4 text-6xl font-black leading-none text-[#2D0A6B]/[0.12]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <div
-                  className="relative z-[1] mb-5 flex h-16 w-16 items-center justify-center rounded-2xl"
-                  style={{ background: "linear-gradient(135deg, #e0f7fa, #b2ebf2)" }}
-                >
-                  <img
-                  src={SOLUTION_ICON_SRC[card.iconId]}
-                  alt=""
-                  className="h-[52px] w-[52px] object-contain"
-                  loading="lazy"
-                  decoding="async"
-                  aria-hidden
-                />
+                <div className="relative z-[1] mb-5 flex">
+                  <div className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center rounded-2xl border border-[#2D0A6B]/20 bg-[#2D0A6B]/10 shadow-md backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-2">
+                    <img
+                      src={SOLUTION_ICON_SRC[card.iconId]}
+                      alt=""
+                      className="h-10 w-10 object-contain"
+                      loading="lazy"
+                      decoding="async"
+                      aria-hidden
+                    />
+                  </div>
                 </div>
                 <h3 className="relative z-[1] text-lg font-bold text-slate-900">{card.title}</h3>
                 <p className="landing-body relative z-[1] mt-2 text-slate-600">{card.body}</p>
@@ -1248,8 +1235,10 @@ export function LandingPage() {
               const staggerClass =
                 index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
               return (
-                <div key={item.step} className={`reveal flex flex-col items-center text-center ${staggerClass}`}>
-                  <HowItWorksStepBadge stepIndex={index} />
+                <div key={item.step} className={`group reveal flex flex-col items-center text-center ${staggerClass}`}>
+                  <div className="transition-transform duration-300 group-hover:-translate-y-2">
+                    <HowItWorksStepBadge stepIndex={index} />
+                  </div>
                   <h3 className="mt-8 text-lg font-bold text-slate-900">{item.title}</h3>
                   <p className="landing-body mt-2 text-slate-600">{item.desc}</p>
                 </div>
@@ -1265,7 +1254,7 @@ export function LandingPage() {
                 index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
               const connector =
                 index < HOW_IT_WORKS_STEPS.length - 1 ? (
-                  <div className="flex min-h-[88px] min-w-0 flex-[1] items-center px-2">
+                  <div className="flex min-h-[92px] min-w-0 flex-[1] items-center px-2">
                     <div
                       className="timeline-line h-[2px] w-full rounded-full"
                       style={{
@@ -1280,8 +1269,12 @@ export function LandingPage() {
 
               return (
                 <div key={item.step} className="contents">
-                  <div className={`reveal flex min-w-0 max-w-[30%] flex-[1.15] flex-col items-center text-center ${staggerClass}`}>
-                    <HowItWorksStepBadge stepIndex={index} />
+                  <div
+                    className={`group reveal flex min-w-0 max-w-[30%] flex-[1.15] flex-col items-center text-center ${staggerClass}`}
+                  >
+                    <div className="transition-transform duration-300 group-hover:-translate-y-2">
+                      <HowItWorksStepBadge stepIndex={index} />
+                    </div>
                     <h3 className="mt-8 text-lg font-bold text-slate-900">{item.title}</h3>
                     <p className="landing-body mt-2 text-slate-600">{item.desc}</p>
                   </div>
