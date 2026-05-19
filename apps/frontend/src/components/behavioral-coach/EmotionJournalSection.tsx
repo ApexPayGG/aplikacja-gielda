@@ -8,10 +8,11 @@ import {
 } from "../../utils/behavioralCoachData";
 import { GLASS_SECTION, GLASS_SECTION_TITLE } from "./glassStyles";
 
-const EMOTION_OPTIONS: EmotionJournalState[] = ["FEARFUL", "NEUTRAL", "GREEDY", "CONFIDENT"];
-
 type Props = {
   userId: string;
+  emotion: EmotionJournalState | null;
+  emotionAcknowledged: boolean;
+  onLogEntry: (entry: EmotionJournalEntry) => void;
 };
 
 function readEntries(key: string): EmotionJournalEntry[] {
@@ -32,73 +33,73 @@ function readEntries(key: string): EmotionJournalEntry[] {
   }
 }
 
-export function EmotionJournalSection({ userId }: Props) {
+export function EmotionJournalSection({ userId, emotion, emotionAcknowledged, onLogEntry }: Props) {
   const storageKey = emotionJournalStorageKey(userId);
-  const [emotion, setEmotion] = useState<EmotionJournalState>("NEUTRAL");
   const [symbol, setSymbol] = useState("");
   const [note, setNote] = useState("");
   const [entries, setEntries] = useState<EmotionJournalEntry[]>([]);
   const [savedFlash, setSavedFlash] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
+    setEntries(readEntries(storageKey));
+  }, [storageKey]);
+
+  const refreshEntries = useCallback(() => {
     setEntries(readEntries(storageKey));
   }, [storageKey]);
 
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      if (!emotion || !emotionAcknowledged) {
+        setFormError("Wybierz emocję w panelu powyżej przed zapisem wpisu.");
+        return;
+      }
+
+      const trimmedNote = note.trim();
+      if (!trimmedNote && (emotion === "NEUTRAL" || emotion === "CONFIDENT")) {
+        setFormError("Dla Neutral / Pewność dodaj krótką notatkę, aby odblokować wzmocnienie radaru.");
+        return;
+      }
+
       const entry: EmotionJournalEntry = {
         id: `ej-${Date.now()}`,
         emotion,
-        note: note.trim(),
+        note: trimmedNote,
         symbol: symbol.trim().toUpperCase() || undefined,
         createdAt: new Date().toISOString(),
       };
-      const next = [entry, ...readEntries(storageKey)].slice(0, 12);
-      window.localStorage.setItem(storageKey, JSON.stringify(next));
-      setEntries(next);
+
+      onLogEntry(entry);
+      refreshEntries();
       setNote("");
       setSymbol("");
+      setFormError(null);
       setSavedFlash(true);
       window.setTimeout(() => setSavedFlash(false), 2200);
     },
-    [emotion, note, symbol, storageKey],
+    [emotion, emotionAcknowledged, note, onLogEntry, refreshEntries, symbol],
   );
 
   return (
     <section className={GLASS_SECTION}>
       <h2 className={GLASS_SECTION_TITLE}>Dziennik Emocji</h2>
       <p className="mt-1 text-sm text-white/55">
-        Zaloguj stan emocjonalny przed transakcją paper — Coach wykorzysta to w kolejnych interwencjach.
+        Uzupełnij kontekst przed paper trade. Emocja jest wspólna z modułem zleceń symulowanych.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-5 space-y-4">
-        <fieldset>
-          <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/60">Jak się czujesz?</legend>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {EMOTION_OPTIONS.map((key) => {
-              const meta = EMOTION_JOURNAL_LABELS[key];
-              const selected = emotion === key;
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setEmotion(key)}
-                  className={`rounded-xl border px-3 py-3 text-left text-sm transition ${
-                    selected
-                      ? "border-[#00C9D4]/50 bg-[#00C9D4]/15 text-white shadow-[0_0_20px_rgba(0,201,212,0.15)]"
-                      : "border-white/10 bg-[#2D0A6B]/20 text-white/75 hover:border-white/20"
-                  }`}
-                >
-                  <span className="block font-semibold">{meta.labelPl}</span>
-                  <span className="mt-0.5 block text-[11px] text-white/45">{meta.label}</span>
-                </button>
-              );
-            })}
-          </div>
-          <p className="mt-2 text-xs text-[#00C9D4]/80">{EMOTION_JOURNAL_LABELS[emotion].hint}</p>
-        </fieldset>
+      {emotion && emotionAcknowledged ? (
+        <p className="mt-3 rounded-xl border border-[#00C9D4]/25 bg-[#00C9D4]/10 px-3 py-2 text-sm text-[#00C9D4]">
+          Aktywny stan: <span className="font-semibold">{EMOTION_JOURNAL_LABELS[emotion].labelPl}</span>
+        </p>
+      ) : (
+        <p className="mt-3 rounded-xl border border-amber-400/25 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
+          Wybierz emocję w sekcji powyżej, aby odblokować dziennik i paper trading.
+        </p>
+      )}
 
+      <form onSubmit={handleSubmit} className="mt-5 space-y-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-xs font-semibold uppercase tracking-wide text-white/60">
             Ticker (opcjonalnie)
@@ -107,7 +108,8 @@ export function EmotionJournalSection({ userId }: Props) {
               value={symbol}
               onChange={(e) => setSymbol(e.target.value)}
               placeholder="np. ABBN"
-              className="mt-1 w-full rounded-xl border border-white/10 bg-[#2D0A6B]/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 backdrop-blur-md focus:border-[#00C9D4]/40 focus:outline-none"
+              disabled={!emotionAcknowledged}
+              className="mt-1 w-full rounded-xl border border-white/10 bg-[#2D0A6B]/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 backdrop-blur-md focus:border-[#00C9D4]/40 focus:outline-none disabled:opacity-50"
             />
           </label>
           <label className="block text-xs font-semibold uppercase tracking-wide text-white/60 sm:col-span-1">
@@ -117,17 +119,21 @@ export function EmotionJournalSection({ userId }: Props) {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Kontekst przed wejściem..."
-              className="mt-1 w-full rounded-xl border border-white/10 bg-[#2D0A6B]/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 backdrop-blur-md focus:border-[#00C9D4]/40 focus:outline-none"
+              disabled={!emotionAcknowledged}
+              className="mt-1 w-full rounded-xl border border-white/10 bg-[#2D0A6B]/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 backdrop-blur-md focus:border-[#00C9D4]/40 focus:outline-none disabled:opacity-50"
             />
           </label>
         </div>
 
+        {formError ? <p className="text-xs text-amber-200">{formError}</p> : null}
+
         <button
           type="submit"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2D0A6B] to-[#00C9D4]/80 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95 sm:w-auto"
+          disabled={!emotionAcknowledged || !emotion}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2D0A6B] to-[#00C9D4]/80 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
         >
           {savedFlash ? <CheckCircleIcon className="h-5 w-5" /> : null}
-          Zapisz wpis przed paper trade
+          Zapisz wpis i zaktualizuj radar
         </button>
       </form>
 
@@ -141,7 +147,12 @@ export function EmotionJournalSection({ userId }: Props) {
               <span className="font-medium text-white/90">{EMOTION_JOURNAL_LABELS[entry.emotion].labelPl}</span>
               {entry.symbol ? <span className="font-mono text-xs text-[#00C9D4]">{entry.symbol}</span> : null}
               <span className="text-xs text-white/45">
-                {new Date(entry.createdAt).toLocaleString("pl-PL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                {new Date(entry.createdAt).toLocaleString("pl-PL", {
+                  day: "numeric",
+                  month: "short",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </span>
             </li>
           ))}

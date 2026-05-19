@@ -3,17 +3,16 @@ import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BrokerIntegrationPaywall } from "../components/behavioral-coach/BrokerIntegrationPaywall";
+import { CoachEmotionHubSection } from "../components/behavioral-coach/CoachEmotionHubSection";
 import { CoachInterventionsSection } from "../components/behavioral-coach/CoachInterventionsSection";
+import { CoachPaperTradingCard } from "../components/behavioral-coach/CoachPaperTradingCard";
 import { EmotionJournalSection } from "../components/behavioral-coach/EmotionJournalSection";
 import { GLASS_PAGE_BG } from "../components/behavioral-coach/glassStyles";
 import { TraderPsycheProfileSection } from "../components/behavioral-coach/TraderPsycheProfileSection";
 import { useAuth } from "../context/AuthContext";
+import { useCoachPaperTrading } from "../hooks/useCoachPaperTrading";
 import { api, getBehavioralCooldown, type BehavioralCooldownResponse } from "../services/api";
-import {
-  buildCoachInterventions,
-  buildPsycheRadarMetrics,
-  type CoachSnapshotLike,
-} from "../utils/behavioralCoachData";
+import { buildCoachInterventions, type CoachSnapshotLike } from "../utils/behavioralCoachData";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { isFreePlan } from "../utils/subscriptionTier";
 
@@ -70,6 +69,21 @@ export function BehavioralCoachPage() {
   const [cooldown, setCooldown] = useState<BehavioralCooldownResponse | null>(null);
   const [cooldownError, setCooldownError] = useState<string | null>(null);
   const [nowTs, setNowTs] = useState(() => Date.now());
+
+  const snapshot = coach?.snapshot ?? null;
+
+  const {
+    hydrated,
+    emotion,
+    emotionAcknowledged,
+    selectEmotion,
+    psycheMetrics,
+    openTrades,
+    closedTrades,
+    openPaperTrade,
+    closePaperTrade,
+    logJournalEntry,
+  } = useCoachPaperTrading(USER_ID, snapshot);
 
   useEffect(() => {
     let cancelled = false;
@@ -133,9 +147,8 @@ export function BehavioralCoachPage() {
     };
   }, [USER_ID]);
 
-  const snapshot = coach?.snapshot ?? null;
-  const psycheMetrics = useMemo(() => buildPsycheRadarMetrics(snapshot), [snapshot]);
   const interventions = useMemo(() => buildCoachInterventions(snapshot), [snapshot]);
+  const radarLoading = loading || !hydrated;
 
   return (
     <div className={GLASS_PAGE_BG}>
@@ -188,11 +201,31 @@ export function BehavioralCoachPage() {
           <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">{error}</div>
         ) : null}
 
-        <TraderPsycheProfileSection metrics={psycheMetrics} loading={loading} />
+        <TraderPsycheProfileSection metrics={psycheMetrics} loading={radarLoading} />
+
+        <CoachEmotionHubSection
+          emotion={emotion}
+          emotionAcknowledged={emotionAcknowledged}
+          onSelectEmotion={selectEmotion}
+        />
+
+        <CoachPaperTradingCard
+          emotion={emotion}
+          emotionAcknowledged={emotionAcknowledged}
+          openTrades={openTrades}
+          closedTrades={closedTrades}
+          onOpenTrade={openPaperTrade}
+          onCloseTrade={closePaperTrade}
+        />
 
         <div className="grid gap-6 lg:grid-cols-2">
           <CoachInterventionsSection interventions={interventions} loading={loading} />
-          <EmotionJournalSection userId={USER_ID} />
+          <EmotionJournalSection
+            userId={USER_ID}
+            emotion={emotion}
+            emotionAcknowledged={emotionAcknowledged}
+            onLogEntry={logJournalEntry}
+          />
         </div>
 
         {showBrokerPaywall ? <BrokerIntegrationPaywall /> : null}
