@@ -12,6 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { createStripeCheckoutSession } from "../services/api";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
+import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { SEOHead } from "../components/SEOHead";
 
@@ -1593,6 +1594,12 @@ export function LandingPage() {
               Zobacz cennik
             </a>
           </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-10" style={{ backgroundColor: BRAND.dark }}>
+        <div className="mx-auto max-w-4xl">
+          <InvestmentDisclaimer variant="landing" />
         </div>
       </section>
 

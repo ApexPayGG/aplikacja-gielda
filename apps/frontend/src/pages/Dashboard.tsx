@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { DailyCheckInWidget } from "../components/DailyCheckInWidget";
+import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import { EmotionalStateWidget } from "../components/EmotionalStateWidget";
 import { useAuth } from "../context/AuthContext";
 import { getCompanyDetail, getLatestQuoteBySymbol, getWatchlist } from "../services/api";
@@ -327,6 +328,8 @@ export function Dashboard() {
           <EmotionalStateWidget variant="compact" />
         </aside>
       </div>
+
+      <InvestmentDisclaimer className="mt-10" />
     </div>
   );
 }

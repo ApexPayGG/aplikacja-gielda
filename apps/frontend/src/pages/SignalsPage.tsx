@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { AIDisclaimer } from "../components/AIDisclaimer";
+import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SignalsFilter } from "../components/SignalsFilter";
 import { ExportButton } from "../components/ExportButton";
@@ -343,7 +343,7 @@ export function SignalsPage() {
             <p className="max-w-2xl text-sm" style={{ color: colors.textSecondary }}>
               Przeglądaj aktywne setupy i ocenę ryzyka wspierane przez analizę AI StockAI Pro.
             </p>
-            <AIDisclaimer variant="compact" className="max-w-2xl" />
+            <InvestmentDisclaimer className="max-w-2xl text-left" showTermsLink />
             <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Wyniki: {filteredSignals.length}
             </p>

@@ -8,19 +8,32 @@ declare global {
   }
 }
 
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID ?? "G-PLACEHOLDER";
 const GA_SCRIPT_SELECTOR = 'script[data-stockai-ga4="true"]';
+
+function getMeasurementId(): string | undefined {
+  const raw = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim();
+  if (!raw || raw === "G-PLACEHOLDER") {
+    return undefined;
+  }
+  return raw;
+}
 
 function canUseAnalytics(): boolean {
   return getCookieConsent() === "all";
 }
 
-function hasValidMeasurementId(): boolean {
-  return GA_MEASUREMENT_ID !== "G-PLACEHOLDER";
+export function isGa4Configured(): boolean {
+  return Boolean(getMeasurementId());
 }
 
 export function initializeGA4(): void {
-  if (typeof window === "undefined" || !canUseAnalytics() || !hasValidMeasurementId() || window.__stockAiGaInitialized) {
+  const measurementId = getMeasurementId();
+  if (
+    typeof window === "undefined" ||
+    !measurementId ||
+    !canUseAnalytics() ||
+    window.__stockAiGaInitialized
+  ) {
     return;
   }
 
@@ -35,18 +48,18 @@ export function initializeGA4(): void {
   if (!existingScript) {
     const script = document.createElement("script");
     script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
     script.setAttribute("data-stockai-ga4", "true");
     document.head.appendChild(script);
   }
 
   window.gtag("js", new Date());
-  window.gtag("config", GA_MEASUREMENT_ID);
+  window.gtag("config", measurementId);
   window.__stockAiGaInitialized = true;
 }
 
 export function trackEvent(name: string, params?: Record<string, string | number>) {
-  if (typeof window === "undefined" || !canUseAnalytics()) {
+  if (typeof window === "undefined" || !canUseAnalytics() || !isGa4Configured()) {
     return;
   }
 

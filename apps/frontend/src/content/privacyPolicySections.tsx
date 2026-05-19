@@ -14,171 +14,270 @@ function BulletList({ items }: { items: string[] }) {
 export const privacyPolicySections: LegalSection[] = [
   {
     id: "who",
-    title: "1. Kim jesteśmy",
+    title: "1. Administrator danych i charakter usługi",
     defaultOpen: true,
     content: (
-      <p>
-        StockAI Pro ({COMPANY_LEGAL.website}) to platforma badań inwestycyjnych i coachingu behawioralnego,
-        prowadzona przez {COMPANY_LEGAL.name} z siedzibą w {COMPANY_LEGAL.city}, {COMPANY_LEGAL.country} (
-        {COMPANY_ADDRESS_LINE}). Nie jesteśmy brokerem, doradcą inwestycyjnym ani instytucją finansową.
-      </p>
+      <div className="space-y-3">
+        <p>
+          Administratorem danych osobowych w rozumieniu Rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679
+          (RODO) jest <strong>{COMPANY_LEGAL.name}</strong>, {COMPANY_ADDRESS_LINE}, NIP: {COMPANY_LEGAL.nip}, KRS:{" "}
+          {COMPANY_LEGAL.krs}.
+        </p>
+        <p>
+          StockAI Pro ({COMPANY_LEGAL.website}) to platforma SaaS do badań inwestycyjnych, analizy behawioralnej i
+          symulacji paper tradingu. Nie jesteśmy brokerem, doradcą inwestycyjnym, instytucją płatniczą ani podmiotem
+          nadzorowanym przez KNF w zakresie doradztwa inwestycyjnego.
+        </p>
+      </div>
     ),
   },
   {
     id: "collect",
-    title: "2. Jakie dane zbieramy",
+    title: "2. Zakres i kategorie przetwarzanych danych",
     content: (
       <>
+        <p>Przetwarzamy wyłącznie dane adekwatne do świadczenia usługi:</p>
         <BulletList
           items={[
-            "Dane rejestracyjne: email, hasło (hash bcrypt), imię (opcjonalne)",
-            "Dane użytkowania: sygnały, paper trades, preferencje językowe",
-            "Dane techniczne: adres IP, user agent, cookies sesyjne",
-            "Dane behawioralne: wzorce klikania (tylko zagregowane, nie indywidualne)",
+            "Dane identyfikacyjne i kontaktowe: adres e-mail, imię (opcjonalnie), identyfikator konta",
+            "Dane uwierzytelniania: hasło przechowywane wyłącznie w formie jednokierunkowego skrótu (bcrypt)",
+            "Dane użytkowania produktu: konfiguracja watchlist, sygnały, historia paper trades, wpisy dziennika emocji, preferencje językowe",
+            "Dane techniczne: adres IP, nagłówek User-Agent, identyfikatory sesji, znaczniki czasu żądań API",
+            "Dane behawioralne produktu: zdarzenia w aplikacji w formie zagregowanej analityki (po wyrażeniu zgody na cookies analityczne)",
+            "Dane rozliczeniowe: identyfikator klienta Stripe, status subskrypcji, okres rozliczeniowy (bez przechowywania pełnych numerów kart po stronie StockAI Pro)",
           ]}
         />
         <p className="mt-3 font-medium text-textPrimary">Nie zbieramy:</p>
-        <BulletList items={["danych finansowych konta bankowego", "numerów kart poza procesorem Stripe", "danych bankowych użytkownika"]} />
+        <BulletList
+          items={[
+            "numerów rachunków bankowych użytkownika",
+            "pełnych danych kart płatniczych (obsługę prowadzi Stripe jako niezależny administrator/procesor)",
+            "danych wrażliwych w rozumieniu art. 9 RODO, o ile użytkownik nie poda ich dobrowolnie w polach tekstowych",
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    id: "infrastructure",
+    title: "3. Infrastruktura techniczna i logowanie",
+    content: (
+      <>
+        <p>Dane operacyjne przechowujemy i przetwarzamy w infrastrukturze hostowanej w UE (m.in. Hetzner), z zastosowaniem:</p>
+        <BulletList
+          items={[
+            "TimescaleDB / PostgreSQL — trwałe dane konta, historii paper tradingu, sygnałów, konfiguracji użytkownika oraz logów aplikacyjnych niezbędnych do audytu i wsparcia",
+            "Redis — krótkotrwałe dane sesji, cache odpowiedzi API, kolejki zadań oraz mechanizmy ograniczania liczby żądań (rate limiting)",
+            "Szyfrowanie transmisji TLS oraz kontrola dostępu do środowisk produkcyjnych",
+          ]}
+        />
+        <p className="mt-3">
+          Logi techniczne (w tym adres IP i metadane żądań) przechowujemy maksymalnie 90 dni, o ile dłuższy okres nie
+          wynika z obowiązku prawnego lub dochodzenia roszczeń.
+        </p>
       </>
     ),
   },
   {
     id: "use",
-    title: "3. Jak używamy danych",
+    title: "4. Cele i sposób wykorzystania danych",
     content: (
       <>
         <BulletList
           items={[
-            "Świadczenie usług platformy",
-            "Personalizacja analiz AI i coachingu",
-            "Wysyłka emaili transakcyjnych (weryfikacja, digest)",
-            "Poprawa produktu (zagregowane statystyki)",
+            "Rejestracja, logowanie, weryfikacja e-mail i utrzymanie konta użytkownika",
+            "Świadczenie funkcji analitycznych, coachingu behawioralnego i paper tradingu",
+            "Personalizacja treści generowanych przez modele AI (m.in. Anthropic Claude) w oparciu o profil użytkowania",
+            "Obsługa subskrypcji i płatności przez Stripe",
+            "Komunikacja transakcyjna (reset hasła, potwierdzenia, digest)",
+            "Bezpieczeństwo platformy, wykrywanie nadużyć i zapobieganie oszustwom",
+            "Statystyki produktowe i poprawa jakości usługi (w formie zagregowanej)",
           ]}
         />
-        <p className="mt-3 font-medium text-textPrimary">Nie:</p>
-        <BulletList items={["sprzedajemy danych osobom trzecim", "używamy danych do reklam targetowanych"]} />
+        <p className="mt-3 font-medium text-textPrimary">Nie sprzedajemy danych osobowych podmiotom trzecim.</p>
+        <p>Nie prowadzimy profilowania wyłącznie automatycznego wywołującego skutki prawne wobec użytkownika.</p>
+        <p>Nie wykorzystujemy danych do reklam targetowanych osób trzecich.</p>
       </>
     ),
   },
   {
     id: "legal-basis",
-    title: "4. Podstawa prawna (RODO Art. 6)",
+    title: "5. Podstawy prawne przetwarzania (RODO art. 6)",
     content: (
       <BulletList
         items={[
-          "Wykonanie umowy (Art. 6 ust. 1 lit. b) — świadczenie usług",
-          "Uzasadniony interes (Art. 6 ust. 1 lit. f) — bezpieczeństwo, zapobieganie nadużyciom",
-          "Zgoda (Art. 6 ust. 1 lit. a) — marketing email, cookies analityczne",
+          "Art. 6 ust. 1 lit. b RODO — wykonanie umowy o świadczenie usług StockAI Pro",
+          "Art. 6 ust. 1 lit. f RODO — prawnie uzasadniony interes administratora (bezpieczeństwo IT, logi, dochodzenie roszczeń, rozwój produktu)",
+          "Art. 6 ust. 1 lit. a RODO — zgoda (marketing e-mail, cookies analityczne Google Analytics 4)",
+          "Art. 6 ust. 1 lit. c RODO — obowiązki prawne, w szczególności w zakresie rozliczeń podatkowych powiązanych z płatnościami",
         ]}
       />
     ),
   },
   {
     id: "retention",
-    title: "5. Przechowywanie danych",
+    title: "6. Okres przechowywania danych",
     content: (
       <BulletList
         items={[
-          "Dane konta: do usunięcia konta + 30 dni",
-          "Logi techniczne: 90 dni",
-          "Dane płatności (Stripe): zgodnie z polityką Stripe (do 7 lat dla celów podatkowych)",
+          "Dane konta i treści użytkownika: do momentu usunięcia konta + 30 dni na backup i zamknięcie spraw administracyjnych",
+          "Historia paper trades i wpisy coachingowe: przez czas trwania konta, następnie usunięcie zgodnie z żądaniem użytkownika",
+          "Logi techniczne i bezpieczeństwa: do 90 dni",
+          "Dane rozliczeniowe Stripe: zgodnie z polityką Stripe i wymogami prawa podatkowego (do 7 lat, jeśli wymagane)",
+          "Zgody marketingowe: do czasu wycofania zgody",
         ]}
       />
     ),
   },
   {
     id: "rights",
-    title: "6. Prawa użytkownika (RODO)",
+    title: "7. Prawa osoby, której dane dotyczą",
     content: (
       <>
+        <p>Przysługują Państwu następujące prawa:</p>
         <BulletList
           items={[
-            "Prawo dostępu do danych (Art. 15)",
-            "Prawo do sprostowania (Art. 16)",
-            'Prawo do usunięcia ("prawo do bycia zapomnianym") (Art. 17)',
-            "Prawo do przenoszenia danych (Art. 20)",
-            "Prawo do sprzeciwu (Art. 21)",
+            "prawo dostępu do danych (art. 15 RODO)",
+            "prawo do sprostowania (art. 16 RODO)",
+            "prawo do usunięcia danych (art. 17 RODO)",
+            "prawo do ograniczenia przetwarzania (art. 18 RODO)",
+            "prawo do przenoszenia danych (art. 20 RODO)",
+            "prawo sprzeciwu wobec przetwarzania (art. 21 RODO)",
+            "prawo wycofania zgody w dowolnym momencie bez wpływu na zgodność z prawem przetwarzania przed wycofaniem",
+            "prawo wniesienia skargi do Prezesa UODO (ul. Stawki 2, 00-193 Warszawa)",
           ]}
         />
         <p className="mt-3">
-          Kontakt w sprawach RODO:{" "}
+          Wnioski realizujemy pod adresem:{" "}
           <a href={`mailto:${COMPANY_LEGAL.privacyEmail}`} className="font-medium text-brandCyan hover:underline">
             {COMPANY_LEGAL.privacyEmail}
           </a>
+          . Odpowiadamy bez zbędnej zwłoki, nie później niż w terminach wynikających z RODO.
         </p>
       </>
     ),
   },
   {
     id: "cookies",
-    title: "7. Cookies",
+    title: "8. Pliki cookies i technologie śledzące",
     content: (
-      <BulletList
-        items={[
-          "Niezbędne: sesja, preferencje językowe (zawsze aktywne)",
-          "Analityczne: Google Analytics 4 (tylko za zgodą)",
-          "Marketing: brak",
-        ]}
-      />
-    ),
-  },
-  {
-    id: "third-parties",
-    title: "8. Usługi trzecich",
-    content: (
-      <ul className="space-y-2">
-        <li>
-          <strong>Stripe</strong> (płatności) —{" "}
-          <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" className="text-brandCyan hover:underline">
-            stripe.com/privacy
-          </a>
-        </li>
-        <li>
-          <strong>Resend</strong> (emaile) —{" "}
-          <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-brandCyan hover:underline">
-            resend.com/privacy
-          </a>
-        </li>
-        <li>
-          <strong>Hetzner</strong> (hosting) —{" "}
+      <>
+        <BulletList
+          items={[
+            "Cookies niezbędne — utrzymanie sesji JWT, preferencje językowe, bezpieczeństwo (zawsze aktywne)",
+            "Cookies analityczne — Google Analytics 4 (aktywowane wyłącznie po wyrażeniu zgody w banerze cookies)",
+            "Cookies marketingowe — nie stosujemy",
+          ]}
+        />
+        <p className="mt-3">
+          Identyfikator pomiaru GA4 konfigurowany jest przez zmienną środowiskową aplikacji i ładowany wyłącznie po
+          zgodzie użytkownika na cookies analityczne. Szczegóły:{" "}
           <a
-            href="https://www.hetzner.com/legal/privacy-policy"
+            href="https://policies.google.com/privacy"
             target="_blank"
             rel="noopener noreferrer"
             className="text-brandCyan hover:underline"
           >
-            hetzner.com/legal/privacy-policy
+            polityka Google
           </a>
-        </li>
-        <li>
-          <strong>Anthropic Claude</strong> (AI) —{" "}
-          <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" className="text-brandCyan hover:underline">
-            anthropic.com/privacy
-          </a>
-        </li>
-        <li>
-          <strong>Alpaca</strong> (trading API) —{" "}
-          <a href="https://alpaca.markets/privacy" target="_blank" rel="noopener noreferrer" className="text-brandCyan hover:underline">
-            alpaca.markets/privacy
-          </a>
-        </li>
-      </ul>
+          .
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "third-parties",
+    title: "9. Odbiorcy danych i podmioty przetwarzające",
+    content: (
+      <>
+        <p>Dane mogą być powierzane zaufanym podmiotom przetwarzającym na podstawie umów powierzenia (DPA), w tym:</p>
+        <ul className="mt-2 space-y-2">
+          <li>
+            <strong>Stripe</strong> — płatności i subskrypcje (
+            <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" className="text-brandCyan hover:underline">
+              stripe.com/privacy
+            </a>
+            )
+          </li>
+          <li>
+            <strong>Resend</strong> — wysyłka e-maili transakcyjnych (
+            <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-brandCyan hover:underline">
+              resend.com/legal/privacy-policy
+            </a>
+            )
+          </li>
+          <li>
+            <strong>Hetzner</strong> — hosting infrastruktury (
+            <a
+              href="https://www.hetzner.com/legal/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brandCyan hover:underline"
+            >
+              hetzner.com/legal/privacy-policy
+            </a>
+            )
+          </li>
+          <li>
+            <strong>Anthropic</strong> — przetwarzanie zapytań AI (
+            <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" className="text-brandCyan hover:underline">
+              anthropic.com/privacy
+            </a>
+            )
+          </li>
+          <li>
+            <strong>Alpaca Markets</strong> — integracja paper/live trading API (
+            <a href="https://alpaca.markets/privacy" target="_blank" rel="noopener noreferrer" className="text-brandCyan hover:underline">
+              alpaca.markets/privacy
+            </a>
+            )
+          </li>
+          <li>
+            <strong>Google</strong> — Analytics 4 (po zgodzie) (
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-brandCyan hover:underline">
+              policies.google.com/privacy
+            </a>
+            )
+          </li>
+        </ul>
+        <p className="mt-3">
+          Przekazanie danych poza EOG następuje wyłącznie przy użyciu mechanizmów zgodnych z RODO (np. Standardowe
+          Klauzule Umowne), jeśli dany podmiot przetwarza dane poza Unią Europejską.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "security",
+    title: "10. Bezpieczeństwo danych",
+    content: (
+      <p>
+        Stosujemy środki organizacyjne i techniczne adekwatne do ryzyka, w tym kontrolę dostępu, szyfrowanie transmisji,
+        separację środowisk, kopie zapasowe oraz procedury reagowania na incydenty. W przypadku naruszenia ochrony danych
+        osobowych, które może powodować wysokie ryzyko dla praw osób, poinformujemy użytkowników zgodnie z art. 34 RODO.
+      </p>
     ),
   },
   {
     id: "changes",
-    title: "9. Zmiany polityki",
-    content: <p>Powiadomimy emailem o istotnych zmianach z 30-dniowym wyprzedzeniem.</p>,
+    title: "11. Zmiany polityki prywatności",
+    content: (
+      <p>
+        Zastrzegamy prawo do aktualizacji niniejszej polityki. O istotnych zmianach poinformujemy z co najmniej 30-dniowym
+        wyprzedzeniem na adres e-mail powiązany z kontem oraz poprzez komunikat w aplikacji.
+      </p>
+    ),
   },
   {
     id: "dpo",
-    title: "10. Kontakt DPO",
+    title: "12. Kontakt w sprawach prywatności",
     content: (
       <p>
-        W sprawach ochrony danych:{" "}
+        Inspektor ochrony danych / kontakt RODO:{" "}
         <a href={`mailto:${COMPANY_LEGAL.privacyEmail}`} className="font-medium text-brandCyan hover:underline">
           {COMPANY_LEGAL.privacyEmail}
         </a>
+        . Korespondencja tradycyjna: {COMPANY_LEGAL.name}, {COMPANY_ADDRESS_LINE}.
       </p>
     ),
   },

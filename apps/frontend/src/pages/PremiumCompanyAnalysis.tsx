@@ -8,7 +8,7 @@ import type {
   PremiumTwinsResponse,
   PremiumVerdictResponse,
 } from "../services/api";
-import { AIDisclaimer } from "../components/AIDisclaimer";
+import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import { createStripeCheckoutSession } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
@@ -628,7 +628,7 @@ export function PremiumCompanyAnalysis() {
           ) : null}
         </div>
 
-        <AIDisclaimer className="mt-8" />
+        <InvestmentDisclaimer className="mt-8" />
       </div>
     </div>
   );
