@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CoachSnapshotLike, EmotionJournalEntry, EmotionJournalState, PsycheRadarPoint } from "../utils/behavioralCoachData";
-import { emotionJournalStorageKey } from "../utils/behavioralCoachData";
 import {
   applyCloseTradeImpact,
   applyEmotionTradeImpact,
@@ -15,6 +14,7 @@ import {
   toRadarMetrics,
   writePaperTrades,
   writePsycheScores,
+  type StoredPsycheScores,
 } from "../utils/coachPaperTrading";
 
 type OpenTradeInput = {
@@ -29,31 +29,58 @@ type CloseTradeInput = {
   closePrice: number;
 };
 
-export function useCoachPaperTrading(userId: string, snapshot: CoachSnapshotLike | null) {
+type PsycheSyncAdapter = {
+  storedScores: StoredPsycheScores;
+  saveStoredScores: (scores: StoredPsycheScores) => Promise<void>;
+  psycheHydrated: boolean;
+};
+
+type EmotionSyncAdapter = {
+  logEmotion: (entry: EmotionJournalEntry) => Promise<EmotionJournalEntry | void>;
+};
+
+export function useCoachPaperTrading(
+  userId: string,
+  snapshot: CoachSnapshotLike | null,
+  adapters?: {
+    psyche?: PsycheSyncAdapter;
+    emotion?: EmotionSyncAdapter;
+  },
+) {
   const tradesKey = paperTradesStorageKey(userId);
   const scoresKey = psycheScoresStorageKey(userId);
-  const journalKey = emotionJournalStorageKey(userId);
 
   const [trades, setTrades] = useState<CoachPaperTrade[]>([]);
-  const [psycheScores, setPsycheScores] = useState(() => scoresFromSnapshot(snapshot));
+  const [psycheScores, setPsycheScores] = useState(() => adapters?.psyche?.storedScores ?? scoresFromSnapshot(snapshot));
   const [emotion, setEmotion] = useState<EmotionJournalState | null>(null);
   const [emotionAcknowledged, setEmotionAcknowledged] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const storedTrades = readPaperTrades(tradesKey);
-    const storedScores = readPsycheScores(scoresKey);
     setTrades(storedTrades);
-    setPsycheScores(storedScores ?? scoresFromSnapshot(snapshot));
+    if (!adapters?.psyche) {
+      const storedScores = readPsycheScores(scoresKey);
+      setPsycheScores(storedScores ?? scoresFromSnapshot(snapshot));
+    }
     setHydrated(true);
-  }, [tradesKey, scoresKey, snapshot]);
+  }, [tradesKey, scoresKey, snapshot, adapters?.psyche]);
+
+  useEffect(() => {
+    if (!adapters?.psyche?.psycheHydrated) return;
+    setPsycheScores(adapters.psyche.storedScores);
+  }, [adapters?.psyche?.psycheHydrated, adapters?.psyche?.storedScores]);
 
   const persistScores = useCallback(
-    (scores: typeof psycheScores) => {
+    (scores: StoredPsycheScores) => {
       setPsycheScores(scores);
+      if (adapters?.psyche) {
+        void adapters.psyche.saveStoredScores(scores);
+        return;
+      }
       writePsycheScores(scoresKey, scores);
     },
-    [scoresKey],
+    [adapters?.psyche, scoresKey],
   );
 
   const persistTrades = useCallback(
@@ -81,7 +108,7 @@ export function useCoachPaperTrading(userId: string, snapshot: CoachSnapshotLike
       }
 
       const seed = Date.now();
-      const currentScores = readPsycheScores(scoresKey) ?? psycheScores;
+      const currentScores = psycheScores;
       const nextScores = applyEmotionTradeImpact(currentScores, input.emotion, seed);
       persistScores(nextScores);
 
@@ -102,7 +129,7 @@ export function useCoachPaperTrading(userId: string, snapshot: CoachSnapshotLike
       persistTrades([trade, ...readPaperTrades(tradesKey)]);
       return { ok: true as const, trade };
     },
-    [emotionAcknowledged, persistScores, persistTrades, psycheScores, scoresKey, tradesKey],
+    [emotionAcknowledged, persistScores, persistTrades, psycheScores, tradesKey],
   );
 
   const closePaperTrade = useCallback(
@@ -118,8 +145,7 @@ export function useCoachPaperTrading(userId: string, snapshot: CoachSnapshotLike
 
       const profitLoss = calculateProfitLoss(trade.action, trade.entryPrice, input.closePrice, trade.quantity);
       const seed = Date.now();
-      const currentScores = readPsycheScores(scoresKey) ?? psycheScores;
-      const nextScores = applyCloseTradeImpact(currentScores, profitLoss, trade.emotionAtEntry, seed);
+      const nextScores = applyCloseTradeImpact(psycheScores, profitLoss, trade.emotionAtEntry, seed);
 
       const closed: CoachPaperTrade = {
         ...trade,
@@ -133,29 +159,22 @@ export function useCoachPaperTrading(userId: string, snapshot: CoachSnapshotLike
       persistTrades(rows.map((row) => (row.id === trade.id ? closed : row)));
       return { ok: true as const, trade: closed };
     },
-    [persistScores, persistTrades, psycheScores, scoresKey, tradesKey],
+    [persistScores, persistTrades, psycheScores, tradesKey],
   );
 
   const logJournalEntry = useCallback(
-    (entry: EmotionJournalEntry) => {
-      const existingRaw = window.localStorage.getItem(journalKey);
-      let existing: EmotionJournalEntry[] = [];
-      try {
-        existing = existingRaw ? (JSON.parse(existingRaw) as EmotionJournalEntry[]) : [];
-      } catch {
-        existing = [];
+    async (entry: EmotionJournalEntry) => {
+      if (adapters?.emotion) {
+        await adapters.emotion.logEmotion(entry);
       }
-      const nextJournal = [entry, ...existing].slice(0, 12);
-      window.localStorage.setItem(journalKey, JSON.stringify(nextJournal));
 
       if (entry.emotion === "NEUTRAL" || entry.emotion === "CONFIDENT") {
         const seed = Date.parse(entry.createdAt) || Date.now();
-        const currentScores = readPsycheScores(scoresKey) ?? psycheScores;
-        const boosted = applyJournalBoost(currentScores, entry.emotion, seed);
+        const boosted = applyJournalBoost(psycheScores, entry.emotion, seed);
         persistScores(boosted);
       }
     },
-    [journalKey, persistScores, psycheScores, scoresKey],
+    [adapters?.emotion, persistScores, psycheScores],
   );
 
   const psycheMetrics: PsycheRadarPoint[] = useMemo(() => toRadarMetrics(psycheScores), [psycheScores]);
@@ -164,7 +183,7 @@ export function useCoachPaperTrading(userId: string, snapshot: CoachSnapshotLike
   const closedTrades = useMemo(() => trades.filter((row) => row.status === "CLOSED").slice(0, 6), [trades]);
 
   return {
-    hydrated,
+    hydrated: hydrated && (adapters?.psyche?.psycheHydrated ?? true),
     emotion,
     emotionAcknowledged,
     selectEmotion,

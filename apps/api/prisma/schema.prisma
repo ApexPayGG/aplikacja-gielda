@@ -87,6 +87,8 @@ model User {
   portfolio_snapshots  PortfolioSnapshot[]
   affiliateClicks      AffiliateClick[]
   affiliateConversions AffiliateConversion[]
+  emotionJournalEntries EmotionJournalEntry[]
+  psycheSnapshots       PsycheSnapshot[]
 
   @@map("users")
 }
@@ -657,6 +659,36 @@ model DecisionReceipt {
 
   @@index([userId, createdAt])
   @@map("decision_receipts")
+}
+
+model EmotionJournalEntry {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  emotion   String
+  ticker    String?
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("emotion_journal_entries")
+}
+
+model PsycheSnapshot {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  fomoScore    Int      @default(50) @map("fomo_score")
+  discipline   Int      @default(50)
+  greedControl Int      @default(50) @map("greed_control")
+  patience     Int      @default(50)
+  growthScore  Int      @default(50) @map("growth_score")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("psyche_snapshots")
 }
 
 model EmotionalEvent {

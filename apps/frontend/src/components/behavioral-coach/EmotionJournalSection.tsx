@@ -1,56 +1,35 @@
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useState, type FormEvent } from "react";
 import {
   EMOTION_JOURNAL_LABELS,
   type EmotionJournalEntry,
   type EmotionJournalState,
-  emotionJournalStorageKey,
 } from "../../utils/behavioralCoachData";
 import { GLASS_SECTION, GLASS_SECTION_TITLE } from "./glassStyles";
 
 type Props = {
-  userId: string;
   emotion: EmotionJournalState | null;
   emotionAcknowledged: boolean;
-  onLogEntry: (entry: EmotionJournalEntry) => void;
+  entries: EmotionJournalEntry[];
+  entriesLoading?: boolean;
+  onLogEntry: (entry: EmotionJournalEntry) => void | Promise<void>;
 };
 
-function readEntries(key: string): EmotionJournalEntry[] {
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (row): row is EmotionJournalEntry =>
-        typeof row === "object" &&
-        row !== null &&
-        typeof (row as EmotionJournalEntry).id === "string" &&
-        typeof (row as EmotionJournalEntry).emotion === "string",
-    );
-  } catch {
-    return [];
-  }
-}
-
-export function EmotionJournalSection({ userId, emotion, emotionAcknowledged, onLogEntry }: Props) {
-  const storageKey = emotionJournalStorageKey(userId);
+export function EmotionJournalSection({
+  emotion,
+  emotionAcknowledged,
+  entries,
+  entriesLoading = false,
+  onLogEntry,
+}: Props) {
   const [symbol, setSymbol] = useState("");
   const [note, setNote] = useState("");
-  const [entries, setEntries] = useState<EmotionJournalEntry[]>([]);
   const [savedFlash, setSavedFlash] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setEntries(readEntries(storageKey));
-  }, [storageKey]);
-
-  const refreshEntries = useCallback(() => {
-    setEntries(readEntries(storageKey));
-  }, [storageKey]);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
+    async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!emotion || !emotionAcknowledged) {
         setFormError("Wybierz emocję w panelu powyżej przed zapisem wpisu.");
@@ -71,15 +50,19 @@ export function EmotionJournalSection({ userId, emotion, emotionAcknowledged, on
         createdAt: new Date().toISOString(),
       };
 
-      onLogEntry(entry);
-      refreshEntries();
-      setNote("");
-      setSymbol("");
-      setFormError(null);
-      setSavedFlash(true);
-      window.setTimeout(() => setSavedFlash(false), 2200);
+      setSubmitting(true);
+      try {
+        await onLogEntry(entry);
+        setNote("");
+        setSymbol("");
+        setFormError(null);
+        setSavedFlash(true);
+        window.setTimeout(() => setSavedFlash(false), 2200);
+      } finally {
+        setSubmitting(false);
+      }
     },
-    [emotion, emotionAcknowledged, note, onLogEntry, refreshEntries, symbol],
+    [emotion, emotionAcknowledged, note, onLogEntry, symbol],
   );
 
   return (
@@ -129,15 +112,17 @@ export function EmotionJournalSection({ userId, emotion, emotionAcknowledged, on
 
         <button
           type="submit"
-          disabled={!emotionAcknowledged || !emotion}
+          disabled={!emotionAcknowledged || !emotion || submitting}
           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2D0A6B] to-[#00C9D4]/80 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
         >
           {savedFlash ? <CheckCircleIcon className="h-5 w-5" /> : null}
-          Zapisz wpis i zaktualizuj radar
+          {submitting ? "Zapisywanie…" : "Zapisz wpis i zaktualizuj radar"}
         </button>
       </form>
 
-      {entries.length > 0 ? (
+      {entriesLoading ? (
+        <div className="mt-6 h-20 animate-pulse rounded-xl bg-white/5" aria-hidden />
+      ) : entries.length > 0 ? (
         <ul className="mt-6 space-y-2 border-t border-white/10 pt-4">
           {entries.slice(0, 5).map((entry) => (
             <li

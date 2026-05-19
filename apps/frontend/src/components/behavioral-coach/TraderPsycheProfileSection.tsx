@@ -1,6 +1,8 @@
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { useMemo } from "react";
 import {
+  Line,
+  LineChart,
   PolarAngleAxis,
   PolarGrid,
   PolarRadiusAxis,
@@ -8,13 +10,18 @@ import {
   RadarChart,
   ResponsiveContainer,
   Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import type { PsycheRadarPoint } from "../../utils/behavioralCoachData";
+import type { PsycheHistoryPoint } from "../../utils/psycheSync";
 import { GLASS_SECTION, GLASS_SECTION_TITLE } from "./glassStyles";
 import { TraderProfileShareMenu } from "./TraderProfileShareMenu";
 
 type Props = {
   metrics: PsycheRadarPoint[];
+  growthScore?: number;
+  history?: PsycheHistoryPoint[];
   loading?: boolean;
 };
 
@@ -35,18 +42,32 @@ function MetricBar({ label, score }: { label: string; score: number }) {
   );
 }
 
-export function TraderPsycheProfileSection({ metrics, loading }: Props) {
+export function TraderPsycheProfileSection({ metrics, growthScore, history = [], loading }: Props) {
   const averageScore = useMemo(() => {
+    if (typeof growthScore === "number") return growthScore;
     if (metrics.length === 0) return 0;
     return Math.round(metrics.reduce((sum, row) => sum + row.score, 0) / metrics.length);
-  }, [metrics]);
+  }, [growthScore, metrics]);
+
+  const historyChartData = useMemo(
+    () =>
+      [...history]
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+        .map((row) => ({
+          label: new Date(row.createdAt).toLocaleDateString("pl-PL", { day: "numeric", month: "short" }),
+          growth: row.growthScore,
+        })),
+    [history],
+  );
 
   return (
     <section className={GLASS_SECTION}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className={GLASS_SECTION_TITLE}>Twój Profil Psychiki Tradera</h2>
-          <p className="mt-1 text-sm text-white/55">Metryki wyliczone z mockowej analizy transakcji paper trading.</p>
+          <p className="mt-1 text-sm text-white/55">
+            Metryki zsynchronizowane z paper tradingiem i dziennikiem emocji (TimescaleDB).
+          </p>
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-[#00C9D4]/25 bg-[#00C9D4]/10 px-3 py-1 text-xs font-medium text-[#00C9D4]">
           <SparklesIcon className="h-3.5 w-3.5" aria-hidden />
@@ -92,6 +113,28 @@ export function TraderPsycheProfileSection({ metrics, loading }: Props) {
             {metrics.map((row) => (
               <MetricBar key={row.metric} label={row.metric} score={row.score} />
             ))}
+            {historyChartData.length > 1 ? (
+              <div className="mt-2 rounded-xl border border-white/10 bg-white/5 p-3">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/50">Trend wzrostu (30 dni)</p>
+                <div className="h-28 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={historyChartData}>
+                      <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 10 }} />
+                      <YAxis domain={[0, 100]} tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 10 }} width={28} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "rgba(26, 5, 56, 0.95)",
+                          border: "1px solid rgba(255,255,255,0.12)",
+                          borderRadius: "12px",
+                          color: "#fff",
+                        }}
+                      />
+                      <Line type="monotone" dataKey="growth" stroke="#00C9D4" strokeWidth={2} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

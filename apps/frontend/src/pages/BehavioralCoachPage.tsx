@@ -12,6 +12,9 @@ import { GLASS_PAGE_BG } from "../components/behavioral-coach/glassStyles";
 import { TraderPsycheProfileSection } from "../components/behavioral-coach/TraderPsycheProfileSection";
 import { useAuth } from "../context/AuthContext";
 import { useCoachPaperTrading } from "../hooks/useCoachPaperTrading";
+import { useEmotionSync } from "../hooks/useEmotionSync";
+import { usePsycheSync } from "../hooks/usePsycheSync";
+import type { SyncSource } from "../utils/psycheSync";
 import { api, getBehavioralCooldown, type BehavioralCooldownResponse } from "../services/api";
 import { buildCoachInterventions, type CoachSnapshotLike } from "../utils/behavioralCoachData";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -61,7 +64,13 @@ export function BehavioralCoachPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const USER_ID = user?.id ?? MOCK_USER_ID;
+  const syncUserId = user?.id ?? null;
   const showBrokerPaywall = isFreePlan(user?.tier);
+
+  const psycheSync = usePsycheSync(syncUserId);
+  const emotionSync = useEmotionSync(syncUserId);
+  const behavioralSyncSource: SyncSource =
+    syncUserId && psycheSync.syncSource === "api" && emotionSync.syncSource === "api" ? "api" : "local";
 
   const [coach, setCoach] = useState<CoachResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -84,7 +93,16 @@ export function BehavioralCoachPage() {
     openPaperTrade,
     closePaperTrade,
     logJournalEntry,
-  } = useCoachPaperTrading(USER_ID, snapshot);
+  } = useCoachPaperTrading(USER_ID, snapshot, {
+    psyche: syncUserId
+      ? {
+          storedScores: psycheSync.storedScores,
+          saveStoredScores: psycheSync.saveStoredScores,
+          psycheHydrated: !psycheSync.loading,
+        }
+      : undefined,
+    emotion: syncUserId ? { logEmotion: emotionSync.logEmotion } : undefined,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -149,7 +167,7 @@ export function BehavioralCoachPage() {
   }, [USER_ID]);
 
   const interventions = useMemo(() => buildCoachInterventions(snapshot), [snapshot]);
-  const radarLoading = loading || !hydrated;
+  const radarLoading = loading || !hydrated || psycheSync.loading;
 
   return (
     <div className={GLASS_PAGE_BG}>
@@ -167,15 +185,28 @@ export function BehavioralCoachPage() {
               Identyfikuj FOMO, revenge trading i overtrading — zanim kosztują Cię realny kapitał.
             </p>
           </div>
-          <span
-            className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold ${
-              usingMock
-                ? "border-amber-400/40 bg-amber-500/10 text-amber-200"
-                : "border-white/15 bg-[#2D0A6B]/20 text-white/70"
-            }`}
-          >
-            {usingMock ? t("common.apiMockBadge") : t("common.apiLiveBadge")}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold ${
+                usingMock
+                  ? "border-amber-400/40 bg-amber-500/10 text-amber-200"
+                  : "border-white/15 bg-[#2D0A6B]/20 text-white/70"
+              }`}
+            >
+              {usingMock ? t("common.apiMockBadge") : t("common.apiLiveBadge")}
+            </span>
+            {syncUserId ? (
+              <span
+                className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold ${
+                  behavioralSyncSource === "api"
+                    ? "border-emerald-400/35 bg-emerald-500/10 text-emerald-200"
+                    : "border-white/15 bg-white/5 text-white/65"
+                }`}
+              >
+                {behavioralSyncSource === "api" ? "☁️ Zsynchronizowano" : "📱 Tryb offline"}
+              </span>
+            ) : null}
+          </div>
         </header>
 
         <section className="rounded-2xl border border-white/10 bg-[#2D0A6B]/10 p-4 backdrop-blur-md">
@@ -202,7 +233,12 @@ export function BehavioralCoachPage() {
           <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">{error}</div>
         ) : null}
 
-        <TraderPsycheProfileSection metrics={psycheMetrics} loading={radarLoading} />
+        <TraderPsycheProfileSection
+          metrics={psycheMetrics}
+          growthScore={psycheSync.psycheData.growthScore}
+          history={psycheSync.history}
+          loading={radarLoading}
+        />
 
         <CoachEmotionHubSection
           emotion={emotion}
@@ -222,9 +258,10 @@ export function BehavioralCoachPage() {
         <div className="grid gap-6 lg:grid-cols-2">
           <CoachInterventionsSection interventions={interventions} loading={loading} />
           <EmotionJournalSection
-            userId={USER_ID}
             emotion={emotion}
             emotionAcknowledged={emotionAcknowledged}
+            entries={emotionSync.entries}
+            entriesLoading={emotionSync.loading}
             onLogEntry={logJournalEntry}
           />
         </div>
