@@ -179,24 +179,26 @@ async function fetchEodhdOnce(fullSymbol: string, token: string, from?: string):
   return fetch(url, { method: "GET", headers: { Accept: "application/json" } });
 }
 
-/**
- * PRIMARY: EODHD dividend history for `symbol` (US suffix) over `years`.
- * Maps: date→exDate, paymentDate→payDate, value→amount, period→frequency.
- */
-export async function fetchDividendHistory(symbol: string, years: number): Promise<EodhdDividendRow[]> {
-  const sym = symbol.trim().toUpperCase();
-  const suffix = process.env.EODHD_DIVIDEND_EXCHANGE?.trim() || ".US";
-  const fullSymbol = toEodhdDividendSymbol(sym, suffix);
-  const from = dividendFromIsoOrYears(years);
-  const key = process.env.EODHD_API_KEY?.trim();
-  const token =
-    key ||
-    (process.env.DIVIDEND_EODHD_DEMO === "1" && fullSymbol === "AAPL.US" ? "demo" : "");
-  if (!token) {
-    throw new Error("EODHD_API_KEY is not set (or set DIVIDEND_EODHD_DEMO=1 for AAPL.US demo only)");
-  }
+function parseEodhdDividendResponse(text: string): EodhdDividendRow[] {
+  const parsed = JSON.parse(text) as unknown;
+  if (!Array.isArray(parsed)) throw new Error(`EODHD expected array: ${text.slice(0, 200)}`);
 
-  const maxRetries = 4;
+  const rows: EodhdDividendRow[] = [];
+  for (const item of parsed) {
+    const n = normalizeEodRow(item as Record<string, unknown>);
+    if (n) rows.push(n);
+  }
+  rows.sort((a, b) => a.date.localeCompare(b.date));
+  return rows;
+}
+
+async function fetchEodhdDividendRows(
+  sym: string,
+  fullSymbol: string,
+  token: string,
+  from: string,
+  maxRetries = 4,
+): Promise<EodhdDividendRow[]> {
   const baseDelayMs = 500;
   let lastErr: Error | null = null;
 
@@ -214,16 +216,7 @@ export async function fetchDividendHistory(symbol: string, years: number): Promi
       }
       if (!res.ok) throw new Error(`EODHD HTTP ${res.status}: ${text.slice(0, 400)}`);
 
-      const parsed = JSON.parse(text) as unknown;
-      if (!Array.isArray(parsed)) throw new Error(`EODHD expected array: ${text.slice(0, 200)}`);
-
-      const rows: EodhdDividendRow[] = [];
-      for (const item of parsed) {
-        const n = normalizeEodRow(item as Record<string, unknown>);
-        if (n) rows.push(n);
-      }
-      rows.sort((a, b) => a.date.localeCompare(b.date));
-
+      const rows = parseEodhdDividendResponse(text);
       const reqFrom = new Date(from + "T12:00:00.000Z");
       if (isLikelyEodhdFreeTierTruncation(reqFrom, rows)) {
         dividendLog("warn", "eodhd_possible_free_tier_truncation", {
@@ -234,7 +227,7 @@ export async function fetchDividendHistory(symbol: string, years: number): Promi
         });
       }
 
-      dividendLog("info", "eodhd_fetch_ok", { fullSymbol, count: rows.length });
+      dividendLog("info", "eodhd_fetch_ok", { fullSymbol, count: rows.length, from });
       return rows;
     } catch (e) {
       lastErr = e instanceof Error ? e : new Error(String(e));
@@ -242,8 +235,49 @@ export async function fetchDividendHistory(symbol: string, years: number): Promi
       await sleep(baseDelayMs * 2 ** attempt);
     }
   }
-  dividendLog("error", "eodhd_fetch_failed", { symbol: sym, error: lastErr?.message });
-  throw lastErr ?? new Error("fetchDividendHistory failed");
+  dividendLog("error", "eodhd_fetch_failed", { symbol: sym, from, error: lastErr?.message });
+  throw lastErr ?? new Error("fetchEodhdDividendRows failed");
+}
+
+/** EODHD dividends since a fixed ISO date (e.g. 2018-01-01). */
+export async function fetchEodhdDividendsSince(symbol: string, fromIso: string): Promise<NormalizedDividendRow[]> {
+  const sym = symbol.trim().toUpperCase();
+  const from = fromIso.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(from)) {
+    throw new Error(`Invalid from date: ${fromIso}`);
+  }
+  const suffix = process.env.EODHD_DIVIDEND_EXCHANGE?.trim() || ".US";
+  const fullSymbol = toEodhdDividendSymbol(sym, suffix);
+  const key = process.env.EODHD_API_KEY?.trim();
+  const token =
+    key ||
+    (process.env.DIVIDEND_EODHD_DEMO === "1" && fullSymbol === "AAPL.US" ? "demo" : "");
+  if (!token) {
+    throw new Error("EODHD_API_KEY is not set (or set DIVIDEND_EODHD_DEMO=1 for AAPL.US demo only)");
+  }
+
+  const rows = await fetchEodhdDividendRows(sym, fullSymbol, token, from);
+  return rows.map(mapEodhdToNormalized);
+}
+
+/**
+ * PRIMARY: EODHD dividend history for `symbol` (US suffix) over `years`.
+ * Maps: date→exDate, paymentDate→payDate, value→amount, period→frequency.
+ */
+export async function fetchDividendHistory(symbol: string, years: number): Promise<EodhdDividendRow[]> {
+  const sym = symbol.trim().toUpperCase();
+  const suffix = process.env.EODHD_DIVIDEND_EXCHANGE?.trim() || ".US";
+  const fullSymbol = toEodhdDividendSymbol(sym, suffix);
+  const from = dividendFromIsoOrYears(years);
+  const key = process.env.EODHD_API_KEY?.trim();
+  const token =
+    key ||
+    (process.env.DIVIDEND_EODHD_DEMO === "1" && fullSymbol === "AAPL.US" ? "demo" : "");
+  if (!token) {
+    throw new Error("EODHD_API_KEY is not set (or set DIVIDEND_EODHD_DEMO=1 for AAPL.US demo only)");
+  }
+
+  return fetchEodhdDividendRows(sym, fullSymbol, token, from);
 }
 
 /**

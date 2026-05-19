@@ -4,6 +4,7 @@ import pino from "pino";
 import { prisma } from "../../db/index";
 import { enqueueDiscordSignalAlert } from "../../queues/discordSignalAlerts";
 import { getCacheRedis } from "../../redis";
+import { backfillDividendsFromEodhd } from "../../services/dividendDataService";
 
 export type DividendData = {
   ticker: string;
@@ -85,9 +86,8 @@ async function generateAiBreef(input: {
   }
 }
 
-export async function getDividendHealth(ticker: string): Promise<DividendData> {
-  const symbol = ticker.trim().toUpperCase();
-  const [company, latestDividend, histories, sustainability] = await Promise.all([
+async function loadDividendHealthContext(symbol: string) {
+  return Promise.all([
     prisma.company.findUnique({
       where: { symbol },
       select: { name: true },
@@ -106,10 +106,20 @@ export async function getDividendHealth(ticker: string): Promise<DividendData> {
       where: { symbol },
       select: { payoutRatio: true },
     }),
-  ]);
+  ] as const);
+}
+
+export async function getDividendHealth(ticker: string): Promise<DividendData> {
+  const symbol = ticker.trim().toUpperCase();
+  let [company, latestDividend, histories, sustainability] = await loadDividendHealthContext(symbol);
 
   if (!latestDividend) {
-    throw new Error(`Dividend data not found for ${symbol}`);
+    logger.info({ msg: "dividend_eodhd_backfill_start", symbol });
+    await backfillDividendsFromEodhd(symbol);
+    [company, latestDividend, histories, sustainability] = await loadDividendHealthContext(symbol);
+    if (!latestDividend) {
+      throw new Error(`Dividend data not found for ${symbol}`);
+    }
   }
 
   const years = consecutiveGrowthYears(histories);

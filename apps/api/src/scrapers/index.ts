@@ -9,6 +9,7 @@ export {
   dividendLog,
   fetchDividendHistory,
   fetchDividendHistoryFinnhub,
+  fetchEodhdDividendsSince,
   fetchDividendHistoryHybrid,
   fetchDividendHistoryRaw,
   isLikelyEodhdFreeTierTruncation,

@@ -6,8 +6,11 @@ import { prisma } from "../db/index";
 import {
   dividendLog,
   fetchDividendHistoryHybrid,
+  fetchEodhdDividendsSince,
   type NormalizedDividendRow,
 } from "../scrapers/dividends";
+
+export const EODHD_DIVIDEND_BACKFILL_FROM = "2018-01-01";
 import { isRedisConfigured } from "../config/redis";
 import { getCacheRedis } from "../redis";
 import { filterValidNormalizedDividends } from "./dividendValidation";
@@ -209,6 +212,20 @@ export async function calculateAndStoreDividendHistory(symbol: string): Promise<
   await invalidateCachesForSymbol(sym);
   dividendLog("info", "dividend_history_calculated", { symbol: sym, yearRows: historyRows.length });
   return { symbol: sym, yearRows: historyRows.length };
+}
+
+/**
+ * On-demand EODHD backfill when DB has no dividend rows for a symbol.
+ * Persists to `dividends` (source eodhd) + recomputes `dividend_histories`.
+ */
+export async function backfillDividendsFromEodhd(symbol: string): Promise<void> {
+  const sym = symbol.trim().toUpperCase();
+  const rows = await fetchEodhdDividendsSince(sym, EODHD_DIVIDEND_BACKFILL_FROM);
+  if (rows.length === 0) {
+    throw new Error(`Dividend data not found for ${sym}`);
+  }
+  await persistNormalizedDividends(sym, rows);
+  dividendLog("info", "eodhd_backfill_ok", { symbol: sym, rows: rows.length, from: EODHD_DIVIDEND_BACKFILL_FROM });
 }
 
 export async function syncOneSymbolDividends(symbol: string, years: number): Promise<SyncOneSymbolResult> {
