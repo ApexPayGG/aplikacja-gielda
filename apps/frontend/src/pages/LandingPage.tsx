@@ -480,6 +480,191 @@ function GlobalConnectionsSVG() {
   );
 }
 
+const WORLD_CLOCK_CITIES = [
+  { name: "Warszawa", timezone: "Europe/Warsaw", exchange: "GPW", flag: "🇵🇱" },
+  { name: "London", timezone: "Europe/London", exchange: "LSE", flag: "🇬🇧" },
+  { name: "New York", timezone: "America/New_York", exchange: "NYSE", flag: "🇺🇸" },
+  { name: "Frankfurt", timezone: "Europe/Berlin", exchange: "DAX", flag: "🇩🇪" },
+  { name: "Tokyo", timezone: "Asia/Tokyo", exchange: "TSE", flag: "🇯🇵" },
+  { name: "Hong Kong", timezone: "Asia/Hong_Kong", exchange: "HKEX", flag: "🇭🇰" },
+] as const;
+
+function getZonedTime(timeZone: string, now: Date) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: false,
+  }).formatToParts(now);
+
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((p) => p.type === type)?.value ?? 0);
+
+  let hours = value("hour");
+  if (hours === 24) hours = 0;
+
+  return {
+    hours,
+    minutes: value("minute"),
+    seconds: value("second"),
+  };
+}
+
+function isExchangeOpenSimple(hour24: number) {
+  return hour24 >= 9 && hour24 < 17;
+}
+
+function WorldClockFace({ timeZone, now }: { timeZone: string; now: Date }) {
+  const { hours, minutes, seconds } = getZonedTime(timeZone, now);
+  const hours12 = hours % 12;
+  const hourDeg = hours12 * 30 + minutes * 0.5;
+  const minuteDeg = minutes * 6;
+  const secondDeg = seconds * 6;
+  const isOpen = isExchangeOpenSimple(hours);
+
+  return (
+    <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden>
+      <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+      <circle cx="50" cy="50" r="44" fill="rgba(255,255,255,0.03)" />
+      {Array.from({ length: 12 }, (_, i) => {
+        const angle = (i * 30 - 90) * (Math.PI / 180);
+        const x1 = 50 + 38 * Math.cos(angle);
+        const y1 = 50 + 38 * Math.sin(angle);
+        const x2 = 50 + 42 * Math.cos(angle);
+        const y2 = 50 + 42 * Math.sin(angle);
+        return (
+          <line
+            key={i}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth={i % 3 === 0 ? 2 : 1}
+          />
+        );
+      })}
+      <line
+        x1="50"
+        y1="50"
+        x2={50 + 24 * Math.sin((hourDeg * Math.PI) / 180)}
+        y2={50 - 24 * Math.cos((hourDeg * Math.PI) / 180)}
+        stroke="white"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <line
+        x1="50"
+        y1="50"
+        x2={50 + 32 * Math.sin((minuteDeg * Math.PI) / 180)}
+        y2={50 - 32 * Math.cos((minuteDeg * Math.PI) / 180)}
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <line
+        x1="50"
+        y1="50"
+        x2={50 + 35 * Math.sin((secondDeg * Math.PI) / 180)}
+        y2={50 - 35 * Math.cos((secondDeg * Math.PI) / 180)}
+        stroke="#00C9D4"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
+      <circle cx="50" cy="50" r="3" fill="#00C9D4" />
+      <circle cx="50" cy="50" r="1.5" fill="white" />
+      <circle cx="50" cy="18" r="3" fill={isOpen ? "#00A86B" : "#E53935"} opacity={0.9} />
+    </svg>
+  );
+}
+
+function WorldClocks() {
+  const [time, setTime] = useState(() => new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section
+      className="world-clocks-section reveal relative overflow-hidden py-16"
+      style={{
+        background: "linear-gradient(135deg, #0f0f1a 0%, #1a0533 50%, #0a1628 100%)",
+      }}
+    >
+      <div className="pointer-events-none absolute inset-0 opacity-10" aria-hidden>
+        <GlobalConnectionsSVG />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-6xl px-6">
+        <div className="mb-12 text-center">
+          <h2 className="section-h2 mb-3 text-white">
+            Rynki nigdy nie śpią.
+            <span style={{ color: BRAND.cyan }}> Ty też nie musisz.</span>
+          </h2>
+          <p className="text-lg text-white/60">StockAI Pro monitoruje 130+ giełd przez całą dobę.</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
+          {WORLD_CLOCK_CITIES.map((city, i) => {
+            const { hours } = getZonedTime(city.timezone, time);
+            const isOpen = isExchangeOpenSimple(hours);
+            const timeStr = time.toLocaleTimeString("pl-PL", {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              timeZone: city.timezone,
+            });
+            const staggerClass = i % 3 === 0 ? "stagger-1" : i % 3 === 1 ? "stagger-2" : "stagger-3";
+
+            return (
+              <div
+                key={city.name}
+                className={`world-clocks-city reveal flex flex-col items-center gap-3 ${staggerClass}`}
+                style={{ transitionDelay: `${i * 0.1}s` }}
+              >
+                <div
+                  className="relative h-20 w-20 rounded-full p-1"
+                  style={{
+                    background: "radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)",
+                    border: `2px solid ${isOpen ? "rgba(0,168,107,0.4)" : "rgba(229,57,53,0.2)"}`,
+                    boxShadow: isOpen ? "0 0 20px rgba(0,168,107,0.2)" : "none",
+                  }}
+                >
+                  <WorldClockFace timeZone={city.timezone} now={time} />
+                </div>
+
+                <div className="text-center">
+                  <div className="mb-1 flex items-center justify-center gap-1">
+                    <span className="text-sm">{city.flag}</span>
+                    <span className="text-sm font-semibold text-white">{city.name}</span>
+                  </div>
+                  <div className="font-mono text-xs text-[#00C9D4]">{timeStr}</div>
+                  <div className="text-xs text-white/40">{city.exchange}</div>
+                  <div className="mt-1">
+                    <span
+                      className="rounded-full px-2 py-0.5 text-xs"
+                      style={{
+                        background: isOpen ? "rgba(0,168,107,0.2)" : "rgba(229,57,53,0.15)",
+                        color: isOpen ? "#00A86B" : "#E53935",
+                        border: `1px solid ${isOpen ? "rgba(0,168,107,0.3)" : "rgba(229,57,53,0.2)"}`,
+                      }}
+                    >
+                      {isOpen ? "● Otwarta" : "● Zamknięta"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 type HeroVisualProps = {
   heroPrices: Record<HeroTicker, number>;
   heroPctByTicker: Partial<Record<HeroTicker, number>>;
@@ -1107,6 +1292,8 @@ export function LandingPage() {
           </div>
         </div>
       </section>
+
+      <WorldClocks />
 
       {/* ═══ ETORO PARTNER ═══ */}
       <section className="border-y border-slate-100 bg-white px-4 py-20">

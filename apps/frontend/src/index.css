@@ -714,3 +714,25 @@ a {
 .landing-how-float {
   animation: landing-icon-tile-float 6s ease-in-out infinite;
 }
+
+/* Landing — world clocks (market hours) */
+.world-clocks-section {
+  scroll-margin-top: 6rem;
+}
+
+.world-clocks-city.reveal {
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+
+.world-clocks-city.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-clocks-city.reveal {
+    transition: none !important;
+  }
+}
