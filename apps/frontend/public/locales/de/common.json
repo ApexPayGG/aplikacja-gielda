@@ -452,39 +452,79 @@
     "validationSymbol": "Please provide a valid symbol."
   },
   "landing": {
+    "footer": {
+      "company": "Unternehmen",
+      "copyright": "© 2026 StockAI Pro · Alle Rechte vorbehalten",
+      "languagesAria": "Sprache wählen",
+      "legal": "Rechtliches",
+      "legalEtoro": "Mit eToro handeln (Partner)",
+      "privacy": "Datenschutz",
+      "product": "Produkt",
+      "productMarkets": "Märkte",
+      "productPricing": "Preise",
+      "productSignals": "Signale",
+      "solutionLink": "Lösung",
+      "tagline": "Eine Plattform. Volles Marktbild. KI und Verhaltenscoaching für informierte Investoren.",
+      "terms": "Nutzungsbedingungen"
+    },
     "footerCta": {
       "button": "Kostenloses Konto erstellen",
       "disclaimer": "Bildungsprodukt. Keine Finanzberatung. Investieren ist mit Risiken verbunden.",
-      "title": "Starte heute dein kostenloses Konto",
-      "pricing": "Preise ansehen"
+      "pricing": "Preise ansehen",
+      "title": "Starten Sie heute Ihr kostenloses Konto"
     },
     "hero": {
+      "aiSignalBuy": "KI-Signal: KAUF",
+      "badge": "KI-GESTÜTZTE PLATTFORM · 130+ Börsen · 9 Sprachen",
+      "coachAlertBody": "Sie vermeiden heute FOMO ✓",
+      "coachAlertTitle": "Coach-Alarm",
       "ctaPrimary": "Kostenlos starten",
-      "ctaSecondary": "So funktioniert es",
-      "subtitle": "Eine Plattform statt fünf Browser-Tabs. KI analysiert, dein Coach hütet deine Emotionen — du triffst informierte Entscheidungen.",
+      "ctaSecondary": "Demo ansehen",
+      "scrollHint": "Scrollen",
+      "subtitle": "Eine Plattform mit 130+ Börsen statt fünf Browser-Tabs. KI analysiert, Ihr Coach hütet Ihre Emotionen — Sie treffen fundierte Entscheidungen.",
       "title": "Investitionsplattform der nächsten Generation",
+      "titleLine1": "Intelligenter investieren.",
+      "titleLine2": "Emotionen kontrollieren.",
+      "trust": "Unterstützt von Top-Tradern",
       "widgetLive": "Live",
       "widgetTitle": "Live-Marktpuls",
-      "badge": "KI-gestützt · 130+ Börsen · 9 Sprachen",
-      "scrollHint": "Scrollen",
-      "titleLine1": "Klüger investieren.",
-      "titleLine2": "Nicht mehr.",
-      "trust": "Schließe dich {{count}}+ Investoren an",
-      "coachAlertTitle": "Coach-Alarm",
-      "coachAlertBody": "Du vermeidest heute FOMO ✓",
-      "aiSignalBuy": "KI-Signal: KAUF",
       "winRate": "Trefferquote"
+    },
+    "howItWorks": {
+      "steps": [
+        {
+          "desc": "30 Sekunden. Keine Kreditkarte.",
+          "title": "Registrieren"
+        },
+        {
+          "desc": "GPW, US, DAX — oder alle auf einmal.",
+          "title": "Markt wählen"
+        },
+        {
+          "desc": "KI analysiert, Coach lehrt, du entscheidest.",
+          "title": "Klüger investieren"
+        }
+      ],
+      "title": "So funktioniert's?"
+    },
+    "nav": {
+      "features": "Funktionen",
+      "howItWorks": "Wie es funktioniert",
+      "markets": "Märkte",
+      "pricing": "Preise",
+      "searchPlaceholder": "Unternehmen suchen..."
     },
     "pricing": {
       "badge": "Frühbucherpreis",
-      "earlyAdopter": "Die ersten 500 Pro-Konten bleiben für immer bei $9/Monat",
-      "monthly": "monatlich",
+      "checkoutError": "Checkout konnte nicht gestartet werden.",
+      "earlyAdopter": "Die ersten 500 Pro-Konten bleiben für immer bei 9 $/Monat",
+      "monthly": "Monatlich",
       "popular": "Am beliebtesten",
-      "save": "Spare 27%",
-      "saveProPlus": "Spare 34%",
+      "save": "27 % sparen",
+      "saveProPlus": "34 % sparen",
       "tiers": {
         "free": {
-          "body": "Grundfunktionen, um mit konsequentem Handeln zu starten.",
+          "body": "Grundfunktionen für mehr Konstanz beim Investieren.",
           "cta": "Kostenlos starten",
           "features": [
             "Kern-Dashboard",
@@ -495,7 +535,7 @@
           "price": "$0/mo"
         },
         "pro": {
-          "body": "Voller Zugriff für aktive Investoren.",
+          "body": "Voller Zugriff für aktive Anleger.",
           "cta": "Pro wählen",
           "features": [
             "Alle KI-Module",
@@ -519,8 +559,7 @@
       },
       "title": "Einfache Preise",
       "trial": "14 Tage kostenlos",
-      "yearly": "jährlich",
-      "checkoutError": "Checkout konnte nicht gestartet werden."
+      "yearly": "Jährlich"
     },
     "problem": {
       "cards": {
@@ -538,13 +577,18 @@
         },
         "memory": {
           "body": "Ohne Feedback-Schleife wiederholen sich dieselben teuren Muster von Trade zu Trade.",
-          "title": "Niemand merkt sich deine Fehler"
+          "title": "Niemand merkt sich Ihre Fehler"
         }
       },
-      "title": "Du verlierst Geld. Du weißt warum.",
-      "subtitle": "Jeder Privatanleger kämpft mit denselben Dingen — und niemand hilft."
+      "subtitle": "Jeder Privatanleger kämpft mit denselben Dingen — und niemand hilft.",
+      "title": "Du verlierst Geld. Du weißt warum."
+    },
+    "seo": {
+      "description": "KI-Aktienanalyse, Verhaltenscoaching und 130+ Börsen — GPW, NYSE, DAX und mehr an einem Ort.",
+      "title": "StockAI Pro — Investitionsplattform der nächsten Generation"
     },
     "socialProof": {
+      "marqueeMarkets": "GPW + NYSE + DAX",
       "stats": {
         "adFree": "100 % werbefrei",
         "exchanges": "130+ Börsen",
@@ -554,32 +598,31 @@
       "subtitle": "Die Early-Access-Community wächst jede Woche.",
       "testimonials": [
         {
-          "quote": "Früher bin ich zwischen Apps gesprungen. Jetzt habe ich einen Prozess vom Signal bis zur Reflexion.",
-          "author": "Kasia, Warsaw"
+          "author": "Kasia, Warschau",
+          "quote": "Früher bin ich zwischen Apps gesprungen. Jetzt habe ich einen Prozess vom Signal bis zur Reflexion."
         },
         {
-          "quote": "Verhaltensimpulse haben mir geholfen, mit Revenge Trading aufzuhören. Meine Risikodisziplin ist endlich real.",
-          "author": "Lukas, Berlin"
+          "author": "Lukas, Berlin",
+          "quote": "Verhaltenscoaching hat mir geholfen, mit Revenge Trading aufzuhören. Meine Risikodisziplin ist endlich real."
         },
         {
-          "quote": "Das Broker-Gateway plus KI-Kontext spart mir in jeder Session Zeit.",
-          "author": "Clara, Madrid"
+          "author": "Clara, Madrid",
+          "quote": "Das Broker-Gateway plus KI-Kontext spart mir in jeder Session Zeit."
         }
       ],
-      "title": "Werde Teil unserer Early-Access-Community",
-      "marqueeMarkets": "GPW + NYSE + DAX",
+      "testimonialsSubtitle": "Kurze Geschichten von der Front — weniger Chaos.",
       "testimonialsTitle": "Was Investoren sagen",
-      "testimonialsSubtitle": "Kurze Geschichten aus der Praxis — weniger Chaos."
+      "title": "Werden Sie Teil unserer Early-Access-Community"
     },
     "solution": {
       "features": {
         "aiBrief": {
-          "body": "Nicht nur ein Score – eine vollständige Erklärung, warum es sich lohnt oder nicht.",
+          "body": "Nicht nur ein Score – eine vollständige Erklärung, warum sich ein Setup lohnt oder nicht.",
           "title": "KI-Briefing mit Narrativ"
         },
         "behavioralCoach": {
           "body": "Erkennt Ihre Fehler und hilft, sie nicht zu wiederholen.",
-          "title": "Verhaltenscoach"
+          "title": "Verhaltenscoaching"
         },
         "brokerIntegration": "Broker-Integration",
         "globalMarkets": {
@@ -589,65 +632,22 @@
         "languages": "9 Sprachen",
         "paperTrading": {
           "body": "Üben ohne Risiko. Aus Fehlern lernen, die nichts kosten.",
-          "title": "Paper Trading"
+          "title": "Paper-Trading"
         },
         "preMortemAi": {
-          "body": "Bevor Sie kaufen, zeigt KI das wahrscheinlichste Verlustszenario.",
-          "title": "Pre-Mortem AI"
+          "body": "Bevor Sie kaufen, zeigt die KI das wahrscheinlichste Verlustszenario.",
+          "title": "Pre-Mortem-KI"
         },
         "signalAnalysis": "KI-Signalanalyse",
         "signalDna": {
-          "body": "Historische Setup-Zwillinge – wie dieses Setup in der Vergangenheit ausgegangen ist.",
-          "title": "Signal DNA"
+          "body": "Historische Setup-Zwillinge – wie dieses Setup in der Vergangenheit ausging.",
+          "title": "Signal-DNA"
         },
         "traderPsycheProfile": "Trader-Psychologieprofil"
       },
-      "title": "Ein Ort.",
       "subtitle": "StockAI Pro ersetzt 5 Tools und fügt hinzu, was keines hat.",
+      "title": "Ein Ort.",
       "titleAccent": "Volles Bild."
-    },
-    "nav": {
-      "features": "Funktionen",
-      "howItWorks": "So funktioniert's",
-      "markets": "Märkte",
-      "pricing": "Preise",
-      "searchPlaceholder": "Unternehmen suchen... AAPL, PKN"
-    },
-    "footer": {
-      "company": "Unternehmen",
-      "copyright": "© 2026 StockAI Pro · Alle Rechte vorbehalten",
-      "languagesAria": "Sprache wählen",
-      "legal": "Rechtliches",
-      "legalEtoro": "Mit eToro handeln (Partner)",
-      "privacy": "Datenschutz",
-      "product": "Produkt",
-      "productMarkets": "Märkte",
-      "productPricing": "Preise",
-      "productSignals": "Signale",
-      "solutionLink": "Lösung",
-      "tagline": "Eine Plattform. Volles Marktbild. KI und Verhaltenscoaching für informierte Investoren.",
-      "terms": "Nutzungsbedingungen"
-    },
-    "howItWorks": {
-      "title": "So funktioniert's?",
-      "steps": [
-        {
-          "title": "Registrieren",
-          "desc": "30 Sekunden. Keine Kreditkarte."
-        },
-        {
-          "title": "Markt wählen",
-          "desc": "GPW, US, DAX — oder alle auf einmal."
-        },
-        {
-          "title": "Klüger investieren",
-          "desc": "KI analysiert, Coach lehrt, du entscheidest."
-        }
-      ]
-    },
-    "seo": {
-      "description": "KI-Aktienanalyse, Verhaltenscoaching und 130+ Börsen — GPW, NYSE, DAX und mehr an einem Ort.",
-      "title": "StockAI Pro — Investitionsplattform der nächsten Generation"
     },
     "stats": {
       "exchanges": "Börsen",
@@ -1318,8 +1318,8 @@
     "weekOf": "Week of"
   },
   "legal": {
-    "investmentDisclaimer": "Rechtlicher Hinweis: Alle Analysen, Marktsignale und von künstlicher Intelligenz (einschließlich Claude AI) auf StockAI Pro erzeugten Inhalte dienen ausschließlich Bildungs- und Informationszwecken. Sie stellen keine Anlageempfehlung oder Finanzberatung dar. Investitionen an Finanzmärkten sind mit hohem Kapitalverlustrisiko verbunden. AMC Energy Sp. z o.o. haftet nicht für Finanzentscheidungen auf Basis der App-Daten.",
-    "termsLink": "Vollständige Nutzungsbedingungen",
-    "ariaLabel": "Rechtlicher Investitionshinweis"
+    "ariaLabel": "Rechtlicher Investitionshinweis",
+    "investmentDisclaimer": "Rechtlicher Hinweis: Alle Analysen, Marktsignale und von der künstlichen Intelligenz (einschließlich Claude AI) auf der Plattform StockAI Pro generierten Materialien dienen ausschließlich Bildungs- und Informationszwecken. Sie stellen keine Anlageberatung oder Finanzempfehlungen im Sinne des Gesetzes dar. Investitionen an den Finanzmärkten sind mit einem hohen Risiko des Kapitalverlusts verbunden. AMC Energy Sp. z o.o. übernimmt keine Haftung für finanzielle Entscheidungen, die auf Basis der Daten in der Anwendung getroffen werden.",
+    "termsLink": "Vollständige Nutzungsbedingungen"
   }
 }
