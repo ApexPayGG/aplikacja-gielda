@@ -1176,10 +1176,36 @@ export interface DividendHistoryResponse {
   data: DividendHistoryItem[];
 }
 
+/** GET /api/dividends/:ticker (dividends router — rich company payload). */
+export interface DividendTickerHistoryRow {
+  year: number;
+  amount: number;
+  ex_date: string;
+  payment_date: string;
+  dy: number | null;
+  payout: number | null;
+}
+
+export interface DividendTickerHistoryResponse {
+  ticker: string;
+  history: DividendTickerHistoryRow[];
+}
+
 export async function getDividendHistory(symbol: string, years = 5): Promise<DividendHistoryResponse> {
   const { data } = await publicApi.get<DividendHistoryResponse>(`/dividends/${encodeURIComponent(symbol)}`, {
     params: { years },
   });
+  return data;
+}
+
+export async function getCompanyDividendTickerHistory(
+  symbol: string,
+  years = 8,
+): Promise<DividendTickerHistoryResponse> {
+  const { data } = await publicApi.get<DividendTickerHistoryResponse>(
+    `/dividends/${encodeURIComponent(symbol)}`,
+    { params: { years } },
+  );
   return data;
 }
 

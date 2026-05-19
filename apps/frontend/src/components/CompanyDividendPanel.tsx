@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getDividendHealth, getDividendHistory, type DividendHealthData } from "../services/api";
+import { getCompanyDividendTickerHistory, getDividendHealth, type DividendHealthData } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -36,16 +36,21 @@ export function CompanyDividendPanel({ symbol, locale }: Props) {
       setLoading(true);
       setError(null);
       try {
-        const [healthData, historyData] = await Promise.all([
+        const [healthData, historyResponse] = await Promise.all([
           getDividendHealth(symbol),
-          getDividendHistory(symbol, 8),
+          getCompanyDividendTickerHistory(symbol, 8),
         ]);
         if (!cancelled) {
           setHealth(healthData);
           setHistory(
-            [...historyData.data].sort(
-              (a, b) => new Date(b.exDate).getTime() - new Date(a.exDate).getTime(),
-            ),
+            [...(historyResponse.history ?? [])]
+              .map((row) => ({
+                exDate: row.ex_date,
+                payDate: row.payment_date,
+                amount: row.amount,
+                yield: row.dy ?? null,
+              }))
+              .sort((a, b) => new Date(b.exDate).getTime() - new Date(a.exDate).getTime()),
           );
         }
       } catch (e) {
