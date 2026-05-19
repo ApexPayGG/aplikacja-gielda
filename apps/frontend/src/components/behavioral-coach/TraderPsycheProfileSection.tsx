@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import type { PsycheRadarPoint } from "../../utils/behavioralCoachData";
 import { GLASS_SECTION, GLASS_SECTION_TITLE } from "./glassStyles";
+import { TraderProfileShareMenu } from "./TraderProfileShareMenu";
 
 type Props = {
   metrics: PsycheRadarPoint[];
@@ -57,7 +58,8 @@ export function TraderPsycheProfileSection({ metrics, loading }: Props) {
         <div className="h-64 animate-pulse rounded-xl bg-white/5" aria-hidden />
       ) : (
         <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-          <div className="h-72 w-full min-h-[260px]">
+          <div className="flex w-full min-h-[320px] flex-col">
+            <div className="h-72 w-full min-h-[240px] shrink-0">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={metrics} cx="50%" cy="50%" outerRadius="72%">
                 <PolarGrid stroke="rgba(255,255,255,0.12)" />
@@ -82,6 +84,8 @@ export function TraderPsycheProfileSection({ metrics, loading }: Props) {
                 />
               </RadarChart>
             </ResponsiveContainer>
+            </div>
+            <TraderProfileShareMenu metrics={metrics} disabled={loading} />
           </div>
 
           <div className="flex flex-col justify-center space-y-4">
