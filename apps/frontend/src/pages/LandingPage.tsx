@@ -28,38 +28,38 @@ const ETORO_AFFILIATE_URL =
 
 type SolutionIconId = "brief" | "coach" | "dna" | "premortem" | "globe" | "paper";
 
-const solutionCards: { iconId: SolutionIconId; title: string; body: string }[] = [
-  {
-    iconId: "brief",
-    title: "AI Brief z narracją",
-    body: "Nie sam score — pełne wyjaśnienie dlaczego warto lub nie. Claude Sonnet analizuje za Ciebie.",
-  },
-  {
-    iconId: "coach",
-    title: "Behavioral Coach",
-    body: "Wykrywa wzorce Twoich błędów i interweniuje zanim popełnisz kolejny.",
-  },
-  {
-    iconId: "dna",
-    title: "Signal DNA",
-    body: "Historyczne bliźniaki setupu. Jak ten układ kończył się w przeszłości — ze statystykami.",
-  },
-  {
-    iconId: "premortem",
-    title: "Pre-Mortem AI",
-    body: "Zanim kupisz — AI pokazuje najbardziej prawdopodobny scenariusz straty.",
-  },
-  {
-    iconId: "globe",
-    title: "130+ giełd",
-    body: "GPW, NYSE, DAX, TSE, NSE i więcej. Wszystko w jednym interfejsie.",
-  },
-  {
-    iconId: "paper",
-    title: "Paper Trading",
-    body: "Ćwicz bez ryzyka. Ucz się na błędach które nic nie kosztują.",
-  },
+const SOLUTION_CARD_DEFS: { iconId: SolutionIconId; titleKey: string; bodyKey: string }[] = [
+  { iconId: "brief", titleKey: "landing.solution.features.aiBrief.title", bodyKey: "landing.solution.features.aiBrief.body" },
+  { iconId: "coach", titleKey: "landing.solution.features.behavioralCoach.title", bodyKey: "landing.solution.features.behavioralCoach.body" },
+  { iconId: "dna", titleKey: "landing.solution.features.signalDna.title", bodyKey: "landing.solution.features.signalDna.body" },
+  { iconId: "premortem", titleKey: "landing.solution.features.preMortemAi.title", bodyKey: "landing.solution.features.preMortemAi.body" },
+  { iconId: "globe", titleKey: "landing.solution.features.globalMarkets.title", bodyKey: "landing.solution.features.globalMarkets.body" },
+  { iconId: "paper", titleKey: "landing.solution.features.paperTrading.title", bodyKey: "landing.solution.features.paperTrading.body" },
 ];
+
+const PROBLEM_CARD_DEFS = [
+  { icon: "apps" as const, titleKey: "landing.problem.cards.apps.title", bodyKey: "landing.problem.cards.apps.body" },
+  { icon: "brain" as const, titleKey: "landing.problem.cards.emotions.title", bodyKey: "landing.problem.cards.emotions.body" },
+  { icon: "target" as const, titleKey: "landing.problem.cards.context.title", bodyKey: "landing.problem.cards.context.body" },
+] as const;
+
+const LANDING_LANGUAGES = [
+  { code: "pl", label: "PL" },
+  { code: "en", label: "EN" },
+  { code: "de", label: "DE" },
+  { code: "es", label: "ES" },
+  { code: "ja", label: "JA" },
+  { code: "hi", label: "HI" },
+  { code: "ko", label: "KO" },
+  { code: "zh-TW", label: "ZH" },
+  { code: "fr", label: "FR" },
+] as const;
+
+function isLandingLanguageActive(code: string, resolved: string | undefined): boolean {
+  if (!resolved) return code === "en";
+  if (code === "zh-TW") return resolved.startsWith("zh");
+  return resolved === code || resolved.startsWith(`${code}-`);
+}
 
 
 const LANDING_ICONA = {
@@ -124,13 +124,12 @@ const INITIAL_HERO_PRICES: Record<HeroTicker, number> = {
 
 type BillingCycle = "monthly" | "yearly";
 
-const marqueeItems = [
-  "130+ giełd",
-  "27 modułów AI",
-  "9 języków",
-  "100% ad-free",
-  "GPW + NYSE + DAX",
-];
+const MARQUEE_ITEM_KEYS = [
+  "landing.socialProof.stats.exchanges",
+  "landing.socialProof.stats.modules",
+  "landing.socialProof.stats.languages",
+  "landing.socialProof.stats.adFree",
+] as const;
 
 function SignalWave({
   offset = 0,
@@ -575,8 +574,44 @@ function WorldClockFace({ timeZone, now }: { timeZone: string; now: Date }) {
   );
 }
 
+function LandingFooterLanguages() {
+  const { i18n, t } = useTranslation("common");
+  const resolved = i18n.resolvedLanguage;
+
+  const handleChange = async (code: string): Promise<void> => {
+    await i18n.changeLanguage(code);
+    localStorage.setItem("stockai.lang", code);
+  };
+
+  return (
+    <div
+      className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm"
+      aria-label={t("landing.footer.languagesAria")}
+    >
+      {LANDING_LANGUAGES.map((lang, index) => (
+        <span key={lang.code} className="inline-flex items-center gap-2">
+          {index > 0 ? <span className="select-none text-white/30" aria-hidden>|</span> : null}
+          {isLandingLanguageActive(lang.code, resolved) ? (
+            <span className="font-bold text-white">{lang.label}</span>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void handleChange(lang.code)}
+              className="cursor-pointer text-white/50 transition hover:text-white/80"
+            >
+              {lang.label}
+            </button>
+          )}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function WorldClocks() {
+  const { t, i18n } = useTranslation("common");
   const [time, setTime] = useState(() => new Date());
+  const locale = i18n.resolvedLanguage?.startsWith("pl") ? "pl-PL" : "en-US";
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
@@ -597,17 +632,17 @@ function WorldClocks() {
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6">
         <div className="mb-8 text-center sm:mb-12">
           <h2 className="section-h2 mb-3 text-white">
-            Rynki nigdy nie śpią.
-            <span style={{ color: BRAND.cyan }}> Ty też nie musisz.</span>
+            {t("landing.worldClocks.title")}
+            <span style={{ color: BRAND.cyan }}> {t("landing.worldClocks.titleAccent")}</span>
           </h2>
-          <p className="text-base text-white/60 sm:text-lg">StockAI Pro monitoruje 130+ giełd przez całą dobę.</p>
+          <p className="text-base text-white/60 sm:text-lg">{t("landing.worldClocks.subtitle")}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-6">
           {WORLD_CLOCK_CITIES.map((city, i) => {
             const { hours } = getZonedTime(city.timezone, time);
             const isOpen = isExchangeOpenSimple(hours);
-            const timeStr = time.toLocaleTimeString("pl-PL", {
+            const timeStr = time.toLocaleTimeString(locale, {
               hour: "2-digit",
               minute: "2-digit",
               second: "2-digit",
@@ -648,7 +683,7 @@ function WorldClocks() {
                         border: `1px solid ${isOpen ? "rgba(0,168,107,0.3)" : "rgba(229,57,53,0.2)"}`,
                       }}
                     >
-                      {isOpen ? "● Otwarta" : "● Zamknięta"}
+                      {isOpen ? t("landing.worldClocks.open") : t("landing.worldClocks.closed")}
                     </span>
                   </div>
                 </div>
@@ -668,6 +703,7 @@ type HeroVisualProps = {
 };
 
 function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProps) {
+  const { t } = useTranslation("common");
   return (
     <div className="landing-hero-dashboard relative min-h-[280px] w-full sm:min-h-[360px] md:min-h-[480px] lg:min-h-[520px]">
       <GlobalConnectionsSVG />
@@ -686,10 +722,10 @@ function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProp
         >
           <div className="p-6">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-white">Puls rynku na żywo</h2>
+              <h2 className="text-lg font-bold text-white">{t("landing.hero.widgetTitle")}</h2>
               <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
                 <span className="pulse-dot inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                Live
+                {t("landing.hero.widgetLive")}
               </span>
             </div>
 
@@ -759,7 +795,8 @@ function useCounter(target: number, duration = 2000): { count: number; ref: RefO
 }
 
 export function LandingPage() {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
+  const statsLocale = i18n.resolvedLanguage?.startsWith("pl") ? "pl-PL" : "en-US";
   const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<"pro" | "pro_plus" | null>(null);
@@ -853,6 +890,7 @@ export function LandingPage() {
     }
   };
 
+  const marqueeItems = MARQUEE_ITEM_KEYS.map((key) => t(key));
   const marqueeTrack = [...marqueeItems, ...marqueeItems];
   const tickerMarqueeTrack = [...TICKER_BAR_ITEMS, ...TICKER_BAR_ITEMS];
 
@@ -912,16 +950,16 @@ export function LandingPage() {
 
           <nav className="hidden flex-1 items-center justify-center gap-10 text-sm font-semibold text-[#2D0A6B]/90 md:flex">
             <a href="#how-it-works" className="transition hover:text-[#00C9D4]">
-              Jak to działa
+              {t("landing.nav.howItWorks")}
             </a>
             <a href="#solution" className="transition hover:text-[#00C9D4]">
-              Funkcje
+              {t("landing.nav.features")}
             </a>
             <a href="#pricing" className="transition hover:text-[#00C9D4]">
-              Cennik
+              {t("landing.nav.pricing")}
             </a>
             <Link to="/companies" className="transition hover:text-[#00C9D4]">
-              Giełdy
+              {t("landing.nav.markets")}
             </Link>
           </nav>
 
@@ -943,8 +981,8 @@ export function LandingPage() {
                 onChange={(e) => setNavSearchQuery(e.target.value)}
                 onFocus={() => goToCompaniesSearch()}
                 onClick={() => goToCompaniesSearch()}
-                placeholder="Szukaj spółki... AAPL, PKN"
-                aria-label="Szukaj spółki"
+                placeholder={t("landing.nav.searchPlaceholder")}
+                aria-label={t("landing.nav.searchPlaceholder")}
                 className="w-48 rounded-full border border-[#2D0A6B]/20 bg-white py-1.5 pl-9 pr-4 text-sm text-[#2D0A6B] outline-none transition-all duration-300 placeholder:text-[#2D0A6B]/45 focus:w-64 focus:border-[#00C9D4]/40"
               />
             </form>
@@ -960,7 +998,7 @@ export function LandingPage() {
               className="hidden min-h-11 items-center rounded-full px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 sm:inline-flex md:px-6"
               style={{ backgroundColor: BRAND.dark }}
             >
-              Zacznij za darmo
+              {t("landing.hero.ctaPrimary")}
             </Link>
             <button
               type="button"
@@ -982,10 +1020,10 @@ export function LandingPage() {
             <div className="flex flex-col gap-1">
               {(
                 [
-                  { href: "#how-it-works", label: "Jak to działa" },
-                  { href: "#solution", label: "Funkcje" },
-                  { href: "#pricing", label: "Cennik" },
-                  { href: "/companies", label: "Giełdy" },
+                  { href: "#how-it-works", label: t("landing.nav.howItWorks") },
+                  { href: "#solution", label: t("landing.nav.features") },
+                  { href: "#pricing", label: t("landing.nav.pricing") },
+                  { href: "/companies", label: t("landing.nav.markets") },
                 ] satisfies { href: string; label: string }[]
               ).map((item) =>
                 item.href.startsWith("/") ? (
@@ -1025,8 +1063,8 @@ export function LandingPage() {
                 type="search"
                 value={navSearchQuery}
                 onChange={(e) => setNavSearchQuery(e.target.value)}
-                placeholder="Szukaj spółki... AAPL, PKN"
-                aria-label="Szukaj spółki"
+                placeholder={t("landing.nav.searchPlaceholder")}
+                aria-label={t("landing.nav.searchPlaceholder")}
                 className="w-full rounded-xl border border-[#2D0A6B]/20 bg-white py-3 pl-10 pr-4 text-base text-[#2D0A6B] outline-none placeholder:text-[#2D0A6B]/45 focus:border-[#00C9D4]/40"
               />
             </form>
@@ -1044,7 +1082,7 @@ export function LandingPage() {
                 style={{ backgroundColor: BRAND.dark }}
                 onClick={() => setMobileNavOpen(false)}
               >
-                Zacznij za darmo
+                {t("landing.hero.ctaPrimary")}
               </Link>
             </div>
           </nav>
@@ -1061,7 +1099,7 @@ export function LandingPage() {
       </header>
 
       {/* ═══ HERO ═══ */}
-      <section className="hero-gradient-bg relative isolate flex min-h-0 items-center overflow-x-hidden pt-16 sm:min-h-screen sm:pt-20">
+      <section className="hero-gradient-bg relative isolate flex min-h-screen items-center overflow-x-hidden pt-24">
         <div
           className="animate-float pointer-events-none absolute left-4 top-8 z-0 h-48 w-48 rounded-full opacity-20 blur-3xl sm:left-10 sm:top-10 sm:h-72 sm:w-72 md:h-[500px] md:w-[500px]"
           style={{ background: "radial-gradient(circle, #7A0F9E, transparent)" }}
@@ -1080,7 +1118,7 @@ export function LandingPage() {
         <SignalWave offset={320} opacity={0.14} />
         <SignalWave offset={460} opacity={0.09} color="#a78bfa" />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 lg:grid-cols-[3fr_2fr] lg:gap-12 lg:py-20">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 px-4 lg:grid-cols-[3fr_2fr] lg:gap-12">
           {/* Left column */}
           <div className="flex flex-col justify-center">
             <span
@@ -1091,20 +1129,17 @@ export function LandingPage() {
                 color: BRAND.dark,
               }}
             >
-              AI-powered · 130+ giełd · 9 języków
+              {t("landing.hero.badge")}
             </span>
 
             <h1 className="hero-h1 text-[#1e1b4b]">
-              <span className="landing-hero-h1-line1 block">Inwestuj mądrzej.</span>
+              <span className="landing-hero-h1-line1 block">{t("landing.hero.titleLine1")}</span>
               <span className="landing-hero-h1-line2 mt-1 block" style={{ color: BRAND.cyan }}>
-                Nie więcej.
+                {t("landing.hero.titleLine2")}
               </span>
             </h1>
 
-            <p className="landing-hero-sub landing-body mt-6 max-w-lg text-slate-600">
-              Jedna platforma zamiast pięciu kart w przeglądarce. AI analizuje, coach pilnuje Twoich emocji — Ty
-              podejmujesz świadome decyzje.
-            </p>
+            <p className="landing-hero-sub landing-body mt-6 max-w-lg text-slate-600">{t("landing.hero.subtitle")}</p>
 
             <div className="landing-hero-cta mt-8 flex w-full flex-col gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Link
@@ -1112,13 +1147,13 @@ export function LandingPage() {
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:opacity-95 sm:w-auto sm:text-lg"
                 style={{ backgroundColor: BRAND.dark }}
               >
-                Zacznij za darmo →
+                {t("landing.hero.ctaPrimary")} →
               </Link>
               <a
                 href="#solution"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#2D0A6B]/20 px-6 py-4 text-base font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5 sm:w-auto sm:text-lg"
               >
-                Zobacz demo
+                {t("landing.hero.ctaSecondary")}
               </a>
             </div>
 
@@ -1144,7 +1179,7 @@ export function LandingPage() {
                 </span>
               </div>
               <p className="text-sm font-medium text-slate-600">
-                Dołącz do <span className="font-bold text-[#2D0A6B]">1,200+</span> inwestorów
+                {t("landing.hero.trust", { count: "1,200" })}
               </p>
             </div>
           </div>
@@ -1156,7 +1191,7 @@ export function LandingPage() {
         </div>
 
         <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 animate-bounce">
-          <span className="text-xs text-gray-400">Scroll</span>
+          <span className="text-xs text-gray-400">{t("landing.hero.scrollHint")}</span>
           <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
@@ -1189,24 +1224,24 @@ export function LandingPage() {
           <div ref={exchangesCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
             <IconStatGlobe className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{exchangesCounter.count}+</div>
-            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">giełd</p>
+            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.exchanges")}</p>
           </div>
           <div ref={modulesCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
             <IconStatCircuit className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{modulesCounter.count}</div>
-            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">modułów AI</p>
+            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.modules")}</p>
           </div>
           <div ref={langsCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
             <IconStatLang className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{langsCounter.count}</div>
-            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">języków</p>
+            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.languages")}</p>
           </div>
           <div ref={investorsCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
             <IconStatUsers className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">
-              {investorsCounter.count.toLocaleString("pl-PL")}+
+              {investorsCounter.count.toLocaleString(statsLocale)}+
             </div>
-            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">inwestorów</p>
+            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.investors")}</p>
           </div>
         </div>
       </section>
@@ -1230,38 +1265,26 @@ export function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <h2 className="section-h2 text-slate-900">Czy to brzmi znajomo?</h2>
-          <p className="landing-body mt-4 text-slate-600">Każdy retail inwestor zmaga się z tym samym.</p>
+          <h2 className="section-h2 text-slate-900">{t("landing.problem.title")}</h2>
+          <p className="landing-body mt-4 text-slate-600">{t("landing.problem.subtitle")}</p>
         </div>
 
         <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-3">
-          {(
-            [
-              {
-                icon: "apps" as const,
-                title: "5 aplikacji. Jeden chaos.",
-                body: "TradingView, Finviz, broker, Excel, Discord — otwarte jednocześnie. Decyzje na fragmentarycznych danych.",
-              },
-              {
-                icon: "brain" as const,
-                title: "Emocje niszczą portfel.",
-                body: "Strach, chciwość, FOMO. Badania potwierdzają — 80% strat to błędy psychologiczne, nie analityczne.",
-              },
-              {
-                icon: "target" as const,
-                title: "Sygnał bez kontekstu.",
-                body: "Widzisz setup ale nie wiesz: czy rynek sprzyja? Czy to właściwy moment? Czy masz przewagę?",
-              },
-            ] as const
-          ).map((card, index) => {
+          {PROBLEM_CARD_DEFS.map((card, index) => {
             const staggerClass = index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
             return (
               <article
-                key={card.title}
+                key={card.titleKey}
                 className={`reveal group relative overflow-hidden rounded-2xl border border-gray-100 border-l-4 border-l-[#2D0A6B] bg-white py-8 pl-6 pr-8 shadow-md transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
               >
                 <div className="mb-6 flex">
-                  <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-[#2D0A6B]/20 bg-[#2D0A6B]/10 shadow-[0_8px_24px_rgba(45,10,107,0.2)] backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-2">
+                  <div
+                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:-translate-y-2"
+                    style={{
+                      background: "linear-gradient(135deg, #2D0A6B20, #7A0F9E15)",
+                      border: "1px solid rgba(45,10,107,0.15)",
+                    }}
+                  >
                     <img
                     src={
                       card.icon === "apps"
@@ -1271,15 +1294,15 @@ export function LandingPage() {
                           : LANDING_ICONA.problemTarget
                     }
                     alt=""
-                    className="h-12 w-12 object-contain"
+                    className="h-10 w-10 object-contain"
                     loading="lazy"
                     decoding="async"
                     aria-hidden
                   />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">{card.title}</h3>
-                <p className="landing-body mt-3 text-slate-600">{card.body}</p>
+                <h3 className="text-xl font-bold text-slate-900">{t(card.titleKey)}</h3>
+                <p className="landing-body mt-3 text-slate-600">{t(card.bodyKey)}</p>
               </article>
             );
           })}
@@ -1295,24 +1318,22 @@ export function LandingPage() {
         <SignalWave offset={20} opacity={0.1} />
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <h2 className="section-h2 text-slate-900">
-            Jedno miejsce.
+            {t("landing.solution.title")}
             <br />
-            <span style={{ color: BRAND.cyan }}>Pełny obraz.</span>
+            <span style={{ color: BRAND.cyan }}>{t("landing.solution.titleAccent")}</span>
           </h2>
-          <p className="landing-body mt-4 text-slate-600">
-            StockAI Pro zastępuje 5 narzędzi i dodaje to czego żadne z nich nie ma.
-          </p>
+          <p className="landing-body mt-4 text-slate-600">{t("landing.solution.subtitle")}</p>
         </div>
 
         <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {solutionCards.map((card, index) => {
+          {SOLUTION_CARD_DEFS.map((card, index) => {
             const revealKind =
               index % 3 === 0 ? "reveal-left" : index % 3 === 2 ? "reveal-right" : "reveal";
             const staggerClass =
               index % 3 === 0 ? "stagger-1" : index % 3 === 1 ? "stagger-2" : "stagger-3";
             return (
               <article
-                key={card.title}
+                key={card.titleKey}
                 className={`${revealKind} group relative overflow-hidden rounded-xl border border-gray-100 border-t-[3px] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#00C9D4] hover:shadow-lg ${staggerClass}`}
                 style={{ borderTopColor: BRAND.cyan }}
               >
@@ -1331,8 +1352,8 @@ export function LandingPage() {
                     />
                   </div>
                 </div>
-                <h3 className="relative z-[1] text-lg font-bold text-slate-900">{card.title}</h3>
-                <p className="landing-body relative z-[1] mt-2 text-slate-600">{card.body}</p>
+                <h3 className="relative z-[1] text-lg font-bold text-slate-900">{t(card.titleKey)}</h3>
+                <p className="landing-body relative z-[1] mt-2 text-slate-600">{t(card.bodyKey)}</p>
               </article>
             );
           })}
@@ -1494,7 +1515,7 @@ export function LandingPage() {
       <section id="pricing" className="relative scroll-mt-24 overflow-hidden bg-white px-4 py-20">
         <SignalWave offset={-20} opacity={0.09} />
         <div className="relative z-10 mx-auto max-w-6xl">
-          <h2 className="section-h2 text-center text-slate-900">Prosty cennik.</h2>
+          <h2 className="section-h2 text-center text-slate-900">{t("landing.pricing.title")}.</h2>
 
           <div className="mt-10 flex justify-center">
             <div className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1">
@@ -1661,23 +1682,21 @@ export function LandingPage() {
       >
         <ParticleDots />
         <div className="relative z-10 mx-auto max-w-3xl">
-          <h2 className="section-h2 text-white">Gotowy żeby inwestować mądrzej?</h2>
-          <p className="landing-body mt-4 text-white/90">
-            Zacznij za darmo — bez karty kredytowej. Upgrade w każdej chwili.
-          </p>
+          <h2 className="section-h2 text-white">{t("landing.footerCta.title")}</h2>
+          <p className="landing-body mt-4 text-white/90">{t("landing.footerCta.disclaimer")}</p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link
               to="/register"
               className="inline-flex rounded-full bg-white px-8 py-4 text-lg font-semibold shadow-xl transition hover:bg-slate-100"
               style={{ color: BRAND.dark }}
             >
-              Zacznij za darmo →
+              {t("landing.footerCta.button")} →
             </Link>
             <a
               href="#pricing"
               className="inline-flex rounded-full border-2 border-white/40 px-8 py-4 text-lg font-semibold text-white transition hover:bg-white/10"
             >
-              Zobacz cennik
+              {t("landing.nav.pricing")}
             </a>
           </div>
         </div>
@@ -1701,36 +1720,34 @@ export function LandingPage() {
                 decoding="async"
               />
             </Link>
-            <p className="mt-4 text-sm leading-relaxed text-white/60">
-              Jedna platforma. Pełny obraz rynku. AI i coaching behawioralny dla świadomych inwestorów.
-            </p>
+            <p className="mt-4 text-sm leading-relaxed text-white/60">{t("landing.footer.tagline")}</p>
           </div>
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wide text-white">Produkt</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wide text-white">{t("landing.footer.product")}</h4>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
                 <Link to="/companies" className="text-white/60 transition hover:text-white">
-                  Rynki
+                  {t("landing.footer.productMarkets")}
                 </Link>
               </li>
               <li>
                 <Link to="/signals" className="text-white/60 transition hover:text-white">
-                  Sygnały
+                  {t("landing.footer.productSignals")}
                 </Link>
               </li>
               <li>
                 <a href="#pricing" className="text-white/60 transition hover:text-white">
-                  Cennik
+                  {t("landing.footer.productPricing")}
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wide text-white">Firma</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wide text-white">{t("landing.footer.company")}</h4>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
                 <a href="#solution" className="text-white/60 transition hover:text-white">
-                  Rozwiązanie
+                  {t("landing.footer.solutionLink")}
                 </a>
               </li>
               <li>
@@ -1740,13 +1757,13 @@ export function LandingPage() {
                   rel="noopener noreferrer"
                   className="text-white/60 transition hover:text-white"
                 >
-                  Handel z eToro (partner)
+                  {t("landing.footer.legalEtoro")}
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wide text-white">Legal</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wide text-white">{t("landing.footer.legal")}</h4>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
                 <Link to="/terms" className="text-white/60 transition hover:text-white">
@@ -1763,13 +1780,8 @@ export function LandingPage() {
         </div>
         <div className="border-t border-white/10">
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 text-xs text-white/50 md:flex-row">
-            <p>© 2026 StockAI Pro · All rights reserved</p>
-            <div className="flex gap-3 text-lg" aria-label="Języki">
-              <span title="Polski">🇵🇱</span>
-              <span title="English">🇬🇧</span>
-              <span title="Deutsch">🇩🇪</span>
-              <span title="Español">🇪🇸</span>
-            </div>
+            <p>{t("landing.footer.copyright")}</p>
+            <LandingFooterLanguages />
           </div>
         </div>
       </footer>

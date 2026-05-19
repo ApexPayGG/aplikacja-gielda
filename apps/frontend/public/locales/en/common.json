@@ -458,12 +458,50 @@
       "title": "Start your free account today"
     },
     "hero": {
+      "badge": "AI-powered · 130+ exchanges · 9 languages",
       "ctaPrimary": "Start for free",
-      "ctaSecondary": "See how it works",
-      "subtitle": "AI research · Behavioral coaching · 12 exchanges · 9 languages",
-      "title": "Next-generation investment platform",
+      "ctaSecondary": "See demo",
+      "scrollHint": "Scroll",
+      "subtitle": "One platform instead of five browser tabs. AI analyzes, your coach guards your emotions — you make informed decisions.",
+      "title": "Invest smarter. Not more.",
+      "titleLine1": "Invest smarter.",
+      "titleLine2": "Not more.",
+      "trust": "Join {{count}}+ investors",
       "widgetLive": "Live",
       "widgetTitle": "Live market pulse"
+    },
+    "nav": {
+      "features": "Features",
+      "howItWorks": "How it works",
+      "markets": "Markets",
+      "pricing": "Pricing",
+      "searchPlaceholder": "Search company... AAPL, PKN"
+    },
+    "footer": {
+      "company": "Company",
+      "copyright": "© 2026 StockAI Pro · All rights reserved",
+      "languagesAria": "Choose language",
+      "legal": "Legal",
+      "legalEtoro": "Trade with eToro (partner)",
+      "product": "Product",
+      "productMarkets": "Markets",
+      "productPricing": "Pricing",
+      "productSignals": "Signals",
+      "solutionLink": "Solution",
+      "tagline": "One platform. Full market picture. AI and behavioral coaching for informed investors."
+    },
+    "stats": {
+      "exchanges": "exchanges",
+      "investors": "investors",
+      "languages": "languages",
+      "modules": "AI modules"
+    },
+    "worldClocks": {
+      "closed": "● Closed",
+      "open": "● Open",
+      "subtitle": "StockAI Pro monitors 130+ exchanges around the clock.",
+      "title": "Markets never sleep.",
+      "titleAccent": "You don't have to either."
     },
     "pricing": {
       "badge": "Early Adopter Price",
@@ -514,19 +552,20 @@
     "problem": {
       "cards": {
         "apps": {
-          "body": "Screener in one tab, journal in another, broker elsewhere. Context switching kills clarity.",
-          "title": "You use 5-6 apps"
+          "body": "TradingView, Finviz, broker, Excel, Discord — all open at once. Decisions on fragmented data.",
+          "title": "5 apps. One chaos."
         },
         "context": {
-          "body": "You see a signal but don't know if market conditions support it or if timing is right.",
-          "title": "You lack context"
+          "body": "You see a setup but don't know: does the market favor it? Is timing right? Do you have an edge?",
+          "title": "Signal without context."
         },
         "emotions": {
-          "body": "Fear, greed, and FOMO quietly override your plan when volatility spikes.",
-          "title": "Emotions cost you money"
+          "body": "Fear, greed, FOMO. Research shows — 80% of losses are psychological mistakes, not analytical ones.",
+          "title": "Emotions destroy your portfolio."
         }
       },
-      "title": "Why investors get stuck"
+      "subtitle": "Every retail investor struggles with the same things — and nobody helps.",
+      "title": "You're losing money. You know why."
     },
     "socialProof": {
       "stats": {
@@ -538,6 +577,9 @@
       "title": "Join our early access community"
     },
     "solution": {
+      "subtitle": "StockAI Pro replaces 5 tools and adds what none of them have.",
+      "title": "One place.",
+      "titleAccent": "Full picture.",
       "features": {
         "aiBrief": {
           "body": "Not just a score - a full explanation of why it is worth it or not.",
@@ -560,11 +602,10 @@
           "title": "Pre-Mortem AI"
         },
         "signalDna": {
-          "body": "Historical setup twins - how this setup ended in the past.",
+          "body": "Historical setup twins — how this setup ended in the past.",
           "title": "Signal DNA"
         }
-      },
-      "title": "One platform built for investor growth"
+      }
     }
   },
   "mentor": {

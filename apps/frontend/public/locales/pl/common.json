@@ -458,10 +458,15 @@
       "title": "Gotowy żeby inwestować mądrzej?"
     },
     "hero": {
+      "badge": "AI · 130+ giełd · 9 języków",
       "ctaPrimary": "Zacznij za darmo",
-      "ctaSecondary": "Zobacz jak działa",
-      "subtitle": "AI analizuje rynki, wykrywa okazje i chroni Cię przed własnymi błędami. GPW, Wall Street, DAX i 130+ giełd w jednym miejscu.",
+      "ctaSecondary": "Zobacz demo",
+      "scrollHint": "Przewiń",
+      "subtitle": "Jedna platforma zamiast pięciu kart w przeglądarce. AI analizuje, coach pilnuje Twoich emocji — Ty podejmujesz świadome decyzje.",
       "title": "Inwestuj mądrzej. Nie więcej.",
+      "titleLine1": "Inwestuj mądrzej.",
+      "titleLine2": "Nie więcej.",
+      "trust": "Dołącz do {{count}}+ inwestorów",
       "widgetLive": "Na żywo",
       "widgetTitle": "Puls rynku na żywo"
     },
@@ -514,23 +519,57 @@
     "problem": {
       "cards": {
         "apps": {
-          "body": "TradingView do wykresów, Finviz do screeningu, broker do transakcji... chaos.",
-          "title": "Używasz 5 aplikacji jednocześnie"
+          "body": "TradingView, Finviz, broker, Excel, Discord — otwarte jednocześnie. Decyzje na fragmentarycznych danych.",
+          "title": "5 aplikacji. Jeden chaos."
         },
         "context": {
-          "body": "Widzisz sygnał ale nie wiesz czy rynek sprzyja, czy to właściwy moment.",
-          "title": "Brakuje Ci kontekstu"
+          "body": "Widzisz setup ale nie wiesz: czy rynek sprzyja? Czy to właściwy moment? Czy masz przewagę?",
+          "title": "Sygnał bez kontekstu."
         },
         "emotions": {
-          "body": "Strach, chciwość, FOMO. Badania pokazują że 80% strat to błędy psychologiczne.",
-          "title": "Emocje sabotują Twoje decyzje"
+          "body": "Strach, chciwość, FOMO. Badania potwierdzają — 80% strat to błędy psychologiczne, nie analityczne.",
+          "title": "Emocje niszczą portfel."
         }
       },
-      "title": "Czy to brzmi znajomo?"
+      "subtitle": "Każdy retail inwestor zmaga się z tym samym — i nikt mu nie pomaga.",
+      "title": "Tracisz pieniądze. Wiesz dlaczego."
+    },
+    "footer": {
+      "company": "Firma",
+      "copyright": "© 2026 StockAI Pro · Wszelkie prawa zastrzeżone",
+      "languagesAria": "Wybierz język",
+      "legal": "Informacje prawne",
+      "legalEtoro": "Handel z eToro (partner)",
+      "product": "Produkt",
+      "productMarkets": "Rynki",
+      "productPricing": "Cennik",
+      "productSignals": "Sygnały",
+      "solutionLink": "Rozwiązanie",
+      "tagline": "Jedna platforma. Pełny obraz rynku. AI i coaching behawioralny dla świadomych inwestorów."
+    },
+    "nav": {
+      "features": "Funkcje",
+      "howItWorks": "Jak to działa",
+      "markets": "Giełdy",
+      "pricing": "Cennik",
+      "searchPlaceholder": "Szukaj spółki... AAPL, PKN"
+    },
+    "worldClocks": {
+      "closed": "● Zamknięta",
+      "open": "● Otwarta",
+      "subtitle": "StockAI Pro monitoruje 130+ giełd przez całą dobę.",
+      "title": "Rynki nigdy nie śpią.",
+      "titleAccent": "Ty też nie musisz."
+    },
+    "stats": {
+      "exchanges": "giełd",
+      "investors": "inwestorów",
+      "languages": "języków",
+      "modules": "modułów AI"
     },
     "socialProof": {
       "stats": {
-        "adFree": "100% ad-free",
+        "adFree": "100% bez reklam",
         "exchanges": "130+ giełd",
         "languages": "9 języków",
         "modules": "27 modułów AI"
@@ -538,6 +577,9 @@
       "title": "Dołącz do inwestorów którzy już inwestują mądrzej"
     },
     "solution": {
+      "subtitle": "StockAI Pro zastępuje 5 narzędzi i dodaje to, czego żadne z nich nie ma.",
+      "title": "Jedno miejsce.",
+      "titleAccent": "Pełny obraz.",
       "features": {
         "aiBrief": {
           "body": "Nie sam score — pełne wyjaśnienie dlaczego warto lub nie.",
@@ -563,8 +605,7 @@
           "body": "Historyczne bliźniaki setupu — jak ten setup kończył się w przeszłości.",
           "title": "Signal DNA"
         }
-      },
-      "title": "Jedno miejsce. Pełny obraz."
+      }
     }
   },
   "mentor": {
