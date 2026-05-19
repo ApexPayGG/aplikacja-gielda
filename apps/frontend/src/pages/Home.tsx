@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { CompaniesFilter } from "../components/CompaniesFilter";
 import { CompanySearchAutocomplete } from "../components/CompanySearchAutocomplete";
+import { AIBriefDrawer } from "../components/AIBriefDrawer";
 import { CompanyCard } from "../components/CompanyCard";
 import type { Company } from "../services/api";
 import { getCompanyBySector } from "../services/api";
@@ -32,6 +33,7 @@ export function Home() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [briefCompany, setBriefCompany] = useState<Company | null>(null);
   const { filters, hasActiveFilters, toggleSector, setMarketCap, setPeRange, setOnlyDividendStocks, setSortBy, resetFilters, applyFilters } =
     useCompaniesFilter();
 
@@ -152,11 +154,13 @@ export function Home() {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {visibleCompanies.map((c) => (
-              <CompanyCard key={c.symbol} company={c} />
+              <CompanyCard key={c.symbol} company={c} onOpenBrief={setBriefCompany} />
             ))}
           </div>
         </div>
       </div>
+
+      <AIBriefDrawer company={briefCompany} open={briefCompany !== null} onClose={() => setBriefCompany(null)} />
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { WatchlistButton } from "./WatchlistButton";
 
 type Props = {
   company: Company;
+  onOpenBrief?: (company: Company) => void;
 };
 
 function readNumber(value: unknown): number | null {
@@ -25,7 +26,7 @@ function readNumber(value: unknown): number | null {
 const GLASS_ICON_SHELL =
   "flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#2D0A6B]/10 bg-[#2D0A6B]/5 p-2 shadow-sm backdrop-blur-sm";
 
-export function CompanyCard({ company }: Props) {
+export function CompanyCard({ company, onOpenBrief }: Props) {
   const companyMeta = company as Company & {
     price?: number | string | null;
     close?: number | string | null;
@@ -49,38 +50,61 @@ export function CompanyCard({ company }: Props) {
     ? `/company/${encodeURIComponent(company.symbol)}/premium`
     : `/company/${encodeURIComponent(company.symbol)}`;
 
+  const cardAriaLabel = `${company.name} (${company.symbol})`;
+
   return (
-    <Link
-      to={cardTo}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-bgPrimary shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
-    >
-      <div className="absolute right-3 top-3 z-20">
-        <WatchlistButton symbol={company.symbol} />
-      </div>
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-bgPrimary shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
+      <Link
+        to={cardTo}
+        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00C9D4] focus-visible:ring-offset-2"
+        aria-label={cardAriaLabel}
+      />
 
-      <div className="relative flex h-28 items-center justify-center bg-gradient-to-b from-[#2D0A6B]/[0.04] to-transparent p-4">
-        <div className={GLASS_ICON_SHELL}>
-          <img
-            src={sectorIconSrc}
-            alt=""
-            className="h-full w-full object-contain"
-            loading="lazy"
-            decoding="async"
-            aria-hidden
-          />
-        </div>
-      </div>
-
-      <div className="relative flex flex-1 flex-col gap-2 p-4">
-        <div>
-          <p className="font-bold text-brandDark">{company.symbol}</p>
-          <p className="line-clamp-1 text-sm text-textSecondary">{company.name}</p>
+      <div className="pointer-events-none relative z-10 flex flex-1 flex-col">
+        <div className="pointer-events-auto absolute right-3 top-3 z-20">
+          <WatchlistButton symbol={company.symbol} />
         </div>
 
-        <div className="relative">
-          {isLocked ? (
-            <div className="relative overflow-hidden rounded-xl">
-              <div className="pointer-events-none select-none blur-[3px]" aria-hidden>
+        <div className="relative flex h-28 items-center justify-center bg-gradient-to-b from-[#2D0A6B]/[0.04] to-transparent p-4">
+          <div className={GLASS_ICON_SHELL}>
+            <img
+              src={sectorIconSrc}
+              alt=""
+              className="h-full w-full object-contain"
+              loading="lazy"
+              decoding="async"
+              aria-hidden
+            />
+          </div>
+        </div>
+
+        <div className="relative flex flex-1 flex-col gap-2 p-4">
+          <div>
+            <p className="font-bold text-brandDark">{company.symbol}</p>
+            <p className="line-clamp-1 text-sm text-textSecondary">{company.name}</p>
+          </div>
+
+          <div className="relative">
+            {isLocked ? (
+              <div className="relative overflow-hidden rounded-xl">
+                <div className="pointer-events-none select-none blur-[3px]" aria-hidden>
+                  <p className="font-mono text-3xl font-bold text-textPrimary">{priceLabel}</p>
+                  <span
+                    className={`mt-2 inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${
+                      isPositive ? "bg-[#00C9D4]/10 text-[#00A86B]" : "bg-red-500/10 text-red-500"
+                    }`}
+                  >
+                    {`${isPositive ? "+" : ""}${changePct.toFixed(2)}%`}
+                  </span>
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-white/5 backdrop-blur-[2px]">
+                  <span className="rounded-full border border-[#2D0A6B]/20 bg-[#2D0A6B] px-3 py-1 text-xs font-bold tracking-wide text-white shadow-sm">
+                    PRO
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <>
                 <p className="font-mono text-3xl font-bold text-textPrimary">{priceLabel}</p>
                 <span
                   className={`mt-2 inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -89,39 +113,31 @@ export function CompanyCard({ company }: Props) {
                 >
                   {`${isPositive ? "+" : ""}${changePct.toFixed(2)}%`}
                 </span>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-white/5 backdrop-blur-[2px]">
-                <span className="rounded-full border border-[#2D0A6B]/20 bg-[#2D0A6B] px-3 py-1 text-xs font-bold tracking-wide text-white shadow-sm">
-                  PRO
-                </span>
-              </div>
-            </div>
-          ) : (
-            <>
-              <p className="font-mono text-3xl font-bold text-textPrimary">{priceLabel}</p>
-              <span
-                className={`mt-2 inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${
-                  isPositive ? "bg-[#00C9D4]/10 text-[#00A86B]" : "bg-red-500/10 text-red-500"
-                }`}
-              >
-                {`${isPositive ? "+" : ""}${changePct.toFixed(2)}%`}
-              </span>
-            </>
-          )}
-        </div>
+              </>
+            )}
+          </div>
 
-        <span className="mt-1 inline-flex w-fit rounded-full bg-[#2D0A6B]/5 px-2.5 py-1 text-xs font-medium text-[#2D0A6B]">
-          {company.sector}
-        </span>
-        <p className="line-clamp-2 text-xs text-textMuted">{company.industry}</p>
-
-        {!isLocked ? (
-          <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-[#00C9D4] transition group-hover:text-[#2D0A6B]">
-            <SparklesIcon className="h-4 w-4" aria-hidden />
-            AI Brief
+          <span className="mt-1 inline-flex w-fit rounded-full bg-[#2D0A6B]/5 px-2.5 py-1 text-xs font-medium text-[#2D0A6B]">
+            {company.sector}
           </span>
-        ) : null}
+          <p className="line-clamp-2 text-xs text-textMuted">{company.industry}</p>
+
+          {!isLocked ? (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onOpenBrief?.(company);
+              }}
+              className="pointer-events-auto relative z-20 mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-[#00C9D4] transition hover:text-[#2D0A6B] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00C9D4] focus-visible:ring-offset-2"
+            >
+              <SparklesIcon className="h-4 w-4" aria-hidden />
+              AI Brief
+            </button>
+          ) : null}
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }
