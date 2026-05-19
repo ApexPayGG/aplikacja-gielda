@@ -7,7 +7,8 @@ import {
   useState,
   type RefObject,
 } from "react";
-import { Link } from "react-router-dom";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { createStripeCheckoutSession } from "../services/api";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
@@ -758,9 +759,11 @@ function useCounter(target: number, duration = 2000): { count: number; ref: RefO
 
 export function LandingPage() {
   const { t } = useTranslation("common");
+  const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<"pro" | "pro_plus" | null>(null);
   const [navScrolled, setNavScrolled] = useState(false);
+  const [navSearchQuery, setNavSearchQuery] = useState("");
 
   const [heroPrices, setHeroPrices] = useState<Record<HeroTicker, number>>(() => ({ ...INITIAL_HERO_PRICES }));
   const [heroPctByTicker, setHeroPctByTicker] = useState<Partial<Record<HeroTicker, number>>>({});
@@ -851,6 +854,11 @@ export function LandingPage() {
   const marqueeTrack = [...marqueeItems, ...marqueeItems];
   const tickerMarqueeTrack = [...TICKER_BAR_ITEMS, ...TICKER_BAR_ITEMS];
 
+  const goToCompaniesSearch = (query = navSearchQuery): void => {
+    const q = query.trim();
+    navigate(q ? `/companies?q=${encodeURIComponent(q)}` : "/companies");
+  };
+
   return (
     <div className="min-h-screen bg-white text-slate-900 antialiased">
       <SEOHead
@@ -901,24 +909,44 @@ export function LandingPage() {
           </Link>
 
           <nav className="hidden flex-1 items-center justify-center gap-10 text-sm font-semibold text-[#2D0A6B]/90 md:flex">
-            <a href="#problem" className="transition hover:text-[#00C9D4]">
-              Problem
+            <a href="#how-it-works" className="transition hover:text-[#00C9D4]">
+              Jak to działa
             </a>
             <a href="#solution" className="transition hover:text-[#00C9D4]">
-              Rozwiązanie
+              Funkcje
             </a>
             <a href="#pricing" className="transition hover:text-[#00C9D4]">
               Cennik
             </a>
             <Link to="/companies" className="transition hover:text-[#00C9D4]">
-              Rynki
+              Giełdy
             </Link>
           </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-3">
-            <div className="[&_button]:border-slate-200 [&_button]:text-[#2D0A6B]">
-              <LanguageSwitcher />
-            </div>
+            <form
+              className="relative hidden md:block"
+              onSubmit={(e) => {
+                e.preventDefault();
+                goToCompaniesSearch();
+              }}
+            >
+              <MagnifyingGlassIcon
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#2D0A6B]/50"
+                aria-hidden
+              />
+              <input
+                type="search"
+                value={navSearchQuery}
+                onChange={(e) => setNavSearchQuery(e.target.value)}
+                onFocus={() => goToCompaniesSearch()}
+                onClick={() => goToCompaniesSearch()}
+                placeholder="Szukaj spółki... AAPL, PKN"
+                aria-label="Szukaj spółki"
+                className="w-48 rounded-full border border-[#2D0A6B]/20 bg-white py-1.5 pl-9 pr-4 text-sm text-[#2D0A6B] outline-none transition-all duration-300 placeholder:text-[#2D0A6B]/45 focus:w-64 focus:border-[#00C9D4]/40"
+              />
+            </form>
+            <LanguageSwitcher variant="landing" />
             <Link
               to="/login"
               className="rounded-full border border-[#2D0A6B]/25 px-4 py-2 text-sm font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5"

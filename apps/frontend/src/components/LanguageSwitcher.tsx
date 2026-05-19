@@ -19,7 +19,11 @@ const options: LangOption[] = [
   { code: "fr", shortCode: "FR", label: "Français", flag: "🇫🇷" },
 ];
 
-export default function LanguageSwitcher() {
+type LanguageSwitcherProps = {
+  variant?: "default" | "landing";
+};
+
+export default function LanguageSwitcher({ variant = "default" }: LanguageSwitcherProps) {
   const { i18n } = useTranslation();
   const active = options.find((x) => i18n.resolvedLanguage?.startsWith(x.code));
   const value = active?.code ?? "en";
@@ -28,6 +32,28 @@ export default function LanguageSwitcher() {
     await i18n.changeLanguage(next);
     localStorage.setItem("stockai.lang", next);
   };
+
+  if (variant === "landing") {
+    return (
+      <div className="relative inline-flex items-center">
+        <span className="pointer-events-none absolute left-3 text-sm" aria-hidden>
+          🌐
+        </span>
+        <select
+          value={value}
+          onChange={(e) => void handleChange(e.target.value)}
+          aria-label="Language selector"
+          className="cursor-pointer appearance-none rounded-lg border border-[#2D0A6B]/15 bg-transparent py-1.5 pl-9 pr-8 text-sm font-semibold text-[#2D0A6B] outline-none transition hover:border-[#2D0A6B]/30 focus:border-[#00C9D4]/50"
+        >
+          {options.map((opt) => (
+            <option key={opt.code} value={opt.code}>
+              {opt.shortCode}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center">

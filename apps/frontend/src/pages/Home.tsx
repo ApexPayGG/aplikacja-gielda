@@ -1,6 +1,7 @@
 import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { CompaniesFilter } from "../components/CompaniesFilter";
 import { CompanySearchAutocomplete } from "../components/CompanySearchAutocomplete";
 import { CompanyCard } from "../components/CompanyCard";
@@ -26,6 +27,8 @@ const SOURCE_SECTORS = [
 
 export function Home() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const initialSearchQuery = searchParams.get("q")?.trim() ?? "";
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -88,6 +91,7 @@ export function Home() {
       <div className="mb-6">
         <CompanySearchAutocomplete
           limit={8}
+          initialValue={initialSearchQuery}
           placeholder={t("home.searchPlaceholder", { defaultValue: "Szukaj po nazwie lub tickerze..." })}
         />
       </div>
