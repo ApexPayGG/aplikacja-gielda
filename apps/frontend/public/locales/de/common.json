@@ -134,9 +134,9 @@
     "planLabel": "What is your plan today?",
     "planPlaceholder": "Optional...",
     "risk": {
-      "HIGH": "HIGH",
-      "LOW": "LOW",
-      "MEDIUM": "MEDIUM"
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
     },
     "submit": "Start trading day",
     "submitting": "Saving...",
@@ -288,7 +288,22 @@
     "statSignals": "Active signals",
     "statWatchlist": "On watchlist",
     "statWinRate": "Win rate",
-    "statStreak": "Positive streak"
+    "statStreak": "Positive streak",
+    "greetingGeneric": "Welcome back",
+    "statNoData": "—",
+    "hero": {
+      "eyebrow": "Your StockAI hub",
+      "title": "Build your market watchlist",
+      "subtitle": "Add a few tickers to unlock live quotes, movement alerts, and AI context tailored to what you actually trade.",
+      "step1": "Pick companies you follow",
+      "step2": "Read AI briefs and signals",
+      "step3": "Track mindset with the coach",
+      "ctaBrowse": "Browse companies",
+      "ctaSignals": "View signals",
+      "popularLabel": "Popular to start"
+    },
+    "emptyWatchlistCta": "Add your first company",
+    "emptySignalsHint": "Signals appear when your watchlist moves ±2% intraday."
   },
   "digest": {
     "cardDateLabel": "Digest date",
@@ -1352,7 +1367,8 @@
   "legal": {
     "ariaLabel": "Rechtlicher Investitionshinweis",
     "investmentDisclaimer": "Rechtlicher Hinweis: Alle Analysen, Marktsignale und von der künstlichen Intelligenz (einschließlich Claude AI) auf der Plattform StockAI Pro generierten Materialien dienen ausschließlich Bildungs- und Informationszwecken. Sie stellen keine Anlageberatung oder Finanzempfehlungen im Sinne des Gesetzes dar. Investitionen an den Finanzmärkten sind mit einem hohen Risiko des Kapitalverlusts verbunden. AMC Energy Sp. z o.o. übernimmt keine Haftung für finanzielle Entscheidungen, die auf Basis der Daten in der Anwendung getroffen werden.",
-    "termsLink": "Vollständige Nutzungsbedingungen"
+    "termsLink": "Vollständige Nutzungsbedingungen",
+    "showDisclaimer": "Investment disclaimer"
   },
   "onboarding": {
     "skip": "Überspringen",

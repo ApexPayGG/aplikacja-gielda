@@ -134,9 +134,9 @@
     "planLabel": "What is your plan today?",
     "planPlaceholder": "Optional...",
     "risk": {
-      "HIGH": "HIGH",
-      "LOW": "LOW",
-      "MEDIUM": "MEDIUM"
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
     },
     "submit": "Start trading day",
     "submitting": "Saving...",
@@ -288,7 +288,22 @@
     "statSignals": "Active signals",
     "statWatchlist": "On watchlist",
     "statWinRate": "Win rate",
-    "statStreak": "Positive streak"
+    "statStreak": "Positive streak",
+    "greetingGeneric": "Welcome back",
+    "statNoData": "—",
+    "hero": {
+      "eyebrow": "Your StockAI hub",
+      "title": "Build your market watchlist",
+      "subtitle": "Add a few tickers to unlock live quotes, movement alerts, and AI context tailored to what you actually trade.",
+      "step1": "Pick companies you follow",
+      "step2": "Read AI briefs and signals",
+      "step3": "Track mindset with the coach",
+      "ctaBrowse": "Browse companies",
+      "ctaSignals": "View signals",
+      "popularLabel": "Popular to start"
+    },
+    "emptyWatchlistCta": "Add your first company",
+    "emptySignalsHint": "Signals appear when your watchlist moves ±2% intraday."
   },
   "digest": {
     "cardDateLabel": "Digest date",
@@ -1352,7 +1367,8 @@
   "legal": {
     "ariaLabel": "投資に関する重要事項",
     "investmentDisclaimer": "【重要】本サービス（StockAI Pro）において、人工知能（Claude AIを含む）が生成・提供する市場分析、シグナル、レポートその他の情報は、投資の教育および参考情報の提供を目的とするものであり、金融商品取引法に基づく投資助言・代理業の業務、または投資一任契約に該当するものではありません。株式、その他金融商品への投資には、価格変動等により元本を割り込むおそれがあり、損失が生じる場合があります。当社（AMC Energy Sp. z o.o.）は、本アプリケーションの情報に基づいてお客様が行った投資判断の結果について、いかなる保証もいたしません。投資に関する最終決定は、お客様ご自身の判断と責任において行ってください。",
-    "termsLink": "利用規約全文"
+    "termsLink": "利用規約全文",
+    "showDisclaimer": "Investment disclaimer"
   },
   "onboarding": {
     "skip": "スキップ",

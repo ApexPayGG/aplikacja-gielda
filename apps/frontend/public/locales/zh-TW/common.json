@@ -134,9 +134,9 @@
     "planLabel": "What is your plan today?",
     "planPlaceholder": "Optional...",
     "risk": {
-      "HIGH": "HIGH",
-      "LOW": "LOW",
-      "MEDIUM": "MEDIUM"
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
     },
     "submit": "Start trading day",
     "submitting": "Saving...",
@@ -288,7 +288,22 @@
     "statSignals": "Active signals",
     "statWatchlist": "On watchlist",
     "statWinRate": "Win rate",
-    "statStreak": "Positive streak"
+    "statStreak": "Positive streak",
+    "greetingGeneric": "Welcome back",
+    "statNoData": "—",
+    "hero": {
+      "eyebrow": "Your StockAI hub",
+      "title": "Build your market watchlist",
+      "subtitle": "Add a few tickers to unlock live quotes, movement alerts, and AI context tailored to what you actually trade.",
+      "step1": "Pick companies you follow",
+      "step2": "Read AI briefs and signals",
+      "step3": "Track mindset with the coach",
+      "ctaBrowse": "Browse companies",
+      "ctaSignals": "View signals",
+      "popularLabel": "Popular to start"
+    },
+    "emptyWatchlistCta": "Add your first company",
+    "emptySignalsHint": "Signals appear when your watchlist moves ±2% intraday."
   },
   "digest": {
     "cardDateLabel": "Digest date",
@@ -1352,7 +1367,8 @@
   "legal": {
     "investmentDisclaimer": "法律聲明：StockAI Pro 上由人工智慧（含 Claude AI）產生的分析、市場訊號與資料僅供教育與資訊用途，不構成投資建議或財務諮詢。投資金融市場具有高資本損失風險。AMC Energy Sp. z o.o. 對依據應用程式資料所做的財務決策不負責任。",
     "termsLink": "完整服務條款",
-    "ariaLabel": "投資法律聲明"
+    "ariaLabel": "投資法律聲明",
+    "showDisclaimer": "Investment disclaimer"
   },
   "onboarding": {
     "skip": "略過",

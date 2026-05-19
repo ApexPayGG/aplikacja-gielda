@@ -134,9 +134,9 @@
     "planLabel": "What is your plan today?",
     "planPlaceholder": "Optional...",
     "risk": {
-      "HIGH": "HIGH",
-      "LOW": "LOW",
-      "MEDIUM": "MEDIUM"
+      "HIGH": "High",
+      "LOW": "Low",
+      "MEDIUM": "Medium"
     },
     "submit": "Start trading day",
     "submitting": "Saving...",
@@ -288,7 +288,22 @@
     "statSignals": "Active signals",
     "statWatchlist": "On watchlist",
     "statWinRate": "Win rate",
-    "statStreak": "Positive streak"
+    "statStreak": "Positive streak",
+    "greetingGeneric": "Welcome back",
+    "statNoData": "—",
+    "hero": {
+      "eyebrow": "Your StockAI hub",
+      "title": "Build your market watchlist",
+      "subtitle": "Add a few tickers to unlock live quotes, movement alerts, and AI context tailored to what you actually trade.",
+      "step1": "Pick companies you follow",
+      "step2": "Read AI briefs and signals",
+      "step3": "Track mindset with the coach",
+      "ctaBrowse": "Browse companies",
+      "ctaSignals": "View signals",
+      "popularLabel": "Popular to start"
+    },
+    "emptyWatchlistCta": "Add your first company",
+    "emptySignalsHint": "Signals appear when your watchlist moves ±2% intraday."
   },
   "digest": {
     "cardDateLabel": "Digest date",
@@ -1352,7 +1367,8 @@
   "legal": {
     "investmentDisclaimer": "법적 고지: StockAI Pro의 인공지능(Claude AI 포함)이 생성한 분석, 시장 신호 및 자료는 교육 및 정보 제공 목적입니다. 투자 권유나 금융 자문이 아닙니다. 금융 시장 투자에는 높은 원금 손실 위험이 있습니다. AMC Energy Sp. z o.o.는 앱 데이터에 따른 금융 결정에 대해 책임지지 않습니다.",
     "termsLink": "전체 이용약관",
-    "ariaLabel": "투자 법적 고지"
+    "ariaLabel": "투자 법적 고지",
+    "showDisclaimer": "Investment disclaimer"
   },
   "onboarding": {
     "skip": "건너뛰기",

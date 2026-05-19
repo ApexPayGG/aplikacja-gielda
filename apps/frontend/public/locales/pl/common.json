@@ -130,19 +130,19 @@
     "winRate": "Win rate"
   },
   "checkin": {
-    "error": "Could not save check-in. Please try again.",
-    "moodLabel": "Mood",
-    "planLabel": "What is your plan today?",
-    "planPlaceholder": "Optional...",
+    "error": "Nie udało się zapisać check-inu. Spróbuj ponownie.",
+    "moodLabel": "Nastrój",
+    "planLabel": "Jaki jest Twój plan na dziś?",
+    "planPlaceholder": "Opcjonalnie…",
     "risk": {
-      "HIGH": "HIGH",
-      "LOW": "LOW",
-      "MEDIUM": "MEDIUM"
+      "HIGH": "Wysoki",
+      "LOW": "Niski",
+      "MEDIUM": "Średni"
     },
-    "submit": "Start trading day",
-    "submitting": "Saving...",
-    "subtitle": "Set your mindset before the market opens.",
-    "title": "Daily Check-In"
+    "submit": "Rozpocznij dzień tradingowy",
+    "submitting": "Zapisywanie…",
+    "subtitle": "Ustaw nastawienie przed otwarciem rynku.",
+    "title": "Codzienny check-in"
   },
   "coach": {
     "aiCoach": "Komentarz coacha AI",
@@ -309,7 +309,22 @@
     "statSignals": "Aktywne sygnały",
     "statWatchlist": "Na watchliście",
     "statWinRate": "Win rate",
-    "statStreak": "Seria wzrostów"
+    "statStreak": "Seria wzrostów",
+    "greetingGeneric": "Witaj ponownie",
+    "statNoData": "—",
+    "hero": {
+      "eyebrow": "Twój hub StockAI",
+      "title": "Zbuduj swoją watchlistę",
+      "subtitle": "Dodaj kilka tickerów, aby odblokować notowania na żywo, alerty ruchu i kontekst AI dopasowany do tego, czym faktycznie handlujesz.",
+      "step1": "Wybierz spółki, które śledzisz",
+      "step2": "Czytaj AI Brief i sygnały",
+      "step3": "Monitoruj psychikę z coachem",
+      "ctaBrowse": "Przeglądaj spółki",
+      "ctaSignals": "Zobacz sygnały",
+      "popularLabel": "Popularne na start"
+    },
+    "emptyWatchlistCta": "Dodaj pierwszą spółkę",
+    "emptySignalsHint": "Sygnały pojawią się, gdy spółka z watchlisty zmieni się o ±2% w sesji."
   },
   "digest": {
     "cardDateLabel": "Data digestu",
@@ -1364,7 +1379,8 @@
   "legal": {
     "investmentDisclaimer": "Zastrzeżenie prawne: Wszelkie analizy, sygnały rynkowe oraz materiały generowane przez sztuczną inteligencję (w tym Claude AI) na platformie StockAI Pro mają charakter wyłącznie edukacyjny i informacyjny. Nie stanowią one rekomendacji inwestycyjnych ani porad finansowych w rozumieniu przepisów prawa. Inwestowanie na rynkach finansowych wiąże się z wysokim ryzykiem utraty kapitału. AMC Energy Sp. z o.o. nie ponosi odpowiedzialności za decyzje finansowe podjęte na podstawie danych w aplikacji.",
     "termsLink": "Pełny regulamin",
-    "ariaLabel": "Zastrzeżenie prawne inwestycyjne"
+    "ariaLabel": "Zastrzeżenie prawne inwestycyjne",
+    "showDisclaimer": "Zastrzeżenie inwestycyjne"
   },
   "onboarding": {
     "skip": "Pomiń",

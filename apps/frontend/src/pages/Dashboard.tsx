@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { DailyCheckInWidget } from "../components/DailyCheckInWidget";
+import { DashboardWelcomeHero } from "../components/DashboardWelcomeHero";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import { EmotionalStateWidget } from "../components/EmotionalStateWidget";
 import { useAuth } from "../context/AuthContext";
@@ -123,9 +124,13 @@ export function Dashboard() {
 
   const firstName = useMemo(() => {
     const raw = user?.name?.trim();
-    if (!raw) return "Trader";
+    if (!raw) return null;
     return raw.split(/\s+/)[0];
   }, [user?.name]);
+
+  const isEmptyDashboard = !watchlistLoading && !watchlistError && watchlistRows.length === 0;
+  const hasWatchlistMetrics = quickStats.watchlistCount > 0;
+  const noDataLabel = t("dashboard.statNoData", { defaultValue: "—" });
 
   const todayLabel = useMemo(() => {
     const locale = i18n.resolvedLanguage || i18n.language || "en";
@@ -137,23 +142,23 @@ export function Dashboard() {
   const statCards: Array<{ label: string; value: string; trend: TrendTone }> = [
     {
       label: t("dashboard.statSignals", { defaultValue: "Active signals" }),
-      value: String(quickStats.signalCount),
-      trend: quickStats.signalCount > 0 ? "up" : "flat",
+      value: hasWatchlistMetrics ? String(quickStats.signalCount) : noDataLabel,
+      trend: hasWatchlistMetrics && quickStats.signalCount > 0 ? "up" : "flat",
     },
     {
       label: t("dashboard.statWatchlist", { defaultValue: "On watchlist" }),
-      value: String(quickStats.watchlistCount),
-      trend: quickStats.watchlistCount > 0 ? "up" : "flat",
+      value: hasWatchlistMetrics ? String(quickStats.watchlistCount) : noDataLabel,
+      trend: hasWatchlistMetrics && quickStats.watchlistCount > 0 ? "up" : "flat",
     },
     {
       label: t("dashboard.statWinRate", { defaultValue: "Win rate" }),
-      value: `${formatNumber(quickStats.winRate, 1)}%`,
-      trend: quickStats.winRate >= 50 ? "up" : "down",
+      value: hasWatchlistMetrics ? `${formatNumber(quickStats.winRate, 1)}%` : noDataLabel,
+      trend: !hasWatchlistMetrics ? "flat" : quickStats.winRate >= 50 ? "up" : "down",
     },
     {
       label: t("dashboard.statStreak", { defaultValue: "Positive streak" }),
-      value: String(quickStats.streak),
-      trend: quickStats.streak > 0 ? "up" : "down",
+      value: hasWatchlistMetrics ? String(quickStats.streak) : noDataLabel,
+      trend: !hasWatchlistMetrics ? "flat" : quickStats.streak > 0 ? "up" : "flat",
     },
   ];
 
@@ -184,18 +189,23 @@ export function Dashboard() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h1 className="text-2xl font-bold text-textPrimary md:text-3xl">
-                  {t("dashboard.greeting", { name: firstName, defaultValue: "Good morning, {{name}}" })}
+                  {firstName
+                    ? t("dashboard.greeting", { name: firstName, defaultValue: "Good morning, {{name}}" })
+                    : t("dashboard.greetingGeneric", { defaultValue: "Welcome back" })}
                 </h1>
-                <p className="mt-1 text-sm capitalize text-textSecondary">{todayLabel}</p>
+                <p className="mt-1 text-sm text-textSecondary">{todayLabel}</p>
               </div>
-              <Link
-                to="/companies"
-                className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-textSecondary transition hover:border-brandDark hover:text-brandDark"
-              >
-                {t("dashboard.companiesTitle", { defaultValue: "Companies" })}
-              </Link>
+              {!isEmptyDashboard ? (
+                <Link
+                  to="/companies"
+                  className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-textSecondary transition hover:border-brandDark hover:text-brandDark"
+                >
+                  {t("dashboard.companiesTitle", { defaultValue: "Companies" })}
+                </Link>
+              ) : null}
             </div>
 
+            {!isEmptyDashboard ? (
             <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {statCards.map((card) => (
                 <article key={card.label} className="rounded-xl border border-border bg-bgSecondary/70 p-3">
@@ -207,8 +217,13 @@ export function Dashboard() {
                 </article>
               ))}
             </div>
+            ) : null}
           </section>
 
+          {isEmptyDashboard ? <DashboardWelcomeHero /> : null}
+
+          {!isEmptyDashboard ? (
+          <>
           <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between gap-3">
               <h2 className="text-base font-semibold uppercase tracking-wide text-textPrimary">
@@ -333,6 +348,8 @@ export function Dashboard() {
               </ul>
             )}
           </section>
+          </>
+          ) : null}
         </div>
 
         <aside className="space-y-4 xl:sticky xl:top-20 xl:self-start">
@@ -341,7 +358,7 @@ export function Dashboard() {
         </aside>
       </div>
 
-      <InvestmentDisclaimer className="mt-10" />
+      <InvestmentDisclaimer className="mt-10" collapsible />
     </div>
   );
 }
