@@ -35,7 +35,7 @@ function SentimentGauge({ score, label }: { score: number; label: string }) {
           aria-hidden
         />
       </div>
-      <div className="flex items-center justify-between text-xs">
+      <div className="flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
         <span className="flex items-center gap-1 text-red-300/90">
           <ArrowTrendingDownIcon className="h-3.5 w-3.5" aria-hidden />
           Niedźwiedzi
@@ -91,7 +91,7 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-[65] flex justify-end" role="presentation">
+    <div className="fixed inset-0 z-[65] flex flex-col justify-end md:flex-row md:justify-end" role="presentation">
       <button
         type="button"
         className="absolute inset-0 bg-[#0D0D1A]/55 backdrop-blur-sm transition-opacity"
@@ -104,14 +104,16 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${panelId}-title`}
-        className="relative flex h-dvh w-full max-w-md flex-col border-l border-white/10 bg-gradient-to-b from-[#2D0A6B]/20 via-[#1a0538]/40 to-[#0D0D1A]/90 shadow-[-16px_0_48px_rgba(45,10,107,0.35)] backdrop-blur-md transition-transform duration-300 ease-out sm:max-w-lg"
+        className="relative flex max-h-[min(92dvh,100%)] w-full flex-col overflow-hidden rounded-t-3xl border border-b-0 border-white/10 bg-gradient-to-b from-[#2D0A6B]/20 via-[#1a0538]/40 to-[#0D0D1A]/90 shadow-[0_-20px_48px_rgba(45,10,107,0.4)] backdrop-blur-md transition-transform duration-300 ease-out md:h-dvh md:max-h-none md:max-w-lg md:rounded-none md:rounded-l-2xl md:border-b md:border-l md:border-t-0 md:shadow-[-16px_0_48px_rgba(45,10,107,0.35)]"
       >
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
           <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#00C9D4]/10 blur-3xl" />
           <div className="absolute -bottom-20 left-8 h-56 w-56 rounded-full bg-[#2D0A6B]/30 blur-3xl" />
         </div>
 
-        <header className="relative shrink-0 border-b border-white/10 px-5 pb-4 pt-5 sm:px-6">
+        <div className="mx-auto mt-2 h-1 w-12 shrink-0 rounded-full bg-white/25 md:hidden" aria-hidden />
+
+        <header className="relative shrink-0 border-b border-white/10 px-5 pb-4 pt-3 sm:px-6 sm:pt-5">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#2D0A6B]/10 p-2 backdrop-blur-md">
@@ -129,7 +131,7 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
               ref={closeButtonRef}
               type="button"
               onClick={onClose}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#2D0A6B]/10 text-white/80 backdrop-blur-md transition hover:border-[#00C9D4]/40 hover:text-white"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#2D0A6B]/10 text-white/80 backdrop-blur-md transition hover:border-[#00C9D4]/40 hover:text-white"
               aria-label="Zamknij AI Brief"
             >
               <XMarkIcon className="h-5 w-5" />

@@ -170,7 +170,7 @@ export function BehavioralCoachPage() {
   const radarLoading = loading || !hydrated || psycheSync.loading;
 
   return (
-    <div className={GLASS_PAGE_BG}>
+    <div className={`${GLASS_PAGE_BG} overflow-x-hidden`}>
       <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
         <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-[#2D0A6B]/40 blur-3xl" />
         <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#00C9D4]/10 blur-3xl" />
@@ -255,7 +255,7 @@ export function BehavioralCoachPage() {
           onCloseTrade={closePaperTrade}
         />
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <CoachInterventionsSection interventions={interventions} loading={loading} />
           <EmotionJournalSection
             emotion={emotion}

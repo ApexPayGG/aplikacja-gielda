@@ -7,7 +7,7 @@ import {
   useState,
   type RefObject,
 } from "react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { createStripeCheckoutSession } from "../services/api";
@@ -340,7 +340,7 @@ function PricingFeatureCheck({ accent }: { accent: "gold" | "cyan" }) {
 
 function CandlestickChart() {
   return (
-    <svg viewBox="0 0 280 100" className="h-40 w-full animate-fadeInUp" aria-hidden>
+    <svg viewBox="0 0 280 100" className="h-28 w-full animate-fadeInUp sm:h-36 md:h-40" aria-hidden preserveAspectRatio="xMidYMid meet">
       {CANDLES_DEMO.map((c, i) => (
         <g
           key={i}
@@ -594,16 +594,16 @@ function WorldClocks() {
         <GlobalConnectionsSVG />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-6">
-        <div className="mb-12 text-center">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6">
+        <div className="mb-8 text-center sm:mb-12">
           <h2 className="section-h2 mb-3 text-white">
             Rynki nigdy nie śpią.
             <span style={{ color: BRAND.cyan }}> Ty też nie musisz.</span>
           </h2>
-          <p className="text-lg text-white/60">StockAI Pro monitoruje 130+ giełd przez całą dobę.</p>
+          <p className="text-base text-white/60 sm:text-lg">StockAI Pro monitoruje 130+ giełd przez całą dobę.</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-6">
           {WORLD_CLOCK_CITIES.map((city, i) => {
             const { hours } = getZonedTime(city.timezone, time);
             const isOpen = isExchangeOpenSimple(hours);
@@ -669,14 +669,14 @@ type HeroVisualProps = {
 
 function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProps) {
   return (
-    <div className="landing-hero-dashboard relative h-[520px] w-full">
+    <div className="landing-hero-dashboard relative min-h-[280px] w-full sm:min-h-[360px] md:min-h-[480px] lg:min-h-[520px]">
       <GlobalConnectionsSVG />
 
       <div className="absolute inset-0 z-[1] flex items-end justify-center opacity-20">
         <CandlestickChart />
       </div>
 
-      <div className="hero-card-glow absolute left-8 right-8 top-8 z-10 rounded-2xl">
+      <div className="hero-card-glow absolute inset-x-2 top-4 z-10 rounded-2xl sm:inset-x-4 sm:top-6 md:inset-x-8 md:top-8">
         <div
           className="hero-card-glow-inner relative overflow-hidden rounded-[14px] shadow-[0_25px_50px_rgba(45,10,107,0.4),0_0_100px_rgba(0,201,212,0.05)]"
           style={{
@@ -764,6 +764,7 @@ export function LandingPage() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<"pro" | "pro_plus" | null>(null);
   const [navScrolled, setNavScrolled] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [navSearchQuery, setNavSearchQuery] = useState("");
 
   const [heroPrices, setHeroPrices] = useState<Record<HeroTicker, number>>(() => ({ ...INITIAL_HERO_PRICES }));
@@ -899,8 +900,8 @@ export function LandingPage() {
           navScrolled ? "shadow-md" : "shadow-none"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 md:py-4">
-          <Link to="/" className="flex shrink-0 items-center" aria-label="StockAI Pro — strona główna">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 md:gap-6 md:py-4">
+          <Link to="/" className="flex min-w-0 shrink-0 items-center" aria-label="StockAI Pro — strona główna">
             <img
               src="/logo.png"
               alt="StockAI Pro"
@@ -950,19 +951,104 @@ export function LandingPage() {
             <LanguageSwitcher variant="landing" />
             <Link
               to="/login"
-              className="rounded-full border border-[#2D0A6B]/25 px-4 py-2 text-sm font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5"
+              className="hidden min-h-11 items-center rounded-full border border-[#2D0A6B]/25 px-4 py-2 text-sm font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5 sm:inline-flex"
             >
               {t("auth.loginButton", { defaultValue: "Zaloguj" })}
             </Link>
             <Link
               to="/register"
-              className="rounded-full px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 md:px-6"
+              className="hidden min-h-11 items-center rounded-full px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 sm:inline-flex md:px-6"
               style={{ backgroundColor: BRAND.dark }}
             >
               Zacznij za darmo
             </Link>
+            <button
+              type="button"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#2D0A6B]/20 text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5 md:hidden"
+              aria-expanded={mobileNavOpen}
+              aria-controls="landing-mobile-nav"
+              aria-label={mobileNavOpen ? "Zamknij menu" : "Otwórz menu"}
+              onClick={() => setMobileNavOpen((open) => !open)}
+            >
+              {mobileNavOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+            </button>
           </div>
         </div>
+        {mobileNavOpen ? (
+          <nav
+            id="landing-mobile-nav"
+            className="border-t border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur-md md:hidden"
+          >
+            <div className="flex flex-col gap-1">
+              {(
+                [
+                  { href: "#how-it-works", label: "Jak to działa" },
+                  { href: "#solution", label: "Funkcje" },
+                  { href: "#pricing", label: "Cennik" },
+                  { href: "/companies", label: "Giełdy" },
+                ] satisfies { href: string; label: string }[]
+              ).map((item) =>
+                item.href.startsWith("/") ? (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className="min-h-12 rounded-xl px-3 py-3 text-base font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5"
+                    onClick={() => setMobileNavOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="min-h-12 rounded-xl px-3 py-3 text-base font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5"
+                    onClick={() => setMobileNavOpen(false)}
+                  >
+                    {item.label}
+                  </a>
+                ),
+              )}
+            </div>
+            <form
+              className="relative mt-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                goToCompaniesSearch();
+                setMobileNavOpen(false);
+              }}
+            >
+              <MagnifyingGlassIcon
+                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2D0A6B]/50"
+                aria-hidden
+              />
+              <input
+                type="search"
+                value={navSearchQuery}
+                onChange={(e) => setNavSearchQuery(e.target.value)}
+                placeholder="Szukaj spółki... AAPL, PKN"
+                aria-label="Szukaj spółki"
+                className="w-full rounded-xl border border-[#2D0A6B]/20 bg-white py-3 pl-10 pr-4 text-base text-[#2D0A6B] outline-none placeholder:text-[#2D0A6B]/45 focus:border-[#00C9D4]/40"
+              />
+            </form>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <Link
+                to="/login"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#2D0A6B]/25 px-4 text-sm font-semibold text-[#2D0A6B]"
+                onClick={() => setMobileNavOpen(false)}
+              >
+                {t("auth.loginButton", { defaultValue: "Zaloguj" })}
+              </Link>
+              <Link
+                to="/register"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl px-4 text-sm font-semibold text-white"
+                style={{ backgroundColor: BRAND.dark }}
+                onClick={() => setMobileNavOpen(false)}
+              >
+                Zacznij za darmo
+              </Link>
+            </div>
+          </nav>
+        ) : null}
         {navScrolled ? (
           <div
             className="pointer-events-none absolute bottom-0 left-0 right-0 h-px"
@@ -975,19 +1061,19 @@ export function LandingPage() {
       </header>
 
       {/* ═══ HERO ═══ */}
-      <section className="hero-gradient-bg relative isolate flex min-h-screen items-center overflow-x-hidden pt-20">
+      <section className="hero-gradient-bg relative isolate flex min-h-0 items-center overflow-x-hidden pt-16 sm:min-h-screen sm:pt-20">
         <div
-          className="animate-float pointer-events-none absolute left-10 top-10 z-0 h-[500px] w-[500px] rounded-full opacity-20 blur-3xl"
+          className="animate-float pointer-events-none absolute left-4 top-8 z-0 h-48 w-48 rounded-full opacity-20 blur-3xl sm:left-10 sm:top-10 sm:h-72 sm:w-72 md:h-[500px] md:w-[500px]"
           style={{ background: "radial-gradient(circle, #7A0F9E, transparent)" }}
           aria-hidden
         />
         <div
-          className="animate-float pointer-events-none absolute right-0 top-1/2 z-0 h-[400px] w-[400px] -translate-y-1/2 rounded-full opacity-15 blur-3xl [animation-delay:2s]"
+          className="animate-float pointer-events-none absolute right-0 top-1/2 z-0 h-56 w-56 -translate-y-1/2 rounded-full opacity-15 blur-3xl sm:h-80 sm:w-80 md:h-[400px] md:w-[400px] [animation-delay:2s]"
           style={{ background: "radial-gradient(circle, #00C9D4, transparent)" }}
           aria-hidden
         />
         <div
-          className="animate-float pointer-events-none absolute bottom-0 left-1/3 z-0 h-[300px] w-[300px] rounded-full opacity-10 blur-3xl [animation-delay:4s]"
+          className="animate-float pointer-events-none absolute bottom-0 left-1/3 z-0 h-40 w-40 rounded-full opacity-10 blur-3xl sm:h-64 sm:w-64 md:h-[300px] md:w-[300px] [animation-delay:4s]"
           style={{ background: "radial-gradient(circle, #FFAE33, transparent)" }}
           aria-hidden
         />
@@ -1020,17 +1106,17 @@ export function LandingPage() {
               podejmujesz świadome decyzje.
             </p>
 
-            <div className="landing-hero-cta mt-10 flex flex-wrap items-center gap-4">
+            <div className="landing-hero-cta mt-8 flex w-full flex-col gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Link
                 to="/register"
-                className="inline-flex items-center gap-2 rounded-full px-8 py-4 text-lg font-semibold text-white shadow-lg transition hover:opacity-95"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:opacity-95 sm:w-auto sm:text-lg"
                 style={{ backgroundColor: BRAND.dark }}
               >
                 Zacznij za darmo →
               </Link>
               <a
                 href="#solution"
-                className="inline-flex items-center gap-2 rounded-full border border-[#2D0A6B]/20 px-6 py-4 text-lg font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#2D0A6B]/20 px-6 py-4 text-base font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5 sm:w-auto sm:text-lg"
               >
                 Zobacz demo
               </a>
@@ -1445,7 +1531,7 @@ export function LandingPage() {
             ⚡ Pierwsze 500 kont Pro w cenie $9/mo — na zawsze
           </p>
 
-          <div className="mt-14 grid items-center gap-8 lg:grid-cols-3">
+          <div className="mt-10 grid grid-cols-1 items-stretch gap-6 sm:mt-14 sm:gap-8 md:grid-cols-2 lg:grid-cols-3 lg:items-center">
             {pricingTiers.map((tier) => {
               const isPro = tier.id === "pro";
               const isFree = tier.id === "free";
@@ -1466,7 +1552,7 @@ export function LandingPage() {
                 return (
                   <article
                     key={tier.id}
-                    className="relative z-10 order-first rounded-2xl p-8 text-white lg:order-none lg:scale-105"
+                    className="relative z-10 order-first rounded-2xl p-6 text-white sm:p-8 lg:order-none lg:scale-105"
                     style={{
                       background: "linear-gradient(135deg, #2D0A6B 0%, #7A0F9E 100%)",
                       boxShadow:

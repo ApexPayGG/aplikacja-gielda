@@ -145,7 +145,7 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#00C9D4]/35 bg-gradient-to-r from-[#2D0A6B]/40 to-[#00C9D4]/20 px-4 py-3 text-sm font-semibold text-white shadow-[0_0_24px_rgba(0,201,212,0.12)] backdrop-blur-md transition hover:border-[#00C9D4]/55 hover:shadow-[0_0_28px_rgba(0,201,212,0.2)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#00C9D4]/35 bg-gradient-to-r from-[#2D0A6B]/40 to-[#00C9D4]/20 px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_24px_rgba(0,201,212,0.12)] backdrop-blur-md transition hover:border-[#00C9D4]/55 hover:shadow-[0_0_28px_rgba(0,201,212,0.2)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
       >
         <ShareIcon className="h-5 w-5 text-[#00C9D4]" aria-hidden />
         Udostępnij profil
@@ -153,10 +153,17 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
       </button>
 
       {open ? (
-        <div
-          role="menu"
-          className="absolute left-0 right-0 z-30 mt-2 overflow-hidden rounded-2xl border border-white/10 bg-[#1a0538]/95 shadow-[0_16px_48px_rgba(45,10,107,0.45)] backdrop-blur-md sm:left-0 sm:right-auto sm:min-w-[20rem]"
-        >
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 z-20 bg-black/40 md:hidden"
+            aria-label="Zamknij menu udostępniania"
+            onClick={() => setOpen(false)}
+          />
+          <div
+            role="menu"
+            className="fixed inset-x-3 bottom-3 z-30 max-h-[min(70vh,28rem)] overflow-y-auto rounded-2xl border border-white/10 bg-[#1a0538]/98 shadow-[0_16px_48px_rgba(45,10,107,0.55)] backdrop-blur-md md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:right-auto md:top-full md:mt-2 md:max-h-none md:min-w-[20rem]"
+          >
           <div className="border-b border-white/10 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-[#00C9D4]">Viral Share Center</p>
             <p className="mt-0.5 text-xs text-white/55">Dyscyplina {payloads.disciplineScore}% · FOMO {payloads.fomoScore}%</p>
@@ -168,7 +175,7 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
                   type="button"
                   role="menuitem"
                   onClick={() => void handleShare(option.id)}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition hover:bg-white/5"
+                  className="flex min-h-12 w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-white/5"
                 >
                   <span className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${option.accent}`}>
                     {option.id === "copy" ? <LinkIcon className="h-4 w-4" /> : option.label.slice(0, 2)}
@@ -187,6 +194,7 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
             ))}
           </ul>
         </div>
+        </>
       ) : null}
 
       {toast ? (
