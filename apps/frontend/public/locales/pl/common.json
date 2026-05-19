@@ -186,6 +186,11 @@
       "growthYears": "Lata wzrostu",
       "healthScore": "Wskaźnik bezpieczeństwa",
       "nextExDate": "Ostatnia data ex",
+      "noDividend": {
+        "title": "📊 Ta spółka nie wypłaca dywidend",
+        "description": "{{companyName}} to spółka wzrostowa reinwestująca zyski w rozwój.",
+        "descriptionGeneric": "To spółka wzrostowa reinwestująca zyski w rozwój."
+      },
       "noHistory": "Brak historii dywidend w bazie.",
       "payoutRatio": "Wskaźnik wypłaty",
       "subtitle": "Bezpieczeństwo dywidendy, ostatnia wypłata i daty ex.",

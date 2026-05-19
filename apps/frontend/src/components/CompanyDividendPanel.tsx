@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getCompanyDividendTickerHistory, getDividendHealth, type DividendHealthData } from "../services/api";
@@ -7,7 +8,20 @@ import { apiErrorMessage } from "../utils/apiErrorMessage";
 type Props = {
   symbol: string;
   locale: string;
+  companyName?: string | null;
 };
+
+function isDividendNotFoundError(e: unknown): boolean {
+  if (axios.isAxiosError(e)) {
+    if (e.response?.status === 404) return true;
+    const body = e.response?.data;
+    if (body && typeof body === "object" && "error" in body) {
+      const apiErr = String((body as { error: unknown }).error).toLowerCase();
+      if (apiErr.includes("dividend data not found")) return true;
+    }
+  }
+  return apiErrorMessage(e).toLowerCase().includes("dividend data not found");
+}
 
 function healthColor(score: number): string {
   if (score > 70) return colors.positive;
@@ -21,7 +35,7 @@ function labelBadgeStyle(label: DividendHealthData["healthLabel"]): { bg: string
   return { bg: "rgba(229, 57, 53, 0.14)", color: colors.negative };
 }
 
-export function CompanyDividendPanel({ symbol, locale }: Props) {
+export function CompanyDividendPanel({ symbol, locale, companyName }: Props) {
   const { t } = useTranslation("common");
   const [health, setHealth] = useState<DividendHealthData | null>(null);
   const [history, setHistory] = useState<
@@ -29,12 +43,14 @@ export function CompanyDividendPanel({ symbol, locale }: Props) {
   >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [noDividend, setNoDividend] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setLoading(true);
       setError(null);
+      setNoDividend(false);
       try {
         const [healthData, historyResponse] = await Promise.all([
           getDividendHealth(symbol),
@@ -57,7 +73,13 @@ export function CompanyDividendPanel({ symbol, locale }: Props) {
         if (!cancelled) {
           setHealth(null);
           setHistory([]);
-          setError(apiErrorMessage(e));
+          if (isDividendNotFoundError(e)) {
+            setNoDividend(true);
+            setError(null);
+          } else {
+            setNoDividend(false);
+            setError(apiErrorMessage(e));
+          }
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -73,6 +95,32 @@ export function CompanyDividendPanel({ symbol, locale }: Props) {
       <p className="text-sm" style={{ color: colors.textSecondary }}>
         {t("common.loading", { defaultValue: "Loading..." })}
       </p>
+    );
+  }
+
+  if (noDividend) {
+    const displayName = companyName?.trim() || symbol;
+    return (
+      <div
+        className="rounded-lg border px-4 py-4"
+        style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+      >
+        <p className="text-sm font-semibold" style={{ color: colors.textPrimary }}>
+          {t("company.dividend.noDividend.title", {
+            defaultValue: "📊 Ta spółka nie wypłaca dywidend",
+          })}
+        </p>
+        <p className="mt-2 text-sm leading-relaxed" style={{ color: colors.textSecondary }}>
+          {companyName?.trim()
+            ? t("company.dividend.noDividend.description", {
+                defaultValue: "{{companyName}} to spółka wzrostowa reinwestująca zyski w rozwój.",
+                companyName: displayName,
+              })
+            : t("company.dividend.noDividend.descriptionGeneric", {
+                defaultValue: "To spółka wzrostowa reinwestująca zyski w rozwój.",
+              })}
+        </p>
+      </div>
     );
   }
 

@@ -186,6 +186,11 @@
       "growthYears": "Years of growth",
       "healthScore": "Health score",
       "nextExDate": "Latest ex-date",
+      "noDividend": {
+        "title": "📊 This company does not pay dividends",
+        "description": "{{companyName}} is a growth company reinvesting profits into expansion.",
+        "descriptionGeneric": "This is a growth company reinvesting profits into expansion."
+      },
       "noHistory": "No dividend history rows yet.",
       "payoutRatio": "Payout ratio",
       "subtitle": "Health score, latest payout, and recent ex-dates.",

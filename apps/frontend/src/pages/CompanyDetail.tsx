@@ -535,7 +535,7 @@ export function CompanyDetail() {
               className="rounded-xl border p-4"
               style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
             >
-              <CompanyDividendPanel symbol={sym} locale={currentLang} />
+              <CompanyDividendPanel symbol={sym} locale={currentLang} companyName={companyName} />
             </section>
           ) : null}
 
