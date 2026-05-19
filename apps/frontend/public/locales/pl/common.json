@@ -517,7 +517,7 @@
         },
         "pro": {
           "body": "Pełny dostęp dla aktywnych inwestorów.",
-          "cta": "Wybierz Pro",
+          "cta": "Get Pro",
           "features": [
             "Wszystkie moduły AI",
             "Coaching behawioralny",
@@ -528,7 +528,7 @@
         },
         "proPlus": {
           "body": "Dla power userów i workflow automatyzacji.",
-          "cta": "Wybierz Pro+",
+          "cta": "Get Pro+",
           "features": [
             "Wszystko z Pro",
             "Dostęp do API",
@@ -1402,6 +1402,78 @@
       "start": "Zaczynamy →",
       "next": "Dalej →",
       "dashboard": "Przejdź do Dashboard →"
+    }
+  },
+  "pricingPage": {
+    "seo": {
+      "title": "Cennik — StockAI Pro",
+      "description": "Free, Pro $9/mies., Pro+ $19/mies. Analiza inwestycyjna AI dla inwestorów detalicznych."
+    },
+    "title": "Wybierz swój plan",
+    "subtitle": "Dopasuj plan do etapu rozwoju. Zmiana lub rezygnacja w dowolnym momencie — bez długoterminowych zobowiązań.",
+    "billing": {
+      "toggleLabel": "Okres rozliczeniowy",
+      "monthly": "Miesięcznie",
+      "yearly": "Rocznie",
+      "saveBadge": "Oszczędność",
+      "monthlyNote": "Zmieniaj plan lub anuluj subskrypcję w ustawieniach konta.",
+      "yearlyNote": "Płatność roczna w USD — taniej niż 12× miesięczna (Pro ~27%, Pro+ ~35%)."
+    },
+    "signInHint": "Masz już konto?",
+    "signInLink": "Zaloguj się",
+    "signInHintSuffix": "i subskrybuj jednym kliknięciem.",
+    "checkoutError": "Nie udało się rozpocząć płatności. Spróbuj ponownie za chwilę.",
+    "cta": {
+      "getPro": "Get Pro",
+      "getProPlus": "Get Pro+",
+      "redirecting": "Przekierowywanie…",
+      "signIn": "Zaloguj się, aby subskrybować"
+    },
+    "plans": {
+      "billedMonthly": "Rozliczenie miesięczne (USD)",
+      "billedYearly": "Rozliczenie roczne (USD)",
+      "free": {
+        "tagline": "Paper trading i podstawowe narzędzia — bez karty płatniczej.",
+        "cta": "Zacznij za darmo"
+      },
+      "pro": {
+        "popular": "Najpopularniejszy",
+        "tagline": "Najlepszy stosunek ceny do możliwości dla aktywnych inwestorów."
+      },
+      "proPlus": {
+        "tagline": "Pełny pakiet analityczny, dostęp API i priorytetowe wsparcie."
+      }
+    },
+    "features": {
+      "paperTrading": "Paper trading bez ryzyka",
+      "journal": "Dziennik transakcyjny i statystyki",
+      "premiumScanner": "Skaner sygnałów premium",
+      "behavioralCoach": "AI coach behawioralny",
+      "stressTests": "Zaawansowane scenariusze stress testów",
+      "prioritySupport": "Priorytetowe wsparcie"
+    },
+    "faq": {
+      "title": "FAQ",
+      "cancel": {
+        "question": "Czy mogę anulować subskrypcję?",
+        "answer": "Tak. Anuluj w ustawieniach konta. Dostęp pozostaje do końca bieżącego okresu rozliczeniowego."
+      },
+      "trial": {
+        "question": "Czy jest okres próbny?",
+        "answer": "Plan Pro obejmuje 14-dniowy trial pełnej funkcjonalności."
+      },
+      "payment": {
+        "question": "Jakie metody płatności?",
+        "answer": "Płatności w USD przez Stripe — karty i metody dostępne lokalnie w Stripe."
+      },
+      "security": {
+        "question": "Czy dane są bezpieczne?",
+        "answer": "Szyfrowanie transmisji, ograniczony dostęp i regularne przeglądy bezpieczeństwa."
+      },
+      "paper": {
+        "question": "Co to jest paper trading?",
+        "answer": "Symulacja inwestowania na danych rynkowych bez ryzyka kapitału — idealna do nauki."
+      }
     }
   }
 }

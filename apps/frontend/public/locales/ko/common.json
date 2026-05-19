@@ -536,7 +536,7 @@
         },
         "pro": {
           "body": "활성 투자자를 위한 전체 액세스.",
-          "cta": "Pro 선택",
+          "cta": "Get Pro",
           "features": [
             "모든 AI 모듈",
             "행동 코칭",
@@ -547,7 +547,7 @@
         },
         "proPlus": {
           "body": "파워 유저 및 자동화 워크플로용.",
-          "cta": "Pro+ 선택",
+          "cta": "Get Pro+",
           "features": [
             "Pro의 모든 기능",
             "API 액세스",
@@ -1390,6 +1390,78 @@
       "start": "시작하기 →",
       "next": "다음 →",
       "dashboard": "대시보드로 →"
+    }
+  },
+  "pricingPage": {
+    "seo": {
+      "title": "요금 — StockAI Pro",
+      "description": "Free, Pro $9/월, Pro+ $19/월. AI 투자 리서치."
+    },
+    "title": "플랜 선택",
+    "subtitle": "단계에 맞는 플랜을 선택하세요. 언제든 변경·해지 가능.",
+    "billing": {
+      "toggleLabel": "결제 주기",
+      "monthly": "월간",
+      "yearly": "연간",
+      "saveBadge": "절약",
+      "monthlyNote": "계정에서 언제든 플랜 변경 또는 해지.",
+      "yearlyNote": "연간 USD 결제 — 월간×12보다 저렴."
+    },
+    "signInHint": "이미 계정이 있으신가요?",
+    "signInLink": "로그인",
+    "signInHintSuffix": "후 원클릭 구독.",
+    "checkoutError": "결제를 시작할 수 없습니다. 잠시 후 다시 시도하세요.",
+    "cta": {
+      "getPro": "Get Pro",
+      "getProPlus": "Get Pro+",
+      "redirecting": "이동 중…",
+      "signIn": "구독하려면 로그인"
+    },
+    "plans": {
+      "billedMonthly": "월간 결제 (USD)",
+      "billedYearly": "연간 결제 (USD)",
+      "free": {
+        "tagline": "페이퍼 트레이딩과 기본 도구 — 카드 불필요.",
+        "cta": "무료로 시작"
+      },
+      "pro": {
+        "popular": "가장 인기",
+        "tagline": "활동적인 투자자에게 최적의 가성비."
+      },
+      "proPlus": {
+        "tagline": "전체 분석, API 액세스, 우선 지원."
+      }
+    },
+    "features": {
+      "paperTrading": "무위험 페이퍼 트레이딩",
+      "journal": "트레이드 저널 및 통계",
+      "premiumScanner": "프리미엄 시그널 스캐너",
+      "behavioralCoach": "AI 행동 코치",
+      "stressTests": "고급 스트레스 테스트",
+      "prioritySupport": "우선 지원"
+    },
+    "faq": {
+      "title": "FAQ",
+      "cancel": {
+        "question": "언제든 해지할 수 있나요?",
+        "answer": "네. 계정 설정에서 해지. 기간 종료까지 이용 가능."
+      },
+      "trial": {
+        "question": "무료 체험이 있나요?",
+        "answer": "Pro는 14일 전체 기능 체험 포함."
+      },
+      "payment": {
+        "question": "결제 수단은?",
+        "answer": "Stripe USD 결제. 주요 카드 및 로컬 방식."
+      },
+      "security": {
+        "question": "데이터는 안전한가요?",
+        "answer": "암호화, 접근 제한, 정기 보안 검토."
+      },
+      "paper": {
+        "question": "페이퍼 트레이딩이란?",
+        "answer": "실제 데이터로 자본 위험 없이 연습."
+      }
     }
   }
 }

@@ -573,7 +573,7 @@
         },
         "pro": {
           "body": "Full access for active investors.",
-          "cta": "Choose Pro",
+          "cta": "Get Pro",
           "features": [
             "All AI modules",
             "Behavioral coaching",
@@ -584,7 +584,7 @@
         },
         "proPlus": {
           "body": "For power users and automation workflows.",
-          "cta": "Choose Pro+",
+          "cta": "Get Pro+",
           "features": [
             "Everything in Pro",
             "API access",
@@ -1402,6 +1402,78 @@
       "start": "Let's go →",
       "next": "Next →",
       "dashboard": "Go to Dashboard →"
+    }
+  },
+  "pricingPage": {
+    "seo": {
+      "title": "Pricing — StockAI Pro",
+      "description": "Free, Pro $9/mo, Pro+ $19/mo. AI investment research for retail investors."
+    },
+    "title": "Choose your plan",
+    "subtitle": "Pick the plan that fits your stage. Upgrade, downgrade, or cancel anytime — no long-term lock-in.",
+    "billing": {
+      "toggleLabel": "Billing period",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "saveBadge": "Save",
+      "monthlyNote": "Switch plans or cancel anytime from your account.",
+      "yearlyNote": "Annual billing in USD — save vs paying monthly (Pro ~27%, Pro+ ~35%)."
+    },
+    "signInHint": "Already have an account?",
+    "signInLink": "Sign in",
+    "signInHintSuffix": "to subscribe with one click.",
+    "checkoutError": "Could not start checkout. Please try again in a moment.",
+    "cta": {
+      "getPro": "Get Pro",
+      "getProPlus": "Get Pro+",
+      "redirecting": "Redirecting…",
+      "signIn": "Sign in to subscribe"
+    },
+    "plans": {
+      "billedMonthly": "Billed monthly in USD",
+      "billedYearly": "Billed annually in USD",
+      "free": {
+        "tagline": "Start with paper trading and core tools — no credit card.",
+        "cta": "Start free"
+      },
+      "pro": {
+        "popular": "Most popular",
+        "tagline": "Best balance of price and power for active investors."
+      },
+      "proPlus": {
+        "tagline": "Full analytics stack, API access, and priority support."
+      }
+    },
+    "features": {
+      "paperTrading": "Risk-free paper trading",
+      "journal": "Trade journal and stats",
+      "premiumScanner": "Premium signal scanner",
+      "behavioralCoach": "AI behavioral coach",
+      "stressTests": "Advanced stress-test scenarios",
+      "prioritySupport": "Priority support"
+    },
+    "faq": {
+      "title": "FAQ",
+      "cancel": {
+        "question": "Can I cancel anytime?",
+        "answer": "Yes. Cancel from your account settings. Access stays active until the end of the billing period."
+      },
+      "trial": {
+        "question": "Is there a free trial?",
+        "answer": "Pro includes a 14-day trial so you can test full features before committing."
+      },
+      "payment": {
+        "question": "What payment methods do you accept?",
+        "answer": "Payments are processed by Stripe in USD. Major cards and local methods supported by Stripe."
+      },
+      "security": {
+        "question": "Is my data secure?",
+        "answer": "We use encryption in transit, least-privilege access, and regular security reviews."
+      },
+      "paper": {
+        "question": "What is paper trading?",
+        "answer": "Paper trading simulates investing on real market data without risking capital — ideal for practice."
+      }
     }
   }
 }

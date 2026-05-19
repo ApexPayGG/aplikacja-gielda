@@ -536,7 +536,7 @@
         },
         "pro": {
           "body": "アクティブな投資家向けのフルアクセス。",
-          "cta": "Proを選ぶ",
+          "cta": "Get Pro",
           "features": [
             "全AIモジュール",
             "行動コーチング",
@@ -547,7 +547,7 @@
         },
         "proPlus": {
           "body": "パワーユーザーと自動化ワークフロー向け。",
-          "cta": "Pro+を選ぶ",
+          "cta": "Get Pro+",
           "features": [
             "Proの全機能",
             "APIアクセス",
@@ -1390,6 +1390,78 @@
       "start": "始める →",
       "next": "次へ →",
       "dashboard": "ダッシュボードへ →"
+    }
+  },
+  "pricingPage": {
+    "seo": {
+      "title": "料金 — StockAI Pro",
+      "description": "Free、Pro $9/月、Pro+ $19/月。AI投資リサーチ。"
+    },
+    "title": "プランを選択",
+    "subtitle": "段階に合わせてプランを選べます。いつでも変更・解約可能。",
+    "billing": {
+      "toggleLabel": "請求サイクル",
+      "monthly": "月額",
+      "yearly": "年額",
+      "saveBadge": "お得",
+      "monthlyNote": "アカウントからいつでもプラン変更・解約。",
+      "yearlyNote": "年額USD請求 — 月額×12よりお得（Pro約27%、Pro+約35%）。"
+    },
+    "signInHint": "すでにアカウントをお持ちですか？",
+    "signInLink": "ログイン",
+    "signInHintSuffix": "してワンクリックで登録。",
+    "checkoutError": "チェックアウトを開始できませんでした。しばらくして再試行してください。",
+    "cta": {
+      "getPro": "Get Pro",
+      "getProPlus": "Get Pro+",
+      "redirecting": "リダイレクト中…",
+      "signIn": "ログインして登録"
+    },
+    "plans": {
+      "billedMonthly": "月額請求（USD）",
+      "billedYearly": "年額請求（USD）",
+      "free": {
+        "tagline": "ペーパートレードと基本ツール — クレジットカード不要。",
+        "cta": "無料で始める"
+      },
+      "pro": {
+        "popular": "人気No.1",
+        "tagline": "アクティブ投資家に最適なコスパ。"
+      },
+      "proPlus": {
+        "tagline": "フル分析、APIアクセス、優先サポート。"
+      }
+    },
+    "features": {
+      "paperTrading": "リスクなしペーパートレード",
+      "journal": "トレードジャーナルと統計",
+      "premiumScanner": "プレミアムシグナルスキャナー",
+      "behavioralCoach": "AI行動コーチ",
+      "stressTests": "高度なストレステスト",
+      "prioritySupport": "優先サポート"
+    },
+    "faq": {
+      "title": "FAQ",
+      "cancel": {
+        "question": "いつでも解約できますか？",
+        "answer": "はい。アカウント設定から解約。請求期間終了まで利用可能。"
+      },
+      "trial": {
+        "question": "無料トライアルはありますか？",
+        "answer": "Proは14日間のフルトライアル付き。"
+      },
+      "payment": {
+        "question": "支払い方法は？",
+        "answer": "StripeでUSD決済。主要カードとローカル方法。"
+      },
+      "security": {
+        "question": "データは安全ですか？",
+        "answer": "暗号化、アクセス制限、定期セキュリティレビュー。"
+      },
+      "paper": {
+        "question": "ペーパートレードとは？",
+        "answer": "実データで資金リスクなしのシミュレーション。"
+      }
     }
   }
 }

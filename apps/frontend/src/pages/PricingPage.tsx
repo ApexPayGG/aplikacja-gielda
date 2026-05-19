@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
+import { useAuth } from "../context/AuthContext";
 import { createStripeCheckoutSession } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
@@ -9,49 +11,28 @@ import { trackEvent } from "../utils/analytics";
 type BillingCycle = "monthly" | "yearly";
 type PaidPlan = "pro" | "pro_plus";
 
-type FeatureMatrixRow = {
-  feature: string;
-  free: boolean;
-  pro: boolean;
-  proPlus: boolean;
+const FEATURE_KEYS = [
+  "paperTrading",
+  "journal",
+  "premiumScanner",
+  "behavioralCoach",
+  "stressTests",
+  "prioritySupport",
+] as const;
+
+const PLAN_FEATURE_ACCESS: Record<(typeof FEATURE_KEYS)[number], { free: boolean; pro: boolean; proPlus: boolean }> = {
+  paperTrading: { free: true, pro: true, proPlus: true },
+  journal: { free: true, pro: true, proPlus: true },
+  premiumScanner: { free: false, pro: true, proPlus: true },
+  behavioralCoach: { free: false, pro: true, proPlus: true },
+  stressTests: { free: false, pro: false, proPlus: true },
+  prioritySupport: { free: false, pro: false, proPlus: true },
 };
 
-const planFeatures: FeatureMatrixRow[] = [
-  { feature: "Paper trading bez ryzyka", free: true, pro: true, proPlus: true },
-  { feature: "Dziennik transakcyjny i statystyki", free: true, pro: true, proPlus: true },
-  { feature: "Skaner sygnałów premium", free: false, pro: true, proPlus: true },
-  { feature: "AI coach behawioralny", free: false, pro: true, proPlus: true },
-  { feature: "Zaawansowane scenariusze stres testów", free: false, pro: false, proPlus: true },
-  { feature: "Priorytetowe wsparcie", free: false, pro: false, proPlus: true },
-];
-
-const faqItems = [
-  {
-    question: "Czy mogę anulować subskrypcję?",
-    answer: "Tak, subskrypcję możesz anulować w dowolnym momencie w panelu konta. Dostęp pozostaje aktywny do końca bieżącego okresu rozliczeniowego.",
-  },
-  {
-    question: "Czy jest trial?",
-    answer: "Dla planu Pro oferujemy 14-dniowy okres próbny. W tym czasie możesz przetestować pełną funkcjonalność planu.",
-  },
-  {
-    question: "Jakie metody płatności?",
-    answer: "Płatności obsługuje Stripe. Akceptujemy najpopularniejsze karty płatnicze oraz metody dostępne lokalnie przez Stripe.",
-  },
-  {
-    question: "Czy dane są bezpieczne?",
-    answer: "Stosujemy szyfrowanie transmisji, ograniczony dostęp do danych i regularne przeglądy bezpieczeństwa zgodne z dobrymi praktykami branżowymi.",
-  },
-  {
-    question: "Co to jest paper trading?",
-    answer: "Paper trading to symulacja inwestowania na danych rynkowych bez używania prawdziwych środków. Pozwala trenować strategię bez ryzyka finansowego.",
-  },
-];
-
-function formatPrice(plan: "free" | "pro" | "proPlus", billingCycle: BillingCycle): string {
-  if (plan === "free") return "0 zł / mies.";
-  if (plan === "pro") return billingCycle === "monthly" ? "49 zł / mies." : "490 zł / rok";
-  return billingCycle === "monthly" ? "99 zł / mies." : "990 zł / rok";
+function formatUsdPrice(plan: "free" | "pro" | "proPlus", billingCycle: BillingCycle): string {
+  if (plan === "free") return "$0/mo";
+  if (plan === "pro") return billingCycle === "monthly" ? "$9/mo" : "$79/yr";
+  return billingCycle === "monthly" ? "$19/mo" : "$149/yr";
 }
 
 function PlanFeatureList({
@@ -61,16 +42,18 @@ function PlanFeatureList({
   planKey: "free" | "pro" | "proPlus";
   textClassName: string;
 }) {
+  const { t } = useTranslation("common");
+
   return (
     <ul className={`mt-5 space-y-3 ${textClassName}`}>
-      {planFeatures.map((row) => {
-        const included = row[planKey];
+      {FEATURE_KEYS.map((featureKey) => {
+        const included = PLAN_FEATURE_ACCESS[featureKey][planKey];
         return (
-          <li key={row.feature} className="flex items-start gap-3 text-sm">
+          <li key={featureKey} className="flex items-start gap-3 text-sm">
             <span style={{ color: included ? colors.positive : colors.textMuted }} className="mt-0.5 font-semibold">
               {included ? "✓" : "✕"}
             </span>
-            <span>{row.feature}</span>
+            <span>{t(`pricingPage.features.${featureKey}`, { defaultValue: featureKey })}</span>
           </li>
         );
       })}
@@ -79,26 +62,82 @@ function PlanFeatureList({
 }
 
 export function PricingPage() {
+  const { t } = useTranslation("common");
+  const { token } = useAuth();
+  const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<PaidPlan | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
-  const pricingNote = useMemo(() => {
-    return billingCycle === "yearly" ? "Płatność roczna = 2 miesiące gratis względem planu miesięcznego." : "Zmieniaj plan w dowolnym momencie.";
-  }, [billingCycle]);
+  const isLoggedIn = Boolean(token);
+
+  const pricingNote = useMemo(
+    () =>
+      billingCycle === "yearly"
+        ? t("pricingPage.billing.yearlyNote", {
+            defaultValue: "Annual billing — save vs paying monthly (Pro ~27%, Pro+ ~35%).",
+          })
+        : t("pricingPage.billing.monthlyNote", {
+            defaultValue: "Switch plans or cancel anytime from your account.",
+          }),
+    [billingCycle, t],
+  );
+
+  const faqItems = useMemo(
+    () => [
+      {
+        question: t("pricingPage.faq.cancel.question", { defaultValue: "Can I cancel anytime?" }),
+        answer: t("pricingPage.faq.cancel.answer", {
+          defaultValue: "Yes. Cancel from your account settings. Access stays active until the end of the billing period.",
+        }),
+      },
+      {
+        question: t("pricingPage.faq.trial.question", { defaultValue: "Is there a free trial?" }),
+        answer: t("pricingPage.faq.trial.answer", {
+          defaultValue: "Pro includes a 14-day trial so you can test full features before committing.",
+        }),
+      },
+      {
+        question: t("pricingPage.faq.payment.question", { defaultValue: "What payment methods do you accept?" }),
+        answer: t("pricingPage.faq.payment.answer", {
+          defaultValue: "Payments are processed by Stripe (USD). Major cards and local methods supported by Stripe.",
+        }),
+      },
+      {
+        question: t("pricingPage.faq.security.question", { defaultValue: "Is my data secure?" }),
+        answer: t("pricingPage.faq.security.answer", {
+          defaultValue: "We use encryption in transit, least-privilege access, and regular security reviews.",
+        }),
+      },
+      {
+        question: t("pricingPage.faq.paper.question", { defaultValue: "What is paper trading?" }),
+        answer: t("pricingPage.faq.paper.answer", {
+          defaultValue:
+            "Paper trading simulates investing on real market data without risking capital — ideal for practice.",
+        }),
+      },
+    ],
+    [t],
+  );
 
   const handleCheckout = async (plan: PaidPlan): Promise<void> => {
+    setCheckoutError(null);
+
+    if (!isLoggedIn) {
+      navigate("/login", { state: { from: "/pricing" } });
+      return;
+    }
+
     const userId = typeof window !== "undefined" ? window.localStorage.getItem("userId")?.trim() ?? "" : "";
     if (!userId) {
-      window.location.href = "/login";
+      navigate("/login", { state: { from: "/pricing" } });
       return;
     }
 
     try {
       setCheckoutLoadingPlan(plan);
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("checkout_plan", plan);
-      }
+      window.localStorage.setItem("checkout_plan", plan);
       trackEvent("begin_checkout", { plan, billing: billingCycle });
       const { url } = await createStripeCheckoutSession({
         userId,
@@ -108,28 +147,56 @@ export function PricingPage() {
       window.location.href = url;
     } catch (error) {
       console.error("Failed to start Stripe checkout", error);
-      window.alert("Nie udało się rozpocząć checkoutu Stripe. Spróbuj ponownie za chwilę.");
+      setCheckoutError(
+        t("pricingPage.checkoutError", {
+          defaultValue: "Could not start checkout. Please try again in a moment.",
+        }),
+      );
     } finally {
       setCheckoutLoadingPlan(null);
     }
   };
 
+  const paidCtaLabel = (plan: PaidPlan): string => {
+    if (checkoutLoadingPlan === plan) {
+      return t("pricingPage.cta.redirecting", { defaultValue: "Redirecting…" });
+    }
+    if (!isLoggedIn) {
+      return t("pricingPage.cta.signIn", { defaultValue: "Sign in to subscribe" });
+    }
+    return plan === "pro"
+      ? t("pricingPage.cta.getPro", { defaultValue: "Get Pro" })
+      : t("pricingPage.cta.getProPlus", { defaultValue: "Get Pro+" });
+  };
+
   return (
     <div className="min-h-screen bg-bgSecondary text-textSecondary">
       <SEOHead
-        title="Cennik — StockAI Pro"
-        description="Free, Pro $9/mo, Pro+ $19/mo. AI investment research for retail investors."
+        title={t("pricingPage.seo.title", { defaultValue: "Pricing — StockAI Pro" })}
+        description={t("pricingPage.seo.description", {
+          defaultValue: "Free, Pro $9/mo, Pro+ $19/mo. AI investment research for retail investors.",
+        })}
       />
       <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
         <header className="text-center">
-          <h1 className="text-4xl font-bold text-textPrimary md:text-5xl">Wybierz swój plan</h1>
+          <h1 className="text-4xl font-bold text-textPrimary md:text-5xl">
+            {t("pricingPage.title", { defaultValue: "Choose your plan" })}
+          </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base text-textSecondary md:text-lg">
-            Dopasuj subskrypcję do etapu Twojego rozwoju tradera. Zawsze możesz zmienić plan lub zrezygnować bez zobowiązań długoterminowych.
+            {t("pricingPage.subtitle", {
+              defaultValue:
+                "Pick the plan that fits your stage. Upgrade, downgrade, or cancel anytime — no long-term lock-in.",
+            })}
           </p>
         </header>
 
         <div className="mt-8 flex flex-col items-center gap-3">
-          <div className="inline-flex rounded-xl border p-1" style={{ borderColor: colors.brandCyan }}>
+          <div
+            className="inline-flex rounded-xl border p-1"
+            style={{ borderColor: colors.brandCyan }}
+            role="group"
+            aria-label={t("pricingPage.billing.toggleLabel", { defaultValue: "Billing period" })}
+          >
             <button
               type="button"
               onClick={() => setBillingCycle("monthly")}
@@ -138,35 +205,68 @@ export function PricingPage() {
                 backgroundColor: billingCycle === "monthly" ? colors.brandCyan : "transparent",
                 color: billingCycle === "monthly" ? colors.brandDark : colors.textSecondary,
               }}
+              aria-pressed={billingCycle === "monthly"}
             >
-              Miesięcznie
+              {t("pricingPage.billing.monthly", { defaultValue: "Monthly" })}
             </button>
             <button
               type="button"
               onClick={() => setBillingCycle("yearly")}
-              className="rounded-lg px-5 py-2 text-sm font-semibold transition"
+              className="relative rounded-lg px-5 py-2 text-sm font-semibold transition"
               style={{
                 backgroundColor: billingCycle === "yearly" ? colors.brandCyan : "transparent",
                 color: billingCycle === "yearly" ? colors.brandDark : colors.textSecondary,
               }}
+              aria-pressed={billingCycle === "yearly"}
             >
-              Rocznie
+              {t("pricingPage.billing.yearly", { defaultValue: "Yearly" })}
+              <span
+                className="ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase"
+                style={{
+                  backgroundColor: billingCycle === "yearly" ? colors.brandDark : colors.positive,
+                  color: billingCycle === "yearly" ? colors.brandCyan : "#fff",
+                }}
+              >
+                {t("pricingPage.billing.saveBadge", { defaultValue: "Save" })}
+              </span>
             </button>
           </div>
-          <p className="text-sm text-textMuted">{pricingNote}</p>
+          <p className="text-center text-sm text-textMuted">{pricingNote}</p>
+          {!isLoggedIn ? (
+            <p className="text-center text-sm text-textSecondary">
+              {t("pricingPage.signInHint", {
+                defaultValue: "Already have an account?",
+              })}{" "}
+              <Link to="/login" className="font-semibold text-brandCyan hover:underline">
+                {t("pricingPage.signInLink", { defaultValue: "Sign in" })}
+              </Link>{" "}
+              {t("pricingPage.signInHintSuffix", { defaultValue: "to subscribe with one click." })}
+            </p>
+          ) : null}
+          {checkoutError ? <p className="text-center text-sm text-negative">{checkoutError}</p> : null}
         </div>
 
         <section className="mt-10 grid gap-6 md:grid-cols-3">
-          <article className="rounded-2xl border p-6 shadow-sm" style={{ backgroundColor: colors.bgPrimary, borderColor: colors.border }}>
+          <article
+            className="rounded-2xl border p-6 shadow-sm"
+            style={{ backgroundColor: colors.bgPrimary, borderColor: colors.border }}
+          >
             <h2 className="text-xl font-bold text-textPrimary">Free</h2>
-            <p className="mt-3 text-3xl font-bold text-brandDark">{formatPrice("free", billingCycle)}</p>
-            <p className="mt-3 text-sm text-textSecondary">Dla osób, które zaczynają i chcą trenować na koncie demonstracyjnym.</p>
+            <p className="mt-3 text-3xl font-bold text-brandDark">{formatUsdPrice("free", billingCycle)}</p>
+            <p className="mt-1 text-xs text-textMuted">
+              {t("pricingPage.plans.billedMonthly", { defaultValue: "Always free" })}
+            </p>
+            <p className="mt-3 text-sm text-textSecondary">
+              {t("pricingPage.plans.free.tagline", {
+                defaultValue: "Start with paper trading and core tools — no credit card.",
+              })}
+            </p>
             <PlanFeatureList planKey="free" textClassName="text-textSecondary" />
             <Link
               to="/register"
               className="mt-6 inline-flex w-full justify-center rounded-lg bg-brandDark px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brandMedium"
             >
-              Zacznij za darmo
+              {t("pricingPage.plans.free.cta", { defaultValue: "Start free" })}
             </Link>
             <EtoroCTAButton sourcePage="pricing_page" className="mt-3" />
           </article>
@@ -175,11 +275,20 @@ export function PricingPage() {
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-xl font-bold text-white">Pro</h2>
               <span className="rounded-full px-3 py-1 text-xs font-semibold text-white" style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
-                Najpopularniejszy
+                {t("pricingPage.plans.pro.popular", { defaultValue: "Most popular" })}
               </span>
             </div>
-            <p className="mt-3 text-3xl font-bold text-white">{formatPrice("pro", billingCycle)}</p>
-            <p className="mt-3 text-sm text-white/90">Najlepszy balans między ceną a możliwościami dla aktywnych traderów.</p>
+            <p className="mt-3 text-3xl font-bold text-white">{formatUsdPrice("pro", billingCycle)}</p>
+            <p className="mt-1 text-xs text-white/80">
+              {billingCycle === "yearly"
+                ? t("pricingPage.plans.billedYearly", { defaultValue: "Billed annually in USD" })
+                : t("pricingPage.plans.billedMonthly", { defaultValue: "Billed monthly in USD" })}
+            </p>
+            <p className="mt-3 text-sm text-white/90">
+              {t("pricingPage.plans.pro.tagline", {
+                defaultValue: "Best balance of price and power for active investors.",
+              })}
+            </p>
             <PlanFeatureList planKey="pro" textClassName="text-white/90" />
             <button
               type="button"
@@ -187,7 +296,7 @@ export function PricingPage() {
               disabled={checkoutLoadingPlan !== null}
               className="mt-6 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-brandDark transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {checkoutLoadingPlan === "pro" ? "Przekierowywanie..." : "Przejdź do Stripe Checkout"}
+              {paidCtaLabel("pro")}
             </button>
           </article>
 
@@ -199,8 +308,17 @@ export function PricingPage() {
             }}
           >
             <h2 className="text-xl font-bold text-white">Pro+</h2>
-            <p className="mt-3 text-3xl font-bold text-white">{formatPrice("proPlus", billingCycle)}</p>
-            <p className="mt-3 text-sm text-white/90">Dla najbardziej wymagających: pełny pakiet analityczny i priorytetowe wsparcie.</p>
+            <p className="mt-3 text-3xl font-bold text-white">{formatUsdPrice("proPlus", billingCycle)}</p>
+            <p className="mt-1 text-xs text-white/80">
+              {billingCycle === "yearly"
+                ? t("pricingPage.plans.billedYearly", { defaultValue: "Billed annually in USD" })
+                : t("pricingPage.plans.billedMonthly", { defaultValue: "Billed monthly in USD" })}
+            </p>
+            <p className="mt-3 text-sm text-white/90">
+              {t("pricingPage.plans.proPlus.tagline", {
+                defaultValue: "Full analytics stack, API access, and priority support.",
+              })}
+            </p>
             <PlanFeatureList planKey="proPlus" textClassName="text-white/90" />
             <button
               type="button"
@@ -208,19 +326,13 @@ export function PricingPage() {
               disabled={checkoutLoadingPlan !== null}
               className="mt-6 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-brandDark transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {checkoutLoadingPlan === "pro_plus" ? "Przekierowywanie..." : "Przejdź do Stripe Checkout"}
+              {paidCtaLabel("pro_plus")}
             </button>
-            <Link
-              to="/api-docs"
-              className="mt-3 inline-flex text-sm font-semibold text-white/90 underline decoration-white/50 underline-offset-4 transition hover:text-white"
-            >
-              API Documentation (Pro+ feature)
-            </Link>
           </article>
         </section>
 
         <section className="mt-16 rounded-2xl border border-border bg-bgPrimary p-6 md:p-8">
-          <h2 className="text-2xl font-bold text-textPrimary">FAQ</h2>
+          <h2 className="text-2xl font-bold text-textPrimary">{t("pricingPage.faq.title", { defaultValue: "FAQ" })}</h2>
           <div className="mt-6 divide-y divide-border">
             {faqItems.map((item, index) => {
               const isOpen = openFaqIndex === index;
@@ -230,6 +342,7 @@ export function PricingPage() {
                     type="button"
                     onClick={() => setOpenFaqIndex((prev) => (prev === index ? null : index))}
                     className="flex w-full items-center justify-between gap-4 py-2 text-left"
+                    aria-expanded={isOpen}
                   >
                     <span className="font-semibold text-textPrimary">{item.question}</span>
                     <span style={{ color: colors.brandCyan }} className="text-lg font-semibold">

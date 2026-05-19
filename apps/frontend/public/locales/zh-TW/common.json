@@ -536,7 +536,7 @@
         },
         "pro": {
           "body": "活躍投資人的完整存取。",
-          "cta": "選擇 Pro",
+          "cta": "Get Pro",
           "features": [
             "所有 AI 模組",
             "行為教練",
@@ -547,7 +547,7 @@
         },
         "proPlus": {
           "body": "進階使用者與自動化工作流程。",
-          "cta": "選擇 Pro+",
+          "cta": "Get Pro+",
           "features": [
             "Pro 全部功能",
             "API 存取",
@@ -1390,6 +1390,78 @@
       "start": "開始 →",
       "next": "下一步 →",
       "dashboard": "前往儀表板 →"
+    }
+  },
+  "pricingPage": {
+    "seo": {
+      "title": "定價 — StockAI Pro",
+      "description": "Free、Pro $9/月、Pro+ $19/月。AI 投資研究。"
+    },
+    "title": "選擇方案",
+    "subtitle": "依階段選擇方案，隨時升級、降級或取消。",
+    "billing": {
+      "toggleLabel": "計費週期",
+      "monthly": "月付",
+      "yearly": "年付",
+      "saveBadge": "省",
+      "monthlyNote": "可於帳戶中隨時變更或取消方案。",
+      "yearlyNote": "年付 USD — 比月付×12更划算。"
+    },
+    "signInHint": "已有帳戶？",
+    "signInLink": "登入",
+    "signInHintSuffix": "即可一鍵訂閱。",
+    "checkoutError": "無法開始結帳，請稍後再試。",
+    "cta": {
+      "getPro": "Get Pro",
+      "getProPlus": "Get Pro+",
+      "redirecting": "重新導向中…",
+      "signIn": "登入以訂閱"
+    },
+    "plans": {
+      "billedMonthly": "每月計費（USD）",
+      "billedYearly": "每年計費（USD）",
+      "free": {
+        "tagline": "模擬交易與基礎工具 — 無需信用卡。",
+        "cta": "免費開始"
+      },
+      "pro": {
+        "popular": "最受歡迎",
+        "tagline": "活躍投資人的最佳性價比。"
+      },
+      "proPlus": {
+        "tagline": "完整分析、API 存取與優先支援。"
+      }
+    },
+    "features": {
+      "paperTrading": "無風險模擬交易",
+      "journal": "交易日誌與統計",
+      "premiumScanner": "進階訊號掃描",
+      "behavioralCoach": "AI 行為教練",
+      "stressTests": "進階壓力測試情境",
+      "prioritySupport": "優先支援"
+    },
+    "faq": {
+      "title": "FAQ",
+      "cancel": {
+        "question": "可以隨時取消嗎？",
+        "answer": "可以。於帳戶設定取消，使用權至本期結束。"
+      },
+      "trial": {
+        "question": "有免費試用嗎？",
+        "answer": "Pro 含 14 天完整功能試用。"
+      },
+      "payment": {
+        "question": "支援哪些付款方式？",
+        "answer": "透過 Stripe 以 USD 付款，支援主要卡片與在地方式。"
+      },
+      "security": {
+        "question": "資料安全嗎？",
+        "answer": "傳輸加密、權限控管與定期安全審查。"
+      },
+      "paper": {
+        "question": "什麼是模擬交易？",
+        "answer": "以真實行情練習，不動用真實資金。"
+      }
     }
   }
 }
