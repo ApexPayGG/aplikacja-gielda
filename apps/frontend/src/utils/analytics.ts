@@ -8,12 +8,13 @@ declare global {
   }
 }
 
+const GA_MEASUREMENT_ID = "G-XE45H4W6BW";
 const GA_SCRIPT_SELECTOR = 'script[data-stockai-ga4="true"]';
 
-function getMeasurementId(): string | undefined {
+function getMeasurementId(): string {
   const raw = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim();
   if (!raw || raw === "G-PLACEHOLDER") {
-    return undefined;
+    return GA_MEASUREMENT_ID;
   }
   return raw;
 }
@@ -44,7 +45,9 @@ export function initializeGA4(): void {
       window.dataLayer?.push(args);
     };
 
-  const existingScript = document.querySelector(GA_SCRIPT_SELECTOR);
+  const existingScript =
+    document.querySelector(GA_SCRIPT_SELECTOR) ||
+    document.querySelector('script[src*="googletagmanager.com/gtag/js"]');
   if (!existingScript) {
     const script = document.createElement("script");
     script.async = true;
