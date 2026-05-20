@@ -86,7 +86,7 @@ export function HelpPage() {
   }, [searchValue]);
 
   return (
-    <div className="min-h-screen bg-bgSecondary px-4 py-10 text-textPrimary">
+    <div className="min-h-screen bg-bgSecondary px-4 py-10 text-white">
       <SEOHead
         title="Centrum pomocy | StockAI Pro"
         description="Najczęściej zadawane pytania, kategorie pomocy i kontakt do zespołu wsparcia StockAI Pro."
@@ -96,11 +96,11 @@ export function HelpPage() {
       <div className="mx-auto max-w-5xl space-y-8">
         <header className="rounded-2xl border bg-bgPrimary p-6 shadow-sm" style={{ borderColor: colors.border }}>
           <h1 className="text-3xl font-bold">Centrum pomocy</h1>
-          <p className="mt-2 text-sm text-textSecondary">
+          <p className="mt-2 glass-muted text-sm">
             Wszystko, czego potrzebujesz, żeby sprawnie korzystać z platformy StockAI Pro.
           </p>
 
-          <label htmlFor="help-search" className="mt-5 block text-sm font-medium text-textSecondary">
+          <label htmlFor="help-search" className="mt-5 block text-sm font-medium glass-muted">
             Szukaj w FAQ
           </label>
           <input
@@ -108,7 +108,7 @@ export function HelpPage() {
             value={searchValue}
             onChange={(event) => setSearchValue(event.target.value)}
             placeholder="Wpisz pytanie lub słowo kluczowe..."
-            className="mt-2 w-full rounded-xl border border-borderStrong bg-bgPrimary px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/30"
+            className="mt-2 w-full rounded-xl border border-white/20 bg-bgPrimary px-4 py-3 text-sm text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/30"
           />
         </header>
 
@@ -124,7 +124,7 @@ export function HelpPage() {
                 style={{ borderColor: colors.border }}
               >
                 <p className="text-2xl">{category.icon}</p>
-                <h3 className="mt-3 text-base font-semibold text-textPrimary">{category.title}</h3>
+                <h3 className="mt-3 text-base font-semibold text-white">{category.title}</h3>
               </article>
             ))}
           </div>
@@ -146,18 +146,18 @@ export function HelpPage() {
                     onClick={() => setOpenQuestion(isOpen ? null : item.question)}
                     aria-expanded={isOpen}
                   >
-                    <span className="font-medium text-textPrimary">{item.question}</span>
+                    <span className="font-medium text-white">{item.question}</span>
                     <span className="text-2xl leading-none" style={{ color: colors.brandCyan }} aria-hidden="true">
                       {isOpen ? "-" : "+"}
                     </span>
                   </button>
-                  {isOpen ? <p className="border-t px-5 py-4 text-sm text-textSecondary" style={{ borderColor: colors.border }}>{item.answer}</p> : null}
+                  {isOpen ? <p className="border-t px-5 py-4 glass-muted text-sm" style={{ borderColor: colors.border }}>{item.answer}</p> : null}
                 </article>
               );
             })}
 
             {filteredFaq.length === 0 ? (
-              <p className="rounded-xl border bg-bgPrimary px-4 py-3 text-sm text-textSecondary" style={{ borderColor: colors.border }}>
+              <p className="rounded-xl border bg-bgPrimary px-4 py-3 glass-muted text-sm" style={{ borderColor: colors.border }}>
                 Brak wyników dla podanego zapytania. Spróbuj użyć innego słowa kluczowego.
               </p>
             ) : null}
@@ -165,8 +165,8 @@ export function HelpPage() {
         </section>
 
         <section className="rounded-2xl border bg-bgPrimary p-6 text-center shadow-sm" style={{ borderColor: colors.border }}>
-          <h2 className="text-2xl font-semibold text-textPrimary">Nie znalazłeś odpowiedzi?</h2>
-          <p className="mt-2 text-sm text-textSecondary">
+          <h2 className="text-2xl font-semibold text-white">Nie znalazłeś odpowiedzi?</h2>
+          <p className="mt-2 glass-muted text-sm">
             Napisz do nas na{" "}
             <a href="mailto:support@stock-ai.pro" className="font-semibold underline" style={{ color: colors.brandDark }}>
               support@stock-ai.pro

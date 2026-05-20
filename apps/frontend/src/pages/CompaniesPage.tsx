@@ -9,7 +9,6 @@ import { CompanyCard } from "../components/CompanyCard";
 import type { Company } from "../services/api";
 import { getCompanyBySector, getDividendScreener } from "../services/api";
 import { useCompaniesFilter } from "../hooks/useCompaniesFilter";
-import { GlassPageShell } from "../components/behavioral-coach/GlassPageShell";
 import { GLASS_INNER_PANEL, GLASS_PAGE_SUBTITLE, GLASS_PAGE_TITLE } from "../components/behavioral-coach/glassStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -116,7 +115,7 @@ export function CompaniesPage() {
   }, [companies, applyFilters, filters.onlyDividendStocks, dividendSymbols]);
 
   return (
-    <GlassPageShell>
+    <div>
       <header className="mb-8">
         <h1 className={GLASS_PAGE_TITLE}>{t("home.title", { defaultValue: "Spółki" })}</h1>
         <p className={GLASS_PAGE_SUBTITLE}>
@@ -212,6 +211,6 @@ export function CompaniesPage() {
       </div>
 
       <AIBriefDrawer company={briefCompany} open={briefCompany !== null} onClose={() => setBriefCompany(null)} />
-    </GlassPageShell>
+    </div>
   );
 }

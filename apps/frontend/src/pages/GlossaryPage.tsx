@@ -112,15 +112,15 @@ export function GlossaryPage() {
 
       <div className="relative z-10 mx-auto max-w-6xl">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold text-brandDark">Słownik finansowy</h1>
-          <p className="mt-2 max-w-2xl text-sm text-textSecondary">
+          <h1 className="glass-page-title text-4xl">Słownik finansowy</h1>
+          <p className="mt-2 max-w-2xl glass-muted text-sm">
             Najważniejsze pojęcia inwestycyjne zebrane w jednym miejscu - szybko wyszukuj terminy i ucz się języka
             rynku.
           </p>
         </header>
 
-        <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-sm">
-          <label htmlFor="glossary-search" className="mb-2 block text-sm font-medium text-textSecondary">
+        <section className="glass-section rounded-2xl p-5 shadow-sm">
+          <label htmlFor="glossary-search" className="mb-2 block text-sm font-medium glass-muted">
             Szukaj terminu
           </label>
           <input
@@ -129,7 +129,7 @@ export function GlossaryPage() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Np. RSI, P/E, stop loss..."
-            className="w-full rounded-xl border border-border bg-bgPrimary px-4 py-3 text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/25"
+            className="w-full glass-panel rounded-xl px-4 py-3 text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/25"
           />
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -144,7 +144,7 @@ export function GlossaryPage() {
                   className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
                     isActive
                       ? "border-brandDark bg-brandDark text-white"
-                      : "border-borderStrong bg-bgPrimary text-textSecondary hover:border-brandDark hover:text-brandDark"
+                      : "border-white/20 bg-bgPrimary glass-muted hover:border-brandDark hover:text-white"
                   }`}
                 >
                   {category}
@@ -156,21 +156,21 @@ export function GlossaryPage() {
 
         <section className="mt-8 space-y-8">
           {alphabet.length === 0 ? (
-            <p className="rounded-xl border border-border bg-bgPrimary px-4 py-3 text-sm text-textSecondary">
+            <p className="glass-panel rounded-xl px-4 py-3 glass-muted text-sm">
               Brak wyników dla podanych filtrów.
             </p>
           ) : (
             alphabet.map((letter) => (
               <div key={letter}>
-                <h2 className="mb-3 text-lg font-semibold text-brandDark">{letter}</h2>
+                <h2 className="mb-3 text-lg font-semibold text-white">{letter}</h2>
                 <div className="grid gap-3 md:grid-cols-2">
                   {groupedEntries[letter].map((entry) => (
                     <article
                       key={entry.term}
-                      className="rounded-xl border border-border bg-bgPrimary p-4 shadow-[0_6px_20px_rgba(13,13,26,0.06)]"
+                      className="glass-panel rounded-xl p-4 shadow-[0_6px_20px_rgba(13,13,26,0.06)]"
                     >
-                      <h3 className="text-base font-bold text-brandDark">{entry.term}</h3>
-                      <p className="mt-2 text-sm leading-6 text-textSecondary">{entry.definition}</p>
+                      <h3 className="text-base font-bold text-white">{entry.term}</h3>
+                      <p className="mt-2 text-sm leading-6 glass-muted">{entry.definition}</p>
                     </article>
                   ))}
                 </div>

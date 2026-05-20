@@ -14,6 +14,7 @@ import { useAuth } from "./context/AuthContext";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { initializeGA4 } from "./utils/analytics";
 import { getCookieConsent, type CookieConsentType } from "./utils/cookieConsent";
+import { GlassAmbient } from "./components/behavioral-coach/GlassAmbient";
 import { hasCompletedOnboarding } from "./utils/onboarding";
 
 function lazyNamed<TModule extends Record<string, unknown>, TKey extends keyof TModule>(
@@ -122,13 +123,7 @@ export default function App() {
   const onboardingCompleted = hasCompletedOnboarding();
   const defaultAuthenticatedRoute = onboardingCompleted ? "/dashboard" : "/onboarding";
   const inOnboarding = location.pathname.startsWith("/onboarding");
-  const glassShellPage =
-    location.pathname.startsWith("/dashboard") ||
-    location.pathname.startsWith("/behavioral-coach") ||
-    location.pathname.startsWith("/companies") ||
-    location.pathname === "/signals" ||
-    location.pathname.startsWith("/paper-trading") ||
-    location.pathname.startsWith("/position-size");
+  const glassApp = Boolean(token) && !inOnboarding;
   const showTopNavigation = token && !inOnboarding;
   const showFloatingEmotionalWidget = token && !location.pathname.startsWith("/dashboard") && !inOnboarding;
   useKeyboardShortcuts();
@@ -140,8 +135,9 @@ export default function App() {
   }, [cookieConsent]);
 
   return (
-    <div className={`app-shell min-h-screen ${glassShellPage ? "bg-[#0D0D1A]" : ""}`}>
-      {showTopNavigation ? <AppNavBar /> : null}
+    <div className={`app-shell min-h-screen ${glassApp ? "glass-app" : ""}`}>
+      {glassApp ? <GlassAmbient /> : null}
+      {showTopNavigation ? <AppNavBar glass /> : null}
       {showFloatingEmotionalWidget ? <EmotionalStateWidget /> : null}
 
       <main className={`relative z-10 ${token ? "pb-16 md:pb-0" : ""}`}>

@@ -162,7 +162,7 @@ export function InsiderMirrorPage() {
           </p>
         </header>
 
-        <section className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <section className="rounded-2xl border p-5 glass-section">
           <form onSubmit={onSubmit} className="flex flex-col gap-3 md:flex-row">
             <input
               value={symbolInput}
@@ -200,7 +200,7 @@ export function InsiderMirrorPage() {
 
         {!loading && !error && result ? (
           <section className="mt-6 space-y-6">
-            <div className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+            <div className="rounded-2xl border p-5 glass-section">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="text-2xl font-semibold" style={{ color: colors.brandDark }}>
                   {result.symbol}
@@ -238,7 +238,7 @@ export function InsiderMirrorPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+            <div className="rounded-2xl border p-5 glass-section">
               <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
                 {t("insider.transactionsTitle", { defaultValue: "Transakcje insiderów" })}
               </h3>
@@ -311,7 +311,7 @@ export function InsiderMirrorPage() {
               )}
             </div>
 
-            <div className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+            <div className="rounded-2xl border p-5 glass-section">
               <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
                 {t("insider.topInsiders", { defaultValue: "Top insiders" })}
               </h3>
@@ -322,7 +322,7 @@ export function InsiderMirrorPage() {
               ) : (
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   {topInsiders.map((insider) => (
-                    <article key={insider.name} className="rounded-xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+                    <article key={insider.name} className="rounded-xl border p-4 glass-panel">
                       <div className="flex items-center gap-3">
                         <span
                           className="inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"

@@ -95,6 +95,84 @@ a {
     var(--bg-primary);
 }
 
+/* Logged-in app: dark glass theme (all authenticated + browsed routes) */
+.glass-app {
+  color-scheme: dark;
+  --bg-primary: rgb(45 10 107 / 0.14);
+  --bg-secondary: rgb(255 255 255 / 0.06);
+  --bg-tertiary: rgb(255 255 255 / 0.1);
+  --text-primary: #ffffff;
+  --text-secondary: rgb(255 255 255 / 0.65);
+  --text-muted: rgb(255 255 255 / 0.5);
+  --border: rgb(255 255 255 / 0.1);
+  --border-strong: rgb(255 255 255 / 0.18);
+  background: linear-gradient(180deg, #0d0d1a 0%, rgb(26 5 56 / 0.92) 45%, #0d0d1a 100%);
+  color: rgb(255 255 255 / 0.9);
+}
+
+.glass-app h1,
+.glass-app h2,
+.glass-app h3,
+.glass-app h4,
+.glass-app h5,
+.glass-app h6 {
+  color: #ffffff;
+}
+
+.glass-app .glass-page-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.glass-app .glass-muted {
+  color: rgb(255 255 255 / 0.6);
+}
+
+.glass-app .glass-section {
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: linear-gradient(135deg, rgb(45 10 107 / 0.22), rgb(0 201 212 / 0.06));
+  box-shadow: 0 8px 32px rgb(45 10 107 / 0.14);
+  backdrop-filter: blur(12px);
+}
+
+.glass-app .glass-panel {
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.glass-app .glass-stat {
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.08), rgb(45 10 107 / 0.22));
+  backdrop-filter: blur(10px);
+}
+
+.glass-app input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.glass-app select,
+.glass-app textarea {
+  border-color: rgb(255 255 255 / 0.15) !important;
+  background: rgb(255 255 255 / 0.05) !important;
+  color: #ffffff !important;
+}
+
+.glass-app input::placeholder,
+.glass-app textarea::placeholder {
+  color: rgb(255 255 255 / 0.4);
+}
+
+.glass-app option {
+  background: #1a0538;
+  color: #ffffff;
+}
+
+.glass-nav-bar {
+  border-bottom: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(13 13 26 / 0.88);
+  box-shadow: 0 4px 24px rgb(45 10 107 / 0.2);
+  backdrop-filter: blur(16px);
+}
+
 .glass-nav {
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border);

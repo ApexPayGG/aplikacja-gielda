@@ -114,14 +114,14 @@ export function MirrorTradingPage() {
   const activeFollowing = useMemo(() => following.filter((r) => r.active), [following]);
 
   return (
-    <div className="min-h-screen bg-bgSecondary px-4 py-10 text-textPrimary">
+    <div className="min-h-screen bg-bgSecondary px-4 py-10 text-white">
       <div className="mx-auto max-w-6xl space-y-8">
         <header
-          className="rounded-3xl border border-border bg-bgPrimary p-6 shadow-[0_18px_40px_rgba(45,10,107,0.1)]"
+          className="glass-section rounded-3xl p-6 shadow-[0_18px_40px_rgba(45,10,107,0.1)]"
           style={{ background: `linear-gradient(120deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
         >
-          <h1 className="text-3xl font-bold text-brandDark">Mirror Trading</h1>
-          <p className="mt-2 text-sm text-textSecondary">{t("mirror.subtitle")}</p>
+          <h1 className="glass-page-title text-3xl">Mirror Trading</h1>
+          <p className="mt-2 glass-muted text-sm">{t("mirror.subtitle")}</p>
         </header>
 
         {error ? (
@@ -130,18 +130,18 @@ export function MirrorTradingPage() {
           </div>
         ) : null}
 
-        <section className="rounded-2xl border border-border bg-bgPrimary p-6 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
-          <h2 className="mb-4 text-xl font-semibold text-brandDark">Twoje aktywne mirror</h2>
+        <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+          <h2 className="mb-4 text-xl font-semibold text-white">Twoje aktywne mirror</h2>
           {loading ? (
-            <p className="text-sm text-textSecondary">{t("common.loading")}</p>
+            <p className="glass-muted text-sm">{t("common.loading")}</p>
           ) : activeFollowing.length === 0 ? (
-            <p className="text-sm text-textMuted">{t("common.noData")}</p>
+            <p className="text-sm text-white/50">{t("common.noData")}</p>
           ) : (
             <ul className="grid gap-4 md:grid-cols-2">
               {activeFollowing.map((row) => (
                 <li
                   key={row.traderId}
-                  className="rounded-2xl border border-border bg-bgPrimary p-4 shadow-[0_12px_26px_rgba(45,10,107,0.07)]"
+                  className="glass-section rounded-2xl p-4 shadow-[0_12px_26px_rgba(45,10,107,0.07)]"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -152,8 +152,8 @@ export function MirrorTradingPage() {
                         {traderInitials(row.traderId)}
                       </div>
                       <div>
-                        <p className="font-mono text-sm font-semibold text-brandDark">{row.traderId}</p>
-                        <p className="mt-1 text-xs text-textSecondary">
+                        <p className="font-mono text-sm font-semibold text-white">{row.traderId}</p>
+                        <p className="mt-1 text-xs glass-muted">
                           {t("mirror.winRate")}: {row.winRate.toFixed(1)}% · {t("mirror.totalTrades")}:{" "}
                           {row.totalTrades}
                         </p>
@@ -164,7 +164,7 @@ export function MirrorTradingPage() {
                     </span>
                   </div>
                   <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-sm font-semibold text-textPrimary">
+                    <p className="text-sm font-semibold text-white">
                       Returns:{" "}
                       <span className={readReturnsPct(row) >= 0 ? "text-positive" : "text-negative"}>
                         {formatSignedPct(readReturnsPct(row))}
@@ -185,12 +185,12 @@ export function MirrorTradingPage() {
           )}
         </section>
 
-        <section className="rounded-2xl border border-border bg-bgPrimary p-6 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
-          <h2 className="mb-4 text-xl font-semibold text-brandDark">Top traderzy</h2>
+        <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+          <h2 className="mb-4 text-xl font-semibold text-white">Top traderzy</h2>
           {loading ? (
-            <p className="text-sm text-textSecondary">{t("common.loading")}</p>
+            <p className="glass-muted text-sm">{t("common.loading")}</p>
           ) : topTraders.length === 0 ? (
-            <p className="text-sm text-textMuted">{t("mirror.noTopTraders")}</p>
+            <p className="text-sm text-white/50">{t("mirror.noTopTraders")}</p>
           ) : (
             <ul className="grid gap-4 md:grid-cols-2">
               {topTraders.map((tr) => {
@@ -201,7 +201,7 @@ export function MirrorTradingPage() {
                 return (
                   <li
                     key={tr.userId}
-                    className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_12px_26px_rgba(45,10,107,0.07)]"
+                    className="glass-section rounded-2xl p-5 shadow-[0_12px_26px_rgba(45,10,107,0.07)]"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
@@ -212,25 +212,25 @@ export function MirrorTradingPage() {
                           {traderInitials(tr.userId)}
                         </div>
                         <div>
-                          <p className="font-mono text-sm font-semibold text-brandDark">{tr.userId}</p>
-                          <p className="mt-1 text-xs text-textSecondary">
+                          <p className="font-mono text-sm font-semibold text-white">{tr.userId}</p>
+                          <p className="mt-1 text-xs glass-muted">
                             {t("mirror.totalTrades")}: {tr.totalTrades} · {t("mirror.followers")}: {tr.followers}
                           </p>
                         </div>
                       </div>
-                      <span className="rounded-full border border-brandDark/15 bg-brandDark/10 px-2.5 py-1 text-xs font-semibold text-brandDark">
+                      <span className="rounded-full border border-brandDark/15 bg-brandDark/10 px-2.5 py-1 text-xs font-semibold text-white">
                         {t("mirror.winRate")}: {tr.winRate.toFixed(1)}%
                       </span>
                     </div>
                     <div className="mt-4 flex items-center justify-between gap-3">
-                      <p className="text-sm font-semibold text-textPrimary">
+                      <p className="text-sm font-semibold text-white">
                         Returns:{" "}
                         <span className={returnsPct >= 0 ? "text-positive" : "text-negative"}>
                           {formatSignedPct(returnsPct)}
                         </span>
                       </p>
                       {isSelf ? (
-                        <span className="rounded-full border border-border bg-bgSecondary px-3 py-1 text-xs font-semibold text-textSecondary">
+                        <span className="rounded-full glass-panel border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold glass-muted">
                           {t("mirror.itsYou")}
                         </span>
                       ) : isFollowing ? (
@@ -238,7 +238,7 @@ export function MirrorTradingPage() {
                           type="button"
                           disabled={busy}
                           onClick={() => void onUnfollow(tr.userId)}
-                          className="rounded-lg border border-brandDark/20 bg-bgSecondary px-3 py-1.5 text-sm font-semibold text-brandDark transition hover:border-brandDark/35 disabled:opacity-50"
+                          className="rounded-lg border border-brandDark/20 bg-bgSecondary px-3 py-1.5 text-sm font-semibold text-white transition hover:border-brandDark/35 disabled:opacity-50"
                         >
                           {busy ? t("common.loading") : "Mirroring"}
                         </button>

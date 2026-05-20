@@ -51,34 +51,34 @@ export function ContactPage() {
     >
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-textPrimary md:text-5xl">Kontakt</h1>
-          <p className="mt-3 max-w-2xl text-base text-textSecondary md:text-lg">
+          <h1 className="text-4xl font-bold text-white md:text-5xl">Kontakt</h1>
+          <p className="mt-3 max-w-2xl text-base glass-muted md:text-lg">
             Masz pytanie o StockAI Pro? Napisz do nas — wrócimy z odpowiedzią maksymalnie w 24h.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <section className="rounded-3xl border border-border bg-bgPrimary p-6 shadow-sm md:p-8">
-            <h2 className="text-xl font-semibold text-textPrimary">Informacje kontaktowe</h2>
+          <section className="glass-section rounded-3xl p-6 shadow-sm md:p-8">
+            <h2 className="text-xl font-semibold text-white">Informacje kontaktowe</h2>
             <div className="mt-6 space-y-5">
               <div>
-                <p className="text-sm font-semibold text-textPrimary">Email</p>
-                <a href="mailto:support@stock-ai.pro" className="mt-1 inline-block text-sm text-brandDark hover:underline">
+                <p className="text-sm font-semibold text-white">Email</p>
+                <a href="mailto:support@stock-ai.pro" className="mt-1 inline-block text-sm text-white hover:underline">
                   support@stock-ai.pro
                 </a>
               </div>
               <div>
-                <p className="text-sm font-semibold text-textPrimary">Czas odpowiedzi</p>
-                <p className="mt-1 text-sm text-textSecondary">Odpowiadamy w ciągu 24h</p>
+                <p className="text-sm font-semibold text-white">Czas odpowiedzi</p>
+                <p className="mt-1 glass-muted text-sm">Odpowiadamy w ciągu 24h</p>
               </div>
               <div>
-                <p className="text-sm font-semibold text-textPrimary">Social links</p>
+                <p className="text-sm font-semibold text-white">Social links</p>
                 <div className="mt-2 flex flex-wrap gap-3 text-sm">
                   <a
                     href="https://www.linkedin.com/company/stock-ai-pro"
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-lg border border-border px-3 py-1.5 text-textSecondary transition hover:border-brandDark hover:text-brandDark"
+                    className="rounded-lg border border-white/10 px-3 py-1.5 glass-muted transition hover:border-brandDark hover:text-white"
                   >
                     LinkedIn
                   </a>
@@ -86,7 +86,7 @@ export function ContactPage() {
                     href="https://x.com/stockaipro"
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-lg border border-border px-3 py-1.5 text-textSecondary transition hover:border-brandDark hover:text-brandDark"
+                    className="rounded-lg border border-white/10 px-3 py-1.5 glass-muted transition hover:border-brandDark hover:text-white"
                   >
                     X
                   </a>
@@ -94,7 +94,7 @@ export function ContactPage() {
                     href="https://github.com/stock-ai-pro"
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-lg border border-border px-3 py-1.5 text-textSecondary transition hover:border-brandDark hover:text-brandDark"
+                    className="rounded-lg border border-white/10 px-3 py-1.5 glass-muted transition hover:border-brandDark hover:text-white"
                   >
                     GitHub
                   </a>
@@ -103,11 +103,11 @@ export function ContactPage() {
             </div>
           </section>
 
-          <section className="rounded-3xl border border-border bg-bgPrimary p-6 shadow-sm md:p-8">
-            <h2 className="text-xl font-semibold text-textPrimary">Napisz do nas</h2>
+          <section className="glass-section rounded-3xl p-6 shadow-sm md:p-8">
+            <h2 className="text-xl font-semibold text-white">Napisz do nas</h2>
             <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="contact-name" className="mb-1 block text-sm font-medium text-textPrimary">
+                <label htmlFor="contact-name" className="mb-1 block text-sm font-medium text-white">
                   Imię i nazwisko
                 </label>
                 <input
@@ -116,12 +116,12 @@ export function ContactPage() {
                   required
                   value={name}
                   onChange={(event) => setName(event.target.value)}
-                  className="w-full rounded-lg border border-border px-4 py-2.5 text-sm text-textPrimary outline-none transition focus:border-brandDark focus:ring-2 focus:ring-brandDark/20"
+                  className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-sm text-white outline-none transition focus:border-brandDark focus:ring-2 focus:ring-brandDark/20"
                 />
               </div>
 
               <div>
-                <label htmlFor="contact-email" className="mb-1 block text-sm font-medium text-textPrimary">
+                <label htmlFor="contact-email" className="mb-1 block text-sm font-medium text-white">
                   Email
                 </label>
                 <input
@@ -130,12 +130,12 @@ export function ContactPage() {
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="w-full rounded-lg border border-border px-4 py-2.5 text-sm text-textPrimary outline-none transition focus:border-brandDark focus:ring-2 focus:ring-brandDark/20"
+                  className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-sm text-white outline-none transition focus:border-brandDark focus:ring-2 focus:ring-brandDark/20"
                 />
               </div>
 
               <div>
-                <label htmlFor="contact-subject" className="mb-1 block text-sm font-medium text-textPrimary">
+                <label htmlFor="contact-subject" className="mb-1 block text-sm font-medium text-white">
                   Temat
                 </label>
                 <select
@@ -143,7 +143,7 @@ export function ContactPage() {
                   required
                   value={subject}
                   onChange={(event) => setSubject(event.target.value as ContactSubject)}
-                  className="w-full rounded-lg border border-border bg-bgPrimary px-4 py-2.5 text-sm text-textPrimary outline-none transition focus:border-brandDark focus:ring-2 focus:ring-brandDark/20"
+                  className="w-full rounded-lg glass-panel border border-white/10 px-4 py-2.5 text-sm text-white outline-none transition focus:border-brandDark focus:ring-2 focus:ring-brandDark/20"
                 >
                   {SUBJECT_OPTIONS.map((option) => (
                     <option key={option} value={option}>
@@ -154,7 +154,7 @@ export function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="contact-message" className="mb-1 block text-sm font-medium text-textPrimary">
+                <label htmlFor="contact-message" className="mb-1 block text-sm font-medium text-white">
                   Wiadomość
                 </label>
                 <textarea
@@ -164,7 +164,7 @@ export function ContactPage() {
                   rows={6}
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
-                  className="w-full rounded-lg border border-border px-4 py-2.5 text-sm text-textPrimary outline-none transition focus:border-brandDark focus:ring-2 focus:ring-brandDark/20"
+                  className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-sm text-white outline-none transition focus:border-brandDark focus:ring-2 focus:ring-brandDark/20"
                 />
               </div>
 

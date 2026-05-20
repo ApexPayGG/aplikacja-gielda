@@ -936,8 +936,7 @@ export function PaperTradingPage() {
 
         {openTradePanelVisible ? (
           <section
-            className="rounded-2xl border p-4 shadow-sm"
-            style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+            className="glass-section rounded-2xl p-4 shadow-sm"
           >
             <form onSubmit={onOpenTrade} className="grid gap-3 md:grid-cols-6">
               <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
@@ -1049,7 +1048,7 @@ export function PaperTradingPage() {
           </section>
         ) : null}
 
-        <section className="rounded-2xl border shadow-sm" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <section className="glass-section rounded-2xl p-4 shadow-sm sm:p-5">
           <div
             className="flex items-center justify-between border-b px-4 py-3"
             style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
@@ -1172,7 +1171,7 @@ export function PaperTradingPage() {
           )}
         </section>
 
-        <section className="rounded-2xl border shadow-sm" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <section className="glass-section rounded-2xl p-4 shadow-sm sm:p-5">
           <div
             className="flex items-center justify-between border-b px-4 py-3"
             style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}

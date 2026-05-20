@@ -229,7 +229,7 @@ export function AlphaCalendarPage() {
   const naDate = t("common.notAvailable");
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary, color: colors.textPrimary }}>
+    <div className="min-h-screen">
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
         <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="space-y-2">
@@ -243,7 +243,7 @@ export function AlphaCalendarPage() {
               {usingMock ? t("common.apiMockBadge") : t("common.apiLiveBadge")}
             </div>
           </div>
-          <div className="inline-flex items-center rounded-2xl border p-1.5" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+          <div className="inline-flex items-center rounded-2xl border p-1.5 glass-panel">
             {(["MONTH", "WEEK"] as const).map((view) => {
               const active = mode === view;
               return (
@@ -279,7 +279,7 @@ export function AlphaCalendarPage() {
 
         {calendarLoading ? (
           <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(280px,1fr)]">
-            <div className="space-y-4 rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+            <div className="space-y-4 rounded-2xl border p-5 glass-panel">
               <div className="h-7 w-1/3 animate-pulse rounded" style={{ backgroundColor: colors.bgTertiary }} />
               <div className="grid grid-cols-7 gap-3">
                 {Array.from({ length: 14 }).map((_, idx) => (
@@ -287,14 +287,14 @@ export function AlphaCalendarPage() {
                 ))}
               </div>
             </div>
-            <div className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+            <div className="rounded-2xl border p-5 glass-panel">
               <div className="mb-4 h-6 w-1/2 animate-pulse rounded" style={{ backgroundColor: colors.bgTertiary }} />
               <div className="h-44 animate-pulse rounded-xl" style={{ backgroundColor: colors.bgTertiary }} />
             </div>
           </div>
         ) : (
           <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(300px,1fr)]">
-            <section className="space-y-4 rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+            <section className="space-y-4 rounded-2xl border p-5 glass-panel">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-lg font-semibold capitalize" style={{ color: colors.brandDark }}>
                   {monthLabel}
@@ -373,7 +373,7 @@ export function AlphaCalendarPage() {
               </div>
             </section>
 
-            <aside className="space-y-4 rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+            <aside className="space-y-4 rounded-2xl border p-5 glass-section">
               <div>
                 <h2 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
                   Selected Day
@@ -394,7 +394,7 @@ export function AlphaCalendarPage() {
                     const typedMeta = probabilityWindowTypeMeta[typedWindow];
                     const probability = normalizeProbability(windowItem.probabilityScore);
                     return (
-                      <article key={`${windowItem.ticker}-${windowItem.type}-${idx}`} className="rounded-xl border p-3" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+                      <article key={`${windowItem.ticker}-${windowItem.type}-${idx}`} className="rounded-xl border p-3 glass-panel">
                         <div className="flex items-center justify-between gap-2">
                           <h3 className="text-sm font-bold" style={{ color: colors.brandDark }}>
                             {windowItem.ticker}
@@ -426,7 +426,7 @@ export function AlphaCalendarPage() {
           </div>
         )}
 
-        <section className="rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <section className="rounded-2xl border p-4 glass-section">
           <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
             Legend
           </h2>

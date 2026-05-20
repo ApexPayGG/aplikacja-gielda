@@ -229,7 +229,7 @@ export function AlpacaPage() {
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <article className="rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+          <article className="rounded-2xl border p-4 glass-section">
             <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Portfolio value
             </p>
@@ -237,7 +237,7 @@ export function AlpacaPage() {
               {loading ? "..." : formatCurrency(portfolioValue, "USD")}
             </p>
           </article>
-          <article className="rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+          <article className="rounded-2xl border p-4 glass-section">
             <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Buying power
             </p>
@@ -245,7 +245,7 @@ export function AlpacaPage() {
               {loading ? "..." : formatCurrency(buyingPower, "USD")}
             </p>
           </article>
-          <article className="rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+          <article className="rounded-2xl border p-4 glass-section">
             <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Day P&L
             </p>

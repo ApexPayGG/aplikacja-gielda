@@ -245,7 +245,7 @@ export function CrowdWisdomPage() {
               <SentimentCard title="Retail sentiment" sentiment={retailSentiment} />
               <SentimentCard title="Insider sentiment" sentiment={insiderSentiment} />
 
-              <article className="rounded-xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+              <article className="rounded-xl border p-4 glass-panel">
                 <p className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
                   Divergence
                 </p>
@@ -264,7 +264,7 @@ export function CrowdWisdomPage() {
           </section>
         ) : null}
 
-        <section className="mt-6 rounded-2xl border p-5 md:p-6" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <section className="mt-6 rounded-2xl border p-5 md:p-6 glass-section">
           <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
             {t("crowdwisdom.topDivergence", { defaultValue: "Spółki z największą dywergencją" })}
           </h3>
@@ -332,7 +332,7 @@ function SentimentCard(props: {
 }) {
   const toneColor = props.sentiment.tone === "positive" ? colors.positive : colors.negative;
   return (
-    <article className="rounded-xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+    <article className="rounded-xl border p-4 glass-panel">
       <p className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
         {props.title}
       </p>

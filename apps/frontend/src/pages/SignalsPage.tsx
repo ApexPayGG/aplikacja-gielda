@@ -12,7 +12,6 @@ import { useSignalsFilter } from "../hooks/useSignalsFilter";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { BrandLogo, BRAND_LOGO_SRC } from "../components/BrandLogo";
-import { GlassPageShell } from "../components/behavioral-coach/GlassPageShell";
 import {
   GLASS_BTN_PRIMARY,
   GLASS_INNER_PANEL,
@@ -278,7 +277,7 @@ export function SignalsPage() {
   };
 
   return (
-    <GlassPageShell maxWidth="max-w-6xl">
+    <div>
         <header className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
             <h1 className={GLASS_PAGE_TITLE}>Sygnały</h1>
@@ -383,6 +382,6 @@ export function SignalsPage() {
           </div>
         </div>
       ) : null}
-    </GlassPageShell>
+    </div>
   );
 }

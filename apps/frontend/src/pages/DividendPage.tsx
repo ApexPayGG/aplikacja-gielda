@@ -202,7 +202,7 @@ export function DividendPage() {
           <ExportButton endpoint="/export/dividend" userId={user?.id} label="Eksportuj dywidendy" />
         </header>
 
-        <section className="rounded-2xl border p-5 shadow-sm" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <section className="rounded-2xl border p-5 shadow-sm glass-section">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <label className="text-sm">
               <span className="font-semibold" style={{ color: colors.textSecondary }}>
@@ -285,7 +285,7 @@ export function DividendPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border shadow-sm" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <section className="rounded-2xl border shadow-sm glass-section">
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
               <thead style={{ backgroundColor: colors.bgTertiary, color: colors.textSecondary }}>

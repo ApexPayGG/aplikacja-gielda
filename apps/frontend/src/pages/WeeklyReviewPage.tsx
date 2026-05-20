@@ -134,13 +134,13 @@ export function WeeklyReviewPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-10 text-textPrimary">
+    <div className="mx-auto max-w-5xl space-y-8 px-4 py-10 text-white">
       <header
-        className="rounded-3xl border border-border bg-bgPrimary p-6 shadow-[0_16px_40px_rgba(45,10,107,0.08)]"
+        className="glass-section rounded-3xl p-6 shadow-[0_16px_40px_rgba(45,10,107,0.08)]"
         style={{ background: `linear-gradient(120deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
       >
-        <h1 className="text-3xl font-bold text-brandDark">Weekly Review</h1>
-        <p className="mt-2 text-sm text-textSecondary">{t("weekly.subtitle")}</p>
+        <h1 className="glass-page-title text-3xl">Weekly Review</h1>
+        <p className="mt-2 glass-muted text-sm">{t("weekly.subtitle")}</p>
         <div className="mt-4 inline-flex items-center rounded-full px-4 py-1.5 text-xs font-semibold text-white" style={{ backgroundColor: colors.brandDark }}>
           {t("weekly.weekOf")}: {weekRangeLabel}
         </div>
@@ -151,15 +151,15 @@ export function WeeklyReviewPage() {
       ) : null}
 
       <section className="space-y-4">
-        <div className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
-          <h2 className="text-lg font-semibold text-brandDark">{t("weekly.title")}</h2>
-          <p className="mt-1 text-sm text-textSecondary">{t("weekly.subtitle")}</p>
+        <div className="glass-section rounded-2xl p-5 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
+          <h2 className="text-lg font-semibold text-white">{t("weekly.title")}</h2>
+          <p className="mt-1 glass-muted text-sm">{t("weekly.subtitle")}</p>
         </div>
 
         {SCORE_QUESTIONS.map(({ key, index }) => {
           const sliderPercentage = ((form[key] - 1) / 4) * 100;
           return (
-            <article key={key} className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_12px_28px_rgba(45,10,107,0.08)]">
+            <article key={key} className="glass-section rounded-2xl p-5 shadow-[0_12px_28px_rgba(45,10,107,0.08)]">
               <div className="mb-4 flex items-start gap-3">
                 <span
                   className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
@@ -167,7 +167,7 @@ export function WeeklyReviewPage() {
                 >
                   {index}
                 </span>
-                <label className="pt-1 text-sm font-semibold text-textPrimary">{t(`weekly.questions.q${index}`)}</label>
+                <label className="pt-1 text-sm font-semibold text-white">{t(`weekly.questions.q${index}`)}</label>
               </div>
               <div className="flex items-center gap-4">
                 <input
@@ -187,7 +187,7 @@ export function WeeklyReviewPage() {
                   {form[key]}
                 </div>
               </div>
-              <div className="mt-2 flex items-center justify-between text-xs text-textMuted">
+              <div className="mt-2 flex items-center justify-between text-xs text-white/50">
                 <span>1</span>
                 <span>5</span>
               </div>
@@ -196,7 +196,7 @@ export function WeeklyReviewPage() {
         })}
 
         {REFLECTION_QUESTIONS.map(({ key, index }) => (
-          <article key={key} className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_12px_28px_rgba(45,10,107,0.08)]">
+          <article key={key} className="glass-section rounded-2xl p-5 shadow-[0_12px_28px_rgba(45,10,107,0.08)]">
             <div className="mb-4 flex items-start gap-3">
               <span
                 className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
@@ -204,14 +204,14 @@ export function WeeklyReviewPage() {
               >
                 {index}
               </span>
-              <label className="pt-1 text-sm font-semibold text-textPrimary">{t(`weekly.questions.q${index}`)}</label>
+              <label className="pt-1 text-sm font-semibold text-white">{t(`weekly.questions.q${index}`)}</label>
             </div>
             <textarea
               rows={4}
               value={form[key]}
               onChange={(e) => setForm((prev) => ({ ...prev, [key]: e.target.value }))}
               placeholder={t(`weekly.placeholders.q${index}`)}
-              className="min-h-[120px] w-full rounded-xl border border-border bg-bgSecondary px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/25"
+              className="min-h-[120px] w-full rounded-xl glass-panel border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/25"
             />
           </article>
         ))}
@@ -256,18 +256,18 @@ export function WeeklyReviewPage() {
         </section>
       )}
 
-      <section className="rounded-2xl border border-border bg-bgPrimary p-6 shadow-[0_16px_36px_rgba(45,10,107,0.08)]">
-        <h2 className="mb-4 text-lg font-semibold text-brandDark">{t("weekly.historyTitle")}</h2>
+      <section className="glass-section rounded-2xl p-6 shadow-[0_16px_36px_rgba(45,10,107,0.08)]">
+        <h2 className="mb-4 text-lg font-semibold text-white">{t("weekly.historyTitle")}</h2>
         {loading ? (
-          <p className="text-sm text-textMuted">{t("common.loading")}</p>
+          <p className="text-sm text-white/50">{t("common.loading")}</p>
         ) : history.length === 0 ? (
-          <p className="text-sm text-textMuted">{t("weekly.emptyHistory")}</p>
+          <p className="text-sm text-white/50">{t("weekly.emptyHistory")}</p>
         ) : (
           <div className="space-y-3">
             {history.map((row) => (
-              <article key={row.id} className="rounded-xl border border-border bg-bgPrimary p-4 shadow-[0_10px_22px_rgba(45,10,107,0.08)]">
+              <article key={row.id} className="glass-panel rounded-xl p-4 shadow-[0_10px_22px_rgba(45,10,107,0.08)]">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-sm font-semibold text-textPrimary">
+                  <p className="text-sm font-semibold text-white">
                     {t("weekly.weekOf")}: {toDateLabel(row.weekStart)}
                   </p>
                   <span
@@ -277,8 +277,8 @@ export function WeeklyReviewPage() {
                     Avg {scoreAverage(row)}/5
                   </span>
                 </div>
-                <p className="mt-2 text-xs text-textMuted">{toDateLabel(row.createdAt)}</p>
-                {row.aiLetter ? <p className="mt-3 text-sm leading-6 text-textSecondary">{row.aiLetter}</p> : null}
+                <p className="mt-2 text-xs text-white/50">{toDateLabel(row.createdAt)}</p>
+                {row.aiLetter ? <p className="mt-3 text-sm leading-6 glass-muted">{row.aiLetter}</p> : null}
               </article>
             ))}
           </div>

@@ -145,16 +145,16 @@ function methodBadgeStyle(method: HttpMethod): CSSProperties {
 
 export function ApiDocsPage() {
   return (
-    <div className="min-h-screen bg-bgSecondary px-4 py-10 text-textPrimary sm:px-6">
+    <div className="min-h-screen bg-bgSecondary px-4 py-10 text-white sm:px-6">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[220px_1fr]">
-        <aside className="hidden h-fit rounded-2xl border border-border bg-bgPrimary p-4 shadow-sm lg:sticky lg:top-24 lg:block">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-textMuted">Sections</p>
+        <aside className="hidden h-fit glass-section rounded-2xl p-4 shadow-sm lg:sticky lg:top-24 lg:block">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/50">Sections</p>
           <nav className="space-y-1">
             {sidebarItems.map((item) => (
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                className="block rounded-lg px-3 py-2 text-sm font-medium text-textSecondary transition hover:bg-bgSecondary hover:text-brandDark"
+                className="block rounded-lg px-3 py-2 text-sm font-medium glass-muted transition hover:bg-bgSecondary hover:text-white"
               >
                 {item.label}
               </a>
@@ -163,11 +163,11 @@ export function ApiDocsPage() {
         </aside>
 
         <main className="space-y-6">
-          <header className="rounded-2xl border border-border bg-bgPrimary p-6 shadow-sm">
+          <header className="glass-section rounded-2xl p-6 shadow-sm">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h1 className="text-3xl font-bold text-textPrimary">API Documentation</h1>
-                <p className="mt-2 text-sm text-textSecondary">Dostęp do danych StockAI Pro przez REST API</p>
+                <h1 className="text-3xl font-bold text-white">API Documentation</h1>
+                <p className="mt-2 glass-muted text-sm">Dostęp do danych StockAI Pro przez REST API</p>
               </div>
               <span
                 className="inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
@@ -176,28 +176,28 @@ export function ApiDocsPage() {
                 Pro+ only
               </span>
             </div>
-            <p className="mt-4 rounded-lg border border-brandGold/50 bg-brandGold/10 px-3 py-2 text-sm text-textPrimary">
+            <p className="mt-4 rounded-lg border border-brandGold/50 bg-brandGold/10 px-3 py-2 text-sm text-white">
               Pro+ required for real access. Endpointy są pokazane publicznie wyłącznie w celach dokumentacyjnych.
             </p>
           </header>
 
-          <section id="authentication" className="rounded-2xl border border-border bg-bgPrimary p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-textPrimary">Authentication</h2>
-            <p className="mt-2 text-sm text-textSecondary">Użyj API key z ustawień konta</p>
-            <pre className="mt-4 overflow-x-auto rounded-xl border border-border bg-bgSecondary p-4 text-sm text-textPrimary">
+          <section id="authentication" className="glass-section rounded-2xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-white">Authentication</h2>
+            <p className="mt-2 glass-muted text-sm">Użyj API key z ustawień konta</p>
+            <pre className="mt-4 overflow-x-auto rounded-xl glass-panel border border-white/10 bg-white/5 p-4 text-sm text-white">
               <code>{`curl -H "Authorization: Bearer {api_key}" https://stock-ai.pro/api/...`}</code>
             </pre>
-            <div className="mt-4 text-sm text-textSecondary">
-              Klucz API znajdziesz w <Link to="/settings" className="font-semibold text-brandDark hover:text-brandMedium">Settings</Link>.
+            <div className="mt-4 glass-muted text-sm">
+              Klucz API znajdziesz w <Link to="/settings" className="font-semibold text-white hover:text-brandMedium">Settings</Link>.
             </div>
           </section>
 
           {endpointSections.map((section) => (
-            <section key={section.id} id={section.id} className="rounded-2xl border border-border bg-bgPrimary p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-textPrimary">{section.title}</h2>
-              <p className="mt-2 text-sm text-textSecondary">{section.description}</p>
+            <section key={section.id} id={section.id} className="glass-section rounded-2xl p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-white">{section.title}</h2>
+              <p className="mt-2 glass-muted text-sm">{section.description}</p>
 
-              <div className="mt-4 rounded-xl border border-border bg-bgSecondary p-4">
+              <div className="mt-4 rounded-xl glass-panel border border-white/10 bg-white/5 p-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="rounded-md border px-2 py-1 text-xs font-semibold" style={methodBadgeStyle(section.endpoint.method)}>
                     {section.endpoint.method}
@@ -207,11 +207,11 @@ export function ApiDocsPage() {
                   </code>
                 </div>
 
-                <p className="mt-3 text-sm text-textSecondary">{section.endpoint.description}</p>
+                <p className="mt-3 glass-muted text-sm">{section.endpoint.description}</p>
 
-                <div className="mt-4 overflow-x-auto rounded-lg border border-border bg-bgPrimary">
+                <div className="mt-4 overflow-x-auto rounded-lg glass-panel border border-white/10">
                   <table className="min-w-full text-left text-sm">
-                    <thead className="bg-bgSecondary text-textSecondary">
+                    <thead className="bg-bgSecondary glass-muted">
                       <tr>
                         <th className="px-3 py-2 font-semibold">Parametr</th>
                         <th className="px-3 py-2 font-semibold">Typ</th>
@@ -221,18 +221,18 @@ export function ApiDocsPage() {
                     </thead>
                     <tbody>
                       {section.endpoint.params.map((param) => (
-                        <tr key={param.name} className="border-t border-border">
-                          <td className="px-3 py-2 font-mono text-xs text-brandDark">{param.name}</td>
-                          <td className="px-3 py-2 text-textSecondary">{param.type}</td>
-                          <td className="px-3 py-2 text-textSecondary">{param.required}</td>
-                          <td className="px-3 py-2 text-textSecondary">{param.description}</td>
+                        <tr key={param.name} className="border-t border-white/10">
+                          <td className="px-3 py-2 font-mono text-xs text-white">{param.name}</td>
+                          <td className="px-3 py-2 glass-muted">{param.type}</td>
+                          <td className="px-3 py-2 glass-muted">{param.required}</td>
+                          <td className="px-3 py-2 glass-muted">{param.description}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
 
-                <pre className="mt-4 overflow-x-auto rounded-lg border border-border bg-bgPrimary p-4 text-sm text-textPrimary">
+                <pre className="mt-4 overflow-x-auto rounded-lg glass-panel border border-white/10 p-4 text-sm text-white">
                   <code>{section.endpoint.responseExample}</code>
                 </pre>
               </div>

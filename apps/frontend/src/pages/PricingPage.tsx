@@ -172,7 +172,7 @@ export function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-bgSecondary text-textSecondary">
+    <div className="min-h-screen bg-bgSecondary glass-muted">
       <SEOHead
         title={t("pricingPage.seo.title", { defaultValue: "Pricing — StockAI Pro" })}
         description={t("pricingPage.seo.description", {
@@ -181,10 +181,10 @@ export function PricingPage() {
       />
       <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
         <header className="text-center">
-          <h1 className="text-4xl font-bold text-textPrimary md:text-5xl">
+          <h1 className="text-4xl font-bold text-white md:text-5xl">
             {t("pricingPage.title", { defaultValue: "Choose your plan" })}
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-textSecondary md:text-lg">
+          <p className="mx-auto mt-4 max-w-2xl text-base glass-muted md:text-lg">
             {t("pricingPage.subtitle", {
               defaultValue:
                 "Pick the plan that fits your stage. Upgrade, downgrade, or cancel anytime — no long-term lock-in.",
@@ -233,9 +233,9 @@ export function PricingPage() {
               </span>
             </button>
           </div>
-          <p className="text-center text-sm text-textMuted">{pricingNote}</p>
+          <p className="text-center text-sm text-white/50">{pricingNote}</p>
           {!isLoggedIn ? (
-            <p className="text-center text-sm text-textSecondary">
+            <p className="text-center glass-muted text-sm">
               {t("pricingPage.signInHint", {
                 defaultValue: "Already have an account?",
               })}{" "}
@@ -253,17 +253,17 @@ export function PricingPage() {
             className="rounded-2xl border p-6 shadow-sm"
             style={{ backgroundColor: colors.bgPrimary, borderColor: colors.border }}
           >
-            <h2 className="text-xl font-bold text-textPrimary">Free</h2>
-            <p className="mt-3 text-3xl font-bold text-brandDark">{formatUsdPrice("free", billingCycle)}</p>
-            <p className="mt-1 text-xs text-textMuted">
+            <h2 className="text-xl font-bold text-white">Free</h2>
+            <p className="mt-3 glass-page-title text-3xl">{formatUsdPrice("free", billingCycle)}</p>
+            <p className="mt-1 text-xs text-white/50">
               {t("pricingPage.plans.billedMonthly", { defaultValue: "Always free" })}
             </p>
-            <p className="mt-3 text-sm text-textSecondary">
+            <p className="mt-3 glass-muted text-sm">
               {t("pricingPage.plans.free.tagline", {
                 defaultValue: "Start with paper trading and core tools — no credit card.",
               })}
             </p>
-            <PlanFeatureList planKey="free" textClassName="text-textSecondary" />
+            <PlanFeatureList planKey="free" textClassName="glass-muted" />
             <Link
               to="/register"
               className="mt-6 inline-flex w-full justify-center rounded-lg bg-brandDark px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brandMedium"
@@ -296,7 +296,7 @@ export function PricingPage() {
               type="button"
               onClick={() => void handleCheckout("pro")}
               disabled={checkoutLoadingPlan !== null}
-              className="mt-6 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-brandDark transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
+              className="mt-6 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
             >
               {paidCtaLabel("pro")}
             </button>
@@ -326,15 +326,15 @@ export function PricingPage() {
               type="button"
               onClick={() => void handleCheckout("pro_plus")}
               disabled={checkoutLoadingPlan !== null}
-              className="mt-6 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-brandDark transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
+              className="mt-6 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
             >
               {paidCtaLabel("pro_plus")}
             </button>
           </article>
         </section>
 
-        <section className="mt-16 rounded-2xl border border-border bg-bgPrimary p-6 md:p-8">
-          <h2 className="text-2xl font-bold text-textPrimary">{t("pricingPage.faq.title", { defaultValue: "FAQ" })}</h2>
+        <section className="mt-16 glass-section rounded-2xl p-6 md:p-8">
+          <h2 className="text-2xl font-bold text-white">{t("pricingPage.faq.title", { defaultValue: "FAQ" })}</h2>
           <div className="mt-6 divide-y divide-border">
             {faqItems.map((item, index) => {
               const isOpen = openFaqIndex === index;
@@ -346,12 +346,12 @@ export function PricingPage() {
                     className="flex w-full items-center justify-between gap-4 py-2 text-left"
                     aria-expanded={isOpen}
                   >
-                    <span className="font-semibold text-textPrimary">{item.question}</span>
+                    <span className="font-semibold text-white">{item.question}</span>
                     <span style={{ color: colors.brandCyan }} className="text-lg font-semibold">
                       {isOpen ? "−" : "+"}
                     </span>
                   </button>
-                  {isOpen ? <p className="pr-8 text-sm text-textSecondary">{item.answer}</p> : null}
+                  {isOpen ? <p className="pr-8 glass-muted text-sm">{item.answer}</p> : null}
                 </div>
               );
             })}

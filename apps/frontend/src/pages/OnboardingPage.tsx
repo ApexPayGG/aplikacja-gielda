@@ -99,13 +99,13 @@ export function OnboardingPage() {
           </Link>
         </div>
 
-        <div className="rounded-3xl border border-border bg-bgPrimary p-6 shadow-[0_24px_72px_rgba(45,10,107,0.16)] sm:p-8">
+        <div className="glass-section rounded-3xl p-6 shadow-[0_24px_72px_rgba(45,10,107,0.16)] sm:p-8">
           <div className="mb-8">
-            <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.08em] text-textMuted">
+            <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.08em] text-white/50">
               <span>{t("onboarding.step", { current: step, total: 4, defaultValue: "Step {{current}}/{{total}}" })}</span>
               <span>{Math.round(progressPercent)}%</span>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-bgTertiary">
+            <div className="h-2 overflow-hidden rounded-full bg-white/10">
               <div
                 className="h-full rounded-full transition-all duration-300"
                 style={{ width: `${progressPercent}%`, backgroundColor: colors.brandCyan }}
@@ -116,13 +116,13 @@ export function OnboardingPage() {
           {step === 1 ? (
             <section className="space-y-5 text-center">
               <BrandLogo size="cardLg" className="mx-auto" />
-              <h1 className="text-3xl font-bold text-textPrimary">
+              <h1 className="text-3xl font-bold text-white">
                 {t("onboarding.welcome.title", {
                   name: firstName,
                   defaultValue: "Welcome to StockAI Pro, {{name}}!",
                 })}
               </h1>
-              <p className="mx-auto max-w-2xl text-base text-textSecondary">
+              <p className="mx-auto max-w-2xl text-base glass-muted">
                 {t("onboarding.welcome.body", {
                   defaultValue:
                     "StockAI Pro combines market analytics, signals, and AI support for investors. We personalize your experience to help you make better decisions faster.",
@@ -133,7 +133,7 @@ export function OnboardingPage() {
 
           {step === 2 ? (
             <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-textPrimary">
+              <h2 className="text-2xl font-bold text-white">
                 {t("onboarding.markets.title", { defaultValue: "Which markets are you interested in?" })}
               </h2>
               <div className="flex flex-wrap gap-3">
@@ -162,7 +162,7 @@ export function OnboardingPage() {
 
           {step === 3 ? (
             <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-textPrimary">
+              <h2 className="text-2xl font-bold text-white">
                 {t("onboarding.style.title", { defaultValue: "What is your investment style?" })}
               </h2>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -183,10 +183,10 @@ export function OnboardingPage() {
                       }}
                     >
                       <p className="text-2xl">{t(`onboarding.style.${styleId}.icon`, { defaultValue: "📈" })}</p>
-                      <p className="mt-2 text-base font-semibold text-textPrimary">
+                      <p className="mt-2 text-base font-semibold text-white">
                         {t(`onboarding.style.${styleId}.title`, { defaultValue: styleId })}
                       </p>
-                      <p className="mt-1 text-sm text-textSecondary">
+                      <p className="mt-1 glass-muted text-sm">
                         {t(`onboarding.style.${styleId}.description`, { defaultValue: "" })}
                       </p>
                     </button>
@@ -199,10 +199,10 @@ export function OnboardingPage() {
 
           {step === 4 ? (
             <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-textPrimary">
+              <h2 className="text-2xl font-bold text-white">
                 {t("onboarding.ready.title", { defaultValue: "Your profile is ready" })}
               </h2>
-              <p className="text-sm text-textSecondary">
+              <p className="glass-muted text-sm">
                 {t("onboarding.ready.subtitle", {
                   defaultValue: "Here are three features to help you get started right away:",
                 })}
@@ -213,12 +213,12 @@ export function OnboardingPage() {
                     key={featureId}
                     type="button"
                     onClick={() => handleFeatureNavigate(FEATURE_HREFS[featureId])}
-                    className="block w-full rounded-2xl border border-border bg-bgPrimary p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm"
+                    className="block w-full glass-section rounded-2xl p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm"
                   >
-                    <p className="text-base font-semibold text-textPrimary">
+                    <p className="text-base font-semibold text-white">
                       {t(`onboarding.features.${featureId}.title`, { defaultValue: featureId })}
                     </p>
-                    <p className="mt-1 text-sm text-textSecondary">
+                    <p className="mt-1 glass-muted text-sm">
                       {t(`onboarding.features.${featureId}.description`, { defaultValue: "" })}
                     </p>
                     <p className="mt-4 text-sm font-semibold text-brandCyan">
@@ -234,7 +234,7 @@ export function OnboardingPage() {
             <button
               type="button"
               onClick={goBack}
-              className="rounded-lg px-3 py-2 text-sm font-semibold text-textSecondary transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-0"
+              className="rounded-lg px-3 py-2 text-sm font-semibold glass-muted transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-0"
               disabled={step === 1}
             >
               {t("onboarding.nav.back", { defaultValue: "← Back" })}

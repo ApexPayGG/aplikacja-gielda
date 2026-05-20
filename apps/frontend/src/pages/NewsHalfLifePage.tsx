@@ -82,7 +82,7 @@ export function NewsHalfLifePage() {
         </p>
       </header>
 
-      <form onSubmit={onSubmit} className="rounded-2xl border p-4 shadow-[0_12px_30px_rgba(45,10,107,0.08)]" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+      <form onSubmit={onSubmit} className="rounded-2xl border p-4 shadow-[0_12px_30px_rgba(45,10,107,0.08)] glass-section">
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
             value={symbol}
@@ -135,7 +135,7 @@ export function NewsHalfLifePage() {
         {filteredNews.map((item, idx) => {
           const longLife = isLongHalfLife(item.halfLifeDays);
           return (
-            <article key={`${item.headline}-${idx}`} className="rounded-2xl border p-4 shadow-[0_10px_24px_rgba(45,10,107,0.07)]" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+            <article key={`${item.headline}-${idx}`} className="rounded-2xl border p-4 shadow-[0_10px_24px_rgba(45,10,107,0.07)] glass-section">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span
                   className="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"

@@ -150,7 +150,7 @@ export function CorrelationPage() {
         </div>
       ) : null}
 
-      <section className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+      <section className="rounded-2xl border p-5 glass-section">
         <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
           Correlation matrix (placeholder)
         </h2>
@@ -194,7 +194,7 @@ export function CorrelationPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+      <section className="rounded-2xl border p-5 glass-section">
         <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
           Correlated companies
         </h2>
@@ -260,7 +260,7 @@ export function CorrelationPage() {
       </section>
 
       {data?.insight ? (
-        <section className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <section className="rounded-2xl border p-5 glass-section">
           <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide" style={{ color: colors.brandDark }}>
             Insight
           </h3>

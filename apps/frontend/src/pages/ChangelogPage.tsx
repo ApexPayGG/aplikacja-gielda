@@ -55,7 +55,7 @@ const CHANGELOG_ENTRIES: ChangelogEntry[] = [
 
 export function ChangelogPage() {
   return (
-    <div className="min-h-screen bg-bgSecondary px-4 py-10 text-textPrimary md:px-6">
+    <div className="min-h-screen bg-bgSecondary px-4 py-10 text-white md:px-6">
       <SEOHead
         title="StockAI Pro Changelog"
         description="Najnowsze funkcje i poprawki w StockAI Pro."

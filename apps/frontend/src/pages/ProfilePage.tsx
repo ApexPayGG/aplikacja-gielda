@@ -93,7 +93,7 @@ export function ProfilePage() {
   const avatarLabel = useMemo(() => getInitials(name || profile?.name || "", emailValue), [emailValue, name, profile?.name]);
 
   const fieldClass =
-    "w-full rounded-xl border bg-white px-3 py-2 text-sm text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20";
+    "w-full rounded-xl border bg-white px-3 py-2 text-sm text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20";
 
   const handleSave = async () => {
     if (!userId) return;
@@ -118,7 +118,7 @@ export function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen px-4 py-8" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
-        <div className="mx-auto max-w-4xl rounded-2xl border p-6" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <div className="mx-auto max-w-4xl rounded-2xl border p-6 glass-section">
           Ładowanie profilu...
         </div>
       </div>

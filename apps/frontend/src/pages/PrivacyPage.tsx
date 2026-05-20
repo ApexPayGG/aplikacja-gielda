@@ -14,17 +14,17 @@ export function PrivacyPage() {
           <p>
             Niniejsza polityka opisuje, jak {COMPANY_LEGAL.name} przetwarza dane osobowe użytkowników StockAI Pro.
           </p>
-          <dl className="mt-4 grid gap-1 rounded-xl border border-border bg-bgSecondary/50 p-4 text-sm">
+          <dl className="mt-4 grid gap-1 rounded-xl glass-panel border border-white/10 bg-white/5/50 p-4 text-sm">
             <div>
-              <dt className="font-medium text-textPrimary">Administrator</dt>
+              <dt className="font-medium text-white">Administrator</dt>
               <dd>{COMPANY_LEGAL.name}</dd>
             </div>
             <div>
-              <dt className="font-medium text-textPrimary">Adres</dt>
+              <dt className="font-medium text-white">Adres</dt>
               <dd>{COMPANY_ADDRESS_LINE}</dd>
             </div>
             <div>
-              <dt className="font-medium text-textPrimary">Email</dt>
+              <dt className="font-medium text-white">Email</dt>
               <dd>
                 <a href={`mailto:${COMPANY_LEGAL.privacyEmail}`} className="text-brandCyan hover:underline">
                   {COMPANY_LEGAL.privacyEmail}

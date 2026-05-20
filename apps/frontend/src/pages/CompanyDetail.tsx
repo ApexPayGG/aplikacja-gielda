@@ -263,7 +263,7 @@ export function CompanyDetail() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary, color: colors.textPrimary }}>
+    <div className="min-h-screen">
       <SEOHead title={seoTitle} description={seoDescription} structuredData={seoStructuredData} />
       <div className="mx-auto max-w-[1280px] px-4 py-6 lg:px-6">
         <Link to="/companies" className="mb-4 inline-block text-sm hover:underline" style={{ color: colors.brandMedium }}>

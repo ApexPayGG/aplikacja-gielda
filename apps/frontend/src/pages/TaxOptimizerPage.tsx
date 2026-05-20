@@ -247,7 +247,7 @@ export function TaxOptimizerPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border p-5 shadow-[0_14px_32px_rgba(45,10,107,0.08)]" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+      <section className="rounded-2xl border p-5 shadow-[0_14px_32px_rgba(45,10,107,0.08)] glass-section">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <label className="flex flex-col gap-1.5 text-sm">
             <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
@@ -335,9 +335,9 @@ export function TaxOptimizerPage() {
       ) : null}
 
       {summary && !error ? (
-        <section className="rounded-2xl border p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <section className="rounded-2xl border p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)] glass-section">
           <div className="grid gap-4 md:grid-cols-2">
-            <article className="rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+            <article className="rounded-2xl border p-4 glass-panel">
               <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
                 Podatek należny
               </p>
@@ -346,7 +346,7 @@ export function TaxOptimizerPage() {
               </p>
             </article>
 
-            <article className="rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+            <article className="rounded-2xl border p-4 glass-panel">
               <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
                 Potencjalna oszczędność
               </p>

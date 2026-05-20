@@ -104,15 +104,15 @@ export function StressTestPage() {
     : "-";
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 px-4 py-10 text-textPrimary">
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-10 text-white">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-brandDark">Stress Test Portfela</h1>
-          <p className="mt-2 text-sm text-textSecondary">
+          <h1 className="text-3xl font-bold tracking-tight text-white">Stress Test Portfela</h1>
+          <p className="mt-2 glass-muted text-sm">
             Sprawdz odpornosc portfela w scenariuszach historycznych i zobacz potencjalna skale strat.
           </p>
         </div>
-        <div className="flex items-center gap-3 text-sm text-textSecondary">
+        <div className="flex items-center gap-3 glass-muted text-sm">
           <span>Waluta:</span>
           <label className="flex cursor-pointer items-center gap-1.5">
             <input
@@ -137,13 +137,13 @@ export function StressTestPage() {
         </div>
       </header>
 
-      {loading && <p className="text-textSecondary">Ladowanie...</p>}
+      {loading && <p className="glass-muted">Ladowanie...</p>}
       {error && (
         <div className="rounded-xl border border-negative/25 bg-negative/10 px-4 py-3 text-sm font-medium text-negative">{error}</div>
       )}
 
       {!loading && !error && data && data.openPositionCount === 0 && (
-        <div className="rounded-2xl border border-border bg-bgPrimary p-8 text-center text-textSecondary">Brak otwartych pozycji do analizy.</div>
+        <div className="glass-section rounded-2xl p-8 text-center glass-muted">Brak otwartych pozycji do analizy.</div>
       )}
 
       {!loading && !error && data && data.openPositionCount > 0 && (
@@ -165,9 +165,9 @@ export function StressTestPage() {
                   style={{ borderColor: isActive ? colors.brandCyan : colors.border }}
                 >
                   <div className="text-2xl">{meta.icon}</div>
-                  <h2 className="mt-2 text-base font-semibold text-brandDark">{meta.name}</h2>
-                  <p className="mt-1 text-sm text-textSecondary">{meta.description}</p>
-                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-textMuted">Drop: {scenario.drop}%</p>
+                  <h2 className="mt-2 text-base font-semibold text-white">{meta.name}</h2>
+                  <p className="mt-1 glass-muted text-sm">{meta.description}</p>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-white/50">Drop: {scenario.drop}%</p>
                 </button>
               );
             })}
@@ -176,9 +176,9 @@ export function StressTestPage() {
           {selectedScenario ? (
             <>
               <section className="rounded-2xl border border-negative/25 bg-bgPrimary p-6 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
-                <div className="text-xs font-semibold uppercase tracking-wide text-textMuted">Laczna strata portfela</div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-white/50">Laczna strata portfela</div>
                 <div className="mt-2 font-mono text-5xl font-bold text-negative">{totalLossLabel}</div>
-                <div className="mt-2 text-sm text-textSecondary">
+                <div className="mt-2 glass-muted text-sm">
                   Szacowana zmiana:{" "}
                   <span style={{ color: colors.negative }} className="font-semibold">
                     {selectedScenario.portfolioLossPct.toFixed(2)}%
@@ -186,11 +186,11 @@ export function StressTestPage() {
                 </div>
               </section>
 
-              <section className="overflow-x-auto rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
-                <h3 className="mb-4 text-base font-semibold text-brandDark">Szacowane straty na pozycjach</h3>
+              <section className="overflow-x-auto glass-section rounded-2xl p-5 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
+                <h3 className="mb-4 text-base font-semibold text-white">Szacowane straty na pozycjach</h3>
                 <table className="w-full min-w-[640px] text-left text-sm">
                   <thead>
-                    <tr className="border-b border-border text-xs uppercase tracking-wide text-textMuted">
+                    <tr className="border-b border-white/10 text-xs uppercase tracking-wide text-white/50">
                       <th className="py-2 pr-4">Spolka</th>
                       <th className="py-2 pr-4">Biezaca wartosc</th>
                       <th className="py-2 pr-4">Szacowana strata</th>
@@ -199,14 +199,14 @@ export function StressTestPage() {
                   </thead>
                   <tbody>
                     {selectedScenario.positionsImpact.map((position) => (
-                      <tr key={`${selectedScenario.scenario}-${position.ticker}`} className="border-b border-border/70">
-                        <td className="py-2 pr-4 font-semibold text-brandDark">{position.ticker}</td>
-                        <td className="py-2 pr-4 font-mono text-textPrimary">{formatMoney(position.currentValue, currency)}</td>
+                      <tr key={`${selectedScenario.scenario}-${position.ticker}`} className="border-b border-white/10/70">
+                        <td className="py-2 pr-4 font-semibold text-white">{position.ticker}</td>
+                        <td className="py-2 pr-4 font-mono text-white">{formatMoney(position.currentValue, currency)}</td>
                         <td className="py-2 pr-4 font-mono font-semibold" style={{ color: position.lossValue > 0 ? colors.negative : colors.positive }}>
                           {position.lossValue > 0 ? "-" : "+"}
                           {formatMoney(Math.abs(position.lossValue), currency)}
                         </td>
-                        <td className="py-2 font-mono text-textPrimary">{formatMoney(position.newValue, currency)}</td>
+                        <td className="py-2 font-mono text-white">{formatMoney(position.newValue, currency)}</td>
                       </tr>
                     ))}
                   </tbody>

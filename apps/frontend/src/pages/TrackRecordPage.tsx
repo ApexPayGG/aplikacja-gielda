@@ -207,14 +207,14 @@ export function TrackRecordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bgSecondary text-textPrimary">
+    <div className="min-h-screen bg-bgSecondary text-white">
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
         <header
-          className="rounded-3xl border border-border bg-bgPrimary p-6 shadow-[0_16px_36px_rgba(45,10,107,0.08)]"
+          className="glass-section rounded-3xl p-6 shadow-[0_16px_36px_rgba(45,10,107,0.08)]"
           style={{ background: `linear-gradient(120deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
         >
-          <h1 className="text-3xl font-bold text-brandDark">Track Record</h1>
-          <p className="mt-1 text-sm text-textSecondary">{t("trackrecord.subtitle")}</p>
+          <h1 className="glass-page-title text-3xl">Track Record</h1>
+          <p className="mt-1 glass-muted text-sm">{t("trackrecord.subtitle")}</p>
         </header>
 
         {error ? (
@@ -224,7 +224,7 @@ export function TrackRecordPage() {
         ) : null}
 
         {!isPublicView ? (
-          <section className="rounded-2xl border border-border bg-bgPrimary p-4 shadow-[0_12px_30px_rgba(45,10,107,0.08)]">
+          <section className="glass-section rounded-2xl p-4 shadow-[0_12px_30px_rgba(45,10,107,0.08)]">
             <button
               type="button"
               onClick={onGenerate}
@@ -239,8 +239,8 @@ export function TrackRecordPage() {
 
         {metrics ? (
           <section className="space-y-5">
-            <article className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_12px_30px_rgba(45,10,107,0.08)]">
-              <h2 className="text-lg font-semibold text-brandDark">Publiczny profil</h2>
+            <article className="glass-section rounded-2xl p-5 shadow-[0_12px_30px_rgba(45,10,107,0.08)]">
+              <h2 className="text-lg font-semibold text-white">Publiczny profil</h2>
               <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard label="Win rate" value={`${metrics.winRate.toFixed(2)}%`} />
                 <StatCard label="Avg return" value={`${metrics.avgReturn.toFixed(2)}%`} />
@@ -249,9 +249,9 @@ export function TrackRecordPage() {
               </div>
 
               <div className="mt-5 flex flex-wrap items-center gap-3 text-sm">
-                <p className="text-textSecondary">
+                <p className="glass-muted">
                   {t("trackrecord.shareLinkLabel")}:{" "}
-                  <span className="font-mono text-textPrimary">{shareProfileUrl ?? t("common.notAvailable")}</span>
+                  <span className="font-mono text-white">{shareProfileUrl ?? t("common.notAvailable")}</span>
                 </p>
                 {shareProfileUrl ? (
                   <ShareButton label="Udostępnij swój Track Record" url={shareProfileUrl} twitterText={shareText} />
@@ -259,17 +259,17 @@ export function TrackRecordPage() {
               </div>
             </article>
 
-            <article className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_12px_30px_rgba(45,10,107,0.08)]">
-              <h3 className="text-lg font-semibold text-brandDark">Historia transakcji</h3>
+            <article className="glass-section rounded-2xl p-5 shadow-[0_12px_30px_rgba(45,10,107,0.08)]">
+              <h3 className="text-lg font-semibold text-white">Historia transakcji</h3>
               {historyLoading ? (
-                <p className="mt-3 text-sm text-textSecondary">{t("common.loading")}</p>
+                <p className="mt-3 glass-muted text-sm">{t("common.loading")}</p>
               ) : tableRows.length === 0 ? (
-                <p className="mt-3 text-sm text-textMuted">{t("common.noData")}</p>
+                <p className="mt-3 text-sm text-white/50">{t("common.noData")}</p>
               ) : (
                 <div className="mt-4 overflow-x-auto">
                   <table className="min-w-full divide-y divide-border text-sm">
                     <thead>
-                      <tr className="text-left text-xs uppercase tracking-wide text-textMuted">
+                      <tr className="text-left text-xs uppercase tracking-wide text-white/50">
                         <th className="px-2 py-2">Symbol</th>
                         <th className="px-2 py-2">Direction</th>
                         <th className="px-2 py-2">Closed at</th>
@@ -281,10 +281,10 @@ export function TrackRecordPage() {
                       {tableRows.map((row) => {
                         const positive = row.pnlPct >= 0;
                         return (
-                          <tr key={row.id} className="text-textPrimary">
-                            <td className="px-2 py-2 font-semibold text-brandDark">{row.symbol}</td>
-                            <td className="px-2 py-2 text-textSecondary">{row.direction}</td>
-                            <td className="px-2 py-2 text-textSecondary">{formatDate(row.closedAt)}</td>
+                          <tr key={row.id} className="text-white">
+                            <td className="px-2 py-2 font-semibold text-white">{row.symbol}</td>
+                            <td className="px-2 py-2 glass-muted">{row.direction}</td>
+                            <td className="px-2 py-2 glass-muted">{formatDate(row.closedAt)}</td>
                             <td className={`px-2 py-2 text-right font-semibold ${positive ? "text-positive" : "text-negative"}`}>
                               {row.pnlValue === 0 ? "—" : `${row.pnlValue >= 0 ? "+" : ""}${row.pnlValue.toFixed(2)}`}
                             </td>
@@ -308,9 +308,9 @@ export function TrackRecordPage() {
 
 function StatCard(props: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-bgSecondary px-4 py-3">
-      <p className="text-xs uppercase tracking-wide text-textMuted">{props.label}</p>
-      <p className="mt-1 text-2xl font-bold text-brandDark">{props.value}</p>
+    <div className="rounded-2xl glass-panel border border-white/10 bg-white/5 px-4 py-3">
+      <p className="text-xs uppercase tracking-wide text-white/50">{props.label}</p>
+      <p className="mt-1 text-2xl font-bold text-white">{props.value}</p>
     </div>
   );
 }

@@ -94,7 +94,7 @@ export function BacktestPage() {
         </p>
       </header>
 
-      <section className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+      <section className="rounded-2xl border p-5 glass-section">
         <form className="grid gap-4 md:grid-cols-4" onSubmit={onSubmit}>
           <label className="text-sm md:col-span-1">
             <span className="mb-1.5 block font-medium" style={{ color: colors.textSecondary }}>
@@ -164,11 +164,11 @@ export function BacktestPage() {
         </div>
       ) : null}
 
-      <section className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+      <section className="rounded-2xl border p-5 glass-section">
         <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
           Equity curve (placeholder)
         </h2>
-        <div className="rounded-xl border p-4" style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary }}>
+        <div className="rounded-xl border p-4 glass-panel">
           <svg viewBox="0 0 100 42" className="h-48 w-full" preserveAspectRatio="none" role="img" aria-label="equity curve">
             <path d={`M0,42 L${linePath} L100,42`} fill={`${colors.brandCyan}18`} />
             <polyline points={linePath} fill="none" stroke={colors.brandCyan} strokeWidth="2.2" strokeLinecap="round" />
@@ -177,7 +177,7 @@ export function BacktestPage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-4">
-        <article className="rounded-xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <article className="rounded-xl border p-4 glass-section">
           <div className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
             Win rate
           </div>
@@ -185,7 +185,7 @@ export function BacktestPage() {
             {result ? `${result.winRate.toFixed(1)}%` : "62.5%"}
           </div>
         </article>
-        <article className="rounded-xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <article className="rounded-xl border p-4 glass-section">
           <div className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
             Sharpe
           </div>
@@ -193,7 +193,7 @@ export function BacktestPage() {
             {result ? result.sharpeRatio.toFixed(2) : "1.34"}
           </div>
         </article>
-        <article className="rounded-xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <article className="rounded-xl border p-4 glass-section">
           <div className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
             Max DD
           </div>
@@ -201,7 +201,7 @@ export function BacktestPage() {
             {result ? `${result.maxDrawdown.toFixed(2)}%` : "-8.10%"}
           </div>
         </article>
-        <article className="rounded-xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <article className="rounded-xl border p-4 glass-section">
           <div className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
             Total return
           </div>
@@ -212,7 +212,7 @@ export function BacktestPage() {
         </article>
       </section>
 
-      <section className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+      <section className="rounded-2xl border p-5 glass-section">
         <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
           Trade list
         </h2>

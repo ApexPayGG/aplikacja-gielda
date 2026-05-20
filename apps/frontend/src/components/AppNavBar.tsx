@@ -131,7 +131,14 @@ function getUserInitials(name: string | null, email: string): string {
   return fallback.slice(0, 2).toUpperCase();
 }
 
-function navLinkClass(isActive: boolean): string {
+function navLinkClass(isActive: boolean, glass: boolean): string {
+  if (glass) {
+    return `whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
+      isActive
+        ? "bg-[#00C9D4]/15 text-[#00C9D4] shadow-[inset_0_0_0_1px_rgba(0,201,212,0.25)]"
+        : "text-white/65 hover:bg-white/10 hover:text-white"
+    }`;
+  }
   return `whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
     isActive
       ? "bg-brandDark/[0.08] text-brandDark shadow-[inset_0_0_0_1px_rgba(45,10,107,0.12)]"
@@ -139,7 +146,14 @@ function navLinkClass(isActive: boolean): string {
   }`;
 }
 
-function triggerClass(active: boolean): string {
+function triggerClass(active: boolean, glass: boolean): string {
+  if (glass) {
+    return `inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
+      active
+        ? "bg-[#00C9D4]/15 text-[#00C9D4] shadow-[inset_0_0_0_1px_rgba(0,201,212,0.25)]"
+        : "text-white/65 hover:bg-white/10 hover:text-white"
+    }`;
+  }
   return `inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
     active
       ? "bg-brandDark/[0.08] text-brandDark shadow-[inset_0_0_0_1px_rgba(45,10,107,0.12)]"
@@ -154,9 +168,10 @@ type DesktopDropdownProps = {
   groupActive: boolean;
   openDropdown: DropdownId | null;
   setOpenDropdown: (v: DropdownId | null) => void;
+  glass: boolean;
 };
 
-function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOpenDropdown }: DesktopDropdownProps) {
+function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOpenDropdown, glass }: DesktopDropdownProps) {
   const { t } = useTranslation();
   const open = openDropdown === id;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -188,7 +203,7 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
     >
       <button
         type="button"
-        className={triggerClass(groupActive)}
+        className={triggerClass(groupActive, glass)}
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpenDropdown(open ? null : id)}
@@ -198,14 +213,18 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
       </button>
       {open ? (
         <div className="absolute left-0 top-full z-50 -mt-0.5 min-w-[13.5rem] pt-2">
-          <div className="rounded-xl border border-border bg-bgPrimary py-1 shadow-lg">
+          <div
+            className={`rounded-xl border py-1 shadow-lg backdrop-blur-md ${
+              glass ? "border-white/15 bg-[#1a0538]/95" : "border-border bg-bgPrimary"
+            }`}
+          >
             {items.map((item) => {
               const Icon = item.icon;
               return (
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  className={({ isActive }) => `${navLinkClass(isActive)} flex items-center gap-2 px-3`}
+                  className={({ isActive }) => `${navLinkClass(isActive, glass)} flex items-center gap-2 px-3`}
                   onClick={() => setOpenDropdown(null)}
                 >
                   {Icon ? <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden /> : null}
@@ -220,7 +239,7 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
   );
 }
 
-export function AppNavBar() {
+export function AppNavBar({ glass = false }: { glass?: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -316,25 +335,31 @@ export function AppNavBar() {
   };
 
   return (
-    <nav className="sticky top-0 z-20 border-b border-border/70 bg-bgPrimary/90 shadow-[0_4px_24px_-12px_rgba(45,10,107,0.25)] backdrop-blur-lg dark:border-gray-700/80 dark:bg-gray-900/90">
+    <nav
+      className={
+        glass
+          ? "glass-nav-bar sticky top-0 z-20"
+          : "sticky top-0 z-20 border-b border-border/70 bg-bgPrimary/90 shadow-[0_4px_24px_-12px_rgba(45,10,107,0.25)] backdrop-blur-lg dark:border-gray-700/80 dark:bg-gray-900/90"
+      }
+    >
       <div className="mx-auto flex h-[3.75rem] max-w-[90rem] items-center gap-2 px-3 sm:gap-3 sm:px-4 lg:gap-4">
         <Link to="/" className="shrink-0 transition-opacity hover:opacity-90">
           <BrandLogo size="appNav" />
         </Link>
 
         <div className="hidden min-w-0 flex-1 flex-nowrap items-center justify-start gap-0.5 overflow-visible md:flex lg:gap-1">
-          <NavLink to="/" end className={({ isActive }) => navLinkClass(isActive)}>
+          <NavLink to="/" end className={({ isActive }) => navLinkClass(isActive, glass)}>
             {t("nav.home")}
           </NavLink>
-          <NavLink to="/about" className={({ isActive }) => navLinkClass(isActive)}>
+          <NavLink to="/about" className={({ isActive }) => navLinkClass(isActive, glass)}>
             {t("nav.about", { defaultValue: "O nas" })}
           </NavLink>
-          <NavLink to="/dashboard" className={({ isActive }) => navLinkClass(isActive)}>
+          <NavLink to="/dashboard" className={({ isActive }) => navLinkClass(isActive, glass)}>
             {t("nav.dashboard")}
           </NavLink>
           <NavLink
             to="/companies"
-            className={({ isActive }) => `${navLinkClass(isActive)} hidden lg:inline-block`}
+            className={({ isActive }) => `${navLinkClass(isActive, glass)} hidden lg:inline-block`}
           >
             {t("nav.companies", { defaultValue: "Spółki" })}
           </NavLink>
@@ -345,6 +370,7 @@ export function AppNavBar() {
             groupActive={marketsActive}
             openDropdown={openDropdown}
             setOpenDropdown={setOpenDropdown}
+            glass={glass}
           />
           <DesktopDropdown
             id="portfolio"
@@ -353,6 +379,7 @@ export function AppNavBar() {
             groupActive={portfolioActive}
             openDropdown={openDropdown}
             setOpenDropdown={setOpenDropdown}
+            glass={glass}
           />
           <DesktopDropdown
             id="tools"
@@ -361,11 +388,12 @@ export function AppNavBar() {
             groupActive={toolsActive}
             openDropdown={openDropdown}
             setOpenDropdown={setOpenDropdown}
+            glass={glass}
           />
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-2 md:ml-0 md:hidden">
-          <GlobalSearchBar variant="mobile" />
+          <GlobalSearchBar variant="mobile" glass={glass} />
           <button
             type="button"
             className="inline-flex h-10 w-10 flex-col items-center justify-center rounded-xl border border-border/80 bg-bgSecondary/50 transition hover:border-brandDark/30 hover:bg-bgSecondary"
@@ -396,7 +424,7 @@ export function AppNavBar() {
         </div>
 
         <div className="hidden shrink-0 items-center gap-1.5 md:flex lg:gap-2">
-          <GlobalSearchBar variant="desktop" />
+          <GlobalSearchBar variant="desktop" glass={glass} />
           <NotificationsCenter />
           <ThemeToggle />
           {user ? (
@@ -428,14 +456,14 @@ export function AppNavBar() {
                   </div>
                   <NavLink
                     to="/profile"
-                    className={({ isActive }) => `${navLinkClass(isActive)} rounded-none px-3`}
+                    className={({ isActive }) => `${navLinkClass(isActive, glass)} rounded-none px-3`}
                     onClick={() => setAccountOpen(false)}
                   >
                     {profileLabel}
                   </NavLink>
                   <NavLink
                     to="/settings"
-                    className={({ isActive }) => `${navLinkClass(isActive)} rounded-none px-3`}
+                    className={({ isActive }) => `${navLinkClass(isActive, glass)} rounded-none px-3`}
                     onClick={() => setAccountOpen(false)}
                   >
                     {settingsLabel}

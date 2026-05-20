@@ -126,7 +126,7 @@ export function DividendIntelligencePage() {
           </div>
         ) : null}
 
-        <section className="rounded-2xl border p-5 shadow-sm md:p-6" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <section className="rounded-2xl border p-5 shadow-sm md:p-6 glass-section">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-4">
               <label className="block text-sm">
@@ -195,7 +195,7 @@ export function DividendIntelligencePage() {
         </section>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className="rounded-2xl border p-5 shadow-sm" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+          <section className="rounded-2xl border p-5 shadow-sm glass-section">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
                 Historia dywidend
@@ -224,7 +224,7 @@ export function DividendIntelligencePage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border p-5 shadow-sm" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+          <section className="rounded-2xl border p-5 shadow-sm glass-section">
             <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
               Latest dividend signals
             </h2>

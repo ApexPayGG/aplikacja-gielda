@@ -8,7 +8,6 @@ import { CoachEmotionHubSection } from "../components/behavioral-coach/CoachEmot
 import { CoachInterventionsSection } from "../components/behavioral-coach/CoachInterventionsSection";
 import { CoachPaperTradingCard } from "../components/behavioral-coach/CoachPaperTradingCard";
 import { EmotionJournalSection } from "../components/behavioral-coach/EmotionJournalSection";
-import { GLASS_PAGE_BG } from "../components/behavioral-coach/glassStyles";
 import { TraderPsycheProfileSection } from "../components/behavioral-coach/TraderPsycheProfileSection";
 import { useAuth } from "../context/AuthContext";
 import { useCoachPaperTrading } from "../hooks/useCoachPaperTrading";
@@ -170,13 +169,8 @@ export function BehavioralCoachPage() {
   const radarLoading = loading || !hydrated || psycheSync.loading;
 
   return (
-    <div className={`${GLASS_PAGE_BG} overflow-x-hidden`}>
-      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
-        <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-[#2D0A6B]/40 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#00C9D4]/10 blur-3xl" />
-      </div>
-
-      <div className="relative mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:py-10">
+    <div className="relative overflow-x-hidden">
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:py-10">
         <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#00C9D4]">StockAI Coach</p>

@@ -7,7 +7,6 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { GlassAmbient } from "../components/behavioral-coach/GlassAmbient";
 import {
   GLASS_BTN_GHOST,
   GLASS_BTN_PRIMARY,
@@ -15,7 +14,6 @@ import {
   GLASS_HERO,
   GLASS_INNER_PANEL,
   GLASS_LINK_ACCENT,
-  GLASS_PAGE_BG,
   GLASS_SECTION,
   GLASS_SECTION_TITLE,
   GLASS_STAT_CARD,
@@ -191,8 +189,7 @@ export function Dashboard() {
   };
 
   return (
-    <div className={`${GLASS_PAGE_BG} relative overflow-x-hidden`}>
-      <GlassAmbient />
+    <div>
 
       <div className="relative z-10 mx-auto max-w-[1400px] px-4 py-6 md:px-6">
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">

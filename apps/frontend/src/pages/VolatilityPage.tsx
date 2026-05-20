@@ -58,7 +58,7 @@ export function VolatilityPage() {
       </header>
 
       <section className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
-        <article className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <article className="rounded-2xl border p-5 glass-section">
           <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
             Calendar heat map (12 months x sectors)
           </h2>
@@ -140,11 +140,11 @@ export function VolatilityPage() {
           </div>
         </article>
 
-        <aside className="rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <aside className="rounded-2xl border p-5 glass-section">
           <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
             Selected month + sector details
           </h2>
-          <div className="rounded-xl border p-4" style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary }}>
+          <div className="rounded-xl border p-4 glass-panel">
             <div className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Month
             </div>

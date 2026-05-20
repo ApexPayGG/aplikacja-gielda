@@ -1,7 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
 import { api } from "../services/api";
-import { GlassPageShell } from "../components/behavioral-coach/GlassPageShell";
 import {
   GLASS_BTN_PRIMARY,
   GLASS_HERO,
@@ -99,7 +98,7 @@ export function PositionSizePage() {
   };
 
   return (
-    <GlassPageShell className="space-y-8" maxWidth="max-w-6xl">
+    <div>
       <header className={GLASS_HERO}>
         <h1 className={GLASS_PAGE_TITLE}>Kalkulator pozycji</h1>
         <p className={GLASS_PAGE_SUBTITLE}>
@@ -268,6 +267,6 @@ export function PositionSizePage() {
           box-shadow: 0 4px 10px rgba(45, 10, 107, 0.25);
         }
       `}</style>
-    </GlassPageShell>
+    </div>
   );
 }

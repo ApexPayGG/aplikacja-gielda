@@ -1,4 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { hasCompletedOnboarding } from "../utils/onboarding";
 
 const HIDDEN_PREFIXES = [
   "/login",

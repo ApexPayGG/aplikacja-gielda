@@ -135,13 +135,13 @@ export function ReplayModePage() {
 
   return (
     <div className="min-h-screen bg-bgSecondary">
-      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 text-textPrimary">
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 text-white">
         <header
-          className="rounded-3xl border border-border bg-bgPrimary p-6 shadow-[0_18px_45px_rgba(45,10,107,0.1)]"
+          className="glass-section rounded-3xl p-6 shadow-[0_18px_45px_rgba(45,10,107,0.1)]"
           style={{ background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
         >
-          <h1 className="text-3xl font-bold text-brandDark">Replay Mode</h1>
-          <p className="mt-2 text-sm text-textSecondary">Cofnij się w czasie i zagraj &quot;co bym zrobił&quot;</p>
+          <h1 className="glass-page-title text-3xl">Replay Mode</h1>
+          <p className="mt-2 glass-muted text-sm">Cofnij się w czasie i zagraj &quot;co bym zrobił&quot;</p>
         </header>
 
         {error ? (
@@ -150,17 +150,17 @@ export function ReplayModePage() {
           </div>
         ) : null}
 
-        <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+        <section className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
           <form onSubmit={onLoadSnapshot} className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-textSecondary">Symbol search</span>
+              <span className="font-medium glass-muted">Symbol search</span>
               <input
                 list="replay-symbols"
                 type="search"
                 value={symbolInput}
                 onChange={(e) => setSymbolInput(e.target.value.toUpperCase())}
                 placeholder="Wyszukaj spółkę..."
-                className="rounded-xl border border-border bg-bgSecondary px-3 py-2.5 text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
+                className="rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5 text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
                 required
               />
               <datalist id="replay-symbols">
@@ -170,17 +170,17 @@ export function ReplayModePage() {
                   </option>
                 ))}
               </datalist>
-              <span className="text-xs text-textMuted">{loadingSymbols ? "Szukam symboli..." : "Wpisz ticker lub nazwę"}</span>
+              <span className="text-xs text-white/50">{loadingSymbols ? "Szukam symboli..." : "Wpisz ticker lub nazwę"}</span>
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-textSecondary">Date picker</span>
+              <span className="font-medium glass-muted">Date picker</span>
               <input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 max={maxReplayDate}
-                className="rounded-xl border border-border bg-bgSecondary px-3 py-2.5 text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
+                className="rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5 text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
                 required
               />
             </label>
@@ -201,22 +201,22 @@ export function ReplayModePage() {
         {snapshot ? (
           <section className="grid gap-5 md:grid-cols-[1.45fr_1fr]">
             <article
-              className="flex min-h-[360px] items-center justify-center rounded-2xl border border-border p-6 text-center shadow-[0_14px_34px_rgba(45,10,107,0.08)]"
+              className="flex min-h-[360px] items-center justify-center rounded-2xl border border-white/10 p-6 text-center shadow-[0_14px_34px_rgba(45,10,107,0.08)]"
               style={{ backgroundColor: colors.bgSecondary }}
             >
               <div>
-                <p className="text-sm font-medium text-textMuted">Wykres historyczny</p>
-                <p className="mt-2 text-xs text-textMuted">
+                <p className="text-sm font-medium text-white/50">Wykres historyczny</p>
+                <p className="mt-2 text-xs text-white/50">
                   {snapshot.symbol} • {snapshot.date}
                 </p>
               </div>
             </article>
 
-            <aside className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
-              <p className="text-sm font-semibold text-textSecondary">Panel decyzji</p>
-              <div className="mt-4 rounded-xl border border-border bg-bgSecondary p-3">
-                <p className="text-xs uppercase tracking-wide text-textMuted">Cena na wybrany dzień</p>
-                <p className="mt-1 font-mono text-2xl font-bold text-brandDark">{formatPrice(snapshot.close)}</p>
+            <aside className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+              <p className="text-sm font-semibold glass-muted">Panel decyzji</p>
+              <div className="mt-4 rounded-xl glass-panel border border-white/10 bg-white/5 p-3">
+                <p className="text-xs uppercase tracking-wide text-white/50">Cena na wybrany dzień</p>
+                <p className="mt-1 font-mono text-2xl font-bold text-white">{formatPrice(snapshot.close)}</p>
               </div>
 
               <div className="mt-4 grid grid-cols-3 gap-2">
@@ -242,7 +242,7 @@ export function ReplayModePage() {
                   type="button"
                   onClick={() => void onDecide("SKIP")}
                   disabled={loadingEvaluation}
-                  className="rounded-lg border border-border px-3 py-2 text-sm font-semibold transition hover:bg-bgSecondary disabled:opacity-60"
+                  className="rounded-lg border border-white/10 px-3 py-2 text-sm font-semibold transition hover:bg-bgSecondary disabled:opacity-60"
                   style={{ color: colors.textMuted }}
                 >
                   Pomiń
@@ -250,17 +250,17 @@ export function ReplayModePage() {
               </div>
 
               <label className="mt-4 block text-sm">
-                <span className="font-medium text-textSecondary">Dlaczego?</span>
+                <span className="font-medium glass-muted">Dlaczego?</span>
                 <textarea
                   value={reason}
                   onChange={(event) => setReason(event.target.value)}
                   rows={5}
                   placeholder="Opisz swój tok myślenia..."
-                  className="mt-1 w-full rounded-xl border border-border bg-bgSecondary px-3 py-2.5 text-sm text-textPrimary outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
+                  className="mt-1 w-full rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
                 />
               </label>
 
-              {loadingEvaluation ? <p className="mt-3 text-xs text-textMuted">Analiza decyzji...</p> : null}
+              {loadingEvaluation ? <p className="mt-3 text-xs text-white/50">Analiza decyzji...</p> : null}
             </aside>
           </section>
         ) : null}
