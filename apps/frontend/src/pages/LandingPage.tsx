@@ -1087,7 +1087,7 @@ export function LandingPage() {
       </header>
 
       {/* ═══ HERO ═══ */}
-      <section className="hero-gradient-bg relative isolate flex min-h-screen items-center overflow-x-hidden pt-24">
+      <section className="hero-gradient-bg relative isolate flex min-h-screen items-start overflow-x-hidden pt-20 pb-12">
         <div
           className="animate-float pointer-events-none absolute left-4 top-8 z-0 h-48 w-48 rounded-full opacity-20 blur-3xl sm:left-10 sm:top-10 sm:h-72 sm:w-72 md:h-[500px] md:w-[500px]"
           style={{ background: "radial-gradient(circle, #7A0F9E, transparent)" }}
