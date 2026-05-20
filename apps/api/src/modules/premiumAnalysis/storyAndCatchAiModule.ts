@@ -1,5 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import process from "node:process";
+import {
+  type AiCallTelemetry,
+  logAiCallFromAnthropicResponse,
+} from "../../services/aiCostTelemetry";
 
 type StoryInput = {
   ticker: string;
@@ -45,9 +49,15 @@ function hasApiKey(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
 }
 
-async function callClaude(prompt: string, model: string, maxTokens: number): Promise<string | null> {
+async function callClaude(
+  prompt: string,
+  model: string,
+  maxTokens: number,
+  telemetry: AiCallTelemetry,
+): Promise<string | null> {
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   if (!apiKey) return null;
+  const startedAt = Date.now();
   const client = new Anthropic({ apiKey });
   const response = await client.messages.create({
     model,
@@ -55,12 +65,16 @@ async function callClaude(prompt: string, model: string, maxTokens: number): Pro
     temperature: 0.2,
     messages: [{ role: "user", content: prompt }],
   });
+  logAiCallFromAnthropicResponse(telemetry, model, startedAt, response.usage);
   const block = response.content[0];
   if (!block || block.type !== "text") return null;
   return block.text;
 }
 
-export async function generateCinematicStoryAi(input: StoryInput): Promise<{
+export async function generateCinematicStoryAi(
+  input: StoryInput,
+  telemetry?: Partial<AiCallTelemetry>,
+): Promise<{
   act1Narrative?: string;
   act2Narrative?: string;
   act3Narrative?: string;
@@ -88,7 +102,15 @@ Rules:
 - Act3: future scenarios framing (bull/base/bear catalyst map)
 - Synthesis: one strategic takeaway sentence
 `;
-  const raw = await callClaude(prompt, STORY_MODEL, 900);
+  const raw = await callClaude(prompt, STORY_MODEL, 900, {
+    endpoint: telemetry?.endpoint ?? "/api/premium/story",
+    plan: telemetry?.plan ?? "unknown",
+    symbol: telemetry?.symbol ?? input.ticker,
+    lang: telemetry?.lang ?? input.language,
+    userId: telemetry?.userId ?? null,
+    cacheHit: false,
+    ...telemetry,
+  });
   if (!raw) return {};
   const obj = parseJsonObject(raw);
   if (!obj) return {};
@@ -100,7 +122,10 @@ Rules:
   };
 }
 
-export async function generateCatchAi(input: CatchInput): Promise<{
+export async function generateCatchAi(
+  input: CatchInput,
+  telemetry?: Partial<AiCallTelemetry>,
+): Promise<{
   dirtyTruthRefinement?: string;
   bullRefinement?: string;
   bearRefinement?: string;
@@ -122,7 +147,15 @@ Rules:
 - Keep each field max 35 words
 - If dirty truth is "none", propose one only if conviction is high; otherwise return empty string
 `;
-  const raw = await callClaude(prompt, CATCH_MODEL, 450);
+  const raw = await callClaude(prompt, CATCH_MODEL, 450, {
+    endpoint: telemetry?.endpoint ?? "/api/premium/catch",
+    plan: telemetry?.plan ?? "unknown",
+    symbol: telemetry?.symbol ?? input.ticker,
+    lang: telemetry?.lang ?? null,
+    userId: telemetry?.userId ?? null,
+    cacheHit: false,
+    ...telemetry,
+  });
   if (!raw) return {};
   const obj = parseJsonObject(raw);
   if (!obj) return {};

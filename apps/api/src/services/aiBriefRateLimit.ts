@@ -2,13 +2,13 @@ import type { PrismaClient } from "@prisma/client";
 import type { NextFunction, Request, Response } from "express";
 import { tryGetAuthenticatedUserId, type AuthenticatedRequest } from "../modules/auth/authMiddleware";
 import { getCacheRedis } from "../redis";
-import { extractBriefSymbolFromPath, peekCachedBrief } from "./aiBriefCache";
+import { extractBriefSymbolFromPath, peekCachedBriefExact } from "./aiBriefCache";
 
 export type UserTier = "FREE" | "PRO" | "PRO_PLUS";
 
 export const AI_BRIEF_FREE_LIMIT = 3;
-export const AI_BRIEF_PRO_DAILY_LIMIT = Number(process.env.AI_BRIEF_PRO_DAILY_LIMIT ?? 20);
-export const AI_BRIEF_PRO_PLUS_DAILY_LIMIT = Number(process.env.AI_BRIEF_PRO_PLUS_DAILY_LIMIT ?? 60);
+export const AI_BRIEF_PRO_DAILY_LIMIT = Number(process.env.AI_BRIEF_PRO_DAILY_LIMIT ?? 15);
+export const AI_BRIEF_PRO_PLUS_DAILY_LIMIT = Number(process.env.AI_BRIEF_PRO_PLUS_DAILY_LIMIT ?? 40);
 export const AI_BRIEF_FREE_WINDOW_SEC = 86_400;
 
 export type AiBriefRateLimitResult =
@@ -136,7 +136,7 @@ function briefLocaleFromRequest(req: Request): string {
 export async function peekAiBriefCached(req: Request): Promise<boolean> {
   const symbol = extractBriefSymbolFromPath(getRequestPath(req));
   if (!symbol) return false;
-  const cached = await peekCachedBrief(symbol, briefLocaleFromRequest(req));
+  const cached = await peekCachedBriefExact(symbol, briefLocaleFromRequest(req));
   return cached != null;
 }
 

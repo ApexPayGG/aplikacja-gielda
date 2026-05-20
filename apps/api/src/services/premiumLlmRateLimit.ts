@@ -7,8 +7,8 @@ import { tryGetAuthenticatedUserId } from "../modules/auth/authMiddleware";
 import { getCacheRedis } from "../redis";
 
 /** Max Claude calls per day for Premium story/catch (not verdict/personal-fit/twins). */
-export const PREMIUM_LLM_PRO_DAILY_LIMIT = Number(process.env.PREMIUM_LLM_PRO_DAILY_LIMIT ?? 12);
-export const PREMIUM_LLM_PRO_PLUS_DAILY_LIMIT = Number(process.env.PREMIUM_LLM_PRO_PLUS_DAILY_LIMIT ?? 40);
+export const PREMIUM_LLM_PRO_DAILY_LIMIT = Number(process.env.PREMIUM_LLM_PRO_DAILY_LIMIT ?? 8);
+export const PREMIUM_LLM_PRO_PLUS_DAILY_LIMIT = Number(process.env.PREMIUM_LLM_PRO_PLUS_DAILY_LIMIT ?? 25);
 const PREMIUM_LLM_WINDOW_SEC = 86_400;
 
 const PREMIUM_LLM_PATH = /^\/api\/premium\/[^/]+\/(story|catch)\/?$/i;

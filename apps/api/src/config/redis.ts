@@ -64,6 +64,9 @@ export const redisKeys = {
   }) => `${KEY_PREFIX}:screener:dividend:growth:v2:${shortHash(JSON.stringify(filters))}`,
   analysisBrief: (symbol: string, langKey: string) =>
     `${KEY_PREFIX}:analysis:${symbol.trim().toUpperCase()}:${langKey}`,
+  /** Single-flight lock while generating a shared company brief */
+  analysisBriefLock: (symbol: string, langKey: string) =>
+    `lock:${KEY_PREFIX}:analysis:${symbol.trim().toUpperCase()}:${langKey}`,
   intelligenceDividend: (symbol: string) =>
     `${KEY_PREFIX}:intelligence:dividend:${symbol.trim().toUpperCase()}`,
   alertsDividend: (symbol: string) => `${KEY_PREFIX}:alerts:dividend:${symbol.trim().toUpperCase()}`,

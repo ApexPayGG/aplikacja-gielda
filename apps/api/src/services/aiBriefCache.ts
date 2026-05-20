@@ -1,6 +1,40 @@
+import { randomUUID } from "node:crypto";
 import type { AnalysisResult } from "../ai/analysis";
 import { cacheJsonGet, cacheJsonSet } from "../cache/jsonCache";
-import { REDIS_TTL_SEC, redisKeys } from "../config/redis";
+import { isRedisConfigured, REDIS_TTL_SEC, redisKeys } from "../config/redis";
+import { getCacheRedis } from "../redis";
+
+/**
+ * GLOBAL CACHE SCOPE — company AI brief only (`cache:v1:analysis:{SYMBOL}:{lang}`).
+ * Never use for: Behavioral Coach, Personal Fit, portfolio, watchlist insights, decision journal.
+ * Premium personal-fit uses `premiumPersonalFit` with userId in the key.
+ */
+
+const LOCK_POLL_MS = 250;
+
+function lockTtlSec(): number {
+  const raw = Number(process.env.AI_BRIEF_LOCK_TTL_SEC ?? 45);
+  return Number.isFinite(raw) && raw >= 15 ? raw : 45;
+}
+
+function lockWaitMs(): number {
+  const raw = Number(process.env.AI_BRIEF_LOCK_WAIT_MS ?? 45_000);
+  return Number.isFinite(raw) && raw >= 200 ? raw : 45_000;
+}
+
+const memoryLocks = new Map<string, { token: string; expiresAt: number }>();
+
+export class BriefGenerationBusyError extends Error {
+  readonly symbol: string;
+  readonly lang: string;
+
+  constructor(symbol: string, lang: string) {
+    super(`Brief generation in progress for ${symbol} (${lang})`);
+    this.name = "BriefGenerationBusyError";
+    this.symbol = symbol;
+    this.lang = lang;
+  }
+}
 
 function primaryLanguageBase(lang: string): string {
   const trimmed = lang.trim();
@@ -8,7 +42,7 @@ function primaryLanguageBase(lang: string): string {
   return trimmed.split(/[-_]/)[0]!.toLowerCase();
 }
 
-function cacheKeySuffixForLang(lang: string): string {
+export function cacheKeySuffixForLang(lang: string): string {
   if (primaryLanguageBase(lang) === "en") return "en";
   return lang.toLowerCase().replace(/[^a-z0-9_-]+/g, "") || "und";
 }
@@ -33,28 +67,32 @@ function normalizeCachedPayload(parsed: AnalysisResult): AnalysisResult | null {
   return null;
 }
 
-/**
- * Shared Redis brief for all users: cache:v1:analysis:{SYMBOL}:{langKey}
- * Non-English locales fall back to English cache when available (saves Anthropic calls).
- */
-export async function peekCachedBrief(symbol: string, localeTag = "en"): Promise<AnalysisResult | null> {
+function briefDataKey(symbol: string, lang: string): string {
+  return redisKeys.analysisBrief(symbol.trim().toUpperCase(), cacheKeySuffixForLang(lang));
+}
+
+function briefLockKey(symbol: string, lang: string): string {
+  return redisKeys.analysisBriefLock(symbol.trim().toUpperCase(), cacheKeySuffixForLang(lang));
+}
+
+/** Exact locale cache only — never serves EN body to a PL UI request. */
+export async function peekCachedBriefExact(symbol: string, localeTag = "en"): Promise<AnalysisResult | null> {
   const sym = symbol.trim().toUpperCase();
   if (!sym) return null;
-
   const lang = (localeTag.trim() || "en").trim();
-  const primaryKey = redisKeys.analysisBrief(sym, cacheKeySuffixForLang(lang));
-  const primary = await cacheJsonGet<AnalysisResult>(primaryKey);
-  if (primary) {
-    const normalized = normalizeCachedPayload(primary);
-    if (normalized) return normalized;
-  }
+  const primary = await cacheJsonGet<AnalysisResult>(briefDataKey(sym, lang));
+  if (!primary) return null;
+  return normalizeCachedPayload(primary);
+}
 
-  if (primaryLanguageBase(lang) === "en") return null;
+/** English source for cheap translation path (not returned directly to non-EN clients). */
+export async function peekCachedBriefEnglish(symbol: string): Promise<AnalysisResult | null> {
+  return peekCachedBriefExact(symbol, "en");
+}
 
-  const enKey = redisKeys.analysisBrief(sym, "en");
-  const enCached = await cacheJsonGet<AnalysisResult>(enKey);
-  if (!enCached) return null;
-  return normalizeCachedPayload(enCached);
+/** @deprecated Use peekCachedBriefExact for serving; kept for internal callers. */
+export async function peekCachedBrief(symbol: string, localeTag = "en"): Promise<AnalysisResult | null> {
+  return peekCachedBriefExact(symbol, localeTag);
 }
 
 export async function storeCachedBrief(
@@ -65,8 +103,93 @@ export async function storeCachedBrief(
   const sym = symbol.trim().toUpperCase();
   if (!sym) return;
   const lang = (localeTag.trim() || "en").trim();
-  const key = redisKeys.analysisBrief(sym, cacheKeySuffixForLang(lang));
-  await cacheJsonSet(key, payload, briefCacheTtlSec());
+  await cacheJsonSet(briefDataKey(sym, lang), payload, briefCacheTtlSec());
+}
+
+async function acquireMemoryLock(lockKey: string, token: string, ttlSec: number): Promise<boolean> {
+  const now = Date.now();
+  const existing = memoryLocks.get(lockKey);
+  if (existing && existing.expiresAt > now && existing.token !== token) {
+    return false;
+  }
+  memoryLocks.set(lockKey, { token, expiresAt: now + ttlSec * 1000 });
+  return true;
+}
+
+async function releaseMemoryLock(lockKey: string, token: string): Promise<void> {
+  const existing = memoryLocks.get(lockKey);
+  if (existing?.token === token) memoryLocks.delete(lockKey);
+}
+
+async function acquireLock(lockKey: string, token: string, ttlSec: number): Promise<boolean> {
+  if (!isRedisConfigured()) {
+    return acquireMemoryLock(lockKey, token, ttlSec);
+  }
+  try {
+    const redis = getCacheRedis();
+    const ok = await redis.set(lockKey, token, "EX", ttlSec, "NX");
+    return ok === "OK";
+  } catch {
+    return acquireMemoryLock(lockKey, token, ttlSec);
+  }
+}
+
+async function releaseLock(lockKey: string, token: string): Promise<void> {
+  if (!isRedisConfigured()) {
+    await releaseMemoryLock(lockKey, token);
+    return;
+  }
+  try {
+    const redis = getCacheRedis();
+    const current = await redis.get(lockKey);
+    if (current === token) await redis.del(lockKey);
+  } catch {
+    await releaseMemoryLock(lockKey, token);
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForExactCache(symbol: string, localeTag: string, maxMs: number): Promise<AnalysisResult | null> {
+  const deadline = Date.now() + maxMs;
+  while (Date.now() < deadline) {
+    const hit = await peekCachedBriefExact(symbol, localeTag);
+    if (hit) return hit;
+    await sleep(LOCK_POLL_MS);
+  }
+  return null;
+}
+
+/**
+ * Single-flight guard: one Claude/translation run per symbol+lang; waiters poll cache.
+ */
+export async function withBriefGenerationLock<T>(
+  symbol: string,
+  localeTag: string,
+  work: () => Promise<T>,
+): Promise<T> {
+  const sym = symbol.trim().toUpperCase();
+  const lang = (localeTag.trim() || "en").trim();
+  const lockKey = briefLockKey(sym, lang);
+  const token = randomUUID();
+  const ttlSec = lockTtlSec();
+
+  const acquired = await acquireLock(lockKey, token, ttlSec);
+  if (!acquired) {
+    const waited = await waitForExactCache(sym, lang, lockWaitMs());
+    if (waited) return waited as T;
+    throw new BriefGenerationBusyError(sym, lang);
+  }
+
+  try {
+    const cached = await peekCachedBriefExact(sym, lang);
+    if (cached) return cached as T;
+    return await work();
+  } finally {
+    await releaseLock(lockKey, token);
+  }
 }
 
 export function extractBriefSymbolFromPath(path: string): string | null {

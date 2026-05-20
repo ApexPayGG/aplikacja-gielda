@@ -3,8 +3,20 @@ import process from "node:process";
 import { buildFallbackBrief } from "../content/sectorFallbacks";
 import { getCompanyBySymbol } from "../db/company-queries";
 import { getLatestIndicator, getLatestQuote, getQuoteHistory, getRecentNews } from "../db/queries";
-import { peekCachedBrief, storeCachedBrief } from "../services/aiBriefCache";
+import {
+  peekCachedBriefEnglish,
+  peekCachedBriefExact,
+  storeCachedBrief,
+  withBriefGenerationLock,
+} from "../services/aiBriefCache";
+import {
+  type AiCallTelemetry,
+  logAiCallFromAnthropicResponse,
+  logAiUsageEvent,
+} from "../services/aiCostTelemetry";
+
 const MODEL = "claude-sonnet-4-6";
+const TRANSLATION_MODEL = process.env.AI_BRIEF_TRANSLATION_MODEL?.trim() || "claude-haiku-4-5";
 
 export type BriefSection = { lang: string; body: string };
 
@@ -13,6 +25,13 @@ export type AnalysisResult = {
   updatedAt: string;
   requestedLang: string;
   sections: BriefSection[];
+};
+
+export type AnalyzeStockContext = {
+  userId?: string | null;
+  plan?: string;
+  endpoint?: string;
+  clientIp?: string | null;
 };
 
 function primaryLanguageBase(lang: string): string {
@@ -141,6 +160,33 @@ function normalizeRequestLang(lang: string | undefined): string {
   return s || "en";
 }
 
+function telemetryBase(ctx: AnalyzeStockContext | undefined, sym: string, lang: string): AiCallTelemetry {
+  return {
+    userId: ctx?.userId ?? null,
+    plan: ctx?.plan ?? "unknown",
+    endpoint: ctx?.endpoint ?? "ai_brief",
+    symbol: sym,
+    lang,
+  };
+}
+
+function logCacheHit(ctx: AnalyzeStockContext | undefined, sym: string, lang: string, startedAt: number): void {
+  logAiUsageEvent({
+    userId: ctx?.userId ?? null,
+    plan: ctx?.plan ?? "unknown",
+    endpoint: ctx?.endpoint ?? "ai_brief",
+    symbol: sym,
+    lang,
+    cacheHit: true,
+    model: null,
+    inputTokens: null,
+    outputTokens: null,
+    estimatedCostUsd: 0,
+    latencyMs: Date.now() - startedAt,
+    createdAt: new Date().toISOString(),
+  });
+}
+
 function isLlmAuthOrConfigError(err: unknown): boolean {
   if (err instanceof APIError && (err.status === 401 || err.status === 403)) return true;
   if (err && typeof err === "object" && "error" in err) {
@@ -163,103 +209,229 @@ function isLlmAuthOrConfigError(err: unknown): boolean {
   }
   return false;
 }
-/**
- * Claude Sonnet brief + optional Redis cache when REDIS_URL is set.
- * @param localeTag BCP 47 tag from the client (e.g. pl, de, en-GB). English locales → EN-only; others → locale + EN.
- */
-export async function analyzeStock(symbol: string, localeTag = "en"): Promise<AnalysisResult> {
-  const sym = symbol.toUpperCase();
-  const lang = normalizeRequestLang(localeTag);
 
-  const cached = await peekCachedBrief(sym, lang);
-  if (cached) return cached;
-
+async function translateBriefFromEnglish(
+  enBrief: AnalysisResult,
+  targetLang: string,
+  sym: string,
+  ctx?: AnalyzeStockContext,
+): Promise<AnalysisResult | null> {
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) return null;
 
-  const [quote, news, rsiRow, company, quoteHistory] = await Promise.all([
-    getLatestQuote(sym),
-    getRecentNews(sym, 10),
-    getLatestIndicator(sym, "RSI"),
-    getCompanyBySymbol(sym),
-    getQuoteHistory(sym, 60),
-  ]);
+  const enSection = enBrief.sections.find((s) => primaryLanguageBase(s.lang) === "en") ?? enBrief.sections[0];
+  if (!enSection?.body) return null;
 
-  const fallbackContext = {
-    symbol: sym,
-    companyName: company?.name,
-    sector: company?.sector,
-    industry: company?.industry,
-    localeTag: lang,
-    closePrice: quote?.close?.toString() ?? null,
-    rsi: rsiRow ? rsiRow.value.toString() : null,
-  };
-
-  if (!apiKey) {
-    console.warn(`[analysis] ANTHROPIC_API_KEY missing — serving sector fallback brief for ${sym}`);
-    return buildFallbackBrief(fallbackContext);
-  }
-
-  const quoteJson = quote
-    ? {
-        timestamp: quote.timestamp.toISOString(),
-        close: quote.close.toString(),
-        volume: quote.volume.toString(),
-        source: quote.source,
-      }
-    : null;
-
-  const newsTitles = news.map((n) => n.title);
-  const rsi = rsiRow ? rsiRow.value.toString() : null;
-  const closes = quoteHistory.map((q) => Number(q.close)).filter((v) => Number.isFinite(v));
-  const { support, resistance } = levelsFromQuoteHistory(closes);
-  const trendSummary = summarizePriceTrend(closes);
-
-  const promptContext: BriefMarketContext = {
-    symbol: sym,
-    companyName: company?.name,
-    sector: company?.sector,
-    industry: company?.industry,
-    quoteJson,
-    newsTitles,
-    rsi,
-    supportLevel: support,
-    resistanceLevel: resistance,
-    trendSummary,
-  };
+  const langName = languageNameForPrompt(targetLang);
+  const startedAt = Date.now();
+  const telemetry = telemetryBase(ctx, sym, targetLang);
 
   try {
     const client = new Anthropic({ apiKey });
     const msg = await client.messages.create({
-      model: MODEL,
-      max_tokens: 1500,
-      messages: [{ role: "user", content: buildPrompt(promptContext, lang) }],
+      model: TRANSLATION_MODEL,
+      max_tokens: 1800,
+      temperature: 0.1,
+      messages: [
+        {
+          role: "user",
+          content: `Translate the following investment brief into ${langName} (locale ${targetLang}). Keep financial terminology accurate. Output plain text only, same structure and length as the source.\n\n${enSection.body}`,
+        },
+      ],
     });
 
+    logAiCallFromAnthropicResponse(telemetry, TRANSLATION_MODEL, startedAt, msg.usage);
+
     const block = msg.content[0];
-    const rawBrief = block.type === "text" ? block.text : "";
+    const body = block.type === "text" ? block.text.trim() : "";
+    if (!body) return null;
+
     const updatedAt = new Date().toISOString();
-    const sections = parseBriefSections(rawBrief, lang);
-    const out: AnalysisResult = {
+    const sections: BriefSection[] = isEnglishLocale(targetLang)
+      ? [{ lang: "en", body }]
+      : [
+          { lang: targetLang, body },
+          { lang: "en", body: enSection.body },
+        ];
+
+    return {
       brief: joinBriefForLegacy(sections),
       updatedAt,
-      requestedLang: lang,
+      requestedLang: targetLang,
       sections,
     };
-
-    await storeCachedBrief(sym, lang, out);
-    return out;
   } catch (err) {
-    if (isLlmAuthOrConfigError(err)) {
+    logAiUsageEvent({
+      userId: telemetry.userId ?? null,
+      plan: telemetry.plan ?? "unknown",
+      endpoint: telemetry.endpoint,
+      symbol: sym,
+      lang: targetLang,
+      cacheHit: false,
+      model: TRANSLATION_MODEL,
+      inputTokens: null,
+      outputTokens: null,
+      estimatedCostUsd: null,
+      latencyMs: Date.now() - startedAt,
+      createdAt: new Date().toISOString(),
+      meta: { error: err instanceof Error ? err.message : "translation_failed" },
+    });
+    return null;
+  }
+}
+
+async function generateBriefWithClaude(
+  sym: string,
+  lang: string,
+  promptContext: BriefMarketContext,
+  ctx?: AnalyzeStockContext,
+): Promise<AnalysisResult> {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) {
+    throw new Error("ANTHROPIC_API_KEY missing");
+  }
+
+  const startedAt = Date.now();
+  const telemetry = telemetryBase(ctx, sym, lang);
+  const client = new Anthropic({ apiKey });
+  const msg = await client.messages.create({
+    model: MODEL,
+    max_tokens: 1500,
+    messages: [{ role: "user", content: buildPrompt(promptContext, lang) }],
+  });
+
+  logAiCallFromAnthropicResponse(telemetry, MODEL, startedAt, msg.usage);
+
+  const block = msg.content[0];
+  const rawBrief = block.type === "text" ? block.text : "";
+  const updatedAt = new Date().toISOString();
+  const sections = parseBriefSections(rawBrief, lang);
+  return {
+    brief: joinBriefForLegacy(sections),
+    updatedAt,
+    requestedLang: lang,
+    sections,
+  };
+}
+
+/**
+ * Claude Sonnet brief + shared Redis cache (global per symbol+lang, not per user).
+ */
+export async function analyzeStock(
+  symbol: string,
+  localeTag = "en",
+  ctx?: AnalyzeStockContext,
+): Promise<AnalysisResult> {
+  const startedAt = Date.now();
+  const sym = symbol.toUpperCase();
+  const lang = normalizeRequestLang(localeTag);
+
+  const exact = await peekCachedBriefExact(sym, lang);
+  if (exact) {
+    logCacheHit(ctx, sym, lang, startedAt);
+    return exact;
+  }
+
+  return withBriefGenerationLock(sym, lang, async () => {
+    const afterLock = await peekCachedBriefExact(sym, lang);
+    if (afterLock) {
+      logCacheHit(ctx, sym, lang, startedAt);
+      return afterLock;
+    }
+
+    const [quote, news, rsiRow, company, quoteHistory] = await Promise.all([
+      getLatestQuote(sym),
+      getRecentNews(sym, 10),
+      getLatestIndicator(sym, "RSI"),
+      getCompanyBySymbol(sym),
+      getQuoteHistory(sym, 60),
+    ]);
+
+    const fallbackContext = {
+      symbol: sym,
+      companyName: company?.name,
+      sector: company?.sector,
+      industry: company?.industry,
+      localeTag: lang,
+      closePrice: quote?.close?.toString() ?? null,
+      rsi: rsiRow ? rsiRow.value.toString() : null,
+    };
+
+    if (!isEnglishLocale(lang)) {
+      const enCached = await peekCachedBriefEnglish(sym);
+      if (enCached) {
+        const translated = await translateBriefFromEnglish(enCached, lang, sym, ctx);
+        if (translated) {
+          await storeCachedBrief(sym, lang, translated);
+          return translated;
+        }
+      }
+    }
+
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!apiKey) {
+      console.warn(`[analysis] ANTHROPIC_API_KEY missing — serving sector fallback brief for ${sym}`);
+      return buildFallbackBrief(fallbackContext);
+    }
+
+    const quoteJson = quote
+      ? {
+          timestamp: quote.timestamp.toISOString(),
+          close: quote.close.toString(),
+          volume: quote.volume.toString(),
+          source: quote.source,
+        }
+      : null;
+
+    const newsTitles = news.map((n) => n.title);
+    const rsi = rsiRow ? rsiRow.value.toString() : null;
+    const closes = quoteHistory.map((q) => Number(q.close)).filter((v) => Number.isFinite(v));
+    const { support, resistance } = levelsFromQuoteHistory(closes);
+    const trendSummary = summarizePriceTrend(closes);
+
+    const promptContext: BriefMarketContext = {
+      symbol: sym,
+      companyName: company?.name,
+      sector: company?.sector,
+      industry: company?.industry,
+      quoteJson,
+      newsTitles,
+      rsi,
+      supportLevel: support,
+      resistanceLevel: resistance,
+      trendSummary,
+    };
+
+    try {
+      const out = await generateBriefWithClaude(sym, lang, promptContext, ctx);
+      await storeCachedBrief(sym, lang, out);
+      if (isEnglishLocale(lang)) {
+        await storeCachedBrief(sym, "en", out);
+      } else {
+        const enSection = out.sections.find((s) => primaryLanguageBase(s.lang) === "en");
+        if (enSection) {
+          await storeCachedBrief(sym, "en", {
+            brief: enSection.body,
+            updatedAt: out.updatedAt,
+            requestedLang: "en",
+            sections: [{ lang: "en", body: enSection.body }],
+          });
+        }
+      }
+      return out;
+    } catch (err) {
+      if (isLlmAuthOrConfigError(err)) {
+        console.warn(
+          `[analysis] LLM auth/config failure for ${sym} — serving sector fallback brief`,
+          err instanceof Error ? err.message : err,
+        );
+        return buildFallbackBrief(fallbackContext);
+      }
       console.warn(
-        `[analysis] LLM auth/config failure for ${sym} — serving sector fallback brief`,
+        `[analysis] LLM request failed for ${sym} — serving sector fallback brief`,
         err instanceof Error ? err.message : err,
       );
       return buildFallbackBrief(fallbackContext);
     }
-    console.warn(
-      `[analysis] LLM request failed for ${sym} — serving sector fallback brief`,
-      err instanceof Error ? err.message : err,
-    );
-    return buildFallbackBrief(fallbackContext);
-  }
+  });
 }

@@ -5,6 +5,8 @@ import { cacheJsonGet, cacheJsonSet } from "../cache/jsonCache";
 import { REDIS_TTL_SEC, redisKeys } from "../config/redis";
 import { findHistoricalTwins } from "../modules/premiumAnalysis/historicalTwinModule";
 import { generateCatchAi, generateCinematicStoryAi } from "../modules/premiumAnalysis/storyAndCatchAiModule";
+import { getRequestPath, resolveUserTier } from "../services/aiBriefRateLimit";
+import { tryGetAuthenticatedUserId } from "../modules/auth/authMiddleware";
 
 type VerdictLabel = "STRONG BUY" | "BUY" | "HOLD" | "SELL" | "STRONG SELL";
 
@@ -587,17 +589,28 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       const language = String(req.query.language ?? "en");
       const experienceLevel = String(req.query.experienceLevel ?? "intermediate");
 
-      const aiStory = await generateCinematicStoryAi({
-        ticker,
-        verdictLabel: verdict.label,
-        verdictScore: verdict.score,
-        currentPrice: verdict.prices.current,
-        target12m: verdict.prices.target12m,
-        stopLoss: verdict.prices.stopLoss,
-        horizonMonths: verdict.horizonMonths,
-        language,
-        complexity: experienceLevel,
-      });
+      const userId = tryGetAuthenticatedUserId(req);
+      const tier = await resolveUserTier(req, prisma);
+      const aiStory = await generateCinematicStoryAi(
+        {
+          ticker,
+          verdictLabel: verdict.label,
+          verdictScore: verdict.score,
+          currentPrice: verdict.prices.current,
+          target12m: verdict.prices.target12m,
+          stopLoss: verdict.prices.stopLoss,
+          horizonMonths: verdict.horizonMonths,
+          language,
+          complexity: experienceLevel,
+        },
+        {
+          userId,
+          plan: tier,
+          endpoint: getRequestPath(req),
+          symbol: ticker,
+          lang: language,
+        },
+      );
 
       const [act1, act2, act3] = await Promise.all(
         ([1, 2, 3] as const).map(async (act) => {
@@ -701,13 +714,23 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       const dirtyTruth = await detectDirtyTruth(prisma, canonicalSymbol);
       const baseBull = `${ticker} keeps compounding through resilient cashflow, disciplined capital returns, and product ecosystem lock-in.`;
       const baseBear = `${ticker} faces execution risk in the next product cycle and valuation compression if growth slows further.`;
-      const aiCatch = await generateCatchAi({
-        ticker,
-        dirtyTruth: dirtyTruth?.one_liner ?? null,
-        bullSummary: baseBull,
-        bearSummary: baseBear,
-        premortemContext: "Earnings miss + valuation de-rating + concentration risk",
-      });
+      const userId = tryGetAuthenticatedUserId(req);
+      const tier = await resolveUserTier(req, prisma);
+      const aiCatch = await generateCatchAi(
+        {
+          ticker,
+          dirtyTruth: dirtyTruth?.one_liner ?? null,
+          bullSummary: baseBull,
+          bearSummary: baseBear,
+          premortemContext: "Earnings miss + valuation de-rating + concentration risk",
+        },
+        {
+          userId,
+          plan: tier,
+          endpoint: getRequestPath(req),
+          symbol: ticker,
+        },
+      );
 
       const payload = {
         ticker,
