@@ -1,10 +1,9 @@
 import Anthropic, { APIError } from "@anthropic-ai/sdk";
 import process from "node:process";
 import { buildFallbackBrief } from "../content/sectorFallbacks";
-import { REDIS_TTL_SEC, redisKeys } from "../config/redis";
 import { getCompanyBySymbol } from "../db/company-queries";
 import { getLatestIndicator, getLatestQuote, getQuoteHistory, getRecentNews } from "../db/queries";
-import { getCacheRedis } from "../redis";
+import { peekCachedBrief, storeCachedBrief } from "../services/aiBriefCache";
 const MODEL = "claude-sonnet-4-6";
 
 export type BriefSection = { lang: string; body: string };
@@ -24,11 +23,6 @@ function primaryLanguageBase(lang: string): string {
 
 function isEnglishLocale(lang: string): boolean {
   return primaryLanguageBase(lang) === "en";
-}
-
-function cacheKeySuffixForLang(lang: string): string {
-  if (isEnglishLocale(lang)) return "en";
-  return lang.toLowerCase().replace(/[^a-z0-9_-]+/g, "") || "und";
 }
 
 function languageNameForPrompt(localeTag: string): string {
@@ -147,40 +141,6 @@ function normalizeRequestLang(lang: string | undefined): string {
   return s || "en";
 }
 
-async function readAnalysisCache(cacheKey: string): Promise<AnalysisResult | null> {
-  if (!process.env.REDIS_URL?.trim()) return null;
-  try {
-    const redis = getCacheRedis();
-    const cached = await redis.get(cacheKey);
-    if (!cached) return null;
-    const parsed = JSON.parse(cached) as AnalysisResult;
-    if (parsed.updatedAt && Array.isArray(parsed.sections) && parsed.sections.length > 0) {
-      return {
-        ...parsed,
-        brief: parsed.brief || joinBriefForLegacy(parsed.sections),
-      };
-    }
-    // Legacy cache shape { brief, updatedAt } without sections
-    const legacy = parsed as unknown as { brief?: string; updatedAt?: string; sections?: BriefSection[] };
-    if (legacy.brief && legacy.updatedAt && !legacy.sections) {
-      return null;
-    }
-  } catch {
-    /* Redis down or bad payload */
-  }
-  return null;
-}
-
-async function writeAnalysisCache(cacheKey: string, payload: AnalysisResult): Promise<void> {
-  if (!process.env.REDIS_URL?.trim()) return;
-  try {
-    const redis = getCacheRedis();
-    await redis.set(cacheKey, JSON.stringify(payload), "EX", REDIS_TTL_SEC.AI_ANALYSIS);
-  } catch {
-    /* ignore cache write failures */
-  }
-}
-
 function isLlmAuthOrConfigError(err: unknown): boolean {
   if (err instanceof APIError && (err.status === 401 || err.status === 403)) return true;
   if (err && typeof err === "object" && "error" in err) {
@@ -210,9 +170,8 @@ function isLlmAuthOrConfigError(err: unknown): boolean {
 export async function analyzeStock(symbol: string, localeTag = "en"): Promise<AnalysisResult> {
   const sym = symbol.toUpperCase();
   const lang = normalizeRequestLang(localeTag);
-  const cacheKey = redisKeys.analysisBrief(sym, cacheKeySuffixForLang(lang));
 
-  const cached = await readAnalysisCache(cacheKey);
+  const cached = await peekCachedBrief(sym, lang);
   if (cached) return cached;
 
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
@@ -287,7 +246,7 @@ export async function analyzeStock(symbol: string, localeTag = "en"): Promise<An
       sections,
     };
 
-    await writeAnalysisCache(cacheKey, out);
+    await storeCachedBrief(sym, lang, out);
     return out;
   } catch (err) {
     if (isLlmAuthOrConfigError(err)) {

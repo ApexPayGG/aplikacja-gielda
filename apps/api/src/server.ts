@@ -59,6 +59,7 @@ import { createPaperTradingRouter } from "./routes/paperTrading";
 import { createExitIntelligenceRouter } from "./routes/exitIntelligence";
 import { createAnalysisRouter, createCompanyBriefHandler } from "./routes/analysis";
 import { createAiBriefRateLimitMiddleware } from "./services/aiBriefRateLimit";
+import { createPremiumLlmRateLimitMiddleware } from "./services/premiumLlmRateLimit";
 import { optionalAuth } from "./modules/auth/authMiddleware";
 import { createQuotesRouter } from "./routes/quotes";
 import { createAlphaJournalRouter } from "./routes/alphaJournal";
@@ -254,8 +255,9 @@ export function createApp(): express.Express {
   app.use(createAffiliateRouter());
   app.use(createAdminRouter());
   app.use(createAdminAffiliateRouter());
+  const premiumLlmRateLimit = createPremiumLlmRateLimitMiddleware({ prisma });
   const premiumRouter = createPremiumCompanyRouter(prisma);
-  app.use("/api/premium", premiumRouter);
+  app.use("/api/premium", premiumLlmRateLimit, premiumRouter);
   app.use(createHistoricalTwinsRouter(prisma));
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));

@@ -13,8 +13,8 @@ export const REDIS_TTL_SEC = {
   SEARCH: 300,
   /** Dividend growth screener (aggregated) */
   SCREENER: 3600,
-  /** Claude analysis brief (expensive); aligns with screener refresh cadence */
-  AI_ANALYSIS: 3600,
+  /** Claude analysis brief (expensive); shared across users — override via AI_BRIEF_CACHE_TTL_SEC */
+  AI_ANALYSIS: 14_400,
   /** Dividend intelligence snapshot per symbol */
   INTELLIGENCE_DIVIDEND: 86_400,
   /** Recent dividend alerts per symbol */

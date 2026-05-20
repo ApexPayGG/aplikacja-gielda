@@ -2,15 +2,18 @@ import type { PrismaClient } from "@prisma/client";
 import type { NextFunction, Request, Response } from "express";
 import { tryGetAuthenticatedUserId, type AuthenticatedRequest } from "../modules/auth/authMiddleware";
 import { getCacheRedis } from "../redis";
+import { extractBriefSymbolFromPath, peekCachedBrief } from "./aiBriefCache";
 
 export type UserTier = "FREE" | "PRO" | "PRO_PLUS";
 
 export const AI_BRIEF_FREE_LIMIT = 3;
+export const AI_BRIEF_PRO_DAILY_LIMIT = Number(process.env.AI_BRIEF_PRO_DAILY_LIMIT ?? 20);
+export const AI_BRIEF_PRO_PLUS_DAILY_LIMIT = Number(process.env.AI_BRIEF_PRO_PLUS_DAILY_LIMIT ?? 60);
 export const AI_BRIEF_FREE_WINDOW_SEC = 86_400;
 
 export type AiBriefRateLimitResult =
   | { allowed: true }
-  | { allowed: false; limit: number; resetIn: number };
+  | { allowed: false; limit: number; resetIn: number; tier: UserTier };
 
 type CounterStore = {
   increment: (key: string, windowSec: number) => Promise<{ count: number; resetIn: number }>;
@@ -26,15 +29,16 @@ function normalizeTier(value: unknown): UserTier {
 }
 
 function getClientIp(req: Request): string {
-  return req.ip || req.socket.remoteAddress || "unknown";
+  return req.ip || req.socket?.remoteAddress || "unknown";
 }
 
 function sanitizeSubjectId(id: string): string {
   return id.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 128) || "unknown";
 }
 
-export function buildAiBriefRateLimitKey(subjectId: string): string {
-  return `ai_brief:free:${sanitizeSubjectId(subjectId)}`;
+export function buildAiBriefRateLimitKey(tier: UserTier, subjectId: string): string {
+  const day = new Date().toISOString().slice(0, 10);
+  return `ai_brief:${tier.toLowerCase()}:${sanitizeSubjectId(subjectId)}:${day}`;
 }
 
 /** Full request path (not mount-stripped `req.path`). */
@@ -50,10 +54,20 @@ const AI_BRIEF_PATH_PATTERNS = [
   /^\/api\/companies\/[^/]+\/brief\/?$/,
 ] as const;
 
-/** Daily FREE-tier AI Brief limit applies only to company brief endpoints — not Premium Analysis. */
+/** Daily AI Brief generation limits — only on cache miss (see middleware). */
 export function isAiBriefRateLimitedPath(path: string): boolean {
   const normalized = (path.split("?")[0] ?? "").replace(/\/+$/, "") || "/";
   return AI_BRIEF_PATH_PATTERNS.some((pattern) => pattern.test(normalized));
+}
+
+function dailyLimitForTier(tier: UserTier): number | null {
+  if (tier === "PRO_PLUS") {
+    return AI_BRIEF_PRO_PLUS_DAILY_LIMIT > 0 ? AI_BRIEF_PRO_PLUS_DAILY_LIMIT : null;
+  }
+  if (tier === "PRO") {
+    return AI_BRIEF_PRO_DAILY_LIMIT > 0 ? AI_BRIEF_PRO_DAILY_LIMIT : null;
+  }
+  return AI_BRIEF_FREE_LIMIT;
 }
 
 function createMemoryStore(): CounterStore {
@@ -112,7 +126,21 @@ export function resolveAiBriefRateSubject(req: Request): string {
   return getClientIp(req);
 }
 
-export async function enforceAiBriefFreeRateLimit(
+function briefLocaleFromRequest(req: Request): string {
+  const q = req.query.lang ?? req.query.language ?? req.query.locale;
+  const raw = Array.isArray(q) ? q[0] : q;
+  return String(raw ?? "en").trim() || "en";
+}
+
+/** True when Redis already has a brief for this symbol (shared across users). */
+export async function peekAiBriefCached(req: Request): Promise<boolean> {
+  const symbol = extractBriefSymbolFromPath(getRequestPath(req));
+  if (!symbol) return false;
+  const cached = await peekCachedBrief(symbol, briefLocaleFromRequest(req));
+  return cached != null;
+}
+
+export async function enforceAiBriefRateLimit(
   req: Request,
   prisma?: PrismaClient,
   store: CounterStore = defaultStore,
@@ -122,19 +150,27 @@ export async function enforceAiBriefFreeRateLimit(
   }
 
   const tier = await resolveUserTier(req, prisma);
-  if (tier === "PRO" || tier === "PRO_PLUS") {
-    return { allowed: true };
-  }
+  const limit = dailyLimitForTier(tier);
+  if (limit === null) return { allowed: true };
 
   const subject = resolveAiBriefRateSubject(req);
-  const key = buildAiBriefRateLimitKey(subject);
+  const key = buildAiBriefRateLimitKey(tier, subject);
   const { count, resetIn } = await store.increment(key, AI_BRIEF_FREE_WINDOW_SEC);
 
-  if (count > AI_BRIEF_FREE_LIMIT) {
-    return { allowed: false, limit: AI_BRIEF_FREE_LIMIT, resetIn };
+  if (count > limit) {
+    return { allowed: false, limit, resetIn, tier };
   }
 
   return { allowed: true };
+}
+
+/** @deprecated Use enforceAiBriefRateLimit */
+export async function enforceAiBriefFreeRateLimit(
+  req: Request,
+  prisma?: PrismaClient,
+  store?: CounterStore,
+): Promise<AiBriefRateLimitResult> {
+  return enforceAiBriefRateLimit(req, prisma, store);
 }
 
 type AiBriefRateLimitMiddlewareDeps = {
@@ -151,10 +187,17 @@ export function createAiBriefRateLimitMiddleware(
     }
 
     try {
-      const rate = await enforceAiBriefFreeRateLimit(req, deps.prisma);
+      if (await peekAiBriefCached(req)) {
+        next();
+        return;
+      }
+
+      const rate = await enforceAiBriefRateLimit(req, deps.prisma);
       if (!rate.allowed) {
         res.status(429).json({
           error: "LIMIT_REACHED",
+          message: "Daily limit of new AI brief generations reached. Try again tomorrow or open a recently cached symbol.",
+          tier: rate.tier,
           limit: rate.limit,
           resetIn: rate.resetIn,
         });

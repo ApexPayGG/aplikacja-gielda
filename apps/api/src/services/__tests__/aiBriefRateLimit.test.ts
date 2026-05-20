@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { Request } from "express";
 import {
-  enforceAiBriefFreeRateLimit,
+  AI_BRIEF_PRO_DAILY_LIMIT,
+  enforceAiBriefRateLimit,
   isAiBriefRateLimitedPath,
+  peekAiBriefCached,
 } from "../aiBriefRateLimit";
 
 describe("aiBriefRateLimit path scope", () => {
@@ -31,8 +33,71 @@ describe("aiBriefRateLimit path scope", () => {
     };
 
     const req = { originalUrl: "/api/premium/ABBV.US/catch", path: "/ABBV.US/catch" } as Request;
-    const result = await enforceAiBriefFreeRateLimit(req, undefined, store);
+    const result = await enforceAiBriefRateLimit(req, undefined, store);
     assert.equal(result.allowed, true);
     assert.equal(increments.length, 0);
+  });
+
+  it("blocks FREE tier after daily limit", async () => {
+    let count = 0;
+    const store = {
+      async increment() {
+        count += 1;
+        return { count, resetIn: 3600 };
+      },
+    };
+
+    const req = { originalUrl: "/api/brief/AAPL.US", path: "/AAPL.US" } as Request;
+    for (let i = 0; i < 3; i += 1) {
+      const ok = await enforceAiBriefRateLimit(req, undefined, store);
+      assert.equal(ok.allowed, true);
+    }
+    const blocked = await enforceAiBriefRateLimit(req, undefined, store);
+    assert.equal(blocked.allowed, false);
+    if (!blocked.allowed) {
+      assert.equal(blocked.tier, "FREE");
+      assert.equal(blocked.limit, 3);
+    }
+  });
+
+  it("blocks PRO tier after configured daily limit", async () => {
+    let count = 0;
+    const store = {
+      async increment() {
+        count += 1;
+        return { count, resetIn: 3600 };
+      },
+    };
+
+    const prisma = {
+      user: {
+        findUnique: async () => ({ tier: "PRO" }),
+      },
+    } as unknown as import("@prisma/client").PrismaClient;
+
+    const req = {
+      originalUrl: "/api/analysis/CPS.WAR?lang=pl",
+      path: "/CPS.WAR",
+      query: { lang: "pl" },
+      auth: { userId: "user-pro-1" },
+    } as Request;
+
+    for (let i = 0; i < AI_BRIEF_PRO_DAILY_LIMIT; i += 1) {
+      const ok = await enforceAiBriefRateLimit(req, prisma, store);
+      assert.equal(ok.allowed, true);
+    }
+    const blocked = await enforceAiBriefRateLimit(req, prisma, store);
+    assert.equal(blocked.allowed, false);
+    if (!blocked.allowed) {
+      assert.equal(blocked.tier, "PRO");
+      assert.equal(blocked.limit, AI_BRIEF_PRO_DAILY_LIMIT);
+    }
+  });
+});
+
+describe("peekAiBriefCached", () => {
+  it("returns false when symbol cannot be parsed", async () => {
+    const req = { originalUrl: "/api/brief/", path: "/" } as Request;
+    assert.equal(await peekAiBriefCached(req), false);
   });
 });
