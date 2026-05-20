@@ -149,7 +149,15 @@
     "submit": "Rozpocznij dzień tradingowy",
     "submitting": "Zapisywanie…",
     "subtitle": "Ustaw nastawienie przed otwarciem rynku.",
-    "title": "Codzienny check-in"
+    "title": "Codzienny check-in",
+    "done": {
+      "eyebrow": "Dziś",
+      "title": "Twój plan na dziś",
+      "noPlan": "Brak zapisanego planu — dodaj go jutro rano.",
+      "aiLabel": "Notatka coacha",
+      "coachCta": "Behavioral Coach",
+      "paperCta": "Paper trading"
+    }
   },
   "coach": {
     "aiCoach": "Komentarz coacha AI",
@@ -334,7 +342,7 @@
     },
     "emptyWatchlistCta": "Przeglądaj spółki",
     "emptySignalsHint": "Sygnały pojawią się, gdy spółka z watchlisty zmieni się o ±2% w sesji.",
-    "emptyWatchlistTitle": "🔍 Znajdź swoją pierwszą spółkę",
+    "emptyWatchlistTitle": "Znajdź swoją pierwszą spółkę",
     "signalsWaiting": "Brak sygnałów — rynek czeka na setup",
     "checkIn": {
       "planPlaceholder": "Jaki jest Twój plan na dziś?"

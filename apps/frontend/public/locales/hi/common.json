@@ -311,7 +311,7 @@
     },
     "emptyWatchlistCta": "Browse companies",
     "emptySignalsHint": "Signals appear when your watchlist moves ±2% intraday.",
-    "emptyWatchlistTitle": "🔍 Find your first company",
+    "emptyWatchlistTitle": "Find your first company",
     "signalsWaiting": "No signals — the market is waiting for a setup",
     "checkIn": {
       "planPlaceholder": "What is your plan today?"

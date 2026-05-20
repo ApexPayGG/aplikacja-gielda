@@ -149,7 +149,15 @@
     "submit": "Start trading day",
     "submitting": "Saving...",
     "subtitle": "Set your mindset before the market opens.",
-    "title": "Daily Check-In"
+    "title": "Daily Check-In",
+    "done": {
+      "eyebrow": "Today",
+      "title": "Your plan for today",
+      "noPlan": "No plan saved — add one tomorrow morning.",
+      "aiLabel": "Coach note",
+      "coachCta": "Behavioral Coach",
+      "paperCta": "Paper trading"
+    }
   },
   "coach": {
     "aiCoach": "AI coach note",
@@ -334,7 +342,7 @@
     },
     "emptyWatchlistCta": "Browse companies",
     "emptySignalsHint": "Signals appear when your watchlist moves ±2% intraday.",
-    "emptyWatchlistTitle": "🔍 Find your first company",
+    "emptyWatchlistTitle": "Find your first company",
     "signalsWaiting": "No signals — the market is waiting for a setup",
     "checkIn": {
       "planPlaceholder": "What is your plan today?"

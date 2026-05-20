@@ -364,8 +364,6 @@ export function AppNavBar() {
           />
         </div>
 
-        <GlobalSearchBar variant="desktop" />
-
         <div className="ml-auto flex shrink-0 items-center gap-2 md:ml-0 md:hidden">
           <GlobalSearchBar variant="mobile" />
           <button
@@ -398,6 +396,7 @@ export function AppNavBar() {
         </div>
 
         <div className="hidden shrink-0 items-center gap-1.5 md:flex lg:gap-2">
+          <GlobalSearchBar variant="desktop" />
           <NotificationsCenter />
           <ThemeToggle />
           {user ? (

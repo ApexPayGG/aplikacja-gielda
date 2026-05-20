@@ -7,7 +7,6 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { BrandLogo } from "../components/BrandLogo";
 import { DailyCheckInWidget } from "../components/DailyCheckInWidget";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import { useAuth } from "../context/AuthContext";
@@ -25,6 +24,8 @@ type WatchedCompany = {
 };
 
 type TrendTone = "up" | "down" | "flat";
+
+const SUGGESTED_TICKERS = ["AAPL.US", "MSFT.US", "NVDA.US"] as const;
 
 function formatChange(value: number | null): string {
   if (value == null) return "—";
@@ -194,20 +195,92 @@ export function Dashboard() {
               ) : null}
             </div>
 
-            {!isEmptyDashboard ? (
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {statCards.map((card) => (
-                <article key={card.label} className="rounded-xl border border-border bg-bgSecondary/70 p-3">
-                  <BrandLogo size="card" className="mb-3" />
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-textSecondary">{card.label}</p>
-                    {trendIcon(card.trend)}
+            {isEmptyDashboard ? (
+              <div className="mt-6 overflow-hidden rounded-2xl border border-brandDark/15 bg-gradient-to-br from-brandDark/[0.06] via-bgPrimary to-brandCyan/[0.08] p-6 md:p-8">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-brandCyan">
+                  {t("dashboard.hero.eyebrow", { defaultValue: "Your StockAI hub" })}
+                </p>
+                <h2 className="mt-2 text-xl font-bold tracking-tight text-brandDark md:text-2xl">
+                  {t("dashboard.hero.title", { defaultValue: "Build your market watchlist" })}
+                </h2>
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-textSecondary md:text-base">
+                  {t("dashboard.hero.subtitle", {
+                    defaultValue:
+                      "Add a few tickers to unlock live quotes, movement alerts, and AI context tailored to what you actually trade.",
+                  })}
+                </p>
+                <ol className="mt-6 grid gap-3 sm:grid-cols-3">
+                  {(
+                    [
+                      t("dashboard.hero.step1", { defaultValue: "Pick companies you follow" }),
+                      t("dashboard.hero.step2", { defaultValue: "Read AI briefs and signals" }),
+                      t("dashboard.hero.step3", { defaultValue: "Track mindset with the coach" }),
+                    ] as const
+                  ).map((step, index) => (
+                    <li
+                      key={step}
+                      className="flex gap-3 rounded-xl border border-border/70 bg-bgPrimary/80 px-3 py-3 text-sm text-textPrimary"
+                    >
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brandDark text-xs font-bold text-white">
+                        {index + 1}
+                      </span>
+                      <span className="leading-snug">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link
+                    to="/companies"
+                    className="inline-flex rounded-xl bg-brandDark px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
+                  >
+                    {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
+                  </Link>
+                  <Link
+                    to="/signals"
+                    className="inline-flex rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-brandDark transition hover:border-brandDark/35 hover:bg-bgSecondary/80"
+                  >
+                    {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
+                  </Link>
+                  <Link
+                    to="/behavioral-coach"
+                    className="inline-flex rounded-xl border border-brandCyan/30 px-5 py-2.5 text-sm font-semibold text-brandDark transition hover:bg-brandCyan/10"
+                  >
+                    {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
+                  </Link>
+                </div>
+                <div className="mt-6">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-textMuted">
+                    {t("dashboard.hero.popularLabel", { defaultValue: "Popular to start" })}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {SUGGESTED_TICKERS.map((symbol) => (
+                      <Link
+                        key={symbol}
+                        to={`/company/${encodeURIComponent(symbol)}`}
+                        className="inline-flex rounded-full border border-border bg-bgPrimary px-3 py-1.5 font-mono text-xs font-semibold text-brandDark transition hover:border-brandCyan/50 hover:bg-brandCyan/5"
+                      >
+                        {symbol}
+                      </Link>
+                    ))}
                   </div>
-                  <p className="mt-2 font-mono text-3xl font-bold leading-none text-brandDark">{card.value}</p>
-                </article>
-              ))}
-            </div>
-            ) : null}
+                </div>
+              </div>
+            ) : (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {statCards.map((card) => (
+                  <article
+                    key={card.label}
+                    className="rounded-xl border border-border bg-bgSecondary/70 p-3 transition hover:border-borderStrong hover:shadow-sm"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-textSecondary">{card.label}</p>
+                      {trendIcon(card.trend)}
+                    </div>
+                    <p className="mt-2 font-mono text-3xl font-bold leading-none text-brandDark">{card.value}</p>
+                  </article>
+                ))}
+              </div>
+            )}
           </section>
 
           <section className="rounded-2xl border border-border bg-bgPrimary p-5 shadow-sm">
@@ -231,20 +304,12 @@ export function Dashboard() {
             )}
 
             {!watchlistLoading && !watchlistError && watchlistRows.length === 0 && (
-              <div className="rounded-xl border border-dashed border-brandDark/25 bg-gradient-to-br from-brandDark/[0.04] to-bgSecondary/80 px-5 py-6 text-center">
-                <p className="text-base font-semibold text-textPrimary">
-                  {t("dashboard.emptyWatchlistTitle", { defaultValue: "🔍 Find your first company" })}
-                </p>
-                <p className="mt-2 text-sm text-textSecondary">
-                  {t("watchlist.empty", { defaultValue: "You are not observing any companies yet." })}
-                </p>
-                <Link
-                  to="/companies"
-                  className="mt-4 inline-flex rounded-lg bg-brandDark px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
-                >
+              <p className="rounded-xl border border-dashed border-border px-4 py-3 text-sm text-textSecondary">
+                {t("watchlist.empty", { defaultValue: "You are not observing any companies yet." })}{" "}
+                <Link to="/companies" className="font-semibold text-brandDark underline decoration-brandCyan/50 underline-offset-2">
                   {t("dashboard.emptyWatchlistCta", { defaultValue: "Browse companies" })}
                 </Link>
-              </div>
+              </p>
             )}
 
             {!watchlistLoading && !watchlistError && watchlistRows.length > 0 && (
@@ -260,7 +325,16 @@ export function Dashboard() {
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-bgPrimary p-1">
-                            <BrandLogo size="mini" className="h-full max-h-8 w-full object-contain" />
+                            {row.logoUrl ? (
+                              <img
+                                src={row.logoUrl}
+                                alt=""
+                                className="h-full w-full object-contain"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <span className="text-xs font-bold text-brandDark">{row.symbol.split(".")[0]?.slice(0, 3)}</span>
+                            )}
                           </div>
                           <div>
                             <p className="font-semibold leading-none text-brandDark">{row.symbol}</p>
@@ -305,10 +379,29 @@ export function Dashboard() {
             )}
 
             {!watchlistLoading && !watchlistError && latestSignals.length === 0 && (
-              <div className="rounded-xl border border-border bg-bgSecondary/80 px-4 py-4 text-sm text-textSecondary">
+              <div className="rounded-xl border border-border bg-bgSecondary/50 px-4 py-4 text-sm">
                 <p className="font-medium text-textPrimary">
                   {t("dashboard.signalsWaiting", { defaultValue: "No signals — the market is waiting for a setup" })}
                 </p>
+                <p className="mt-2 text-textSecondary">
+                  {t("dashboard.emptySignalsHint", {
+                    defaultValue: "Signals appear when your watchlist moves ±2% intraday.",
+                  })}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Link
+                    to="/signals"
+                    className="inline-flex rounded-lg bg-brandDark px-4 py-2 text-xs font-semibold text-white transition hover:brightness-110"
+                  >
+                    {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
+                  </Link>
+                  <Link
+                    to="/companies"
+                    className="inline-flex rounded-lg border border-border px-4 py-2 text-xs font-semibold text-brandDark transition hover:border-brandDark/30"
+                  >
+                    {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
+                  </Link>
+                </div>
               </div>
             )}
 
