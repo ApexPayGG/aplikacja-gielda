@@ -931,8 +931,8 @@ export function LandingPage() {
           navScrolled ? "shadow-md" : "shadow-none"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 md:gap-6 md:py-4">
-          <Link to="/" className="flex min-w-0 shrink-0 items-center" aria-label="Stock-AI.Pro — strona główna">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-6 md:py-5">
+          <Link to="/" className="flex min-w-0 shrink-0 items-center py-1" aria-label="Stock-AI.Pro — strona główna">
             <BrandLogo size="nav" />
           </Link>
 

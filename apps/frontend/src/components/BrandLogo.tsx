@@ -4,7 +4,7 @@ export const BRAND_LOGO_SRC = "/logo.png";
 type BrandLogoSize = "nav" | "footer" | "auth" | "loading" | "card" | "cardLg" | "hero" | "badge" | "mini";
 
 const SIZE_CLASSES: Record<BrandLogoSize, string> = {
-  nav: "h-12 w-auto max-w-[min(100%,380px)]",
+  nav: "h-16 w-auto max-w-[min(100%,min(440px,78vw))] sm:h-[4.5rem] md:h-20",
   footer: "h-14 w-auto max-w-[min(100%,360px)] md:h-16 md:max-w-[420px]",
   auth: "h-14 w-auto max-w-[min(100%,380px)] md:h-16",
   loading: "h-16 w-auto max-w-[min(100%,400px)]",
