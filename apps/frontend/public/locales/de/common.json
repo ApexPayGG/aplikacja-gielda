@@ -708,7 +708,7 @@
     },
     "stats": {
       "exchanges": "Börsen",
-      "investors": "Investoren",
+      "investors": "Early Access",
       "languages": "Sprachen",
       "modules": "KI-Module"
     },
@@ -718,7 +718,8 @@
       "subtitle": "StockAI Pro überwacht 130+ Börsen rund um die Uhr.",
       "title": "Märkte schlafen nie.",
       "titleAccent": "Du musst es auch nicht."
-    }
+    },
+    "heroSocialProof": "Werden Sie Teil unserer wachsenden Investorengemeinschaft"
   },
   "mentor": {
     "currentStatus": "Current status",

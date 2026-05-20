@@ -708,7 +708,7 @@
     },
     "stats": {
       "exchanges": "एक्सचेंज",
-      "investors": "निवेशक",
+      "investors": "Early Access",
       "languages": "भाषाएँ",
       "modules": "AI मॉड्यूल"
     },
@@ -718,7 +718,8 @@
       "subtitle": "StockAI Pro 130+ एक्सचेंज की 24/7 निगरानी करता है।",
       "title": "बाज़ार कभी नहीं सोते।",
       "titleAccent": "आपको भी नहीं।"
-    }
+    },
+    "heroSocialProof": "हमारे बढ़ते निवेशक समुदाय से जुड़ें"
   },
   "mentor": {
     "currentStatus": "Current status",

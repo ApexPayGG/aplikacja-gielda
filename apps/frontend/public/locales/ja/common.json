@@ -708,7 +708,7 @@
     },
     "stats": {
       "exchanges": "取引所",
-      "investors": "投資家",
+      "investors": "Early Access",
       "languages": "言語",
       "modules": "AIモジュール"
     },
@@ -718,7 +718,8 @@
       "subtitle": "StockAI Proは130以上の取引所を24時間監視します。",
       "title": "市場は眠らない。",
       "titleAccent": "あなたも眠る必要はない。"
-    }
+    },
+    "heroSocialProof": "成長する投資家コミュニティに参加"
   },
   "mentor": {
     "currentStatus": "Current status",

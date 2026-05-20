@@ -672,7 +672,7 @@
     },
     "stats": {
       "exchanges": "giełd",
-      "investors": "inwestorów",
+      "investors": "Early Access",
       "languages": "języków",
       "modules": "modułów AI"
     },
@@ -732,7 +732,8 @@
           "title": "Signal DNA"
         }
       }
-    }
+    },
+    "heroSocialProof": "Dołącz do grona zadowolonych inwestorów"
   },
   "mentor": {
     "currentStatus": "Aktualny status",

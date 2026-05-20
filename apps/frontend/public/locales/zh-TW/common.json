@@ -708,7 +708,7 @@
     },
     "stats": {
       "exchanges": "交易所",
-      "investors": "投資人",
+      "investors": "Early Access",
       "languages": "語言",
       "modules": "AI 模組"
     },
@@ -718,7 +718,8 @@
       "subtitle": "StockAI Pro 全天候監控 130+ 交易所。",
       "title": "市場永不休眠。",
       "titleAccent": "您也不必。"
-    }
+    },
+    "heroSocialProof": "加入我們不斷成長的投資人社群"
   },
   "mentor": {
     "currentStatus": "Current status",

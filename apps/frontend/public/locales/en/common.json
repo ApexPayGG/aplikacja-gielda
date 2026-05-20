@@ -600,7 +600,7 @@
     },
     "stats": {
       "exchanges": "exchanges",
-      "investors": "investors",
+      "investors": "Early Access",
       "languages": "languages",
       "modules": "AI modules"
     },
@@ -732,7 +732,8 @@
           "title": "Signal DNA"
         }
       }
-    }
+    },
+    "heroSocialProof": "Join our growing investor community"
   },
   "mentor": {
     "currentStatus": "Current status",

@@ -708,7 +708,7 @@
     },
     "stats": {
       "exchanges": "bolsas",
-      "investors": "inversores",
+      "investors": "Early Access",
       "languages": "idiomas",
       "modules": "módulos IA"
     },
@@ -718,7 +718,8 @@
       "subtitle": "StockAI Pro monitoriza 130+ bolsas las 24 horas.",
       "title": "Los mercados no duermen.",
       "titleAccent": "Tú tampoco tienes que hacerlo."
-    }
+    },
+    "heroSocialProof": "Únete a nuestra comunidad de inversores en crecimiento"
   },
   "mentor": {
     "currentStatus": "Current status",

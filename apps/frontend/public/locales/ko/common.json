@@ -708,7 +708,7 @@
     },
     "stats": {
       "exchanges": "거래소",
-      "investors": "투자자",
+      "investors": "Early Access",
       "languages": "언어",
       "modules": "AI 모듈"
     },
@@ -718,7 +718,8 @@
       "subtitle": "StockAI Pro는 130개 이상 거래소를 24시간 모니터링합니다.",
       "title": "시장은 잠들지 않습니다.",
       "titleAccent": "당신도 잠들 필요 없습니다."
-    }
+    },
+    "heroSocialProof": "성장하는 투자자 커뮤니티에 참여하세요"
   },
   "mentor": {
     "currentStatus": "Current status",

@@ -708,7 +708,7 @@
     },
     "stats": {
       "exchanges": "places",
-      "investors": "investisseurs",
+      "investors": "Early Access",
       "languages": "langues",
       "modules": "modules IA"
     },
@@ -718,7 +718,8 @@
       "subtitle": "StockAI Pro surveille 130+ places en continu.",
       "title": "Les marchés ne dorment jamais.",
       "titleAccent": "Vous non plus."
-    }
+    },
+    "heroSocialProof": "Rejoignez notre communauté d'investisseurs en pleine croissance"
   },
   "mentor": {
     "currentStatus": "Current status",

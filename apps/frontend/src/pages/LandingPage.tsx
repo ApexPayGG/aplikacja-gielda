@@ -796,7 +796,6 @@ export function LandingPage() {
   const exchangesCounter = useCounter(130);
   const modulesCounter = useCounter(27);
   const langsCounter = useCounter(9);
-  const investorsCounter = useCounter(1200);
 
   const solutionCards = useMemo(
     () =>
@@ -1183,7 +1182,7 @@ export function LandingPage() {
                 {t("landing.hero.ctaPrimary")} →
               </Link>
               <a
-                href="#solution"
+                href="#how-it-works"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#2D0A6B]/20 px-6 py-4 text-base font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5 sm:w-auto sm:text-lg"
               >
                 {t("landing.hero.ctaSecondary")}
@@ -1211,9 +1210,7 @@ export function LandingPage() {
                   A
                 </span>
               </div>
-              <p className="text-sm font-medium text-slate-600">
-                {t("landing.hero.trust", { count: "1,200" })}
-              </p>
+              <p className="text-sm font-medium text-slate-600">{t("landing.heroSocialProof")}</p>
             </div>
           </div>
 
@@ -1269,12 +1266,9 @@ export function LandingPage() {
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{langsCounter.count}</div>
             <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.languages")}</p>
           </div>
-          <div ref={investorsCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
+          <div className="flex flex-col items-center px-4 py-8 text-center md:py-10">
             <IconStatUsers className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
-            <div className="text-5xl font-black tabular-nums text-white md:text-6xl">
-              {investorsCounter.count.toLocaleString(i18n.language)}+
-            </div>
-            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.investors")}</p>
+            <div className="text-3xl font-black text-white md:text-4xl">{t("landing.stats.investors")}</div>
           </div>
         </div>
       </section>
@@ -1602,9 +1596,6 @@ export function LandingPage() {
                     </span>
                     <h3 className="mt-4 text-xl font-bold">{t(tier.nameKey)}</h3>
                     <p className="mt-6 text-5xl font-bold">{priceDisplay}</p>
-                    <p className="mt-2 font-semibold" style={{ color: BRAND.cyan }}>
-                      {t("landing.pricing.trial")}
-                    </p>
                     {billingCycle === "yearly" ? (
                       <p className="mt-2 text-sm font-semibold text-emerald-300">
                         {t("landing.pricing.save", { defaultValue: "Save 27%" })}
