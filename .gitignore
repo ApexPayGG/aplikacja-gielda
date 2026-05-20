@@ -33,3 +33,9 @@ Thumbs.db
 
 # Local editor metadata
 .cursor/
+
+# Duplicate / vendor logo asset packs (use apps/frontend/public/logo.png only)
+LOGO NOWE.png
+Logo - StockAI PRO.png
+Icona Studio*/
+Iconora Studio*/

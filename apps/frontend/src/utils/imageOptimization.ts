@@ -1,19 +1,4 @@
-import { getSector3dIconPath } from "./sectorIcon3d";
-
-const symbolDomainMap: Record<string, string> = {
-  AAPL: "apple.com",
-  AMZN: "amazon.com",
-  GOOGL: "google.com",
-  META: "meta.com",
-  MSFT: "microsoft.com",
-  NFLX: "netflix.com",
-  NVDA: "nvidia.com",
-  TSLA: "tesla.com",
-};
-
-function toClearbitUrl(domain: string): string {
-  return `https://logo.clearbit.com/${encodeURIComponent(domain)}?size=128&format=png`;
-}
+import { BRAND_LOGO_SRC } from "../components/BrandLogo";
 
 export function normalizeTickerSymbol(symbol: string): string {
   const normalized = symbol.trim().toUpperCase();
@@ -21,17 +6,13 @@ export function normalizeTickerSymbol(symbol: string): string {
   return normalized.split(".")[0]?.trim() ?? normalized;
 }
 
-export function getLogoFallbackUrl(symbol: string, sector?: string | null): string {
-  const normalized = normalizeTickerSymbol(symbol);
-  if (!normalized) return getSector3dIconPath(sector, symbol);
-  return getSector3dIconPath(sector, symbol);
+/** Always use the single Stock-AI.Pro brand logo. */
+export function getLogoFallbackUrl(_symbol?: string, _sector?: string | null): string {
+  return BRAND_LOGO_SRC;
 }
 
-export function getOptimizedLogoUrl(symbol: string): string {
-  const normalized = normalizeTickerSymbol(symbol);
-  if (!normalized) return getLogoFallbackUrl(symbol);
-  const domain = symbolDomainMap[normalized] ?? `${normalized.toLowerCase()}.com`;
-  return toClearbitUrl(domain);
+export function getOptimizedLogoUrl(_symbol?: string): string {
+  return BRAND_LOGO_SRC;
 }
 
 function applyLazyAttributesToImage(image: HTMLImageElement): void {

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ExportButton } from "../components/ExportButton";
 import { useAuth } from "../context/AuthContext";
 import { getDividendGrowthScreener, type DividendGrowthRow } from "../services/api";
+import { BrandLogo } from "../components/BrandLogo";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -366,16 +367,9 @@ export function DividendPage() {
                         >
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3">
-                              {company.logoUrl ? (
-                                <img src={company.logoUrl} alt={`${company.symbol} logo`} className="h-8 w-8 rounded-full border object-cover" style={{ borderColor: colors.border }} />
-                              ) : (
-                                <div
-                                  className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
-                                  style={{ backgroundColor: colors.brandDark, color: colors.bgPrimary }}
-                                >
-                                  {company.symbol.slice(0, 1)}
-                                </div>
-                              )}
+                              <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg p-0.5">
+                                <BrandLogo size="mini" className="h-full max-h-7 w-full object-contain" />
+                              </div>
                               <span className="font-semibold">{company.symbol}</span>
                             </div>
                           </td>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getCompanyDetail, getDividendAlerts, getDividendIntelligence, type Company } from "../services/api";
+import { BrandLogo } from "../components/BrandLogo";
 import { colors } from "../styles/designSystem";
 import type { DividendAlert, DividendIntelligence } from "../types/dividend";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -147,21 +148,9 @@ export function DividendIntelligencePage() {
               </label>
 
               <div className="flex items-center gap-3">
-                {company?.logoUrl ? (
-                  <img
-                    src={company.logoUrl}
-                    alt={`${company.symbol} logo`}
-                    className="h-12 w-12 rounded-full border object-cover"
-                    style={{ borderColor: colors.border }}
-                  />
-                ) : (
-                  <div
-                    className="flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold"
-                    style={{ backgroundColor: colors.brandDark, color: colors.bgPrimary }}
-                  >
-                    {symbol.slice(0, 1)}
-                  </div>
-                )}
+                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg p-1">
+                  <BrandLogo size="mini" className="h-full max-h-10 w-full object-contain" />
+                </div>
                 <div>
                   <p className="text-xl font-semibold">{company?.name ?? symbol}</p>
                   <p className="text-xs" style={{ color: colors.textMuted }}>

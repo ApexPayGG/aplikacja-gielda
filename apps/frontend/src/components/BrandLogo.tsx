@@ -1,3 +1,6 @@
+/** Single brand asset used across the entire app. */
+export const BRAND_LOGO_SRC = "/logo.png";
+
 type BrandLogoSize = "nav" | "footer" | "auth" | "loading" | "card" | "cardLg" | "hero" | "badge" | "mini";
 
 const SIZE_CLASSES: Record<BrandLogoSize, string> = {
@@ -21,7 +24,7 @@ export function BrandLogo({ size = "nav", className = "" }: BrandLogoProps) {
   const sizeClass = SIZE_CLASSES[size];
   return (
     <img
-      src="/logo.png"
+      src={BRAND_LOGO_SRC}
       alt="Stock-AI.Pro"
       className={[sizeClass, "object-contain object-left", className].filter(Boolean).join(" ")}
       decoding="async"

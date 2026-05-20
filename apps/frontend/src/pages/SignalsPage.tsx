@@ -11,7 +11,7 @@ import { useAuth } from "../context/AuthContext";
 import { useSignalsFilter } from "../hooks/useSignalsFilter";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
-import { getLogoFallbackUrl, getOptimizedLogoUrl, normalizeTickerSymbol } from "../utils/imageOptimization";
+import { BrandLogo, BRAND_LOGO_SRC } from "../components/BrandLogo";
 import { colors } from "../styles/designSystem";
 
 type SignalListItem = {
@@ -124,11 +124,7 @@ function parseSignal(raw: unknown): SignalListItem | null {
   const companyNameFromMap = companyMetaByTicker[ticker]?.companyName;
   const companyName = companyNameFromApi || companyNameFromMap || `${ticker} Company`;
 
-  const logoInput = row.logoUrl ?? row.logo ?? null;
-  const logoUrl =
-    typeof logoInput === "string" && logoInput.trim()
-      ? logoInput.trim()
-      : companyMetaByTicker[ticker]?.logoUrl ?? getOptimizedLogoUrl(normalizeTickerSymbol(ticker));
+  const logoUrl = BRAND_LOGO_SRC;
   const createdAt = String(row.createdAt ?? row.timestamp ?? row.updatedAt ?? row.date ?? new Date().toISOString());
   const exchange = String(row.exchange ?? row.market ?? row.marketCode ?? "").trim() || null;
 
@@ -163,9 +159,6 @@ export function SignalsPage() {
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const { filters, hasActiveFilters, toggleSetupType, setRiskScoreMin, toggleExchange, setTimeframe, setSortBy, resetFilters, applyFilters } =
     useSignalsFilter();
-  const [failedSignalLogoIds, setFailedSignalLogoIds] = useState<Record<string, true>>({});
-  const [fallbackSignalLogoIds, setFallbackSignalLogoIds] = useState<Record<string, true>>({});
-
   useEffect(() => {
     let cancelled = false;
     async function loadSignals(): Promise<void> {
@@ -209,10 +202,6 @@ export function SignalsPage() {
     const isPositive = signal.changePct >= 0;
     const isHovered = hoveredSignalId === signal.id;
     const signedChangeForShare = `${signal.changePct >= 0 ? "+" : ""}${signal.changePct.toFixed(1)}%`;
-    const logoSrc = fallbackSignalLogoIds[signal.id]
-      ? getLogoFallbackUrl(signal.ticker)
-      : signal.logoUrl ?? getOptimizedLogoUrl(signal.ticker);
-    const showLogo = Boolean(logoSrc) && !failedSignalLogoIds[signal.id];
     return (
       <article
         key={signal.id}
@@ -235,24 +224,7 @@ export function SignalsPage() {
                 color: colors.brandDark,
               }}
             >
-              {showLogo ? (
-                <img
-                  src={logoSrc}
-                  alt={`${signal.companyName} logo`}
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                  onError={() => {
-                    if (!fallbackSignalLogoIds[signal.id]) {
-                      setFallbackSignalLogoIds((current) => ({ ...current, [signal.id]: true }));
-                      return;
-                    }
-                    setFailedSignalLogoIds((current) => ({ ...current, [signal.id]: true }));
-                  }}
-                />
-              ) : (
-                signal.ticker.slice(0, 2)
-              )}
+              <BrandLogo size="mini" className="h-full max-h-10 w-full object-contain" />
             </div>
             <div>
               <p className="text-lg font-bold" style={{ color: colors.brandDark }}>

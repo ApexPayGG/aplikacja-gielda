@@ -8,6 +8,7 @@ import { CompanyDividendPanel } from "../components/CompanyDividendPanel";
 import { CompanyPriceChart } from "../components/CompanyPriceChart";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
+import { BrandLogo } from "../components/BrandLogo";
 import { WatchlistButton } from "../components/WatchlistButton";
 import { colors } from "../styles/designSystem";
 import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
@@ -279,13 +280,7 @@ export function CompanyDetail() {
                 className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border"
                 style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
               >
-                {company.logoUrl ? (
-                  <img src={company.logoUrl} alt="" className="h-20 w-20 rounded-xl object-contain p-2" />
-                ) : (
-                  <span className="text-2xl font-bold" style={{ color: colors.brandDark }}>
-                    {company.symbol.slice(0, 3)}
-                  </span>
-                )}
+                <BrandLogo size="cardLg" className="max-h-16 w-full object-contain" />
               </div>
               <div className="min-w-0">
                 <h1 className="truncate text-2xl font-semibold lg:text-3xl" style={{ color: colors.textPrimary }}>

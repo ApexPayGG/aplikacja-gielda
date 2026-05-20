@@ -1,13 +1,12 @@
 {
-  "name": "StockAI Pro",
+  "name": "Stock-AI.Pro",
   "short_name": "StockAI",
   "description": "AI-powered investment research platform",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFFFFF",
+  "background_color": "#0A0A0F",
   "theme_color": "#2D0A6B",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
   ]
 }

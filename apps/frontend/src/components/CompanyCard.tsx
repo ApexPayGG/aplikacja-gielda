@@ -6,7 +6,7 @@ import {
   isPremiumLockedSymbol,
   mockQuoteFromSymbol,
 } from "../utils/companyCardDisplay";
-import { getSector3dIconPath } from "../utils/sectorIcon3d";
+import { BrandLogo } from "./BrandLogo";
 import { WatchlistButton } from "./WatchlistButton";
 
 type Props = {
@@ -42,7 +42,6 @@ export function CompanyCard({ company, onOpenBrief }: Props) {
   const latestPrice = apiPrice ?? mock.price;
   const changePct = apiChangePct ?? mock.changePct;
   const isLocked = isPremiumLockedSymbol(company.symbol);
-  const sectorIconSrc = getSector3dIconPath(company.sector, company.symbol);
   const priceLabel = formatStockPrice(latestPrice, company.symbol);
   const isPositive = changePct >= 0;
 
@@ -67,14 +66,7 @@ export function CompanyCard({ company, onOpenBrief }: Props) {
 
         <div className="relative flex h-28 items-center justify-center bg-gradient-to-b from-[#2D0A6B]/[0.04] to-transparent p-4">
           <div className={GLASS_ICON_SHELL}>
-            <img
-              src={sectorIconSrc}
-              alt=""
-              className="h-full w-full object-contain"
-              loading="lazy"
-              decoding="async"
-              aria-hidden
-            />
+            <BrandLogo size="mini" className="h-full max-h-10 w-full max-w-full object-contain" />
           </div>
         </div>
 

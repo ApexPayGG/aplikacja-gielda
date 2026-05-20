@@ -1,11 +1,10 @@
-const CACHE_NAME = "stockai-v2";
+const CACHE_NAME = "stockai-v3";
 const OFFLINE_URL = "/offline.html";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
   "/manifest.json",
-  "/icon-192.png",
-  "/icon-512.png",
+  "/logo.png",
   "/flags/pl.png",
   "/flags/gb.png",
   "/flags/de.png",

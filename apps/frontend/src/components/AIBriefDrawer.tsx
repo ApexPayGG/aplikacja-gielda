@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import type { Company } from "../services/api";
 import { InvestmentDisclaimer } from "./InvestmentDisclaimer";
 import { buildAIBriefInsight } from "../utils/aiBriefContent";
-import { getSector3dIconPath } from "../utils/sectorIcon3d";
+import { BrandLogo } from "./BrandLogo";
 
 type Props = {
   company: Company | null;
@@ -62,7 +62,6 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
     return buildAIBriefInsight(company.symbol, company.sector);
   }, [company]);
 
-  const sectorIconSrc = company ? getSector3dIconPath(company.sector, company.symbol) : "";
   const premiumHref = company ? `/company/${encodeURIComponent(company.symbol)}/premium` : "/pricing";
 
   useEffect(() => {
@@ -116,8 +115,8 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
         <header className="relative shrink-0 border-b border-white/10 px-5 pb-4 pt-3 sm:px-6 sm:pt-5">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#2D0A6B]/10 p-2 backdrop-blur-md">
-                <img src={sectorIconSrc} alt="" className="h-full w-full object-contain" aria-hidden />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#2D0A6B]/10 p-1 backdrop-blur-md">
+                <BrandLogo size="mini" className="h-full max-h-10 w-full object-contain brightness-110" />
               </div>
               <div className="min-w-0">
                 <p id={`${panelId}-title`} className="truncate text-lg font-bold text-white">

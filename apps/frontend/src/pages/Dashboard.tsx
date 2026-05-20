@@ -1,7 +1,6 @@
 import {
   ArrowTrendingDownIcon,
   ArrowTrendingUpIcon,
-  BuildingOffice2Icon,
   FireIcon,
   MinusSmallIcon,
 } from "@heroicons/react/24/outline";
@@ -30,15 +29,6 @@ type TrendTone = "up" | "down" | "flat";
 function formatChange(value: number | null): string {
   if (value == null) return "—";
   return formatPercent(value);
-}
-
-function makeFallbackLogo(symbol: string, exchange?: string | null): string | null {
-  const normalized = symbol.trim().toUpperCase();
-  if (!normalized) return null;
-  const [baseSymbol, exchangeFromSymbol] = normalized.split(".");
-  const logoExchange = (exchange ?? exchangeFromSymbol ?? "US").trim().toUpperCase();
-  if (!baseSymbol || !logoExchange) return null;
-  return `https://eodhd.com/img/logos/${encodeURIComponent(logoExchange)}/${encodeURIComponent(baseSymbol)}.png`;
 }
 
 export function Dashboard() {
@@ -260,7 +250,6 @@ export function Dashboard() {
             {!watchlistLoading && !watchlistError && watchlistRows.length > 0 && (
               <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2">
                 {watchlistRows.map((row) => {
-                  const logo = row.logoUrl ?? makeFallbackLogo(row.symbol, row.exchange);
                   const isPositive = row.changePct != null && row.changePct >= 0;
                   return (
                     <Link
@@ -270,12 +259,8 @@ export function Dashboard() {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-bgPrimary">
-                            {logo ? (
-                              <img src={logo} alt={`${row.name} logo`} className="h-8 w-8 object-contain" loading="lazy" />
-                            ) : (
-                              <BuildingOffice2Icon className="h-5 w-5 text-textMuted" />
-                            )}
+                          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-bgPrimary p-1">
+                            <BrandLogo size="mini" className="h-full max-h-8 w-full object-contain" />
                           </div>
                           <div>
                             <p className="font-semibold leading-none text-brandDark">{row.symbol}</p>
