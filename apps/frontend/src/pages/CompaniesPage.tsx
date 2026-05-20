@@ -9,7 +9,8 @@ import { CompanyCard } from "../components/CompanyCard";
 import type { Company } from "../services/api";
 import { getCompanyBySector, getDividendScreener } from "../services/api";
 import { useCompaniesFilter } from "../hooks/useCompaniesFilter";
-import { colors } from "../styles/designSystem";
+import { GlassPageShell } from "../components/behavioral-coach/GlassPageShell";
+import { GLASS_INNER_PANEL, GLASS_PAGE_SUBTITLE, GLASS_PAGE_TITLE } from "../components/behavioral-coach/glassStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const SOURCE_SECTORS = [
@@ -115,10 +116,10 @@ export function CompaniesPage() {
   }, [companies, applyFilters, filters.onlyDividendStocks, dividendSymbols]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <GlassPageShell>
       <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-textPrimary">{t("home.title", { defaultValue: "Spółki" })}</h1>
-        <p className="mt-2 max-w-3xl text-sm text-textSecondary">
+        <h1 className={GLASS_PAGE_TITLE}>{t("home.title", { defaultValue: "Spółki" })}</h1>
+        <p className={GLASS_PAGE_SUBTITLE}>
           {t("home.subtitle", {
             defaultValue: "Szybko przeszukuj i filtruj spółki według rynku oraz sektora, aby przejść do pełnej analizy.",
           })}
@@ -129,11 +130,12 @@ export function CompaniesPage() {
         <CompanySearchAutocomplete
           limit={8}
           initialValue={initialSearchQuery}
+          variant="glass"
           placeholder={t("home.searchPlaceholder", { defaultValue: "Szukaj po nazwie lub tickerze..." })}
         />
       </div>
 
-      <p className="mb-6 text-xs font-semibold uppercase tracking-wide text-textMuted">
+      <p className="mb-6 text-xs font-semibold uppercase tracking-wide text-white/50">
         {t("home.results", { defaultValue: "Wyniki" })}: {visibleCompanies.length}
         {filters.onlyDividendStocks && dividendFilterLoading
           ? ` · ${t("companies.filterDividendLoading", { defaultValue: "Ładowanie listy dywidendowych…" })}`
@@ -141,10 +143,7 @@ export function CompaniesPage() {
       </p>
 
       {error && (
-        <div
-          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm"
-          style={{ borderColor: colors.negative, backgroundColor: "rgba(229,57,53,0.08)", color: colors.negative }}
-        >
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
           <span>
             {companies.length > 0
               ? t("home.partialError", {
@@ -182,21 +181,21 @@ export function CompaniesPage() {
           {loading && (
             <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" aria-live="polite" aria-label={t("common.loading")}>
               {Array.from({ length: 9 }).map((_, index) => (
-                <div key={`skeleton-${index}`} className="overflow-hidden rounded-2xl border border-border bg-bgSecondary p-4">
-                  <div className="mb-4 h-20 rounded-xl bg-bgTertiary" />
-                  <div className="mb-3 h-4 w-1/2 rounded bg-bgTertiary" />
-                  <div className="mb-3 h-3 w-4/5 rounded bg-bgTertiary" />
-                  <div className="mb-4 h-8 w-2/3 rounded bg-bgTertiary" />
-                  <div className="h-6 w-24 rounded-full bg-bgTertiary" />
+                <div key={`skeleton-${index}`} className={`${GLASS_INNER_PANEL} overflow-hidden p-4`}>
+                  <div className="mb-4 h-20 rounded-xl bg-white/10" />
+                  <div className="mb-3 h-4 w-1/2 rounded bg-white/10" />
+                  <div className="mb-3 h-3 w-4/5 rounded bg-white/10" />
+                  <div className="mb-4 h-8 w-2/3 rounded bg-white/10" />
+                  <div className="h-6 w-24 rounded-full bg-white/10" />
                 </div>
               ))}
             </div>
           )}
 
           {!loading && visibleCompanies.length === 0 && (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-bgSecondary px-6 py-14 text-center">
-              <BuildingOffice2Icon className="mb-3 h-10 w-10 text-textMuted" aria-hidden />
-              <p className="text-sm text-textSecondary">
+            <div className={`${GLASS_INNER_PANEL} flex flex-col items-center justify-center border-dashed px-6 py-14 text-center`}>
+              <BuildingOffice2Icon className="mb-3 h-10 w-10 text-white/40" aria-hidden />
+              <p className="text-sm text-white/60">
                 {hasActiveFilters
                   ? t("home.emptySector", { defaultValue: "Brak spółek dla wybranych filtrów." })
                   : t("home.emptySelectSector", { defaultValue: "Brak wyników. Spróbuj zmienić filtry lub wyszukaj spółkę." })}
@@ -213,6 +212,6 @@ export function CompaniesPage() {
       </div>
 
       <AIBriefDrawer company={briefCompany} open={briefCompany !== null} onClose={() => setBriefCompany(null)} />
-    </div>
+    </GlassPageShell>
   );
 }

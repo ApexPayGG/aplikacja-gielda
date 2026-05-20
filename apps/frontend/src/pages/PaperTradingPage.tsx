@@ -840,22 +840,19 @@ export function PaperTradingPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary, color: colors.textPrimary }}>
-      <div className="mx-auto max-w-7xl space-y-4 px-4 py-6">
-        <section
-          className="rounded-2xl border px-4 py-4 shadow-sm md:px-5"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-        >
+    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-[#0D0D1A] via-[#1a0538]/90 to-[#0D0D1A] text-white">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
+        <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-[#2D0A6B]/40 blur-3xl" />
+        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-[#00C9D4]/12 blur-3xl" />
+      </div>
+      <div className="relative z-10 mx-auto max-w-7xl space-y-4 px-4 py-6">
+        <section className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#2D0A6B]/30 to-[#00C9D4]/10 px-4 py-4 shadow-[0_8px_32px_rgba(45,10,107,0.15)] backdrop-blur-md md:px-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.14em]" style={{ color: colors.textSecondary }}>
-                Paper Trading
-              </p>
-              <h1 className="text-2xl font-semibold md:text-3xl" style={{ color: colors.brandDark }}>
-                Paper Trading
-              </h1>
+              <p className="text-[11px] uppercase tracking-[0.14em] text-[#00C9D4]">Paper Trading</p>
+              <h1 className="text-2xl font-semibold text-white md:text-3xl">Paper Trading</h1>
               <div className="mt-2 flex flex-wrap items-center gap-3">
-                <span className="font-mono text-3xl md:text-4xl" style={{ color: colors.brandDark }}>
+                <span className="font-mono text-3xl text-white md:text-4xl">
                   {formatCurrency(portfolioBalance, "USD")}
                 </span>
                 <span
@@ -1475,18 +1472,12 @@ export function PaperTradingPage() {
 
 function StatTile(props: { label: string; value: string; tone?: "default" | "positive" | "negative" }) {
   const tone = props.tone ?? "default";
-  const valueColor = tone === "positive" ? colors.positive : tone === "negative" ? colors.negative : colors.brandDark;
+  const valueColor =
+    tone === "positive" ? "text-emerald-400" : tone === "negative" ? "text-red-400" : "text-white";
   return (
-    <div
-      className="rounded-xl border px-3 py-2 shadow-sm"
-      style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-    >
-      <div className="text-[11px] uppercase tracking-[0.1em]" style={{ color: colors.textSecondary }}>
-        {props.label}
-      </div>
-      <div className="mt-1 font-mono text-xl font-semibold" style={{ color: valueColor }}>
-        {props.value}
-      </div>
+    <div className="rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-[#2D0A6B]/25 px-3 py-2 shadow-[0_8px_24px_rgba(45,10,107,0.12)] backdrop-blur-md">
+      <div className="text-[11px] uppercase tracking-[0.1em] text-white/50">{props.label}</div>
+      <div className={`mt-1 font-mono text-xl font-semibold ${valueColor}`}>{props.value}</div>
     </div>
   );
 }

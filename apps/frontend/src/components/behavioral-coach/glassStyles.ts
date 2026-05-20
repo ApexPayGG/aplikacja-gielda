@@ -33,3 +33,23 @@ export const GLASS_BTN_GHOST =
 
 export const GLASS_LINK_ACCENT =
   "font-semibold text-[#00C9D4] underline decoration-[#00C9D4]/40 underline-offset-2 hover:decoration-[#00C9D4]";
+
+export const GLASS_PAGE_TITLE = "text-3xl font-bold tracking-tight text-white md:text-4xl";
+
+export const GLASS_PAGE_SUBTITLE = "mt-2 max-w-3xl text-sm text-white/60";
+
+export const GLASS_FILTER_PANEL =
+  "space-y-6 rounded-2xl border border-white/10 bg-[#2D0A6B]/15 p-4 shadow-[0_8px_32px_rgba(45,10,107,0.12)] backdrop-blur-md sm:p-5";
+
+export const GLASS_INPUT =
+  "w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-[#00C9D4]/50 focus:ring-2 focus:ring-[#00C9D4]/20";
+
+export const GLASS_SELECT = GLASS_INPUT;
+
+export const GLASS_LABEL = "text-xs font-semibold uppercase tracking-wide text-white/60";
+
+export const GLASS_COMPANY_CARD =
+  "group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-[#2D0A6B]/30 shadow-[0_8px_28px_rgba(45,10,107,0.14)] backdrop-blur-md transition hover:-translate-y-0.5 hover:border-[#00C9D4]/35";
+
+export const GLASS_SIGNAL_CARD =
+  "rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-[#2D0A6B]/25 p-5 shadow-[0_8px_28px_rgba(45,10,107,0.12)] backdrop-blur-md transition hover:border-[#00C9D4]/30";

@@ -123,7 +123,12 @@ export default function App() {
   const defaultAuthenticatedRoute = onboardingCompleted ? "/dashboard" : "/onboarding";
   const inOnboarding = location.pathname.startsWith("/onboarding");
   const glassShellPage =
-    location.pathname.startsWith("/dashboard") || location.pathname.startsWith("/behavioral-coach");
+    location.pathname.startsWith("/dashboard") ||
+    location.pathname.startsWith("/behavioral-coach") ||
+    location.pathname.startsWith("/companies") ||
+    location.pathname === "/signals" ||
+    location.pathname.startsWith("/paper-trading") ||
+    location.pathname.startsWith("/position-size");
   const showTopNavigation = token && !inOnboarding;
   const showFloatingEmotionalWidget = token && !location.pathname.startsWith("/dashboard") && !inOnboarding;
   useKeyboardShortcuts();

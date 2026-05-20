@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { colors } from "../styles/designSystem";
+import {
+  GLASS_FILTER_PANEL,
+  GLASS_INPUT,
+  GLASS_LABEL,
+  GLASS_LINK_ACCENT,
+  GLASS_SELECT,
+} from "./behavioral-coach/glassStyles";
 import {
   COMPANY_FILTER_SECTORS,
   PE_RATIO_MAX,
@@ -63,47 +69,36 @@ export function CompaniesFilter({
 
   const peMinPercent = ((filters.peMin - PE_RATIO_MIN) / (PE_RATIO_MAX - PE_RATIO_MIN)) * 100;
   const peMaxPercent = ((filters.peMax - PE_RATIO_MIN) / (PE_RATIO_MAX - PE_RATIO_MIN)) * 100;
-  const peFill = `linear-gradient(90deg, ${colors.border} 0%, ${colors.border} ${peMinPercent}%, ${colors.brandCyan} ${peMinPercent}%, ${colors.brandCyan} ${peMaxPercent}%, ${colors.border} ${peMaxPercent}%, ${colors.border} 100%)`;
+  const peFill = `linear-gradient(90deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.12) ${peMinPercent}%, #00C9D4 ${peMinPercent}%, #00C9D4 ${peMaxPercent}%, rgba(255,255,255,0.12) ${peMaxPercent}%, rgba(255,255,255,0.12) 100%)`;
 
   const selectedSectorLabel = filters.selectedSectors.length === 0 ? "All sectors" : `${filters.selectedSectors.length} selected`;
 
   return (
-    <section className="space-y-6 rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+    <section className={GLASS_FILTER_PANEL}>
       <header className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-          Filtry
-        </h2>
-        <button type="button" onClick={onReset} className="text-sm font-semibold hover:underline" style={{ color: colors.brandCyan }}>
+        <h2 className={GLASS_LABEL}>Filtry</h2>
+        <button type="button" onClick={onReset} className={`text-sm ${GLASS_LINK_ACCENT}`}>
           Resetuj filtry
         </button>
       </header>
 
       <div className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-          Sector
-        </p>
+        <p className={GLASS_LABEL}>Sector</p>
         <div className="relative" ref={panelRef}>
-          <button
-            type="button"
-            onClick={() => setIsSectorOpen((prev) => !prev)}
-            className="w-full rounded-xl border px-3 py-2 text-left text-sm transition"
-            style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary, color: colors.textPrimary }}
-          >
+          <button type="button" onClick={() => setIsSectorOpen((prev) => !prev)} className={`${GLASS_INPUT} text-left`}>
             {selectedSectorLabel}
           </button>
           {isSectorOpen ? (
-            <div
-              className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-xl border p-2 shadow-lg"
-              style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-            >
+            <div className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-white/15 bg-[#1a0538]/95 p-2 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-md">
               {COMPANY_FILTER_SECTORS.map((sector) => {
                 const selected = filters.selectedSectors.includes(sector);
                 return (
-                  <label key={sector} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-50">
-                    <input type="checkbox" checked={selected} onChange={() => onToggleSector(sector)} />
-                    <span className="text-sm" style={{ color: colors.textPrimary }}>
-                      {sector}
-                    </span>
+                  <label
+                    key={sector}
+                    className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-white/10"
+                  >
+                    <input type="checkbox" checked={selected} onChange={() => onToggleSector(sector)} className="accent-[#00C9D4]" />
+                    <span className="text-sm text-white/90">{sector}</span>
                   </label>
                 );
               })}
@@ -113,18 +108,17 @@ export function CompaniesFilter({
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="market-cap-filter" className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+        <label htmlFor="market-cap-filter" className={GLASS_LABEL}>
           Market cap
         </label>
         <select
           id="market-cap-filter"
           value={filters.marketCap}
           onChange={(event) => onMarketCapChange(event.target.value as CompanyMarketCapFilter)}
-          className="w-full rounded-xl border px-3 py-2 text-sm outline-none"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary, color: colors.textPrimary }}
+          className={GLASS_SELECT}
         >
           {marketCapOptions.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option key={option.value} value={option.value} className="bg-[#1a0538] text-white">
               {option.label}
             </option>
           ))}
@@ -133,10 +127,8 @@ export function CompaniesFilter({
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-            P/E ratio
-          </p>
-          <span className="text-xs font-semibold" style={{ color: colors.brandDark }}>
+          <p className={GLASS_LABEL}>P/E ratio</p>
+          <span className="text-xs font-semibold text-[#00C9D4]">
             {filters.peMin} - {filters.peMax}
           </span>
         </div>
@@ -165,21 +157,18 @@ export function CompaniesFilter({
         />
       </div>
 
-      <div className="flex items-center justify-between rounded-xl border px-3 py-2" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
-        <span className="text-sm font-medium" style={{ color: colors.textPrimary }}>
+      <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+        <span className="text-sm font-medium text-white/90">
           {t("companies.filterDividend", { defaultValue: "Tylko spółki z dywidendą" })}
-          {dividendFilterLoading ? (
-            <span className="ml-1 text-xs font-normal" style={{ color: colors.textMuted }}>
-              …
-            </span>
-          ) : null}
+          {dividendFilterLoading ? <span className="ml-1 text-xs font-normal text-white/50">…</span> : null}
         </span>
         <button
           type="button"
           onClick={() => onDividendToggle(!filters.onlyDividendStocks)}
           disabled={dividendFilterLoading}
-          className="relative inline-flex h-6 w-11 items-center rounded-full transition disabled:opacity-60"
-          style={{ backgroundColor: filters.onlyDividendStocks ? colors.brandCyan : colors.borderStrong }}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition disabled:opacity-60 ${
+            filters.onlyDividendStocks ? "bg-[#00C9D4]" : "bg-white/20"
+          }`}
           aria-pressed={filters.onlyDividendStocks}
           aria-label={t("companies.filterDividend", { defaultValue: "Tylko spółki z dywidendą" })}
         >
@@ -191,18 +180,17 @@ export function CompaniesFilter({
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="companies-sort-filter" className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+        <label htmlFor="companies-sort-filter" className={GLASS_LABEL}>
           Sort
         </label>
         <select
           id="companies-sort-filter"
           value={filters.sortBy}
           onChange={(event) => onSortChange(event.target.value as CompanySortOption)}
-          className="w-full rounded-xl border px-3 py-2 text-sm outline-none"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary, color: colors.textPrimary }}
+          className={GLASS_SELECT}
         >
           {sortOptions.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option key={option.value} value={option.value} className="bg-[#1a0538] text-white">
               {option.label}
             </option>
           ))}

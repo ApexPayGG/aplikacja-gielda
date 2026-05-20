@@ -1,4 +1,9 @@
-import { colors } from "../styles/designSystem";
+import {
+  GLASS_FILTER_PANEL,
+  GLASS_LABEL,
+  GLASS_LINK_ACCENT,
+  GLASS_SELECT,
+} from "./behavioral-coach/glassStyles";
 import {
   SIGNAL_EXCHANGES,
   SIGNAL_SETUP_TYPES,
@@ -33,6 +38,12 @@ const sortOptions: Array<{ value: SignalSortOption; label: string }> = [
   { value: "OLDEST", label: "Oldest" },
 ];
 
+function pillClass(active: boolean): string {
+  return active
+    ? "rounded-full border border-[#00C9D4]/50 bg-[#00C9D4]/20 px-3 py-1.5 text-xs font-semibold text-[#00C9D4]"
+    : "rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70 transition hover:border-white/25";
+}
+
 export function SignalsFilter({
   filters,
   onToggleSetupType,
@@ -42,38 +53,24 @@ export function SignalsFilter({
   onSortByChange,
   onReset,
 }: Props) {
-  const riskFill = `linear-gradient(90deg, ${colors.brandCyan} 0%, ${colors.brandCyan} ${filters.riskScoreMin}%, ${colors.border} ${filters.riskScoreMin}%, ${colors.border} 100%)`;
+  const riskFill = `linear-gradient(90deg, #00C9D4 0%, #00C9D4 ${filters.riskScoreMin}%, rgba(255,255,255,0.12) ${filters.riskScoreMin}%, rgba(255,255,255,0.12) 100%)`;
 
   return (
-    <section className="space-y-6 rounded-2xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+    <section className={GLASS_FILTER_PANEL}>
       <header className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-          Filtry
-        </h2>
-        <button type="button" onClick={onReset} className="text-sm font-semibold hover:underline" style={{ color: colors.brandCyan }}>
+        <h2 className={GLASS_LABEL}>Filtry</h2>
+        <button type="button" onClick={onReset} className={`text-sm ${GLASS_LINK_ACCENT}`}>
           Resetuj filtry
         </button>
       </header>
 
       <div className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-          Setup type
-        </p>
+        <p className={GLASS_LABEL}>Setup type</p>
         <div className="flex flex-wrap gap-2">
           {SIGNAL_SETUP_TYPES.map((setupType) => {
             const active = filters.selectedSetupTypes.includes(setupType);
             return (
-              <button
-                key={setupType}
-                type="button"
-                onClick={() => onToggleSetupType(setupType)}
-                className="rounded-full border px-3 py-1.5 text-xs font-semibold transition"
-                style={{
-                  borderColor: active ? colors.brandDark : colors.borderStrong,
-                  backgroundColor: active ? colors.brandDark : colors.bgPrimary,
-                  color: active ? colors.bgPrimary : colors.textSecondary,
-                }}
-              >
+              <button key={setupType} type="button" onClick={() => onToggleSetupType(setupType)} className={pillClass(active)}>
                 {setupType}
               </button>
             );
@@ -83,12 +80,8 @@ export function SignalsFilter({
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-            Risk score
-          </p>
-          <span className="text-xs font-semibold" style={{ color: colors.brandDark }}>
-            {filters.riskScoreMin} - 100
-          </span>
+          <p className={GLASS_LABEL}>Risk score</p>
+          <span className="text-xs font-semibold text-[#00C9D4]">{filters.riskScoreMin} - 100</span>
         </div>
         <input
           type="range"
@@ -104,24 +97,12 @@ export function SignalsFilter({
       </div>
 
       <div className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-          Exchange
-        </p>
+        <p className={GLASS_LABEL}>Exchange</p>
         <div className="flex flex-wrap gap-2">
           {SIGNAL_EXCHANGES.map((exchange) => {
             const active = filters.selectedExchanges.includes(exchange);
             return (
-              <button
-                key={exchange}
-                type="button"
-                onClick={() => onToggleExchange(exchange)}
-                className="rounded-full border px-3 py-1.5 text-xs font-semibold transition"
-                style={{
-                  borderColor: active ? colors.brandDark : colors.borderStrong,
-                  backgroundColor: active ? colors.brandDark : colors.bgPrimary,
-                  color: active ? colors.bgPrimary : colors.textSecondary,
-                }}
-              >
+              <button key={exchange} type="button" onClick={() => onToggleExchange(exchange)} className={pillClass(active)}>
                 {exchange}
               </button>
             );
@@ -130,9 +111,7 @@ export function SignalsFilter({
       </div>
 
       <div className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-          Timeframe
-        </p>
+        <p className={GLASS_LABEL}>Timeframe</p>
         <div className="grid grid-cols-2 gap-2">
           {timeframeOptions.map((option) => {
             const active = filters.timeframe === option.value;
@@ -141,12 +120,11 @@ export function SignalsFilter({
                 key={option.value}
                 type="button"
                 onClick={() => onTimeframeChange(option.value)}
-                className="rounded-xl border px-3 py-2 text-xs font-semibold transition"
-                style={{
-                  borderColor: active ? colors.brandCyan : colors.border,
-                  backgroundColor: active ? `${colors.brandCyan}22` : colors.bgPrimary,
-                  color: active ? colors.brandDark : colors.textSecondary,
-                }}
+                className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
+                  active
+                    ? "border-[#00C9D4]/40 bg-[#00C9D4]/15 text-[#00C9D4]"
+                    : "border-white/15 bg-white/5 text-white/70 hover:border-white/25"
+                }`}
               >
                 {option.label}
               </button>
@@ -156,22 +134,17 @@ export function SignalsFilter({
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="signals-sort-select" className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+        <label htmlFor="signals-sort-select" className={GLASS_LABEL}>
           Sort by
         </label>
         <select
           id="signals-sort-select"
           value={filters.sortBy}
           onChange={(event) => onSortByChange(event.target.value as SignalSortOption)}
-          className="w-full rounded-xl border px-3 py-2 text-sm outline-none transition"
-          style={{
-            borderColor: colors.border,
-            backgroundColor: colors.bgPrimary,
-            color: colors.textPrimary,
-          }}
+          className={GLASS_SELECT}
         >
           {sortOptions.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option key={option.value} value={option.value} className="bg-[#1a0538] text-white">
               {option.label}
             </option>
           ))}

@@ -2,6 +2,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { importCompanyFromSearch, searchCompaniesAutocomplete, type CompanySearchSuggestion } from "../services/api";
+import { GLASS_INPUT } from "./behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 
 type CompanySearchAutocompleteProps = {
@@ -10,6 +11,7 @@ type CompanySearchAutocompleteProps = {
   limit?: number;
   navigateOnSelect?: boolean;
   compact?: boolean;
+  variant?: "light" | "glass";
   onQueryChange?: (query: string) => void;
   onSelectCompany?: (company: CompanySearchSuggestion) => void;
 };
@@ -23,6 +25,7 @@ export function CompanySearchAutocomplete({
   limit = DEFAULT_LIMIT,
   navigateOnSelect = true,
   compact = false,
+  variant = "light",
   onQueryChange,
   onSelectCompany,
 }: CompanySearchAutocompleteProps) {
@@ -151,21 +154,33 @@ export function CompanySearchAutocomplete({
           onFocus={() => setIsOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className={`w-full border shadow-sm outline-none transition ${
-            compact ? "h-10 rounded-xl pl-10 pr-3 text-sm" : "h-12 rounded-2xl pl-12 pr-4 text-sm"
-          }`}
-          style={{
-            borderColor: colors.border,
-            color: colors.textPrimary,
-            backgroundColor: colors.bgPrimary,
-          }}
+          className={
+            variant === "glass"
+              ? `${GLASS_INPUT} shadow-sm ${compact ? "h-10 pl-10 pr-3" : "h-12 pl-12 pr-4"}`
+              : `w-full border shadow-sm outline-none transition ${
+                  compact ? "h-10 rounded-xl pl-10 pr-3 text-sm" : "h-12 rounded-2xl pl-12 pr-4 text-sm"
+                }`
+          }
+          style={
+            variant === "glass"
+              ? undefined
+              : {
+                  borderColor: colors.border,
+                  color: colors.textPrimary,
+                  backgroundColor: colors.bgPrimary,
+                }
+          }
         />
       </div>
 
       {showDropdown && (
         <div
-          className="absolute z-30 mt-2 w-full rounded-2xl border bg-white shadow-lg"
-          style={{ borderColor: colors.border }}
+          className={`absolute z-30 mt-2 w-full rounded-2xl border shadow-lg backdrop-blur-md ${
+            variant === "glass"
+              ? "border-white/15 bg-[#1a0538]/95"
+              : "border-border bg-white"
+          }`}
+          style={variant === "glass" ? undefined : { borderColor: colors.border }}
           role="listbox"
         >
           {loading ? (

@@ -12,7 +12,14 @@ import { useSignalsFilter } from "../hooks/useSignalsFilter";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { BrandLogo, BRAND_LOGO_SRC } from "../components/BrandLogo";
-import { colors } from "../styles/designSystem";
+import { GlassPageShell } from "../components/behavioral-coach/GlassPageShell";
+import {
+  GLASS_BTN_PRIMARY,
+  GLASS_INNER_PANEL,
+  GLASS_PAGE_SUBTITLE,
+  GLASS_PAGE_TITLE,
+  GLASS_SIGNAL_CARD,
+} from "../components/behavioral-coach/glassStyles";
 
 type SignalListItem = {
   id: string;
@@ -205,59 +212,34 @@ export function SignalsPage() {
     return (
       <article
         key={signal.id}
-        className="h-full rounded-2xl border p-5 transition"
-        style={{
-          backgroundColor: colors.bgPrimary,
-          borderColor: isHovered ? colors.brandCyan : colors.border,
-          boxShadow: isHovered ? "0 12px 28px rgba(13, 13, 26, 0.08)" : "0 2px 8px rgba(13, 13, 26, 0.05)",
-        }}
+        className={`h-full ${GLASS_SIGNAL_CARD} ${isHovered ? "border-[#00C9D4]/40 shadow-[0_12px_32px_rgba(0,201,212,0.15)]" : ""}`}
         onMouseEnter={() => setHoveredSignalId(signal.id)}
         onMouseLeave={() => setHoveredSignalId(null)}
       >
         <div className="grid gap-4 md:grid-cols-[2.2fr_1.2fr_1.2fr] md:items-center">
           <div className="flex items-center gap-3">
-            <div
-              className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border text-sm font-bold uppercase"
-              style={{
-                borderColor: colors.borderStrong,
-                backgroundColor: colors.bgSecondary,
-                color: colors.brandDark,
-              }}
-            >
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-white/5 text-sm font-bold uppercase text-[#00C9D4]">
               <BrandLogo size="mini" className="h-full max-h-10 w-full object-contain" />
             </div>
             <div>
-              <p className="text-lg font-bold" style={{ color: colors.brandDark }}>
-                {signal.ticker}
-              </p>
-              <p className="text-sm" style={{ color: colors.textSecondary }}>
-                {signal.companyName}
-              </p>
+              <p className="text-lg font-bold text-white">{signal.ticker}</p>
+              <p className="text-sm text-white/60">{signal.companyName}</p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <span
-              className="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-              style={{ backgroundColor: colors.brandCyan, color: colors.brandDark }}
-            >
+            <span className="inline-flex rounded-full bg-[#00C9D4]/20 px-3 py-1 text-xs font-semibold text-[#00C9D4]">
               {signal.setupType}
             </span>
-            <p className="text-4xl font-bold leading-none" style={{ color: colors.brandDark }}>
-              {Math.round(signal.riskScore)}
-            </p>
+            <p className="text-4xl font-bold leading-none text-white">{Math.round(signal.riskScore)}</p>
           </div>
 
           <div className="text-left md:text-right">
-            <p className="text-2xl font-semibold" style={{ color: colors.textPrimary }}>
-              ${formatPrice(signal.price)}
-            </p>
+            <p className="text-2xl font-semibold text-white">${formatPrice(signal.price)}</p>
             <span
-              className="mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-              style={{
-                backgroundColor: `${isPositive ? colors.positive : colors.negative}1A`,
-                color: isPositive ? colors.positive : colors.negative,
-              }}
+              className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                isPositive ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"
+              }`}
             >
               {signal.changePct >= 0 ? "+" : ""}
               {signal.changePct.toFixed(2)}%
@@ -272,30 +254,21 @@ export function SignalsPage() {
           </div>
         </div>
 
-        <div
-          className="relative mt-5 overflow-hidden rounded-xl border"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-        >
-          <div className="space-y-2 p-4 blur-[2px]" style={{ opacity: isLoggedIn ? 1 : 0.72 }}>
-            <div className="mb-2 h-2.5 w-3/4 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-            <div className="mb-2 h-2.5 w-11/12 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-            <div className="h-2.5 w-2/3 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+        <div className={`${GLASS_INNER_PANEL} relative mt-5 overflow-hidden`}>
+          <div className={`space-y-2 p-4 blur-[2px] ${isLoggedIn ? "opacity-100" : "opacity-70"}`}>
+            <div className="mb-2 h-2.5 w-3/4 rounded bg-white/15" />
+            <div className="mb-2 h-2.5 w-11/12 rounded bg-white/15" />
+            <div className="h-2.5 w-2/3 rounded bg-white/15" />
           </div>
           {!isLoggedIn ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/75 px-4 text-center">
-              <p className="text-sm font-semibold" style={{ color: colors.brandDark }}>
-                Zaloguj się aby zobaczyć analizę AI
-              </p>
-              <Link
-                to="/register"
-                className="rounded-lg px-3 py-1.5 text-xs font-semibold"
-                style={{ color: colors.bgPrimary, backgroundColor: colors.brandDark }}
-              >
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#0D0D1A]/70 px-4 text-center backdrop-blur-sm">
+              <p className="text-sm font-semibold text-white">Zaloguj się aby zobaczyć analizę AI</p>
+              <Link to="/register" className={`${GLASS_BTN_PRIMARY} px-3 py-1.5 text-xs`}>
                 Zaloguj się
               </Link>
             </div>
           ) : (
-            <div className="absolute inset-0 flex items-center px-4 text-xs" style={{ color: colors.textSecondary }}>
+            <div className="absolute inset-0 flex items-center px-4 text-xs text-white/60">
               Analiza AI dostępna w podglądzie premium dla tego sygnału.
             </div>
           )}
@@ -305,18 +278,15 @@ export function SignalsPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary, color: colors.textPrimary }}>
-      <div className="mx-auto max-w-6xl px-4 py-10">
+    <GlassPageShell maxWidth="max-w-6xl">
         <header className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold" style={{ color: colors.brandDark }}>
-              Sygnały
-            </h1>
-            <p className="max-w-2xl text-sm" style={{ color: colors.textSecondary }}>
+            <h1 className={GLASS_PAGE_TITLE}>Sygnały</h1>
+            <p className={GLASS_PAGE_SUBTITLE}>
               Przeglądaj aktywne setupy i ocenę ryzyka wspierane przez analizę AI StockAI Pro.
             </p>
-            <InvestmentDisclaimer className="max-w-2xl text-left" showTermsLink />
-            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+            <InvestmentDisclaimer variant="drawer" className="max-w-2xl text-left" showTermsLink />
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/50">
               Wyniki: {filteredSignals.length}
             </p>
             <EtoroCTAButton sourcePage="signals" className="max-w-xs" />
@@ -344,37 +314,21 @@ export function SignalsPage() {
             {loadingList ? (
               <div className="space-y-4">
                 {Array.from({ length: 6 }).map((_, idx) => (
-                  <div
-                    key={`skeleton-${idx}`}
-                    className="animate-pulse rounded-2xl border p-5"
-                    style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-                  >
-                    <div className="mb-4 h-5 w-1/3 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                    <div className="mb-2 h-4 w-4/5 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                    <div className="h-4 w-2/5 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+                  <div key={`skeleton-${idx}`} className={`${GLASS_INNER_PANEL} animate-pulse p-5`}>
+                    <div className="mb-4 h-5 w-1/3 rounded bg-white/10" />
+                    <div className="mb-2 h-4 w-4/5 rounded bg-white/10" />
+                    <div className="h-4 w-2/5 rounded bg-white/10" />
                   </div>
                 ))}
               </div>
             ) : null}
 
             {!loadingList && listError ? (
-              <div
-                className="rounded-2xl border px-4 py-3 text-sm"
-                style={{
-                  borderColor: colors.negative,
-                  color: colors.negative,
-                  backgroundColor: `${colors.negative}12`,
-                }}
-              >
-                {listError}
-              </div>
+              <div className="rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{listError}</div>
             ) : null}
 
             {!loadingList && !listError && filteredSignals.length === 0 ? (
-              <div
-                className="rounded-2xl border px-4 py-6 text-center text-sm"
-                style={{ borderColor: colors.border, color: colors.textSecondary, backgroundColor: colors.bgSecondary }}
-              >
+              <div className={`${GLASS_INNER_PANEL} px-4 py-6 text-center text-sm text-white/60`}>
                 Brak sygnałów dla wybranego filtra.
               </div>
             ) : null}
@@ -393,12 +347,10 @@ export function SignalsPage() {
             ) : null}
           </div>
         </div>
-      </div>
 
       <button
         type="button"
-        className="fixed bottom-4 right-4 z-30 rounded-full px-5 py-3 text-sm font-semibold shadow-lg lg:hidden"
-        style={{ backgroundColor: colors.brandDark, color: colors.bgPrimary }}
+        className={`fixed bottom-20 right-4 z-30 rounded-full px-5 py-3 text-sm font-semibold shadow-lg lg:hidden md:bottom-4 ${GLASS_BTN_PRIMARY}`}
         onClick={() => setIsMobileFiltersOpen(true)}
       >
         Filtry {hasActiveFilters ? "•" : ""}
@@ -412,12 +364,10 @@ export function SignalsPage() {
             onClick={() => setIsMobileFiltersOpen(false)}
             aria-label="Zamknij panel filtrów"
           />
-          <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-3xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+          <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-3xl border border-white/15 bg-[#1a0538]/95 p-4 backdrop-blur-md">
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-base font-bold" style={{ color: colors.brandDark }}>
-                Filtry sygnałów
-              </p>
-              <button type="button" className="text-sm font-semibold" style={{ color: colors.brandCyan }} onClick={() => setIsMobileFiltersOpen(false)}>
+              <p className="text-base font-bold text-white">Filtry sygnałów</p>
+              <button type="button" className="text-sm font-semibold text-[#00C9D4]" onClick={() => setIsMobileFiltersOpen(false)}>
                 Zamknij
               </button>
             </div>
@@ -433,6 +383,6 @@ export function SignalsPage() {
           </div>
         </div>
       ) : null}
-    </div>
+    </GlassPageShell>
   );
 }

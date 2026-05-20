@@ -1,4 +1,4 @@
-const CACHE_NAME = "stockai-v4";
+const CACHE_NAME = "stockai-v5";
 const OFFLINE_URL = "/offline.html";
 const STATIC_ASSETS = [
   "/",
