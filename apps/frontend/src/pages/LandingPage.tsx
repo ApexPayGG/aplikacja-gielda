@@ -7,6 +7,18 @@ import {
   type RefObject,
 } from "react";
 import { Bars3Icon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  AlertTriangle,
+  BarChart2,
+  Brain,
+  FileText,
+  GitBranch,
+  Globe,
+  TrendingUp,
+  UserPlus,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { createStripeCheckoutSession } from "../services/api";
@@ -27,6 +39,22 @@ const BRAND = {
 
 const ETORO_AFFILIATE_URL =
   "https://med.etoro.com/B9219_A129734_TClick_Sstockaipro-main.aspx";
+
+const SOLUTION_FEATURE_ICONS: LucideIcon[] = [FileText, Brain, GitBranch, AlertTriangle, Globe, TrendingUp];
+
+const HOW_IT_WORKS_ICONS: LucideIcon[] = [UserPlus, BarChart2, Zap];
+
+function LandingLucideIcon({ icon: Icon, className = "" }: { icon: LucideIcon; className?: string }) {
+  return (
+    <Icon
+      className={className}
+      size={28}
+      strokeWidth={2}
+      color={BRAND.cyan}
+      aria-hidden
+    />
+  );
+}
 
 const pricingTiers = [
   {
@@ -164,7 +192,7 @@ const CANDLES_DEMO = [
 ] as const;
 
 function HowItWorksStepBadge({ stepIndex }: { stepIndex: number }) {
-  const label = String(stepIndex + 1);
+  const StepIcon = HOW_IT_WORKS_ICONS[stepIndex] ?? UserPlus;
 
   const accentRing = [
     "shadow-[0_0_0_1px_rgba(6,182,212,0.35)]",
@@ -181,9 +209,7 @@ function HowItWorksStepBadge({ stepIndex }: { stepIndex: number }) {
 
   return (
     <div className={shell}>
-      <span className="text-3xl font-black tabular-nums" style={{ color: BRAND.cyan }}>
-        {label}
-      </span>
+      <StepIcon size={36} strokeWidth={2} color={BRAND.cyan} aria-hidden />
     </div>
   );
 }
@@ -1250,12 +1276,14 @@ export function LandingPage() {
               index % 3 === 0 ? "reveal-left" : index % 3 === 2 ? "reveal-right" : "reveal";
             const staggerClass =
               index % 3 === 0 ? "stagger-1" : index % 3 === 1 ? "stagger-2" : "stagger-3";
+            const FeatureIcon = SOLUTION_FEATURE_ICONS[index] ?? FileText;
             return (
               <article
                 key={card.title}
-                className={`${revealKind} group relative overflow-hidden rounded-xl border border-gray-100 border-t-[3px] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#00C9D4] hover:shadow-lg ${staggerClass}`}
+                className={`${revealKind} group relative overflow-hidden rounded-xl border border-gray-100 border-t-[3px] bg-white p-6 pt-12 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#00C9D4] hover:shadow-lg ${staggerClass}`}
                 style={{ borderTopColor: BRAND.cyan }}
               >
+                <LandingLucideIcon icon={FeatureIcon} className="absolute left-4 top-4 z-[2]" />
                 <span className="pointer-events-none absolute right-4 top-4 text-6xl font-black leading-none text-[#2D0A6B]/[0.12]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
