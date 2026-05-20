@@ -1,168 +1,65 @@
-import { Link } from "react-router-dom";
 import { SEOHead } from "../components/SEOHead";
-import { colors } from "../styles/designSystem";
 
 const missionValues = [
   {
-    icon: "🎯",
     title: "Precyzja",
-    description: "AI analizy oparte na danych, nie opiniach",
+    description: "Analizy oparte na danych rynkowych, nie na opiniach i szumie informacyjnym.",
   },
   {
-    icon: "🧠",
     title: "Psychologia",
-    description: "Behavioral coaching jako fundament, nie dodatek",
+    description: "Behavioral coaching jako fundament decyzji — nie dodatek do wykresów.",
   },
   {
-    icon: "🌍",
     title: "Dostępność",
-    description: "9 języków, 130+ giełd, od $0",
+    description: "9 języków, 130+ giełd i plan startowy od 0 USD.",
   },
 ] as const;
 
-const stackBadges = ["React", "Node.js", "Claude AI", "TimescaleDB", "Alpaca"] as const;
-
-const contactBadges = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/" },
-  { label: "GitHub", href: "https://github.com/" },
-] as const;
+const SUPPORT_EMAIL = "support@stock-ai.pro";
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen bg-bgPrimary text-textPrimary">
+    <div className="min-h-screen bg-white text-slate-900 antialiased">
       <SEOHead
         title="O StockAI Pro"
-        description="Poznaj misję, wartości i twórcę StockAI Pro."
+        description="Misja StockAI Pro: profesjonalne narzędzia inwestycyjne i coaching behawioralny dla inwestorów detalicznych."
         ogType="website"
       />
 
-      <section
-        className="py-20 text-white md:py-24"
-        style={{ backgroundImage: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
-      >
-        <div className="mx-auto max-w-6xl px-6">
-          <h1 className="text-4xl font-bold md:text-5xl">O StockAI Pro</h1>
-          <p className="mt-4 max-w-2xl text-base text-white/90 md:text-lg">
-            Budujemy narzędzie które chcielibyśmy sami mieć
-          </p>
-        </div>
-      </section>
+      <main className="mx-auto max-w-3xl px-6 py-20 md:py-28 lg:py-32">
+        <p className="text-sm font-medium uppercase tracking-widest text-slate-500">StockAI Pro</p>
 
-      <section className="mx-auto max-w-6xl px-6 py-14 md:py-16">
-        <h2 className="text-3xl font-bold" style={{ color: colors.brandDark }}>
-          Misja
-        </h2>
-        <p className="mt-4 max-w-3xl text-base leading-7 text-textSecondary">
-          Naszą misją jest demokratyzacja profesjonalnych narzędzi inwestycyjnych. Retail inwestor zasługuje na takie
-          same analizy jak instytucje.
+        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 md:text-5xl md:leading-[1.1] lg:text-[3.25rem]">
+          Budujemy narzędzie, które chcielibyśmy sami mieć.
+        </h1>
+
+        <p className="mt-8 text-lg leading-relaxed text-slate-600 md:text-xl md:leading-relaxed">
+          Demokratyzujemy dostęp do profesjonalnych narzędzi inwestycyjnych. Inwestor detaliczny zasługuje na taką
+          samą jakość analiz i wsparcia decyzyjnego jak instytucje — bez barier wejścia i bez zbędnej złożoności.
         </p>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
+        <div className="mt-16 grid gap-4 sm:grid-cols-3 sm:gap-5 md:mt-20">
           {missionValues.map((value) => (
             <article
               key={value.title}
-              className="rounded-2xl border bg-bgPrimary p-6 shadow-sm"
-              style={{ borderColor: colors.border }}
+              className="flex flex-col rounded-xl border border-slate-200/80 bg-slate-50/50 p-5 transition-colors hover:border-slate-300 hover:bg-slate-50 md:p-6"
             >
-              <div className="mb-4 text-3xl" style={{ color: colors.brandCyan }}>
-                {value.icon}
-              </div>
-              <h3 className="text-lg font-semibold text-textPrimary">{value.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-textSecondary">{value.description}</p>
+              <h2 className="text-base font-semibold tracking-tight text-slate-950">{value.title}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{value.description}</p>
             </article>
           ))}
         </div>
-      </section>
 
-      <section className="bg-bgSecondary py-14 md:py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-3xl font-bold" style={{ color: colors.brandDark }}>
-            Twórca
-          </h2>
-          <div className="mt-8 rounded-2xl border border-border bg-bgPrimary p-6 shadow-sm md:p-8">
-            <div className="flex flex-col gap-6 md:flex-row md:items-start">
-              <div
-                className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full text-2xl font-bold text-white"
-                style={{ backgroundColor: colors.brandDark }}
-                aria-label="Avatar MC"
-              >
-                MC
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-textPrimary">Marcin Chłędzik</h3>
-                <p className="mt-1 font-medium" style={{ color: colors.brandMedium }}>
-                  Founder & CEO
-                </p>
-                <p className="mt-4 max-w-3xl text-sm leading-7 text-textSecondary">
-                  CEO AMC Energy, inwestor od 10 lat. StockAI Pro to narzędzie które sam chciałem mieć.
-                </p>
-                <a
-                  href="https://www.linkedin.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-4 inline-flex text-sm font-semibold transition-opacity hover:opacity-80"
-                  style={{ color: colors.brandCyan }}
-                >
-                  LinkedIn
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-14 md:py-16">
-        <h2 className="text-3xl font-bold" style={{ color: colors.brandDark }}>
-          Stack technologiczny
-        </h2>
-        <div className="mt-8 flex flex-wrap gap-3">
-          {stackBadges.map((badge) => (
-            <span
-              key={badge}
-              className="inline-flex rounded-full px-4 py-2 text-sm font-semibold text-white"
-              style={{ backgroundColor: colors.brandDark }}
-            >
-              {badge}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      <section className="border-t border-border bg-bgSecondary py-14 md:py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-3xl font-bold" style={{ color: colors.brandDark }}>
-            Kontakt
-          </h2>
+        <p className="mt-16 border-t border-slate-200 pt-10 text-base text-slate-600 md:mt-20">
+          Kontakt:{" "}
           <a
-            href="mailto:marcin.chledzik@amcenergy.pl"
-            className="mt-4 inline-flex text-base font-medium text-textSecondary transition hover:text-brandDark"
+            href={`mailto:${SUPPORT_EMAIL}`}
+            className="font-medium text-slate-950 underline decoration-slate-300 underline-offset-[0.2em] transition hover:decoration-slate-950"
           >
-            marcin.chledzik@amcenergy.pl
+            {SUPPORT_EMAIL}
           </a>
-          <div className="mt-4">
-            <Link
-              to="/contact"
-              className="inline-flex rounded-lg bg-brandDark px-4 py-2 text-sm font-semibold text-white transition hover:bg-brandMedium"
-            >
-              Przejdź do kontaktu
-            </Link>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            {contactBadges.map((badge) => (
-              <a
-                key={badge.label}
-                href={badge.href}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex rounded-full border px-4 py-2 text-sm font-semibold transition hover:border-brandDark hover:text-brandDark"
-                style={{ borderColor: colors.borderStrong, color: colors.textSecondary }}
-              >
-                {badge.label}
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
+        </p>
+      </main>
     </div>
   );
 }

@@ -313,45 +313,12 @@ export function AppNavBar() {
 
   return (
     <nav className="relative z-20 border-b border-border bg-bgPrimary dark:border-gray-700 dark:bg-gray-900">
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-3 gap-y-3 px-4 py-3 md:flex-nowrap md:py-4">
         <Link to="/" className="shrink-0">
           <BrandLogo size="nav" />
         </Link>
 
-        <GlobalSearchBar variant="desktop" />
-
-        <div className="ml-auto flex shrink-0 items-center gap-2 md:hidden">
-          <GlobalSearchBar variant="mobile" />
-          <button
-          type="button"
-          className="inline-flex h-11 w-11 flex-col items-center justify-center rounded-lg border border-border"
-          aria-expanded={mobileOpen}
-          aria-controls="mobile-nav-panel"
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          <span
-            aria-hidden
-            className={`block h-0.5 w-6 bg-brandDark transition-transform duration-300 ${
-              mobileOpen ? "translate-y-[7px] rotate-45" : ""
-            }`}
-          />
-          <span
-            aria-hidden
-            className={`my-1 block h-0.5 w-6 bg-brandDark transition-opacity duration-200 ${
-              mobileOpen ? "opacity-0" : "opacity-100"
-            }`}
-          />
-          <span
-            aria-hidden
-            className={`block h-0.5 w-6 bg-brandDark transition-transform duration-300 ${
-              mobileOpen ? "-translate-y-[7px] -rotate-45" : ""
-            }`}
-          />
-          <span className="sr-only">{t("nav.menu")}</span>
-          </button>
-        </div>
-
-        <div className="hidden min-w-0 shrink-0 items-center gap-x-1 gap-y-2 md:flex md:gap-x-3">
+        <div className="hidden min-w-0 flex-1 items-center gap-x-1 overflow-x-auto md:flex md:gap-x-2 lg:gap-x-3">
           <NavLink to="/" end className={({ isActive }) => navLinkClass(isActive)}>
             {t("nav.home")}
           </NavLink>
@@ -390,8 +357,41 @@ export function AppNavBar() {
           />
         </div>
 
-        <div className="hidden shrink-0 items-center gap-3 md:flex">
-          <p className="text-xs text-textMuted">{t("nav.shortcutsHint", { defaultValue: "Press ? for keyboard shortcuts" })}</p>
+        <GlobalSearchBar variant="desktop" />
+
+        <div className="ml-auto flex shrink-0 items-center gap-2 lg:hidden">
+          <GlobalSearchBar variant="mobile" />
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 flex-col items-center justify-center rounded-lg border border-border"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-panel"
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            <span
+              aria-hidden
+              className={`block h-0.5 w-6 bg-brandDark transition-transform duration-300 ${
+                mobileOpen ? "translate-y-[7px] rotate-45" : ""
+              }`}
+            />
+            <span
+              aria-hidden
+              className={`my-1 block h-0.5 w-6 bg-brandDark transition-opacity duration-200 ${
+                mobileOpen ? "opacity-0" : "opacity-100"
+              }`}
+            />
+            <span
+              aria-hidden
+              className={`block h-0.5 w-6 bg-brandDark transition-transform duration-300 ${
+                mobileOpen ? "-translate-y-[7px] -rotate-45" : ""
+              }`}
+            />
+            <span className="sr-only">{t("nav.menu")}</span>
+          </button>
+        </div>
+
+        <div className="hidden shrink-0 items-center gap-2 md:flex lg:gap-3">
+          <p className="hidden text-xs text-textMuted xl:inline">{t("nav.shortcutsHint", { defaultValue: "Press ? for keyboard shortcuts" })}</p>
           <NotificationsCenter />
           <ThemeToggle />
           {user ? (
