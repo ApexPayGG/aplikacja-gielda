@@ -100,7 +100,14 @@
     "verifyEmailSuccess": "Email verified! You can sign in now.",
     "forgotPassword": "Forgot password?",
     "loginContinueCheckout": "Sign in to complete your subscription.",
-    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link."
+    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link.",
+    "signIn": "Anmelden",
+    "signInSubtitle": "Melden Sie sich an, um mit StockAI Pro fortzufahren.",
+    "loginAsideTitle": "Warum StockAI Pro?",
+    "loginAsideSubtitle": "Eine Investmentplattform für moderne Trader.",
+    "loginAsideFeature1": "KI-Analysen für fundierte Anlageentscheidungen",
+    "loginAsideFeature2": "Automatische Alerts und Marktüberwachung rund um die Uhr",
+    "loginAsideFeature3": "Portfolio-Einblicke und Performance an einem Ort"
   },
   "backtest": {
     "avgReturn": "Ø Rendite",
@@ -805,7 +812,8 @@
     "weeklyReview": "Weekly Review",
     "shortcutsHint": "Press ? for keyboard shortcuts",
     "companies": "Companies",
-    "searchPlaceholder": "Search company..."
+    "searchPlaceholder": "Search company...",
+    "dividendScreener": "Dividenden-Screener"
   },
   "newshalflife": {
     "categoryLabel": "Category",
@@ -1517,5 +1525,9 @@
         "answer": "Simulation mit Echtzeitdaten ohne Kapitalrisiko — ideal zum Üben."
       }
     }
+  },
+  "companies": {
+    "filterDividend": "Nur Dividendenaktien",
+    "filterDividendLoading": "Dividendenliste wird geladen…"
   }
 }

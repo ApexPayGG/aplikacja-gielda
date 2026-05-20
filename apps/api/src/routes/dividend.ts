@@ -2,6 +2,11 @@ import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import { getDividendHealth, getDividendScreener } from "../modules/dividend/dividendModule";
 
+function isNoDividendError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  return /dividend data not found/i.test(error.message) || /no valid dividend rows/i.test(error.message);
+}
+
 export function createDividendRouter(): Router {
   const router = Router();
 
@@ -39,6 +44,10 @@ export function createDividendRouter(): Router {
       const data = await getDividendHealth(ticker);
       res.json(data);
     } catch (error) {
+      if (isNoDividendError(error)) {
+        const message = error instanceof Error ? error.message : "Dividend data not found";
+        return res.status(404).json({ error: message, code: "NO_DIVIDEND" });
+      }
       next(error);
     }
   });

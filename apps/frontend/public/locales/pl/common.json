@@ -101,7 +101,14 @@
     "verifyEmailSuccess": "Email zweryfikowany! Możesz się zalogować.",
     "forgotPassword": "Nie pamiętasz hasła?",
     "loginContinueCheckout": "Zaloguj się, aby dokończyć subskrypcję.",
-    "verifyEmailFirst": "Zweryfikuj adres e-mail — sprawdź skrzynkę i kliknij link aktywacyjny."
+    "verifyEmailFirst": "Zweryfikuj adres e-mail — sprawdź skrzynkę i kliknij link aktywacyjny.",
+    "signIn": "Zaloguj się",
+    "signInSubtitle": "Zaloguj się, aby kontynuować pracę z platformą.",
+    "loginAsideTitle": "Dlaczego StockAI Pro?",
+    "loginAsideSubtitle": "Platforma inwestycyjna zbudowana dla nowoczesnych traderów.",
+    "loginAsideFeature1": "Analityka AI dla świadomych decyzji inwestycyjnych",
+    "loginAsideFeature2": "Zautomatyzowane alerty i monitorowanie rynku 24/7",
+    "loginAsideFeature3": "Wgląd w portfel i wyniki w jednym miejscu"
   },
   "backtest": {
     "avgReturn": "Śr. zwrot",
@@ -192,9 +199,11 @@
       "healthScore": "Wskaźnik bezpieczeństwa",
       "nextExDate": "Ostatnia data ex",
       "noDividend": {
-        "title": "📊 Ta spółka nie wypłaca dywidend",
-        "description": "{{companyName}} to spółka wzrostowa reinwestująca zyski w rozwój.",
-        "descriptionGeneric": "To spółka wzrostowa reinwestująca zyski w rozwój."
+        "title": "Ta spółka nie wypłaca dywidend",
+        "lead": "I to jest w porządku.",
+        "description": "{{companyName}} skupia się na wzroście i reinwestuje zyski zamiast wypłacać je akcjonariuszom — tak działa wiele spółek technologicznych.",
+        "descriptionGeneric": "Wiele spółek wzrostowych reinwestuje zyski zamiast wypłacać dywidendę — to świadoma strategia, nie brak danych.",
+        "hint": "Szukasz innych metryk? Sprawdź zakładki Przegląd lub AI Brief."
       },
       "noHistory": "Brak historii dywidend w bazie.",
       "payoutRatio": "Wskaźnik wypłaty",
@@ -817,7 +826,8 @@
     "weeklyReview": "Weekly Review",
     "shortcutsHint": "Naciśnij ? aby zobaczyć skróty",
     "companies": "Spółki",
-    "searchPlaceholder": "Szukaj spółki..."
+    "searchPlaceholder": "Szukaj spółki...",
+    "dividendScreener": "Screener dywidend"
   },
   "newshalflife": {
     "categoryLabel": "Kategoria",
@@ -1529,5 +1539,9 @@
         "answer": "Symulacja inwestowania na danych rynkowych bez ryzyka kapitału — idealna do nauki."
       }
     }
+  },
+  "companies": {
+    "filterDividend": "Tylko spółki z dywidendą",
+    "filterDividendLoading": "Ładowanie listy dywidendowych…"
   }
 }

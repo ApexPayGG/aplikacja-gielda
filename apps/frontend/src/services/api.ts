@@ -1165,6 +1165,22 @@ export async function getDividendHealth(ticker: string): Promise<DividendHealthD
   return data;
 }
 
+export interface DividendScreenerResponse {
+  count: number;
+  data: DividendHealthData[];
+}
+
+export async function getDividendScreener(params?: {
+  minYield?: number;
+  maxYield?: number;
+  minYears?: number;
+  minHealth?: number;
+  trend?: "GROWING" | "STABLE" | "DECLINING";
+}): Promise<DividendScreenerResponse> {
+  const { data } = await publicApi.get<DividendScreenerResponse>("/dividend/screener", { params });
+  return data;
+}
+
 export interface DividendHistoryItem {
   exDate: string;
   payDate: string;

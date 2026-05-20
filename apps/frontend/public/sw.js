@@ -1,6 +1,22 @@
-const CACHE_NAME = "stockai-v1";
+const CACHE_NAME = "stockai-v2";
 const OFFLINE_URL = "/offline.html";
-const STATIC_ASSETS = ["/", "/index.html", "/manifest.json", "/icon-192.png", "/icon-512.png", OFFLINE_URL];
+const STATIC_ASSETS = [
+  "/",
+  "/index.html",
+  "/manifest.json",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/flags/pl.png",
+  "/flags/gb.png",
+  "/flags/de.png",
+  "/flags/es.png",
+  "/flags/jp.png",
+  "/flags/in.png",
+  "/flags/kr.png",
+  "/flags/tw.png",
+  "/flags/fr.png",
+  OFFLINE_URL,
+];
 
 const isApiRequest = (requestUrl) =>
   requestUrl.pathname.startsWith("/api") ||

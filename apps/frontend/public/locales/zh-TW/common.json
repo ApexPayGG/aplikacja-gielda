@@ -100,7 +100,14 @@
     "verifyEmailSuccess": "Email verified! You can sign in now.",
     "forgotPassword": "Forgot password?",
     "loginContinueCheckout": "Sign in to complete your subscription.",
-    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link."
+    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link.",
+    "signIn": "登入",
+    "signInSubtitle": "登入以在 StockAI Pro 上繼續。",
+    "loginAsideTitle": "為什麼選擇 StockAI Pro？",
+    "loginAsideSubtitle": "為現代交易者打造的投資平台。",
+    "loginAsideFeature1": "AI 分析助您做出明智投資決策",
+    "loginAsideFeature2": "自動提醒與 24/7 市場監控",
+    "loginAsideFeature3": "投資組合洞察與績效一站掌握"
   },
   "backtest": {
     "avgReturn": "平均報酬",
@@ -805,7 +812,8 @@
     "weeklyReview": "Weekly Review",
     "shortcutsHint": "Press ? for keyboard shortcuts",
     "companies": "Companies",
-    "searchPlaceholder": "Search company..."
+    "searchPlaceholder": "Search company...",
+    "dividendScreener": "股息篩選器"
   },
   "newshalflife": {
     "categoryLabel": "Category",
@@ -1517,5 +1525,9 @@
         "answer": "以真實行情練習，不動用真實資金。"
       }
     }
+  },
+  "companies": {
+    "filterDividend": "僅限有股息的股票",
+    "filterDividendLoading": "正在載入股息名單…"
   }
 }

@@ -100,7 +100,14 @@
     "verifyEmailSuccess": "Email verified! You can sign in now.",
     "forgotPassword": "Forgot password?",
     "loginContinueCheckout": "Sign in to complete your subscription.",
-    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link."
+    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link.",
+    "signIn": "Iniciar sesión",
+    "signInSubtitle": "Inicia sesión para continuar en StockAI Pro.",
+    "loginAsideTitle": "¿Por qué StockAI Pro?",
+    "loginAsideSubtitle": "Una plataforma de inversión creada para traders modernos.",
+    "loginAsideFeature1": "Analítica con IA para decisiones de inversión informadas",
+    "loginAsideFeature2": "Alertas automáticas y monitoreo del mercado 24/7",
+    "loginAsideFeature3": "Visión del portafolio y resultados en un solo lugar"
   },
   "backtest": {
     "avgReturn": "Rentab. media",
@@ -805,7 +812,8 @@
     "weeklyReview": "Weekly Review",
     "shortcutsHint": "Press ? for keyboard shortcuts",
     "companies": "Companies",
-    "searchPlaceholder": "Search company..."
+    "searchPlaceholder": "Search company...",
+    "dividendScreener": "Screener de dividendos"
   },
   "newshalflife": {
     "categoryLabel": "Category",
@@ -1517,5 +1525,9 @@
         "answer": "Simulación con datos reales sin arriesgar capital."
       }
     }
+  },
+  "companies": {
+    "filterDividend": "Solo acciones con dividendo",
+    "filterDividendLoading": "Cargando lista de dividendos…"
   }
 }

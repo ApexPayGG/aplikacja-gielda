@@ -21,7 +21,7 @@ export default function LanguageSwitcher({ variant = "default" }: LanguageSwitch
       <div className="relative inline-flex items-center">
         <CountryFlag
           countryCode={currentOption.countryCode}
-          className="pointer-events-none absolute left-2.5 z-10 h-3.5 w-[1.35rem] rounded-[2px] object-cover"
+          className="pointer-events-none absolute left-2.5 z-10 h-4 w-6 rounded-[2px] object-cover"
           title={currentOption.label}
         />
         <select

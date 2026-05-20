@@ -100,7 +100,14 @@
     "verifyEmailSuccess": "Email verified! You can sign in now.",
     "forgotPassword": "Forgot password?",
     "loginContinueCheckout": "Sign in to complete your subscription.",
-    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link."
+    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link.",
+    "signIn": "लॉग इन करें",
+    "signInSubtitle": "StockAI Pro पर जारी रखने के लिए लॉग इन करें।",
+    "loginAsideTitle": "StockAI Pro क्यों?",
+    "loginAsideSubtitle": "आधुनिक ट्रेडर्स के लिए बनाया गया निवेश प्लेटफ़ॉर्म।",
+    "loginAsideFeature1": "सूचित निवेश निर्णयों के लिए AI विश्लेषण",
+    "loginAsideFeature2": "स्वचालित अलर्ट और 24/7 बाज़ार निगरानी",
+    "loginAsideFeature3": "एक जगह पर पोर्टफ़ोलियो अंतर्दृष्टि और प्रदर्शन"
   },
   "backtest": {
     "avgReturn": "औसत रिटर्न",
@@ -805,7 +812,8 @@
     "weeklyReview": "Weekly Review",
     "shortcutsHint": "Press ? for keyboard shortcuts",
     "companies": "Companies",
-    "searchPlaceholder": "Search company..."
+    "searchPlaceholder": "Search company...",
+    "dividendScreener": "लाभांश स्क्रीनर"
   },
   "newshalflife": {
     "categoryLabel": "Category",
@@ -1517,5 +1525,9 @@
         "answer": "वास्तविक डेटा पर बिना पूंजी जोखिम के अभ्यास।"
       }
     }
+  },
+  "companies": {
+    "filterDividend": "केवल लाभांश वाले शेयर",
+    "filterDividendLoading": "लाभांश सूची लोड हो रही है…"
   }
 }

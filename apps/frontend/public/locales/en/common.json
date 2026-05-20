@@ -101,7 +101,14 @@
     "verifyEmailSuccess": "Email verified! You can sign in now.",
     "forgotPassword": "Forgot password?",
     "loginContinueCheckout": "Sign in to complete your subscription.",
-    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link."
+    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link.",
+    "signIn": "Sign in",
+    "signInSubtitle": "Sign in to continue on StockAI Pro.",
+    "loginAsideTitle": "Why StockAI Pro?",
+    "loginAsideSubtitle": "An investment platform built for modern traders.",
+    "loginAsideFeature1": "AI analytics for informed investment decisions",
+    "loginAsideFeature2": "Automated alerts and 24/7 market monitoring",
+    "loginAsideFeature3": "Portfolio insights and performance in one place"
   },
   "backtest": {
     "avgReturn": "Avg return",
@@ -192,9 +199,11 @@
       "healthScore": "Health score",
       "nextExDate": "Latest ex-date",
       "noDividend": {
-        "title": "📊 This company does not pay dividends",
-        "description": "{{companyName}} is a growth company reinvesting profits into expansion.",
-        "descriptionGeneric": "This is a growth company reinvesting profits into expansion."
+        "title": "This company doesn't pay dividends",
+        "lead": "And that's perfectly normal.",
+        "description": "{{companyName}} focuses on growth and reinvests earnings rather than paying shareholders — common for many tech and growth stocks.",
+        "descriptionGeneric": "Many growth companies reinvest earnings instead of paying dividends — that's a deliberate strategy, not missing data.",
+        "hint": "Looking for other metrics? Try the Overview or AI Brief tabs."
       },
       "noHistory": "No dividend history rows yet.",
       "payoutRatio": "Payout ratio",
@@ -817,7 +826,8 @@
     "weeklyReview": "Weekly Review",
     "shortcutsHint": "Press ? for keyboard shortcuts",
     "companies": "Companies",
-    "searchPlaceholder": "Search company..."
+    "searchPlaceholder": "Search company...",
+    "dividendScreener": "Dividend Screener"
   },
   "newshalflife": {
     "categoryLabel": "Category",
@@ -1529,5 +1539,9 @@
         "answer": "Paper trading simulates investing on real market data without risking capital — ideal for practice."
       }
     }
+  },
+  "companies": {
+    "filterDividend": "Dividend stocks only",
+    "filterDividendLoading": "Loading dividend list…"
   }
 }

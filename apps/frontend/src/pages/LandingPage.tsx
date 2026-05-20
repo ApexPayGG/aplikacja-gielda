@@ -559,14 +559,19 @@ function LandingFooterLanguages() {
             type="button"
             onClick={() => void handleChange(opt.code)}
             title={opt.label}
-            className={`inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 transition ${
+            aria-label={opt.label}
+            aria-current={current === opt.code ? "true" : undefined}
+            className={`inline-flex items-center rounded-md p-1.5 transition ${
               current === opt.code
-                ? "bg-white/10 font-bold text-white"
-                : "cursor-pointer text-white/60 hover:bg-white/5 hover:text-white"
+                ? "bg-white/15 ring-1 ring-white/25"
+                : "cursor-pointer opacity-70 hover:bg-white/5 hover:opacity-100"
             }`}
           >
-            <CountryFlag countryCode={opt.countryCode} className="h-3.5 w-[1.35rem] rounded-[2px] object-cover shadow-sm" />
-            <span className="text-xs font-semibold tracking-wide">{opt.shortCode}</span>
+            <CountryFlag
+              countryCode={opt.countryCode}
+              className="block h-5 w-7 min-h-[20px] min-w-[28px] rounded-[3px] object-cover shadow-sm"
+              title={opt.label}
+            />
           </button>
         </span>
       ))}

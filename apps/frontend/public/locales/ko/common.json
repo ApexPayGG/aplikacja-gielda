@@ -100,7 +100,14 @@
     "verifyEmailSuccess": "Email verified! You can sign in now.",
     "forgotPassword": "Forgot password?",
     "loginContinueCheckout": "Sign in to complete your subscription.",
-    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link."
+    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link.",
+    "signIn": "로그인",
+    "signInSubtitle": "StockAI Pro에서 계속하려면 로그인하세요.",
+    "loginAsideTitle": "StockAI Pro를 선택하는 이유",
+    "loginAsideSubtitle": "현대 트레이더를 위해 만든 투자 플랫폼입니다.",
+    "loginAsideFeature1": "AI 분석으로 현명한 투자 결정",
+    "loginAsideFeature2": "자동 알림과 24/7 시장 모니터링",
+    "loginAsideFeature3": "포트폴리오 인사이트와 성과를 한곳에서"
   },
   "backtest": {
     "avgReturn": "평균 수익률",
@@ -805,7 +812,8 @@
     "weeklyReview": "Weekly Review",
     "shortcutsHint": "Press ? for keyboard shortcuts",
     "companies": "Companies",
-    "searchPlaceholder": "Search company..."
+    "searchPlaceholder": "Search company...",
+    "dividendScreener": "배당 스크리너"
   },
   "newshalflife": {
     "categoryLabel": "Category",
@@ -1517,5 +1525,9 @@
         "answer": "실제 데이터로 자본 위험 없이 연습."
       }
     }
+  },
+  "companies": {
+    "filterDividend": "배당주만",
+    "filterDividendLoading": "배당 종목 불러오는 중…"
   }
 }

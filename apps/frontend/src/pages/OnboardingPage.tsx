@@ -45,6 +45,26 @@ export function OnboardingPage() {
     setStep((previous) => (previous > 1 ? ((previous - 1) as WizardStep) : previous));
   }
 
+  function persistOnboardingCompletion(): void {
+    if (!selectedStyle) {
+      return;
+    }
+    saveOnboardingPreferences({
+      markets: selectedMarkets,
+      style: selectedStyle,
+      completedAt: new Date().toISOString(),
+    });
+  }
+
+  function handleFeatureNavigate(href: string): void {
+    saveOnboardingPreferences({
+      markets: selectedMarkets,
+      style: selectedStyle ?? "learning",
+      completedAt: new Date().toISOString(),
+    });
+    navigate(href, { replace: true });
+  }
+
   function goNext(): void {
     if (step === 2 && selectedMarkets.length === 0) {
       setMarketError(t("onboarding.markets.error", { defaultValue: "Select at least one market to continue." }));
@@ -60,11 +80,7 @@ export function OnboardingPage() {
       if (!selectedStyle) {
         return;
       }
-      saveOnboardingPreferences({
-        markets: selectedMarkets,
-        style: selectedStyle,
-        completedAt: new Date().toISOString(),
-      });
+      persistOnboardingCompletion();
       navigate("/dashboard", { replace: true });
       return;
     }
@@ -190,12 +206,13 @@ export function OnboardingPage() {
                   defaultValue: "Here are three features to help you get started right away:",
                 })}
               </p>
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="relative z-10 grid gap-4 md:grid-cols-3">
                 {FEATURE_IDS.map((featureId) => (
-                  <Link
+                  <button
                     key={featureId}
-                    to={FEATURE_HREFS[featureId]}
-                    className="rounded-2xl border border-border bg-bgPrimary p-4 transition hover:-translate-y-0.5 hover:shadow-sm"
+                    type="button"
+                    onClick={() => handleFeatureNavigate(FEATURE_HREFS[featureId])}
+                    className="block w-full rounded-2xl border border-border bg-bgPrimary p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm"
                   >
                     <p className="text-base font-semibold text-textPrimary">
                       {t(`onboarding.features.${featureId}.title`, { defaultValue: featureId })}
@@ -206,7 +223,7 @@ export function OnboardingPage() {
                     <p className="mt-4 text-sm font-semibold text-brandCyan">
                       {t("onboarding.ready.explore", { defaultValue: "Explore →" })}
                     </p>
-                  </Link>
+                  </button>
                 ))}
               </div>
             </section>

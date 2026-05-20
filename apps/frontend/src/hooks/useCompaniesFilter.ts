@@ -147,7 +147,11 @@ function compareCompanies(a: CompanyFilterItem, b: CompanyFilterItem, sortBy: Co
   return a.name.localeCompare(b.name);
 }
 
-function filterCompanies<T extends CompanyFilterItem>(rows: T[], filters: CompaniesFilterState): T[] {
+function filterCompanies<T extends CompanyFilterItem>(
+  rows: T[],
+  filters: CompaniesFilterState,
+  dividendSymbols?: ReadonlySet<string> | null,
+): T[] {
   const isPeRangeDefault = filters.peMin === PE_RATIO_MIN && filters.peMax === PE_RATIO_MAX;
 
   return [...rows]
@@ -168,7 +172,12 @@ function filterCompanies<T extends CompanyFilterItem>(rows: T[], filters: Compan
 
       if (filters.onlyDividendStocks) {
         const dividendYield = readDividendYield(company);
-        if (dividendYield === null || dividendYield <= 0) return false;
+        const symbol = String(company.symbol ?? "")
+          .trim()
+          .toUpperCase();
+        const hasYield = dividendYield !== null && dividendYield > 0;
+        const inScreener = dividendSymbols?.has(symbol) ?? false;
+        if (!hasYield && !inScreener) return false;
       }
 
       return true;
@@ -230,7 +239,11 @@ export function useCompaniesFilter() {
     setFilters(DEFAULT_FILTERS);
   }, []);
 
-  const applyFilters = useCallback(<T extends CompanyFilterItem>(rows: T[]) => filterCompanies(rows, filters), [filters]);
+  const applyFilters = useCallback(
+    <T extends CompanyFilterItem>(rows: T[], dividendSymbols?: ReadonlySet<string> | null) =>
+      filterCompanies(rows, filters, dividendSymbols),
+    [filters],
+  );
 
   const hasActiveFilters = useMemo(() => {
     return (

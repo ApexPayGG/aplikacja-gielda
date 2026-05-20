@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
+  BanknotesIcon,
   BriefcaseIcon,
   ChartBarSquareIcon,
   ChevronDownIcon,
@@ -9,6 +10,7 @@ import {
   UserCircleIcon,
   WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
+import type { ComponentType, SVGProps } from "react";
 import { GlobalSearchBar } from "./GlobalSearchBar";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { NotificationsCenter } from "./NotificationsCenter";
@@ -16,6 +18,11 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "../context/AuthContext";
 
 type DropdownId = "markets" | "portfolio" | "tools";
+type NavDropdownItem = {
+  to: string;
+  labelKey: string;
+  icon?: ComponentType<SVGProps<SVGSVGElement>>;
+};
 type MobileDrawerLink = {
   to: string;
   label: string;
@@ -23,9 +30,10 @@ type MobileDrawerLink = {
   isActive: (pathname: string) => boolean;
 };
 
-const marketsLinks: { to: string; labelKey: string }[] = [
+const marketsLinks: NavDropdownItem[] = [
   { to: "/signals", labelKey: "nav.signals" },
   { to: "/dividend", labelKey: "nav.dividend" },
+  { to: "/dividend-screener", labelKey: "nav.dividendScreener", icon: BanknotesIcon },
   { to: "/dividend/intelligence", labelKey: "nav.dividendIntelligence" },
   { to: "/alpha", labelKey: "nav.alphaCalendar" },
 ];
@@ -59,6 +67,7 @@ function isMarketsPath(pathname: string): boolean {
   return (
     pathname.startsWith("/signals") ||
     pathname.startsWith("/dividend") ||
+    pathname.startsWith("/dividend-screener") ||
     pathname.startsWith("/alpha") ||
     pathname.startsWith("/companies") ||
     pathname.startsWith("/company/")
@@ -136,7 +145,7 @@ function triggerClass(active: boolean): string {
 type DesktopDropdownProps = {
   id: DropdownId;
   labelKey: string;
-  items: { to: string; labelKey: string }[];
+  items: NavDropdownItem[];
   groupActive: boolean;
   openDropdown: DropdownId | null;
   setOpenDropdown: (v: DropdownId | null) => void;
@@ -185,16 +194,20 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
       {open ? (
         <div className="absolute left-0 top-full z-50 -mt-0.5 min-w-[13.5rem] pt-2">
           <div className="rounded-xl border border-border bg-bgPrimary py-1 shadow-lg">
-            {items.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) => `${navLinkClass(isActive)} px-3`}
-                onClick={() => setOpenDropdown(null)}
-              >
-                {t(item.labelKey)}
-              </NavLink>
-            ))}
+            {items.map((item) => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) => `${navLinkClass(isActive)} flex items-center gap-2 px-3`}
+                  onClick={() => setOpenDropdown(null)}
+                >
+                  {Icon ? <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden /> : null}
+                  {t(item.labelKey)}
+                </NavLink>
+              );
+            })}
           </div>
         </div>
       ) : null}

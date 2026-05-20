@@ -1,27 +1,15 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getCompanyDividendTickerHistory, getDividendHealth, type DividendHealthData } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { isNoDividendError, isNoDividendMessage } from "../utils/isNoDividendError";
 
 type Props = {
   symbol: string;
   locale: string;
   companyName?: string | null;
 };
-
-function isDividendNotFoundError(e: unknown): boolean {
-  if (axios.isAxiosError(e)) {
-    if (e.response?.status === 404) return true;
-    const body = e.response?.data;
-    if (body && typeof body === "object" && "error" in body) {
-      const apiErr = String((body as { error: unknown }).error).toLowerCase();
-      if (apiErr.includes("dividend data not found")) return true;
-    }
-  }
-  return apiErrorMessage(e).toLowerCase().includes("dividend data not found");
-}
 
 function healthColor(score: number): string {
   if (score > 70) return colors.positive;
@@ -33,6 +21,66 @@ function labelBadgeStyle(label: DividendHealthData["healthLabel"]): { bg: string
   if (label === "SAFE") return { bg: "rgba(0, 168, 107, 0.14)", color: colors.positive };
   if (label === "WATCH") return { bg: "rgba(245, 158, 11, 0.16)", color: colors.brandGold };
   return { bg: "rgba(229, 57, 53, 0.14)", color: colors.negative };
+}
+
+function NoDividendEmptyState({
+  companyName,
+  symbol,
+  t,
+}: {
+  companyName?: string | null;
+  symbol: string;
+  t: ReturnType<typeof useTranslation>["t"];
+}) {
+  const displayName = companyName?.trim() || symbol;
+  return (
+    <div
+      className="rounded-2xl border px-5 py-6 sm:px-6 sm:py-7"
+      style={{
+        borderColor: "rgba(91, 45, 130, 0.18)",
+        background: "linear-gradient(145deg, rgba(91, 45, 130, 0.06) 0%, rgba(255, 255, 255, 0.95) 55%)",
+      }}
+    >
+      <div className="flex gap-4">
+        <div
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl"
+          style={{ backgroundColor: "rgba(91, 45, 130, 0.12)" }}
+          aria-hidden
+        >
+          📈
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-base font-semibold leading-snug" style={{ color: colors.textPrimary }}>
+            {t("company.dividend.noDividend.title", {
+              defaultValue: "Ta spółka nie wypłaca dywidend",
+            })}
+          </h3>
+          <p className="mt-1 text-sm font-medium" style={{ color: colors.brandDark }}>
+            {t("company.dividend.noDividend.lead", {
+              defaultValue: "I to jest w porządku.",
+            })}
+          </p>
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: colors.textSecondary }}>
+            {companyName?.trim()
+              ? t("company.dividend.noDividend.description", {
+                  defaultValue:
+                    "{{companyName}} skupia się na wzroście i reinwestuje zyski zamiast wypłacać je akcjonariuszom — tak działa wiele spółek technologicznych.",
+                  companyName: displayName,
+                })
+              : t("company.dividend.noDividend.descriptionGeneric", {
+                  defaultValue:
+                    "Wiele spółek wzrostowych reinwestuje zyski zamiast wypłacać dywidendę — to świadoma strategia, nie brak danych.",
+                })}
+          </p>
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: colors.textMuted }}>
+            {t("company.dividend.noDividend.hint", {
+              defaultValue: "Szukasz innych metryk? Sprawdź zakładki Przegląd lub AI Brief.",
+            })}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function CompanyDividendPanel({ symbol, locale, companyName }: Props) {
@@ -51,39 +99,43 @@ export function CompanyDividendPanel({ symbol, locale, companyName }: Props) {
       setLoading(true);
       setError(null);
       setNoDividend(false);
-      try {
-        const [healthData, historyResponse] = await Promise.all([
-          getDividendHealth(symbol),
-          getCompanyDividendTickerHistory(symbol, 8),
-        ]);
-        if (!cancelled) {
-          setHealth(healthData);
-          setHistory(
-            [...(historyResponse.history ?? [])]
-              .map((row) => ({
-                exDate: row.ex_date,
-                payDate: row.payment_date,
-                amount: row.amount,
-                yield: row.dy ?? null,
-              }))
-              .sort((a, b) => new Date(b.exDate).getTime() - new Date(a.exDate).getTime()),
-          );
+      setHealth(null);
+      setHistory([]);
+
+      const [healthResult, historyResult] = await Promise.allSettled([
+        getDividendHealth(symbol),
+        getCompanyDividendTickerHistory(symbol, 8),
+      ]);
+
+      if (cancelled) return;
+
+      if (healthResult.status === "rejected") {
+        if (isNoDividendError(healthResult.reason)) {
+          setNoDividend(true);
+          setLoading(false);
+          return;
         }
-      } catch (e) {
-        if (!cancelled) {
-          setHealth(null);
-          setHistory([]);
-          if (isDividendNotFoundError(e)) {
-            setNoDividend(true);
-            setError(null);
-          } else {
-            setNoDividend(false);
-            setError(apiErrorMessage(e));
-          }
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
+        setError(apiErrorMessage(healthResult.reason));
+        setLoading(false);
+        return;
       }
+
+      setHealth(healthResult.value);
+
+      if (historyResult.status === "fulfilled") {
+        setHistory(
+          [...(historyResult.value.history ?? [])]
+            .map((row) => ({
+              exDate: row.ex_date,
+              payDate: row.payment_date,
+              amount: row.amount,
+              yield: row.dy ?? null,
+            }))
+            .sort((a, b) => new Date(b.exDate).getTime() - new Date(a.exDate).getTime()),
+        );
+      }
+
+      setLoading(false);
     })();
     return () => {
       cancelled = true;
@@ -98,35 +150,13 @@ export function CompanyDividendPanel({ symbol, locale, companyName }: Props) {
     );
   }
 
-  if (noDividend) {
-    const displayName = companyName?.trim() || symbol;
-    return (
-      <div
-        className="rounded-lg border px-4 py-4"
-        style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-      >
-        <p className="text-sm font-semibold" style={{ color: colors.textPrimary }}>
-          {t("company.dividend.noDividend.title", {
-            defaultValue: "📊 Ta spółka nie wypłaca dywidend",
-          })}
-        </p>
-        <p className="mt-2 text-sm leading-relaxed" style={{ color: colors.textSecondary }}>
-          {companyName?.trim()
-            ? t("company.dividend.noDividend.description", {
-                defaultValue: "{{companyName}} to spółka wzrostowa reinwestująca zyski w rozwój.",
-                companyName: displayName,
-              })
-            : t("company.dividend.noDividend.descriptionGeneric", {
-                defaultValue: "To spółka wzrostowa reinwestująca zyski w rozwój.",
-              })}
-        </p>
-      </div>
-    );
+  if (noDividend || (error && isNoDividendMessage(error))) {
+    return <NoDividendEmptyState companyName={companyName} symbol={symbol} t={t} />;
   }
 
   if (error || !health) {
     return (
-      <p className="rounded-lg border px-4 py-3 text-sm" style={{ borderColor: colors.border, color: colors.negative }}>
+      <p className="rounded-lg border px-4 py-3 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
         {error ??
           t("company.dividend.unavailable", {
             defaultValue: "Dividend data is not available for this symbol.",

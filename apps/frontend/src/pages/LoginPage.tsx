@@ -14,7 +14,7 @@ function safeRedirectPath(from: unknown): string {
 }
 
 export function LoginPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const location = useLocation();
   const [params] = useSearchParams();
@@ -37,7 +37,7 @@ export function LoginPage() {
     } catch (e) {
       const message = apiErrorMessage(e);
       if (message === "Please verify your email first") {
-        setError(t("auth.verifyEmailFirst", { defaultValue: "Please verify your email first. Check your inbox for the activation link." }));
+        setError(t("auth.verifyEmailFirst"));
         return;
       }
       setError(message);
@@ -49,9 +49,9 @@ export function LoginPage() {
   const inputClassName =
     "w-full rounded-xl border border-bgTertiary bg-bgPrimary px-3 py-2.5 text-textPrimary outline-none transition focus:border-brandCyan";
   const keyFeatures = [
-    "Analityka AI dla świadomych decyzji inwestycyjnych",
-    "Zautomatyzowane alerty i monitorowanie rynku 24/7",
-    "Wgląd w portfel i wyniki w jednym miejscu",
+    t("auth.loginAsideFeature1"),
+    t("auth.loginAsideFeature2"),
+    t("auth.loginAsideFeature3"),
   ];
 
   return (
@@ -66,28 +66,24 @@ export function LoginPage() {
             />
             <form onSubmit={onSubmit} className="space-y-4">
               <div>
-                <h1 className="text-2xl font-bold text-textPrimary">
-                  {t("auth.loginTitle", { defaultValue: "Logowanie" })}
-                </h1>
-                <p className="mt-1 text-sm text-textSecondary">
-                  {t("auth.loginSubtitle", { defaultValue: "Sign in to continue on StockAI Pro." })}
-                </p>
+                <h1 className="text-2xl font-bold text-textPrimary">{t("auth.signIn")}</h1>
+                <p className="mt-1 text-sm text-textSecondary">{t("auth.signInSubtitle")}</p>
               </div>
 
               {isCheckoutReturn ? (
                 <p className="rounded-xl border border-brandCyan/30 bg-brandCyan/10 px-3 py-2 text-sm text-brandDark">
-                  {t("auth.loginContinueCheckout", { defaultValue: "Sign in to complete your subscription." })}
+                  {t("auth.loginContinueCheckout")}
                 </p>
               ) : null}
 
               {params.get("verified") === "true" ? (
                 <p className="rounded-xl border border-positive/30 bg-positive/10 px-3 py-2 text-sm text-positive">
-                  {t("auth.verifyEmailSuccess", { defaultValue: "Email verified! You can sign in now." })}
+                  {t("auth.verifyEmailSuccess")}
                 </p>
               ) : null}
 
               <label className="block space-y-1.5 text-sm text-textSecondary">
-                <span>{t("auth.email", { defaultValue: "Email" })}</span>
+                <span>{t("auth.email")}</span>
                 <input
                   type="email"
                   required
@@ -98,7 +94,7 @@ export function LoginPage() {
               </label>
 
               <label className="block space-y-1.5 text-sm text-textSecondary">
-                <span>{t("auth.password", { defaultValue: "Hasło" })}</span>
+                <span>{t("auth.password")}</span>
                 <input
                   type="password"
                   required
@@ -110,7 +106,7 @@ export function LoginPage() {
 
               <p className="text-right text-sm text-textSecondary">
                 <Link to="/forgot-password" className="font-medium text-brandCyan">
-                  {t("auth.forgotPassword", { defaultValue: "Forgot password?" })}
+                  {t("auth.forgotPassword")}
                 </Link>
               </p>
 
@@ -121,14 +117,12 @@ export function LoginPage() {
                 disabled={loading}
                 className="w-full rounded-xl bg-brandDark px-4 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
               >
-                {loading
-                  ? t("auth.loginLoading", { defaultValue: "Logowanie..." })
-                  : t("auth.loginButton", { defaultValue: "Zaloguj" })}
+                {loading ? t("auth.loginLoading") : t("auth.signIn")}
               </button>
 
               <p className="text-sm text-textSecondary">
                 <Link to="/register" className="font-medium text-brandCyan">
-                  {t("auth.registerLink", { defaultValue: "Nie masz konta? Zarejestruj się" })}
+                  {t("auth.noAccount")}
                 </Link>
               </p>
             </form>
@@ -138,11 +132,11 @@ export function LoginPage() {
             className="hidden flex-col justify-center p-10 text-white lg:flex"
             style={{ background: `linear-gradient(140deg, ${colors.brandDark}, ${colors.brandMedium})` }}
           >
-            <h2 className="text-2xl font-semibold">Dlaczego StockAI Pro?</h2>
-            <p className="mt-2 text-sm text-white/85">Platforma inwestycyjna zbudowana dla nowoczesnych traderów.</p>
+            <h2 className="text-2xl font-semibold">{t("auth.loginAsideTitle")}</h2>
+            <p className="mt-2 text-sm text-white/85">{t("auth.loginAsideSubtitle")}</p>
             <ul className="mt-8 space-y-3">
-              {keyFeatures.map((feature) => (
-                <li key={feature} className="flex items-start gap-3 text-sm text-white/95">
+              {keyFeatures.map((feature, index) => (
+                <li key={index} className="flex items-start gap-3 text-sm text-white/95">
                   <span className="mt-1 inline-block h-2.5 w-2.5 rounded-full bg-brandCyan" />
                   <span>{feature}</span>
                 </li>

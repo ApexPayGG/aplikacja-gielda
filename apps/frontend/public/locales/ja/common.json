@@ -100,7 +100,14 @@
     "verifyEmailSuccess": "Email verified! You can sign in now.",
     "forgotPassword": "Forgot password?",
     "loginContinueCheckout": "Sign in to complete your subscription.",
-    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link."
+    "verifyEmailFirst": "Please verify your email first. Check your inbox for the activation link.",
+    "signIn": "ログイン",
+    "signInSubtitle": "StockAI Proで続行するにはログインしてください。",
+    "loginAsideTitle": "StockAI Proを選ぶ理由",
+    "loginAsideSubtitle": "現代のトレーダーのために作られた投資プラットフォーム。",
+    "loginAsideFeature1": "AI分析で納得の投資判断を",
+    "loginAsideFeature2": "自動アラートと24時間365日の市場モニタリング",
+    "loginAsideFeature3": "ポートフォリオの洞察と成果を一元管理"
   },
   "backtest": {
     "avgReturn": "平均リターン",
@@ -805,7 +812,8 @@
     "weeklyReview": "Weekly Review",
     "shortcutsHint": "Press ? for keyboard shortcuts",
     "companies": "Companies",
-    "searchPlaceholder": "Search company..."
+    "searchPlaceholder": "Search company...",
+    "dividendScreener": "配当スクリーナー"
   },
   "newshalflife": {
     "categoryLabel": "Category",
@@ -1517,5 +1525,9 @@
         "answer": "実データで資金リスクなしのシミュレーション。"
       }
     }
+  },
+  "companies": {
+    "filterDividend": "配当株のみ",
+    "filterDividendLoading": "配当銘柄を読み込み中…"
   }
 }

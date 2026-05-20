@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { colors } from "../styles/designSystem";
 import {
   COMPANY_FILTER_SECTORS,
@@ -12,6 +13,7 @@ import {
 
 type Props = {
   filters: CompaniesFilterState;
+  dividendFilterLoading?: boolean;
   onToggleSector: (sector: CompanyFilterSector) => void;
   onMarketCapChange: (value: CompanyMarketCapFilter) => void;
   onPeRangeChange: (min: number, max: number) => void;
@@ -36,6 +38,7 @@ const sortOptions: Array<{ value: CompanySortOption; label: string }> = [
 
 export function CompaniesFilter({
   filters,
+  dividendFilterLoading = false,
   onToggleSector,
   onMarketCapChange,
   onPeRangeChange,
@@ -43,6 +46,7 @@ export function CompaniesFilter({
   onSortChange,
   onReset,
 }: Props) {
+  const { t } = useTranslation();
   const [isSectorOpen, setIsSectorOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
 
@@ -163,15 +167,21 @@ export function CompaniesFilter({
 
       <div className="flex items-center justify-between rounded-xl border px-3 py-2" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
         <span className="text-sm font-medium" style={{ color: colors.textPrimary }}>
-          Only dividend stocks
+          {t("companies.filterDividend", { defaultValue: "Tylko spółki z dywidendą" })}
+          {dividendFilterLoading ? (
+            <span className="ml-1 text-xs font-normal" style={{ color: colors.textMuted }}>
+              …
+            </span>
+          ) : null}
         </span>
         <button
           type="button"
           onClick={() => onDividendToggle(!filters.onlyDividendStocks)}
-          className="relative inline-flex h-6 w-11 items-center rounded-full transition"
+          disabled={dividendFilterLoading}
+          className="relative inline-flex h-6 w-11 items-center rounded-full transition disabled:opacity-60"
           style={{ backgroundColor: filters.onlyDividendStocks ? colors.brandCyan : colors.borderStrong }}
           aria-pressed={filters.onlyDividendStocks}
-          aria-label="Only dividend stocks"
+          aria-label={t("companies.filterDividend", { defaultValue: "Tylko spółki z dywidendą" })}
         >
           <span
             className="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
