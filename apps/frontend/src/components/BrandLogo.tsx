@@ -1,5 +1,5 @@
 /** Single brand asset used across the entire app. */
-export const BRAND_LOGO_SRC = "/logo.png";
+export const BRAND_LOGO_SRC = "/logo.png?v=3";
 
 type BrandLogoSize = "nav" | "footer" | "auth" | "loading" | "card" | "cardLg" | "hero" | "badge" | "mini";
 
