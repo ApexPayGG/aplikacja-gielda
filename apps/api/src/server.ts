@@ -58,6 +58,7 @@ import { createPortfolioRouter } from "./routes/portfolio";
 import { createPaperTradingRouter } from "./routes/paperTrading";
 import { createExitIntelligenceRouter } from "./routes/exitIntelligence";
 import { createAnalysisRouter, createCompanyBriefHandler } from "./routes/analysis";
+import { createAiBriefRateLimitMiddleware } from "./services/aiBriefRateLimit";
 import { optionalAuth } from "./modules/auth/authMiddleware";
 import { createQuotesRouter } from "./routes/quotes";
 import { createAlphaJournalRouter } from "./routes/alphaJournal";
@@ -384,10 +385,11 @@ export function createApp(): express.Express {
     }
   });
 
+  const aiBriefRateLimit = createAiBriefRateLimitMiddleware({ prisma });
   const handleCompanyBrief = createCompanyBriefHandler({ prisma });
-  app.use("/api/brief", createAnalysisRouter({ prisma }));
-  app.use("/api/analysis", createAnalysisRouter({ prisma }));
-  app.get("/api/companies/:symbol/brief", optionalAuth, handleCompanyBrief);
+  app.use("/api/brief", aiBriefRateLimit, createAnalysisRouter({ prisma }));
+  app.use("/api/analysis", aiBriefRateLimit, createAnalysisRouter({ prisma }));
+  app.get("/api/companies/:symbol/brief", aiBriefRateLimit, optionalAuth, handleCompanyBrief);
 
   app.get("/api/companies/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {

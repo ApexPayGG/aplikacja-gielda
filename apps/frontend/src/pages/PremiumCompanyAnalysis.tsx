@@ -75,9 +75,8 @@ function monthBucket(): string {
 }
 
 function getUsageLimit(tier: Tier): number {
-  if (tier === "PRO_PLUS") return Number.POSITIVE_INFINITY;
-  if (tier === "PRO") return 50;
-  return 3;
+  if (tier === "PRO_PLUS" || tier === "PRO") return Number.POSITIVE_INFINITY;
+  return 10;
 }
 
 function trackedTickersKey(userId: string, bucket: string): string {

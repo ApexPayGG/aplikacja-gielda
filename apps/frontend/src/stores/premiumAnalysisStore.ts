@@ -1,3 +1,4 @@
+import axios from "axios";
 import { create } from "zustand";
 import {
   getPremiumCatch,
@@ -63,6 +64,9 @@ const initialErrors: ErrorState = {
 };
 
 function toError(error: unknown): string {
+  if (axios.isAxiosError(error) && error.response?.status === 429) {
+    return "Monthly premium analysis limit reached. Upgrade to Pro for more.";
+  }
   if (error instanceof Error && error.message) return error.message;
   return "Request failed";
 }

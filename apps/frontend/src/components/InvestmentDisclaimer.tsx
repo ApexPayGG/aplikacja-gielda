@@ -30,13 +30,18 @@ export function InvestmentDisclaimer({
         ? "border-white/10 bg-[#2D0A6B]/25 px-3 py-2.5 text-white/65"
         : "border-[#2D0A6B]/15 bg-[#2D0A6B]/5 px-4 py-3 text-textSecondary";
 
+  const collapsibleBtnClass =
+    variant === "landing" || variant === "drawer"
+      ? "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-left text-xs font-medium text-white/60 transition hover:border-[#00C9D4]/30 hover:text-white/80"
+      : "w-full rounded-lg border border-border px-3 py-2 text-left text-xs font-medium text-textMuted transition hover:border-brandDark/30 hover:text-textSecondary";
+
   if (collapsible && !expanded) {
     return (
       <aside className={className}>
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="w-full rounded-lg border border-border px-3 py-2 text-left text-xs font-medium text-textMuted transition hover:border-brandDark/30 hover:text-textSecondary"
+          className={collapsibleBtnClass}
         >
           {t("legal.showDisclaimer", { defaultValue: "Investment disclaimer" })}
         </button>

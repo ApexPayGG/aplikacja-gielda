@@ -1,5 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
-import type { Request } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { tryGetAuthenticatedUserId, type AuthenticatedRequest } from "../modules/auth/authMiddleware";
 import { getCacheRedis } from "../redis";
 
@@ -35,6 +35,25 @@ function sanitizeSubjectId(id: string): string {
 
 export function buildAiBriefRateLimitKey(subjectId: string): string {
   return `ai_brief:free:${sanitizeSubjectId(subjectId)}`;
+}
+
+/** Full request path (not mount-stripped `req.path`). */
+export function getRequestPath(req: Request): string {
+  const fromOriginal = req.originalUrl?.split("?")[0];
+  if (fromOriginal) return fromOriginal;
+  return req.path || "";
+}
+
+const AI_BRIEF_PATH_PATTERNS = [
+  /^\/api\/analysis\/[^/]+\/?$/,
+  /^\/api\/brief\/[^/]+\/?$/,
+  /^\/api\/companies\/[^/]+\/brief\/?$/,
+] as const;
+
+/** Daily FREE-tier AI Brief limit applies only to company brief endpoints — not Premium Analysis. */
+export function isAiBriefRateLimitedPath(path: string): boolean {
+  const normalized = (path.split("?")[0] ?? "").replace(/\/+$/, "") || "/";
+  return AI_BRIEF_PATH_PATTERNS.some((pattern) => pattern.test(normalized));
 }
 
 function createMemoryStore(): CounterStore {
@@ -98,6 +117,10 @@ export async function enforceAiBriefFreeRateLimit(
   prisma?: PrismaClient,
   store: CounterStore = defaultStore,
 ): Promise<AiBriefRateLimitResult> {
+  if (!isAiBriefRateLimitedPath(getRequestPath(req))) {
+    return { allowed: true };
+  }
+
   const tier = await resolveUserTier(req, prisma);
   if (tier === "PRO" || tier === "PRO_PLUS") {
     return { allowed: true };
@@ -112,6 +135,36 @@ export async function enforceAiBriefFreeRateLimit(
   }
 
   return { allowed: true };
+}
+
+type AiBriefRateLimitMiddlewareDeps = {
+  prisma?: PrismaClient;
+};
+
+export function createAiBriefRateLimitMiddleware(
+  deps: AiBriefRateLimitMiddlewareDeps = {},
+): (req: Request, res: Response, next: NextFunction) => Promise<void> {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    if (!isAiBriefRateLimitedPath(getRequestPath(req))) {
+      next();
+      return;
+    }
+
+    try {
+      const rate = await enforceAiBriefFreeRateLimit(req, deps.prisma);
+      if (!rate.allowed) {
+        res.status(429).json({
+          error: "LIMIT_REACHED",
+          limit: rate.limit,
+          resetIn: rate.resetIn,
+        });
+        return;
+      }
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 /** @internal test helper */

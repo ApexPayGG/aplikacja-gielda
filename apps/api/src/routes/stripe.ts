@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
+import Stripe from "stripe";
 import {
   constructWebhookEvent,
   createCheckoutSession,
@@ -20,7 +21,11 @@ type StripeRouteDeps = {
 
 function isStripeConfigurationError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
-  return error.message === "STRIPE_SECRET_KEY is not set" || error.message === "STRIPE_WEBHOOK_SECRET is not set";
+  return (
+    error.message === "STRIPE_SECRET_KEY is not set" ||
+    error.message === "STRIPE_WEBHOOK_SECRET is not set" ||
+    error.message === "STRIPE_PRICE_IDS are not configured"
+  );
 }
 
 function isPlan(value: unknown): value is StripePlan {
@@ -66,6 +71,12 @@ export function createStripeRouter(depsInput?: Partial<StripeRouteDeps>): Router
           return res
             .status(503)
             .json({ error: "Stripe is not configured. Set required STRIPE_* environment variables." });
+        }
+        if (error instanceof Stripe.errors.StripeError) {
+          console.error("Stripe checkout session error:", error.message);
+          return res.status(502).json({
+            error: "Payment provider error. Check Stripe price IDs and API keys.",
+          });
         }
         next(error);
       }

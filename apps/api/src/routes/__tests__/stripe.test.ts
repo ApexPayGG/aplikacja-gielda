@@ -27,6 +27,9 @@ describe("stripe routes", () => {
           if (userId === "cfg") {
             throw new Error("STRIPE_SECRET_KEY is not set");
           }
+          if (userId === "prices") {
+            throw new Error("STRIPE_PRICE_IDS are not configured");
+          }
           if (userId === "boom") {
             throw new Error("Database unavailable");
           }
@@ -94,6 +97,17 @@ describe("stripe routes", () => {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ userId: "cfg", plan: "pro", billing: "monthly" }),
+    });
+    assert.equal(res.status, 503);
+    const body = (await res.json()) as { error: string };
+    assert.equal(body.error, "Stripe is not configured. Set required STRIPE_* environment variables.");
+  });
+
+  it("POST /api/stripe/create-checkout-session returns 503 when price IDs are missing", async () => {
+    const res = await fetch(`${baseUrl}/api/stripe/create-checkout-session`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ userId: "prices", plan: "pro", billing: "monthly" }),
     });
     assert.equal(res.status, 503);
     const body = (await res.json()) as { error: string };

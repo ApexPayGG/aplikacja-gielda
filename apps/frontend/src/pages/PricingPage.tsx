@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { createStripeCheckoutSession } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
+import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 type BillingCycle = "monthly" | "yearly";
 type PaidPlan = "pro" | "pro_plus";
@@ -148,9 +149,10 @@ export function PricingPage() {
     } catch (error) {
       console.error("Failed to start Stripe checkout", error);
       setCheckoutError(
-        t("pricingPage.checkoutError", {
-          defaultValue: "Could not start checkout. Please try again in a moment.",
-        }),
+        apiErrorMessage(error) ||
+          t("pricingPage.checkoutError", {
+            defaultValue: "Could not start checkout. Please try again in a moment.",
+          }),
       );
     } finally {
       setCheckoutLoadingPlan(null);

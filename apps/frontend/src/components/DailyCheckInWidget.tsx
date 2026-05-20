@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { GLASS_BTN_PRIMARY, GLASS_BTN_SECONDARY, GLASS_WIDGET_SHELL } from "./behavioral-coach/glassStyles";
 import { useAuth } from "../context/AuthContext";
 import {
   createDailyCheckIn,
@@ -15,6 +16,7 @@ const RISK_LEVELS: DailyCheckInRiskLevel[] = ["LOW", "MEDIUM", "HIGH"];
 
 type DailyCheckInWidgetProps = {
   compact?: boolean;
+  appearance?: "light" | "glass";
 };
 
 function readUserId(): string {
@@ -27,10 +29,11 @@ function moodEmoji(mood: number): string {
   return MOOD_EMOJIS[Math.min(MOOD_EMOJIS.length, Math.max(1, mood)) - 1] ?? MOOD_EMOJIS[2];
 }
 
-export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps) {
+export function DailyCheckInWidget({ compact = false, appearance = "light" }: DailyCheckInWidgetProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const userId = useMemo(() => user?.id ?? readUserId(), [user?.id]);
+  const isGlass = appearance === "glass";
 
   const [loading, setLoading] = useState(true);
   const [todayCheckIn, setTodayCheckIn] = useState<DailyCheckIn | null>(null);
@@ -91,17 +94,31 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
     }
   }
 
-  const shellClass = compact
-    ? "rounded-2xl border border-border/80 bg-gradient-to-b from-bgPrimary to-bgSecondary/30 p-4 shadow-sm"
-    : "mb-6 rounded-2xl border border-border bg-bgPrimary p-4 shadow-sm";
+  const shellClass = isGlass
+    ? `${GLASS_WIDGET_SHELL}${compact ? "" : " mb-6"}`
+    : compact
+      ? "rounded-2xl border border-border/80 bg-gradient-to-b from-bgPrimary to-bgSecondary/30 p-4 shadow-sm"
+      : "mb-6 rounded-2xl border border-border bg-bgPrimary p-4 shadow-sm";
+
+  const titleClass = isGlass
+    ? `${compact ? "text-sm" : "text-base"} font-semibold text-white`
+    : `${compact ? "text-sm" : "text-base"} font-semibold text-textPrimary`;
+
+  const subtitleClass = isGlass ? "mt-1 text-sm text-white/60" : "mt-1 text-sm text-textSecondary";
+
+  const panelClass = isGlass
+    ? "flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 backdrop-blur-sm"
+    : "flex items-center gap-3 rounded-xl border border-border/80 bg-bgSecondary/50 px-3 py-2.5";
+
+  const skeletonClass = isGlass ? "bg-white/10" : "bg-bgSecondary";
 
   if (loading) {
     return (
       <section className={shellClass} aria-busy="true">
         <div className="animate-pulse space-y-3">
-          <div className="h-4 w-2/3 rounded bg-bgSecondary" />
-          <div className="h-10 rounded-lg bg-bgSecondary" />
-          <div className="h-20 rounded-lg bg-bgSecondary" />
+          <div className={`h-4 w-2/3 rounded ${skeletonClass}`} />
+          <div className={`h-10 rounded-lg ${skeletonClass}`} />
+          <div className={`h-20 rounded-lg ${skeletonClass}`} />
         </div>
       </section>
     );
@@ -117,31 +134,37 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
       <section className={shellClass}>
         <div className="space-y-4">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-brandCyan">
+            <p className={`text-[11px] font-semibold uppercase tracking-widest ${isGlass ? "text-[#00C9D4]" : "text-brandCyan"}`}>
               {t("checkin.done.eyebrow", { defaultValue: "Today" })}
             </p>
-            <h2 className={`${compact ? "text-sm" : "text-base"} mt-1 font-semibold text-textPrimary`}>
+            <h2 className={`${titleClass} mt-1`}>
               {t("checkin.done.title", { defaultValue: "Your plan for today" })}
             </h2>
           </div>
 
-          <div className="flex items-center gap-3 rounded-xl border border-border/80 bg-bgSecondary/50 px-3 py-2.5">
+          <div className={panelClass}>
             <span className="text-2xl" aria-hidden>
               {moodEmoji(displayMood)}
             </span>
             <div className="min-w-0">
-              <p className="text-xs font-medium text-textMuted">
+              <p className={`text-xs font-medium ${isGlass ? "text-white/50" : "text-textMuted"}`}>
                 {t(`checkin.risk.${displayRisk}`, { defaultValue: displayRisk })}
               </p>
-              <p className="mt-0.5 text-sm text-textPrimary">
+              <p className={`mt-0.5 text-sm ${isGlass ? "text-white/90" : "text-textPrimary"}`}>
                 {savedPlan || t("checkin.done.noPlan", { defaultValue: "No plan saved — add one tomorrow morning." })}
               </p>
             </div>
           </div>
 
           {coachNote ? (
-            <p className="rounded-xl border border-brandCyan/20 bg-brandCyan/5 px-3 py-2.5 text-sm leading-relaxed text-textPrimary">
-              <span className="font-semibold text-brandDark">
+            <p
+              className={`rounded-xl border px-3 py-2.5 text-sm leading-relaxed ${
+                isGlass
+                  ? "border-[#00C9D4]/25 bg-[#00C9D4]/10 text-white/90"
+                  : "border-brandCyan/20 bg-brandCyan/5 text-textPrimary"
+              }`}
+            >
+              <span className={`font-semibold ${isGlass ? "text-[#00C9D4]" : "text-brandDark"}`}>
                 {t("checkin.done.aiLabel", { defaultValue: "Coach note" })}:{" "}
               </span>
               {coachNote}
@@ -151,13 +174,17 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
           <div className="grid gap-2">
             <Link
               to="/behavioral-coach"
-              className="inline-flex items-center justify-center rounded-xl bg-brandDark px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
+              className={isGlass ? GLASS_BTN_PRIMARY : "inline-flex items-center justify-center rounded-xl bg-brandDark px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"}
             >
               {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
             </Link>
             <Link
               to="/paper-trading"
-              className="inline-flex items-center justify-center rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-brandDark transition hover:border-brandDark/40 hover:bg-bgSecondary/80"
+              className={
+                isGlass
+                  ? GLASS_BTN_SECONDARY
+                  : "inline-flex items-center justify-center rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-brandDark transition hover:border-brandDark/40 hover:bg-bgSecondary/80"
+              }
             >
               {t("checkin.done.paperCta", { defaultValue: "Paper trading" })}
             </Link>
@@ -167,15 +194,39 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
     );
   }
 
+  const moodBtn = (selected: boolean) =>
+    isGlass
+      ? selected
+        ? "border-[#00C9D4] bg-[#00C9D4]/15"
+        : "border-white/15 bg-white/5 hover:border-white/25"
+      : selected
+        ? "border-brandDark bg-brandDark/10"
+        : "border-border bg-bgSecondary hover:border-borderStrong";
+
+  const riskBtn = (selected: boolean) =>
+    isGlass
+      ? selected
+        ? "border-[#7A0F9E] bg-gradient-to-r from-[#2D0A6B] to-[#7A0F9E] text-white"
+        : "border-white/15 bg-white/5 text-white/70 hover:border-white/25"
+      : selected
+        ? "border-brandDark bg-brandDark text-white"
+        : "border-border bg-bgSecondary text-textSecondary hover:border-borderStrong";
+
+  const inputClass = isGlass
+    ? `w-full rounded-lg border border-white/15 bg-white/5 px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-white placeholder:text-white/40 outline-none ring-[#00C9D4]/40 transition focus:ring`
+    : `w-full rounded-lg border border-border bg-bgSecondary px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-textPrimary outline-none ring-brandCyan/40 transition focus:ring`;
+
+  const submitBtnClass = isGlass
+    ? `w-full ${GLASS_BTN_PRIMARY} ${compact ? "px-3 py-2 text-xs" : ""} disabled:cursor-not-allowed disabled:opacity-60`
+    : `w-full rounded-xl bg-brandDark ${compact ? "px-3 py-2 text-xs" : "px-4 py-2.5 text-sm"} font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60`;
+
   return (
     <section className={shellClass}>
       <div className="space-y-4">
         <div>
-          <h2 className={`${compact ? "text-sm" : "text-base"} font-semibold text-textPrimary`}>
-            {t("checkin.title", { defaultValue: "Daily Check-In" })}
-          </h2>
+          <h2 className={titleClass}>{t("checkin.title", { defaultValue: "Daily Check-In" })}</h2>
           {compact ? null : (
-            <p className="mt-1 text-sm text-textSecondary">
+            <p className={subtitleClass}>
               {t("checkin.subtitle", { defaultValue: "Set your mindset before the market opens." })}
             </p>
           )}
@@ -190,9 +241,7 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
                 key={emoji}
                 type="button"
                 onClick={() => setMood(value)}
-                className={`rounded-lg border ${compact ? "px-2 py-1.5 text-lg" : "px-3 py-2 text-xl"} transition ${
-                  selected ? "border-brandDark bg-brandDark/10" : "border-border bg-bgSecondary hover:border-borderStrong"
-                }`}
+                className={`rounded-lg border ${compact ? "px-2 py-1.5 text-lg" : "px-3 py-2 text-xl"} transition ${moodBtn(selected)}`}
                 aria-label={`${t("checkin.moodLabel", { defaultValue: "Mood" })} ${value}`}
               >
                 {emoji}
@@ -202,7 +251,7 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
         </div>
 
         <div>
-          <label className={`mb-1 block ${compact ? "text-xs" : "text-sm"} text-textSecondary`}>
+          <label className={`mb-1 block ${compact ? "text-xs" : "text-sm"} ${isGlass ? "text-white/60" : "text-textSecondary"}`}>
             {t("dashboard.checkIn.planPlaceholder", { defaultValue: "What is your plan today?" })}
           </label>
           <textarea
@@ -210,7 +259,7 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
             onChange={(event) => setPlan(event.target.value.slice(0, 200))}
             rows={compact ? 2 : 2}
             maxLength={200}
-            className={`w-full rounded-lg border border-border bg-bgSecondary px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-textPrimary outline-none ring-brandCyan/40 transition focus:ring`}
+            className={inputClass}
             placeholder={t("checkin.planPlaceholder", { defaultValue: "Optional..." })}
           />
         </div>
@@ -223,11 +272,7 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
                 key={level}
                 type="button"
                 onClick={() => setRiskLevel(level)}
-                className={`rounded-lg border ${compact ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs"} font-semibold tracking-wide ${
-                  selected
-                    ? "border-brandDark bg-brandDark text-white"
-                    : "border-border bg-bgSecondary text-textSecondary hover:border-borderStrong"
-                }`}
+                className={`rounded-lg border ${compact ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs"} font-semibold tracking-wide ${riskBtn(selected)}`}
               >
                 {t(`checkin.risk.${level}`, { defaultValue: level })}
               </button>
@@ -242,13 +287,13 @@ export function DailyCheckInWidget({ compact = false }: DailyCheckInWidgetProps)
               void handleSubmit();
             }}
             disabled={submitting}
-            className={`w-full rounded-xl bg-brandDark ${compact ? "px-3 py-2 text-xs" : "px-4 py-2.5 text-sm"} font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60`}
+            className={submitBtnClass}
           >
             {submitting
               ? t("checkin.submitting", { defaultValue: "Saving..." })
               : t("checkin.submit", { defaultValue: "Start trading day" })}
           </button>
-          {error ? <p className="text-sm text-negative">{error}</p> : null}
+          {error ? <p className={`text-sm ${isGlass ? "text-red-400" : "text-negative"}`}>{error}</p> : null}
         </div>
       </div>
     </section>

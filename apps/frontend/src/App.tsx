@@ -122,6 +122,8 @@ export default function App() {
   const onboardingCompleted = hasCompletedOnboarding();
   const defaultAuthenticatedRoute = onboardingCompleted ? "/dashboard" : "/onboarding";
   const inOnboarding = location.pathname.startsWith("/onboarding");
+  const glassShellPage =
+    location.pathname.startsWith("/dashboard") || location.pathname.startsWith("/behavioral-coach");
   const showTopNavigation = token && !inOnboarding;
   const showFloatingEmotionalWidget = token && !location.pathname.startsWith("/dashboard") && !inOnboarding;
   useKeyboardShortcuts();
@@ -133,7 +135,7 @@ export default function App() {
   }, [cookieConsent]);
 
   return (
-    <div className="app-shell min-h-screen">
+    <div className={`app-shell min-h-screen ${glassShellPage ? "bg-[#0D0D1A]" : ""}`}>
       {showTopNavigation ? <AppNavBar /> : null}
       {showFloatingEmotionalWidget ? <EmotionalStateWidget /> : null}
 

@@ -17,6 +17,7 @@ import { SEOHead } from "../components/SEOHead";
 import { BrandLogo } from "../components/BrandLogo";
 import { CountryFlag } from "../components/CountryFlag";
 import { LANGUAGE_OPTIONS, resolveLanguageCode } from "../constants/languages";
+import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const BRAND = {
   dark: "#2D0A6B",
@@ -882,7 +883,7 @@ export function LandingPage() {
       window.location.href = url;
     } catch (error) {
       console.error("Failed to create Stripe Checkout session", error);
-      window.alert(t("landing.pricing.checkoutError"));
+      window.alert(apiErrorMessage(error) || t("landing.pricing.checkoutError"));
     } finally {
       setCheckoutLoadingPlan(null);
     }

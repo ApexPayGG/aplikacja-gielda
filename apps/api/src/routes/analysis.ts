@@ -3,7 +3,6 @@ import { Router } from "express";
 import type { PrismaClient } from "@prisma/client";
 import { analyzeStock } from "../ai/analysis";
 import { optionalAuth } from "../modules/auth/authMiddleware";
-import { enforceAiBriefFreeRateLimit } from "../services/aiBriefRateLimit";
 
 export type AnalysisRouteDeps = {
   prisma?: PrismaClient;
@@ -19,17 +18,6 @@ export function createCompanyBriefHandler(deps: AnalysisRouteDeps = {}) {
       }
 
       const lang = String(req.query.lang ?? "en").trim() || "en";
-
-      const rate = await enforceAiBriefFreeRateLimit(req, deps.prisma);
-      if (!rate.allowed) {
-        res.status(429).json({
-          error: "LIMIT_REACHED",
-          limit: rate.limit,
-          resetIn: rate.resetIn,
-        });
-        return;
-      }
-
       const result = await analyzeStock(sym, lang);
       res.json(result);
     } catch (e) {

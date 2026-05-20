@@ -22,6 +22,23 @@ const TIER_BY_PLAN: Record<StripePlan, UserTier> = {
   pro_plus: "PRO_PLUS",
 };
 
+const PLACEHOLDER_PRICE_IDS = new Set([
+  "price_pro_monthly",
+  "price_pro_yearly",
+  "price_proplus_monthly",
+  "price_proplus_yearly",
+]);
+
+export function isStripePriceIdsConfigured(): boolean {
+  const ids = [
+    process.env.STRIPE_PRO_MONTHLY_PRICE_ID?.trim(),
+    process.env.STRIPE_PRO_YEARLY_PRICE_ID?.trim(),
+    process.env.STRIPE_PROPLUS_MONTHLY_PRICE_ID?.trim(),
+    process.env.STRIPE_PROPLUS_YEARLY_PRICE_ID?.trim(),
+  ];
+  return ids.every((id) => Boolean(id) && !PLACEHOLDER_PRICE_IDS.has(id!));
+}
+
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY?.trim();
   if (!key) {
@@ -31,16 +48,20 @@ function getStripe() {
 }
 
 function getPriceId(plan: StripePlan, billing: StripeBilling): string {
+  let id: string | undefined;
   if (plan === "pro" && billing === "monthly") {
-    return process.env.STRIPE_PRO_MONTHLY_PRICE_ID?.trim() || "price_pro_monthly";
+    id = process.env.STRIPE_PRO_MONTHLY_PRICE_ID?.trim();
+  } else if (plan === "pro" && billing === "yearly") {
+    id = process.env.STRIPE_PRO_YEARLY_PRICE_ID?.trim();
+  } else if (plan === "pro_plus" && billing === "monthly") {
+    id = process.env.STRIPE_PROPLUS_MONTHLY_PRICE_ID?.trim();
+  } else {
+    id = process.env.STRIPE_PROPLUS_YEARLY_PRICE_ID?.trim();
   }
-  if (plan === "pro" && billing === "yearly") {
-    return process.env.STRIPE_PRO_YEARLY_PRICE_ID?.trim() || "price_pro_yearly";
+  if (!id || PLACEHOLDER_PRICE_IDS.has(id)) {
+    throw new Error("STRIPE_PRICE_IDS are not configured");
   }
-  if (plan === "pro_plus" && billing === "monthly") {
-    return process.env.STRIPE_PROPLUS_MONTHLY_PRICE_ID?.trim() || "price_proplus_monthly";
-  }
-  return process.env.STRIPE_PROPLUS_YEARLY_PRICE_ID?.trim() || "price_proplus_yearly";
+  return id;
 }
 
 function parsePeriodEnd(periodEnd: number | null | undefined): Date | null {
@@ -49,6 +70,9 @@ function parsePeriodEnd(periodEnd: number | null | undefined): Date | null {
 }
 
 export async function createCheckoutSession(input: CreateCheckoutSessionInput): Promise<string> {
+  if (!isStripePriceIdsConfigured()) {
+    throw new Error("STRIPE_PRICE_IDS are not configured");
+  }
   const stripe = getStripe();
   const user = await prisma.user.findUnique({
     where: { id: input.userId },

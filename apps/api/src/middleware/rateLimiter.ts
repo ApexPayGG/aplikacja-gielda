@@ -25,10 +25,8 @@ const AUTH_REGISTER_LIMIT = { limit: 3, windowSec: 60 * 60 };
 const AUTH_FORGOT_PASSWORD_LIMIT = { limit: 3, windowSec: 60 * 60 };
 const CONTACT_LIMIT = { limit: 3, windowSec: 60 * 60 };
 const STRIPE_LIMIT = { limit: 10, windowSec: 60 };
-const PREMIUM_LIMITS: Record<Exclude<UserTier, "PRO_PLUS">, number> = {
-  FREE: 3,
-  PRO: 50,
-};
+/** Monthly Premium Analysis calls for unauthenticated / FREE users only. */
+const PREMIUM_FREE_MONTHLY_LIMIT = 10;
 
 function normalizeTier(value: unknown): UserTier {
   const normalized = String(value ?? "")
@@ -223,6 +221,7 @@ export function createRateLimiterMiddleware(deps?: RateLimiterDeps): RequestHand
         if (!ok) return;
       }
 
+      // Premium Analysis (/api/premium/*) — separate monthly tier limits; not AI Brief (see aiBriefRateLimit.ts).
       if (path.startsWith("/api/premium/")) {
         const month = getMonthKey(now());
         const windowSec = getSecondsUntilNextMonth(now());
@@ -231,7 +230,7 @@ export function createRateLimiterMiddleware(deps?: RateLimiterDeps): RequestHand
             res,
             store,
             `rate:premium:${month}:ip:${ip}`,
-            PREMIUM_LIMITS.FREE,
+            PREMIUM_FREE_MONTHLY_LIMIT,
             windowSec,
           );
           if (!ok) return;
@@ -240,17 +239,16 @@ export function createRateLimiterMiddleware(deps?: RateLimiterDeps): RequestHand
         }
 
         const tier = await getUserTier(requestUserId);
-        if (tier === "PRO_PLUS") {
+        if (tier === "PRO" || tier === "PRO_PLUS") {
           next();
           return;
         }
 
-        const limit = PREMIUM_LIMITS[tier];
         const ok = await enforceLimit(
           res,
           store,
           `rate:premium:${month}:user:${requestUserId}`,
-          limit,
+          PREMIUM_FREE_MONTHLY_LIMIT,
           windowSec,
         );
         if (!ok) return;

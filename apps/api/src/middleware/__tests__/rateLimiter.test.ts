@@ -103,19 +103,17 @@ describe("rate limiter middleware", () => {
   });
 
   it("enforces monthly /api/premium/* limits by subscription tier", async () => {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 10; i++) {
       const okRes = await fetch(`${baseUrl}/api/premium/signal?userId=free-user`);
       assert.equal(okRes.status, 200);
     }
     const blockedFree = await fetch(`${baseUrl}/api/premium/signal?userId=free-user`);
     assert.equal(blockedFree.status, 429);
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 60; i++) {
       const okRes = await fetch(`${baseUrl}/api/premium/signal?userId=pro-user`);
       assert.equal(okRes.status, 200);
     }
-    const blockedPro = await fetch(`${baseUrl}/api/premium/signal?userId=pro-user`);
-    assert.equal(blockedPro.status, 429);
 
     for (let i = 0; i < 60; i++) {
       const plusRes = await fetch(`${baseUrl}/api/premium/signal?userId=plus-user`);
