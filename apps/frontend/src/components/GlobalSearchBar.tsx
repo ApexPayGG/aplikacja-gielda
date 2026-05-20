@@ -26,7 +26,7 @@ export function GlobalSearchBar({ variant = "desktop" }: GlobalSearchBarProps) {
       return (
         <button
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-border text-brandDark transition hover:border-brandDark/40"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/80 bg-bgSecondary/50 text-brandDark transition hover:border-brandCyan/40 hover:shadow-[0_0_0_3px_rgba(0,201,212,0.1)]"
           aria-label={placeholder}
           onClick={() => setMobileExpanded(true)}
         >
@@ -55,7 +55,7 @@ export function GlobalSearchBar({ variant = "desktop" }: GlobalSearchBarProps) {
   }
 
   return (
-    <div className="hidden w-44 shrink-0 lg:block xl:w-52">
+    <div className="hidden w-full max-w-[240px] shrink-0 md:block">
       <CompanySearchAutocomplete placeholder={placeholder} compact />
     </div>
   );

@@ -1,10 +1,11 @@
 /** Single brand asset used across the entire app. */
 export const BRAND_LOGO_SRC = "/logo.png?v=3";
 
-type BrandLogoSize = "nav" | "footer" | "auth" | "loading" | "card" | "cardLg" | "hero" | "badge" | "mini";
+type BrandLogoSize = "nav" | "appNav" | "footer" | "auth" | "loading" | "card" | "cardLg" | "hero" | "badge" | "mini";
 
 const SIZE_CLASSES: Record<BrandLogoSize, string> = {
   nav: "h-[3.75rem] w-auto max-w-[min(100%,min(480px,82vw))] sm:h-[4.75rem] md:h-[5.25rem]",
+  appNav: "h-9 w-auto max-w-[9.5rem] sm:max-w-[10.5rem] md:h-10",
   footer: "h-14 w-auto max-w-[min(100%,360px)] md:h-16 md:max-w-[420px]",
   auth: "h-14 w-auto max-w-[min(100%,380px)] md:h-16",
   loading: "h-16 w-auto max-w-[min(100%,400px)]",

@@ -132,14 +132,18 @@ function getUserInitials(name: string | null, email: string): string {
 }
 
 function navLinkClass(isActive: boolean): string {
-  return `block rounded-md border-b-2 px-2 py-1.5 text-sm font-medium transition-colors ${
-    isActive ? "border-brandDark text-brandDark" : "border-transparent text-textSecondary hover:text-brandDark"
+  return `whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
+    isActive
+      ? "bg-brandDark/[0.08] text-brandDark shadow-[inset_0_0_0_1px_rgba(45,10,107,0.12)]"
+      : "text-textSecondary hover:bg-bgSecondary/80 hover:text-brandDark"
   }`;
 }
 
 function triggerClass(active: boolean): string {
-  return `inline-flex items-center gap-0.5 rounded-md border-b-2 px-2 py-1.5 text-sm font-medium transition-colors ${
-    active ? "border-brandDark text-brandDark" : "border-transparent text-textSecondary hover:text-brandDark"
+  return `inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
+    active
+      ? "bg-brandDark/[0.08] text-brandDark shadow-[inset_0_0_0_1px_rgba(45,10,107,0.12)]"
+      : "text-textSecondary hover:bg-bgSecondary/80 hover:text-brandDark"
   }`;
 }
 
@@ -178,7 +182,7 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
   return (
     <div
       ref={containerRef}
-      className="relative hidden md:block"
+      className="relative shrink-0"
       onMouseEnter={() => setOpenDropdown(id)}
       onMouseLeave={() => setOpenDropdown(null)}
     >
@@ -312,13 +316,13 @@ export function AppNavBar() {
   };
 
   return (
-    <nav className="relative z-20 border-b border-border bg-bgPrimary dark:border-gray-700 dark:bg-gray-900">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-3 gap-y-3 px-4 py-3 md:flex-nowrap md:py-4">
-        <Link to="/" className="shrink-0">
-          <BrandLogo size="nav" />
+    <nav className="sticky top-0 z-20 border-b border-border/70 bg-bgPrimary/90 shadow-[0_4px_24px_-12px_rgba(45,10,107,0.25)] backdrop-blur-lg dark:border-gray-700/80 dark:bg-gray-900/90">
+      <div className="mx-auto flex h-[3.75rem] max-w-[90rem] items-center gap-2 px-3 sm:gap-3 sm:px-4 lg:gap-4">
+        <Link to="/" className="shrink-0 transition-opacity hover:opacity-90">
+          <BrandLogo size="appNav" />
         </Link>
 
-        <div className="hidden min-w-0 flex-1 items-center gap-x-1 overflow-x-auto md:flex md:gap-x-2 lg:gap-x-3">
+        <div className="hidden min-w-0 flex-1 flex-nowrap items-center justify-start gap-0.5 overflow-visible md:flex lg:gap-1">
           <NavLink to="/" end className={({ isActive }) => navLinkClass(isActive)}>
             {t("nav.home")}
           </NavLink>
@@ -328,8 +332,11 @@ export function AppNavBar() {
           <NavLink to="/dashboard" className={({ isActive }) => navLinkClass(isActive)}>
             {t("nav.dashboard")}
           </NavLink>
-          <NavLink to="/companies" className={({ isActive }) => navLinkClass(isActive)}>
-            {t("nav.companies", { defaultValue: "Companies" })}
+          <NavLink
+            to="/companies"
+            className={({ isActive }) => `${navLinkClass(isActive)} hidden lg:inline-block`}
+          >
+            {t("nav.companies", { defaultValue: "Spółki" })}
           </NavLink>
           <DesktopDropdown
             id="markets"
@@ -359,39 +366,38 @@ export function AppNavBar() {
 
         <GlobalSearchBar variant="desktop" />
 
-        <div className="ml-auto flex shrink-0 items-center gap-2 lg:hidden">
+        <div className="ml-auto flex shrink-0 items-center gap-2 md:ml-0 md:hidden">
           <GlobalSearchBar variant="mobile" />
           <button
             type="button"
-            className="inline-flex h-11 w-11 flex-col items-center justify-center rounded-lg border border-border"
+            className="inline-flex h-10 w-10 flex-col items-center justify-center rounded-xl border border-border/80 bg-bgSecondary/50 transition hover:border-brandDark/30 hover:bg-bgSecondary"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav-panel"
             onClick={() => setMobileOpen((v) => !v)}
           >
             <span
               aria-hidden
-              className={`block h-0.5 w-6 bg-brandDark transition-transform duration-300 ${
-                mobileOpen ? "translate-y-[7px] rotate-45" : ""
+              className={`block h-0.5 w-5 bg-brandDark transition-transform duration-300 ${
+                mobileOpen ? "translate-y-[6px] rotate-45" : ""
               }`}
             />
             <span
               aria-hidden
-              className={`my-1 block h-0.5 w-6 bg-brandDark transition-opacity duration-200 ${
+              className={`my-1 block h-0.5 w-5 bg-brandDark transition-opacity duration-200 ${
                 mobileOpen ? "opacity-0" : "opacity-100"
               }`}
             />
             <span
               aria-hidden
-              className={`block h-0.5 w-6 bg-brandDark transition-transform duration-300 ${
-                mobileOpen ? "-translate-y-[7px] -rotate-45" : ""
+              className={`block h-0.5 w-5 bg-brandDark transition-transform duration-300 ${
+                mobileOpen ? "-translate-y-[6px] -rotate-45" : ""
               }`}
             />
             <span className="sr-only">{t("nav.menu")}</span>
           </button>
         </div>
 
-        <div className="hidden shrink-0 items-center gap-2 md:flex lg:gap-3">
-          <p className="hidden text-xs text-textMuted xl:inline">{t("nav.shortcutsHint", { defaultValue: "Press ? for keyboard shortcuts" })}</p>
+        <div className="hidden shrink-0 items-center gap-1.5 md:flex lg:gap-2">
           <NotificationsCenter />
           <ThemeToggle />
           {user ? (
@@ -399,18 +405,28 @@ export function AppNavBar() {
               <button
                 type="button"
                 onClick={() => setAccountOpen((open) => !open)}
-                className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-left transition hover:border-brandDark/35"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-bgSecondary/40 px-1.5 py-1 transition-all hover:border-brandCyan/40 hover:shadow-[0_0_0_3px_rgba(0,201,212,0.12)]"
                 aria-expanded={accountOpen}
                 aria-haspopup="true"
+                title={userEmail}
               >
-                <div className="max-w-[18rem] text-right">
-                  {userName ? <div className="text-xs text-brandDark">{userName}</div> : null}
-                  <div className="break-all text-[11px] text-brandDark">{userEmail}</div>
-                </div>
-                <ChevronDownIcon className="h-4 w-4 text-brandDark" aria-hidden />
+                <span
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brandDark to-brandMedium text-xs font-bold text-white shadow-sm"
+                  aria-hidden
+                >
+                  {userInitials}
+                </span>
+                <ChevronDownIcon
+                  className={`h-4 w-4 shrink-0 text-brandDark transition-transform duration-200 ${accountOpen ? "rotate-180" : ""}`}
+                  aria-hidden
+                />
               </button>
               {accountOpen ? (
-                <div className="absolute right-0 top-full z-50 mt-2 min-w-[11rem] rounded-xl border border-border bg-bgPrimary py-1 shadow-lg">
+                <div className="absolute right-0 top-full z-50 mt-2 min-w-[12rem] overflow-hidden rounded-xl border border-border bg-bgPrimary py-1 shadow-lg ring-1 ring-black/5">
+                  <div className="border-b border-border px-3 py-2.5">
+                    {userName ? <p className="truncate text-sm font-semibold text-brandDark">{userName}</p> : null}
+                    <p className="truncate text-xs text-textMuted">{userEmail}</p>
+                  </div>
                   <NavLink
                     to="/profile"
                     className={({ isActive }) => `${navLinkClass(isActive)} rounded-none px-3`}
