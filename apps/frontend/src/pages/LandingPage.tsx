@@ -14,7 +14,7 @@ import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { SEOHead } from "../components/SEOHead";
-import { BrandLogo, CardBrandMark } from "../components/BrandLogo";
+import { BrandLogo } from "../components/BrandLogo";
 import { CountryFlag } from "../components/CountryFlag";
 import { LANGUAGE_OPTIONS, resolveLanguageCode } from "../constants/languages";
 
@@ -179,20 +179,11 @@ function HowItWorksStepBadge({ stepIndex }: { stepIndex: number }) {
     accentRing,
   ].join(" ");
 
-  const numBadge = (
-    <span
-      className="absolute -bottom-2 -right-2 flex h-9 min-w-[2.25rem] items-center justify-center rounded-full border border-white/25 bg-white/95 px-2 text-sm font-black shadow-lg backdrop-blur-sm"
-      style={{ color: BRAND.dark, boxShadow: "0 10px 28px rgba(45,10,107,0.22)" }}
-      aria-hidden
-    >
-      {label}
-    </span>
-  );
-
   return (
     <div className={shell}>
-      <BrandLogo size="badge" className="drop-shadow-lg" />
-      {numBadge}
+      <span className="text-3xl font-black tabular-nums" style={{ color: BRAND.cyan }}>
+        {label}
+      </span>
     </div>
   );
 }
@@ -285,7 +276,6 @@ function FloatingCards() {
           animationDelay: "0s",
         }}
       >
-        <BrandLogo size="mini" className="mb-2" />
         <div className="flex items-center gap-2">
           <div
             className="pulse-dot h-2 w-2 rounded-full bg-[#00A86B]"
@@ -303,7 +293,6 @@ function FloatingCards() {
           animationDelay: "1.5s",
         }}
       >
-        <BrandLogo size="mini" className="mb-2" />
         <div className="text-[11px] font-bold text-[#2D0A6B]">🧠 {t("landing.hero.coachAlertTitle")}</div>
         <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.coachAlertBody")}</div>
       </div>
@@ -315,7 +304,6 @@ function FloatingCards() {
           background: "linear-gradient(135deg, #2D0A6B, #7A0F9E)",
         }}
       >
-        <BrandLogo size="mini" className="mb-2 brightness-110" />
         <div className="text-[20px] font-black text-white">73%</div>
         <div className="text-[10px] text-white/60">{t("landing.hero.winRate")}</div>
       </div>
@@ -633,7 +621,6 @@ function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProp
         >
           <div className="p-6">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-              <BrandLogo size="hero" />
               <h2 className="text-lg font-bold text-white">{t("landing.hero.widgetTitle")}</h2>
               <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
                 <span className="pulse-dot inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />
@@ -1183,22 +1170,18 @@ export function LandingPage() {
         <SignalWave offset={-36} opacity={0.1} color="#67e8f9" />
         <div className="relative z-10 mx-auto grid max-w-5xl grid-cols-2 divide-x divide-y divide-white/10 md:grid-cols-4 md:divide-y-0">
           <div ref={exchangesCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
-            <BrandLogo size="card" className="mb-4 brightness-110" />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{exchangesCounter.count}+</div>
             <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.exchanges")}</p>
           </div>
           <div ref={modulesCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
-            <BrandLogo size="card" className="mb-4 brightness-110" />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{modulesCounter.count}</div>
             <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.modules")}</p>
           </div>
           <div ref={langsCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
-            <BrandLogo size="card" className="mb-4 brightness-110" />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{langsCounter.count}</div>
             <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.languages")}</p>
           </div>
           <div className="flex flex-col items-center px-4 py-8 text-center md:py-10">
-            <BrandLogo size="card" className="mb-4 brightness-110" />
             <div className="text-3xl font-black text-white md:text-4xl">{t("landing.stats.investors")}</div>
           </div>
         </div>
@@ -1237,7 +1220,6 @@ export function LandingPage() {
                 key={cardKey}
                 className={`reveal group relative overflow-hidden rounded-2xl border border-gray-100 border-l-4 border-l-[#2D0A6B] bg-white py-8 pl-6 pr-8 shadow-md transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
               >
-                <CardBrandMark />
                 <h3 className="text-xl font-bold text-slate-900">{title}</h3>
                 <p className="landing-body mt-3 text-slate-600">{body}</p>
               </article>
@@ -1277,7 +1259,6 @@ export function LandingPage() {
                 <span className="pointer-events-none absolute right-4 top-4 text-6xl font-black leading-none text-[#2D0A6B]/[0.12]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <CardBrandMark className="relative z-[1]" />
                 <h3 className="relative z-[1] text-lg font-bold text-slate-900">{card.title}</h3>
                 <p className="landing-body relative z-[1] mt-2 text-slate-600">{card.body}</p>
               </article>
@@ -1353,7 +1334,6 @@ export function LandingPage() {
       {/* ═══ ETORO PARTNER ═══ */}
       <section className="border-y border-slate-100 bg-white px-4 py-20">
         <div className="mx-auto max-w-xl rounded-2xl border border-gray-100 bg-slate-50/90 p-8 shadow-sm">
-          <CardBrandMark className="mb-6" />
           <p className="text-center text-sm font-semibold text-slate-800">{t("etoro.subtitle")}</p>
           <EtoroCTAButton sourcePage="landing_page" className="mx-auto mt-4 max-w-sm" />
         </div>
@@ -1388,7 +1368,6 @@ export function LandingPage() {
                     border: "1px solid rgba(255,255,255,0.9)",
                   }}
                 >
-                  <CardBrandMark className="relative z-10 mb-4" />
                   <p
                     className="pointer-events-none absolute left-6 top-4 font-serif text-7xl opacity-30"
                     style={{ color: BRAND.cyan }}
@@ -1493,8 +1472,7 @@ export function LandingPage() {
                     >
                       {t("landing.pricing.popular")}
                     </span>
-                    <CardBrandMark className="mt-2 [&_img]:brightness-110" />
-                    <h3 className="text-xl font-bold">{t(tier.nameKey)}</h3>
+                    <h3 className="mt-4 text-xl font-bold">{t(tier.nameKey)}</h3>
                     <p className="mt-6 text-5xl font-bold">{priceDisplay}</p>
                     {billingCycle === "yearly" ? (
                       <p className="mt-2 text-sm font-semibold text-emerald-300">
@@ -1533,7 +1511,6 @@ export function LandingPage() {
                   }`}
                   style={isProPlus ? { borderColor: BRAND.medium } : undefined}
                 >
-                  <CardBrandMark />
                   <h3 className="text-xl font-bold text-slate-900">{t(tier.nameKey)}</h3>
                   <p className={`mt-6 font-bold ${isFree ? "text-4xl" : "text-4xl"}`} style={{ color: BRAND.dark }}>
                     {priceDisplay}
