@@ -1,5 +1,4 @@
 import {
-  type SVGProps,
   useEffect,
   useId,
   useMemo,
@@ -15,6 +14,7 @@ import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { SEOHead } from "../components/SEOHead";
+import { BrandLogo, CardBrandMark } from "../components/BrandLogo";
 import { CountryFlag } from "../components/CountryFlag";
 import { LANGUAGE_OPTIONS, resolveLanguageCode } from "../constants/languages";
 
@@ -27,24 +27,6 @@ const BRAND = {
 
 const ETORO_AFFILIATE_URL =
   "https://med.etoro.com/B9219_A129734_TClick_Sstockaipro-main.aspx";
-
-type SolutionIconId = "brief" | "coach" | "dna" | "premortem" | "globe" | "paper";
-
-const LANDING_ICONA = {
-  problemApps: "/icons/icona/problem-apps.png",
-  problemBrain: "/icons/icona/problem-brain.png",
-  problemTarget: "/icons/icona/problem-target.png",
-  howSteps: ["/icons/icona/how-step-1.png", "/icons/icona/how-step-2.png", "/icons/icona/how-step-3.png"],
-} as const;
-
-const SOLUTION_ICON_SRC: Record<SolutionIconId, string> = {
-  brief: "/icons/icona/solution-brief.png",
-  coach: "/icons/icona/solution-coach.png",
-  dna: "/icons/icona/solution-dna.png",
-  premortem: "/icons/icona/solution-premortem.png",
-  globe: "/icons/icona/solution-globe.png",
-  paper: "/icons/icona/solution-paper.png",
-};
 
 const pricingTiers = [
   {
@@ -156,45 +138,6 @@ function ParticleDots() {
   );
 }
 
-function IconStatGlobe(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
-      <circle cx="12" cy="12" r="10" />
-      <line x1="2" y1="12" x2="22" y2="12" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-    </svg>
-  );
-}
-
-function IconStatCircuit(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <path d="M9 9h6v6H9z" />
-      <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
-    </svg>
-  );
-}
-
-function IconStatLang(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}
-
-function IconStatUsers(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  );
-}
-
 const TICKER_BAR_ITEMS = [
   { symbol: "AAPL", price: "$300.23", change: "+0.78%", positive: true },
   { symbol: "MSFT", price: "$421.92", change: "+1.85%", positive: true },
@@ -248,13 +191,7 @@ function HowItWorksStepBadge({ stepIndex }: { stepIndex: number }) {
 
   return (
     <div className={shell}>
-      <img
-        src={LANDING_ICONA.howSteps[stepIndex] ?? LANDING_ICONA.howSteps[0]}
-        alt=""
-        className="h-[64px] w-[64px] object-contain drop-shadow-lg"
-        decoding="async"
-        aria-hidden
-      />
+      <BrandLogo size="badge" className="drop-shadow-lg" />
       {numBadge}
     </div>
   );
@@ -348,6 +285,7 @@ function FloatingCards() {
           animationDelay: "0s",
         }}
       >
+        <BrandLogo size="mini" className="mb-2" />
         <div className="flex items-center gap-2">
           <div
             className="pulse-dot h-2 w-2 rounded-full bg-[#00A86B]"
@@ -365,6 +303,7 @@ function FloatingCards() {
           animationDelay: "1.5s",
         }}
       >
+        <BrandLogo size="mini" className="mb-2" />
         <div className="text-[11px] font-bold text-[#2D0A6B]">🧠 {t("landing.hero.coachAlertTitle")}</div>
         <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.coachAlertBody")}</div>
       </div>
@@ -376,6 +315,7 @@ function FloatingCards() {
           background: "linear-gradient(135deg, #2D0A6B, #7A0F9E)",
         }}
       >
+        <BrandLogo size="mini" className="mb-2 brightness-110" />
         <div className="text-[20px] font-black text-white">73%</div>
         <div className="text-[10px] text-white/60">{t("landing.hero.winRate")}</div>
       </div>
@@ -692,7 +632,8 @@ function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProp
           }}
         >
           <div className="p-6">
-            <div className="mb-5 flex items-center justify-between">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <BrandLogo size="hero" />
               <h2 className="text-lg font-bold text-white">{t("landing.hero.widgetTitle")}</h2>
               <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
                 <span className="pulse-dot inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />
@@ -765,20 +706,16 @@ function useCounter(target: number, duration = 2000): { count: number; ref: RefO
   return { count, ref };
 }
 
-const SOLUTION_CARD_KEYS: { iconId: SolutionIconId; titleKey: string; bodyKey: string }[] = [
-  { iconId: "brief", titleKey: "landing.solution.features.aiBrief.title", bodyKey: "landing.solution.features.aiBrief.body" },
-  { iconId: "coach", titleKey: "landing.solution.features.behavioralCoach.title", bodyKey: "landing.solution.features.behavioralCoach.body" },
-  { iconId: "dna", titleKey: "landing.solution.features.signalDna.title", bodyKey: "landing.solution.features.signalDna.body" },
-  { iconId: "premortem", titleKey: "landing.solution.features.preMortemAi.title", bodyKey: "landing.solution.features.preMortemAi.body" },
-  { iconId: "globe", titleKey: "landing.solution.features.globalMarkets.title", bodyKey: "landing.solution.features.globalMarkets.body" },
-  { iconId: "paper", titleKey: "landing.solution.features.paperTrading.title", bodyKey: "landing.solution.features.paperTrading.body" },
+const SOLUTION_CARD_KEYS: { titleKey: string; bodyKey: string }[] = [
+  { titleKey: "landing.solution.features.aiBrief.title", bodyKey: "landing.solution.features.aiBrief.body" },
+  { titleKey: "landing.solution.features.behavioralCoach.title", bodyKey: "landing.solution.features.behavioralCoach.body" },
+  { titleKey: "landing.solution.features.signalDna.title", bodyKey: "landing.solution.features.signalDna.body" },
+  { titleKey: "landing.solution.features.preMortemAi.title", bodyKey: "landing.solution.features.preMortemAi.body" },
+  { titleKey: "landing.solution.features.globalMarkets.title", bodyKey: "landing.solution.features.globalMarkets.body" },
+  { titleKey: "landing.solution.features.paperTrading.title", bodyKey: "landing.solution.features.paperTrading.body" },
 ];
 
-const PROBLEM_CARD_KEYS = [
-  { icon: "apps" as const, cardKey: "apps" },
-  { icon: "brain" as const, cardKey: "emotions" },
-  { icon: "target" as const, cardKey: "context" },
-] as const;
+const PROBLEM_CARD_KEYS = ["apps", "emotions", "context"] as const;
 
 export function LandingPage() {
   const { t, i18n } = useTranslation("common");
@@ -800,7 +737,6 @@ export function LandingPage() {
   const solutionCards = useMemo(
     () =>
       SOLUTION_CARD_KEYS.map((card) => ({
-        iconId: card.iconId,
         title: t(card.titleKey),
         body: t(card.bodyKey),
       })),
@@ -971,13 +907,8 @@ export function LandingPage() {
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 md:gap-6 md:py-4">
-          <Link to="/" className="flex min-w-0 shrink-0 items-center" aria-label="StockAI Pro — strona główna">
-            <img
-              src="/logo.png"
-              alt="StockAI Pro"
-              className="h-9 w-auto max-w-[min(100%,280px)] object-contain object-left md:h-10 md:max-w-[320px]"
-              decoding="async"
-            />
+          <Link to="/" className="flex min-w-0 shrink-0 items-center" aria-label="Stock-AI.Pro — strona główna">
+            <BrandLogo size="nav" />
           </Link>
 
           <nav className="hidden flex-1 items-center justify-center gap-10 text-sm font-semibold text-[#2D0A6B]/90 md:flex">
@@ -1252,22 +1183,22 @@ export function LandingPage() {
         <SignalWave offset={-36} opacity={0.1} color="#67e8f9" />
         <div className="relative z-10 mx-auto grid max-w-5xl grid-cols-2 divide-x divide-y divide-white/10 md:grid-cols-4 md:divide-y-0">
           <div ref={exchangesCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
-            <IconStatGlobe className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
+            <BrandLogo size="card" className="mb-4 brightness-110" />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{exchangesCounter.count}+</div>
             <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.exchanges")}</p>
           </div>
           <div ref={modulesCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
-            <IconStatCircuit className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
+            <BrandLogo size="card" className="mb-4 brightness-110" />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{modulesCounter.count}</div>
             <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.modules")}</p>
           </div>
           <div ref={langsCounter.ref} className="flex flex-col items-center px-4 py-8 text-center md:py-10">
-            <IconStatLang className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
+            <BrandLogo size="card" className="mb-4 brightness-110" />
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{langsCounter.count}</div>
             <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.languages")}</p>
           </div>
           <div className="flex flex-col items-center px-4 py-8 text-center md:py-10">
-            <IconStatUsers className="mb-3 h-7 w-7 shrink-0" style={{ color: BRAND.cyan }} />
+            <BrandLogo size="card" className="mb-4 brightness-110" />
             <div className="text-3xl font-black text-white md:text-4xl">{t("landing.stats.investors")}</div>
           </div>
         </div>
@@ -1297,39 +1228,16 @@ export function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-3">
-          {PROBLEM_CARD_KEYS.map((card, index) => {
+          {PROBLEM_CARD_KEYS.map((cardKey, index) => {
             const staggerClass = index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
-            const title = t(`landing.problem.cards.${card.cardKey}.title`);
-            const body = t(`landing.problem.cards.${card.cardKey}.body`);
+            const title = t(`landing.problem.cards.${cardKey}.title`);
+            const body = t(`landing.problem.cards.${cardKey}.body`);
             return (
               <article
-                key={card.cardKey}
+                key={cardKey}
                 className={`reveal group relative overflow-hidden rounded-2xl border border-gray-100 border-l-4 border-l-[#2D0A6B] bg-white py-8 pl-6 pr-8 shadow-md transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
               >
-                <div className="mb-6 flex">
-                  <div
-                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:-translate-y-2"
-                    style={{
-                      background: "linear-gradient(135deg, #2D0A6B20, #7A0F9E15)",
-                      border: "1px solid rgba(45,10,107,0.15)",
-                    }}
-                  >
-                    <img
-                    src={
-                      card.icon === "apps"
-                        ? LANDING_ICONA.problemApps
-                        : card.icon === "brain"
-                          ? LANDING_ICONA.problemBrain
-                          : LANDING_ICONA.problemTarget
-                    }
-                    alt=""
-                    className="h-12 w-12 object-contain"
-                    loading="lazy"
-                    decoding="async"
-                    aria-hidden
-                  />
-                  </div>
-                </div>
+                <CardBrandMark />
                 <h3 className="text-xl font-bold text-slate-900">{title}</h3>
                 <p className="landing-body mt-3 text-slate-600">{body}</p>
               </article>
@@ -1369,18 +1277,7 @@ export function LandingPage() {
                 <span className="pointer-events-none absolute right-4 top-4 text-6xl font-black leading-none text-[#2D0A6B]/[0.12]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <div className="relative z-[1] mb-5 flex">
-                  <div className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center rounded-2xl border border-[#2D0A6B]/20 bg-[#2D0A6B]/10 shadow-md backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-2">
-                    <img
-                      src={SOLUTION_ICON_SRC[card.iconId]}
-                      alt=""
-                      className="h-10 w-10 object-contain"
-                      loading="lazy"
-                      decoding="async"
-                      aria-hidden
-                    />
-                  </div>
-                </div>
+                <CardBrandMark className="relative z-[1]" />
                 <h3 className="relative z-[1] text-lg font-bold text-slate-900">{card.title}</h3>
                 <p className="landing-body relative z-[1] mt-2 text-slate-600">{card.body}</p>
               </article>
@@ -1456,6 +1353,7 @@ export function LandingPage() {
       {/* ═══ ETORO PARTNER ═══ */}
       <section className="border-y border-slate-100 bg-white px-4 py-20">
         <div className="mx-auto max-w-xl rounded-2xl border border-gray-100 bg-slate-50/90 p-8 shadow-sm">
+          <CardBrandMark className="mb-6" />
           <p className="text-center text-sm font-semibold text-slate-800">{t("etoro.subtitle")}</p>
           <EtoroCTAButton sourcePage="landing_page" className="mx-auto mt-4 max-w-sm" />
         </div>
@@ -1490,6 +1388,7 @@ export function LandingPage() {
                     border: "1px solid rgba(255,255,255,0.9)",
                   }}
                 >
+                  <CardBrandMark className="relative z-10 mb-4" />
                   <p
                     className="pointer-events-none absolute left-6 top-4 font-serif text-7xl opacity-30"
                     style={{ color: BRAND.cyan }}
@@ -1594,7 +1493,8 @@ export function LandingPage() {
                     >
                       {t("landing.pricing.popular")}
                     </span>
-                    <h3 className="mt-4 text-xl font-bold">{t(tier.nameKey)}</h3>
+                    <CardBrandMark className="mt-2 [&_img]:brightness-110" />
+                    <h3 className="text-xl font-bold">{t(tier.nameKey)}</h3>
                     <p className="mt-6 text-5xl font-bold">{priceDisplay}</p>
                     {billingCycle === "yearly" ? (
                       <p className="mt-2 text-sm font-semibold text-emerald-300">
@@ -1633,6 +1533,7 @@ export function LandingPage() {
                   }`}
                   style={isProPlus ? { borderColor: BRAND.medium } : undefined}
                 >
+                  <CardBrandMark />
                   <h3 className="text-xl font-bold text-slate-900">{t(tier.nameKey)}</h3>
                   <p className={`mt-6 font-bold ${isFree ? "text-4xl" : "text-4xl"}`} style={{ color: BRAND.dark }}>
                     {priceDisplay}
@@ -1717,13 +1618,8 @@ export function LandingPage() {
       <footer className="text-white" style={{ backgroundColor: BRAND.dark }}>
         <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 md:grid-cols-4">
           <div>
-            <Link to="/" className="inline-flex" aria-label="StockAI Pro — strona główna">
-              <img
-                src="/logo.png"
-                alt="StockAI Pro"
-                className="h-10 w-auto max-w-[min(100%,300px)] object-contain object-left md:h-11 md:max-w-[340px]"
-                decoding="async"
-              />
+            <Link to="/" className="inline-flex" aria-label="Stock-AI.Pro — strona główna">
+              <BrandLogo size="footer" />
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
               {t("landing.footer.tagline")}

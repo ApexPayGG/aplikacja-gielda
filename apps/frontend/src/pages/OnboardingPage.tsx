@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
+import { BrandLogo, CardBrandMark } from "../components/BrandLogo";
 import { colors } from "../styles/designSystem";
 import { saveOnboardingPreferences, type InvestmentStyle } from "../utils/onboarding";
 
@@ -114,7 +115,7 @@ export function OnboardingPage() {
 
           {step === 1 ? (
             <section className="space-y-5 text-center">
-              <img src="/logo.png" alt="StockAI Pro" className="mx-auto h-20 w-auto object-contain" />
+              <BrandLogo size="cardLg" className="mx-auto" />
               <h1 className="text-3xl font-bold text-textPrimary">
                 {t("onboarding.welcome.title", {
                   name: firstName,
@@ -181,8 +182,8 @@ export function OnboardingPage() {
                         backgroundColor: colors.bgPrimary,
                       }}
                     >
-                      <p className="text-2xl">{t(`onboarding.style.${styleId}.icon`, { defaultValue: "📈" })}</p>
-                      <p className="mt-2 text-base font-semibold text-textPrimary">
+                      <CardBrandMark className="mb-2" />
+                      <p className="text-base font-semibold text-textPrimary">
                         {t(`onboarding.style.${styleId}.title`, { defaultValue: styleId })}
                       </p>
                       <p className="mt-1 text-sm text-textSecondary">
@@ -214,6 +215,7 @@ export function OnboardingPage() {
                     onClick={() => handleFeatureNavigate(FEATURE_HREFS[featureId])}
                     className="block w-full rounded-2xl border border-border bg-bgPrimary p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm"
                   >
+                    <CardBrandMark className="mb-3" />
                     <p className="text-base font-semibold text-textPrimary">
                       {t(`onboarding.features.${featureId}.title`, { defaultValue: featureId })}
                     </p>

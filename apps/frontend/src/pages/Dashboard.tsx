@@ -8,6 +8,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { BrandLogo } from "../components/BrandLogo";
 import { DailyCheckInWidget } from "../components/DailyCheckInWidget";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import { useAuth } from "../context/AuthContext";
@@ -207,6 +208,7 @@ export function Dashboard() {
             <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {statCards.map((card) => (
                 <article key={card.label} className="rounded-xl border border-border bg-bgSecondary/70 p-3">
+                  <BrandLogo size="card" className="mb-3" />
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-[11px] font-semibold uppercase tracking-wide text-textSecondary">{card.label}</p>
                     {trendIcon(card.trend)}

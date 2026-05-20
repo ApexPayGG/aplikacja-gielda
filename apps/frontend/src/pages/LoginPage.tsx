@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from "react-router-do
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
+import { BrandLogo } from "../components/BrandLogo";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 function safeRedirectPath(from: unknown): string {
@@ -59,11 +60,7 @@ export function LoginPage() {
       <div className="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-10 lg:px-8">
         <div className="grid w-full overflow-hidden rounded-3xl bg-bgPrimary shadow-[0_24px_72px_rgba(45,10,107,0.2)] lg:grid-cols-2">
           <div className="p-6 sm:p-10">
-            <img
-              src="/logo.png"
-              alt="StockAI Pro"
-              className="mb-8 h-10 w-auto max-w-[min(100%,300px)] object-contain object-left"
-            />
+            <BrandLogo size="auth" className="mb-8" />
             <form onSubmit={onSubmit} className="space-y-4">
               <div>
                 <h1 className="text-2xl font-bold text-textPrimary">{t("auth.signIn")}</h1>
@@ -132,6 +129,7 @@ export function LoginPage() {
             className="hidden flex-col justify-center p-10 text-white lg:flex"
             style={{ background: `linear-gradient(140deg, ${colors.brandDark}, ${colors.brandMedium})` }}
           >
+            <BrandLogo size="auth" className="mb-8 brightness-110" />
             <h2 className="text-2xl font-semibold">{t("auth.loginAsideTitle")}</h2>
             <p className="mt-2 text-sm text-white/85">{t("auth.loginAsideSubtitle")}</p>
             <ul className="mt-8 space-y-3">

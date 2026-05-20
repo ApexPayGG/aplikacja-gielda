@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
+import { BrandLogo } from "../components/BrandLogo";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function RegisterPage() {
@@ -45,11 +46,7 @@ export function RegisterPage() {
       <div className="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-10 lg:px-8">
         <div className="grid w-full overflow-hidden rounded-3xl bg-bgPrimary shadow-[0_24px_72px_rgba(45,10,107,0.2)] lg:grid-cols-2">
           <div className="p-6 sm:p-10">
-            <img
-              src="/logo.png"
-              alt="StockAI Pro"
-              className="mb-8 h-10 w-auto max-w-[min(100%,300px)] object-contain object-left"
-            />
+            <BrandLogo size="auth" className="mb-8" />
             <form onSubmit={onSubmit} className="space-y-4">
               <div>
                 <h1 className="text-2xl font-bold text-textPrimary">
@@ -127,6 +124,7 @@ export function RegisterPage() {
             className="hidden flex-col justify-center p-10 text-white lg:flex"
             style={{ background: `linear-gradient(140deg, ${colors.brandDark}, ${colors.brandMedium})` }}
           >
+            <BrandLogo size="auth" className="mb-8 brightness-110" />
             <h2 className="text-2xl font-semibold">Korzyści z rejestracji</h2>
             <p className="mt-2 text-sm text-white/85">Dołącz do StockAI Pro i zacznij inwestować mądrzej.</p>
             <ul className="mt-8 space-y-4">
