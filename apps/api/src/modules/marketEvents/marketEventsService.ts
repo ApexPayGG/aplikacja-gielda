@@ -67,13 +67,15 @@ export async function syncMarketEventsFromProviders(
   const to = addDaysIso(from, marketEventsSyncHorizonDays());
   const sources: string[] = [];
 
+  const tracked = await collectTrackedSymbols(db);
+  const trackedSymbols = [...tracked];
+
   let events: NormalizedMarketEvent[] = [];
   if (process.env.EODHD_API_KEY?.trim()) {
-    events = await fetchNormalizedMarketEventsFromEodhd(from, to);
+    events = await fetchNormalizedMarketEventsFromEodhd(from, to, trackedSymbols);
     sources.push("eodhd");
   }
 
-  const tracked = await collectTrackedSymbols(db);
   const filtered = filterEventsForWatchlistSymbols(events, tracked);
   const { upserted } = await upsertMarketEvents(filtered, db);
 
