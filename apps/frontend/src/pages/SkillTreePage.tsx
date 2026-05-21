@@ -78,12 +78,9 @@ export function SkillTreePage() {
   }
 
   return (
-    <div className="min-h-screen bg-bgSecondary">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0b14] via-[#1e1b4b]/90 to-[#0a0b14]">
       <div className="mx-auto max-w-6xl px-4 py-10">
-        <header
-          className="mb-8 glass-section rounded-3xl p-6 shadow-[0_16px_36px_rgba(168,85,247,0.08)]"
-          style={{ background: `linear-gradient(120deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
-        >
+        <header className="mb-8 glass-section rounded-3xl border border-white/10 p-6 shadow-[0_16px_36px_rgba(168,85,247,0.08)]">
           <h1 className="glass-page-title text-3xl">Skill Tree</h1>
           <p className="mt-1 glass-muted text-sm">{t("skilltree.subtitle")}</p>
         </header>
@@ -147,10 +144,10 @@ export function SkillTreePage() {
                 const unlocked = skill.unlocked;
                 const inProgress = !unlocked && index === firstLockedIndex;
                 const cardClass = unlocked
-                  ? "border-white/10 bg-bgPrimary"
+                  ? "border-white/10 bg-white/[0.04]"
                   : inProgress
-                    ? "border-2 border-brandCyan bg-bgPrimary"
-                    : "border-white/10 bg-bgSecondary";
+                    ? "border-2 border-brandCyan bg-white/[0.06]"
+                    : "border-white/10 bg-white/[0.03]";
                 const iconClass = unlocked
                   ? "bg-brandCyan/15 text-white"
                   : inProgress

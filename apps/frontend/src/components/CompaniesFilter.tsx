@@ -76,9 +76,9 @@ export function CompaniesFilter({
   return (
     <section className={GLASS_FILTER_PANEL}>
       <header className="flex items-center justify-between gap-2">
-        <h2 className={GLASS_LABEL}>Filtry</h2>
+        <h2 className={GLASS_LABEL}>{t("common.filters", { defaultValue: "Filters" })}</h2>
         <button type="button" onClick={onReset} className={`text-sm ${GLASS_LINK_ACCENT}`}>
-          Resetuj filtry
+          {t("common.resetFilters", { defaultValue: "Reset filters" })}
         </button>
       </header>
 

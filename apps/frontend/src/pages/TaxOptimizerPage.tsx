@@ -1,5 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { TAX_COUNTRY_ENGLISH_NAMES, TAX_COUNTRY_FLAGS } from "../constants/taxCountries";
+import {
+  GLASS_BTN_PRIMARY,
+  GLASS_HERO,
+  GLASS_INPUT,
+  GLASS_PAGE_BG,
+  GLASS_PAGE_SUBTITLE,
+  GLASS_PAGE_TITLE,
+  GLASS_SECTION,
+} from "../components/behavioral-coach/glassStyles";
 import {
   calculateTax,
   getAlpacaSettings,
@@ -46,32 +56,32 @@ function buildOptimizationSuggestions(params: {
 
   if (params.losses <= 0) {
     result.push({
-      title: "Harvesting strat",
-      body: "Rozważ zamknięcie części stratnych pozycji przed końcem roku, aby obniżyć podstawę opodatkowania.",
+      title: "Loss harvesting",
+      body: "Consider closing some losing positions before year-end to reduce your tax base.",
     });
   } else {
     result.push({
-      title: "Rozliczenie strat",
-      body: "Zachowaj pełną dokumentację strat i rozlicz je z zyskami w tym samym lub kolejnym roku podatkowym.",
+      title: "Loss settlement",
+      body: "Keep full loss documentation and offset gains in the same or a future tax year.",
     });
   }
 
   if (params.dividends > 0) {
     result.push({
-      title: "Podatek od dywidend",
-      body: `Zweryfikuj umowy o unikaniu podwójnego opodatkowania dla kraju ${params.country} i przygotuj potrącenia pod ${params.taxName}.`,
+      title: "Dividend tax",
+      body: `Review double-tax treaties for ${params.country} and prepare withholdings under ${params.taxName}.`,
     });
   }
 
   result.push({
-    title: "Plan na rok podatkowy",
-    body: `Ustal harmonogram realizacji zysków i strat na ${params.taxYear}, aby uniknąć kumulacji podatku na koniec okresu.`,
+    title: "Tax year plan",
+    body: `Schedule gain and loss realization for ${params.taxYear} to avoid a tax spike at period end.`,
   });
 
   if (params.taxDue > 0) {
     result.push({
-      title: "Optymalizacja rachunków",
-      body: "Sprawdź możliwość wykorzystania rachunków uprzywilejowanych podatkowo dla części portfela długoterminowego.",
+      title: "Account optimization",
+      body: "Check whether tax-advantaged accounts can hold part of your long-term portfolio.",
     });
   }
 
@@ -79,6 +89,7 @@ function buildOptimizationSuggestions(params: {
 }
 
 export function TaxOptimizerPage() {
+  const { t } = useTranslation();
   const [userId] = useState<string>(() => readUserId());
   const [systems, setSystems] = useState<TaxSystemItem[]>([]);
   const [country, setCountry] = useState("PL");
@@ -207,19 +218,14 @@ export function TaxOptimizerPage() {
   const activeTaxRate = data?.taxRate ?? (country === "CUSTOM" && Number.isFinite(rateAsNumber) ? rateAsNumber / 100 : 0);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-10" style={{ color: colors.textPrimary }}>
-      <header
-        className="rounded-3xl border p-6 shadow-[0_20px_44px_rgba(168,85,247,0.12)]"
-        style={{
-          borderColor: colors.border,
-          background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})`,
-        }}
-      >
-        <h1 className="text-3xl font-bold" style={{ color: colors.brandDark }}>
-          Optymalizator podatkowy
-        </h1>
-        <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
-          Symuluj scenariusze podatkowe dla portfela i zaplanuj obciążenia zanim zamkniesz rok.
+    <div className={`${GLASS_PAGE_BG} px-4 py-10`}>
+      <div className="mx-auto max-w-6xl space-y-6">
+      <header className={GLASS_HERO}>
+        <h1 className={GLASS_PAGE_TITLE}>{t("taxOptimizer.title", { defaultValue: "Tax Optimizer" })}</h1>
+        <p className={`${GLASS_PAGE_SUBTITLE} mt-2`}>
+          {t("taxOptimizer.pageSubtitle", {
+            defaultValue: "Simulate tax scenarios for your portfolio and plan liabilities before year-end.",
+          })}
         </p>
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -247,57 +253,53 @@ export function TaxOptimizerPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border p-5 shadow-[0_14px_32px_rgba(168,85,247,0.08)] glass-section">
+      <section className={GLASS_SECTION}>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Zyski
+            <span className="text-xs font-semibold uppercase tracking-wide text-white/50">
+              {t("taxOptimizer.grossGains", { defaultValue: "Gains" })}
             </span>
             <input
               value={grossGainsInput}
               onChange={(event) => setGrossGainsInput(event.target.value)}
               inputMode="decimal"
-              className="rounded-xl border px-3 py-2 outline-none"
-              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+              className={GLASS_INPUT}
             />
           </label>
 
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Straty
+            <span className="text-xs font-semibold uppercase tracking-wide text-white/50">
+              {t("taxOptimizer.losses", { defaultValue: "Losses" })}
             </span>
             <input
               value={lossesInput}
               onChange={(event) => setLossesInput(event.target.value)}
               inputMode="decimal"
-              className="rounded-xl border px-3 py-2 outline-none"
-              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+              className={GLASS_INPUT}
             />
           </label>
 
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Dywidendy
+            <span className="text-xs font-semibold uppercase tracking-wide text-white/50">
+              {t("taxOptimizer.dividends", { defaultValue: "Dividends" })}
             </span>
             <input
               value={dividendsInput}
               onChange={(event) => setDividendsInput(event.target.value)}
               inputMode="decimal"
-              className="rounded-xl border px-3 py-2 outline-none"
-              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+              className={GLASS_INPUT}
             />
           </label>
 
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Rok podatkowy
+            <span className="text-xs font-semibold uppercase tracking-wide text-white/50">
+              {t("taxOptimizer.year", { defaultValue: "Tax year" })}
             </span>
             <input
               value={taxYearInput}
               onChange={(event) => setTaxYearInput(event.target.value)}
               inputMode="numeric"
-              className="rounded-xl border px-3 py-2 outline-none"
-              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+              className={GLASS_INPUT}
             />
           </label>
         </div>
@@ -321,10 +323,9 @@ export function TaxOptimizerPage() {
           type="button"
           onClick={() => void handleCalculate()}
           disabled={loading || !data || !customRateValid}
-          className="mt-5 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
-          style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
+          className={`${GLASS_BTN_PRIMARY} mt-5 disabled:cursor-not-allowed disabled:opacity-60`}
         >
-          {loading ? "Ładowanie..." : "Oblicz"}
+          {loading ? t("common.loading") : t("taxOptimizer.calculate", { defaultValue: "Calculate" })}
         </button>
       </section>
 
@@ -383,6 +384,7 @@ export function TaxOptimizerPage() {
           </p>
         </section>
       ) : null}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,15 @@
 import { FormEvent, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { analyzeCorrelation, type CorrelationAnalyzeResponse } from "../services/api";
+import {
+  GLASS_BTN_PRIMARY,
+  GLASS_HERO,
+  GLASS_INPUT,
+  GLASS_PAGE_BG,
+  GLASS_PAGE_SUBTITLE,
+  GLASS_PAGE_TITLE,
+  GLASS_SECTION,
+} from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -42,6 +52,7 @@ function correlationTextColor(value: number): string {
 }
 
 export function CorrelationPage() {
+  const { t } = useTranslation();
   const [symbolInput, setSymbolInput] = useState("AAPL");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -100,21 +111,18 @@ export function CorrelationPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-10" style={{ color: colors.textPrimary }}>
-      <header className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight" style={{ color: colors.brandDark }}>
-          Correlation Detector
-        </h1>
-        <p className="text-sm" style={{ color: colors.textSecondary }}>
-          Monitor pair dependencies, detect hidden concentration risk, and keep diversification under control.
+    <div className={`${GLASS_PAGE_BG} px-4 py-10`}>
+      <div className="mx-auto max-w-6xl space-y-6">
+      <header className={GLASS_HERO}>
+        <h1 className={GLASS_PAGE_TITLE}>{t("correlation.title", { defaultValue: "Correlation Scanner" })}</h1>
+        <p className={`${GLASS_PAGE_SUBTITLE} mt-2`}>
+          {t("correlation.subtitle", {
+            defaultValue: "Check Pearson correlation between your main ticker and portfolio symbols.",
+          })}
         </p>
       </header>
 
-      <form
-        onSubmit={onSubmit}
-        className="flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-end"
-        style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-      >
+      <form onSubmit={onSubmit} className={`${GLASS_SECTION} flex flex-col gap-3 sm:flex-row sm:items-end`}>
         <label className="w-full text-sm sm:max-w-sm">
           <span className="mb-1.5 block font-medium" style={{ color: colors.textSecondary }}>
             Search base company
@@ -123,21 +131,11 @@ export function CorrelationPage() {
             value={symbolInput}
             onChange={(e) => setSymbolInput(e.target.value.toUpperCase())}
             placeholder="AAPL"
-            className="w-full rounded-xl border px-3 py-2 outline-none transition"
-            style={{
-              borderColor: colors.borderStrong,
-              backgroundColor: colors.bgSecondary,
-              color: colors.textPrimary,
-            }}
+            className={GLASS_INPUT}
           />
         </label>
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded-xl px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
-          style={{ backgroundColor: colors.brandDark }}
-        >
-          {loading ? "Analyzing..." : "Analyze correlations"}
+        <button type="submit" disabled={loading} className={`${GLASS_BTN_PRIMARY} disabled:opacity-60`}>
+          {loading ? t("common.loading") : t("correlation.analyze", { defaultValue: "Analyze correlation" })}
         </button>
       </form>
 
@@ -269,6 +267,7 @@ export function CorrelationPage() {
           </p>
         </section>
       ) : null}
+      </div>
     </div>
   );
 }

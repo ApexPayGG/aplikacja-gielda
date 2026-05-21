@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowDownTrayIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { api } from "../services/api";
 import { colors } from "../styles/designSystem";
@@ -28,7 +29,9 @@ function triggerBrowserDownload(blob: Blob, filename: string): void {
   URL.revokeObjectURL(href);
 }
 
-export function ExportButton({ endpoint, userId, label = "Eksportuj" }: ExportButtonProps) {
+export function ExportButton({ endpoint, userId, label }: ExportButtonProps) {
+  const { t } = useTranslation();
+  const displayLabel = label ?? t("common.export", { defaultValue: "Export" });
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -76,7 +79,7 @@ export function ExportButton({ endpoint, userId, label = "Eksportuj" }: ExportBu
         }}
       >
         <ArrowDownTrayIcon className="h-4 w-4" />
-        <span>{loading ? "Pobieranie..." : label}</span>
+        <span>{loading ? t("common.loading") : displayLabel}</span>
         <ChevronDownIcon className="h-4 w-4" />
       </button>
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
@@ -156,6 +157,7 @@ function formatPrice(value: number): string {
 }
 
 export function SignalsPage() {
+  const { t } = useTranslation();
   const { token, user } = useAuth();
   const isLoggedIn = Boolean(token);
   const [signals, setSignals] = useState<SignalListItem[]>([]);
@@ -245,9 +247,18 @@ export function SignalsPage() {
             </span>
             <div className="mt-3 flex md:justify-end">
               <ShareButton
-                label={`Udostępnij sygnał ${signal.ticker} ${signedChangeForShare}`}
+                label={t("signals.shareSignal", {
+                  ticker: signal.ticker,
+                  change: signedChangeForShare,
+                  defaultValue: `Share signal ${signal.ticker} ${signedChangeForShare}`,
+                })}
                 url={`https://stock-ai.pro/signals/${signal.id}`}
-                twitterText={`🚀 Sygnał AI: ${signal.ticker} ${signal.setupType} | Score: ${Math.round(signal.riskScore)}/100 | StockAI Pro #inwestowanie #GPW`}
+                twitterText={t("signals.shareTwitter", {
+                  ticker: signal.ticker,
+                  setup: signal.setupType,
+                  score: Math.round(signal.riskScore),
+                  defaultValue: `AI signal: ${signal.ticker} ${signal.setupType} | Score: ${Math.round(signal.riskScore)}/100 | StockAI Pro`,
+                })}
               />
             </div>
           </div>
@@ -261,14 +272,14 @@ export function SignalsPage() {
           </div>
           {!isLoggedIn ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#0a0b14]/70 px-4 text-center backdrop-blur-sm">
-              <p className="text-sm font-semibold text-white">Zaloguj się aby zobaczyć analizę AI</p>
+              <p className="text-sm font-semibold text-white">{t("signals.loginForAi", { defaultValue: "Sign in to view AI analysis" })}</p>
               <Link to="/register" className={`${GLASS_BTN_PRIMARY} px-3 py-1.5 text-xs`}>
-                Zaloguj się
+                {t("signals.signIn", { defaultValue: "Sign in" })}
               </Link>
             </div>
           ) : (
             <div className="absolute inset-0 flex items-center px-4 text-xs text-white/60">
-              Analiza AI dostępna w podglądzie premium dla tego sygnału.
+              {t("signals.aiPreview", { defaultValue: "AI analysis preview is available for this signal." })}
             </div>
           )}
         </div>
@@ -280,18 +291,24 @@ export function SignalsPage() {
     <div>
         <header className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
-            <h1 className={GLASS_PAGE_TITLE}>Sygnały</h1>
+            <h1 className={GLASS_PAGE_TITLE}>{t("signals.title", { defaultValue: "Signals" })}</h1>
             <p className={GLASS_PAGE_SUBTITLE}>
-              Przeglądaj aktywne setupy i ocenę ryzyka wspierane przez analizę AI StockAI Pro.
+              {t("signals.pageSubtitle", {
+                defaultValue: "Browse active setups and AI-supported risk assessments.",
+              })}
             </p>
             <InvestmentDisclaimer variant="drawer" className="max-w-2xl text-left" showTermsLink />
             <p className="text-xs font-semibold uppercase tracking-wide text-white/50">
-              Wyniki: {filteredSignals.length}
+              {t("signals.resultsCount", { defaultValue: "Results" })}: {filteredSignals.length}
             </p>
             <EtoroCTAButton sourcePage="signals" className="max-w-xs" />
           </div>
           <div className="self-start md:self-auto">
-            <ExportButton endpoint="/export/signals" userId={user?.id} label="Eksportuj sygnały" />
+            <ExportButton
+              endpoint="/export/signals"
+              userId={user?.id}
+              label={t("signals.exportSignals", { defaultValue: "Export signals" })}
+            />
           </div>
         </header>
         <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
@@ -328,7 +345,7 @@ export function SignalsPage() {
 
             {!loadingList && !listError && filteredSignals.length === 0 ? (
               <div className={`${GLASS_INNER_PANEL} px-4 py-6 text-center text-sm text-white/60`}>
-                Brak sygnałów dla wybranego filtra.
+                {t("signals.emptyFiltered", { defaultValue: "No signals for the selected filter." })}
               </div>
             ) : null}
 
@@ -352,7 +369,7 @@ export function SignalsPage() {
         className={`fixed bottom-20 right-4 z-30 rounded-full px-5 py-3 text-sm font-semibold shadow-lg lg:hidden md:bottom-4 ${GLASS_BTN_PRIMARY}`}
         onClick={() => setIsMobileFiltersOpen(true)}
       >
-        Filtry {hasActiveFilters ? "•" : ""}
+        {t("signals.mobileFilters", { defaultValue: "Filters" })} {hasActiveFilters ? "•" : ""}
       </button>
 
       {isMobileFiltersOpen ? (
@@ -361,13 +378,13 @@ export function SignalsPage() {
             type="button"
             className="absolute inset-0 bg-black/45"
             onClick={() => setIsMobileFiltersOpen(false)}
-            aria-label="Zamknij panel filtrów"
+            aria-label={t("signals.closeFiltersPanel", { defaultValue: "Close filter panel" })}
           />
           <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-3xl border border-white/15 bg-[#0f111c]/95 p-4 backdrop-blur-md">
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-base font-bold text-white">Filtry sygnałów</p>
+              <p className="text-base font-bold text-white">{t("signals.filtersTitle", { defaultValue: "Signal filters" })}</p>
               <button type="button" className="text-sm font-semibold text-[#22d3ee]" onClick={() => setIsMobileFiltersOpen(false)}>
-                Zamknij
+                {t("common.close", { defaultValue: "Close" })}
               </button>
             </div>
             <SignalsFilter

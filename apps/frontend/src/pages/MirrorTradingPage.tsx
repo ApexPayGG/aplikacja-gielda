@@ -114,12 +114,9 @@ export function MirrorTradingPage() {
   const activeFollowing = useMemo(() => following.filter((r) => r.active), [following]);
 
   return (
-    <div className="min-h-screen bg-bgSecondary px-4 py-10 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0b14] via-[#1e1b4b]/90 to-[#0a0b14] px-4 py-10 text-white">
       <div className="mx-auto max-w-6xl space-y-8">
-        <header
-          className="glass-section rounded-3xl p-6 shadow-[0_18px_40px_rgba(168,85,247,0.1)]"
-          style={{ background: `linear-gradient(120deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
-        >
+        <header className="glass-section rounded-3xl border border-white/10 p-6 shadow-[0_18px_40px_rgba(168,85,247,0.1)]">
           <h1 className="glass-page-title text-3xl">Mirror Trading</h1>
           <p className="mt-2 glass-muted text-sm">{t("mirror.subtitle")}</p>
         </header>
@@ -131,7 +128,7 @@ export function MirrorTradingPage() {
         ) : null}
 
         <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-          <h2 className="mb-4 text-xl font-semibold text-white">Twoje aktywne mirror</h2>
+          <h2 className="mb-4 text-xl font-semibold text-white">{t("mirror.activeMirrors", { defaultValue: "Your active mirrors" })}</h2>
           {loading ? (
             <p className="glass-muted text-sm">{t("common.loading")}</p>
           ) : activeFollowing.length === 0 ? (
@@ -186,7 +183,7 @@ export function MirrorTradingPage() {
         </section>
 
         <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-          <h2 className="mb-4 text-xl font-semibold text-white">Top traderzy</h2>
+          <h2 className="mb-4 text-xl font-semibold text-white">{t("mirror.topTraders", { defaultValue: "Top traders" })}</h2>
           {loading ? (
             <p className="glass-muted text-sm">{t("common.loading")}</p>
           ) : topTraders.length === 0 ? (

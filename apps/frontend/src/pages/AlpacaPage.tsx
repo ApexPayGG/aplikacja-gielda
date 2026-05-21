@@ -183,17 +183,12 @@ export function AlpacaPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-10" style={{ color: colors.textPrimary }}>
-      <section
-        className="rounded-3xl border p-6 shadow-[0_16px_36px_rgba(168,85,247,0.08)]"
-        style={{ borderColor: colors.border, background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
-      >
+      <section className="glass-section rounded-3xl border border-white/10 p-6 shadow-[0_16px_36px_rgba(168,85,247,0.08)]">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold" style={{ color: colors.brandDark }}>
-              Alpaca Trading
-            </h1>
-            <p className="mt-1 text-sm font-medium" style={{ color: colors.textSecondary }}>
-              Real trading na rynku US
+            <h1 className="text-3xl font-bold text-white">{t("alpaca.title", { defaultValue: "Alpaca Trading" })}</h1>
+            <p className="mt-1 text-sm font-medium text-white/65">
+              {t("alpaca.subtitleUs", { defaultValue: "Live and paper trading on US markets." })}
             </p>
           </div>
           <span
@@ -285,7 +280,7 @@ export function AlpacaPage() {
 
       <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
         <div className="space-y-6">
-          <article className="rounded-2xl border bg-bgPrimary p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]" style={{ borderColor: colors.border }}>
+          <article className="glass-section rounded-2xl border border-white/10 p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]">
             <h2 className="mb-4 text-lg font-semibold" style={{ color: colors.brandDark }}>
               Pozycje
             </h2>
@@ -344,7 +339,7 @@ export function AlpacaPage() {
             </div>
           </article>
 
-          <article className="rounded-2xl border bg-bgPrimary p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]" style={{ borderColor: colors.border }}>
+          <article className="glass-section rounded-2xl border border-white/10 p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]">
             <h2 className="mb-4 text-lg font-semibold" style={{ color: colors.brandDark }}>
               Recent orders
             </h2>
@@ -409,7 +404,7 @@ export function AlpacaPage() {
           </article>
         </div>
 
-        <aside className="rounded-2xl border bg-bgPrimary p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)] lg:sticky lg:top-20 lg:h-fit" style={{ borderColor: colors.border }}>
+        <aside className="glass-section rounded-2xl border border-white/10 p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)] lg:sticky lg:top-20 lg:h-fit">
           <h2 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
             Order form
           </h2>

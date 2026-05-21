@@ -135,7 +135,7 @@ export function CompaniesPage() {
       </div>
 
       <p className="mb-6 text-xs font-semibold uppercase tracking-wide text-white/50">
-        {t("home.results", { defaultValue: "Wyniki" })}: {visibleCompanies.length}
+        {t("home.results", { defaultValue: "Results" })}: {visibleCompanies.length}
         {filters.onlyDividendStocks && dividendFilterLoading
           ? ` · ${t("companies.filterDividendLoading", { defaultValue: "Loading dividend list…" })}`
           : null}

@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  GLASS_HERO,
+  GLASS_PAGE_BG,
+  GLASS_PAGE_SUBTITLE,
+  GLASS_PAGE_TITLE,
+  GLASS_SECTION,
+} from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { getCrowdWisdom, searchCompanies, type Company, type CrowdWisdomResponse } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -8,12 +15,12 @@ function clampPercent(value: number): number {
   return Math.max(0, Math.min(100, Number.isFinite(value) ? value : 0));
 }
 
-function sentimentSummary(value: number): { percent: number; label: "kupuje" | "sprzedaje"; tone: "positive" | "negative" } {
+function sentimentSummary(value: number): { percent: number; label: "buying" | "selling"; tone: "positive" | "negative" } {
   const clamped = clampPercent(value);
   if (clamped >= 50) {
-    return { percent: clamped, label: "kupuje", tone: "positive" };
+    return { percent: clamped, label: "buying", tone: "positive" };
   }
-  return { percent: 100 - clamped, label: "sprzedaje", tone: "negative" };
+  return { percent: 100 - clamped, label: "selling", tone: "negative" };
 }
 
 function formatPercent(value: number): string {
@@ -104,10 +111,10 @@ export function CrowdWisdomPage() {
   const hasLargeDivergence = divergenceValue >= DIVERGENCE_GOLD_THRESHOLD;
   const signalLabel = selectedCompany
     ? selectedCompany.signal === "CONTRARIAN_BUY"
-      ? t("crowdwisdom.signalBuy", { defaultValue: "Sygnał: Kupuj kontrariańsko" })
+      ? t("crowdwisdom.signalBuy", { defaultValue: "Signal: Contrarian buy" })
       : selectedCompany.signal === "CONTRARIAN_SELL"
-        ? t("crowdwisdom.signalSell", { defaultValue: "Sygnał: Sprzedaj kontrariańsko" })
-        : t("crowdwisdom.signalNeutral", { defaultValue: "Sygnał: Neutralny" })
+        ? t("crowdwisdom.signalSell", { defaultValue: "Signal: Contrarian sell" })
+        : t("crowdwisdom.signalNeutral", { defaultValue: "Signal: Neutral" })
     : "";
   const signalColor =
     selectedCompany?.signal === "CONTRARIAN_BUY"
@@ -117,29 +124,22 @@ export function CrowdWisdomPage() {
         : colors.textSecondary;
 
   return (
-    <div className="min-h-screen py-8" style={{ backgroundColor: colors.bgSecondary }}>
+    <div className={`${GLASS_PAGE_BG} py-8`}>
       <div className="mx-auto max-w-6xl px-4">
-        <header className="mb-6">
-          <h1 className="text-4xl font-bold" style={{ color: colors.brandDark }}>
-            {t("crowdwisdom.redesignTitle", { defaultValue: "Crowd Wisdom Inverter" })}
-          </h1>
-          <p className="mt-2 text-sm md:text-base" style={{ color: colors.textSecondary }}>
-            {t("crowdwisdom.redesignSubtitle", {
-              defaultValue:
-                "Konfrontuj nastroje inwestorów retail z aktywnością insiderów i wychwytuj największe rozbieżności.",
+        <header className={`${GLASS_HERO} mb-6`}>
+          <h1 className={GLASS_PAGE_TITLE}>{t("crowdwisdom.title", { defaultValue: "Crowd Wisdom Inverter" })}</h1>
+          <p className={`${GLASS_PAGE_SUBTITLE} mt-2`}>
+            {t("crowdwisdom.heroSubtitle", {
+              defaultValue: "Compare retail sentiment with insider activity and surface the largest divergences.",
             })}
           </p>
         </header>
 
-        <form
-          onSubmit={onSubmit}
-          className="relative rounded-2xl border p-4 md:p-5"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-        >
+        <form onSubmit={onSubmit} className={`${GLASS_SECTION} relative`}>
           <div className="flex flex-col gap-3 md:flex-row md:items-end">
             <label className="relative flex-1 text-sm">
               <span className="mb-2 block font-semibold" style={{ color: colors.textSecondary }}>
-                {t("crowdwisdom.searchStocks", { defaultValue: "Search spółki" })}
+                {t("crowdwisdom.searchStocks", { defaultValue: "Search companies" })}
               </span>
               <input
                 value={symbolInput}
@@ -191,12 +191,12 @@ export function CrowdWisdomPage() {
               className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               style={{ backgroundColor: colors.brandDark }}
             >
-              {loading ? t("common.loading", { defaultValue: "Ładowanie..." }) : t("crowdwisdom.analyze", { defaultValue: "Analizuj" })}
+              {loading ? t("common.loading") : t("crowdwisdom.analyze", { defaultValue: "Analyze" })}
             </button>
           </div>
           {searching ? (
             <p className="mt-2 text-xs" style={{ color: colors.textMuted }}>
-              {t("crowdwisdom.searching", { defaultValue: "Wyszukiwanie spółek..." })}
+              {t("crowdwisdom.searching", { defaultValue: "Searching companies..." })}
             </p>
           ) : null}
         </form>
@@ -253,7 +253,9 @@ export function CrowdWisdomPage() {
                   {formatDivergence(selectedCompany.divergence)}
                 </p>
                 <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
-                  {hasLargeDivergence ? "Duża rozbieżność sentymentu." : "Rozbieżność w normie."}
+                  {hasLargeDivergence
+                    ? t("crowdwisdom.largeDivergence", { defaultValue: "Large sentiment divergence." })
+                    : t("crowdwisdom.normalDivergence", { defaultValue: "Divergence within normal range." })}
                 </p>
               </article>
             </div>
@@ -266,12 +268,12 @@ export function CrowdWisdomPage() {
 
         <section className="mt-6 rounded-2xl border p-5 md:p-6 glass-section">
           <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-            {t("crowdwisdom.topDivergence", { defaultValue: "Spółki z największą dywergencją" })}
+            {t("crowdwisdom.topDivergence", { defaultValue: "Companies with the largest divergence" })}
           </h3>
 
           {divergenceLeaders.length === 0 ? (
             <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
-              {t("crowdwisdom.emptyLeaders", { defaultValue: "Brak danych. Wyszukaj i przeanalizuj pierwszą spółkę." })}
+              {t("crowdwisdom.emptyLeaders", { defaultValue: "No data yet. Search and analyze your first company." })}
             </p>
           ) : (
             <div className="mt-3 overflow-x-auto rounded-xl border" style={{ borderColor: colors.border }}>
@@ -328,7 +330,7 @@ export function CrowdWisdomPage() {
 
 function SentimentCard(props: {
   title: string;
-  sentiment: { percent: number; label: "kupuje" | "sprzedaje"; tone: "positive" | "negative" };
+  sentiment: { percent: number; label: "buying" | "selling"; tone: "positive" | "negative" };
 }) {
   const toneColor = props.sentiment.tone === "positive" ? colors.positive : colors.negative;
   return (

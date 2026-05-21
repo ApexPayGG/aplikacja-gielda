@@ -1,8 +1,19 @@
 import { useMemo, useState, type CSSProperties, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import {
   calculateDividendCompound,
   type DividendCompoundResponse,
 } from "../services/api";
+import {
+  GLASS_BTN_PRIMARY,
+  GLASS_HERO,
+  GLASS_INPUT,
+  GLASS_PAGE_BG,
+  GLASS_PAGE_SUBTITLE,
+  GLASS_PAGE_TITLE,
+  GLASS_SECTION,
+  GLASS_STAT_CARD,
+} from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -47,6 +58,7 @@ function formatCurrency(value: number): string {
 }
 
 export function DividendCompoundPage() {
+  const { t } = useTranslation();
   const [form, setForm] = useState<FormState>(DEFAULT_FORM);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,49 +104,36 @@ export function DividendCompoundPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
-      <div className="mx-auto max-w-5xl px-4 py-10">
-        <header className="mb-8 space-y-2">
-          <h1 className="text-4xl font-bold" style={{ color: colors.brandDark }}>
-            Dividend Compound Calculator
-          </h1>
-          <p className="text-sm md:text-base" style={{ color: colors.textSecondary }}>
-            Modeluj wzrost portfela dywidendowego wedlug zasad AMC Energy design system.
+    <div className={`${GLASS_PAGE_BG} px-4 py-10`}>
+      <div className="mx-auto max-w-5xl">
+        <header className={GLASS_HERO}>
+          <h1 className={GLASS_PAGE_TITLE}>{t("dividendcompound.title", { defaultValue: "Dividend Compound Calculator" })}</h1>
+          <p className={`${GLASS_PAGE_SUBTITLE} mt-2`}>
+            {t("dividendcompound.subtitle", {
+              defaultValue: "Simulate portfolio growth with dividend reinvestment vs cash payout.",
+            })}
           </p>
         </header>
 
-        <form
-          onSubmit={onSubmit}
-          className="rounded-2xl border p-6 shadow-sm"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-        >
+        <form onSubmit={onSubmit} className={`${GLASS_SECTION} mt-8`}>
           <div className="grid gap-5 md:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-semibold" style={{ color: colors.textSecondary }}>
-                Spolka
-              </span>
+              <span className="font-semibold text-white/70">{t("dividendcompound.company", { defaultValue: "Company" })}</span>
               <input
                 type="text"
                 value={form.company}
                 onChange={(event) => setForm((prev) => ({ ...prev, company: event.target.value.toUpperCase() }))}
                 placeholder="AAPL"
-                className="rounded-xl border px-3 py-2 outline-none"
-                style={{
-                  borderColor: colors.borderStrong,
-                  backgroundColor: colors.bgPrimary,
-                  color: colors.textPrimary,
-                }}
+                className={GLASS_INPUT}
               />
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-semibold" style={{ color: colors.textSecondary }}>
-                Reinwestowanie
-              </span>
-              <div className="grid grid-cols-2 rounded-xl border p-1" style={{ borderColor: colors.borderStrong }}>
+              <span className="font-semibold text-white/70">{t("dividendcompound.withReinvesting", { defaultValue: "Reinvest dividends" })}</span>
+              <div className="grid grid-cols-2 rounded-xl border border-white/15 p-1">
                 {[
-                  { label: "Tak", value: true },
-                  { label: "Nie", value: false },
+                  { label: t("common.yes", { defaultValue: "Yes" }), value: true },
+                  { label: t("common.no", { defaultValue: "No" }), value: false },
                 ].map((option) => {
                   const active = form.reinvesting === option.value;
                   return (
@@ -157,7 +156,7 @@ export function DividendCompoundPage() {
 
             <label className="flex flex-col gap-2 text-sm md:col-span-2">
               <span className="flex items-center justify-between font-semibold" style={{ color: colors.textSecondary }}>
-                <span>Kwota inwestycji</span>
+                <span>{t("dividendcompound.initialAmount", { defaultValue: "Initial amount (PLN)" })}</span>
                 <span style={{ color: colors.brandDark }}>{formatCurrency(form.investmentAmount)}</span>
               </span>
               <input
@@ -180,8 +179,8 @@ export function DividendCompoundPage() {
 
             <label className="flex flex-col gap-2 text-sm md:col-span-2">
               <span className="flex items-center justify-between font-semibold" style={{ color: colors.textSecondary }}>
-                <span>Okres (lata)</span>
-                <span style={{ color: colors.brandDark }}>{form.years} lat</span>
+                <span>{t("dividendcompound.years", { defaultValue: "Time period (years)" })}</span>
+                <span className="text-[#22d3ee]">{t("dividendcompound.yearsValue", { count: form.years, defaultValue: `${form.years} years` })}</span>
               </span>
               <input
                 type="range"
@@ -203,10 +202,9 @@ export function DividendCompoundPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-6 rounded-xl px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-            style={{ backgroundColor: colors.brandDark }}
+            className={`${GLASS_BTN_PRIMARY} mt-6 disabled:opacity-60`}
           >
-            {loading ? "Liczenie..." : "Oblicz"}
+            {loading ? t("common.calculating") : t("dividendcompound.calculate", { defaultValue: "Calculate" })}
           </button>
         </form>
 
@@ -217,54 +215,31 @@ export function DividendCompoundPage() {
         ) : null}
 
         <section className="mt-8 grid gap-4 md:grid-cols-3">
-          <article
-            className="rounded-2xl border p-5 shadow-sm"
-            style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-          >
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-              Koncowa wartosc
-            </p>
-            <p className="mt-3 text-4xl font-extrabold" style={{ color: colors.brandDark }}>
+          <article className={GLASS_STAT_CARD}>
+            <p className="text-xs uppercase tracking-wide text-white/50">{t("dividendcompound.chartTitle", { defaultValue: "Portfolio value year by year" })}</p>
+            <p className="mt-3 text-4xl font-extrabold text-white">
               {selectedResult ? formatCurrency(selectedResult.final) : "-"}
             </p>
           </article>
 
-          <article
-            className="rounded-2xl border p-5 shadow-sm"
-            style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-          >
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-              Laczne dywidendy
-            </p>
-            <p className="mt-3 text-4xl font-extrabold" style={{ color: colors.brandDark }}>
+          <article className={GLASS_STAT_CARD}>
+            <p className="text-xs uppercase tracking-wide text-white/50">{t("dividendcompound.difference", { defaultValue: "Difference (compound bonus)" })}</p>
+            <p className="mt-3 text-4xl font-extrabold text-white">
               {selectedResult ? formatCurrency(totalDividends) : "-"}
             </p>
           </article>
 
-          <article
-            className="rounded-2xl border p-5 shadow-sm"
-            style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-          >
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-              CAGR %
-            </p>
-            <p className="mt-3 text-4xl font-extrabold" style={{ color: colors.brandDark }}>
+          <article className={GLASS_STAT_CARD}>
+            <p className="text-xs uppercase tracking-wide text-white/50">CAGR %</p>
+            <p className="mt-3 text-4xl font-extrabold text-[#22d3ee]">
               {selectedResult ? `${cagr.toFixed(2)}%` : "-"}
             </p>
           </article>
         </section>
 
-        <section
-          className="mt-6 rounded-2xl border p-6 shadow-sm"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-        >
-          <p className="text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-            Wykres wzrostu (placeholder)
-          </p>
-          <div
-            className="mt-4 rounded-xl p-4"
-            style={{ backgroundColor: colors.bgSecondary, border: `1px solid ${colors.border}` }}
-          >
+        <section className={`${GLASS_SECTION} mt-6`}>
+          <p className="text-xs uppercase tracking-wide text-white/50">{t("dividendcompound.chartTitle", { defaultValue: "Portfolio value year by year" })}</p>
+          <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-4">
             <svg viewBox="0 0 100 36" className="h-40 w-full" role="img" aria-label="Dividend growth placeholder">
               <polyline
                 points="4,31 20,29 34,27 49,22 64,18 78,12 96,6"

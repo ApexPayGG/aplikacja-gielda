@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   GLASS_FILTER_PANEL,
   GLASS_LABEL,
@@ -53,14 +54,15 @@ export function SignalsFilter({
   onSortByChange,
   onReset,
 }: Props) {
+  const { t } = useTranslation();
   const riskFill = `linear-gradient(90deg, #22d3ee 0%, #22d3ee ${filters.riskScoreMin}%, rgba(255,255,255,0.12) ${filters.riskScoreMin}%, rgba(255,255,255,0.12) 100%)`;
 
   return (
     <section className={GLASS_FILTER_PANEL}>
       <header className="flex items-center justify-between gap-2">
-        <h2 className={GLASS_LABEL}>Filtry</h2>
+        <h2 className={GLASS_LABEL}>{t("common.filters", { defaultValue: "Filters" })}</h2>
         <button type="button" onClick={onReset} className={`text-sm ${GLASS_LINK_ACCENT}`}>
-          Resetuj filtry
+          {t("common.resetFilters", { defaultValue: "Reset filters" })}
         </button>
       </header>
 
