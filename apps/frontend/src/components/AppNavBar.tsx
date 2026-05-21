@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -51,18 +51,40 @@ const portfolioLinks: { to: string; labelKey: string }[] = [
   { to: "/concentration", labelKey: "nav.concentration" },
 ];
 
-const toolsLinks: { to: string; labelKey: string }[] = [
+const TOOLS_PUBLIC_LINKS: NavDropdownItem[] = [
   { to: "/position-size", labelKey: "nav.positionSize" },
+  { to: "/tax-optimizer", labelKey: "nav.taxOptimizer" },
+  { to: "/dividend-compound", labelKey: "nav.dividendCompound" },
+  { to: "/glossary", labelKey: "nav.glossary" },
+  { to: "/skill-tree", labelKey: "nav.skillTree" },
   { to: "/premortem", labelKey: "nav.premortem" },
   { to: "/correlation", labelKey: "nav.correlation" },
   { to: "/volatility", labelKey: "nav.volatility" },
   { to: "/crowd-wisdom", labelKey: "nav.crowdWisdom" },
-  { to: "/dividend-compound", labelKey: "nav.dividendCompound" },
-  { to: "/glossary", labelKey: "nav.glossary" },
-  { to: "/skill-tree", labelKey: "nav.skillTree" },
-  { to: "/tax-optimizer", labelKey: "nav.taxOptimizer" },
+];
+
+const TOOLS_ADMIN_LINKS: NavDropdownItem[] = [
   { to: "/admin/affiliate", labelKey: "nav.adminAffiliate" },
 ];
+
+const NAV_ITEM_DEFAULTS: Partial<Record<string, string>> = {
+  "nav.positionSize": "Position Size Calculator",
+  "nav.taxOptimizer": "Tax Optimizer",
+  "nav.dividendCompound": "Dividend Compound Calculator",
+  "nav.glossary": "Financial Glossary",
+  "nav.skillTree": "Skill Tree",
+  "nav.premortem": "Pre-Mortem AI",
+  "nav.adminAffiliate": "Admin - Affiliate Brokers",
+};
+
+function isAdminUser(role: string | undefined): boolean {
+  return role?.toUpperCase() === "ADMIN";
+}
+
+function buildToolsNavLinks(isAdmin: boolean): NavDropdownItem[] {
+  if (!isAdmin) return TOOLS_PUBLIC_LINKS;
+  return [...TOOLS_PUBLIC_LINKS, ...TOOLS_ADMIN_LINKS];
+}
 
 function isMarketsPath(pathname: string): boolean {
   return (
@@ -228,7 +250,7 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
                   onClick={() => setOpenDropdown(null)}
                 >
                   {Icon ? <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden /> : null}
-                  {t(item.labelKey)}
+                  {t(item.labelKey, { defaultValue: NAV_ITEM_DEFAULTS[item.labelKey] })}
                 </NavLink>
               );
             })}
@@ -322,6 +344,8 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
     };
   }, [mobileOpen]);
 
+  const visibleToolsLinks = useMemo(() => buildToolsNavLinks(isAdminUser(user?.role)), [user?.role]);
+
   const marketsActive = isMarketsPath(pathname);
   const portfolioActive = isPortfolioPath(pathname);
   const toolsActive = isToolsPath(pathname);
@@ -384,7 +408,7 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
           <DesktopDropdown
             id="tools"
             labelKey="nav.tools"
-            items={toolsLinks}
+            items={visibleToolsLinks}
             groupActive={toolsActive}
             openDropdown={openDropdown}
             setOpenDropdown={setOpenDropdown}
