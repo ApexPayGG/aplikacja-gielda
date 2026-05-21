@@ -111,7 +111,7 @@ export function CompanyPriceChart({ quotes, sessionOhlc }: Props) {
       className="relative overflow-hidden rounded-lg border"
       style={{
         borderColor: colors.borderStrong,
-        background: `linear-gradient(165deg, rgba(45, 10, 107, 0.06) 0%, rgba(0, 201, 212, 0.05) 55%, ${colors.bgPrimary} 100%)`,
+        background: `linear-gradient(165deg, rgba(168,85,247, 0.06) 0%, rgba(34,211,238, 0.05) 55%, ${colors.bgPrimary} 100%)`,
       }}
     >
       <div className="absolute right-3 top-3 rounded-md px-2 py-1 text-xs font-semibold font-mono"

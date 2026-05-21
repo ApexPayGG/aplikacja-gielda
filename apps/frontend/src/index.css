@@ -11,10 +11,10 @@
 }
 
 :root {
-  color-scheme: light;
-  --bg-primary: #ffffff;
-  --bg-secondary: #f4f6fa;
-  --bg-tertiary: #eceef5;
+  color-scheme: dark;
+  --bg-primary: #0a0b14;
+  --bg-secondary: rgb(255 255 255 / 0.05);
+  --bg-tertiary: rgb(255 255 255 / 0.08);
   --brand-dark: #a855f7;
   --brand-medium: #9333ea;
   --brand-cyan: #22d3ee;
@@ -22,11 +22,11 @@
   --brand-gold: #ffae33;
   --positive: #4ade80;
   --negative: #f87171;
-  --text-primary: #0d0d1a;
-  --text-secondary: #5a5a7a;
-  --text-muted: #9b9bb5;
-  --border: #e2e6f0;
-  --border-strong: #c8cce0;
+  --text-primary: #ffffff;
+  --text-secondary: rgb(255 255 255 / 0.88);
+  --text-muted: #94a3b8;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.16);
 }
 
 html,
@@ -90,10 +90,7 @@ a {
 
 .app-shell {
   min-height: 100vh;
-  background:
-    radial-gradient(120% 80% at 0% 0%, rgb(168 85 247 / 0.1) 0%, transparent 48%),
-    radial-gradient(120% 80% at 100% 0%, rgb(34 211 238 / 0.06) 0%, transparent 50%),
-    var(--bg-primary);
+  background: linear-gradient(165deg, #0a0b14 0%, #10131f 38%, #1e1b4b 72%, #0a0b14 100%);
 }
 
 /* Logged-in app: dark glass theme (all authenticated + browsed routes) */
@@ -133,18 +130,22 @@ a {
   color: #94a3b8;
 }
 
+/* Alias for GLASS_SECTION — same card model everywhere in .glass-app */
 .glass-app .glass-section {
+  border-radius: 1rem;
   border: 1px solid rgb(255 255 255 / 0.08);
   background: linear-gradient(135deg, rgb(15 17 28 / 0.92), rgb(30 27 75 / 0.55));
   box-shadow: 0 8px 40px rgb(168 85 247 / 0.12);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(24px);
 }
 
 .glass-app .glass-panel {
-  border: 1px solid rgb(255 255 255 / 0.1);
-  background: rgb(255 255 255 / 0.05);
-  backdrop-filter: blur(10px);
+  border-radius: 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.04);
+  backdrop-filter: blur(16px);
 }
+
 
 .glass-app .glass-stat {
   border: 1px solid rgb(255 255 255 / 0.08);

@@ -296,7 +296,7 @@ export function PricingPage() {
               type="button"
               onClick={() => void handleCheckout("pro")}
               disabled={checkoutLoadingPlan !== null}
-              className="mt-6 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
+              className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
             >
               {paidCtaLabel("pro")}
             </button>
@@ -326,7 +326,7 @@ export function PricingPage() {
               type="button"
               onClick={() => void handleCheckout("pro_plus")}
               disabled={checkoutLoadingPlan !== null}
-              className="mt-6 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
+              className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
             >
               {paidCtaLabel("pro_plus")}
             </button>

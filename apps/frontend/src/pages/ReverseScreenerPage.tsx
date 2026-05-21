@@ -52,7 +52,7 @@ export function ReverseScreenerPage() {
           </p>
         </header>
 
-        <section className="rounded-2xl border bg-white p-6 shadow-sm" style={{ borderColor: colors.border }}>
+        <section className="rounded-2xl glass-section p-6 shadow-sm" style={{ borderColor: colors.border }}>
           <label className="text-sm font-semibold" htmlFor="rs-symbol" style={{ color: colors.textSecondary }}>
             Search ticker input
           </label>
@@ -94,7 +94,7 @@ export function ReverseScreenerPage() {
             </div>
 
             {result.matches.length === 0 ? (
-              <p className="rounded-xl border bg-white px-4 py-3 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
+              <p className="rounded-xl glass-section px-4 py-3 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
                 Brak dopasowań dla podanego tickera.
               </p>
             ) : (
@@ -102,7 +102,7 @@ export function ReverseScreenerPage() {
                 {result.matches.map((match) => (
                   <li
                     key={`${match.symbol}-${match.date}`}
-                    className="rounded-2xl border bg-white p-4 shadow-sm"
+                    className="rounded-2xl glass-section p-4 shadow-sm"
                     style={{ borderColor: colors.border }}
                   >
                     <div className="grid gap-3 text-sm md:grid-cols-[1fr_1fr_auto_2fr] md:items-center">
@@ -123,7 +123,7 @@ export function ReverseScreenerPage() {
                       <div className="justify-self-start md:justify-self-center">
                         <span
                           className="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-                          style={{ backgroundColor: "rgba(0, 201, 212, 0.16)", color: colors.brandCyan }}
+                          style={{ backgroundColor: "rgba(34,211,238, 0.16)", color: colors.brandCyan }}
                         >
                           Similarity {match.similarity.toFixed(1)}%
                         </span>

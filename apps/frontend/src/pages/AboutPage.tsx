@@ -19,7 +19,7 @@ const SUPPORT_EMAIL = "support@stock-ai.pro";
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 antialiased">
+    <div className="min-h-screen text-white antialiased">
       <SEOHead
         title="O StockAI Pro"
         description="Misja StockAI Pro: profesjonalne narzędzia inwestycyjne i coaching behawioralny dla inwestorów detalicznych."
@@ -27,37 +27,32 @@ export function AboutPage() {
       />
 
       <main className="mx-auto max-w-3xl px-6 py-20 md:py-28 lg:py-32">
-        <p className="text-sm font-medium uppercase tracking-widest text-slate-500">StockAI Pro</p>
+        <p className="text-sm font-medium uppercase tracking-widest text-[#94a3b8]">StockAI Pro</p>
 
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 md:text-5xl md:leading-[1.1] lg:text-[3.25rem]">
+        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white md:text-5xl md:leading-[1.1] lg:text-[3.25rem]">
           Budujemy narzędzie, które chcielibyśmy sami mieć.
         </h1>
 
-        <p className="mt-8 text-lg leading-relaxed text-slate-600 md:text-xl md:leading-relaxed">
+        <p className="mt-8 text-lg leading-relaxed text-[#94a3b8] md:text-xl md:leading-relaxed">
           Demokratyzujemy dostęp do profesjonalnych narzędzi inwestycyjnych. Inwestor detaliczny zasługuje na taką
           samą jakość analiz i wsparcia decyzyjnego jak instytucje — bez barier wejścia i bez zbędnej złożoności.
         </p>
 
-        <div className="mt-16 grid gap-4 sm:grid-cols-3 sm:gap-5 md:mt-20">
-          {missionValues.map((value) => (
-            <article
-              key={value.title}
-              className="flex flex-col rounded-xl border border-slate-200/80 bg-slate-50/50 p-5 transition-colors hover:border-slate-300 hover:bg-slate-50 md:p-6"
-            >
-              <h2 className="text-base font-semibold tracking-tight text-slate-950">{value.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{value.description}</p>
+        <div className="mt-16 grid gap-6 sm:grid-cols-3">
+          {missionValues.map((item) => (
+            <article key={item.title} className="glass-section p-6">
+              <h2 className="text-lg font-semibold text-white">{item.title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-[#94a3b8]">{item.description}</p>
             </article>
           ))}
         </div>
 
-        <p className="mt-16 border-t border-slate-200 pt-10 text-base text-slate-600 md:mt-20">
-          Kontakt:{" "}
-          <a
-            href={`mailto:${SUPPORT_EMAIL}`}
-            className="font-medium text-slate-950 underline decoration-slate-300 underline-offset-[0.2em] transition hover:decoration-slate-950"
-          >
+        <p className="mt-16 text-sm text-[#94a3b8]">
+          Pytania? Napisz na{" "}
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="font-semibold text-[#22d3ee] hover:underline">
             {SUPPORT_EMAIL}
           </a>
+          .
         </p>
       </main>
     </div>

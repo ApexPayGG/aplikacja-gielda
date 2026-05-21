@@ -20,9 +20,9 @@ import { LANGUAGE_OPTIONS, resolveLanguageCode } from "../constants/languages";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const BRAND = {
-  dark: "#2D0A6B",
-  medium: "#7A0F9E",
-  cyan: "#00C9D4",
+  dark: "#a855f7",
+  medium: "#9333ea",
+  cyan: "#22d3ee",
   gold: "#FFAE33",
 } as const;
 
@@ -206,8 +206,8 @@ function HowItWorksStepBadge({ stepIndex }: { stepIndex: number }) {
 
   const shell = [
     "landing-how-float relative flex h-[92px] w-[92px] shrink-0 items-center justify-center overflow-visible rounded-2xl",
-    "border border-white/15 bg-gradient-to-br from-[#2D0A6B]/55 via-[#3b0764]/40 to-[#0f172a]/50 backdrop-blur-md",
-    "shadow-[0_14px_44px_rgba(45,10,107,0.42),inset_0_1px_0_rgba(255,255,255,0.14)]",
+    "border border-white/15 bg-gradient-to-br from-[#a855f7]/55 via-[#3b0764]/40 to-[#0f172a]/50 backdrop-blur-md",
+    "shadow-[0_14px_44px_rgba(168,85,247,0.42),inset_0_1px_0_rgba(255,255,255,0.14)]",
     accentRing,
   ].join(" ");
 
@@ -240,8 +240,8 @@ function PricingFeatureCheck({ accent }: { accent: "gold" | "cyan" }) {
             </>
           ) : (
             <>
-              <stop offset="0%" stopColor="#2D0A6B" />
-              <stop offset="100%" stopColor="#00C9D4" />
+              <stop offset="0%" stopColor="#a855f7" />
+              <stop offset="100%" stopColor="#22d3ee" />
             </>
           )}
         </linearGradient>
@@ -291,7 +291,7 @@ function CandlestickChart() {
       <polyline
         points="20,55 50,37 80,42 110,32 140,22 170,25 200,18 230,10"
         fill="none"
-        stroke="#00C9D4"
+        stroke="#22d3ee"
         strokeWidth={1.5}
         opacity={0.4}
         strokeDasharray={300}
@@ -305,7 +305,7 @@ function CandlestickChart() {
 function FloatingCards() {
   const { t } = useTranslation("common");
   const cardShell =
-    "rounded-2xl shadow-[0_8px_32px_rgba(45,10,107,0.15)] border border-[rgba(45,10,107,0.08)] bg-white px-3 py-2 md:px-4 md:py-3";
+    "glass-section rounded-2xl px-3 py-2 shadow-[0_8px_32px_rgba(168,85,247,0.15)] md:px-4 md:py-3";
 
   return (
     <>
@@ -320,7 +320,7 @@ function FloatingCards() {
             className="pulse-dot h-2 w-2 rounded-full bg-[#00A86B]"
             style={{ boxShadow: "0 0 8px #00A86B" }}
           />
-          <span className="text-[11px] font-bold text-[#2D0A6B]">AAPL</span>
+          <span className="text-[11px] font-bold text-[#a855f7]">AAPL</span>
           <span className="text-[11px] font-semibold text-[#00A86B]">+2.4% ↑</span>
         </div>
         <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.aiSignalBuy")}</div>
@@ -332,15 +332,15 @@ function FloatingCards() {
           animationDelay: "1.5s",
         }}
       >
-        <div className="text-[11px] font-bold text-[#2D0A6B]">🧠 {t("landing.hero.coachAlertTitle")}</div>
+        <div className="text-[11px] font-bold text-[#a855f7]">🧠 {t("landing.hero.coachAlertTitle")}</div>
         <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.coachAlertBody")}</div>
       </div>
 
       <div
-        className="animate-float absolute right-2 top-[6rem] z-20 origin-top-right scale-[0.78] rounded-2xl px-3 py-2 shadow-[0_8px_32px_rgba(45,10,107,0.3)] sm:right-1 sm:top-6 sm:scale-90 md:right-0 md:top-4 md:scale-100 md:px-4 md:py-3"
+        className="animate-float absolute right-2 top-[6rem] z-20 origin-top-right scale-[0.78] rounded-2xl px-3 py-2 shadow-[0_8px_32px_rgba(168,85,247,0.3)] sm:right-1 sm:top-6 sm:scale-90 md:right-0 md:top-4 md:scale-100 md:px-4 md:py-3"
         style={{
           animationDelay: "3s",
-          background: "linear-gradient(135deg, #2D0A6B, #7A0F9E)",
+          background: "linear-gradient(135deg, #a855f7, #9333ea)",
         }}
       >
         <div className="text-[20px] font-black text-white">73%</div>
@@ -381,14 +381,14 @@ function GlobalConnectionsSVG() {
       {nodes.map((node, i) => (
         <g key={i}>
           <title>{node.label}</title>
-          <circle cx={node.x} cy={node.y} r={4} fill="#2D0A6B" />
-          <circle cx={node.x} cy={node.y} r={8} fill="none" stroke="#2D0A6B" strokeWidth={1} opacity={0.5} />
+          <circle cx={node.x} cy={node.y} r={4} fill="#a855f7" />
+          <circle cx={node.x} cy={node.y} r={8} fill="none" stroke="#a855f7" strokeWidth={1} opacity={0.5} />
         </g>
       ))}
       {edges.map(([x1, y1, x2, y2], i) => (
-        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#2D0A6B" strokeWidth={0.5} opacity={0.6} />
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#a855f7" strokeWidth={0.5} opacity={0.6} />
       ))}
-      <circle r={3} fill="#00C9D4" opacity={0.8}>
+      <circle r={3} fill="#22d3ee" opacity={0.8}>
         <animateMotion dur="3s" repeatCount="indefinite" path="M80,200 L200,80 L380,150 L420,320 L150,380 L80,200" />
       </circle>
       <circle r={2} fill="#FFAE33" opacity={0.6}>
@@ -486,11 +486,11 @@ function WorldClockFace({ timeZone, now }: { timeZone: string; now: Date }) {
         y1="50"
         x2={50 + 35 * Math.sin((secondDeg * Math.PI) / 180)}
         y2={50 - 35 * Math.cos((secondDeg * Math.PI) / 180)}
-        stroke="#00C9D4"
+        stroke="#22d3ee"
         strokeWidth="1"
         strokeLinecap="round"
       />
-      <circle cx="50" cy="50" r="3" fill="#00C9D4" />
+      <circle cx="50" cy="50" r="3" fill="#22d3ee" />
       <circle cx="50" cy="50" r="1.5" fill="white" />
       <circle cx="50" cy="18" r="3" fill={isOpen ? "#00A86B" : "#E53935"} opacity={0.9} />
     </svg>
@@ -609,7 +609,7 @@ function WorldClocks() {
                     <span className="text-sm">{city.flag}</span>
                     <span className="text-sm font-semibold text-white">{city.name}</span>
                   </div>
-                  <div className="font-mono text-xs text-[#00C9D4]">{timeStr}</div>
+                  <div className="font-mono text-xs text-[#22d3ee]">{timeStr}</div>
                   <div className="text-xs text-white/40">{city.exchange}</div>
                   <div className="mt-1">
                     <span
@@ -652,7 +652,7 @@ function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProp
 
       <div className="hero-card-glow absolute inset-x-2 top-4 z-10 rounded-2xl sm:inset-x-4 sm:top-6 md:inset-x-8 md:top-8">
         <div
-          className="hero-card-glow-inner relative overflow-hidden rounded-[14px] shadow-[0_25px_50px_rgba(45,10,107,0.4),0_0_100px_rgba(0,201,212,0.05)]"
+          className="hero-card-glow-inner relative overflow-hidden rounded-[14px] shadow-[0_25px_50px_rgba(168,85,247,0.4),0_0_100px_rgba(34,211,238,0.05)]"
           style={{
             background: "linear-gradient(135deg, #0f0f1a 0%, #1a0533 50%, #0a1628 100%)",
             border: "1px solid rgba(255,255,255,0.1)",
@@ -898,7 +898,7 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 antialiased">
+    <div className="min-h-screen text-white antialiased">
       <SEOHead title={t("landing.seo.title")} description={t("landing.seo.description")} ogType="website" />
 
       {/* ═══ TICKER BAR (demo quotes) ═══ */}
@@ -928,7 +928,7 @@ export function LandingPage() {
 
       {/* ═══ NAVBAR ═══ */}
       <header
-        className={`relative sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md transition-shadow duration-300 ${
+        className={`relative sticky top-0 z-50 border-b border-white/10 bg-[#0a0b14]/90 backdrop-blur-xl transition-shadow duration-300 ${
           navScrolled ? "shadow-md" : "shadow-none"
         }`}
       >
@@ -937,17 +937,17 @@ export function LandingPage() {
             <BrandLogo size="nav" />
           </Link>
 
-          <nav className="hidden flex-1 items-center justify-center gap-10 text-sm font-semibold text-[#2D0A6B]/90 md:flex">
-            <a href="#how-it-works" className="transition hover:text-[#00C9D4]">
+          <nav className="hidden flex-1 items-center justify-center gap-10 text-sm font-semibold text-[#a855f7]/90 md:flex">
+            <a href="#how-it-works" className="transition hover:text-[#22d3ee]">
               {t("landing.nav.howItWorks")}
             </a>
-            <a href="#solution" className="transition hover:text-[#00C9D4]">
+            <a href="#solution" className="transition hover:text-[#22d3ee]">
               {t("landing.nav.features")}
             </a>
-            <a href="#pricing" className="transition hover:text-[#00C9D4]">
+            <a href="#pricing" className="transition hover:text-[#22d3ee]">
               {t("landing.nav.pricing")}
             </a>
-            <Link to="/companies" className="transition hover:text-[#00C9D4]">
+            <Link to="/companies" className="transition hover:text-[#22d3ee]">
               {t("landing.nav.markets")}
             </Link>
           </nav>
@@ -961,7 +961,7 @@ export function LandingPage() {
               }}
             >
               <MagnifyingGlassIcon
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#2D0A6B]/50"
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#a855f7]/50"
                 aria-hidden
               />
               <input
@@ -972,13 +972,13 @@ export function LandingPage() {
                 onClick={() => goToCompaniesSearch()}
                 placeholder={t("landing.nav.searchPlaceholder")}
                 aria-label={t("landing.nav.searchPlaceholder")}
-                className="w-48 rounded-full border border-[#2D0A6B]/20 bg-white py-1.5 pl-9 pr-4 text-sm text-[#2D0A6B] outline-none transition-all duration-300 placeholder:text-[#2D0A6B]/45 focus:w-64 focus:border-[#00C9D4]/40"
+                className="w-48 rounded-full border border-white/15 bg-white/[0.05] py-1.5 pl-9 pr-4 text-sm text-white outline-none transition-all duration-300 placeholder:text-[#94a3b8] focus:w-64 focus:border-[#22d3ee]/40"
               />
             </form>
             <LanguageSwitcher variant="landing" />
             <Link
               to="/login"
-              className="hidden min-h-11 items-center rounded-full border border-[#2D0A6B]/25 px-4 py-2 text-sm font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5 sm:inline-flex"
+              className="hidden min-h-11 items-center rounded-full border border-[#a855f7]/25 px-4 py-2 text-sm font-semibold text-[#a855f7] transition hover:bg-[#1e1b4b]/5 sm:inline-flex"
             >
               {t("auth.loginButton")}
             </Link>
@@ -991,7 +991,7 @@ export function LandingPage() {
             </Link>
             <button
               type="button"
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#2D0A6B]/20 text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5 md:hidden"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#a855f7]/20 text-[#a855f7] transition hover:bg-[#1e1b4b]/5 md:hidden"
               aria-expanded={mobileNavOpen}
               aria-controls="landing-mobile-nav"
               aria-label={mobileNavOpen ? "Zamknij menu" : "Otwórz menu"}
@@ -1004,7 +1004,7 @@ export function LandingPage() {
         {mobileNavOpen ? (
           <nav
             id="landing-mobile-nav"
-            className="border-t border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur-md md:hidden"
+            className="border-t border-white/10 bg-[#0f111c]/95 px-4 py-4 backdrop-blur-xl md:hidden"
           >
             <div className="flex flex-col gap-1">
               {(
@@ -1019,7 +1019,7 @@ export function LandingPage() {
                   <Link
                     key={item.href}
                     to={item.href}
-                    className="min-h-12 rounded-xl px-3 py-3 text-base font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5"
+                    className="min-h-12 rounded-xl px-3 py-3 text-base font-semibold text-[#a855f7] transition hover:bg-[#1e1b4b]/5"
                     onClick={() => setMobileNavOpen(false)}
                   >
                     {item.label}
@@ -1028,7 +1028,7 @@ export function LandingPage() {
                   <a
                     key={item.href}
                     href={item.href}
-                    className="min-h-12 rounded-xl px-3 py-3 text-base font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5"
+                    className="min-h-12 rounded-xl px-3 py-3 text-base font-semibold text-[#a855f7] transition hover:bg-[#1e1b4b]/5"
                     onClick={() => setMobileNavOpen(false)}
                   >
                     {item.label}
@@ -1045,7 +1045,7 @@ export function LandingPage() {
               }}
             >
               <MagnifyingGlassIcon
-                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2D0A6B]/50"
+                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#a855f7]/50"
                 aria-hidden
               />
               <input
@@ -1054,13 +1054,13 @@ export function LandingPage() {
                 onChange={(e) => setNavSearchQuery(e.target.value)}
                 placeholder={t("landing.nav.searchPlaceholder")}
                 aria-label={t("landing.nav.searchPlaceholder")}
-                className="w-full rounded-xl border border-[#2D0A6B]/20 bg-white py-3 pl-10 pr-4 text-base text-[#2D0A6B] outline-none placeholder:text-[#2D0A6B]/45 focus:border-[#00C9D4]/40"
+                className="w-full rounded-xl border border-white/15 bg-white/[0.05] py-3 pl-10 pr-4 text-base text-white outline-none placeholder:text-[#94a3b8] focus:border-[#22d3ee]/40"
               />
             </form>
             <div className="mt-4 grid grid-cols-2 gap-2">
               <Link
                 to="/login"
-                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#2D0A6B]/25 px-4 text-sm font-semibold text-[#2D0A6B]"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#a855f7]/25 px-4 text-sm font-semibold text-[#a855f7]"
                 onClick={() => setMobileNavOpen(false)}
               >
                 {t("auth.loginButton")}
@@ -1080,7 +1080,7 @@ export function LandingPage() {
           <div
             className="pointer-events-none absolute bottom-0 left-0 right-0 h-px"
             style={{
-              background: "linear-gradient(90deg, transparent, #00C9D4 30%, #7A0F9E 70%, transparent)",
+              background: "linear-gradient(90deg, transparent, #22d3ee 30%, #9333ea 70%, transparent)",
             }}
             aria-hidden
           />
@@ -1091,12 +1091,12 @@ export function LandingPage() {
       <section className="hero-gradient-bg relative isolate flex min-h-screen items-start overflow-x-hidden pt-20 pb-12">
         <div
           className="animate-float pointer-events-none absolute left-4 top-8 z-0 h-48 w-48 rounded-full opacity-20 blur-3xl sm:left-10 sm:top-10 sm:h-72 sm:w-72 md:h-[500px] md:w-[500px]"
-          style={{ background: "radial-gradient(circle, #7A0F9E, transparent)" }}
+          style={{ background: "radial-gradient(circle, #9333ea, transparent)" }}
           aria-hidden
         />
         <div
           className="animate-float pointer-events-none absolute right-0 top-1/2 z-0 h-56 w-56 -translate-y-1/2 rounded-full opacity-15 blur-3xl sm:h-80 sm:w-80 md:h-[400px] md:w-[400px] [animation-delay:2s]"
-          style={{ background: "radial-gradient(circle, #00C9D4, transparent)" }}
+          style={{ background: "radial-gradient(circle, #22d3ee, transparent)" }}
           aria-hidden
         />
         <div
@@ -1128,7 +1128,7 @@ export function LandingPage() {
               </span>
             </h1>
 
-            <p className="landing-hero-sub landing-body mt-6 max-w-lg text-slate-600">{t("landing.hero.subtitle")}</p>
+            <p className="landing-hero-sub landing-body mt-6 max-w-lg text-[#94a3b8]">{t("landing.hero.subtitle")}</p>
 
             <div className="landing-hero-cta mt-8 flex w-full flex-col gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Link
@@ -1140,7 +1140,7 @@ export function LandingPage() {
               </Link>
               <a
                 href="#how-it-works"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#2D0A6B]/20 px-6 py-4 text-base font-semibold text-[#2D0A6B] transition hover:bg-[#2D0A6B]/5 sm:w-auto sm:text-lg"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#a855f7]/20 px-6 py-4 text-base font-semibold text-[#a855f7] transition hover:bg-[#1e1b4b]/5 sm:w-auto sm:text-lg"
               >
                 {t("landing.hero.ctaSecondary")}
               </a>
@@ -1167,7 +1167,7 @@ export function LandingPage() {
                   A
                 </span>
               </div>
-              <p className="text-sm font-medium text-slate-600">{t("landing.heroSocialProof")}</p>
+              <p className="text-sm font-medium text-[#94a3b8]">{t("landing.heroSocialProof")}</p>
             </div>
           </div>
 
@@ -1203,7 +1203,7 @@ export function LandingPage() {
       <section
         className="relative overflow-hidden border-y border-white/10 py-14 md:py-20"
         style={{
-          background: "linear-gradient(135deg, #2D0A6B 0%, #1a0533 50%, #0a1628 100%)",
+          background: "linear-gradient(135deg, #a855f7 0%, #1a0533 50%, #0a1628 100%)",
         }}
       >
         <SignalWave offset={-36} opacity={0.1} color="#67e8f9" />
@@ -1230,7 +1230,7 @@ export function LandingPage() {
       <section
         id="problem"
         className="relative scroll-mt-24 overflow-hidden px-4 py-20"
-        style={{ background: "linear-gradient(180deg, #ffffff 0%, #faf8ff 100%)" }}
+        style={{ background: "linear-gradient(180deg, transparent 0%, rgb(30 27 75 / 0.25) 100%)" }}
       >
         <SignalWave offset={-40} opacity={0.12} />
         <div className="pointer-events-none absolute inset-0">
@@ -1245,8 +1245,8 @@ export function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <h2 className="section-h2 text-slate-900">{t("landing.problem.title")}</h2>
-          <p className="landing-body mt-4 text-slate-600">{t("landing.problem.subtitle")}</p>
+          <h2 className="section-h2 text-white">{t("landing.problem.title")}</h2>
+          <p className="landing-body mt-4 text-[#94a3b8]">{t("landing.problem.subtitle")}</p>
         </div>
 
         <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-3">
@@ -1257,10 +1257,10 @@ export function LandingPage() {
             return (
               <article
                 key={cardKey}
-                className={`reveal group relative overflow-hidden rounded-2xl border border-gray-100 border-l-4 border-l-[#2D0A6B] bg-white py-8 pl-6 pr-8 shadow-md transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-xl ${staggerClass}`}
+                className={`glass-section reveal group relative overflow-hidden border-l-4 border-l-[#a855f7] py-8 pl-6 pr-8 transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-[0_12px_48px_rgba(168,85,247,0.2)] ${staggerClass}`}
               >
-                <h3 className="text-xl font-bold text-slate-900">{title}</h3>
-                <p className="landing-body mt-3 text-slate-600">{body}</p>
+                <h3 className="text-xl font-bold text-white">{title}</h3>
+                <p className="landing-body mt-3 text-[#94a3b8]">{body}</p>
               </article>
             );
           })}
@@ -1271,16 +1271,16 @@ export function LandingPage() {
       <section
         id="solution"
         className="relative scroll-mt-24 overflow-hidden px-4 py-20"
-        style={{ background: "linear-gradient(180deg, #faf8ff 0%, #f0f9ff 50%, #faf8ff 100%)" }}
+        style={{ background: "linear-gradient(180deg, transparent 0%, rgb(34 211 238 / 0.06) 50%, transparent 100%)" }}
       >
         <SignalWave offset={20} opacity={0.1} />
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <h2 className="section-h2 text-slate-900">
+          <h2 className="section-h2 text-white">
             {t("landing.solution.title")}
             <br />
             <span style={{ color: BRAND.cyan }}>{t("landing.solution.titleAccent")}</span>
           </h2>
-          <p className="landing-body mt-4 text-slate-600">{t("landing.solution.subtitle")}</p>
+          <p className="landing-body mt-4 text-[#94a3b8]">{t("landing.solution.subtitle")}</p>
         </div>
 
         <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -1293,15 +1293,15 @@ export function LandingPage() {
             return (
               <article
                 key={card.title}
-                className={`${revealKind} group relative overflow-hidden rounded-xl border border-gray-100 border-t-[3px] bg-white p-6 pt-12 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#00C9D4] hover:shadow-lg ${staggerClass}`}
+                className={`glass-section ${revealKind} group relative overflow-hidden border-t-[3px] p-6 pt-12 transition-all duration-300 hover:-translate-y-1 hover:border-[#22d3ee]/50 hover:shadow-[0_12px_48px_rgba(34,211,238,0.15)] ${staggerClass}`}
                 style={{ borderTopColor: BRAND.cyan }}
               >
                 <LandingFeatureIcon src={iconSrc} className="absolute left-4 top-4 z-[2]" />
-                <span className="pointer-events-none absolute right-4 top-4 text-6xl font-black leading-none text-[#2D0A6B]/[0.12]">
+                <span className="pointer-events-none absolute right-4 top-4 text-6xl font-black leading-none text-[#a855f7]/[0.12]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <h3 className="relative z-[1] text-lg font-bold text-slate-900">{card.title}</h3>
-                <p className="landing-body relative z-[1] mt-2 text-slate-600">{card.body}</p>
+                <h3 className="relative z-[1] text-lg font-bold text-white">{card.title}</h3>
+                <p className="landing-body relative z-[1] mt-2 text-[#94a3b8]">{card.body}</p>
               </article>
             );
           })}
@@ -1309,9 +1309,9 @@ export function LandingPage() {
       </section>
 
       {/* ═══ HOW IT WORKS ═══ */}
-      <section id="how-it-works" className="relative scroll-mt-24 overflow-hidden bg-white px-4 py-20">
+      <section id="how-it-works" className="relative scroll-mt-24 overflow-hidden px-4 py-20">
         <SignalWave offset={-24} opacity={0.1} />
-        <h2 className="section-h2 relative z-10 text-center text-slate-900">{t("landing.howItWorks.title")}</h2>
+        <h2 className="section-h2 relative z-10 text-center text-white">{t("landing.howItWorks.title")}</h2>
 
         <div className="relative z-10 mx-auto mt-16 md:hidden">
           <div className="mx-auto grid max-w-lg gap-12">
@@ -1323,8 +1323,8 @@ export function LandingPage() {
                   <div className="transition-transform duration-300 group-hover:-translate-y-2">
                     <HowItWorksStepBadge stepIndex={index} />
                   </div>
-                  <h3 className="mt-8 text-lg font-bold text-slate-900">{item.title}</h3>
-                  <p className="landing-body mt-2 text-slate-600">{item.desc}</p>
+                  <h3 className="mt-8 text-lg font-bold text-white">{item.title}</h3>
+                  <p className="landing-body mt-2 text-[#94a3b8]">{item.desc}</p>
                 </div>
               );
             })}
@@ -1344,8 +1344,8 @@ export function LandingPage() {
                       style={{
                         background:
                           index === 0
-                            ? "linear-gradient(90deg, #2D0A6B, #00C9D4)"
-                            : "linear-gradient(90deg, #00C9D4, #2D0A6B)",
+                            ? "linear-gradient(90deg, #a855f7, #22d3ee)"
+                            : "linear-gradient(90deg, #22d3ee, #a855f7)",
                       }}
                     />
                   </div>
@@ -1359,8 +1359,8 @@ export function LandingPage() {
                     <div className="transition-transform duration-300 group-hover:-translate-y-2">
                       <HowItWorksStepBadge stepIndex={index} />
                     </div>
-                    <h3 className="mt-8 text-lg font-bold text-slate-900">{item.title}</h3>
-                    <p className="landing-body mt-2 text-slate-600">{item.desc}</p>
+                    <h3 className="mt-8 text-lg font-bold text-white">{item.title}</h3>
+                    <p className="landing-body mt-2 text-[#94a3b8]">{item.desc}</p>
                   </div>
                   {connector}
                 </div>
@@ -1373,19 +1373,19 @@ export function LandingPage() {
       <WorldClocks />
 
       {/* ═══ ETORO PARTNER ═══ */}
-      <section className="border-y border-slate-100 bg-white px-4 py-20">
-        <div className="mx-auto max-w-xl rounded-2xl border border-gray-100 bg-slate-50/90 p-8 shadow-sm">
-          <p className="text-center text-sm font-semibold text-slate-800">{t("etoro.subtitle")}</p>
+      <section className="border-y border-white/10 px-4 py-20">
+        <div className="glass-section mx-auto max-w-xl p-8">
+          <p className="text-center text-sm font-semibold text-white/90">{t("etoro.subtitle")}</p>
           <EtoroCTAButton sourcePage="landing_page" className="mx-auto mt-4 max-w-sm" />
         </div>
       </section>
 
       {/* ═══ TESTIMONIALS ═══ */}
-      <section className="relative overflow-hidden bg-gray-50 px-4 py-20">
+      <section className="relative overflow-hidden px-4 py-20">
         <SignalWave offset={60} opacity={0.1} />
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <h2 className="section-h2 text-slate-900">{t("landing.socialProof.testimonialsTitle")}</h2>
-          <p className="landing-body mt-4 text-slate-600">{t("landing.socialProof.testimonialsSubtitle")}</p>
+          <h2 className="section-h2 text-white">{t("landing.socialProof.testimonialsTitle")}</h2>
+          <p className="landing-body mt-4 text-[#94a3b8]">{t("landing.socialProof.testimonialsSubtitle")}</p>
         </div>
         <div className="relative z-10 mx-auto mt-14 grid max-w-6xl gap-8 md:grid-cols-3">
           {testimonials.map((item, index) => {
@@ -1396,19 +1396,12 @@ export function LandingPage() {
                 <div
                   className="pointer-events-none absolute inset-x-3 bottom-[-8px] -z-10 h-full scale-95 rounded-2xl"
                   style={{
-                    background: "rgba(45,10,107,0.08)",
+                    background: "rgba(168,85,247,0.08)",
                     filter: "blur(8px)",
                   }}
                   aria-hidden
                 />
-                <blockquote
-                  className="relative z-10 rounded-2xl p-8 shadow-[0_8px_32px_rgba(45,10,107,0.08)] transition-[transform,box-shadow] duration-300 ease-out group-hover:-translate-y-2 group-hover:shadow-xl"
-                  style={{
-                    background: "rgba(255,255,255,0.8)",
-                    backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(255,255,255,0.9)",
-                  }}
-                >
+                <blockquote className="glass-section relative z-10 p-8 transition-[transform,box-shadow] duration-300 ease-out group-hover:-translate-y-2 group-hover:shadow-[0_12px_48px_rgba(168,85,247,0.2)]">
                   <p
                     className="pointer-events-none absolute left-6 top-4 font-serif text-7xl opacity-30"
                     style={{ color: BRAND.cyan }}
@@ -1416,7 +1409,7 @@ export function LandingPage() {
                   >
                     &ldquo;
                   </p>
-                  <p className="relative z-10 text-lg leading-relaxed text-slate-900">{item.quote}</p>
+                  <p className="relative z-10 text-lg leading-relaxed text-white">{item.quote}</p>
                   <footer className="relative z-10 mt-6 flex items-center gap-3">
                     <span
                       className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
@@ -1427,8 +1420,8 @@ export function LandingPage() {
                       {initials}
                     </span>
                     <div>
-                      <div className="font-bold text-slate-900">{name}</div>
-                      <div className="text-sm text-slate-500">{loc}</div>
+                      <div className="font-bold text-white">{name}</div>
+                      <div className="text-sm text-[#94a3b8]">{loc}</div>
                     </div>
                   </footer>
                 </blockquote>
@@ -1439,18 +1432,18 @@ export function LandingPage() {
       </section>
 
       {/* ═══ PRICING ═══ */}
-      <section id="pricing" className="relative scroll-mt-24 overflow-hidden bg-white px-4 py-20">
+      <section id="pricing" className="relative scroll-mt-24 overflow-hidden px-4 py-20">
         <SignalWave offset={-20} opacity={0.09} />
         <div className="relative z-10 mx-auto max-w-6xl">
-          <h2 className="section-h2 text-center text-slate-900">{t("landing.pricing.title")}</h2>
+          <h2 className="section-h2 text-center text-white">{t("landing.pricing.title")}</h2>
 
           <div className="mt-10 flex justify-center">
-            <div className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1">
+            <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-xl">
               <button
                 type="button"
                 onClick={() => setBillingCycle("monthly")}
                 className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
-                  billingCycle === "monthly" ? "text-white shadow-md" : "text-slate-600 hover:text-slate-900"
+                  billingCycle === "monthly" ? "text-white shadow-md" : "text-[#94a3b8] hover:text-white"
                 }`}
                 style={
                   billingCycle === "monthly"
@@ -1464,7 +1457,7 @@ export function LandingPage() {
                 type="button"
                 onClick={() => setBillingCycle("yearly")}
                 className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
-                  billingCycle === "yearly" ? "text-white shadow-md" : "text-slate-600 hover:text-slate-900"
+                  billingCycle === "yearly" ? "text-white shadow-md" : "text-[#94a3b8] hover:text-white"
                 }`}
                 style={
                   billingCycle === "yearly" ? { backgroundColor: BRAND.dark } : { backgroundColor: "transparent" }
@@ -1475,7 +1468,7 @@ export function LandingPage() {
             </div>
           </div>
 
-          <p className="mt-6 text-center text-sm font-medium text-slate-700">
+          <p className="mt-6 text-center text-sm font-medium text-[#94a3b8]">
             ⚡ {t("landing.pricing.earlyAdopter")}
           </p>
 
@@ -1502,14 +1495,14 @@ export function LandingPage() {
                     key={tier.id}
                     className="relative z-10 order-first rounded-2xl p-6 text-white sm:p-8 lg:order-none lg:scale-105"
                     style={{
-                      background: "linear-gradient(135deg, #2D0A6B 0%, #7A0F9E 100%)",
+                      background: "linear-gradient(135deg, #a855f7 0%, #9333ea 100%)",
                       boxShadow:
-                        "0 0 60px rgba(122,15,158,0.4), 0 20px 40px rgba(45,10,107,0.3)",
+                        "0 0 60px rgba(122,15,158,0.4), 0 20px 40px rgba(168,85,247,0.3)",
                     }}
                   >
                     <span
                       className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold"
-                      style={{ background: "#00C9D4", color: "#0A0A0F" }}
+                      style={{ background: "#22d3ee", color: "#0A0A0F" }}
                     >
                       {t("landing.pricing.popular")}
                     </span>
@@ -1547,12 +1540,9 @@ export function LandingPage() {
               return (
                 <article
                   key={tier.id}
-                  className={`rounded-2xl border bg-white p-8 ${
-                    isProPlus ? "border-2 shadow-md" : "border-gray-200 shadow-sm"
-                  }`}
-                  style={isProPlus ? { borderColor: BRAND.medium } : undefined}
+                  className={`glass-section p-8 ${isProPlus ? "border-2 border-[#9333ea]/60" : ""}`}
                 >
-                  <h3 className="text-xl font-bold text-slate-900">{t(tier.nameKey)}</h3>
+                  <h3 className="text-xl font-bold text-white">{t(tier.nameKey)}</h3>
                   <p className={`mt-6 font-bold ${isFree ? "text-4xl" : "text-4xl"}`} style={{ color: BRAND.dark }}>
                     {priceDisplay}
                   </p>
@@ -1561,8 +1551,8 @@ export function LandingPage() {
                       {t("landing.pricing.saveProPlus", { defaultValue: "Save 34%" })}
                     </p>
                   ) : null}
-                  <p className="mt-4 text-sm text-slate-600">{t(tier.bodyKey)}</p>
-                  <ul className="mt-6 space-y-2 text-sm text-slate-700">
+                  <p className="mt-4 text-sm text-[#94a3b8]">{t(tier.bodyKey)}</p>
+                  <ul className="mt-6 space-y-2 text-sm text-white/85">
                     {pricingFeatures(tier.featuresKey).map((item) => (
                       <li key={item} className="flex gap-2">
                         <PricingFeatureCheck accent="cyan" />
@@ -1573,7 +1563,7 @@ export function LandingPage() {
                   {tier.id === "free" ? (
                     <Link
                       to="/register"
-                      className="mt-8 inline-flex w-full justify-center rounded-full border border-slate-200 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
+                      className="mt-8 inline-flex w-full justify-center rounded-full border border-white/15 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                     >
                       {t(tier.ctaKey)}
                     </Link>
@@ -1582,7 +1572,7 @@ export function LandingPage() {
                       type="button"
                       onClick={() => void handleChoosePlan("pro_plus")}
                       disabled={checkoutLoadingPlan !== null}
-                      className="mt-8 w-full rounded-full border-2 py-3 text-sm font-bold transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="mt-8 w-full rounded-full border-2 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
                       style={{ borderColor: BRAND.medium, color: BRAND.dark }}
                     >
                       {checkoutLoadingPlan === "pro_plus"

@@ -215,7 +215,7 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
         <div className="absolute left-0 top-full z-50 -mt-0.5 min-w-[13.5rem] pt-2">
           <div
             className={`rounded-xl border py-1 shadow-lg backdrop-blur-md ${
-              glass ? "border-white/15 bg-[#1a0538]/95" : "border-border bg-bgPrimary"
+              glass ? "border-white/15 bg-[#0f111c]/95" : "border-border bg-bgPrimary"
             }`}
           >
             {items.map((item) => {
@@ -339,7 +339,7 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
       className={
         glass
           ? "glass-nav-bar sticky top-0 z-20"
-          : "sticky top-0 z-20 border-b border-border/70 bg-bgPrimary/90 shadow-[0_4px_24px_-12px_rgba(45,10,107,0.25)] backdrop-blur-lg dark:border-gray-700/80 dark:bg-gray-900/90"
+          : "sticky top-0 z-20 border-b border-border/70 bg-bgPrimary/90 shadow-[0_4px_24px_-12px_rgba(168,85,247,0.25)] backdrop-blur-lg dark:border-gray-700/80 dark:bg-gray-900/90"
       }
     >
       <div className="mx-auto flex h-[3.75rem] max-w-[90rem] items-center gap-2 px-3 sm:gap-3 sm:px-4 lg:gap-4">

@@ -81,7 +81,7 @@ export function SkillTreePage() {
     <div className="min-h-screen bg-bgSecondary">
       <div className="mx-auto max-w-6xl px-4 py-10">
         <header
-          className="mb-8 glass-section rounded-3xl p-6 shadow-[0_16px_36px_rgba(45,10,107,0.08)]"
+          className="mb-8 glass-section rounded-3xl p-6 shadow-[0_16px_36px_rgba(168,85,247,0.08)]"
           style={{ background: `linear-gradient(120deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
         >
           <h1 className="glass-page-title text-3xl">Skill Tree</h1>
@@ -98,7 +98,7 @@ export function SkillTreePage() {
           <p className="glass-muted">{t("common.loading")}</p>
         ) : data ? (
           <>
-            <section className="mb-6 glass-section rounded-2xl p-5 shadow-[0_14px_30px_rgba(45,10,107,0.08)]">
+            <section className="mb-6 glass-section rounded-2xl p-5 shadow-[0_14px_30px_rgba(168,85,247,0.08)]">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-white">XP Progress</p>
@@ -160,7 +160,7 @@ export function SkillTreePage() {
                 return (
                   <article
                     key={skill.id}
-                    className={`rounded-2xl border p-5 shadow-[0_10px_24px_rgba(45,10,107,0.07)] ${cardClass}`}
+                    className={`rounded-2xl border p-5 shadow-[0_10px_24px_rgba(168,85,247,0.07)] ${cardClass}`}
                   >
                     <div className="mb-3 flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">

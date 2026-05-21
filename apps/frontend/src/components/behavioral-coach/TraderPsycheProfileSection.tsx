@@ -31,11 +31,11 @@ function MetricBar({ label, score }: { label: string; score: number }) {
     <div>
       <div className="mb-1 flex items-center justify-between text-xs">
         <span className="text-white/70">{label}</span>
-        <span className="font-mono font-semibold text-[#00C9D4]">{score}</span>
+        <span className="font-mono font-semibold text-[#22d3ee]">{score}</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full border border-white/10 bg-[#2D0A6B]/30">
+      <div className="h-2 overflow-hidden rounded-full border border-white/10 bg-[#1e1b4b]/30">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-[#2D0A6B] to-[#00C9D4]"
+          className="h-full rounded-full bg-gradient-to-r from-[#a855f7] to-[#22d3ee]"
           style={{ width: `${score}%` }}
         />
       </div>
@@ -74,7 +74,7 @@ export function TraderPsycheProfileSection({ metrics, growthScore, history = [],
             Metryki zsynchronizowane z paper tradingiem i dziennikiem emocji (TimescaleDB).
           </p>
         </div>
-        <span className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-[#00C9D4]/25 bg-[#00C9D4]/10 px-3 py-1 text-xs font-medium text-[#00C9D4] sm:w-auto">
+        <span className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-[#22d3ee]/25 bg-[#22d3ee]/10 px-3 py-1 text-xs font-medium text-[#22d3ee] sm:w-auto">
           <SparklesIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
           Indeks psychiki: {loading ? "—" : averageScore}/100
         </span>
@@ -94,8 +94,8 @@ export function TraderPsycheProfileSection({ metrics, growthScore, history = [],
                 <Radar
                   name="Wynik"
                   dataKey="score"
-                  stroke="#00C9D4"
-                  fill="#00C9D4"
+                  stroke="#22d3ee"
+                  fill="#22d3ee"
                   fillOpacity={0.35}
                   strokeWidth={2}
                 />
@@ -134,7 +134,7 @@ export function TraderPsycheProfileSection({ metrics, growthScore, history = [],
                           color: "#fff",
                         }}
                       />
-                      <Line type="monotone" dataKey="growth" stroke="#00C9D4" strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="growth" stroke="#22d3ee" strokeWidth={2} dot={false} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>

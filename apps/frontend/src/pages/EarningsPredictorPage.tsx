@@ -108,7 +108,7 @@ export function EarningsPredictorPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10" style={{ color: colors.textPrimary }}>
       <header
-        className="rounded-3xl border p-6 shadow-[0_18px_44px_rgba(45,10,107,0.1)]"
+        className="rounded-3xl border p-6 shadow-[0_18px_44px_rgba(168,85,247,0.1)]"
         style={{ borderColor: colors.border, background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
       >
         <h1 className="text-3xl font-bold" style={{ color: colors.brandDark }}>
@@ -119,7 +119,7 @@ export function EarningsPredictorPage() {
         </p>
       </header>
 
-      <section className="rounded-2xl border p-6 shadow-[0_12px_30px_rgba(45,10,107,0.08)] glass-section">
+      <section className="rounded-2xl border p-6 shadow-[0_12px_30px_rgba(168,85,247,0.08)] glass-section">
         <form onSubmit={onSubmit} className="flex flex-col gap-3 md:flex-row">
           <input
             value={symbolInput}
@@ -147,11 +147,11 @@ export function EarningsPredictorPage() {
       ) : null}
 
       {!loading && !error && result ? (
-        <section className="space-y-6 rounded-2xl border p-6 shadow-[0_14px_34px_rgba(45,10,107,0.08)] glass-section">
+        <section className="space-y-6 rounded-2xl border p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)] glass-section">
           <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
             <article className="flex flex-col items-center justify-center rounded-2xl border p-5 glass-panel">
               <div
-                className="flex h-44 w-44 flex-col items-center justify-center rounded-full text-center text-white shadow-[0_14px_28px_rgba(45,10,107,0.35)]"
+                className="flex h-44 w-44 flex-col items-center justify-center rounded-full text-center text-white shadow-[0_14px_28px_rgba(168,85,247,0.35)]"
                 style={{ backgroundColor: colors.brandDark }}
               >
                 <p className="text-xs uppercase tracking-wide text-white/80">Prediction score</p>

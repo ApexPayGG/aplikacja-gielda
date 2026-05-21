@@ -173,7 +173,7 @@ export function BehavioralCoachPage() {
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:py-10">
         <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#00C9D4]">StockAI Coach</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#22d3ee]">StockAI Coach</p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Behavioral Coach</h1>
             <p className="mt-2 max-w-2xl text-sm text-white/60 sm:text-base">
               Identyfikuj FOMO, revenge trading i overtrading — zanim kosztują Cię realny kapitał.
@@ -184,7 +184,7 @@ export function BehavioralCoachPage() {
               className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold ${
                 usingMock
                   ? "border-amber-400/40 bg-amber-500/10 text-amber-200"
-                  : "border-white/15 bg-[#2D0A6B]/20 text-white/70"
+                  : "border-white/15 bg-[#1e1b4b]/20 text-white/70"
               }`}
             >
               {usingMock ? t("common.apiMockBadge") : t("common.apiLiveBadge")}
@@ -203,7 +203,7 @@ export function BehavioralCoachPage() {
           </div>
         </header>
 
-        <section className="rounded-2xl border border-white/10 bg-[#2D0A6B]/10 p-4 backdrop-blur-md">
+        <section className="rounded-2xl border border-white/10 bg-[#1e1b4b]/10 p-4 backdrop-blur-md">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-white/60">{t("cooldown.title")}</h2>
           {cooldown?.active ? (
             <div className="mt-3 rounded-xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-100">
@@ -263,8 +263,8 @@ export function BehavioralCoachPage() {
         {showBrokerPaywall ? <BrokerIntegrationPaywall /> : null}
 
         {!loading && coach?.aiDescription?.trim() ? (
-          <section className="rounded-2xl border border-[#00C9D4]/20 bg-gradient-to-br from-[#2D0A6B]/30 to-[#00C9D4]/10 p-5 backdrop-blur-md">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[#00C9D4]">
+          <section className="rounded-2xl border border-[#22d3ee]/20 bg-gradient-to-br from-[#a855f7]/30 to-[#22d3ee]/10 p-5 backdrop-blur-md">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[#22d3ee]">
               <SparklesIcon className="h-4 w-4" aria-hidden />
               {t("coach.aiCoach")}
             </p>

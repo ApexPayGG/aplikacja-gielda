@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { useTranslation } from "react-i18next";
 import type { QuoteRow } from "../services/api";
+import { GLASS_INNER_PANEL, GLASS_SECTION } from "./behavioral-coach/glassStyles";
 
 type Props = {
   quotes: QuoteRow[];
@@ -27,14 +28,14 @@ export function Chart({ quotes, title = "Close (latest window)" }: Props) {
 
   if (data.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-surface-border bg-slate-900/40 text-sm text-slate-500">
+      <div className={`flex h-64 items-center justify-center border-dashed ${GLASS_INNER_PANEL} text-sm text-[#94a3b8]`}>
         {t("company.noQuoteHistory", { defaultValue: "No quote history yet." })}
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-surface-border bg-surface-elevated p-4">
+    <div className={`${GLASS_SECTION} p-4`}>
       <h3 className="mb-4 text-sm font-medium text-slate-300">{title}</h3>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">

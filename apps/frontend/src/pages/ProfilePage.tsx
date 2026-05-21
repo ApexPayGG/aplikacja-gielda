@@ -93,7 +93,7 @@ export function ProfilePage() {
   const avatarLabel = useMemo(() => getInitials(name || profile?.name || "", emailValue), [emailValue, name, profile?.name]);
 
   const fieldClass =
-    "w-full rounded-xl border bg-white px-3 py-2 text-sm text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20";
+    "w-full rounded-xl border border-white/12 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none transition focus:border-[#22d3ee]/50 focus:ring-2 focus:ring-[#22d3ee]/20";
 
   const handleSave = async () => {
     if (!userId) return;
@@ -135,7 +135,7 @@ export function ProfilePage() {
         </header>
 
         <section
-          className="rounded-2xl border p-6 shadow-[0_12px_24px_rgba(45,10,107,0.08)]"
+          className="rounded-2xl border p-6 shadow-[0_12px_24px_rgba(168,85,247,0.08)]"
           style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
         >
           <div className="flex flex-wrap items-center gap-4">
@@ -163,7 +163,7 @@ export function ProfilePage() {
         </section>
 
         <section
-          className="rounded-2xl border p-6 shadow-[0_12px_24px_rgba(45,10,107,0.08)]"
+          className="rounded-2xl border p-6 shadow-[0_12px_24px_rgba(168,85,247,0.08)]"
           style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
         >
           <div className="grid gap-4 md:grid-cols-2">
@@ -232,7 +232,7 @@ export function ProfilePage() {
         </section>
 
         <section
-          className="rounded-2xl border p-6 shadow-[0_12px_24px_rgba(45,10,107,0.08)]"
+          className="rounded-2xl border p-6 shadow-[0_12px_24px_rgba(168,85,247,0.08)]"
           style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
         >
           <div className="flex flex-wrap items-center justify-between gap-4">

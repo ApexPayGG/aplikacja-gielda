@@ -23,14 +23,14 @@ function SentimentGauge({ score, label }: { score: number; label: string }) {
 
   return (
     <div className="space-y-3">
-      <div className="relative h-3 overflow-hidden rounded-full border border-white/10 bg-[#2D0A6B]/20 backdrop-blur-sm">
+      <div className="relative h-3 overflow-hidden rounded-full border border-white/10 bg-[#1e1b4b]/20 backdrop-blur-sm">
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-red-500/80 via-amber-400/70 to-[#00C9D4]"
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-red-500/80 via-amber-400/70 to-[#22d3ee]"
           style={{ width: "100%" }}
           aria-hidden
         />
         <div
-          className="absolute top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-2 border-white bg-[#2D0A6B] shadow-[0_0_12px_rgba(0,201,212,0.55)]"
+          className="absolute top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-2 border-white bg-[#1e1b4b] shadow-[0_0_12px_rgba(34,211,238,0.55)]"
           style={{ left: `calc(${clamped}% - 10px)` }}
           aria-hidden
         />
@@ -40,10 +40,10 @@ function SentimentGauge({ score, label }: { score: number; label: string }) {
           <ArrowTrendingDownIcon className="h-3.5 w-3.5" aria-hidden />
           Niedźwiedzi
         </span>
-        <span className="rounded-full border border-[#00C9D4]/30 bg-[#00C9D4]/10 px-2.5 py-0.5 font-semibold text-[#00C9D4]">
+        <span className="rounded-full border border-[#22d3ee]/30 bg-[#22d3ee]/10 px-2.5 py-0.5 font-semibold text-[#22d3ee]">
           {label} · {clamped}%
         </span>
-        <span className="flex items-center gap-1 text-[#00C9D4]">
+        <span className="flex items-center gap-1 text-[#22d3ee]">
           Byczy
           <ArrowTrendingUpIcon className="h-3.5 w-3.5" aria-hidden />
         </span>
@@ -93,7 +93,7 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
     <div className="fixed inset-0 z-[65] flex flex-col justify-end md:flex-row md:justify-end" role="presentation">
       <button
         type="button"
-        className="absolute inset-0 bg-[#0D0D1A]/55 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-[#0a0b14]/55 backdrop-blur-sm transition-opacity"
         aria-label="Zamknij panel AI Brief"
         onClick={onClose}
       />
@@ -103,11 +103,11 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${panelId}-title`}
-        className="relative flex max-h-[min(92dvh,100%)] w-full flex-col overflow-hidden rounded-t-3xl border border-b-0 border-white/10 bg-gradient-to-b from-[#2D0A6B]/20 via-[#1a0538]/40 to-[#0D0D1A]/90 shadow-[0_-20px_48px_rgba(45,10,107,0.4)] backdrop-blur-md transition-transform duration-300 ease-out md:h-dvh md:max-h-none md:max-w-lg md:rounded-none md:rounded-l-2xl md:border-b md:border-l md:border-t-0 md:shadow-[-16px_0_48px_rgba(45,10,107,0.35)]"
+        className="relative flex max-h-[min(92dvh,100%)] w-full flex-col overflow-hidden rounded-t-3xl border border-b-0 border-white/10 bg-gradient-to-b from-[#a855f7]/20 via-[#0f111c]/40 to-[#0a0b14]/90 shadow-[0_-20px_48px_rgba(168,85,247,0.4)] backdrop-blur-md transition-transform duration-300 ease-out md:h-dvh md:max-h-none md:max-w-lg md:rounded-none md:rounded-l-2xl md:border-b md:border-l md:border-t-0 md:shadow-[-16px_0_48px_rgba(168,85,247,0.35)]"
       >
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-          <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#00C9D4]/10 blur-3xl" />
-          <div className="absolute -bottom-20 left-8 h-56 w-56 rounded-full bg-[#2D0A6B]/30 blur-3xl" />
+          <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#22d3ee]/10 blur-3xl" />
+          <div className="absolute -bottom-20 left-8 h-56 w-56 rounded-full bg-[#1e1b4b]/30 blur-3xl" />
         </div>
 
         <div className="mx-auto mt-2 h-1 w-12 shrink-0 rounded-full bg-white/25 md:hidden" aria-hidden />
@@ -115,14 +115,14 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
         <header className="relative shrink-0 border-b border-white/10 px-5 pb-4 pt-3 sm:px-6 sm:pt-5">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#2D0A6B]/10 p-1 backdrop-blur-md">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#1e1b4b]/10 p-1 backdrop-blur-md">
                 <BrandLogo size="mini" className="h-full max-h-10 w-full object-contain brightness-110" />
               </div>
               <div className="min-w-0">
                 <p id={`${panelId}-title`} className="truncate text-lg font-bold text-white">
                   {company.name}
                 </p>
-                <p className="font-mono text-sm font-semibold text-[#00C9D4]">{company.symbol}</p>
+                <p className="font-mono text-sm font-semibold text-[#22d3ee]">{company.symbol}</p>
                 <p className="mt-0.5 truncate text-xs text-white/55">{company.sector}</p>
               </div>
             </div>
@@ -130,33 +130,33 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
               ref={closeButtonRef}
               type="button"
               onClick={onClose}
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#2D0A6B]/10 text-white/80 backdrop-blur-md transition hover:border-[#00C9D4]/40 hover:text-white"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#1e1b4b]/10 text-white/80 backdrop-blur-md transition hover:border-[#22d3ee]/40 hover:text-white"
               aria-label="Zamknij AI Brief"
             >
               <XMarkIcon className="h-5 w-5" />
             </button>
           </div>
 
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#00C9D4]/25 bg-[#00C9D4]/10 px-3 py-1 text-[11px] font-medium text-[#00C9D4] backdrop-blur-md">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#22d3ee]/25 bg-[#22d3ee]/10 px-3 py-1 text-[11px] font-medium text-[#22d3ee] backdrop-blur-md">
             <SparklesIcon className="h-3.5 w-3.5" aria-hidden />
             Analysis powered by Claude 3.5 Sonnet
           </span>
         </header>
 
         <div className="relative flex-1 space-y-5 overflow-y-auto px-5 py-5 sm:px-6">
-          <section className="rounded-2xl border border-white/10 bg-[#2D0A6B]/10 p-4 backdrop-blur-md">
+          <section className="rounded-2xl border border-white/10 bg-[#1e1b4b]/10 p-4 backdrop-blur-md">
             <h2 className="text-sm font-bold uppercase tracking-wide text-white/90">Szybki Przegląd Poranny</h2>
             <ul className="mt-3 space-y-3 text-sm leading-relaxed text-white/80">
               {insight.morningBullets.map((bullet) => (
                 <li key={bullet.slice(0, 48)} className="flex gap-2.5">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00C9D4]" aria-hidden />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#22d3ee]" aria-hidden />
                   <span>{bullet}</span>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-[#2D0A6B]/10 p-4 backdrop-blur-md">
+          <section className="rounded-2xl border border-white/10 bg-[#1e1b4b]/10 p-4 backdrop-blur-md">
             <h2 className="text-sm font-bold uppercase tracking-wide text-white/90">Sentyment Sektorowy</h2>
             <p className="mt-1 text-xs text-white/50">Na podstawie agregacji newsów i sygnałów makro w sektorze {company.sector}.</p>
             <div className="mt-4">
@@ -164,7 +164,7 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-amber-400/25 bg-gradient-to-br from-amber-500/10 to-[#2D0A6B]/10 p-4 backdrop-blur-md">
+          <section className="rounded-2xl border border-amber-400/25 bg-gradient-to-br from-amber-500/10 to-[#9333ea]/10 p-4 backdrop-blur-md">
             <div className="flex items-center gap-2">
               <ExclamationTriangleIcon className="h-5 w-5 text-amber-300" aria-hidden />
               <h2 className="text-sm font-bold uppercase tracking-wide text-amber-100">Behavioral Warning</h2>
@@ -181,10 +181,10 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
           <Link
             to={premiumHref}
             onClick={onClose}
-            className="block rounded-2xl border border-[#00C9D4]/20 bg-gradient-to-r from-[#2D0A6B]/20 to-[#00C9D4]/10 px-4 py-3.5 text-center text-sm leading-snug text-white/85 backdrop-blur-md transition hover:border-[#00C9D4]/40 hover:from-[#2D0A6B]/30"
+            className="block rounded-2xl border border-[#22d3ee]/20 bg-gradient-to-r from-[#a855f7]/20 to-[#22d3ee]/10 px-4 py-3.5 text-center text-sm leading-snug text-white/85 backdrop-blur-md transition hover:border-[#22d3ee]/40 hover:from-[#a855f7]/30"
           >
             <span className="text-white/70">Chcesz codziennych powiadomień SMS/Push dla tej spółki?</span>{" "}
-            <span className="font-semibold text-[#00C9D4]">Odblokuj alerty StockAI Pro</span>
+            <span className="font-semibold text-[#22d3ee]">Odblokuj alerty StockAI Pro</span>
           </Link>
         </footer>
       </aside>

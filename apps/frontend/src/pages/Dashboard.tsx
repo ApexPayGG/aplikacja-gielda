@@ -336,7 +336,7 @@ export function Dashboard() {
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-[#0D0D1A]/60 p-1">
+                            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-[#0a0b14]/60 p-1">
                               {row.logoUrl ? (
                                 <img src={row.logoUrl} alt="" className="h-full w-full object-contain" loading="lazy" />
                               ) : (

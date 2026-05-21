@@ -25,13 +25,13 @@ export function AIDisclaimer({ variant = "default", className = "" }: Props) {
   if (variant === "dark") {
     return (
       <div
-        className={`rounded-xl border border-white/10 bg-[#2D0A6B]/20 px-3 py-2.5 text-[11px] leading-relaxed text-white/60 ${className}`}
+        className={`rounded-xl border border-white/10 bg-[#1e1b4b]/20 px-3 py-2.5 text-[11px] leading-relaxed text-white/60 ${className}`}
         role="note"
         aria-label="Zastrzeżenie dotyczące treści AI"
       >
         <p>{DISCLAIMER_TEXT}</p>
         <p className="mt-1.5">
-          <Link to="/terms" className="font-medium text-[#00C9D4]/90 underline-offset-2 hover:underline">
+          <Link to="/terms" className="font-medium text-[#22d3ee]/90 underline-offset-2 hover:underline">
             Pełny regulamin i disclaimer inwestycyjny
           </Link>
         </p>

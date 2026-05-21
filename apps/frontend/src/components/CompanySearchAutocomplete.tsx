@@ -177,7 +177,7 @@ export function CompanySearchAutocomplete({
         <div
           className={`absolute z-30 mt-2 w-full rounded-2xl border shadow-lg backdrop-blur-md ${
             variant === "glass"
-              ? "border-white/15 bg-[#1a0538]/95"
+              ? "border-white/15 bg-[#0f111c]/95"
               : "border-border bg-white"
           }`}
           style={variant === "glass" ? undefined : { borderColor: colors.border }}

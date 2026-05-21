@@ -9,7 +9,7 @@ export function NotFoundPage() {
         backgroundImage: `linear-gradient(145deg, ${colors.brandDark}0d 0%, ${colors.bgPrimary} 55%)`,
       }}
     >
-      <div className="relative z-10 w-full max-w-xl rounded-3xl border border-border bg-bgPrimary p-8 text-center shadow-[0_24px_72px_rgba(45,10,107,0.12)]">
+      <div className="relative z-10 w-full max-w-xl rounded-3xl border border-border bg-bgPrimary p-8 text-center shadow-[0_24px_72px_rgba(168,85,247,0.12)]">
         <p className="text-9xl font-extrabold leading-none text-brandDark">404</p>
         <h1 className="mt-6 text-3xl font-bold text-textPrimary">Nie znaleziono strony</h1>
         <p className="mt-3 text-sm text-textSecondary">

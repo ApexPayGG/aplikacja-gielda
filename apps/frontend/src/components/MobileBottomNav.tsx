@@ -68,7 +68,7 @@ export function MobileBottomNav() {
     <nav
       className={`fixed bottom-0 left-0 right-0 z-20 border-t md:hidden ${
         glass
-          ? "border-white/10 bg-[#0D0D1A]/92 backdrop-blur-lg"
+          ? "border-white/10 bg-[#0a0b14]/92 backdrop-blur-lg"
           : "border-border bg-bgPrimary"
       }`}
     >

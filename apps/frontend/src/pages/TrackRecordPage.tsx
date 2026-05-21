@@ -210,7 +210,7 @@ export function TrackRecordPage() {
     <div className="min-h-screen bg-bgSecondary text-white">
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
         <header
-          className="glass-section rounded-3xl p-6 shadow-[0_16px_36px_rgba(45,10,107,0.08)]"
+          className="glass-section rounded-3xl p-6 shadow-[0_16px_36px_rgba(168,85,247,0.08)]"
           style={{ background: `linear-gradient(120deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
         >
           <h1 className="glass-page-title text-3xl">Track Record</h1>
@@ -224,12 +224,12 @@ export function TrackRecordPage() {
         ) : null}
 
         {!isPublicView ? (
-          <section className="glass-section rounded-2xl p-4 shadow-[0_12px_30px_rgba(45,10,107,0.08)]">
+          <section className="glass-section rounded-2xl p-4 shadow-[0_12px_30px_rgba(168,85,247,0.08)]">
             <button
               type="button"
               onClick={onGenerate}
               disabled={loading}
-              className="rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(45,10,107,0.35)] transition hover:brightness-110 disabled:opacity-60"
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(168,85,247,0.35)] transition hover:brightness-110 disabled:opacity-60"
               style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
             >
               {loading ? t("common.loading") : t("trackrecord.generateButton")}
@@ -239,7 +239,7 @@ export function TrackRecordPage() {
 
         {metrics ? (
           <section className="space-y-5">
-            <article className="glass-section rounded-2xl p-5 shadow-[0_12px_30px_rgba(45,10,107,0.08)]">
+            <article className="glass-section rounded-2xl p-5 shadow-[0_12px_30px_rgba(168,85,247,0.08)]">
               <h2 className="text-lg font-semibold text-white">Publiczny profil</h2>
               <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard label="Win rate" value={`${metrics.winRate.toFixed(2)}%`} />
@@ -259,7 +259,7 @@ export function TrackRecordPage() {
               </div>
             </article>
 
-            <article className="glass-section rounded-2xl p-5 shadow-[0_12px_30px_rgba(45,10,107,0.08)]">
+            <article className="glass-section rounded-2xl p-5 shadow-[0_12px_30px_rgba(168,85,247,0.08)]">
               <h3 className="text-lg font-semibold text-white">Historia transakcji</h3>
               {historyLoading ? (
                 <p className="mt-3 glass-muted text-sm">{t("common.loading")}</p>

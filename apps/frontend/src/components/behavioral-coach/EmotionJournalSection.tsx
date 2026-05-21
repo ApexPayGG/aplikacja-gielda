@@ -73,7 +73,7 @@ export function EmotionJournalSection({
       </p>
 
       {emotion && emotionAcknowledged ? (
-        <p className="mt-3 rounded-xl border border-[#00C9D4]/25 bg-[#00C9D4]/10 px-3 py-2 text-sm text-[#00C9D4]">
+        <p className="mt-3 rounded-xl border border-[#22d3ee]/25 bg-[#22d3ee]/10 px-3 py-2 text-sm text-[#22d3ee]">
           Aktywny stan: <span className="font-semibold">{EMOTION_JOURNAL_LABELS[emotion].labelPl}</span>
         </p>
       ) : (
@@ -92,7 +92,7 @@ export function EmotionJournalSection({
               onChange={(e) => setSymbol(e.target.value)}
               placeholder="np. ABBN"
               disabled={!emotionAcknowledged}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-[#2D0A6B]/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 backdrop-blur-md focus:border-[#00C9D4]/40 focus:outline-none disabled:opacity-50"
+              className="mt-1 w-full rounded-xl border border-white/10 bg-[#1e1b4b]/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 backdrop-blur-md focus:border-[#22d3ee]/40 focus:outline-none disabled:opacity-50"
             />
           </label>
           <label className="block text-xs font-semibold uppercase tracking-wide text-white/60 sm:col-span-1">
@@ -103,7 +103,7 @@ export function EmotionJournalSection({
               onChange={(e) => setNote(e.target.value)}
               placeholder="Kontekst przed wejściem..."
               disabled={!emotionAcknowledged}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-[#2D0A6B]/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 backdrop-blur-md focus:border-[#00C9D4]/40 focus:outline-none disabled:opacity-50"
+              className="mt-1 w-full rounded-xl border border-white/10 bg-[#1e1b4b]/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 backdrop-blur-md focus:border-[#22d3ee]/40 focus:outline-none disabled:opacity-50"
             />
           </label>
         </div>
@@ -113,7 +113,7 @@ export function EmotionJournalSection({
         <button
           type="submit"
           disabled={!emotionAcknowledged || !emotion || submitting}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2D0A6B] to-[#00C9D4]/80 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#22d3ee]/80 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
         >
           {savedFlash ? <CheckCircleIcon className="h-5 w-5" /> : null}
           {submitting ? "Zapisywanie…" : "Zapisz wpis i zaktualizuj radar"}
@@ -130,7 +130,7 @@ export function EmotionJournalSection({
               className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/5 bg-white/5 px-3 py-2 text-sm"
             >
               <span className="font-medium text-white/90">{EMOTION_JOURNAL_LABELS[entry.emotion].labelPl}</span>
-              {entry.symbol ? <span className="font-mono text-xs text-[#00C9D4]">{entry.symbol}</span> : null}
+              {entry.symbol ? <span className="font-mono text-xs text-[#22d3ee]">{entry.symbol}</span> : null}
               <span className="text-xs text-white/45">
                 {new Date(entry.createdAt).toLocaleString("pl-PL", {
                   day: "numeric",

@@ -117,7 +117,7 @@ export function MirrorTradingPage() {
     <div className="min-h-screen bg-bgSecondary px-4 py-10 text-white">
       <div className="mx-auto max-w-6xl space-y-8">
         <header
-          className="glass-section rounded-3xl p-6 shadow-[0_18px_40px_rgba(45,10,107,0.1)]"
+          className="glass-section rounded-3xl p-6 shadow-[0_18px_40px_rgba(168,85,247,0.1)]"
           style={{ background: `linear-gradient(120deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
         >
           <h1 className="glass-page-title text-3xl">Mirror Trading</h1>
@@ -130,7 +130,7 @@ export function MirrorTradingPage() {
           </div>
         ) : null}
 
-        <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+        <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
           <h2 className="mb-4 text-xl font-semibold text-white">Twoje aktywne mirror</h2>
           {loading ? (
             <p className="glass-muted text-sm">{t("common.loading")}</p>
@@ -141,7 +141,7 @@ export function MirrorTradingPage() {
               {activeFollowing.map((row) => (
                 <li
                   key={row.traderId}
-                  className="glass-section rounded-2xl p-4 shadow-[0_12px_26px_rgba(45,10,107,0.07)]"
+                  className="glass-section rounded-2xl p-4 shadow-[0_12px_26px_rgba(168,85,247,0.07)]"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -185,7 +185,7 @@ export function MirrorTradingPage() {
           )}
         </section>
 
-        <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+        <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
           <h2 className="mb-4 text-xl font-semibold text-white">Top traderzy</h2>
           {loading ? (
             <p className="glass-muted text-sm">{t("common.loading")}</p>
@@ -201,7 +201,7 @@ export function MirrorTradingPage() {
                 return (
                   <li
                     key={tr.userId}
-                    className="glass-section rounded-2xl p-5 shadow-[0_12px_26px_rgba(45,10,107,0.07)]"
+                    className="glass-section rounded-2xl p-5 shadow-[0_12px_26px_rgba(168,85,247,0.07)]"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
@@ -247,7 +247,7 @@ export function MirrorTradingPage() {
                           type="button"
                           disabled={busy}
                           onClick={() => void onFollow(tr.userId)}
-                          className="rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(45,10,107,0.35)] transition hover:brightness-110 disabled:opacity-55"
+                          className="rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(168,85,247,0.35)] transition hover:brightness-110 disabled:opacity-55"
                           style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
                         >
                           {busy ? t("common.loading") : "Mirror"}

@@ -329,7 +329,7 @@ export function AlphaCalendarPage() {
                       style={{
                         borderColor: isActive ? colors.brandCyan : colors.border,
                         backgroundColor: isWeekend(day) ? colors.bgSecondary : colors.bgPrimary,
-                        boxShadow: isActive ? "0 0 0 1px rgba(0, 201, 212, 0.3)" : "none",
+                        boxShadow: isActive ? "0 0 0 1px rgba(34,211,238, 0.3)" : "none",
                         opacity: mutedText ? 0.75 : 1,
                       }}
                     >

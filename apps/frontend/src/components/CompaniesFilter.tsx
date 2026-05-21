@@ -69,7 +69,7 @@ export function CompaniesFilter({
 
   const peMinPercent = ((filters.peMin - PE_RATIO_MIN) / (PE_RATIO_MAX - PE_RATIO_MIN)) * 100;
   const peMaxPercent = ((filters.peMax - PE_RATIO_MIN) / (PE_RATIO_MAX - PE_RATIO_MIN)) * 100;
-  const peFill = `linear-gradient(90deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.12) ${peMinPercent}%, #00C9D4 ${peMinPercent}%, #00C9D4 ${peMaxPercent}%, rgba(255,255,255,0.12) ${peMaxPercent}%, rgba(255,255,255,0.12) 100%)`;
+  const peFill = `linear-gradient(90deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.12) ${peMinPercent}%, #22d3ee ${peMinPercent}%, #22d3ee ${peMaxPercent}%, rgba(255,255,255,0.12) ${peMaxPercent}%, rgba(255,255,255,0.12) 100%)`;
 
   const selectedSectorLabel = filters.selectedSectors.length === 0 ? "All sectors" : `${filters.selectedSectors.length} selected`;
 
@@ -89,7 +89,7 @@ export function CompaniesFilter({
             {selectedSectorLabel}
           </button>
           {isSectorOpen ? (
-            <div className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-white/15 bg-[#1a0538]/95 p-2 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-md">
+            <div className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-white/15 bg-[#0f111c]/95 p-2 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-md">
               {COMPANY_FILTER_SECTORS.map((sector) => {
                 const selected = filters.selectedSectors.includes(sector);
                 return (
@@ -97,7 +97,7 @@ export function CompaniesFilter({
                     key={sector}
                     className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-white/10"
                   >
-                    <input type="checkbox" checked={selected} onChange={() => onToggleSector(sector)} className="accent-[#00C9D4]" />
+                    <input type="checkbox" checked={selected} onChange={() => onToggleSector(sector)} className="accent-[#22d3ee]" />
                     <span className="text-sm text-white/90">{sector}</span>
                   </label>
                 );
@@ -118,7 +118,7 @@ export function CompaniesFilter({
           className={GLASS_SELECT}
         >
           {marketCapOptions.map((option) => (
-            <option key={option.value} value={option.value} className="bg-[#1a0538] text-white">
+            <option key={option.value} value={option.value} className="bg-[#0f111c] text-white">
               {option.label}
             </option>
           ))}
@@ -128,7 +128,7 @@ export function CompaniesFilter({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <p className={GLASS_LABEL}>P/E ratio</p>
-          <span className="text-xs font-semibold text-[#00C9D4]">
+          <span className="text-xs font-semibold text-[#22d3ee]">
             {filters.peMin} - {filters.peMax}
           </span>
         </div>
@@ -167,7 +167,7 @@ export function CompaniesFilter({
           onClick={() => onDividendToggle(!filters.onlyDividendStocks)}
           disabled={dividendFilterLoading}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition disabled:opacity-60 ${
-            filters.onlyDividendStocks ? "bg-[#00C9D4]" : "bg-white/20"
+            filters.onlyDividendStocks ? "bg-[#22d3ee]" : "bg-white/20"
           }`}
           aria-pressed={filters.onlyDividendStocks}
           aria-label={t("companies.filterDividend", { defaultValue: "Tylko spółki z dywidendą" })}
@@ -190,7 +190,7 @@ export function CompaniesFilter({
           className={GLASS_SELECT}
         >
           {sortOptions.map((option) => (
-            <option key={option.value} value={option.value} className="bg-[#1a0538] text-white">
+            <option key={option.value} value={option.value} className="bg-[#0f111c] text-white">
               {option.label}
             </option>
           ))}

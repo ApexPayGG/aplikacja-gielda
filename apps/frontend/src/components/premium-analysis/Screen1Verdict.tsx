@@ -1,3 +1,4 @@
+import { GLASS_INNER_PANEL, GLASS_SECTION } from "../behavioral-coach/glassStyles";
 import { VerdictScoreCircle } from "./VerdictScoreCircle";
 
 type VerdictData = {
@@ -22,11 +23,11 @@ type Screen1VerdictProps = {
 };
 
 export function Screen1Verdict({ data, loading, onNext }: Screen1VerdictProps) {
-  if (loading) return <div className="rounded-xl border border-surface-border bg-surface-elevated p-5 text-slate-400">Loading verdict...</div>;
+  if (loading) return <div className={`${GLASS_INNER_PANEL} p-5 text-[#94a3b8]`}>Loading verdict...</div>;
   if (!data) return <div className="rounded-xl border border-brand-red/40 bg-brand-red/10 p-5 text-brand-red">Verdict unavailable.</div>;
 
   return (
-    <section className="space-y-4 rounded-2xl border border-surface-border bg-surface-elevated p-5">
+    <section className={`${GLASS_SECTION} space-y-4`}>
       <header>
         <h2 className="text-xl font-semibold text-white">Screen 1 - Verdict</h2>
         <p className="text-sm text-slate-400">{data.ticker} · 5-second decision layer</p>

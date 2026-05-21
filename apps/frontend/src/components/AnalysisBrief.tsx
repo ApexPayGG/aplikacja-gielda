@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { AnalysisResponse } from "../services/api";
 import { pickBriefSectionsForLocale } from "../utils/briefLocale";
+import { GLASS_SECTION } from "./behavioral-coach/glassStyles";
 import { sanitizeApiErrorMessage } from "../utils/sanitizeApiErrorMessage";
 
 export type BriefLimitReached = {
@@ -43,7 +44,7 @@ export function AnalysisBrief({ analysis, loading, error, limitReached }: Props)
 
   if (loading) {
     return (
-      <div className="animate-pulse rounded-2xl border border-surface-border bg-surface-elevated p-6">
+      <div className={`animate-pulse ${GLASS_SECTION}`}>
         <div className="h-4 w-1/3 rounded bg-slate-700" />
         <div className="mt-4 space-y-2">
           <div className="h-3 rounded bg-slate-700" />
@@ -81,7 +82,7 @@ export function AnalysisBrief({ analysis, loading, error, limitReached }: Props)
   const sections = pickBriefSectionsForLocale(rawSections, i18n.language);
 
   return (
-    <div className="rounded-2xl border border-surface-border bg-surface-elevated p-6">
+    <div className={GLASS_SECTION}>
       <div className="mb-3 flex items-center gap-2 text-textPrimary">
         <SparklesIcon className="h-5 w-5 text-brandDark" />
         <h3 className="text-sm font-semibold uppercase tracking-wide">
