@@ -17,6 +17,8 @@ import {
   GLASS_SECTION,
   GLASS_SECTION_TITLE,
   GLASS_STAT_CARD,
+  GLASS_TEXT_NEGATIVE,
+  GLASS_TEXT_POSITIVE,
   GLASS_WATCHLIST_CARD,
 } from "../components/behavioral-coach/glassStyles";
 import { DailyCheckInWidget } from "../components/DailyCheckInWidget";
@@ -175,17 +177,19 @@ export function Dashboard() {
 
   function trendIcon(tone: TrendTone) {
     if (tone === "up") {
-      return <ArrowTrendingUpIcon className="h-4 w-4 text-emerald-400" />;
+      return <ArrowTrendingUpIcon className={`h-4 w-4 ${GLASS_TEXT_POSITIVE}`} />;
     }
     if (tone === "down") {
-      return <ArrowTrendingDownIcon className="h-4 w-4 text-red-400" />;
+      return <ArrowTrendingDownIcon className={`h-4 w-4 ${GLASS_TEXT_NEGATIVE}`} />;
     }
     return <MinusSmallIcon className="h-4 w-4 text-white/40" />;
   }
 
   const changeBadge = (changePct: number | null) => {
     if (changePct == null) return "bg-white/10 text-white/50";
-    return changePct >= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400";
+    return changePct >= 0
+      ? `bg-[#4ade80]/15 ${GLASS_TEXT_POSITIVE}`
+      : `bg-[#f87171]/15 ${GLASS_TEXT_NEGATIVE}`;
   };
 
   return (
@@ -207,7 +211,7 @@ export function Dashboard() {
                 {!isEmptyDashboard ? (
                   <Link
                     to="/companies"
-                    className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white/70 backdrop-blur-sm transition hover:border-[#00C9D4]/40 hover:text-[#00C9D4]"
+                    className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white/70 backdrop-blur-sm transition hover:border-[#22d3ee]/40 hover:text-[#22d3ee]"
                   >
                     {t("dashboard.companiesTitle", { defaultValue: "Companies" })}
                   </Link>
@@ -216,7 +220,7 @@ export function Dashboard() {
 
               {isEmptyDashboard ? (
                 <div className={GLASS_HERO}>
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-[#00C9D4]">
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-[#22d3ee]">
                     {t("dashboard.hero.eyebrow", { defaultValue: "Your StockAI hub" })}
                   </p>
                   <h2 className="mt-2 text-xl font-bold tracking-tight text-white md:text-2xl">
@@ -240,7 +244,7 @@ export function Dashboard() {
                         key={step}
                         className="flex gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-white/90 backdrop-blur-sm"
                       >
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#2D0A6B] to-[#7A0F9E] text-xs font-bold text-white">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#a855f7] to-[#9333ea] text-xs font-bold text-white">
                           {index + 1}
                         </span>
                         <span className="leading-snug">{step}</span>
@@ -267,7 +271,7 @@ export function Dashboard() {
                         <Link
                           key={symbol}
                           to={`/company/${encodeURIComponent(symbol)}`}
-                          className="inline-flex rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-mono text-xs font-semibold text-[#00C9D4] transition hover:border-[#00C9D4]/50 hover:bg-[#00C9D4]/10"
+                          className="inline-flex rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-mono text-xs font-semibold text-[#22d3ee] transition hover:border-[#22d3ee]/50 hover:bg-[#22d3ee]/10"
                         >
                           {symbol}
                         </Link>
@@ -336,7 +340,7 @@ export function Dashboard() {
                               {row.logoUrl ? (
                                 <img src={row.logoUrl} alt="" className="h-full w-full object-contain" loading="lazy" />
                               ) : (
-                                <span className="text-xs font-bold text-[#00C9D4]">{row.symbol.split(".")[0]?.slice(0, 3)}</span>
+                                <span className="text-xs font-bold text-[#22d3ee]">{row.symbol.split(".")[0]?.slice(0, 3)}</span>
                               )}
                             </div>
                             <div>
@@ -407,14 +411,18 @@ export function Dashboard() {
                         <div className="flex items-center gap-2">
                           <span
                             className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                              isPositive ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"
+                              isPositive
+                                ? `bg-[#4ade80]/15 ${GLASS_TEXT_POSITIVE}`
+                                : `bg-[#f87171]/15 ${GLASS_TEXT_NEGATIVE}`
                             }`}
                           >
                             {isPositive
                               ? t("dashboard.signalLong", { defaultValue: "LONG" })
                               : t("dashboard.signalShort", { defaultValue: "SHORT" })}
                           </span>
-                          <span className={`text-sm font-semibold ${isPositive ? "text-emerald-400" : "text-red-400"}`}>
+                          <span
+                            className={`text-sm font-semibold ${isPositive ? GLASS_TEXT_POSITIVE : GLASS_TEXT_NEGATIVE}`}
+                          >
                             {formatChange(row.changePct)}
                           </span>
                         </div>

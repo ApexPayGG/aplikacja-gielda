@@ -80,11 +80,11 @@ export function MobileBottomNav() {
             <li key={item.to}>
               <NavLink to={item.to} className="flex flex-col items-center justify-center gap-1 px-2 py-2.5">
                 <Icon
-                  className={`h-5 w-5 ${isActive ? (glass ? "text-[#00C9D4]" : "text-brandDark") : glass ? "text-white/50" : "text-textMuted"}`}
+                  className={`h-5 w-5 ${isActive ? (glass ? "text-[#22d3ee]" : "text-brandDark") : glass ? "text-white/50" : "text-textMuted"}`}
                   aria-hidden
                 />
                 <span
-                  className={`text-[11px] font-semibold ${isActive ? (glass ? "text-[#00C9D4]" : "text-brandDark") : glass ? "text-white/50" : "text-textMuted"}`}
+                  className={`text-[11px] font-semibold ${isActive ? (glass ? "text-[#22d3ee]" : "text-brandDark") : glass ? "text-white/50" : "text-textMuted"}`}
                 >
                   {t(item.labelKey)}
                 </span>

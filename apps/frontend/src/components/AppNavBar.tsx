@@ -135,13 +135,13 @@ function navLinkClass(isActive: boolean, glass: boolean): string {
   if (glass) {
     return `whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
       isActive
-        ? "bg-[#00C9D4]/15 text-[#00C9D4] shadow-[inset_0_0_0_1px_rgba(0,201,212,0.25)]"
+        ? "bg-[#22d3ee]/15 text-[#22d3ee] shadow-[inset_0_0_0_1px_rgba(34,211,238,0.25)]"
         : "text-white/65 hover:bg-white/10 hover:text-white"
     }`;
   }
   return `whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
     isActive
-      ? "bg-brandDark/[0.08] text-brandDark shadow-[inset_0_0_0_1px_rgba(45,10,107,0.12)]"
+      ? "bg-brandDark/[0.08] text-brandDark shadow-[inset_0_0_0_1px_rgba(168,85,247,0.12)]"
       : "text-textSecondary hover:bg-bgSecondary/80 hover:text-brandDark"
   }`;
 }
@@ -150,13 +150,13 @@ function triggerClass(active: boolean, glass: boolean): string {
   if (glass) {
     return `inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
       active
-        ? "bg-[#00C9D4]/15 text-[#00C9D4] shadow-[inset_0_0_0_1px_rgba(0,201,212,0.25)]"
+        ? "bg-[#22d3ee]/15 text-[#22d3ee] shadow-[inset_0_0_0_1px_rgba(34,211,238,0.25)]"
         : "text-white/65 hover:bg-white/10 hover:text-white"
     }`;
   }
   return `inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
     active
-      ? "bg-brandDark/[0.08] text-brandDark shadow-[inset_0_0_0_1px_rgba(45,10,107,0.12)]"
+      ? "bg-brandDark/[0.08] text-brandDark shadow-[inset_0_0_0_1px_rgba(168,85,247,0.12)]"
       : "text-textSecondary hover:bg-bgSecondary/80 hover:text-brandDark"
   }`;
 }
@@ -432,7 +432,7 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
               <button
                 type="button"
                 onClick={() => setAccountOpen((open) => !open)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-bgSecondary/40 px-1.5 py-1 transition-all hover:border-brandCyan/40 hover:shadow-[0_0_0_3px_rgba(0,201,212,0.12)]"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-bgSecondary/40 px-1.5 py-1 transition-all hover:border-brandCyan/40 hover:shadow-[0_0_0_3px_rgba(34,211,238,0.12)]"
                 aria-expanded={accountOpen}
                 aria-haspopup="true"
                 title={userEmail}

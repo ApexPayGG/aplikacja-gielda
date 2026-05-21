@@ -5,15 +5,16 @@ export const colors = {
   bgTertiary: "#ECEEF5",
 
   // Brand (AMC Energy)
-  brandDark: "#2D0A6B",
-  brandMedium: "#7A0F9E",
-  brandCyan: "#00C9D4",
+  brandDark: "#a855f7",
+  brandMedium: "#9333ea",
+  brandCyan: "#22d3ee",
+  brandIndigo: "#1e1b4b",
   brandGold: "#FFAE33",
 
   // Semantic
-  positive: "#00A86B",
-  negative: "#E53935",
-  neutral: "#5A5A7A",
+  positive: "#4ade80",
+  negative: "#f87171",
+  neutral: "#94a3b8",
 
   // Text
   textPrimary: "#0D0D1A",

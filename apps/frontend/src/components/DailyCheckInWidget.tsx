@@ -134,7 +134,7 @@ export function DailyCheckInWidget({ compact = false, appearance = "light" }: Da
       <section className={shellClass}>
         <div className="space-y-4">
           <div>
-            <p className={`text-[11px] font-semibold uppercase tracking-widest ${isGlass ? "text-[#00C9D4]" : "text-brandCyan"}`}>
+            <p className={`text-[11px] font-semibold uppercase tracking-widest ${isGlass ? "text-[#22d3ee]" : "text-brandCyan"}`}>
               {t("checkin.done.eyebrow", { defaultValue: "Today" })}
             </p>
             <h2 className={`${titleClass} mt-1`}>
@@ -160,11 +160,11 @@ export function DailyCheckInWidget({ compact = false, appearance = "light" }: Da
             <p
               className={`rounded-xl border px-3 py-2.5 text-sm leading-relaxed ${
                 isGlass
-                  ? "border-[#00C9D4]/25 bg-[#00C9D4]/10 text-white/90"
+                  ? "border-[#22d3ee]/25 bg-[#22d3ee]/10 text-white/90"
                   : "border-brandCyan/20 bg-brandCyan/5 text-textPrimary"
               }`}
             >
-              <span className={`font-semibold ${isGlass ? "text-[#00C9D4]" : "text-brandDark"}`}>
+              <span className={`font-semibold ${isGlass ? "text-[#22d3ee]" : "text-brandDark"}`}>
                 {t("checkin.done.aiLabel", { defaultValue: "Coach note" })}:{" "}
               </span>
               {coachNote}
@@ -197,7 +197,7 @@ export function DailyCheckInWidget({ compact = false, appearance = "light" }: Da
   const moodBtn = (selected: boolean) =>
     isGlass
       ? selected
-        ? "border-[#00C9D4] bg-[#00C9D4]/15"
+        ? "border-[#22d3ee] bg-[#22d3ee]/15"
         : "border-white/15 bg-white/5 hover:border-white/25"
       : selected
         ? "border-brandDark bg-brandDark/10"
@@ -206,14 +206,14 @@ export function DailyCheckInWidget({ compact = false, appearance = "light" }: Da
   const riskBtn = (selected: boolean) =>
     isGlass
       ? selected
-        ? "border-[#7A0F9E] bg-gradient-to-r from-[#2D0A6B] to-[#7A0F9E] text-white"
+        ? "border-[#9333ea] bg-gradient-to-r from-[#a855f7] to-[#9333ea] text-white"
         : "border-white/15 bg-white/5 text-white/70 hover:border-white/25"
       : selected
         ? "border-brandDark bg-brandDark text-white"
         : "border-border bg-bgSecondary text-textSecondary hover:border-borderStrong";
 
   const inputClass = isGlass
-    ? `w-full rounded-lg border border-white/15 bg-white/5 px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-white placeholder:text-white/40 outline-none ring-[#00C9D4]/40 transition focus:ring`
+    ? `w-full rounded-lg border border-white/15 bg-white/5 px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-white placeholder:text-white/40 outline-none ring-[#22d3ee]/40 transition focus:ring`
     : `w-full rounded-lg border border-border bg-bgSecondary px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-textPrimary outline-none ring-brandCyan/40 transition focus:ring`;
 
   const submitBtnClass = isGlass

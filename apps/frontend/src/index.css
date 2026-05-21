@@ -15,12 +15,13 @@
   --bg-primary: #ffffff;
   --bg-secondary: #f4f6fa;
   --bg-tertiary: #eceef5;
-  --brand-dark: #2d0a6b;
-  --brand-medium: #7a0f9e;
-  --brand-cyan: #00c9d4;
+  --brand-dark: #a855f7;
+  --brand-medium: #9333ea;
+  --brand-cyan: #22d3ee;
+  --brand-indigo: #1e1b4b;
   --brand-gold: #ffae33;
-  --positive: #00a86b;
-  --negative: #e53935;
+  --positive: #4ade80;
+  --negative: #f87171;
   --text-primary: #0d0d1a;
   --text-secondary: #5a5a7a;
   --text-muted: #9b9bb5;
@@ -64,7 +65,7 @@ a {
 }
 
 ::selection {
-  background: rgb(0 201 212 / 0.28);
+  background: rgb(34 211 238 / 0.28);
   color: var(--text-primary);
 }
 
@@ -90,24 +91,27 @@ a {
 .app-shell {
   min-height: 100vh;
   background:
-    radial-gradient(120% 80% at 0% 0%, rgb(45 10 107 / 0.08) 0%, transparent 48%),
-    radial-gradient(120% 80% at 100% 0%, rgb(122 15 158 / 0.08) 0%, transparent 50%),
+    radial-gradient(120% 80% at 0% 0%, rgb(168 85 247 / 0.1) 0%, transparent 48%),
+    radial-gradient(120% 80% at 100% 0%, rgb(34 211 238 / 0.06) 0%, transparent 50%),
     var(--bg-primary);
 }
 
 /* Logged-in app: dark glass theme (all authenticated + browsed routes) */
 .glass-app {
   color-scheme: dark;
-  --bg-primary: rgb(45 10 107 / 0.14);
-  --bg-secondary: rgb(255 255 255 / 0.06);
-  --bg-tertiary: rgb(255 255 255 / 0.1);
+  --brand-dark: #a855f7;
+  --brand-medium: #9333ea;
+  --brand-cyan: #22d3ee;
+  --bg-primary: rgb(168 85 247 / 0.12);
+  --bg-secondary: rgb(255 255 255 / 0.05);
+  --bg-tertiary: rgb(255 255 255 / 0.08);
   --text-primary: #ffffff;
-  --text-secondary: rgb(255 255 255 / 0.65);
-  --text-muted: rgb(255 255 255 / 0.5);
-  --border: rgb(255 255 255 / 0.1);
-  --border-strong: rgb(255 255 255 / 0.18);
-  background: linear-gradient(180deg, #0d0d1a 0%, rgb(26 5 56 / 0.92) 45%, #0d0d1a 100%);
-  color: rgb(255 255 255 / 0.9);
+  --text-secondary: rgb(255 255 255 / 0.88);
+  --text-muted: #94a3b8;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.16);
+  background: linear-gradient(165deg, #0a0b14 0%, #10131f 38%, #1e1b4b 72%, #0a0b14 100%);
+  color: rgb(255 255 255 / 0.92);
 }
 
 .glass-app h1,
@@ -126,14 +130,14 @@ a {
 }
 
 .glass-app .glass-muted {
-  color: rgb(255 255 255 / 0.6);
+  color: #94a3b8;
 }
 
 .glass-app .glass-section {
-  border: 1px solid rgb(255 255 255 / 0.1);
-  background: linear-gradient(135deg, rgb(45 10 107 / 0.22), rgb(0 201 212 / 0.06));
-  box-shadow: 0 8px 32px rgb(45 10 107 / 0.14);
-  backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: linear-gradient(135deg, rgb(15 17 28 / 0.92), rgb(30 27 75 / 0.55));
+  box-shadow: 0 8px 40px rgb(168 85 247 / 0.12);
+  backdrop-filter: blur(16px);
 }
 
 .glass-app .glass-panel {
@@ -143,9 +147,9 @@ a {
 }
 
 .glass-app .glass-stat {
-  border: 1px solid rgb(255 255 255 / 0.1);
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.08), rgb(45 10 107 / 0.22));
-  backdrop-filter: blur(10px);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.06), rgb(30 27 75 / 0.5));
+  backdrop-filter: blur(12px);
 }
 
 .glass-app input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
@@ -162,15 +166,15 @@ a {
 }
 
 .glass-app option {
-  background: #1a0538;
+  background: #0f111c;
   color: #ffffff;
 }
 
 .glass-nav-bar {
-  border-bottom: 1px solid rgb(255 255 255 / 0.1);
-  background: rgb(13 13 26 / 0.88);
-  box-shadow: 0 4px 24px rgb(45 10 107 / 0.2);
-  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(10 11 20 / 0.9);
+  box-shadow: 0 4px 32px rgb(168 85 247 / 0.15);
+  backdrop-filter: blur(20px);
 }
 
 .glass-nav {
@@ -217,7 +221,7 @@ a {
   inset: -1px;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(120deg, rgb(0 201 212 / 0.35), rgb(122 15 158 / 0.3), rgb(45 10 107 / 0.25));
+  background: linear-gradient(120deg, rgb(34 211 238 / 0.35), rgb(147 51 234 / 0.35), rgb(168 85 247 / 0.25));
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -242,7 +246,7 @@ a {
 
 .interactive-tilt:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgb(45 10 107 / 0.12);
+  box-shadow: 0 12px 32px rgb(168 85 247 / 0.14);
 }
 
 .interactive-tilt:active {
