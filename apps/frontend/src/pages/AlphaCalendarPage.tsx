@@ -2,6 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
+import {
+  GLASS_INNER_PANEL,
+  GLASS_PAGE_SUBTITLE,
+  GLASS_PAGE_TITLE,
+  GLASS_SECTION,
+} from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -38,7 +44,7 @@ const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const
 const mockCalendar: AlphaCalendarResponse = {
   generatedAt: new Date().toISOString(),
   aiSummary:
-    "Najmocniejsze okna alpha koncentrują się obecnie na cyklu earnings i sezonowości spółek tech. Ryzyko: szybka zmiana reżimu może skrócić żywotność setupów o wysokiej probabilistyce.",
+    "Strongest alpha windows are clustered around earnings cycles and tech seasonality. Risk: a fast regime shift can shorten the life of high-probability setups.",
   windows: [
     {
       ticker: "AAPL",
@@ -47,8 +53,8 @@ const mockCalendar: AlphaCalendarResponse = {
       type: "EARNINGS_CYCLE",
       probabilityScore: 88,
       historicalAvgReturn: 3.4,
-      description: "Okno wokół publikacji wyników kwartalnych (3 dni przed do 1 dnia po).",
-      aiNote: "Historycznie po podobnych publikacjach momentum utrzymywało się przez 1-2 sesje.",
+      description: "Window around quarterly earnings (3 days before to 1 day after).",
+      aiNote: "Historically, momentum often held for 1–2 sessions after similar releases.",
     },
     {
       ticker: "MSFT",
@@ -57,8 +63,8 @@ const mockCalendar: AlphaCalendarResponse = {
       type: "SEASONAL",
       probabilityScore: 79,
       historicalAvgReturn: 2.6,
-      description: "Sezonowość miesiąca historycznie wspiera dodatnią stopę zwrotu.",
-      aiNote: "Miesięczny profil zwrotu jest dodatni, ale wrażliwy na słabszy NASDAQ.",
+      description: "Monthly seasonality has historically supported positive returns.",
+      aiNote: "Monthly return profile is positive but sensitive to a weaker NASDAQ.",
     },
     {
       ticker: "NVDA",
@@ -67,8 +73,8 @@ const mockCalendar: AlphaCalendarResponse = {
       type: "SECTOR_ROTATION",
       probabilityScore: 74,
       historicalAvgReturn: 1.3,
-      description: "Reżim RISK_ON faworyzuje sektor Information Technology.",
-      aiNote: "Kapitał rotuje do growth, co historycznie wspierało liderów półprzewodników.",
+      description: "RISK_ON regime favors the Information Technology sector.",
+      aiNote: "Capital rotation into growth has historically supported semiconductor leaders.",
     },
     {
       ticker: "XOM",
@@ -77,8 +83,8 @@ const mockCalendar: AlphaCalendarResponse = {
       type: "REGIME_SHIFT",
       probabilityScore: 66,
       historicalAvgReturn: -0.4,
-      description: "Zmiana reżimu z RISK_ON na RISK_OFF w ostatnich 24h.",
-      aiNote: "Po regime shift reakcja bywa gwałtowna — priorytetem jest kontrola ryzyka.",
+      description: "Regime shift from RISK_ON to RISK_OFF in the last 24h.",
+      aiNote: "After a regime shift, reactions can be sharp — risk control comes first.",
     },
   ],
 };
@@ -229,21 +235,21 @@ export function AlphaCalendarPage() {
   const naDate = t("common.notAvailable");
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen text-white">
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
         <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold" style={{ color: colors.brandDark }}>
-              Alpha Calendar
-            </h1>
-            <p className="text-sm" style={{ color: colors.textSecondary }}>
-              Probabilistic window map for the current market cycle.
+            <h1 className={GLASS_PAGE_TITLE}>{t("alphaCalendar.title", { defaultValue: "Alpha Calendar" })}</h1>
+            <p className={GLASS_PAGE_SUBTITLE}>
+              {t("alphaCalendar.subtitle", {
+                defaultValue: "Probabilistic window map for the current market cycle.",
+              })}
             </p>
-            <div className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style={{ backgroundColor: colors.bgSecondary, color: colors.textSecondary }}>
+            <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-[#94a3b8]">
               {usingMock ? t("common.apiMockBadge") : t("common.apiLiveBadge")}
             </div>
           </div>
-          <div className="inline-flex items-center rounded-2xl border p-1.5 glass-panel">
+          <div className="inline-flex items-center rounded-2xl border border-white/10 bg-white/[0.04] p-1.5 backdrop-blur-xl">
             {(["MONTH", "WEEK"] as const).map((view) => {
               const active = mode === view;
               return (
@@ -251,13 +257,13 @@ export function AlphaCalendarPage() {
                   key={view}
                   type="button"
                   onClick={() => setMode(view)}
-                  className="rounded-xl px-4 py-2 text-sm font-semibold transition"
-                  style={{
-                    backgroundColor: active ? colors.brandDark : "transparent",
-                    color: active ? colors.bgPrimary : colors.textSecondary,
-                  }}
+                  className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                    active ? "bg-[#a855f7] text-white shadow-[0_4px_20px_rgba(168,85,247,0.35)]" : "text-[#94a3b8] hover:text-white"
+                  }`}
                 >
-                  {view === "MONTH" ? "Month" : "Week"}
+                  {view === "MONTH"
+                    ? t("alphaCalendar.month", { defaultValue: "Month" })
+                    : t("alphaCalendar.week", { defaultValue: "Week" })}
                 </button>
               );
             })}
@@ -265,48 +271,41 @@ export function AlphaCalendarPage() {
         </header>
 
         {error ? (
-          <div
-            className="rounded-2xl border px-4 py-3 text-sm"
-            style={{
-              borderColor: colors.negative,
-              color: colors.negative,
-              backgroundColor: `${colors.negative}14`,
-            }}
-          >
+          <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 backdrop-blur-md">
             {error}
           </div>
         ) : null}
 
         {calendarLoading ? (
           <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(280px,1fr)]">
-            <div className="space-y-4 rounded-2xl border p-5 glass-panel">
-              <div className="h-7 w-1/3 animate-pulse rounded" style={{ backgroundColor: colors.bgTertiary }} />
+            <div className={`space-y-4 ${GLASS_SECTION}`}>
+              <div className="h-7 w-1/3 animate-pulse rounded bg-white/10" />
               <div className="grid grid-cols-7 gap-3">
                 {Array.from({ length: 14 }).map((_, idx) => (
-                  <div key={`day-skeleton-${idx}`} className="h-24 animate-pulse rounded-xl" style={{ backgroundColor: colors.bgTertiary }} />
+                  <div key={`day-skeleton-${idx}`} className="h-24 animate-pulse rounded-xl bg-white/10" />
                 ))}
               </div>
             </div>
-            <div className="rounded-2xl border p-5 glass-panel">
-              <div className="mb-4 h-6 w-1/2 animate-pulse rounded" style={{ backgroundColor: colors.bgTertiary }} />
-              <div className="h-44 animate-pulse rounded-xl" style={{ backgroundColor: colors.bgTertiary }} />
+            <div className={GLASS_SECTION}>
+              <div className="mb-4 h-6 w-1/2 animate-pulse rounded bg-white/10" />
+              <div className="h-44 animate-pulse rounded-xl bg-white/10" />
             </div>
           </div>
         ) : (
           <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(300px,1fr)]">
-            <section className="space-y-4 rounded-2xl border p-5 glass-panel">
+            <section className={`space-y-4 ${GLASS_SECTION}`}>
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-lg font-semibold capitalize" style={{ color: colors.brandDark }}>
-                  {monthLabel}
-                </h2>
-                <span className="text-xs" style={{ color: colors.textMuted }}>
-                  {mode === "MONTH" ? "Monthly overview" : "Week snapshot"}
+                <h2 className="text-lg font-semibold capitalize text-white">{monthLabel}</h2>
+                <span className="text-xs text-[#94a3b8]">
+                  {mode === "MONTH"
+                    ? t("alphaCalendar.monthlyOverview", { defaultValue: "Monthly overview" })
+                    : t("alphaCalendar.weekSnapshot", { defaultValue: "Week snapshot" })}
                 </span>
               </div>
 
               <div className="grid grid-cols-7 gap-2">
                 {weekdayLabels.map((day) => (
-                  <div key={day} className="text-center text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+                  <div key={day} className="text-center text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">
                     {day}
                   </div>
                 ))}
@@ -325,28 +324,25 @@ export function AlphaCalendarPage() {
                       key={dayKey}
                       type="button"
                       onClick={() => setSelectedDayKey(dayKey)}
-                      className="min-h-[120px] rounded-xl border p-3 text-left transition"
-                      style={{
-                        borderColor: isActive ? colors.brandCyan : colors.border,
-                        backgroundColor: isWeekend(day) ? colors.bgSecondary : colors.bgPrimary,
-                        boxShadow: isActive ? "0 0 0 1px rgba(34,211,238, 0.3)" : "none",
-                        opacity: mutedText ? 0.75 : 1,
-                      }}
+                      className={`min-h-[120px] rounded-xl border p-3 text-left transition ${
+                        isActive
+                          ? "border-[#22d3ee]/50 bg-[#22d3ee]/10 shadow-[0_0_0_1px_rgba(34,211,238,0.25)]"
+                          : "border-white/10 bg-white/[0.04] hover:border-white/20"
+                      } ${isWeekend(day) ? "opacity-80" : ""}`}
+                      style={{ opacity: mutedText ? 0.65 : undefined }}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold" style={{ color: mutedText ? colors.textMuted : colors.textPrimary }}>
+                        <span className={`text-sm font-semibold ${mutedText ? "text-[#94a3b8]" : "text-white"}`}>
                           {day.getDate()}
                         </span>
                         {entries.length > 0 ? (
-                          <span className="text-[11px] font-semibold" style={{ color: colors.brandDark }}>
-                            {entries.length}
-                          </span>
+                          <span className="text-[11px] font-semibold text-[#22d3ee]">{entries.length}</span>
                         ) : null}
                       </div>
                       <div className="mt-3 space-y-1.5">
                         {dayTypes.length === 0 ? (
-                          <p className="text-[11px]" style={{ color: colors.textMuted }}>
-                            No windows
+                          <p className="text-[11px] text-[#94a3b8]">
+                            {t("alphaCalendar.noWindows", { defaultValue: "No windows" })}
                           </p>
                         ) : (
                           dayTypes.slice(0, 3).map((dayType) => {
@@ -354,17 +350,13 @@ export function AlphaCalendarPage() {
                             return (
                               <div key={`${dayKey}-${dayType}`} className="flex items-center gap-1.5">
                                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: meta.color }} />
-                                <span className="text-[10px] font-semibold tracking-wide" style={{ color: colors.textSecondary }}>
-                                  {meta.label}
-                                </span>
+                                <span className="text-[10px] font-semibold tracking-wide text-white/70">{meta.label}</span>
                               </div>
                             );
                           })
                         )}
                         {dayTypes.length > 3 ? (
-                          <p className="text-[10px] font-semibold" style={{ color: colors.textMuted }}>
-                            +{dayTypes.length - 3} more
-                          </p>
+                          <p className="text-[10px] font-semibold text-[#94a3b8]">+{dayTypes.length - 3} more</p>
                         ) : null}
                       </div>
                     </button>
@@ -373,19 +365,19 @@ export function AlphaCalendarPage() {
               </div>
             </section>
 
-            <aside className="space-y-4 rounded-2xl border p-5 glass-section">
+            <aside className={`space-y-4 ${GLASS_SECTION}`}>
               <div>
-                <h2 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-                  Selected Day
+                <h2 className="text-lg font-semibold text-white">
+                  {t("alphaCalendar.selectedDay", { defaultValue: "Selected day" })}
                 </h2>
-                <p className="mt-1 text-sm capitalize" style={{ color: colors.textSecondary }}>
-                  {selectedDateLabel}
-                </p>
+                <p className="mt-1 text-sm capitalize text-[#94a3b8]">{selectedDateLabel}</p>
               </div>
 
               {selectedDayWindows.length === 0 ? (
-                <div className="rounded-xl border px-4 py-8 text-center text-sm" style={{ borderColor: colors.border, color: colors.textMuted, backgroundColor: colors.bgSecondary }}>
-                  No probabilistic windows for this day.
+                <div className={`${GLASS_INNER_PANEL} border-dashed px-4 py-8 text-center text-sm text-[#94a3b8]`}>
+                  {t("alphaCalendar.noWindowsDay", {
+                    defaultValue: "No probabilistic windows for this day.",
+                  })}
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -394,27 +386,31 @@ export function AlphaCalendarPage() {
                     const typedMeta = probabilityWindowTypeMeta[typedWindow];
                     const probability = normalizeProbability(windowItem.probabilityScore);
                     return (
-                      <article key={`${windowItem.ticker}-${windowItem.type}-${idx}`} className="rounded-xl border p-3 glass-panel">
+                      <article key={`${windowItem.ticker}-${windowItem.type}-${idx}`} className={`${GLASS_INNER_PANEL} p-3`}>
                         <div className="flex items-center justify-between gap-2">
-                          <h3 className="text-sm font-bold" style={{ color: colors.brandDark }}>
-                            {windowItem.ticker}
-                          </h3>
-                          <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold" style={{ color: typedMeta.color, backgroundColor: `${typedMeta.color}1A` }}>
+                          <h3 className="text-sm font-bold text-white">{windowItem.ticker}</h3>
+                          <span
+                            className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
+                            style={{ color: typedMeta.color, backgroundColor: `${typedMeta.color}1A` }}
+                          >
                             {typedMeta.label}
                           </span>
                         </div>
-                        <p className="mt-2 text-[11px]" style={{ color: colors.textSecondary }}>
-                          {formatDateTime(windowItem.windowStart, naDate)} - {formatDateTime(windowItem.windowEnd, naDate)}
+                        <p className="mt-2 text-[11px] text-[#94a3b8]">
+                          {formatDateTime(windowItem.windowStart, naDate)} – {formatDateTime(windowItem.windowEnd, naDate)}
                         </p>
                         <div className="mt-3 space-y-1.5">
                           <div className="flex items-center justify-between text-xs">
-                            <span style={{ color: colors.textMuted }}>Probability</span>
-                            <span className="font-semibold" style={{ color: colors.brandDark }}>
-                              {probability}%
+                            <span className="text-[#94a3b8]">
+                              {t("alphaCalendar.probability", { defaultValue: "Probability" })}
                             </span>
+                            <span className="font-semibold text-[#22d3ee]">{probability}%</span>
                           </div>
-                          <div className="h-2 overflow-hidden rounded-full" style={{ backgroundColor: colors.bgTertiary }}>
-                            <div className="h-full rounded-full" style={{ width: `${probability}%`, backgroundColor: colors.brandCyan }} />
+                          <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                            <div
+                              className="h-full rounded-full bg-[#22d3ee]"
+                              style={{ width: `${probability}%` }}
+                            />
                           </div>
                         </div>
                       </article>
@@ -426,15 +422,15 @@ export function AlphaCalendarPage() {
           </div>
         )}
 
-        <section className="rounded-2xl border p-4 glass-section">
-          <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-            Legend
+        <section className={GLASS_SECTION}>
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+            {t("alphaCalendar.legend", { defaultValue: "Legend" })}
           </h2>
           <div className="mt-3 flex flex-wrap gap-4">
             {(Object.keys(probabilityWindowTypeMeta) as ProbabilityWindowType[]).map((legendType) => {
               const legend = probabilityWindowTypeMeta[legendType];
               return (
-                <div key={legendType} className="inline-flex items-center gap-2 text-sm font-semibold" style={{ color: colors.textPrimary }}>
+                <div key={legendType} className="inline-flex items-center gap-2 text-sm font-semibold text-white/85">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: legend.color }} />
                   {legend.label}
                 </div>

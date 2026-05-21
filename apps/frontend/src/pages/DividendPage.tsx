@@ -4,6 +4,14 @@ import { ExportButton } from "../components/ExportButton";
 import { useAuth } from "../context/AuthContext";
 import { getDividendGrowthScreener, type DividendGrowthRow } from "../services/api";
 import { BrandLogo } from "../components/BrandLogo";
+import {
+  GLASS_INPUT,
+  GLASS_PAGE_SUBTITLE,
+  GLASS_PAGE_TITLE,
+  GLASS_SECTION,
+  GLASS_TEXT_NEGATIVE,
+  GLASS_TEXT_POSITIVE,
+} from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -19,15 +27,6 @@ interface DividendCompanyRow {
   healthScore: number;
   exDate: string;
   dividendPerShare: number | null;
-}
-
-function withAlpha(hex: string, alpha: number): string {
-  const normalized = hex.replace("#", "");
-  if (normalized.length !== 6) return hex;
-  const r = Number.parseInt(normalized.slice(0, 2), 16);
-  const g = Number.parseInt(normalized.slice(2, 4), 16);
-  const b = Number.parseInt(normalized.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -188,43 +187,42 @@ export function DividendPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
+    <div className="min-h-screen text-white">
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
         <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold tracking-tight">{t("dividend.pageTitle", { defaultValue: "Dywidendy" })}</h1>
-            <p className="text-sm md:text-base" style={{ color: colors.textSecondary }}>
+            <h1 className={GLASS_PAGE_TITLE}>{t("dividend.pageTitle", { defaultValue: "Dividends" })}</h1>
+            <p className={`text-sm md:text-base ${GLASS_PAGE_SUBTITLE}`}>
               {t("dividend.pageSubtitle", {
-                defaultValue: "Screener spolek dywidendowych zgodny z design systemem AMC Energy.",
+                defaultValue: "Screen dividend-paying companies with yield, safety score and ex-dates.",
               })}
             </p>
           </div>
-          <ExportButton endpoint="/export/dividend" userId={user?.id} label="Eksportuj dywidendy" />
+          <ExportButton
+            endpoint="/export/dividend"
+            userId={user?.id}
+            label={t("dividend.exportLabel", { defaultValue: "Export dividends" })}
+          />
         </header>
 
-        <section className="rounded-2xl border p-5 shadow-sm glass-section">
+        <section className={GLASS_SECTION}>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <label className="text-sm">
-              <span className="font-semibold" style={{ color: colors.textSecondary }}>
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
                 {t("dividend.searchLabel", { defaultValue: "Search" })}
               </span>
               <input
                 type="text"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder={t("dividend.searchPlaceholder", { defaultValue: "Symbol lub nazwa spółki" })}
-                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none"
-                style={{
-                  borderColor: colors.borderStrong,
-                  backgroundColor: colors.bgPrimary,
-                  color: colors.textPrimary,
-                }}
+                placeholder={t("dividend.searchPlaceholder", { defaultValue: "Symbol or company name" })}
+                className={`${GLASS_INPUT} mt-1`}
               />
             </label>
 
             <label className="text-sm">
-              <span className="font-semibold" style={{ color: colors.textSecondary }}>
-                {t("dividend.yieldMin", { defaultValue: "Yield min %" })}
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+                {t("dividend.yieldMin", { defaultValue: "Min yield %" })}
               </span>
               <input
                 type="number"
@@ -232,18 +230,13 @@ export function DividendPage() {
                 onChange={(event) => setYieldMin(event.target.value)}
                 min={0}
                 step={0.1}
-                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none"
-                style={{
-                  borderColor: colors.borderStrong,
-                  backgroundColor: colors.bgPrimary,
-                  color: colors.textPrimary,
-                }}
+                className={`${GLASS_INPUT} mt-1`}
               />
             </label>
 
             <label className="text-sm">
-              <span className="font-semibold" style={{ color: colors.textSecondary }}>
-                {t("dividend.yieldMax", { defaultValue: "Yield max %" })}
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+                {t("dividend.yieldMax", { defaultValue: "Max yield %" })}
               </span>
               <input
                 type="number"
@@ -251,30 +244,16 @@ export function DividendPage() {
                 onChange={(event) => setYieldMax(event.target.value)}
                 min={0}
                 step={0.1}
-                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none"
-                style={{
-                  borderColor: colors.borderStrong,
-                  backgroundColor: colors.bgPrimary,
-                  color: colors.textPrimary,
-                }}
+                className={`${GLASS_INPUT} mt-1`}
               />
             </label>
 
             <label className="text-sm">
-              <span className="font-semibold" style={{ color: colors.textSecondary }}>
-                {t("dividend.sector", { defaultValue: "Sektor" })}
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+                {t("dividend.sector", { defaultValue: "Sector" })}
               </span>
-              <select
-                value={sector}
-                onChange={(event) => setSector(event.target.value)}
-                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none"
-                style={{
-                  borderColor: colors.borderStrong,
-                  backgroundColor: colors.bgPrimary,
-                  color: colors.textPrimary,
-                }}
-              >
-                <option value="all">{t("dividend.sectorAll", { defaultValue: "Wszystkie" })}</option>
+              <select value={sector} onChange={(event) => setSector(event.target.value)} className={`${GLASS_INPUT} mt-1`}>
+                <option value="all">{t("dividend.sectorAll", { defaultValue: "All" })}</option>
                 {sectors.map((sectorName) => (
                   <option key={sectorName} value={sectorName}>
                     {sectorName}
@@ -285,44 +264,48 @@ export function DividendPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border shadow-sm glass-section">
+        <section className={GLASS_SECTION}>
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
-              <thead style={{ backgroundColor: colors.bgTertiary, color: colors.textSecondary }}>
+              <thead className="border-b border-white/10 bg-white/[0.04] text-[#94a3b8]">
                 <tr>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold" onClick={() => onSort("symbol")}>
-                      {t("dividend.columnSymbol", { defaultValue: "Logo+Symbol" })}
+                    <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("symbol")}>
+                      {t("dividend.columnSymbol", { defaultValue: "Symbol" })}
                       {sortIndicator("symbol")}
                     </button>
                   </th>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold" onClick={() => onSort("name")}>
-                      {t("dividend.columnName", { defaultValue: "Nazwa" })}
+                    <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("name")}>
+                      {t("dividend.columnName", { defaultValue: "Name" })}
                       {sortIndicator("name")}
                     </button>
                   </th>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold" onClick={() => onSort("yieldPct")}>
+                    <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("yieldPct")}>
                       {t("dividend.columnYield", { defaultValue: "Yield %" })}
                       {sortIndicator("yieldPct")}
                     </button>
                   </th>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold" onClick={() => onSort("healthScore")}>
+                    <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("healthScore")}>
                       {t("dividend.columnHealth", { defaultValue: "Health Score" })}
                       {sortIndicator("healthScore")}
                     </button>
                   </th>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold" onClick={() => onSort("exDate")}>
+                    <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("exDate")}>
                       {t("dividend.columnExDate", { defaultValue: "Ex-Date" })}
                       {sortIndicator("exDate")}
                     </button>
                   </th>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold" onClick={() => onSort("dividendPerShare")}>
-                      {t("dividend.columnDividendPerShare", { defaultValue: "Dywidenda/akcję" })}
+                    <button
+                      type="button"
+                      className="font-semibold text-[#94a3b8] hover:text-white"
+                      onClick={() => onSort("dividendPerShare")}
+                    >
+                      {t("dividend.columnDividendPerShare", { defaultValue: "Dividend / share" })}
                       {sortIndicator("dividendPerShare")}
                     </button>
                   </th>
@@ -331,22 +314,22 @@ export function DividendPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td className="px-4 py-6 text-sm" colSpan={6} style={{ color: colors.textSecondary }}>
+                    <td className="px-4 py-6 text-sm text-[#94a3b8]" colSpan={6}>
                       {t("common.loading", { defaultValue: "Loading..." })}
                     </td>
                   </tr>
                 ) : null}
                 {error ? (
                   <tr>
-                    <td className="px-4 py-6 text-sm" colSpan={6} style={{ color: colors.negative }}>
+                    <td className={`px-4 py-6 text-sm ${GLASS_TEXT_NEGATIVE}`} colSpan={6}>
                       {error}
                     </td>
                   </tr>
                 ) : null}
                 {!loading && !error && filteredAndSorted.length === 0 ? (
                   <tr>
-                    <td className="px-4 py-6 text-sm" colSpan={6} style={{ color: colors.textSecondary }}>
-                      {t("dividend.noData", { defaultValue: "Brak wyników dla wybranych filtrów." })}
+                    <td className="px-4 py-6 text-sm text-[#94a3b8]" colSpan={6}>
+                      {t("dividend.noResults", { defaultValue: "No results for the selected filters." })}
                     </td>
                   </tr>
                 ) : null}
@@ -357,43 +340,34 @@ export function DividendPage() {
                       return (
                         <tr
                           key={company.symbol}
-                          className="transition-colors"
+                          className={`border-t border-white/10 transition-colors ${
+                            isHovered ? "bg-white/[0.06]" : "bg-transparent"
+                          }`}
                           onMouseEnter={() => setHoveredSymbol(company.symbol)}
                           onMouseLeave={() => setHoveredSymbol(null)}
-                          style={{
-                            borderTop: `1px solid ${colors.border}`,
-                            backgroundColor: isHovered ? colors.bgSecondary : colors.bgPrimary,
-                          }}
                         >
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3">
                               <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg p-0.5">
                                 <BrandLogo size="mini" className="h-full max-h-7 w-full object-contain" />
                               </div>
-                              <span className="font-semibold">{company.symbol}</span>
+                              <span className="font-semibold text-white">{company.symbol}</span>
                             </div>
                           </td>
                           <td className="px-4 py-3">
                             <div>
-                              <p className="font-semibold">{company.name}</p>
-                              <p className="text-xs" style={{ color: colors.textMuted }}>{company.sector}</p>
+                              <p className="font-semibold text-white">{company.name}</p>
+                              <p className="text-xs text-[#94a3b8]">{company.sector}</p>
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <span
-                              className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
-                              style={{
-                                color: colors.brandDark,
-                                backgroundColor: withAlpha(colors.brandCyan, 0.2),
-                                border: `1px solid ${withAlpha(colors.brandCyan, 0.5)}`,
-                              }}
-                            >
+                            <span className="inline-flex rounded-full border border-[#22d3ee]/40 bg-[#22d3ee]/15 px-2.5 py-1 text-xs font-semibold text-[#22d3ee]">
                               {formatPercent(company.yieldPct)}
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             <div className="space-y-1.5">
-                              <div className="h-2.5 w-full rounded-full" style={{ backgroundColor: colors.bgTertiary }}>
+                              <div className="h-2.5 w-full rounded-full bg-white/10">
                                 <div
                                   className="h-2.5 rounded-full transition-all"
                                   style={{
@@ -402,13 +376,21 @@ export function DividendPage() {
                                   }}
                                 />
                               </div>
-                              <p className="text-xs font-semibold" style={{ color: currentHealthColor }}>
+                              <p
+                                className={`text-xs font-semibold ${
+                                  company.healthScore > 70
+                                    ? GLASS_TEXT_POSITIVE
+                                    : company.healthScore < 40
+                                      ? GLASS_TEXT_NEGATIVE
+                                      : "text-amber-300"
+                                }`}
+                              >
                                 {company.healthScore}
                               </p>
                             </div>
                           </td>
-                          <td className="px-4 py-3 font-mono text-xs">{company.exDate}</td>
-                          <td className="px-4 py-3">{formatDividendPerShare(company.dividendPerShare)}</td>
+                          <td className="px-4 py-3 font-mono text-xs text-white/80">{company.exDate}</td>
+                          <td className="px-4 py-3 text-white/90">{formatDividendPerShare(company.dividendPerShare)}</td>
                         </tr>
                       );
                     })
