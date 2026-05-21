@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import type { DividendAlertsResponse, DividendIntelligence, SectorComparison } from "../types/dividend";
+import type { MarketEventDto } from "../types/marketEvents";
 
 const AUTH_TOKEN_STORAGE_KEY = "auth_token";
 const AUTH_USER_ID_STORAGE_KEY = "userId";
@@ -1996,4 +1997,13 @@ export async function resetPassword(token: string, newPassword: string): Promise
     newPassword,
   });
   return data;
+}
+
+export type { MarketEventDto } from "../types/marketEvents";
+
+export async function getMarketEvents(params?: { limit?: number }): Promise<MarketEventDto[]> {
+  const { data } = await api.get<{ events: MarketEventDto[] }>("/market-events", {
+    params: { limit: params?.limit ?? 50 },
+  });
+  return Array.isArray(data.events) ? data.events : [];
 }
