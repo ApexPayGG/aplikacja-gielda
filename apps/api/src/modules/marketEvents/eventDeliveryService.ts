@@ -7,11 +7,33 @@ import {
   listWatchlistMarketEvents,
   upsertDefaultSubscription,
 } from "./marketEventsService";
-import type { EventImportance } from "./types";
+import type { EventImportance, WatchlistDailyDigest } from "./types";
 import { meetsMinImportance } from "./types";
+
+export type WatchlistDigestDeps = {
+  buildWatchlistDailyDigest: (userId: string, db: PrismaClient) => Promise<WatchlistDailyDigest>;
+  ensureSystemAnchorEvent: (db: PrismaClient) => Promise<{ id: string }>;
+};
+
+const defaultDigestDeps: WatchlistDigestDeps = {
+  buildWatchlistDailyDigest,
+  ensureSystemAnchorEvent,
+};
 
 function deliveryDedupeKey(userId: string, eventId: string, channel: string, subtype: string): string {
   return `del:${userId}:${eventId}:${channel}:${subtype}`;
+}
+
+/** Only exact offsets in daysBefore for upcoming events (daysTo >= 0). */
+export function shouldDeliverForDaysBefore(daysTo: number, daysBefore: number[]): boolean {
+  // TODO(Etap 2): published earnings — separate alert path by eventSubtype, not negative daysTo.
+  if (daysTo < 0) return false;
+  return daysBefore.includes(daysTo);
+}
+
+/** One dedupeKey → at most one in-app notification (any prior status). */
+export function shouldSkipExistingDelivery(existing: { status: string } | null | undefined): boolean {
+  return existing != null;
 }
 
 export async function deliverUpcomingEventAlerts(
@@ -52,7 +74,7 @@ export async function deliverUpcomingEventAlerts(
       if (!meetsMinImportance(event.importance as EventImportance, minImp)) continue;
 
       const daysTo = daysUntilEventDate(event.eventDate);
-      if (!daysBefore.includes(daysTo) && !(daysTo <= 0 && daysBefore.includes(0))) continue;
+      if (!shouldDeliverForDaysBefore(daysTo, daysBefore)) continue;
 
       if (!sub.channels.includes("in_app")) continue;
 
@@ -64,7 +86,7 @@ export async function deliverUpcomingEventAlerts(
       );
 
       const existing = await db.eventDelivery.findUnique({ where: { dedupeKey } });
-      if (existing?.status === "sent") {
+      if (shouldSkipExistingDelivery(existing)) {
         skipped += 1;
         continue;
       }
@@ -127,6 +149,7 @@ export async function deliverUpcomingEventAlerts(
 
 export async function deliverWatchlistDailyDigest(
   db: PrismaClient = defaultPrisma,
+  deps: WatchlistDigestDeps = defaultDigestDeps,
 ): Promise<{ digests: number }> {
   const userIds = await db.watchlist.findMany({
     select: { userId: true },
@@ -135,43 +158,53 @@ export async function deliverWatchlistDailyDigest(
 
   let digests = 0;
   const dayKey = new Date().toISOString().slice(0, 10);
-  const anchor = await ensureSystemAnchorEvent(db);
+  const anchor = await deps.ensureSystemAnchorEvent(db);
 
   for (const { userId } of userIds) {
-    const digest = await buildWatchlistDailyDigest(userId, db);
-    if (digest.items.length === 0) continue;
+    try {
+      const digest = await deps.buildWatchlistDailyDigest(userId, db);
+      if (digest.items.length === 0) continue;
 
-    const dedupeKey = `digest:${userId}:${dayKey}`;
-    const existing = await db.eventDelivery.findUnique({ where: { dedupeKey } });
-    if (existing?.status === "sent") continue;
+      const dedupeKey = `digest:${userId}:${dayKey}`;
+      const existing = await db.eventDelivery.findUnique({ where: { dedupeKey } });
+      if (shouldSkipExistingDelivery(existing)) continue;
 
-    const lines = digest.items.slice(0, 8).map((i) => `• ${i.title}`);
-    const message = [digest.headline, "", ...lines].join("\n");
+      const lines = digest.items.slice(0, 8).map((i) => `• ${i.title}`);
+      const message = [digest.headline, "", ...lines].join("\n");
 
-    await db.notification.create({
-      data: {
-        userId,
-        type: "market_event_digest",
-        title: "Event Risk Radar — dzisiejszy przegląd watchlisty",
-        message,
-        link: "/dashboard",
-      },
-    });
+      await db.notification.create({
+        data: {
+          userId,
+          type: "market_event_digest",
+          title: "Event Risk Radar — dzisiejszy przegląd watchlisty",
+          message,
+          link: "/dashboard",
+        },
+      });
 
-    await db.eventDelivery.upsert({
-      where: { dedupeKey },
-      create: {
-        eventId: anchor.id,
-        userId,
-        channel: "in_app",
-        status: "sent",
-        attempts: 1,
-        dedupeKey,
-        sentAt: new Date(),
-      },
-      update: { status: "sent", sentAt: new Date() },
-    });
-    digests += 1;
+      await db.eventDelivery.upsert({
+        where: { dedupeKey },
+        create: {
+          eventId: anchor.id,
+          userId,
+          channel: "in_app",
+          status: "sent",
+          attempts: 1,
+          dedupeKey,
+          sentAt: new Date(),
+        },
+        update: { status: "sent", sentAt: new Date() },
+      });
+      digests += 1;
+    } catch (err) {
+      console.warn(
+        JSON.stringify({
+          type: "market_events_digest_user_failed",
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+    }
   }
 
   return { digests };

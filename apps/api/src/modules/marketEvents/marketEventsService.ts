@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 import { prisma as defaultPrisma } from "../../db/index";
 import { marketEventsSyncHorizonDays } from "./config";
 import { daysUntilEventDate } from "./dedupe";
@@ -43,7 +43,7 @@ export async function upsertMarketEvents(
         source: e.source,
         sourceUrl: e.sourceUrl ?? null,
         dedupeKey: e.dedupeKey,
-        payload: e.payload ?? undefined,
+        payload: (e.payload ?? undefined) as Prisma.InputJsonValue | undefined,
         fiscalPeriod: e.fiscalPeriod ?? null,
       },
       update: {
@@ -51,7 +51,7 @@ export async function upsertMarketEvents(
         title: e.title,
         summary: e.summary ?? null,
         eventTime: e.eventTime ?? null,
-        payload: e.payload ?? undefined,
+        payload: (e.payload ?? undefined) as Prisma.InputJsonValue | undefined,
         updatedAt: new Date(),
       },
     });
@@ -73,8 +73,39 @@ export async function syncMarketEventsFromProviders(
     sources.push("eodhd");
   }
 
-  const filtered = filterEventsForWatchlistSymbols(events, await collectTrackedSymbols(db));
+  const tracked = await collectTrackedSymbols(db);
+  const filtered = filterEventsForWatchlistSymbols(events, tracked);
   const { upserted } = await upsertMarketEvents(filtered, db);
+
+  const trackedCount = tracked.size;
+
+  if (!process.env.EODHD_API_KEY?.trim()) {
+    console.warn("Market events sync skipped: missing EODHD_API_KEY");
+  } else if (events.length === 0) {
+    console.info(
+      JSON.stringify({
+        type: "market_events_sync_info",
+        message: "provider_returned_zero_events",
+        from,
+        to,
+        trackedSymbolCount: trackedCount,
+      }),
+    );
+  } else if (upserted === 0) {
+    console.warn(
+      JSON.stringify({
+        type: "market_events_sync_warn",
+        reason: "no_events_after_filter",
+        from,
+        to,
+        sources,
+        fetched: events.length,
+        filtered: filtered.length,
+        trackedSymbolCount: trackedCount,
+      }),
+    );
+  }
+
   return { upserted, sources };
 }
 
@@ -90,6 +121,78 @@ async function collectTrackedSymbols(db: PrismaClient): Promise<Set<string>> {
 }
 
 /** Keep macro + events for symbols users track or top universe. */
+/**
+ * Expands watchlist tickers for DB lookup (AAPL ↔ AAPL.US, CPS.WAR ↔ base CPS).
+ */
+/**
+ * Safe MVP expansion for provider symbols (no fuzzy ticker guessing).
+ * AAPL → AAPL, AAPL.US | CPS.WAR → CPS.WAR, CPS | MSFT → MSFT, MSFT.US
+ */
+export function expandWatchlistSymbols(symbols: string[]): string[] {
+  const out = new Set<string>();
+  for (const raw of symbols) {
+    const sym = raw.trim().toUpperCase();
+    if (!sym) continue;
+    out.add(sym);
+    const base = sym.split(".")[0] ?? sym;
+    if (sym.includes(".")) {
+      if (base !== sym) out.add(base);
+    } else if (base.length >= 4) {
+      out.add(`${base}.US`);
+    }
+  }
+  return [...out];
+}
+
+/** True when a DB event symbol matches a watchlist entry (incl. AAPL ↔ AAPL.US). */
+export function watchlistEntryMatchesEventSymbol(watchlistSymbol: string, eventSymbol: string): boolean {
+  const wl = watchlistSymbol.trim().toUpperCase();
+  const ev = eventSymbol.trim().toUpperCase();
+  if (!wl || !ev) return false;
+  if (wl === ev) return true;
+  const wlBase = wl.split(".")[0] ?? wl;
+  const evBase = ev.split(".")[0] ?? ev;
+  if (wlBase !== evBase) return false;
+  if (wl.includes(".")) {
+    return ev === wlBase || ev.startsWith(`${wlBase}.`);
+  }
+  if (ev === `${wlBase}.US`) return wlBase.length >= 4;
+  return ev.startsWith(`${wlBase}.`) && ev !== `${wlBase}.US`;
+}
+
+/** Prisma filter: expanded IN list + startsWith for non-US suffixes (e.g. CPS → CPS.WAR). */
+export function buildWatchlistSymbolWhere(symbols: string[]): Prisma.MarketEventWhereInput {
+  const inList = expandWatchlistSymbols(symbols);
+  const or: Prisma.MarketEventWhereInput[] = [{ symbol: { in: inList } }];
+
+  for (const raw of symbols) {
+    const sym = raw.trim().toUpperCase();
+    if (!sym || sym.includes(".")) continue;
+    const base = sym.split(".")[0] ?? sym;
+    or.push({ symbol: { startsWith: `${base}.` } });
+  }
+
+  return or.length > 0 ? { OR: or } : { symbol: { in: [] } };
+}
+
+type MarketEventRow = {
+  importance: string;
+  eventDate: Date;
+  [key: string]: unknown;
+};
+
+/** Sort by eventDate ascending, then importance descending within the same day. */
+export function sortEventsByImportance<T extends MarketEventRow>(rows: T[]): T[] {
+  return [...rows].sort((a, b) => {
+    const dateDiff = a.eventDate.getTime() - b.eventDate.getTime();
+    if (dateDiff !== 0) return dateDiff;
+    return (
+      (IMPORTANCE_RANK[b.importance as EventImportance] ?? 0) -
+      (IMPORTANCE_RANK[a.importance as EventImportance] ?? 0)
+    );
+  });
+}
+
 export function filterEventsForWatchlistSymbols(
   events: NormalizedMarketEvent[],
   tracked: Set<string>,
@@ -134,11 +237,13 @@ export async function listMarketEvents(
       ...(query.eventType ? { eventType: query.eventType } : {}),
       ...(query.importance ? { importance: query.importance } : {}),
     },
-    orderBy: [{ importance: "desc" }, { eventDate: "asc" }],
+    orderBy: { eventDate: "asc" },
     take: limit,
   });
 
-  return rows.map((row) => ({
+  const sorted = sortEventsByImportance(rows);
+
+  return sorted.map((row) => ({
     ...row,
     eventDate: row.eventDate.toISOString().slice(0, 10),
     daysToEvent: daysUntilEventDate(row.eventDate.toISOString().slice(0, 10)),
@@ -165,7 +270,7 @@ export async function listWatchlistMarketEvents(
 
   const rows = await db.marketEvent.findMany({
     where: {
-      symbol: { in: symbols },
+      ...buildWatchlistSymbolWhere(symbols),
       eventDate: {
         gte: new Date(`${from}T00:00:00.000Z`),
         lte: new Date(`${to}T23:59:59.999Z`),
@@ -173,11 +278,13 @@ export async function listWatchlistMarketEvents(
       ...(query.eventType ? { eventType: query.eventType } : {}),
       ...(query.importance ? { importance: query.importance } : {}),
     },
-    orderBy: [{ importance: "desc" }, { eventDate: "asc" }],
+    orderBy: { eventDate: "asc" },
     take: limit,
   });
 
-  const events = rows.map((row) => ({
+  const sorted = sortEventsByImportance(rows);
+
+  const events = sorted.map((row) => ({
     ...row,
     eventDate: row.eventDate.toISOString().slice(0, 10),
     daysToEvent: daysUntilEventDate(row.eventDate.toISOString().slice(0, 10)),
