@@ -1,0 +1,251 @@
+import { CalendarDaysIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import {
+  GLASS_BTN_GHOST,
+  GLASS_INNER_PANEL,
+  GLASS_LINK_ACCENT,
+  GLASS_SECTION,
+  GLASS_SECTION_TITLE,
+} from "./behavioral-coach/glassStyles";
+import { getMarketEvents } from "../services/api";
+import type { EventImportance, MarketEventDto, MarketEventType } from "../types/marketEvents";
+import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { pickTopMarketEvents } from "../utils/marketEventRanking";
+import { eventMatchesWatchlistSymbol } from "../utils/marketEventSymbols";
+
+type EventRiskRadarWidgetProps = {
+  watchlistSymbols: string[];
+};
+
+function eventTypeLabel(type: MarketEventType, t: (key: string, opts?: { defaultValue?: string }) => string): string {
+  if (type === "earnings") return t("marketEvents.type.earnings", { defaultValue: "Earnings" });
+  if (type === "dividend") return t("marketEvents.type.dividend", { defaultValue: "Dividend" });
+  if (type === "macro") return t("marketEvents.type.macro", { defaultValue: "Macro" });
+  return type;
+}
+
+function importanceLabel(
+  importance: EventImportance,
+  t: (key: string, opts?: { defaultValue?: string }) => string,
+): string {
+  const map: Record<EventImportance, string> = {
+    critical: t("marketEvents.importance.critical", { defaultValue: "Critical" }),
+    high: t("marketEvents.importance.high", { defaultValue: "High" }),
+    medium: t("marketEvents.importance.medium", { defaultValue: "Medium" }),
+    low: t("marketEvents.importance.low", { defaultValue: "Low" }),
+  };
+  return map[importance] ?? importance;
+}
+
+function importanceBadgeClass(importance: EventImportance): string {
+  if (importance === "critical") return "border-red-400/40 bg-red-500/15 text-red-200";
+  if (importance === "high") return "border-amber-400/40 bg-amber-500/15 text-amber-100";
+  if (importance === "medium") return "border-[#22d3ee]/35 bg-[#22d3ee]/10 text-[#22d3ee]";
+  return "border-white/15 bg-white/5 text-white/60";
+}
+
+function eventTypeBadgeClass(type: MarketEventType): string {
+  if (type === "earnings") return "border-[#a855f7]/40 bg-[#a855f7]/15 text-[#e9d5ff]";
+  if (type === "dividend") return "border-[#22d3ee]/35 bg-[#22d3ee]/10 text-[#22d3ee]";
+  if (type === "macro") return "border-indigo-400/35 bg-indigo-500/10 text-indigo-200";
+  return "border-white/15 bg-white/5 text-white/70";
+}
+
+function formatDaysToEvent(
+  days: number,
+  t: (key: string, opts?: { defaultValue?: string; count?: number }) => string,
+): string {
+  if (days <= 0) return t("marketEvents.days.today", { defaultValue: "dzisiaj" });
+  if (days === 1) return t("marketEvents.days.tomorrow", { defaultValue: "jutro" });
+  return t("marketEvents.days.inDays", { count: days, defaultValue: "za {{count}} dni" });
+}
+
+function formatEventDate(eventDate: string, locale: string): string {
+  const parsed = new Date(`${eventDate.slice(0, 10)}T12:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return eventDate;
+  return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(parsed);
+}
+
+function companyLinkSymbol(event: MarketEventDto): string | null {
+  if (!event.symbol?.trim()) return null;
+  return event.symbol.trim().toUpperCase();
+}
+
+export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetProps) {
+  const { t, i18n } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [events, setEvents] = useState<MarketEventDto[]>([]);
+
+  const normalizedWatchlist = useMemo(
+    () => watchlistSymbols.map((s) => s.trim().toUpperCase()).filter(Boolean),
+    [watchlistSymbols],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const rows = await getMarketEvents({ limit: 50 });
+        if (!cancelled) setEvents(rows);
+      } catch (err) {
+        if (!cancelled) {
+          setError(apiErrorMessage(err));
+          setEvents([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const { items: topEvents, scope } = useMemo(
+    () => pickTopMarketEvents(events, normalizedWatchlist, 3),
+    [events, normalizedWatchlist],
+  );
+
+  const locale = i18n.resolvedLanguage || i18n.language || "pl";
+
+  return (
+    <section className={GLASS_SECTION}>
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <CalendarDaysIcon className="h-5 w-5 text-[#22d3ee]" aria-hidden />
+            <h2 className={GLASS_SECTION_TITLE}>
+              {t("marketEvents.radar.title", { defaultValue: "Event Risk Radar" })}
+            </h2>
+          </div>
+          <p className="mt-2 max-w-xl text-sm text-white/60">
+            {t("marketEvents.radar.subtitle", {
+              defaultValue: "Najbliższe wydarzenia, które mogą wpłynąć na Twoje decyzje.",
+            })}
+          </p>
+        </div>
+        <Link
+          to="/market-events"
+          className={`${GLASS_BTN_GHOST} shrink-0 px-3 py-1.5 text-xs`}
+        >
+          {t("marketEvents.radar.viewCalendar", { defaultValue: "Zobacz kalendarz" })}
+        </Link>
+      </div>
+
+      {loading ? (
+        <p className={`${GLASS_INNER_PANEL} px-4 py-3 text-sm text-white/60`}>
+          {t("common.loading", { defaultValue: "Loading..." })}
+        </p>
+      ) : null}
+
+      {error ? (
+        <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 backdrop-blur-md">
+          {error}
+        </p>
+      ) : null}
+
+      {!loading && !error && topEvents.length === 0 ? (
+        <div className={`${GLASS_INNER_PANEL} border-dashed px-4 py-4 text-sm`}>
+          <p className="font-medium text-white">
+            {t("marketEvents.radar.emptyTitle", { defaultValue: "Brak nadchodzących wydarzeń w tym horyzoncie" })}
+          </p>
+          <p className="mt-2 text-white/60">
+            {t("marketEvents.radar.emptyHint", {
+              defaultValue: "Dodaj spółki do watchlisty lub sprawdź kalendarz za kilka dni.",
+            })}
+          </p>
+          <Link to="/market-events" className={`${GLASS_LINK_ACCENT} mt-3 inline-block text-sm`}>
+            {t("marketEvents.radar.viewCalendar", { defaultValue: "Zobacz kalendarz" })}
+          </Link>
+        </div>
+      ) : null}
+
+      {!loading && !error && topEvents.length > 0 ? (
+        <>
+          {scope === "global" && normalizedWatchlist.length > 0 ? (
+            <p className="mb-3 text-xs text-white/50">
+              {t("marketEvents.radar.globalFallback", {
+                defaultValue: "Brak eventów na watchliście — pokazujemy najbliższe globalne.",
+              })}
+            </p>
+          ) : null}
+          <ul className="space-y-3">
+            {topEvents.map((event) => {
+              const symbol = event.symbol?.trim().toUpperCase() ?? null;
+              const onWatchlist =
+                symbol != null && eventMatchesWatchlistSymbol(symbol, normalizedWatchlist);
+              const linkSymbol = companyLinkSymbol(event);
+
+              return (
+                <li key={event.id} className={`${GLASS_INNER_PANEL} p-4`}>
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-mono text-sm font-bold text-white">
+                        {symbol ?? t("marketEvents.macroSymbol", { defaultValue: "MACRO" })}
+                      </span>
+                      <span
+                        className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${eventTypeBadgeClass(event.eventType)}`}
+                      >
+                        {eventTypeLabel(event.eventType, t)}
+                      </span>
+                      {onWatchlist ? (
+                        <span className="rounded-full border border-[#a855f7]/35 bg-[#a855f7]/10 px-2 py-0.5 text-[10px] font-semibold text-[#e9d5ff]">
+                          {t("marketEvents.radar.onWatchlist", { defaultValue: "Watchlist" })}
+                        </span>
+                      ) : null}
+                    </div>
+                    <span
+                      className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${importanceBadgeClass(event.importance)}`}
+                    >
+                      {importanceLabel(event.importance, t)}
+                    </span>
+                  </div>
+
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/55">
+                    <span>{formatEventDate(event.eventDate, locale)}</span>
+                    <span className="font-semibold text-[#22d3ee]">{formatDaysToEvent(event.daysToEvent, t)}</span>
+                  </div>
+
+                  {event.summary?.trim() ? (
+                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-white/75">{event.summary}</p>
+                  ) : (
+                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-white/55">{event.title}</p>
+                  )}
+
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    {linkSymbol ? (
+                      <Link
+                        to={`/company/${encodeURIComponent(linkSymbol)}`}
+                        className={`${GLASS_LINK_ACCENT} text-xs font-semibold`}
+                      >
+                        {t("marketEvents.radar.prepare", { defaultValue: "Przygotuj się" })}
+                      </Link>
+                    ) : (
+                      <Link to="/market-events" className={`${GLASS_LINK_ACCENT} text-xs font-semibold`}>
+                        {t("marketEvents.radar.prepare", { defaultValue: "Przygotuj się" })}
+                      </Link>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      ) : null}
+
+      {!loading && !error && topEvents.some((e) => e.importance === "critical" || e.importance === "high") ? (
+        <p className="mt-3 flex items-center gap-1.5 text-[11px] text-amber-200/80">
+          <ExclamationTriangleIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          {t("marketEvents.radar.highRiskHint", {
+            defaultValue: "Wysoka ważność — zaplanuj pozycję i emocje przed sesją.",
+          })}
+        </p>
+      ) : null}
+    </section>
+  );
+}

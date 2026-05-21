@@ -22,6 +22,7 @@ import {
   GLASS_WATCHLIST_CARD,
 } from "../components/behavioral-coach/glassStyles";
 import { DailyCheckInWidget } from "../components/DailyCheckInWidget";
+import { EventRiskRadarWidget } from "../components/EventRiskRadarWidget";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import { useAuth } from "../context/AuthContext";
 import { getCompanyDetail, getLatestQuoteBySymbol, getWatchlist } from "../services/api";
@@ -174,6 +175,8 @@ export function Dashboard() {
         .slice(0, 5),
     [watchlistRows],
   );
+
+  const watchlistSymbols = useMemo(() => watchlistRows.map((row) => row.symbol), [watchlistRows]);
 
   function trendIcon(tone: TrendTone) {
     if (tone === "up") {
@@ -362,6 +365,8 @@ export function Dashboard() {
                 </div>
               )}
             </section>
+
+            <EventRiskRadarWidget watchlistSymbols={watchlistSymbols} />
 
             <section className={GLASS_SECTION}>
               <div className="mb-4 flex items-center justify-between gap-3">
