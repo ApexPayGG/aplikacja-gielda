@@ -28,7 +28,7 @@ const SHARE_OPTIONS: ShareOption[] = [
   { id: "twitter", label: "X (Twitter)", sublabel: "Intent tweet z hashtagi", accent: "bg-white/10 text-white" },
   { id: "facebook", label: "Facebook", sublabel: "Udostępnij + tekst w schowku", accent: "bg-[#1877F2]/20 text-[#7CB8FF]" },
   { id: "threads", label: "Threads", sublabel: "Ten sam payload co X", accent: "bg-white/10 text-white/90" },
-  { id: "copy", label: "Kopiuj link", sublabel: "Discord · Telegram · WhatsApp", accent: "bg-[#00C9D4]/15 text-[#00C9D4]" },
+  { id: "copy", label: "Kopiuj link", sublabel: "Discord · Telegram · WhatsApp", accent: "bg-[#22d3ee]/15 text-[#22d3ee]" },
 ];
 
 function openShareWindow(url: string): void {
@@ -145,9 +145,9 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#00C9D4]/35 bg-gradient-to-r from-[#2D0A6B]/40 to-[#00C9D4]/20 px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_24px_rgba(0,201,212,0.12)] backdrop-blur-md transition hover:border-[#00C9D4]/55 hover:shadow-[0_0_28px_rgba(0,201,212,0.2)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#22d3ee]/35 bg-gradient-to-r from-[#a855f7]/40 to-[#22d3ee]/20 px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_24px_rgba(34,211,238,0.12)] backdrop-blur-md transition hover:border-[#22d3ee]/55 hover:shadow-[0_0_28px_rgba(34,211,238,0.2)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
       >
-        <ShareIcon className="h-5 w-5 text-[#00C9D4]" aria-hidden />
+        <ShareIcon className="h-5 w-5 text-[#22d3ee]" aria-hidden />
         Udostępnij profil
         <ChevronDownIcon className={`h-4 w-4 text-white/70 transition ${open ? "rotate-180" : ""}`} aria-hidden />
       </button>
@@ -162,10 +162,10 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
           />
           <div
             role="menu"
-            className="fixed inset-x-3 bottom-3 z-30 max-h-[min(70vh,28rem)] overflow-y-auto rounded-2xl border border-white/10 bg-[#1a0538]/98 shadow-[0_16px_48px_rgba(45,10,107,0.55)] backdrop-blur-md md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:right-auto md:top-full md:mt-2 md:max-h-none md:min-w-[20rem]"
+            className="fixed inset-x-3 bottom-3 z-30 max-h-[min(70vh,28rem)] overflow-y-auto rounded-2xl border border-white/10 bg-[#0f111c]/98 shadow-[0_16px_48px_rgba(168,85,247,0.55)] backdrop-blur-md md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:right-auto md:top-full md:mt-2 md:max-h-none md:min-w-[20rem]"
           >
           <div className="border-b border-white/10 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#00C9D4]">Viral Share Center</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#22d3ee]">Viral Share Center</p>
             <p className="mt-0.5 text-xs text-white/55">Dyscyplina {payloads.disciplineScore}% · FOMO {payloads.fomoScore}%</p>
           </div>
           <ul className="p-2">
@@ -185,7 +185,7 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
                     <span className="block text-[11px] text-white/45">{option.sublabel}</span>
                   </span>
                   {copiedChannel === option.id ? (
-                    <CheckIcon className="h-4 w-4 shrink-0 text-[#00C9D4]" aria-hidden />
+                    <CheckIcon className="h-4 w-4 shrink-0 text-[#22d3ee]" aria-hidden />
                   ) : option.id === "copy" ? (
                     <ClipboardDocumentIcon className="h-4 w-4 shrink-0 text-white/35" aria-hidden />
                   ) : null}
@@ -200,7 +200,7 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
       {toast ? (
         <div
           role="status"
-          className="absolute left-0 right-0 top-full z-40 mt-2 rounded-xl border border-[#00C9D4]/30 bg-[#2D0A6B]/95 px-4 py-3 text-sm text-white shadow-lg backdrop-blur-md"
+          className="absolute left-0 right-0 top-full z-40 mt-2 rounded-xl border border-[#22d3ee]/30 bg-[#1e1b4b]/95 px-4 py-3 text-sm text-white shadow-lg backdrop-blur-md"
         >
           {toast}
         </div>

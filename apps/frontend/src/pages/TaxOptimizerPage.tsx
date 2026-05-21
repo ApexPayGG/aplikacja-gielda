@@ -209,7 +209,7 @@ export function TaxOptimizerPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10" style={{ color: colors.textPrimary }}>
       <header
-        className="rounded-3xl border p-6 shadow-[0_20px_44px_rgba(45,10,107,0.12)]"
+        className="rounded-3xl border p-6 shadow-[0_20px_44px_rgba(168,85,247,0.12)]"
         style={{
           borderColor: colors.border,
           background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})`,
@@ -247,7 +247,7 @@ export function TaxOptimizerPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border p-5 shadow-[0_14px_32px_rgba(45,10,107,0.08)] glass-section">
+      <section className="rounded-2xl border p-5 shadow-[0_14px_32px_rgba(168,85,247,0.08)] glass-section">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <label className="flex flex-col gap-1.5 text-sm">
             <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
@@ -335,7 +335,7 @@ export function TaxOptimizerPage() {
       ) : null}
 
       {summary && !error ? (
-        <section className="rounded-2xl border p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)] glass-section">
+        <section className="rounded-2xl border p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)] glass-section">
           <div className="grid gap-4 md:grid-cols-2">
             <article className="rounded-2xl border p-4 glass-panel">
               <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>

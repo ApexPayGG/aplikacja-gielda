@@ -1,3 +1,4 @@
+import { GLASS_INNER_PANEL } from "../behavioral-coach/glassStyles";
 type ScreenNavigatorProps = {
   current: number;
   onChange: (next: number) => void;
@@ -7,12 +8,12 @@ type ScreenNavigatorProps = {
 
 export function ScreenNavigator({ current, onChange, max, lockedFrom }: ScreenNavigatorProps) {
   return (
-    <div className="mb-5 flex items-center justify-between gap-3 rounded-xl border border-surface-border bg-surface-elevated p-3">
+    <div className={`mb-5 flex items-center justify-between gap-3 ${GLASS_INNER_PANEL} p-3`}>
       <button
         type="button"
         onClick={() => onChange(Math.max(1, current - 1))}
         disabled={current <= 1}
-        className="rounded-lg border border-surface-border px-3 py-1 text-sm text-slate-300 disabled:opacity-50"
+        className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-1 text-sm text-[#94a3b8] disabled:opacity-50"
       >
         ← Prev
       </button>
@@ -42,7 +43,7 @@ export function ScreenNavigator({ current, onChange, max, lockedFrom }: ScreenNa
         type="button"
         onClick={() => onChange(Math.min(max, current + 1))}
         disabled={current >= max || (lockedFrom != null && current + 1 >= lockedFrom)}
-        className="rounded-lg border border-surface-border px-3 py-1 text-sm text-slate-300 disabled:opacity-50"
+        className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-1 text-sm text-[#94a3b8] disabled:opacity-50"
       >
         Next →
       </button>

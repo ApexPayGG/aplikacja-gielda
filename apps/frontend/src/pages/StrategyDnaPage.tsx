@@ -107,7 +107,7 @@ export function StrategyDnaPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10 text-white">
       <header
-        className="glass-section rounded-3xl p-6 shadow-[0_18px_45px_rgba(45,10,107,0.1)]"
+        className="glass-section rounded-3xl p-6 shadow-[0_18px_45px_rgba(168,85,247,0.1)]"
         style={{ background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
       >
         <h1 className="glass-page-title text-3xl">Strategy DNA</h1>
@@ -132,12 +132,12 @@ export function StrategyDnaPage() {
       {!loading && !error && data && (
         <>
           {data.hasEnoughData ? (
-            <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+            <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
               <h2 className="text-lg font-semibold text-white">Twój styl inwestowania</h2>
               <div className="mt-5 grid gap-6 md:grid-cols-[260px_1fr]">
                 <div className="flex flex-col items-center justify-center rounded-2xl glass-panel border border-white/10 bg-white/5 p-5">
                   <div
-                    className="flex h-44 w-44 flex-col items-center justify-center rounded-full text-center text-white shadow-[0_12px_30px_rgba(45,10,107,0.35)]"
+                    className="flex h-44 w-44 flex-col items-center justify-center rounded-full text-center text-white shadow-[0_12px_30px_rgba(168,85,247,0.35)]"
                     style={{ backgroundColor: colors.brandDark }}
                   >
                     <p className="text-xs uppercase tracking-wide text-white/75">Dominant style</p>
@@ -169,7 +169,7 @@ export function StrategyDnaPage() {
           )}
 
           <section className="grid gap-6 md:grid-cols-2">
-            <div className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+            <div className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
               <h3 className="text-lg font-semibold text-white">Twoje setup-y</h3>
               <ul className="mt-4 space-y-3">
                 {buildSetups(data).map((setup) => (
@@ -186,7 +186,7 @@ export function StrategyDnaPage() {
               </ul>
             </div>
 
-            <div className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+            <div className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
               <h3 className="text-lg font-semibold text-white">AI insight</h3>
               <p className="mt-3 text-sm leading-6 glass-muted">{data.insight}</p>
 
@@ -199,7 +199,7 @@ export function StrategyDnaPage() {
             </div>
           </section>
 
-          <section className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+          <section className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
             <h3 className="text-lg font-semibold text-white">Rekomendacje</h3>
             <div className="mt-4 grid gap-3 md:grid-cols-3">
               <RecommendationCard
@@ -249,7 +249,7 @@ function StatTile(props: { label: string; value: string }) {
 
 function RecommendationCard(props: { title: string; body: string }) {
   return (
-    <article className="glass-panel rounded-xl p-4 shadow-[0_10px_24px_rgba(45,10,107,0.08)]" style={{ borderLeft: `4px solid ${colors.brandCyan}` }}>
+    <article className="glass-panel rounded-xl p-4 shadow-[0_10px_24px_rgba(168,85,247,0.08)]" style={{ borderLeft: `4px solid ${colors.brandCyan}` }}>
       <h4 className="text-sm font-semibold text-white">{props.title}</h4>
       <p className="mt-2 text-sm leading-6 glass-muted">{props.body}</p>
     </article>

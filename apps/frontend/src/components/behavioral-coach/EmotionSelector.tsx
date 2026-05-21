@@ -27,8 +27,8 @@ export function EmotionSelector({ emotion, acknowledged, onSelect, compact }: Pr
               onClick={() => onSelect(key)}
               className={`min-h-12 rounded-xl border px-3 py-3.5 text-left text-sm transition ${
                 selected
-                  ? "border-[#00C9D4]/50 bg-[#00C9D4]/15 text-white shadow-[0_0_20px_rgba(0,201,212,0.15)]"
-                  : "border-white/10 bg-[#2D0A6B]/20 text-white/75 hover:border-white/20"
+                  ? "border-[#22d3ee]/50 bg-[#22d3ee]/15 text-white shadow-[0_0_20px_rgba(34,211,238,0.15)]"
+                  : "border-white/10 bg-[#1e1b4b]/20 text-white/75 hover:border-white/20"
               }`}
             >
               <span className="block font-semibold">{meta.labelPl}</span>
@@ -38,7 +38,7 @@ export function EmotionSelector({ emotion, acknowledged, onSelect, compact }: Pr
         })}
       </div>
       {emotion && acknowledged ? (
-        <p className="mt-2 text-xs text-[#00C9D4]/80">{EMOTION_JOURNAL_LABELS[emotion].hint}</p>
+        <p className="mt-2 text-xs text-[#22d3ee]/80">{EMOTION_JOURNAL_LABELS[emotion].hint}</p>
       ) : (
         <p className="mt-2 text-xs text-amber-200/90">Paper trade i dziennik wymagają świadomego wyboru emocji.</p>
       )}

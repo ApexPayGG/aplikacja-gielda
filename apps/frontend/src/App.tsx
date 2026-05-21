@@ -123,7 +123,8 @@ export default function App() {
   const onboardingCompleted = hasCompletedOnboarding();
   const defaultAuthenticatedRoute = onboardingCompleted ? "/dashboard" : "/onboarding";
   const inOnboarding = location.pathname.startsWith("/onboarding");
-  const glassApp = Boolean(token) && !inOnboarding;
+  /** Dark glass theme on every route (landing, auth, onboarding, app). */
+  const glassApp = true;
   const showTopNavigation = token && !inOnboarding;
   const showFloatingEmotionalWidget = token && !location.pathname.startsWith("/dashboard") && !inOnboarding;
   useKeyboardShortcuts();

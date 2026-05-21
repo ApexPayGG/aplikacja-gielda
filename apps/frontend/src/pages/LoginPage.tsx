@@ -48,7 +48,7 @@ export function LoginPage() {
   }
 
   const inputClassName =
-    "w-full rounded-xl border border-bgTertiary bg-bgPrimary px-3 py-2.5 text-textPrimary outline-none transition focus:border-brandCyan";
+    "w-full rounded-xl border border-white/12 bg-white/[0.04] px-3 py-2.5 text-white outline-none transition placeholder:text-[#94a3b8] focus:border-[#22d3ee]/50 focus:ring-2 focus:ring-[#22d3ee]/20";
   const keyFeatures = [
     t("auth.loginAsideFeature1"),
     t("auth.loginAsideFeature2"),
@@ -56,9 +56,9 @@ export function LoginPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-bgPrimary">
+    <div className="min-h-screen">
       <div className="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-10 lg:px-8">
-        <div className="grid w-full overflow-hidden rounded-3xl bg-bgPrimary shadow-[0_24px_72px_rgba(45,10,107,0.2)] lg:grid-cols-2">
+        <div className="glass-section grid w-full overflow-hidden rounded-3xl lg:grid-cols-2">
           <div className="p-6 sm:p-10">
             <BrandLogo size="auth" className="mb-8" />
             <form onSubmit={onSubmit} className="space-y-4">

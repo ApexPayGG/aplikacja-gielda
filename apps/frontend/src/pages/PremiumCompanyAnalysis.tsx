@@ -223,7 +223,7 @@ export function PremiumCompanyAnalysis() {
       style={{
         backgroundColor: colors.bgPrimary,
         borderColor: colors.border,
-        boxShadow: "0 18px 44px rgba(45, 10, 107, 0.16)",
+        boxShadow: "0 18px 44px rgba(168,85,247, 0.16)",
       }}
     >
       {currentScreen === 1 ? (
@@ -531,7 +531,7 @@ export function PremiumCompanyAnalysis() {
         </Link>
         <header
           className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border px-5 py-4"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary, boxShadow: "0 8px 24px rgba(45, 10, 107, 0.1)" }}
+          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary, boxShadow: "0 8px 24px rgba(168,85,247, 0.1)" }}
         >
           <div className="flex items-center gap-3">
             <div
@@ -602,7 +602,7 @@ export function PremiumCompanyAnalysis() {
           {showUpgradeBlock ? (
             <section
               className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl p-6 text-center backdrop-blur-[3px]"
-              style={{ background: `linear-gradient(135deg, rgba(45, 10, 107, 0.84), rgba(122, 15, 158, 0.76))` }}
+              style={{ background: `linear-gradient(135deg, rgba(168,85,247, 0.84), rgba(122, 15, 158, 0.76))` }}
             >
               <div className="max-w-xl rounded-2xl border p-7" style={{ borderColor: "rgba(255,255,255,0.22)", backgroundColor: "rgba(255,255,255,0.1)" }}>
                 <h2 className="text-2xl font-semibold text-white">Unlock full premium analysis</h2>

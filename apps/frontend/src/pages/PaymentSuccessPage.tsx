@@ -44,7 +44,7 @@ export function PaymentSuccessPage() {
         ))}
       </div>
 
-      <section className="relative z-10 w-full max-w-xl rounded-3xl border border-border bg-bgPrimary p-8 text-center shadow-[0_24px_72px_rgba(45,10,107,0.18)] sm:p-10">
+      <section className="relative z-10 w-full max-w-xl rounded-3xl border border-border bg-bgPrimary p-8 text-center shadow-[0_24px_72px_rgba(168,85,247,0.18)] sm:p-10">
         <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-positive/15 text-6xl font-bold text-positive">
           ✓
         </div>

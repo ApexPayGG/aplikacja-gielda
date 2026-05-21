@@ -29,11 +29,11 @@ export function AppLegalFooter() {
       }`}
     >
       <p className={`text-[11px] ${glass ? "text-white/50" : "text-textSecondary"}`}>
-        <Link to="/terms" className={`font-medium hover:underline ${glass ? "text-[#00C9D4]" : "text-brandCyan"}`}>
+        <Link to="/terms" className={`font-medium hover:underline ${glass ? "text-[#22d3ee]" : "text-brandCyan"}`}>
           Regulamin
         </Link>
         {" · "}
-        <Link to="/privacy" className={`font-medium hover:underline ${glass ? "text-[#00C9D4]" : "text-brandCyan"}`}>
+        <Link to="/privacy" className={`font-medium hover:underline ${glass ? "text-[#22d3ee]" : "text-brandCyan"}`}>
           Polityka prywatności
         </Link>
       </p>

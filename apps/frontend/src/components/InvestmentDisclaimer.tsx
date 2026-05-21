@@ -27,12 +27,12 @@ export function InvestmentDisclaimer({
     variant === "landing"
       ? "border-white/15 bg-white/5 px-4 py-3 text-white/70"
       : variant === "drawer"
-        ? "border-white/10 bg-[#2D0A6B]/25 px-3 py-2.5 text-white/65"
-        : "border-[#2D0A6B]/15 bg-[#2D0A6B]/5 px-4 py-3 text-textSecondary";
+        ? "border-white/10 bg-[#1e1b4b]/25 px-3 py-2.5 text-white/65"
+        : "border-[#a855f7]/15 bg-[#1e1b4b]/5 px-4 py-3 text-textSecondary";
 
   const collapsibleBtnClass =
     variant === "landing" || variant === "drawer"
-      ? "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-left text-xs font-medium text-white/60 transition hover:border-[#00C9D4]/30 hover:text-white/80"
+      ? "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-left text-xs font-medium text-white/60 transition hover:border-[#22d3ee]/30 hover:text-white/80"
       : "w-full rounded-lg border border-border px-3 py-2 text-left text-xs font-medium text-textMuted transition hover:border-brandDark/30 hover:text-textSecondary";
 
   if (collapsible && !expanded) {
@@ -62,7 +62,7 @@ export function InvestmentDisclaimer({
             to="/terms"
             className={
               variant === "landing" || variant === "drawer"
-                ? "font-medium text-[#00C9D4] underline-offset-2 hover:underline"
+                ? "font-medium text-[#22d3ee] underline-offset-2 hover:underline"
                 : "font-medium text-brandCyan underline-offset-2 hover:underline"
             }
           >

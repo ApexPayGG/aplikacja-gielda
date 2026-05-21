@@ -137,7 +137,7 @@ export function MistakeLibraryPage() {
             {mistakeSymbols.length > 0 ? (
               <Link
                 to={`/strategy-dna?from=mistakes&symbols=${encodeURIComponent(mistakeSymbols.join(","))}`}
-                className="rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
+                className="rounded-lg glass-section px-3 py-2 text-sm font-semibold"
                 style={{ borderColor: colors.borderStrong, color: colors.brandDark }}
               >
                 {t("mistakes.dnaContextLink")}
@@ -162,7 +162,7 @@ export function MistakeLibraryPage() {
         ) : null}
 
         <section className="mb-6 grid gap-3 md:grid-cols-3">
-          <article className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+          <article className="rounded-2xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
             <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Łączne błędy
             </p>
@@ -170,7 +170,7 @@ export function MistakeLibraryPage() {
               {summary.total}
             </p>
           </article>
-          <article className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+          <article className="rounded-2xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
             <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Najczęstszy typ
             </p>
@@ -178,7 +178,7 @@ export function MistakeLibraryPage() {
               {mostCommonType}
             </p>
           </article>
-          <article className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+          <article className="rounded-2xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
             <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Koszt błędów w %
             </p>
@@ -188,7 +188,7 @@ export function MistakeLibraryPage() {
           </article>
         </section>
 
-        <section className="mb-4 rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+        <section className="mb-4 rounded-2xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
           <p className="mb-3 text-sm font-semibold" style={{ color: colors.textSecondary }}>
             Filtr po typie
           </p>
@@ -204,7 +204,7 @@ export function MistakeLibraryPage() {
                   className="rounded-full border px-3 py-1.5 text-xs font-semibold transition"
                   style={{
                     borderColor: active ? colors.brandDark : colors.borderStrong,
-                    backgroundColor: active ? "rgba(45, 10, 107, 0.1)" : colors.bgPrimary,
+                    backgroundColor: active ? "rgba(168,85,247, 0.1)" : colors.bgPrimary,
                     color: active ? colors.brandDark : colors.textSecondary,
                   }}
                 >
@@ -216,11 +216,11 @@ export function MistakeLibraryPage() {
         </section>
 
         {loading ? (
-          <div className="rounded-xl border bg-white p-5 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
+          <div className="rounded-xl glass-section p-5 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
             {t("common.loading")}
           </div>
         ) : filteredItems.length === 0 ? (
-          <div className="rounded-xl border bg-white p-5 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
+          <div className="rounded-xl glass-section p-5 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
             Brak błędów dla wybranego filtra.
           </div>
         ) : (
@@ -228,7 +228,7 @@ export function MistakeLibraryPage() {
             {filteredItems.map((item) => {
               const meta = typeMeta[item.type];
               return (
-                <li key={item.id} className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+                <li key={item.id} className="rounded-2xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"

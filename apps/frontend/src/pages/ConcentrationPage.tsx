@@ -110,7 +110,7 @@ export function ConcentrationPage() {
       {!loading && !error && data && data.stockWeights.length > 0 && (
         <>
           <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-            <article className="glass-section rounded-2xl p-6 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
+            <article className="glass-section rounded-2xl p-6 shadow-[0_14px_32px_rgba(168,85,247,0.08)]">
               <h2 className="mb-4 text-base font-semibold text-white">Rozklad sektorowy (placeholder)</h2>
               <div className="flex flex-wrap items-center gap-6">
                 <div
@@ -118,7 +118,7 @@ export function ConcentrationPage() {
                   style={{
                     background: pieBackground,
                     borderColor: colors.bgPrimary,
-                    boxShadow: "0 14px 34px rgba(45, 10, 107, 0.12)",
+                    boxShadow: "0 14px 34px rgba(168,85,247, 0.12)",
                   }}
                 >
                   <div
@@ -138,7 +138,7 @@ export function ConcentrationPage() {
               </div>
             </article>
 
-            <article className="glass-section rounded-2xl p-6 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
+            <article className="glass-section rounded-2xl p-6 shadow-[0_14px_32px_rgba(168,85,247,0.08)]">
               <h2 className="mb-4 text-base font-semibold text-white">Diversification score</h2>
               <div
                 className={`mx-auto flex h-48 w-48 items-center justify-center rounded-full border-8 font-mono text-5xl font-bold ${scoreClass(data.diversificationScore)}`}
@@ -164,7 +164,7 @@ export function ConcentrationPage() {
             </article>
           </section>
 
-          <section className="glass-section rounded-2xl p-6 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
+          <section className="glass-section rounded-2xl p-6 shadow-[0_14px_32px_rgba(168,85,247,0.08)]">
             <h2 className="mb-4 text-base font-semibold text-white">Udzial spolek w portfelu</h2>
             <div className="space-y-4">
               {data.stockWeights.map((row) => (

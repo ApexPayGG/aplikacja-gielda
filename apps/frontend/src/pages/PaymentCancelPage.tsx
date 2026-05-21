@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export function PaymentCancelPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-bgSecondary px-4 py-10">
-      <section className="w-full max-w-xl rounded-3xl border border-border bg-bgPrimary p-8 text-center shadow-[0_24px_72px_rgba(45,10,107,0.14)] sm:p-10">
+      <section className="w-full max-w-xl rounded-3xl border border-border bg-bgPrimary p-8 text-center shadow-[0_24px_72px_rgba(168,85,247,0.14)] sm:p-10">
         <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-negative/15 text-5xl font-bold text-negative">
           ✕
         </div>

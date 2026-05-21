@@ -19,7 +19,7 @@ export function DashboardWelcomeHero() {
   ];
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-brandDark/15 bg-gradient-to-br from-[#2D0A6B]/[0.07] via-bgPrimary to-brandCyan/[0.06] p-6 shadow-sm md:p-8">
+    <section className="relative overflow-hidden rounded-2xl border border-brandDark/15 bg-gradient-to-br from-[#a855f7]/[0.07] via-bgPrimary to-brandCyan/[0.06] p-6 shadow-sm md:p-8">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-brandCyan/10 blur-3xl"

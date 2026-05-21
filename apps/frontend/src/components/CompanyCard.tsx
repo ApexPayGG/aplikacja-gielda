@@ -25,7 +25,7 @@ function readNumber(value: unknown): number | null {
 }
 
 const GLASS_ICON_SHELL =
-  "flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#2D0A6B]/10 bg-[#2D0A6B]/5 p-2 shadow-sm backdrop-blur-sm";
+  "flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#a855f7]/10 bg-[#1e1b4b]/5 p-2 shadow-sm backdrop-blur-sm";
 
 export function CompanyCard({ company, onOpenBrief }: Props) {
   const companyMeta = company as Company & {
@@ -56,7 +56,7 @@ export function CompanyCard({ company, onOpenBrief }: Props) {
     <div className={GLASS_COMPANY_CARD}>
       <Link
         to={cardTo}
-        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00C9D4] focus-visible:ring-offset-2"
+        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#22d3ee] focus-visible:ring-offset-2"
         aria-label={cardAriaLabel}
       />
 
@@ -65,7 +65,7 @@ export function CompanyCard({ company, onOpenBrief }: Props) {
           <WatchlistButton symbol={company.symbol} />
         </div>
 
-        <div className="relative flex h-28 items-center justify-center bg-gradient-to-b from-[#00C9D4]/10 to-transparent p-4">
+        <div className="relative flex h-28 items-center justify-center bg-gradient-to-b from-[#22d3ee]/10 to-transparent p-4">
           <div className={GLASS_ICON_SHELL}>
             <BrandLogo size="mini" className="h-full max-h-10 w-full max-w-full object-contain" />
           </div>
@@ -84,14 +84,14 @@ export function CompanyCard({ company, onOpenBrief }: Props) {
                   <p className="font-mono text-3xl font-bold text-white">{priceLabel}</p>
                   <span
                     className={`mt-2 inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${
-                      isPositive ? "bg-[#00C9D4]/10 text-[#00A86B]" : "bg-red-500/10 text-red-500"
+                      isPositive ? "bg-[#22d3ee]/10 text-[#00A86B]" : "bg-red-500/10 text-red-500"
                     }`}
                   >
                     {`${isPositive ? "+" : ""}${changePct.toFixed(2)}%`}
                   </span>
                 </div>
-                <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-[#0D0D1A]/40 backdrop-blur-sm">
-                  <span className="rounded-full border border-[#2D0A6B]/20 bg-[#2D0A6B] px-3 py-1 text-xs font-bold tracking-wide text-white shadow-sm">
+                <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-[#0a0b14]/40 backdrop-blur-sm">
+                  <span className="rounded-full border border-[#a855f7]/20 bg-[#1e1b4b] px-3 py-1 text-xs font-bold tracking-wide text-white shadow-sm">
                     PRO
                   </span>
                 </div>
@@ -101,7 +101,7 @@ export function CompanyCard({ company, onOpenBrief }: Props) {
                 <p className="font-mono text-3xl font-bold text-white">{priceLabel}</p>
                 <span
                   className={`mt-2 inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${
-                    isPositive ? "bg-[#00C9D4]/10 text-[#00A86B]" : "bg-red-500/10 text-red-500"
+                    isPositive ? "bg-[#22d3ee]/10 text-[#00A86B]" : "bg-red-500/10 text-red-500"
                   }`}
                 >
                   {`${isPositive ? "+" : ""}${changePct.toFixed(2)}%`}
@@ -110,7 +110,7 @@ export function CompanyCard({ company, onOpenBrief }: Props) {
             )}
           </div>
 
-          <span className="mt-1 inline-flex w-fit rounded-full border border-[#7A0F9E]/30 bg-[#7A0F9E]/20 px-2.5 py-1 text-xs font-medium text-[#00C9D4]">
+          <span className="mt-1 inline-flex w-fit rounded-full border border-[#9333ea]/30 bg-[#9333ea]/20 px-2.5 py-1 text-xs font-medium text-[#22d3ee]">
             {company.sector}
           </span>
           <p className="line-clamp-2 text-xs text-white/50">{company.industry}</p>
@@ -123,7 +123,7 @@ export function CompanyCard({ company, onOpenBrief }: Props) {
                 event.stopPropagation();
                 onOpenBrief?.(company);
               }}
-              className={`pointer-events-auto relative z-20 mt-2 inline-flex w-fit items-center gap-1.5 text-sm ${GLASS_LINK_ACCENT} focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00C9D4]`}
+              className={`pointer-events-auto relative z-20 mt-2 inline-flex w-fit items-center gap-1.5 text-sm ${GLASS_LINK_ACCENT} focus:outline-none focus-visible:ring-2 focus-visible:ring-[#22d3ee]`}
             >
               <SparklesIcon className="h-4 w-4" aria-hidden />
               AI Brief

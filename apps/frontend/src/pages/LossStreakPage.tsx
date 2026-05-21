@@ -99,7 +99,7 @@ export function LossStreakPage() {
         ) : null}
 
         <section className="grid gap-4 md:grid-cols-3">
-          <article className="rounded-2xl border bg-white p-5 shadow-sm md:col-span-2" style={{ borderColor: colors.border }}>
+          <article className="rounded-2xl glass-section p-5 shadow-sm md:col-span-2" style={{ borderColor: colors.border }}>
             <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Aktualny streak
             </p>
@@ -111,7 +111,7 @@ export function LossStreakPage() {
             </p>
           </article>
 
-          <article className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: colors.border }}>
+          <article className="rounded-2xl glass-section p-5 shadow-sm" style={{ borderColor: colors.border }}>
             <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
               Status
             </p>
@@ -132,7 +132,7 @@ export function LossStreakPage() {
           </article>
         </section>
 
-        <section className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: colors.border }}>
+        <section className="rounded-2xl glass-section p-5 shadow-sm" style={{ borderColor: colors.border }}>
           <h2 className="text-base font-semibold">Historia streaków</h2>
           <p className="mt-1 text-xs" style={{ color: colors.textSecondary }}>
             Mini chart placeholder
@@ -163,7 +163,7 @@ export function LossStreakPage() {
               "W trakcie cooldownu nie otwieraj nowych pozycji i wykonaj checklistę ryzyka.",
               "Po zakończeniu cooldownu wróć wyłącznie do setupów z planu dnia.",
             ].map((rule) => (
-              <article key={rule} className="rounded-xl border bg-white p-4 shadow-sm" style={{ borderColor: colors.border }}>
+              <article key={rule} className="rounded-xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
                 <p className="text-sm" style={{ color: colors.textSecondary }}>
                   {rule}
                 </p>

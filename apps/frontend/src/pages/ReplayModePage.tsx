@@ -137,7 +137,7 @@ export function ReplayModePage() {
     <div className="min-h-screen bg-bgSecondary">
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 text-white">
         <header
-          className="glass-section rounded-3xl p-6 shadow-[0_18px_45px_rgba(45,10,107,0.1)]"
+          className="glass-section rounded-3xl p-6 shadow-[0_18px_45px_rgba(168,85,247,0.1)]"
           style={{ background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
         >
           <h1 className="glass-page-title text-3xl">Replay Mode</h1>
@@ -150,7 +150,7 @@ export function ReplayModePage() {
           </div>
         ) : null}
 
-        <section className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+        <section className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
           <form onSubmit={onLoadSnapshot} className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
             <label className="flex flex-col gap-1 text-sm">
               <span className="font-medium glass-muted">Symbol search</span>
@@ -201,7 +201,7 @@ export function ReplayModePage() {
         {snapshot ? (
           <section className="grid gap-5 md:grid-cols-[1.45fr_1fr]">
             <article
-              className="flex min-h-[360px] items-center justify-center rounded-2xl border border-white/10 p-6 text-center shadow-[0_14px_34px_rgba(45,10,107,0.08)]"
+              className="flex min-h-[360px] items-center justify-center rounded-2xl border border-white/10 p-6 text-center shadow-[0_14px_34px_rgba(168,85,247,0.08)]"
               style={{ backgroundColor: colors.bgSecondary }}
             >
               <div>
@@ -212,7 +212,7 @@ export function ReplayModePage() {
               </div>
             </article>
 
-            <aside className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(45,10,107,0.08)]">
+            <aside className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
               <p className="text-sm font-semibold glass-muted">Panel decyzji</p>
               <div className="mt-4 rounded-xl glass-panel border border-white/10 bg-white/5 p-3">
                 <p className="text-xs uppercase tracking-wide text-white/50">Cena na wybrany dzień</p>
@@ -267,7 +267,7 @@ export function ReplayModePage() {
 
         {evaluation ? (
           <section
-            className="rounded-2xl p-5 text-white shadow-[0_18px_45px_rgba(45,10,107,0.35)]"
+            className="rounded-2xl p-5 text-white shadow-[0_18px_45px_rgba(168,85,247,0.35)]"
             style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
           >
             <h2 className="text-lg font-semibold text-white">AI Feedback</h2>

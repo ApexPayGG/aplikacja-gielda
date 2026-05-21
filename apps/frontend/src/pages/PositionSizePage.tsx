@@ -112,7 +112,7 @@ export function PositionSizePage() {
           <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm">
             <span className="text-white/60">Waluta:</span>
             <select
-              className="rounded-md border border-white/15 bg-[#1a0538] px-2 py-1 text-sm text-white outline-none"
+              className="rounded-md border border-white/15 bg-[#0f111c] px-2 py-1 text-sm text-white outline-none"
               value={currency}
               onChange={(e) => setCurrency(e.target.value as Currency)}
             >
@@ -174,7 +174,7 @@ export function PositionSizePage() {
           <div className="md:col-span-2">
             <div className="mb-2 flex items-center justify-between">
               <span className={GLASS_LABEL}>Conviction</span>
-              <span className="text-sm font-semibold text-[#00C9D4]">
+              <span className="text-sm font-semibold text-[#22d3ee]">
                 {convictionLevel === 1 ? "LOW" : convictionLevel === 2 ? "MED" : "HIGH"}
               </span>
             </div>
@@ -187,7 +187,7 @@ export function PositionSizePage() {
               onChange={(e) => setConvictionLevel(Number(e.target.value))}
               className="amc-conviction-slider h-2 w-full cursor-pointer appearance-none rounded-full"
               style={{
-                background: `linear-gradient(90deg, #00C9D4 ${convictionFillPercent}%, rgba(255,255,255,0.12) ${convictionFillPercent}%)`,
+                background: `linear-gradient(90deg, #22d3ee ${convictionFillPercent}%, rgba(255,255,255,0.12) ${convictionFillPercent}%)`,
               }}
             />
             <div className="mt-2 flex justify-between text-xs font-semibold text-white/50">
@@ -254,17 +254,17 @@ export function PositionSizePage() {
           width: 18px;
           height: 18px;
           border-radius: 9999px;
-          border: 3px solid #0D0D1A;
-          background: #7A0F9E;
-          box-shadow: 0 4px 10px rgba(45, 10, 107, 0.25);
+          border: 3px solid #0a0b14;
+          background: #9333ea;
+          box-shadow: 0 4px 10px rgba(168,85,247, 0.25);
         }
         .amc-conviction-slider::-moz-range-thumb {
           width: 18px;
           height: 18px;
           border-radius: 9999px;
-          border: 3px solid #0D0D1A;
-          background: #7A0F9E;
-          box-shadow: 0 4px 10px rgba(45, 10, 107, 0.25);
+          border: 3px solid #0a0b14;
+          background: #9333ea;
+          box-shadow: 0 4px 10px rgba(168,85,247, 0.25);
         }
       `}</style>
     </div>

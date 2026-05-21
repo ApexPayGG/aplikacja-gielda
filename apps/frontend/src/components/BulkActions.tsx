@@ -105,7 +105,7 @@ export function BulkActions({
       {confirmOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(13,13,26,0.45)" }}>
           <div
-            className="w-full max-w-md rounded-2xl border p-5 shadow-[0_20px_48px_rgba(45,10,107,0.26)]"
+            className="w-full max-w-md rounded-2xl border p-5 shadow-[0_20px_48px_rgba(168,85,247,0.26)]"
             style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
           >
             <h3 className="text-base font-semibold" style={{ color: colors.brandDark }}>

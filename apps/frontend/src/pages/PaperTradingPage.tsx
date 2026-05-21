@@ -840,16 +840,16 @@ export function PaperTradingPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-[#0D0D1A] via-[#1a0538]/90 to-[#0D0D1A] text-white">
+    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-[#0a0b14] via-[#0f111c]/90 to-[#0a0b14] text-white">
       <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
-        <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-[#2D0A6B]/40 blur-3xl" />
-        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-[#00C9D4]/12 blur-3xl" />
+        <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-[#1e1b4b]/40 blur-3xl" />
+        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-[#22d3ee]/12 blur-3xl" />
       </div>
       <div className="relative z-10 mx-auto max-w-7xl space-y-4 px-4 py-6">
-        <section className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#2D0A6B]/30 to-[#00C9D4]/10 px-4 py-4 shadow-[0_8px_32px_rgba(45,10,107,0.15)] backdrop-blur-md md:px-5">
+        <section className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#a855f7]/30 to-[#22d3ee]/10 px-4 py-4 shadow-[0_8px_32px_rgba(168,85,247,0.15)] backdrop-blur-md md:px-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.14em] text-[#00C9D4]">Paper Trading</p>
+              <p className="text-[11px] uppercase tracking-[0.14em] text-[#22d3ee]">Paper Trading</p>
               <h1 className="text-2xl font-semibold text-white md:text-3xl">Paper Trading</h1>
               <div className="mt-2 flex flex-wrap items-center gap-3">
                 <span className="font-mono text-3xl text-white md:text-4xl">
@@ -942,7 +942,7 @@ export function PaperTradingPage() {
               <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
                 <span>Ticker</span>
                 <input
-                  className="rounded-lg border bg-white px-3 py-2 text-sm outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white text-sm outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={form.ticker}
                   onChange={(e) => setForm((prev) => ({ ...prev, ticker: e.target.value.toUpperCase() }))}
@@ -984,7 +984,7 @@ export function PaperTradingPage() {
                   type="number"
                   min="0"
                   step="0.01"
-                  className="rounded-lg border bg-white px-3 py-2 text-sm outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white text-sm outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={form.entryPrice}
                   onChange={(e) => setForm((prev) => ({ ...prev, entryPrice: e.target.value }))}
@@ -998,7 +998,7 @@ export function PaperTradingPage() {
                   type="number"
                   min="0"
                   step="0.01"
-                  className="rounded-lg border bg-white px-3 py-2 text-sm outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white text-sm outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={form.stopLoss}
                   onChange={(e) => setForm((prev) => ({ ...prev, stopLoss: e.target.value }))}
@@ -1012,7 +1012,7 @@ export function PaperTradingPage() {
                   type="number"
                   min="0"
                   step="0.01"
-                  className="rounded-lg border bg-white px-3 py-2 text-sm outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white text-sm outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={form.takeProfit}
                   onChange={(e) => setForm((prev) => ({ ...prev, takeProfit: e.target.value }))}
@@ -1026,7 +1026,7 @@ export function PaperTradingPage() {
                   type="number"
                   min="0"
                   step="0.01"
-                  className="rounded-lg border bg-white px-3 py-2 text-sm outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white text-sm outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={form.quantity}
                   onChange={(e) => setForm((prev) => ({ ...prev, quantity: e.target.value }))}
@@ -1246,7 +1246,7 @@ export function PaperTradingPage() {
       {reflectionTrade ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(13,13,26,0.45)" }}>
           <div
-            className="w-full max-w-lg rounded-2xl border p-5 shadow-[0_28px_72px_rgba(45,10,107,0.28)]"
+            className="w-full max-w-lg rounded-2xl border p-5 shadow-[0_28px_72px_rgba(168,85,247,0.28)]"
             style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
           >
             <div className="mb-4 flex items-center justify-between">
@@ -1297,7 +1297,7 @@ export function PaperTradingPage() {
                 <select
                   value={reflectionEmotion}
                   onChange={(e) => setReflectionEmotion(e.target.value as ReflectionEmotion)}
-                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                 >
                   <option value="FRUSTRATION">{emotionLabel(t, "FRUSTRATION")}</option>
@@ -1315,7 +1315,7 @@ export function PaperTradingPage() {
                   maxLength={100}
                   onChange={(e) => setReflectionLesson(e.target.value.slice(0, 100))}
                   placeholder={t("reflection.lessonPlaceholder")}
-                  className="min-h-[88px] rounded-lg border bg-white px-3 py-2 outline-none"
+                  className="min-h-[88px] rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                 />
                 <span className="text-xs" style={{ color: colors.textMuted }}>
@@ -1351,7 +1351,7 @@ export function PaperTradingPage() {
       {preMortemOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(13,13,26,0.45)" }}>
           <div
-            className="w-full max-w-2xl rounded-2xl border p-5 shadow-[0_28px_72px_rgba(45,10,107,0.24)]"
+            className="w-full max-w-2xl rounded-2xl border p-5 shadow-[0_28px_72px_rgba(168,85,247,0.24)]"
             style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
           >
             <h3 className="mb-4 text-lg font-bold" style={{ color: colors.brandDark }}>
@@ -1361,7 +1361,7 @@ export function PaperTradingPage() {
               <label className="flex flex-col gap-1 text-sm">
                 <span style={{ color: colors.textSecondary }}>{t("premortem.symbol")}</span>
                 <input
-                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={preMortemForm.symbol}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, symbol: e.target.value.toUpperCase() }))}
@@ -1371,7 +1371,7 @@ export function PaperTradingPage() {
                 <span style={{ color: colors.textSecondary }}>{t("premortem.quantity")}</span>
                 <input
                   type="number"
-                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={preMortemForm.quantity}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, quantity: e.target.value }))}
@@ -1381,7 +1381,7 @@ export function PaperTradingPage() {
                 <span style={{ color: colors.textSecondary }}>{t("premortem.entry")}</span>
                 <input
                   type="number"
-                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={preMortemForm.entry}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, entry: e.target.value }))}
@@ -1391,7 +1391,7 @@ export function PaperTradingPage() {
                 <span style={{ color: colors.textSecondary }}>{t("premortem.stopLoss")}</span>
                 <input
                   type="number"
-                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={preMortemForm.stopLoss}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, stopLoss: e.target.value }))}
@@ -1401,7 +1401,7 @@ export function PaperTradingPage() {
                 <span style={{ color: colors.textSecondary }}>{t("premortem.takeProfit")}</span>
                 <input
                   type="number"
-                  className="rounded-lg border bg-white px-3 py-2 outline-none"
+                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
                   style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
                   value={preMortemForm.takeProfit}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, takeProfit: e.target.value }))}
@@ -1474,7 +1474,7 @@ function StatTile(props: { label: string; value: string; tone?: "default" | "pos
   const valueColor =
     tone === "positive" ? "text-emerald-400" : tone === "negative" ? "text-red-400" : "text-white";
   return (
-    <div className="rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-[#2D0A6B]/25 px-3 py-2 shadow-[0_8px_24px_rgba(45,10,107,0.12)] backdrop-blur-md">
+    <div className="rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-[#9333ea]/25 px-3 py-2 shadow-[0_8px_24px_rgba(168,85,247,0.12)] backdrop-blur-md">
       <div className="text-[11px] uppercase tracking-[0.1em] text-white/50">{props.label}</div>
       <div className={`mt-1 font-mono text-xl font-semibold ${valueColor}`}>{props.value}</div>
     </div>

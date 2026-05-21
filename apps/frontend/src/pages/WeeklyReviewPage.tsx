@@ -136,7 +136,7 @@ export function WeeklyReviewPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-8 px-4 py-10 text-white">
       <header
-        className="glass-section rounded-3xl p-6 shadow-[0_16px_40px_rgba(45,10,107,0.08)]"
+        className="glass-section rounded-3xl p-6 shadow-[0_16px_40px_rgba(168,85,247,0.08)]"
         style={{ background: `linear-gradient(120deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
       >
         <h1 className="glass-page-title text-3xl">Weekly Review</h1>
@@ -151,7 +151,7 @@ export function WeeklyReviewPage() {
       ) : null}
 
       <section className="space-y-4">
-        <div className="glass-section rounded-2xl p-5 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
+        <div className="glass-section rounded-2xl p-5 shadow-[0_14px_32px_rgba(168,85,247,0.08)]">
           <h2 className="text-lg font-semibold text-white">{t("weekly.title")}</h2>
           <p className="mt-1 glass-muted text-sm">{t("weekly.subtitle")}</p>
         </div>
@@ -159,7 +159,7 @@ export function WeeklyReviewPage() {
         {SCORE_QUESTIONS.map(({ key, index }) => {
           const sliderPercentage = ((form[key] - 1) / 4) * 100;
           return (
-            <article key={key} className="glass-section rounded-2xl p-5 shadow-[0_12px_28px_rgba(45,10,107,0.08)]">
+            <article key={key} className="glass-section rounded-2xl p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]">
               <div className="mb-4 flex items-start gap-3">
                 <span
                   className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
@@ -196,7 +196,7 @@ export function WeeklyReviewPage() {
         })}
 
         {REFLECTION_QUESTIONS.map(({ key, index }) => (
-          <article key={key} className="glass-section rounded-2xl p-5 shadow-[0_12px_28px_rgba(45,10,107,0.08)]">
+          <article key={key} className="glass-section rounded-2xl p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]">
             <div className="mb-4 flex items-start gap-3">
               <span
                 className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
@@ -220,7 +220,7 @@ export function WeeklyReviewPage() {
           type="button"
           onClick={() => void onSubmit()}
           disabled={!canSubmit}
-          className="w-full rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(45,10,107,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(168,85,247,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
           style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
         >
           {submitting ? t("weekly.submitting") : t("weekly.submit")}
@@ -229,7 +229,7 @@ export function WeeklyReviewPage() {
 
       {(showReveal || current?.aiLetter || submitting) && (
         <section
-          className="rounded-2xl border border-brandDark/20 p-6 text-white shadow-[0_22px_50px_rgba(45,10,107,0.4)]"
+          className="rounded-2xl border border-brandDark/20 p-6 text-white shadow-[0_22px_50px_rgba(168,85,247,0.4)]"
           style={{
             background: `linear-gradient(130deg, ${colors.brandDark}, ${colors.brandMedium})`,
             animation: "weeklyReviewFadeIn 0.45s ease-out",
@@ -256,7 +256,7 @@ export function WeeklyReviewPage() {
         </section>
       )}
 
-      <section className="glass-section rounded-2xl p-6 shadow-[0_16px_36px_rgba(45,10,107,0.08)]">
+      <section className="glass-section rounded-2xl p-6 shadow-[0_16px_36px_rgba(168,85,247,0.08)]">
         <h2 className="mb-4 text-lg font-semibold text-white">{t("weekly.historyTitle")}</h2>
         {loading ? (
           <p className="text-sm text-white/50">{t("common.loading")}</p>
@@ -265,7 +265,7 @@ export function WeeklyReviewPage() {
         ) : (
           <div className="space-y-3">
             {history.map((row) => (
-              <article key={row.id} className="glass-panel rounded-xl p-4 shadow-[0_10px_22px_rgba(45,10,107,0.08)]">
+              <article key={row.id} className="glass-panel rounded-xl p-4 shadow-[0_10px_22px_rgba(168,85,247,0.08)]">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-white">
                     {t("weekly.weekOf")}: {toDateLabel(row.weekStart)}
@@ -304,7 +304,7 @@ export function WeeklyReviewPage() {
           border-radius: 9999px;
           border: 3px solid ${colors.bgPrimary};
           background: ${colors.brandDark};
-          box-shadow: 0 4px 10px rgba(45, 10, 107, 0.25);
+          box-shadow: 0 4px 10px rgba(168,85,247, 0.25);
         }
         .weekly-review-slider::-moz-range-thumb {
           width: 18px;
@@ -312,7 +312,7 @@ export function WeeklyReviewPage() {
           border-radius: 9999px;
           border: 3px solid ${colors.bgPrimary};
           background: ${colors.brandDark};
-          box-shadow: 0 4px 10px rgba(45, 10, 107, 0.25);
+          box-shadow: 0 4px 10px rgba(168,85,247, 0.25);
         }
       `}</style>
     </div>

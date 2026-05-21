@@ -161,7 +161,7 @@ export function StressTestPage() {
                   key={scenario.scenario}
                   type="button"
                   onClick={() => setActiveScenario(scenario.scenario)}
-                  className="rounded-2xl border bg-bgPrimary p-4 text-left shadow-[0_12px_26px_rgba(45,10,107,0.08)] transition hover:translate-y-[-1px]"
+                  className="rounded-2xl border bg-bgPrimary p-4 text-left shadow-[0_12px_26px_rgba(168,85,247,0.08)] transition hover:translate-y-[-1px]"
                   style={{ borderColor: isActive ? colors.brandCyan : colors.border }}
                 >
                   <div className="text-2xl">{meta.icon}</div>
@@ -175,7 +175,7 @@ export function StressTestPage() {
 
           {selectedScenario ? (
             <>
-              <section className="rounded-2xl border border-negative/25 bg-bgPrimary p-6 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
+              <section className="rounded-2xl border border-negative/25 bg-bgPrimary p-6 shadow-[0_14px_32px_rgba(168,85,247,0.08)]">
                 <div className="text-xs font-semibold uppercase tracking-wide text-white/50">Laczna strata portfela</div>
                 <div className="mt-2 font-mono text-5xl font-bold text-negative">{totalLossLabel}</div>
                 <div className="mt-2 glass-muted text-sm">
@@ -186,7 +186,7 @@ export function StressTestPage() {
                 </div>
               </section>
 
-              <section className="overflow-x-auto glass-section rounded-2xl p-5 shadow-[0_14px_32px_rgba(45,10,107,0.08)]">
+              <section className="overflow-x-auto glass-section rounded-2xl p-5 shadow-[0_14px_32px_rgba(168,85,247,0.08)]">
                 <h3 className="mb-4 text-base font-semibold text-white">Szacowane straty na pozycjach</h3>
                 <table className="w-full min-w-[640px] text-left text-sm">
                   <thead>

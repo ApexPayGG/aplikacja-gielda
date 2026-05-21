@@ -211,13 +211,13 @@ export function SignalsPage() {
     return (
       <article
         key={signal.id}
-        className={`h-full ${GLASS_SIGNAL_CARD} ${isHovered ? "border-[#00C9D4]/40 shadow-[0_12px_32px_rgba(0,201,212,0.15)]" : ""}`}
+        className={`h-full ${GLASS_SIGNAL_CARD} ${isHovered ? "border-[#22d3ee]/40 shadow-[0_12px_32px_rgba(34,211,238,0.15)]" : ""}`}
         onMouseEnter={() => setHoveredSignalId(signal.id)}
         onMouseLeave={() => setHoveredSignalId(null)}
       >
         <div className="grid gap-4 md:grid-cols-[2.2fr_1.2fr_1.2fr] md:items-center">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-white/5 text-sm font-bold uppercase text-[#00C9D4]">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-white/5 text-sm font-bold uppercase text-[#22d3ee]">
               <BrandLogo size="mini" className="h-full max-h-10 w-full object-contain" />
             </div>
             <div>
@@ -227,7 +227,7 @@ export function SignalsPage() {
           </div>
 
           <div className="space-y-2">
-            <span className="inline-flex rounded-full bg-[#00C9D4]/20 px-3 py-1 text-xs font-semibold text-[#00C9D4]">
+            <span className="inline-flex rounded-full bg-[#22d3ee]/20 px-3 py-1 text-xs font-semibold text-[#22d3ee]">
               {signal.setupType}
             </span>
             <p className="text-4xl font-bold leading-none text-white">{Math.round(signal.riskScore)}</p>
@@ -260,7 +260,7 @@ export function SignalsPage() {
             <div className="h-2.5 w-2/3 rounded bg-white/15" />
           </div>
           {!isLoggedIn ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#0D0D1A]/70 px-4 text-center backdrop-blur-sm">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#0a0b14]/70 px-4 text-center backdrop-blur-sm">
               <p className="text-sm font-semibold text-white">Zaloguj się aby zobaczyć analizę AI</p>
               <Link to="/register" className={`${GLASS_BTN_PRIMARY} px-3 py-1.5 text-xs`}>
                 Zaloguj się
@@ -363,10 +363,10 @@ export function SignalsPage() {
             onClick={() => setIsMobileFiltersOpen(false)}
             aria-label="Zamknij panel filtrów"
           />
-          <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-3xl border border-white/15 bg-[#1a0538]/95 p-4 backdrop-blur-md">
+          <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-3xl border border-white/15 bg-[#0f111c]/95 p-4 backdrop-blur-md">
             <div className="mb-4 flex items-center justify-between">
               <p className="text-base font-bold text-white">Filtry sygnałów</p>
-              <button type="button" className="text-sm font-semibold text-[#00C9D4]" onClick={() => setIsMobileFiltersOpen(false)}>
+              <button type="button" className="text-sm font-semibold text-[#22d3ee]" onClick={() => setIsMobileFiltersOpen(false)}>
                 Zamknij
               </button>
             </div>

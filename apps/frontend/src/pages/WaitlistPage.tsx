@@ -81,7 +81,7 @@ export function WaitlistPage() {
             Pierwsze 500 kont otrzyma cenę Early Adopter na zawsze: Pro $9/mo
           </p>
 
-          <div className="mt-8 rounded-2xl bg-white p-6 shadow-lg md:p-8">
+          <div className="mt-8 glass-section p-6 shadow-lg md:p-8">
             {submitted ? (
               <p className="text-base font-semibold text-brandDark">Jesteś na liście! Sprawdź swoją skrzynkę.</p>
             ) : (
@@ -134,7 +134,7 @@ export function WaitlistPage() {
       <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
         <p className="text-lg font-semibold text-textPrimary">Już {count ?? "…"} osób czeka</p>
 
-        <div className="mt-6 rounded-2xl border border-border bg-white p-6 shadow-sm">
+        <div className="mt-6 glass-section p-6 shadow-sm">
           <h2 className="text-xl font-bold text-textPrimary">Korzyści Early Access</h2>
           <ul className="mt-4 space-y-3">
             {EARLY_ACCESS_BENEFITS.map((benefit) => (

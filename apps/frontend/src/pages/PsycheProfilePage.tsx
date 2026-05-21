@@ -216,7 +216,7 @@ export function PsycheProfilePage() {
         ) : null}
 
         <section
-          className="rounded-2xl border bg-white p-5 shadow-sm md:p-6"
+          className="rounded-2xl glass-section p-5 shadow-sm md:p-6"
           style={{ borderColor: colors.border, opacity: loading ? 0.7 : 1 }}
         >
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -246,7 +246,7 @@ export function PsycheProfilePage() {
         </section>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <section className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: colors.border }}>
+          <section className="rounded-2xl glass-section p-5 shadow-sm" style={{ borderColor: colors.border }}>
             <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
               Trading Style
             </h2>
@@ -260,7 +260,7 @@ export function PsycheProfilePage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: colors.border }}>
+          <section className="rounded-2xl glass-section p-5 shadow-sm" style={{ borderColor: colors.border }}>
             <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
               Detected Biases
             </h2>
@@ -289,7 +289,7 @@ export function PsycheProfilePage() {
             )}
           </section>
 
-          <section className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: colors.border }}>
+          <section className="rounded-2xl glass-section p-5 shadow-sm" style={{ borderColor: colors.border }}>
             <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
               Trading Rules
             </h2>
@@ -362,7 +362,7 @@ export function PsycheProfilePage() {
             ) : null}
           </section>
 
-          <section className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: colors.border }}>
+          <section className="rounded-2xl glass-section p-5 shadow-sm" style={{ borderColor: colors.border }}>
             <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
               Decision History
             </h2>

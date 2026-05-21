@@ -40,7 +40,7 @@ const sortOptions: Array<{ value: SignalSortOption; label: string }> = [
 
 function pillClass(active: boolean): string {
   return active
-    ? "rounded-full border border-[#00C9D4]/50 bg-[#00C9D4]/20 px-3 py-1.5 text-xs font-semibold text-[#00C9D4]"
+    ? "rounded-full border border-[#22d3ee]/50 bg-[#22d3ee]/20 px-3 py-1.5 text-xs font-semibold text-[#22d3ee]"
     : "rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70 transition hover:border-white/25";
 }
 
@@ -53,7 +53,7 @@ export function SignalsFilter({
   onSortByChange,
   onReset,
 }: Props) {
-  const riskFill = `linear-gradient(90deg, #00C9D4 0%, #00C9D4 ${filters.riskScoreMin}%, rgba(255,255,255,0.12) ${filters.riskScoreMin}%, rgba(255,255,255,0.12) 100%)`;
+  const riskFill = `linear-gradient(90deg, #22d3ee 0%, #22d3ee ${filters.riskScoreMin}%, rgba(255,255,255,0.12) ${filters.riskScoreMin}%, rgba(255,255,255,0.12) 100%)`;
 
   return (
     <section className={GLASS_FILTER_PANEL}>
@@ -81,7 +81,7 @@ export function SignalsFilter({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <p className={GLASS_LABEL}>Risk score</p>
-          <span className="text-xs font-semibold text-[#00C9D4]">{filters.riskScoreMin} - 100</span>
+          <span className="text-xs font-semibold text-[#22d3ee]">{filters.riskScoreMin} - 100</span>
         </div>
         <input
           type="range"
@@ -122,7 +122,7 @@ export function SignalsFilter({
                 onClick={() => onTimeframeChange(option.value)}
                 className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
                   active
-                    ? "border-[#00C9D4]/40 bg-[#00C9D4]/15 text-[#00C9D4]"
+                    ? "border-[#22d3ee]/40 bg-[#22d3ee]/15 text-[#22d3ee]"
                     : "border-white/15 bg-white/5 text-white/70 hover:border-white/25"
                 }`}
               >
@@ -144,7 +144,7 @@ export function SignalsFilter({
           className={GLASS_SELECT}
         >
           {sortOptions.map((option) => (
-            <option key={option.value} value={option.value} className="bg-[#1a0538] text-white">
+            <option key={option.value} value={option.value} className="bg-[#0f111c] text-white">
               {option.label}
             </option>
           ))}

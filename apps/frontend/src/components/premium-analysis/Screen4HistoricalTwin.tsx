@@ -1,3 +1,4 @@
+import { GLASS_INNER_PANEL, GLASS_SECTION } from "../behavioral-coach/glassStyles";
 import { TwinCard } from "./TwinCard";
 
 type TwinData = {
@@ -24,12 +25,12 @@ type Props = {
 };
 
 export function Screen4HistoricalTwin({ data, loading }: Props) {
-  if (loading) return <div className="rounded-xl border border-surface-border bg-surface-elevated p-5 text-slate-400">Loading historical twins...</div>;
-  if (!data) return <div className="rounded-xl border border-brand-red/40 bg-brand-red/10 p-5 text-brand-red">Twins unavailable.</div>;
+  if (loading) return <div className={`${GLASS_INNER_PANEL} p-5 text-[#94a3b8]`}>Loading historical twins...</div>;
+  if (!data) return <div className={`${GLASS_INNER_PANEL} border-[#f87171]/40 bg-[#f87171]/10 p-5 text-[#f87171]`}>Twins unavailable.</div>;
 
   const shareText = encodeURIComponent(`Historical Twins insight:\n${data.ai_synthesis}`);
   return (
-    <section className="space-y-4 rounded-2xl border border-surface-border bg-surface-elevated p-5">
+    <section className={`${GLASS_SECTION} space-y-4`}>
       <h2 className="text-xl font-semibold text-white">Screen 4 - Historical Twin</h2>
       <div className="grid gap-3 md:grid-cols-3">
         {data.twins.map((twin) => (

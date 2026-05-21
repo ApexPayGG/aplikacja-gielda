@@ -1,3 +1,4 @@
+import { GLASS_INNER_PANEL, GLASS_SECTION } from "../behavioral-coach/glassStyles";
 import { PersonalFitComparison } from "./PersonalFitComparison";
 
 type PersonalFitData = {
@@ -15,11 +16,11 @@ type Props = {
 };
 
 export function Screen2PersonalFit({ data, loading }: Props) {
-  if (loading) return <div className="rounded-xl border border-surface-border bg-surface-elevated p-5 text-slate-400">Loading personal fit...</div>;
+  if (loading) return <div className={`${GLASS_INNER_PANEL} p-5 text-[#94a3b8]`}>Loading personal fit...</div>;
   if (!data) return <div className="rounded-xl border border-brand-red/40 bg-brand-red/10 p-5 text-brand-red">Personal fit unavailable.</div>;
 
   return (
-    <section className="space-y-4 rounded-2xl border border-surface-border bg-surface-elevated p-5">
+    <section className={`${GLASS_SECTION} space-y-4`}>
       <h2 className="text-xl font-semibold text-white">Screen 2 - Personal Fit</h2>
       <PersonalFitComparison marketScore={data.marketScore} personalScore={data.personalScore} delta={data.delta} />
       <div className="grid gap-4 md:grid-cols-2">

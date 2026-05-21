@@ -99,7 +99,7 @@ export function OnboardingPage() {
           </Link>
         </div>
 
-        <div className="glass-section rounded-3xl p-6 shadow-[0_24px_72px_rgba(45,10,107,0.16)] sm:p-8">
+        <div className="glass-section rounded-3xl p-6 shadow-[0_24px_72px_rgba(168,85,247,0.16)] sm:p-8">
           <div className="mb-8">
             <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.08em] text-white/50">
               <span>{t("onboarding.step", { current: step, total: 4, defaultValue: "Step {{current}}/{{total}}" })}</span>
@@ -147,7 +147,7 @@ export function OnboardingPage() {
                       className="rounded-full border px-4 py-2 text-sm font-semibold transition"
                       style={{
                         borderColor: selected ? colors.brandCyan : colors.borderStrong,
-                        backgroundColor: selected ? "rgba(0, 201, 212, 0.12)" : colors.bgPrimary,
+                        backgroundColor: selected ? "rgba(34,211,238, 0.12)" : colors.bgPrimary,
                         color: colors.textPrimary,
                       }}
                     >

@@ -41,7 +41,7 @@ export function ResetPasswordPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-bgSecondary px-4 py-10">
-      <section className="w-full max-w-md rounded-3xl border border-border bg-bgPrimary p-8 shadow-[0_24px_72px_rgba(45,10,107,0.14)]">
+      <section className="w-full max-w-md rounded-3xl border border-border bg-bgPrimary p-8 shadow-[0_24px_72px_rgba(168,85,247,0.14)]">
         <h1 className="text-2xl font-bold text-textPrimary">Ustaw nowe hasło</h1>
         <p className="mt-2 text-sm text-textSecondary">Wprowadź nowe hasło do konta.</p>
 

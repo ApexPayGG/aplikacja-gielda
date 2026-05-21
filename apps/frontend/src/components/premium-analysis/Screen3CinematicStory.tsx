@@ -1,3 +1,4 @@
+import { GLASS_INNER_PANEL, GLASS_SECTION } from "../behavioral-coach/glassStyles";
 import { StoryAct } from "./StoryAct";
 
 type StoryData = {
@@ -17,11 +18,11 @@ type Props = {
 };
 
 export function Screen3CinematicStory({ data, loading }: Props) {
-  if (loading) return <div className="rounded-xl border border-surface-border bg-surface-elevated p-5 text-slate-400">Generating cinematic story...</div>;
+  if (loading) return <div className={`${GLASS_INNER_PANEL} p-5 text-[#94a3b8]`}>Generating cinematic story...</div>;
   if (!data) return <div className="rounded-xl border border-brand-red/40 bg-brand-red/10 p-5 text-brand-red">Story unavailable.</div>;
 
   return (
-    <section className="space-y-4 rounded-2xl border border-surface-border bg-surface-elevated p-5">
+    <section className={`${GLASS_SECTION} space-y-4`}>
       <h2 className="text-xl font-semibold text-white">Screen 3 - Cinematic Story</h2>
       {data.acts.map((act) => (
         <StoryAct
