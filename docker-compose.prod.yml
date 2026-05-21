@@ -27,7 +27,7 @@ services:
         "--maxmemory",
         "512mb",
         "--maxmemory-policy",
-        "allkeys-lru",
+        "noeviction",
         "--appendonly",
         "yes",
       ]
