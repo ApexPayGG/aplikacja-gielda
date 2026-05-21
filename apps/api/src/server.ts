@@ -87,6 +87,7 @@ import { createMirrorRouter } from "./routes/mirror";
 import { createCrowdWisdomRouter } from "./routes/crowdwisdom";
 import { createGlossaryRouter } from "./routes/glossary";
 import { createDigestRouter } from "./routes/digest";
+import { createMarketEventsRouter } from "./routes/marketEvents";
 import { createDiscordSyncRouter } from "./routes/discordSync";
 import { createNotificationsRouter } from "./routes/notifications";
 import { createSkillTreeRouter } from "./routes/skilltree";
@@ -247,6 +248,7 @@ export function createApp(): express.Express {
   app.use(createCrowdWisdomRouter());
   app.use(createGlossaryRouter());
   app.use(createDigestRouter());
+  app.use(createMarketEventsRouter({ prisma }));
   app.use(createDiscordSyncRouter());
   app.use(createNotificationsRouter());
   app.use(createVolatilityRouter());

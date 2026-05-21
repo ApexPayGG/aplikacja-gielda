@@ -35,6 +35,14 @@ import {
   scheduleDailyEodhdGpwImportJob,
 } from "./jobs/eodhdImports";
 import {
+  registerMarketEventsDigest,
+  scheduleDailyMarketEventsDigest,
+} from "./jobs/marketEventsDigest";
+import {
+  registerMarketEventsSync,
+  scheduleDailyMarketEventsSync,
+} from "./jobs/syncMarketEvents";
+import {
   ingestLogger,
   runIngestJob,
   STANDARD_INGEST_JOB_OPTIONS,
@@ -144,6 +152,10 @@ export async function startScheduler(): Promise<void> {
   const digestWorkerConn = createRedisConnection();
   const onboardingConn = createRedisConnection();
   const onboardingWorkerConn = createRedisConnection();
+  const marketEventsConn = createRedisConnection();
+  const marketEventsWorkerConn = createRedisConnection();
+  const marketEventsDigestConn = createRedisConnection();
+  const marketEventsDigestWorkerConn = createRedisConnection();
 
   const queue = new Queue(QUEUE_NAME, {
     connection,
@@ -332,6 +344,30 @@ export async function startScheduler(): Promise<void> {
   });
   await scheduleDailyAlphaCalendar(alphaCalendarQueue);
 
+  const { queue: marketEventsQueue, worker: marketEventsWorker } = registerMarketEventsSync(
+    marketEventsConn,
+    marketEventsWorkerConn,
+  );
+  marketEventsWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] market events sync job ${job?.id} failed`, err);
+  });
+  marketEventsWorker.on("completed", (job) => {
+    console.log(`[scheduler] market events sync job ${job.id} completed`);
+  });
+  await scheduleDailyMarketEventsSync(marketEventsQueue);
+
+  const { queue: marketEventsDigestQueue, worker: marketEventsDigestWorker } = registerMarketEventsDigest(
+    marketEventsDigestConn,
+    marketEventsDigestWorkerConn,
+  );
+  marketEventsDigestWorker.on("failed", (job, err) => {
+    console.error(`[scheduler] market events digest job ${job?.id} failed`, err);
+  });
+  marketEventsDigestWorker.on("completed", (job) => {
+    console.log(`[scheduler] market events digest job ${job.id} completed`);
+  });
+  await scheduleDailyMarketEventsDigest(marketEventsDigestQueue);
+
   console.log("[scheduler] BullMQ worker started; hourly job scheduled");
   console.log("[scheduler] Dividend hybrid sync: daily @ 01:00 UTC (queue dividend-sync)");
   console.log("[scheduler] Dividend alerts: daily @ 06:00 UTC (queue dividend-alerts)");
@@ -347,6 +383,8 @@ export async function startScheduler(): Promise<void> {
   console.log("[scheduler] Discord signal alerts: dispatch + batch flush every 1 minute");
   console.log("[scheduler] Exit intelligence monitor: every 15 minutes (queue exit-monitor)");
   console.log("[scheduler] Alpha calendar: daily @ 07:00 UTC (queue alpha-calendar)");
+  console.log("[scheduler] Market events sync: weekdays @ 05:30 UTC (queue market-events-sync)");
+  console.log("[scheduler] Market events digest: weekdays @ 07:00 UTC (queue market-events-digest)");
   if (process.env.POLYGON_API_KEY) {
     console.log("[scheduler] Polygon live quotes: every 5 min Mon–Fri UTC (queue fetch-quotes)");
   }
