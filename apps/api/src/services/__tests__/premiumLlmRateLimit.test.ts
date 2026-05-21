@@ -7,6 +7,10 @@ import {
   isPremiumLlmRateLimitedPath,
 } from "../premiumLlmRateLimit";
 
+function mockRequest(partial: object): Request {
+  return partial as unknown as Request;
+}
+
 describe("premiumLlmRateLimit", () => {
   it("matches only story and catch endpoints", () => {
     assert.equal(isPremiumLlmRateLimitedPath("/api/premium/NVDA.US/story"), true);
@@ -27,11 +31,11 @@ describe("premiumLlmRateLimit", () => {
       user: { findUnique: async () => ({ tier: "PRO" }) },
     } as unknown as import("@prisma/client").PrismaClient;
 
-    const req = {
+    const req = mockRequest({
       originalUrl: "/api/premium/AAPL.US/story",
       path: "/AAPL.US/story",
       auth: { userId: "u1" },
-    } as Request;
+    });
 
     for (let i = 0; i < PREMIUM_LLM_PRO_DAILY_LIMIT; i += 1) {
       const ok = await enforcePremiumLlmDailyLimit(req, prisma, store);

@@ -8,6 +8,10 @@ import {
   peekAiBriefCached,
 } from "../aiBriefRateLimit";
 
+function mockRequest(partial: object): Request {
+  return partial as unknown as Request;
+}
+
 describe("aiBriefRateLimit path scope", () => {
   it("matches only AI Brief endpoints", () => {
     assert.equal(isAiBriefRateLimitedPath("/api/analysis/AAPL.US"), true);
@@ -32,7 +36,7 @@ describe("aiBriefRateLimit path scope", () => {
       },
     };
 
-    const req = { originalUrl: "/api/premium/ABBV.US/catch", path: "/ABBV.US/catch" } as Request;
+    const req = mockRequest({ originalUrl: "/api/premium/ABBV.US/catch", path: "/ABBV.US/catch" });
     const result = await enforceAiBriefRateLimit(req, undefined, store);
     assert.equal(result.allowed, true);
     assert.equal(increments.length, 0);
@@ -47,7 +51,7 @@ describe("aiBriefRateLimit path scope", () => {
       },
     };
 
-    const req = { originalUrl: "/api/brief/AAPL.US", path: "/AAPL.US" } as Request;
+    const req = mockRequest({ originalUrl: "/api/brief/AAPL.US", path: "/AAPL.US" });
     for (let i = 0; i < 3; i += 1) {
       const ok = await enforceAiBriefRateLimit(req, undefined, store);
       assert.equal(ok.allowed, true);
@@ -75,12 +79,12 @@ describe("aiBriefRateLimit path scope", () => {
       },
     } as unknown as import("@prisma/client").PrismaClient;
 
-    const req = {
+    const req = mockRequest({
       originalUrl: "/api/analysis/CPS.WAR?lang=pl",
       path: "/CPS.WAR",
       query: { lang: "pl" },
       auth: { userId: "user-pro-1" },
-    } as Request;
+    });
 
     for (let i = 0; i < AI_BRIEF_PRO_DAILY_LIMIT; i += 1) {
       const ok = await enforceAiBriefRateLimit(req, prisma, store);
@@ -97,7 +101,7 @@ describe("aiBriefRateLimit path scope", () => {
 
 describe("peekAiBriefCached", () => {
   it("returns false when symbol cannot be parsed", async () => {
-    const req = { originalUrl: "/api/brief/", path: "/" } as Request;
+    const req = mockRequest({ originalUrl: "/api/brief/", path: "/" });
     assert.equal(await peekAiBriefCached(req), false);
   });
 });

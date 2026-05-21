@@ -2,7 +2,31 @@ import assert from "node:assert/strict";
 import type { PrismaClient } from "@prisma/client";
 import { describe, it } from "node:test";
 import { deliverWatchlistDailyDigest } from "../eventDeliveryService";
-import type { WatchlistDailyDigest } from "../types";
+import type { WatchlistDailyDigest, WatchlistDigestItem } from "../types";
+
+function mockDigestItem(overrides: Partial<WatchlistDigestItem> = {}): WatchlistDigestItem {
+  return {
+    symbol: "AAPL.US",
+    eventType: "earnings",
+    eventDate: "2026-06-01",
+    importance: "high",
+    title: "AAPL earnings",
+    summary: null,
+    daysToEvent: 3,
+    ...overrides,
+  };
+}
+
+function mockDailyDigest(overrides: Partial<WatchlistDailyDigest> = {}): WatchlistDailyDigest {
+  return {
+    date: "2026-06-01",
+    headline: "empty",
+    items: [],
+    highRiskSymbols: [],
+    macroHighlights: [],
+    ...overrides,
+  };
+}
 
 function createDigestDb(userIds: string[]) {
   let notificationCreates = 0;
@@ -38,11 +62,11 @@ function createDigestDb(userIds: string[]) {
 const digestDeps = {
   buildWatchlistDailyDigest: async (userId: string): Promise<WatchlistDailyDigest> => {
     if (userId === "fail-user") throw new Error("digest failed");
-    if (userId === "empty-user") return { headline: "empty", items: [] };
-    return {
+    if (userId === "empty-user") return mockDailyDigest({ headline: "empty", items: [] });
+    return mockDailyDigest({
       headline: "2 events",
-      items: [{ title: "AAPL earnings", symbol: "AAPL.US", eventType: "earnings", eventDate: "2026-06-01" }],
-    };
+      items: [mockDigestItem()],
+    });
   },
   ensureSystemAnchorEvent: async () => ({ id: "system-anchor" }),
 };
