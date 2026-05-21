@@ -868,7 +868,11 @@ export function PaperTradingPage() {
             </div>
             <div className="flex flex-col items-end gap-2">
               <div className="flex flex-wrap items-center justify-end gap-2">
-                <ExportButton endpoint="/export/portfolio" userId={USER_ID || undefined} label="Eksportuj portfel" />
+                <ExportButton
+                  endpoint="/export/portfolio"
+                  userId={USER_ID || undefined}
+                  label={t("paperTrading.exportPortfolio", { defaultValue: "Export portfolio" })}
+                />
                 <button
                   type="button"
                   onClick={onPrintReport}
@@ -876,7 +880,7 @@ export function PaperTradingPage() {
                   style={{ borderColor: colors.brandDark, color: colors.brandDark, backgroundColor: colors.bgPrimary }}
                 >
                   <PrinterIcon className="h-4 w-4" />
-                  Drukuj raport
+                  {t("paperTrading.printReport", { defaultValue: "Print report" })}
                 </button>
                 <button
                   type="button"
@@ -884,7 +888,7 @@ export function PaperTradingPage() {
                   className="rounded-xl px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
                   style={{ background: `linear-gradient(135deg, ${colors.brandDark}, ${colors.brandMedium})` }}
                 >
-                  Otwórz pozycję
+                  {t("paperTrading.openPosition", { defaultValue: "Open position" })}
                 </button>
               </div>
               <span
@@ -905,11 +909,14 @@ export function PaperTradingPage() {
         </section>
 
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <StatTile label="Otwarte pozycje" value={String(portfolio?.openPositions.length ?? positionRows.length)} />
-          <StatTile label="Zamknięte" value={String(closedCount)} />
+          <StatTile
+            label={t("paperTrading.openPositionsStat", { defaultValue: "Open positions" })}
+            value={String(portfolio?.openPositions.length ?? positionRows.length)}
+          />
+          <StatTile label={t("paperTrading.closedStat", { defaultValue: "Closed" })} value={String(closedCount)} />
           <StatTile label="Win rate" value={`${formatNumber(winRate, 1)}%`} tone={winRate >= 50 ? "positive" : "negative"} />
           <StatTile
-            label="Najlepszy trade"
+            label={t("paperTrading.bestTradeStat", { defaultValue: "Best trade" })}
             value={bestTrade ? `${bestTrade.ticker} ${formatPercent(Number(bestTrade.pnlPct ?? 0))}` : "n/a"}
             tone={Number(bestTrade?.pnl ?? 0) >= 0 ? "positive" : "negative"}
           />
@@ -1049,15 +1056,12 @@ export function PaperTradingPage() {
         ) : null}
 
         <section className="glass-section rounded-2xl p-4 shadow-sm sm:p-5">
-          <div
-            className="flex items-center justify-between border-b px-4 py-3"
-            style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-          >
-            <h2 className="text-sm font-semibold uppercase tracking-[0.12em]" style={{ color: colors.brandDark }}>
-              Otwarte pozycje
+          <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#22d3ee]">
+              {t("paperTrading.openPositionsTitle", { defaultValue: "Open positions" })}
             </h2>
-            <span className="text-xs font-medium" style={{ color: colors.textSecondary }}>
-              Unrealized {formatCurrency(totalUnrealized, "USD")}
+            <span className="text-xs font-medium text-white/60">
+              {t("paperTrading.unrealized", { defaultValue: "Unrealized" })} {formatCurrency(totalUnrealized, "USD")}
             </span>
           </div>
           <BulkActions
@@ -1085,15 +1089,15 @@ export function PaperTradingPage() {
                     <th className="px-3 py-2">Entry price</th>
                     <th className="px-3 py-2">Current price</th>
                     <th className="px-3 py-2">P&amp;L %</th>
-                    <th className="px-3 py-2">Czas</th>
-                    <th className="px-3 py-2">Akcje</th>
+                    <th className="px-3 py-2">{t("paperTrading.timeColumn", { defaultValue: "Time" })}</th>
+                    <th className="px-3 py-2">{t("paperTrading.actionsColumn", { defaultValue: "Actions" })}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {positionRows.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="px-3 py-6 text-center text-sm" style={{ color: colors.textMuted }}>
-                        Brak aktywnych pozycji.
+                        {t("paperTrading.noOpenPositions", { defaultValue: "No open positions" })}
                       </td>
                     </tr>
                   ) : (
@@ -1107,7 +1111,7 @@ export function PaperTradingPage() {
                             <BulkRowCheckbox
                               checked={isSelected}
                               disabled={bulkClosing || closingTradeId === row.id}
-                              label={`Zaznacz ${row.ticker}`}
+                              label={t("paperTrading.selectTicker", { ticker: row.ticker, defaultValue: `Select ${row.ticker}` })}
                               onChange={(checked) => toggleTradeSelection(row.id, checked)}
                             />
                           </td>
@@ -1154,7 +1158,9 @@ export function PaperTradingPage() {
                                 className="rounded-md px-3 py-1 text-xs font-semibold text-white disabled:opacity-60"
                                 style={{ backgroundColor: colors.brandDark }}
                               >
-                                {closingTradeId === row.id || bulkClosing ? t("common.loading") : "Zamknij"}
+                                {closingTradeId === row.id || bulkClosing
+                                  ? t("common.loading")
+                                  : t("paperTrading.closePosition", { defaultValue: "Close position" })}
                               </button>
                               <span className={`rounded px-2 py-0.5 text-[10px] font-semibold ${exitBadgeClass(signal?.action ?? "HOLD")}`}>
                                 {signal?.action ?? "HOLD"}
@@ -1172,15 +1178,12 @@ export function PaperTradingPage() {
         </section>
 
         <section className="glass-section rounded-2xl p-4 shadow-sm sm:p-5">
-          <div
-            className="flex items-center justify-between border-b px-4 py-3"
-            style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-          >
-            <h2 className="text-xs font-semibold uppercase tracking-[0.12em]" style={{ color: colors.brandDark }}>
-              Zamknięte pozycje
+          <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-[#22d3ee]">
+              {t("paperTrading.closedPositionsTitle", { defaultValue: "Closed positions" })}
             </h2>
-            <span className="text-xs" style={{ color: colors.textSecondary }}>
-              Ostatnie {Math.min(history.length, 10)}
+            <span className="text-xs text-white/60">
+              {t("paperTrading.recentCount", { count: Math.min(history.length, 10), defaultValue: `Latest ${Math.min(history.length, 10)}` })}
             </span>
           </div>
           {loadingHistory ? (
@@ -1203,7 +1206,7 @@ export function PaperTradingPage() {
                   {history.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="px-3 py-5 text-center" style={{ color: colors.textMuted }}>
-                        Brak historii transakcji.
+                        {t("paperTrading.noTradeHistory", { defaultValue: "No trade history" })}
                       </td>
                     </tr>
                   ) : (

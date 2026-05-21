@@ -505,7 +505,7 @@ export function AlpacaPage() {
               disabled={placing}
               onClick={() => void handlePlaceOrder()}
             >
-              {placing ? t("common.loading") : "Złóż zlecenie"}
+              {placing ? t("common.loading") : t("alpaca.placeOrder", { defaultValue: "Place order" })}
             </button>
           </div>
         </aside>

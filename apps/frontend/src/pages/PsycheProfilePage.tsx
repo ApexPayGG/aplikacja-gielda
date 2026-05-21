@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   createPsycheRule,
@@ -11,16 +12,16 @@ import {
   type PsycheTradingRule,
   type TraderProfile,
 } from "../services/api";
+import {
+  GLASS_HERO,
+  GLASS_PAGE_BG,
+  GLASS_PAGE_SUBTITLE,
+  GLASS_PAGE_TITLE,
+} from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
-
-const EXAMPLE_RULES = [
-  "Max 2 transakcje dziennie",
-  "Nie handluj w piątek po 14:00",
-  "Stop loss zawsze przed wejściem",
-];
 
 type BiasSeverity = "positive" | "negative" | "brandGold";
 
@@ -94,7 +95,16 @@ function decisionTone(log: PsycheDecisionLog): string {
 }
 
 export function PsycheProfilePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const exampleRules = useMemo(
+    () => [
+      t("psyche.exampleRule1", { defaultValue: "Max 2 trades per day" }),
+      t("psyche.exampleRule2", { defaultValue: "No trading Friday after 2 PM" }),
+      t("psyche.exampleRule3", { defaultValue: "Stop loss always before entry" }),
+    ],
+    [t],
+  );
   const [profile, setProfile] = useState<TraderProfile | null>(null);
   const [hasProfile, setHasProfile] = useState(false);
   const [rules, setRules] = useState<PsycheTradingRule[]>([]);
@@ -105,7 +115,7 @@ export function PsycheProfilePage() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const exampleHint = useMemo(() => EXAMPLE_RULES.join(" · "), []);
+  const exampleHint = useMemo(() => exampleRules.join(" · "), [exampleRules]);
   const displayName = useMemo(() => formatDisplayName(USER_ID), []);
   const initials = useMemo(() => getInitials(displayName), [displayName]);
   const scoreTheme = useMemo(() => growthScoreTheme(profile?.growthScore ?? 0), [profile?.growthScore]);
@@ -114,21 +124,32 @@ export function PsycheProfilePage() {
   const decisionTimeline = useMemo(() => logs.slice(0, 5), [logs]);
   const aiInsight = useMemo(() => {
     if (!profile) {
-      return "AI insight pojawi się po pierwszym pełnym check-inie i analizie Twoich decyzji.";
+      return t("psyche.aiInsightPending", {
+        defaultValue: "AI insight will appear after your first full check-in and decision analysis.",
+      });
     }
     const good = profile.goodConditions?.trim();
     const bad = profile.badConditions?.trim();
     if (good && bad) {
-      return `Najlepiej działasz, gdy ${good}. Uważaj na sytuacje: ${bad}.`;
+      return t("psyche.aiInsightGoodBad", {
+        good,
+        bad,
+        defaultValue: `You perform best when ${good}. Watch for situations: ${bad}.`,
+      });
     }
     if (good) {
-      return `Najbardziej stabilne decyzje podejmujesz, gdy ${good}.`;
+      return t("psyche.aiInsightGood", { good, defaultValue: `Your most stable decisions happen when ${good}.` });
     }
     if (bad) {
-      return `Twoja główna strefa ryzyka: ${bad}. Wzmocnij pre-trade checklist przed wejściem.`;
+      return t("psyche.aiInsightBad", {
+        bad,
+        defaultValue: `Your main risk zone: ${bad}. Strengthen your pre-trade checklist before entering.`,
+      });
     }
-    return "Twój profil dojrzewa. Kontynuuj check-iny i journaling, aby AI zbudowało precyzyjniejsze wskazówki.";
-  }, [profile]);
+    return t("psyche.aiInsightGrowing", {
+      defaultValue: "Your profile is maturing. Keep check-ins and journaling so AI can refine guidance.",
+    });
+  }, [profile, t]);
 
   const loadAll = useCallback(async () => {
     setError(null);
@@ -197,12 +218,14 @@ export function PsycheProfilePage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
-      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
-        <header>
-          <h1 className="text-4xl font-bold tracking-tight">Trader Psyche Profile</h1>
-          <p className="mt-2 text-sm md:text-base" style={{ color: colors.textSecondary }}>
-            Twój profil psychologiczny i decyzje tradingowe w design systemie AMC Energy.
+    <div className={`${GLASS_PAGE_BG} px-4 py-8`}>
+      <div className="mx-auto max-w-6xl space-y-6">
+        <header className={GLASS_HERO}>
+          <h1 className={GLASS_PAGE_TITLE}>{t("psyche.title", { defaultValue: "Trader Psyche" })}</h1>
+          <p className={`${GLASS_PAGE_SUBTITLE} mt-2`}>
+            {t("psyche.pageSubtitle", {
+              defaultValue: "Your psychological profile and trading decision patterns.",
+            })}
           </p>
         </header>
 
@@ -266,7 +289,7 @@ export function PsycheProfilePage() {
             </h2>
             {detectedBiases.length === 0 ? (
               <p className="mt-4 text-sm" style={{ color: colors.textSecondary }}>
-                Brak wykrytych biasów.
+                {t("psyche.noBiases", { defaultValue: "No biases detected yet." })}
               </p>
             ) : (
               <ul className="mt-4 space-y-2">
@@ -296,7 +319,7 @@ export function PsycheProfilePage() {
 
             {rules.length === 0 ? (
               <p className="mt-4 text-sm" style={{ color: colors.textSecondary }}>
-                Nie masz jeszcze zdefiniowanych reguł.
+                {t("psyche.noRules", { defaultValue: "You have not defined any rules yet." })}
               </p>
             ) : (
               <ul className="mt-4 space-y-2">
@@ -332,7 +355,7 @@ export function PsycheProfilePage() {
                           className="text-xs font-semibold"
                           style={{ color: colors.negative }}
                         >
-                          Usuń
+                          {t("psyche.deleteRule", { defaultValue: "Delete" })}
                         </button>
                       </div>
                     ) : null}
@@ -346,7 +369,7 @@ export function PsycheProfilePage() {
                 <input
                   className="w-full rounded-xl border px-3 py-2 text-sm outline-none"
                   style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
-                  placeholder={`Dodaj regułę (${exampleHint})`}
+                  placeholder={t("psyche.rulePlaceholder", { defaultValue: "Add a rule" }) + ` (${exampleHint})`}
                   value={newRule}
                   onChange={(e) => setNewRule(e.target.value)}
                 />
@@ -356,7 +379,7 @@ export function PsycheProfilePage() {
                   className="rounded-xl px-4 py-2 text-sm font-semibold text-white"
                   style={{ backgroundColor: colors.brandDark }}
                 >
-                  Dodaj regułę
+                  {t("psyche.addRule", { defaultValue: "Add rule" })}
                 </button>
               </div>
             ) : null}
@@ -368,7 +391,7 @@ export function PsycheProfilePage() {
             </h2>
             {decisionTimeline.length === 0 ? (
               <p className="mt-4 text-sm" style={{ color: colors.textSecondary }}>
-                Brak historii decyzji.
+                {t("psyche.noDecisionHistory", { defaultValue: "No decision history yet." })}
               </p>
             ) : (
               <ol className="mt-4 space-y-3">
@@ -413,7 +436,7 @@ export function PsycheProfilePage() {
             className="rounded-xl px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             style={{ backgroundColor: colors.brandDark }}
           >
-            Edytuj zasady
+            {t("psyche.editRules", { defaultValue: "Edit rules" })}
           </button>
           <button
             type="button"
@@ -422,7 +445,9 @@ export function PsycheProfilePage() {
             className="rounded-xl px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
             style={{ backgroundColor: colors.brandDark }}
           >
-            {refreshing ? "Odświeżanie..." : "Nowy Check-In"}
+            {refreshing
+              ? t("psyche.refreshing", { defaultValue: "Refreshing..." })
+              : t("psyche.newCheckIn", { defaultValue: "New check-in" })}
           </button>
         </div>
       </div>

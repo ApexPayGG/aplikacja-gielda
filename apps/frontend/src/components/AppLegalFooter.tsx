@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { hasCompletedOnboarding } from "../utils/onboarding";
 
@@ -14,6 +15,7 @@ const HIDDEN_PREFIXES = [
 ];
 
 export function AppLegalFooter() {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   const { token } = useAuth();
   const glass = Boolean(token) && hasCompletedOnboarding();
@@ -30,11 +32,11 @@ export function AppLegalFooter() {
     >
       <p className={`text-[11px] ${glass ? "text-white/50" : "text-textSecondary"}`}>
         <Link to="/terms" className={`font-medium hover:underline ${glass ? "text-[#22d3ee]" : "text-brandCyan"}`}>
-          Regulamin
+          {t("legalFooter.terms", { defaultValue: "Terms" })}
         </Link>
         {" · "}
         <Link to="/privacy" className={`font-medium hover:underline ${glass ? "text-[#22d3ee]" : "text-brandCyan"}`}>
-          Polityka prywatności
+          {t("legalFooter.privacy", { defaultValue: "Privacy Policy" })}
         </Link>
       </p>
     </footer>

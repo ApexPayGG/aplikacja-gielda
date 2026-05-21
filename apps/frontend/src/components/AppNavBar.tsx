@@ -249,9 +249,9 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
   const [accountOpen, setAccountOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const accountLabel = t("nav.account", { defaultValue: "Account" });
-  const profileLabel = t("nav.profile", { defaultValue: "Mój profil" });
-  const settingsLabel = t("nav.settings", { defaultValue: "Ustawienia" });
-  const logoutLabel = t("nav.logout", { defaultValue: "Wyloguj" });
+  const profileLabel = t("nav.profile", { defaultValue: "My profile" });
+  const settingsLabel = t("nav.settings", { defaultValue: "Settings" });
+  const logoutLabel = t("nav.logout", { defaultValue: "Log out" });
 
   const mobileDrawerLinks: MobileDrawerLink[] = [
     {
@@ -268,7 +268,7 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
     },
     {
       to: "/about",
-      label: t("nav.about", { defaultValue: "O nas" }),
+      label: t("nav.about", { defaultValue: "About" }),
       icon: InformationCircleIcon,
       isActive: (path) => path.startsWith("/about"),
     },
@@ -352,7 +352,7 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
             {t("nav.home")}
           </NavLink>
           <NavLink to="/about" className={({ isActive }) => navLinkClass(isActive, glass)}>
-            {t("nav.about", { defaultValue: "O nas" })}
+            {t("nav.about", { defaultValue: "About" })}
           </NavLink>
           <NavLink to="/dashboard" className={({ isActive }) => navLinkClass(isActive, glass)}>
             {t("nav.dashboard")}
@@ -361,7 +361,7 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
             to="/companies"
             className={({ isActive }) => `${navLinkClass(isActive, glass)} hidden lg:inline-block`}
           >
-            {t("nav.companies", { defaultValue: "Spółki" })}
+            {t("nav.companies", { defaultValue: "Companies" })}
           </NavLink>
           <DesktopDropdown
             id="markets"

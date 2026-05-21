@@ -41,8 +41,7 @@ const mockCoach: CoachResponse = {
     avgHoldingLossHours: 29.4,
     calculatedAt: new Date().toISOString(),
   },
-  aiDescription:
-    "Masz dobry potencjał momentum, ale statystycznie zbyt szybko zamykasz zwycięzców. Pozwól trendom pracować dłużej i ogranicz liczbę wejść w ciągu dnia do setupów o najwyższej jakości.",
+  aiDescription: "",
 };
 
 function formatCountdown(unlocksAt: string, nowTs: number): string {
@@ -58,6 +57,8 @@ function formatCountdown(unlocksAt: string, nowTs: number): string {
 function isFallbackError(e: unknown): boolean {
   return axios.isAxiosError(e) && (!e.response || e.response.status === 404 || e.response.status >= 500);
 }
+
+const MOCK_AI_KEY = "coach.mockAiDescription";
 
 export function BehavioralCoachPage() {
   const { t } = useTranslation();
@@ -119,11 +120,23 @@ export function BehavioralCoachPage() {
       } catch (e) {
         if (cancelled) return;
         if (isFallbackError(e)) {
-          setCoach(mockCoach);
+          setCoach({
+            ...mockCoach,
+            aiDescription: t(MOCK_AI_KEY, {
+              defaultValue:
+                "You have solid momentum potential, but you tend to close winners too early. Let trends run longer and limit daily entries to your highest-quality setups.",
+            }),
+          });
           setUsingMock(true);
         } else {
           setError(apiErrorMessage(e));
-          setCoach(mockCoach);
+          setCoach({
+            ...mockCoach,
+            aiDescription: t(MOCK_AI_KEY, {
+              defaultValue:
+                "You have solid momentum potential, but you tend to close winners too early. Let trends run longer and limit daily entries to your highest-quality setups.",
+            }),
+          });
           setUsingMock(true);
         }
       } finally {
@@ -135,7 +148,7 @@ export function BehavioralCoachPage() {
     return () => {
       cancelled = true;
     };
-  }, [USER_ID]);
+  }, [USER_ID, t]);
 
   useEffect(() => {
     const timer = setInterval(() => setNowTs(Date.now()), 1000);
@@ -176,7 +189,9 @@ export function BehavioralCoachPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#22d3ee]">StockAI Coach</p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Behavioral Coach</h1>
             <p className="mt-2 max-w-2xl text-sm text-white/60 sm:text-base">
-              Identyfikuj FOMO, revenge trading i overtrading — zanim kosztują Cię realny kapitał.
+              {t("coach.subtitle", {
+                defaultValue: "Spot FOMO, revenge trading, and overtrading before they cost you real capital.",
+              })}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -197,7 +212,9 @@ export function BehavioralCoachPage() {
                     : "border-white/15 bg-white/5 text-white/65"
                 }`}
               >
-                {behavioralSyncSource === "api" ? "☁️ Zsynchronizowano" : "📱 Tryb offline"}
+                {behavioralSyncSource === "api"
+                  ? `☁️ ${t("coach.synced", { defaultValue: "Synced" })}`
+                  : `📱 ${t("coach.offline", { defaultValue: "Offline mode" })}`}
               </span>
             ) : null}
           </div>

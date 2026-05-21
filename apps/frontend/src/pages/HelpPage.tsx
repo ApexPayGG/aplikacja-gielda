@@ -1,183 +1,226 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SEOHead } from "../components/SEOHead";
-import { colors } from "../styles/designSystem";
+import {
+  GLASS_BTN_PRIMARY,
+  GLASS_HERO,
+  GLASS_INPUT,
+  GLASS_PAGE_BG,
+  GLASS_PAGE_SUBTITLE,
+  GLASS_PAGE_TITLE,
+  GLASS_SECTION,
+} from "../components/behavioral-coach/glassStyles";
 
 type HelpCategory = {
   icon: string;
-  title: string;
+  titleKey: string;
+  titleDefault: string;
 };
 
 type FaqItem = {
-  question: string;
-  answer: string;
+  questionKey: string;
+  questionDefault: string;
+  answerKey: string;
+  answerDefault: string;
 };
 
 const categories: HelpCategory[] = [
-  { icon: "🚀", title: "Pierwsze kroki" },
-  { icon: "💳", title: "Płatności i subskrypcja" },
-  { icon: "📊", title: "Sygnały i analiza" },
-  { icon: "🤖", title: "AI i Behavioral Coach" },
+  { icon: "🚀", titleKey: "help.catGettingStarted", titleDefault: "Getting started" },
+  { icon: "💳", titleKey: "help.catBilling", titleDefault: "Billing & subscription" },
+  { icon: "📊", titleKey: "help.catSignals", titleDefault: "Signals & analysis" },
+  { icon: "🤖", titleKey: "help.catCoach", titleDefault: "AI & Behavioral Coach" },
 ];
 
 const faqItems: FaqItem[] = [
   {
-    question: "Jak zacząć korzystać z StockAI Pro?",
-    answer:
-      "Załóż konto, przejdź onboarding i wybierz interesujące Cię moduły. Następnie skonfiguruj preferencje sygnałów oraz rozpocznij pracę od Dashboardu.",
+    questionKey: "help.faq1q",
+    questionDefault: "How do I get started with StockAI Pro?",
+    answerKey: "help.faq1a",
+    answerDefault:
+      "Create an account, complete onboarding, and pick the modules you care about. Then configure signal preferences and start from the Dashboard.",
   },
   {
-    question: "Czym różni się Free od Pro?",
-    answer:
-      "Plan Free daje dostęp do podstawowych narzędzi i ograniczonej liczby analiz. Plan Pro odblokowuje zaawansowane moduły AI, więcej sygnałów oraz rozszerzone raporty.",
+    questionKey: "help.faq2q",
+    questionDefault: "What is the difference between Free and Pro?",
+    answerKey: "help.faq2a",
+    answerDefault:
+      "Free includes core tools and a limited number of analyses. Pro unlocks advanced AI modules, more signals, and extended reports.",
   },
   {
-    question: "Jak działa Paper Trading?",
-    answer:
-      "Paper Trading pozwala testować decyzje inwestycyjne na wirtualnym kapitale. Symulujesz transakcje bez ryzyka finansowego i analizujesz wyniki jak na realnym rynku.",
+    questionKey: "help.faq3q",
+    questionDefault: "How does Paper Trading work?",
+    answerKey: "help.faq3a",
+    answerDefault:
+      "Paper Trading lets you test investment decisions on virtual capital. You simulate trades without financial risk and review results like on a live market.",
   },
   {
-    question: "Co to jest Behavioral Coach?",
-    answer:
-      "Behavioral Coach analizuje Twoje nawyki inwestycyjne i podpowiada, jak ograniczyć błędy emocjonalne. Otrzymujesz konkretne wskazówki dopasowane do Twojego stylu.",
+    questionKey: "help.faq4q",
+    questionDefault: "What is Behavioral Coach?",
+    answerKey: "help.faq4a",
+    answerDefault:
+      "Behavioral Coach analyzes your investing habits and suggests how to reduce emotional mistakes. You get concrete tips tailored to your style.",
   },
   {
-    question: "Jak podpiąć konto eToro?",
-    answer:
-      "Przejdź do Ustawień, sekcji Brokers i wybierz kartę eToro. Po kliknięciu CTA przejdziesz przez proces połączenia konta oraz autoryzacji.",
+    questionKey: "help.faq5q",
+    questionDefault: "How do I connect an eToro account?",
+    answerKey: "help.faq5a",
+    answerDefault:
+      "Go to Settings, open Brokers, and select eToro. The CTA walks you through account linking and authorization.",
   },
   {
-    question: "Jak działają sygnały AI?",
-    answer:
-      "Sygnały AI łączą dane rynkowe, sentyment i kontekst zachowania ceny. Każdy sygnał zawiera scoring, uzasadnienie oraz sugerowany poziom ryzyka.",
+    questionKey: "help.faq6q",
+    questionDefault: "How do AI signals work?",
+    answerKey: "help.faq6a",
+    answerDefault:
+      "AI signals combine market data, sentiment, and price behavior context. Each signal includes scoring, rationale, and a suggested risk level.",
   },
   {
-    question: "Czy mogę anulować subskrypcję?",
-    answer:
-      "Tak. Subskrypcję możesz anulować w dowolnym momencie z poziomu ustawień płatności. Dostęp do funkcji Pro pozostanie aktywny do końca opłaconego okresu.",
+    questionKey: "help.faq7q",
+    questionDefault: "Can I cancel my subscription?",
+    answerKey: "help.faq7a",
+    answerDefault:
+      "Yes. Cancel anytime from payment settings. Pro access stays active until the end of the paid period.",
   },
   {
-    question: "Jak resetować hasło?",
-    answer:
-      "Wejdź na stronę logowania i kliknij „Nie pamiętasz hasła?”. Otrzymasz e-mail z linkiem do ustawienia nowego hasła.",
+    questionKey: "help.faq8q",
+    questionDefault: "How do I reset my password?",
+    answerKey: "help.faq8a",
+    answerDefault:
+      'Open the login page and click "Forgot password?". You will receive an email with a link to set a new password.',
   },
   {
-    question: "Co to jest Pre-Mortem AI?",
-    answer:
-      "Pre-Mortem AI to moduł, który symuluje potencjalne scenariusze porażki przed wejściem w transakcję. Pomaga ocenić ryzyko i przygotować plan działania.",
+    questionKey: "help.faq9q",
+    questionDefault: "What is Pre-Mortem AI?",
+    answerKey: "help.faq9a",
+    answerDefault:
+      "Pre-Mortem AI simulates likely failure scenarios before you enter a trade. It helps assess risk and prepare an action plan.",
   },
   {
-    question: "Jak działa Premium Analysis?",
-    answer:
-      "Premium Analysis dostarcza pogłębione raporty spółek: czynniki fundamentalne, ryzyka branżowe i scenariusze cenowe. To rozszerzona warstwa analityczna dla planu Pro.",
+    questionKey: "help.faq10q",
+    questionDefault: "How does Premium Analysis work?",
+    answerKey: "help.faq10a",
+    answerDefault:
+      "Premium Analysis delivers deeper company reports: fundamentals, sector risks, and price scenarios. It is the extended analytics layer for Pro.",
   },
 ];
 
 export function HelpPage() {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
-  const [openQuestion, setOpenQuestion] = useState<string | null>(faqItems[0]?.question ?? null);
+  const [openQuestion, setOpenQuestion] = useState<string | null>(faqItems[0]?.questionKey ?? null);
+
+  const localizedFaq = useMemo(
+    () =>
+      faqItems.map((item) => ({
+        id: item.questionKey,
+        question: t(item.questionKey, { defaultValue: item.questionDefault }),
+        answer: t(item.answerKey, { defaultValue: item.answerDefault }),
+      })),
+    [t],
+  );
 
   const filteredFaq = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
-    if (!normalizedSearch) return faqItems;
-    return faqItems.filter((item) => {
+    if (!normalizedSearch) return localizedFaq;
+    return localizedFaq.filter((item) => {
       const content = `${item.question} ${item.answer}`.toLowerCase();
       return content.includes(normalizedSearch);
     });
-  }, [searchValue]);
+  }, [localizedFaq, searchValue]);
 
   return (
-    <div className="min-h-screen bg-bgSecondary px-4 py-10 text-white">
+    <div className={`${GLASS_PAGE_BG} px-4 py-10`}>
       <SEOHead
-        title="Centrum pomocy | StockAI Pro"
-        description="Najczęściej zadawane pytania, kategorie pomocy i kontakt do zespołu wsparcia StockAI Pro."
+        title={t("help.seoTitle", { defaultValue: "Help Center | StockAI Pro" })}
+        description={t("help.seoDescription", {
+          defaultValue: "FAQ, help categories, and support contact for StockAI Pro.",
+        })}
         ogType="website"
       />
 
       <div className="mx-auto max-w-5xl space-y-8">
-        <header className="rounded-2xl border bg-bgPrimary p-6 shadow-sm" style={{ borderColor: colors.border }}>
-          <h1 className="text-3xl font-bold">Centrum pomocy</h1>
-          <p className="mt-2 glass-muted text-sm">
-            Wszystko, czego potrzebujesz, żeby sprawnie korzystać z platformy StockAI Pro.
+        <header className={GLASS_HERO}>
+          <h1 className={GLASS_PAGE_TITLE}>{t("help.title", { defaultValue: "Help Center" })}</h1>
+          <p className={`${GLASS_PAGE_SUBTITLE} mt-2`}>
+            {t("help.subtitle", {
+              defaultValue: "Everything you need to use StockAI Pro effectively.",
+            })}
           </p>
 
-          <label htmlFor="help-search" className="mt-5 block text-sm font-medium glass-muted">
-            Szukaj w FAQ
+          <label htmlFor="help-search" className="mt-5 block text-sm font-medium text-white/70">
+            {t("help.searchLabel", { defaultValue: "Search FAQ" })}
           </label>
           <input
             id="help-search"
             value={searchValue}
             onChange={(event) => setSearchValue(event.target.value)}
-            placeholder="Wpisz pytanie lub słowo kluczowe..."
-            className="mt-2 w-full rounded-xl border border-white/20 bg-bgPrimary px-4 py-3 text-sm text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/30"
+            placeholder={t("help.searchPlaceholder", { defaultValue: "Type a question or keyword..." })}
+            className={`${GLASS_INPUT} mt-2 w-full`}
           />
         </header>
 
         <section aria-labelledby="help-categories" className="space-y-4">
-          <h2 id="help-categories" className="text-xl font-semibold">
-            Kategorie
+          <h2 id="help-categories" className="text-xl font-semibold text-white">
+            {t("help.categoriesTitle", { defaultValue: "Categories" })}
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {categories.map((category) => (
-              <article
-                key={category.title}
-                className="rounded-2xl border bg-bgPrimary p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                style={{ borderColor: colors.border }}
-              >
+              <article key={category.titleKey} className={GLASS_SECTION}>
                 <p className="text-2xl">{category.icon}</p>
-                <h3 className="mt-3 text-base font-semibold text-white">{category.title}</h3>
+                <h3 className="mt-3 text-base font-semibold text-white">
+                  {t(category.titleKey, { defaultValue: category.titleDefault })}
+                </h3>
               </article>
             ))}
           </div>
         </section>
 
         <section aria-labelledby="help-faq" className="space-y-4">
-          <h2 id="help-faq" className="text-xl font-semibold">
-            FAQ
+          <h2 id="help-faq" className="text-xl font-semibold text-white">
+            {t("help.faqTitle", { defaultValue: "FAQ" })}
           </h2>
 
           <div className="space-y-3">
             {filteredFaq.map((item) => {
-              const isOpen = openQuestion === item.question;
+              const isOpen = openQuestion === item.id;
               return (
-                <article key={item.question} className="overflow-hidden rounded-2xl border bg-bgPrimary" style={{ borderColor: colors.border }}>
+                <article key={item.id} className={`${GLASS_SECTION} overflow-hidden p-0`}>
                   <button
                     type="button"
                     className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
-                    onClick={() => setOpenQuestion(isOpen ? null : item.question)}
+                    onClick={() => setOpenQuestion(isOpen ? null : item.id)}
                     aria-expanded={isOpen}
                   >
                     <span className="font-medium text-white">{item.question}</span>
-                    <span className="text-2xl leading-none" style={{ color: colors.brandCyan }} aria-hidden="true">
+                    <span className="text-2xl leading-none text-[#22d3ee]" aria-hidden="true">
                       {isOpen ? "-" : "+"}
                     </span>
                   </button>
-                  {isOpen ? <p className="border-t px-5 py-4 glass-muted text-sm" style={{ borderColor: colors.border }}>{item.answer}</p> : null}
+                  {isOpen ? <p className="border-t border-white/10 px-5 py-4 text-sm text-white/65">{item.answer}</p> : null}
                 </article>
               );
             })}
 
             {filteredFaq.length === 0 ? (
-              <p className="rounded-xl border bg-bgPrimary px-4 py-3 glass-muted text-sm" style={{ borderColor: colors.border }}>
-                Brak wyników dla podanego zapytania. Spróbuj użyć innego słowa kluczowego.
+              <p className={`${GLASS_SECTION} text-sm text-white/60`}>
+                {t("help.noResults", {
+                  defaultValue: "No results for your search. Try a different keyword.",
+                })}
               </p>
             ) : null}
           </div>
         </section>
 
-        <section className="rounded-2xl border bg-bgPrimary p-6 text-center shadow-sm" style={{ borderColor: colors.border }}>
-          <h2 className="text-2xl font-semibold text-white">Nie znalazłeś odpowiedzi?</h2>
-          <p className="mt-2 glass-muted text-sm">
-            Napisz do nas na{" "}
-            <a href="mailto:support@stock-ai.pro" className="font-semibold underline" style={{ color: colors.brandDark }}>
+        <section className={`${GLASS_SECTION} text-center`}>
+          <h2 className="text-2xl font-semibold text-white">{t("help.contactTitle", { defaultValue: "Still need help?" })}</h2>
+          <p className="mt-2 text-sm text-white/65">
+            {t("help.contactBody", { defaultValue: "Email us at" })}{" "}
+            <a href="mailto:support@stock-ai.pro" className="font-semibold text-[#22d3ee] underline">
               support@stock-ai.pro
             </a>
           </p>
-          <a
-            href="mailto:support@stock-ai.pro"
-            className="mt-5 inline-flex rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
-            style={{ backgroundColor: colors.brandDark }}
-          >
-            Napisz do nas
+          <a href="mailto:support@stock-ai.pro" className={`${GLASS_BTN_PRIMARY} mt-5 inline-flex`}>
+            {t("help.contactCta", { defaultValue: "Contact support" })}
           </a>
         </section>
       </div>

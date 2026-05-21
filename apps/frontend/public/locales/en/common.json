@@ -55,7 +55,8 @@
     "status": "Status",
     "symbol": "Symbol",
     "testConnection": "Test connection",
-    "title": "Alpaca Trading"
+    "title": "Alpaca Trading",
+    "placeOrder": "Place order"
   },
   "alpha": {
     "aiSummaryEmpty": "No AI summary available.",
@@ -833,9 +834,17 @@
   "mistakes": {
     "analyzeButton": "Analyze my mistakes",
     "analyzing": "Analyzing...",
+    "costLabel": "Cost:",
+    "costPct": "Mistake cost %",
     "dnaContextLink": "Open Strategy DNA with these symbols",
     "dnaRowLink": "Strategy DNA",
+    "emptyFilter": "No mistakes for the selected filter.",
     "emptyType": "No mistakes in this category yet.",
+    "filterAll": "All",
+    "filterByType": "Filter by type",
+    "mostCommonType": "Most common type",
+    "noData": "No data",
+    "subtitle": "Most common investing mistake patterns and their cost.",
     "summary": {
       "emotional": "Emotional",
       "strategy": "Strategy",
@@ -843,6 +852,7 @@
       "total": "Total"
     },
     "title": "Mistake Library",
+    "totalErrors": "Total mistakes",
     "types": {
       "EMOTIONAL": "EMOTIONAL",
       "STRATEGY": "STRATEGY",
@@ -884,7 +894,16 @@
     "shortcutsHint": "Press ? for keyboard shortcuts",
     "companies": "Companies",
     "searchPlaceholder": "Search company...",
-    "dividendScreener": "Dividend Screener"
+    "dividendScreener": "Dividend Screener",
+    "about": "About",
+    "profile": "My profile",
+    "settings": "Settings",
+    "logout": "Log out",
+    "account": "Account"
+  },
+  "legalFooter": {
+    "terms": "Terms",
+    "privacy": "Privacy Policy"
   },
   "newshalflife": {
     "categoryLabel": "Category",
@@ -901,18 +920,32 @@
     "title": "News Half-Life Score"
   },
   "paperTrading": {
-    "closePosition": "Close Position",
+    "actionsColumn": "Actions",
+    "bestTradeStat": "Best trade",
+    "closedPositionsTitle": "Closed positions",
+    "closedStat": "Closed",
+    "closePosition": "Close position",
     "direction": "Direction",
-    "entryPrice": "Entry Price",
-    "exitPrice": "Exit Price",
-    "history": "Trade History",
+    "entryPrice": "Entry price",
+    "exitPrice": "Exit price",
+    "exportPortfolio": "Export portfolio",
+    "history": "Trade history",
     "long": "Long",
-    "openPosition": "Open Position",
+    "noOpenPositions": "No open positions",
+    "noTradeHistory": "No trade history",
+    "openPosition": "Open position",
+    "openPositionsStat": "Open positions",
+    "openPositionsTitle": "Open positions",
     "pnl": "P&L",
     "portfolio": "Portfolio",
+    "printReport": "Print report",
     "quantity": "Quantity",
+    "recentCount": "Latest {{count}}",
+    "selectTicker": "Select {{ticker}}",
     "short": "Short",
-    "title": "Paper Trading"
+    "timeColumn": "Time",
+    "title": "Paper Trading",
+    "unrealized": "Unrealized"
   },
   "pearls": {
     "decisionTrailEmpty": "No recorded decisions yet. Proceeding after Pre-Mortem or closing a loss creates an entry.",
@@ -953,6 +986,11 @@
     "stop": "Stop Loss",
     "takeProfits": "Take profit (R multiples)",
     "title": "Position Size Calculator",
+    "subtitle": "Size your position and cap max trade risk using sound capital management.",
+    "positionParams": "Position parameters",
+    "currencyLabel": "Currency:",
+    "calculating": "Calculating...",
+    "takeProfitLevels": "Take profit levels",
     "tp1": "1R",
     "tp2": "2R",
     "tp3": "3R",
@@ -997,7 +1035,28 @@
     "subtitle": "Your behavioral baseline: DNA, rules, and a lightweight decision journal.",
     "title": "Trader Psyche",
     "topBiases": "Top biases",
-    "tradingStyle": "Trading style"
+    "tradingStyle": "Trading style",
+    "pageSubtitle": "Your psychological profile and trading decision patterns.",
+    "aiInsightPending": "AI insight will appear after your first full check-in and decision analysis.",
+    "aiInsightGoodBad": "You perform best when {{good}}. Watch for situations: {{bad}}.",
+    "aiInsightGood": "Your most stable decisions happen when {{good}}.",
+    "aiInsightBad": "Your main risk zone: {{bad}}. Strengthen your pre-trade checklist before entering.",
+    "aiInsightGrowing": "Your profile is maturing. Keep check-ins and journaling so AI can refine guidance.",
+    "noBiases": "No biases detected yet.",
+    "noRules": "You have not defined any rules yet.",
+    "noDecisionHistory": "No decision history yet.",
+    "editRules": "Edit rules",
+    "refreshing": "Refreshing...",
+    "newCheckIn": "New check-in",
+    "exampleRule1": "Max 2 trades per day",
+    "exampleRule2": "No trading Friday after 2 PM",
+    "exampleRule3": "Stop loss always before entry"
+  },
+  "coach": {
+    "subtitle": "Spot FOMO, revenge trading, and overtrading before they cost you real capital.",
+    "mockAiDescription": "You have solid momentum potential, but you tend to close winners too early. Let trends run longer and limit daily entries to your highest-quality setups.",
+    "synced": "Synced",
+    "offline": "Offline mode"
   },
   "reactions": {
     "charCount": "{{used}} / {{max}}",
@@ -1599,6 +1658,7 @@
   },
   "companies": {
     "filterDividend": "Dividend stocks only",
-    "filterDividendLoading": "Loading dividend list…"
+    "filterDividendLoading": "Loading dividend list…",
+    "pageSubtitle": "Search and filter companies by market and sector, then open full analysis."
   }
 }

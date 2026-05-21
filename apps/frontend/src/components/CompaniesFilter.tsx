@@ -159,7 +159,7 @@ export function CompaniesFilter({
 
       <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
         <span className="text-sm font-medium text-white/90">
-          {t("companies.filterDividend", { defaultValue: "Tylko spółki z dywidendą" })}
+          {t("companies.filterDividend", { defaultValue: "Dividend stocks only" })}
           {dividendFilterLoading ? <span className="ml-1 text-xs font-normal text-white/50">…</span> : null}
         </span>
         <button
@@ -170,7 +170,7 @@ export function CompaniesFilter({
             filters.onlyDividendStocks ? "bg-[#22d3ee]" : "bg-white/20"
           }`}
           aria-pressed={filters.onlyDividendStocks}
-          aria-label={t("companies.filterDividend", { defaultValue: "Tylko spółki z dywidendą" })}
+          aria-label={t("companies.filterDividend", { defaultValue: "Dividend stocks only" })}
         >
           <span
             className="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"

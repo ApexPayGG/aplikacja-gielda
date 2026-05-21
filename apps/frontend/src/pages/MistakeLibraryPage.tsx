@@ -7,6 +7,15 @@ import {
   type MistakeLibraryItem,
   type MistakeType,
 } from "../services/api";
+import {
+  GLASS_BTN_PRIMARY,
+  GLASS_HERO,
+  GLASS_PAGE_BG,
+  GLASS_PAGE_SUBTITLE,
+  GLASS_PAGE_TITLE,
+  GLASS_SECTION,
+  GLASS_STAT_CARD,
+} from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -99,9 +108,9 @@ export function MistakeLibraryPage() {
 
   const mostCommonType = useMemo(() => {
     const sorted = (Object.entries(typeCounters) as Array<[MistakeType, number]>).sort((a, b) => b[1] - a[1]);
-    if (!sorted[0] || sorted[0][1] === 0) return "Brak danych";
+    if (!sorted[0] || sorted[0][1] === 0) return t("mistakes.noData", { defaultValue: "No data" });
     return typeMeta[sorted[0][0]].label;
-  }, [typeCounters]);
+  }, [typeCounters, t]);
 
   const totalCostPct = useMemo(() => items.reduce((sum, item) => sum + item.pnl, 0), [items]);
 
@@ -124,21 +133,22 @@ export function MistakeLibraryPage() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-10" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
+    <div className={`${GLASS_PAGE_BG} px-4 py-10`}>
       <div className="mx-auto max-w-6xl">
-        <header className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <header className={`${GLASS_HERO} mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between`}>
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Biblioteka błędów</h1>
-            <p className="mt-2 text-sm md:text-base" style={{ color: colors.textSecondary }}>
-              Najczęstsze schematy błędów inwestycyjnych wraz z ich kosztem.
+            <h1 className={GLASS_PAGE_TITLE}>{t("mistakes.title", { defaultValue: "Mistake Library" })}</h1>
+            <p className={`${GLASS_PAGE_SUBTITLE} mt-2`}>
+              {t("mistakes.subtitle", {
+                defaultValue: "Most common investing mistake patterns and their cost.",
+              })}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {mistakeSymbols.length > 0 ? (
               <Link
                 to={`/strategy-dna?from=mistakes&symbols=${encodeURIComponent(mistakeSymbols.join(","))}`}
-                className="rounded-lg glass-section px-3 py-2 text-sm font-semibold"
-                style={{ borderColor: colors.borderStrong, color: colors.brandDark }}
+                className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-[#22d3ee] hover:bg-white/10"
               >
                 {t("mistakes.dnaContextLink")}
               </Link>
@@ -147,8 +157,7 @@ export function MistakeLibraryPage() {
               type="button"
               onClick={() => void onAnalyzeClick()}
               disabled={analyzing}
-              className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-              style={{ backgroundColor: colors.brandDark }}
+              className={`${GLASS_BTN_PRIMARY} disabled:cursor-not-allowed disabled:opacity-60`}
             >
               {analyzing ? t("mistakes.analyzing") : t("mistakes.analyzeButton")}
             </button>
@@ -156,57 +165,40 @@ export function MistakeLibraryPage() {
         </header>
 
         {error ? (
-          <p className="mb-4 rounded-xl border px-4 py-3 text-sm" style={{ borderColor: colors.negative, color: colors.negative }}>
-            {error}
-          </p>
+          <p className="mb-4 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>
         ) : null}
 
         <section className="mb-6 grid gap-3 md:grid-cols-3">
-          <article className="rounded-2xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Łączne błędy
-            </p>
-            <p className="mt-2 text-3xl font-bold" style={{ color: colors.brandDark }}>
-              {summary.total}
-            </p>
+          <article className={GLASS_STAT_CARD}>
+            <p className="text-xs uppercase tracking-wide text-white/50">{t("mistakes.totalErrors", { defaultValue: "Total mistakes" })}</p>
+            <p className="mt-2 text-3xl font-bold text-white">{summary.total}</p>
           </article>
-          <article className="rounded-2xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Najczęstszy typ
-            </p>
-            <p className="mt-2 text-2xl font-bold" style={{ color: colors.brandMedium }}>
-              {mostCommonType}
-            </p>
+          <article className={GLASS_STAT_CARD}>
+            <p className="text-xs uppercase tracking-wide text-white/50">{t("mistakes.mostCommonType", { defaultValue: "Most common type" })}</p>
+            <p className="mt-2 text-2xl font-bold text-[#22d3ee]">{mostCommonType}</p>
           </article>
-          <article className="rounded-2xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Koszt błędów w %
-            </p>
-            <p className="mt-2 text-2xl font-bold" style={{ color: totalCostPct < 0 ? colors.negative : colors.positive }}>
-              {formatSignedPct(totalCostPct)}
-            </p>
+          <article className={GLASS_STAT_CARD}>
+            <p className="text-xs uppercase tracking-wide text-white/50">{t("mistakes.costPct", { defaultValue: "Mistake cost %" })}</p>
+            <p className={`mt-2 text-2xl font-bold ${totalCostPct < 0 ? "text-red-400" : "text-emerald-400"}`}>{formatSignedPct(totalCostPct)}</p>
           </article>
         </section>
 
-        <section className="mb-4 rounded-2xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
-          <p className="mb-3 text-sm font-semibold" style={{ color: colors.textSecondary }}>
-            Filtr po typie
-          </p>
+        <section className={`${GLASS_SECTION} mb-4`}>
+          <p className="mb-3 text-sm font-semibold text-white/70">{t("mistakes.filterByType", { defaultValue: "Filter by type" })}</p>
           <div className="flex flex-wrap gap-2">
             {(["ALL", "EMOTIONAL", "STRATEGY", "TIMING"] as MistakeFilter[]).map((type) => {
               const active = filter === type;
-              const label = type === "ALL" ? "Wszystkie" : typeMeta[type].label;
+              const label = type === "ALL" ? t("mistakes.filterAll", { defaultValue: "All" }) : typeMeta[type].label;
               return (
                 <button
                   key={type}
                   type="button"
                   onClick={() => setFilter(type)}
-                  className="rounded-full border px-3 py-1.5 text-xs font-semibold transition"
-                  style={{
-                    borderColor: active ? colors.brandDark : colors.borderStrong,
-                    backgroundColor: active ? "rgba(168,85,247, 0.1)" : colors.bgPrimary,
-                    color: active ? colors.brandDark : colors.textSecondary,
-                  }}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                    active
+                      ? "border-[#a855f7]/50 bg-[#a855f7]/15 text-[#22d3ee]"
+                      : "border-white/15 bg-white/5 text-white/60 hover:border-white/25"
+                  }`}
                 >
                   {label}
                 </button>
@@ -216,19 +208,17 @@ export function MistakeLibraryPage() {
         </section>
 
         {loading ? (
-          <div className="rounded-xl glass-section p-5 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
-            {t("common.loading")}
-          </div>
+          <div className={`${GLASS_SECTION} text-sm text-white/60`}>{t("common.loading")}</div>
         ) : filteredItems.length === 0 ? (
-          <div className="rounded-xl glass-section p-5 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
-            Brak błędów dla wybranego filtra.
+          <div className={`${GLASS_SECTION} text-sm text-white/60`}>
+            {t("mistakes.emptyFilter", { defaultValue: "No mistakes for the selected filter." })}
           </div>
         ) : (
           <ul className="space-y-3">
             {filteredItems.map((item) => {
               const meta = typeMeta[item.type];
               return (
-                <li key={item.id} className="rounded-2xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
+                <li key={item.id} className={GLASS_SECTION}>
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
@@ -236,26 +226,21 @@ export function MistakeLibraryPage() {
                     >
                       {meta.label}
                     </span>
-                    <span className="text-xs font-medium" style={{ color: colors.textMuted }}>
-                      {new Date(item.createdAt).toLocaleDateString("pl-PL")}
+                    <span className="text-xs font-medium text-white/50">
+                      {new Date(item.createdAt).toLocaleDateString("en-US")}
                     </span>
-                    <span className="text-xs font-semibold" style={{ color: item.pnl < 0 ? colors.negative : colors.positive }}>
-                      Koszt: {formatSignedPct(item.pnl)}
+                    <span className={`text-xs font-semibold ${item.pnl < 0 ? "text-red-400" : "text-emerald-400"}`}>
+                      {t("mistakes.costLabel", { defaultValue: "Cost:" })} {formatSignedPct(item.pnl)}
                     </span>
                     <Link
                       to={`/strategy-dna?from=mistakes&symbol=${encodeURIComponent(item.symbol)}`}
-                      className="ml-auto text-xs font-semibold hover:underline"
-                      style={{ color: colors.brandDark }}
+                      className="ml-auto text-xs font-semibold text-[#22d3ee] hover:underline"
                     >
                       {t("mistakes.dnaRowLink")}
                     </Link>
                   </div>
-                  <p className="mt-2 text-sm font-semibold" style={{ color: colors.brandDark }}>
-                    {item.symbol}
-                  </p>
-                  <p className="mt-1 text-sm" style={{ color: colors.textSecondary }}>
-                    {item.explanation}
-                  </p>
+                  <p className="mt-2 text-sm font-semibold text-white">{item.symbol}</p>
+                  <p className="mt-1 text-sm text-white/65">{item.explanation}</p>
                 </li>
               );
             })}

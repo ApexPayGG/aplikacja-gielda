@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import {
   GLASS_BTN_PRIMARY,
@@ -42,6 +43,7 @@ function convictionFromLevel(level: number): Conviction {
 }
 
 export function PositionSizePage() {
+  const { t } = useTranslation();
   const [currency, setCurrency] = useState<Currency>("PLN");
   const [capital, setCapital] = useState("100000");
   const [riskPercent, setRiskPercent] = useState("2");
@@ -71,7 +73,7 @@ export function PositionSizePage() {
       !Number.isFinite(stop) ||
       stop <= 0
     ) {
-      setError("Wpisz poprawne wartosci liczbowe.");
+      setError(t("positionSize.errorInvalid", { defaultValue: "Enter valid positive numbers for account, entry, and stop." }));
       return;
     }
 
@@ -100,17 +102,19 @@ export function PositionSizePage() {
   return (
     <div>
       <header className={GLASS_HERO}>
-        <h1 className={GLASS_PAGE_TITLE}>Kalkulator pozycji</h1>
+        <h1 className={GLASS_PAGE_TITLE}>{t("positionSize.title", { defaultValue: "Position Size Calculator" })}</h1>
         <p className={GLASS_PAGE_SUBTITLE}>
-          Wyznacz wielkosc pozycji i maksymalne ryzyko transakcji zgodnie z zasadami zarzadzania kapitalem.
+          {t("positionSize.subtitle", {
+            defaultValue: "Size your position and cap max trade risk using sound capital management.",
+          })}
         </p>
       </header>
 
       <section className={GLASS_SECTION}>
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-lg font-semibold text-white">Parametry pozycji</h2>
+          <h2 className="text-lg font-semibold text-white">{t("positionSize.positionParams", { defaultValue: "Position parameters" })}</h2>
           <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm">
-            <span className="text-white/60">Waluta:</span>
+            <span className="text-white/60">{t("positionSize.currencyLabel", { defaultValue: "Currency:" })}</span>
             <select
               className="rounded-md border border-white/15 bg-[#0f111c] px-2 py-1 text-sm text-white outline-none"
               value={currency}
@@ -208,7 +212,9 @@ export function PositionSizePage() {
           onClick={() => void onCalculate()}
           className={`mt-5 ${GLASS_BTN_PRIMARY} disabled:cursor-not-allowed disabled:opacity-70`}
         >
-          {loading ? "Liczenie..." : "Oblicz pozycje"}
+          {loading
+            ? t("positionSize.calculating", { defaultValue: "Calculating..." })
+            : t("positionSize.calculate", { defaultValue: "Calculate" })}
         </button>
       </section>
 
@@ -216,21 +222,21 @@ export function PositionSizePage() {
         <>
           <section className="grid gap-4 md:grid-cols-3">
             <article className={GLASS_STAT_CARD}>
-              <div className="text-xs font-semibold uppercase tracking-wide text-white/50">Liczba akcji</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-white/50">{t("positionSize.shares", { defaultValue: "Shares to buy" })}</div>
               <div className="mt-2 font-mono text-4xl font-bold text-white">{result.shares}</div>
             </article>
             <article className={GLASS_STAT_CARD}>
-              <div className="text-xs font-semibold uppercase tracking-wide text-white/50">Wartosc pozycji</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-white/50">{t("positionSize.positionValue", { defaultValue: "Position value" })}</div>
               <div className="mt-2 font-mono text-4xl font-bold text-white">{formatMoney(result.positionValue, currency)}</div>
             </article>
             <article className={GLASS_STAT_CARD}>
-              <div className="text-xs font-semibold uppercase tracking-wide text-white/50">Max strata</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-white/50">{t("positionSize.maxLoss", { defaultValue: "Max loss at stop" })}</div>
               <div className="mt-2 font-mono text-4xl font-bold text-white">{formatMoney(result.maxLoss, currency)}</div>
             </article>
           </section>
 
           <section className="space-y-3">
-            <h3 className="text-lg font-semibold text-white">Take Profit levels</h3>
+            <h3 className="text-lg font-semibold text-white">{t("positionSize.takeProfitLevels", { defaultValue: "Take profit levels" })}</h3>
             <div className="grid gap-4 md:grid-cols-3">
               {[
                 { label: "1R", value: result.takeProfit1R },

@@ -117,10 +117,10 @@ export function CompaniesPage() {
   return (
     <div>
       <header className="mb-8">
-        <h1 className={GLASS_PAGE_TITLE}>{t("home.title", { defaultValue: "Spółki" })}</h1>
+        <h1 className={GLASS_PAGE_TITLE}>{t("home.title", { defaultValue: "Companies" })}</h1>
         <p className={GLASS_PAGE_SUBTITLE}>
-          {t("home.subtitle", {
-            defaultValue: "Szybko przeszukuj i filtruj spółki według rynku oraz sektora, aby przejść do pełnej analizy.",
+          {t("companies.pageSubtitle", {
+            defaultValue: "Search and filter companies by market and sector, then open full analysis.",
           })}
         </p>
       </header>
@@ -137,7 +137,7 @@ export function CompaniesPage() {
       <p className="mb-6 text-xs font-semibold uppercase tracking-wide text-white/50">
         {t("home.results", { defaultValue: "Wyniki" })}: {visibleCompanies.length}
         {filters.onlyDividendStocks && dividendFilterLoading
-          ? ` · ${t("companies.filterDividendLoading", { defaultValue: "Ładowanie listy dywidendowych…" })}`
+          ? ` · ${t("companies.filterDividendLoading", { defaultValue: "Loading dividend list…" })}`
           : null}
       </p>
 
@@ -196,8 +196,8 @@ export function CompaniesPage() {
               <BuildingOffice2Icon className="mb-3 h-10 w-10 text-white/40" aria-hidden />
               <p className="text-sm text-white/60">
                 {hasActiveFilters
-                  ? t("home.emptySector", { defaultValue: "Brak spółek dla wybranych filtrów." })
-                  : t("home.emptySelectSector", { defaultValue: "Brak wyników. Spróbuj zmienić filtry lub wyszukaj spółkę." })}
+                  ? t("home.emptySector", { defaultValue: "No companies in this sector yet." })
+                  : t("home.emptySelectSector", { defaultValue: "Choose a sector or run a search to see companies." })}
               </p>
             </div>
           )}
