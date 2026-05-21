@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { BrandLogo } from "../components/BrandLogo";
@@ -66,6 +66,15 @@ export function OnboardingPage() {
     navigate(href, { replace: true });
   }
 
+  function handleSkip(): void {
+    saveOnboardingPreferences({
+      markets: selectedMarkets,
+      style: selectedStyle ?? "learning",
+      completedAt: new Date().toISOString(),
+    });
+    navigate("/dashboard", { replace: true });
+  }
+
   function goNext(): void {
     if (step === 2 && selectedMarkets.length === 0) {
       setMarketError(t("onboarding.markets.error", { defaultValue: "Select at least one market to continue." }));
@@ -94,9 +103,13 @@ export function OnboardingPage() {
     <div className="min-h-screen bg-bgSecondary px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-4xl">
         <div className="mb-4 flex justify-end">
-          <Link to="/dashboard" className="text-sm font-medium text-brandCyan transition hover:brightness-90">
+          <button
+            type="button"
+            onClick={handleSkip}
+            className="text-sm font-medium text-brandCyan transition hover:brightness-90"
+          >
             {t("onboarding.skip", { defaultValue: "Skip" })}
-          </Link>
+          </button>
         </div>
 
         <div className="glass-section rounded-3xl p-6 shadow-[0_24px_72px_rgba(168,85,247,0.16)] sm:p-8">
