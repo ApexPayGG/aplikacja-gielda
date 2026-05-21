@@ -32,19 +32,23 @@ export function filterEventsForWatchlist(events: MarketEventDto[], watchlistSymb
   return events.filter((e) => e.symbol != null && eventMatchesWatchlistSymbol(e.symbol, watchlistSymbols));
 }
 
+export type MarketEventPickScope = "watchlist" | "global" | "empty-watchlist";
+
 export function pickTopMarketEvents(
   events: MarketEventDto[],
   watchlistSymbols: string[],
   limit = 3,
-): { items: MarketEventDto[]; scope: "watchlist" | "global" } {
+): { items: MarketEventDto[]; scope: MarketEventPickScope } {
+  if (watchlistSymbols.length === 0) {
+    return { items: [], scope: "empty-watchlist" };
+  }
+
   const upcoming = events.filter((e) => e.daysToEvent >= 0);
   const sorted = [...upcoming].sort((a, b) => compareMarketEvents(a, b, watchlistSymbols));
 
-  if (watchlistSymbols.length > 0) {
-    const watchlistOnly = filterEventsForWatchlist(sorted, watchlistSymbols);
-    if (watchlistOnly.length > 0) {
-      return { items: watchlistOnly.slice(0, limit), scope: "watchlist" };
-    }
+  const watchlistOnly = filterEventsForWatchlist(sorted, watchlistSymbols);
+  if (watchlistOnly.length > 0) {
+    return { items: watchlistOnly.slice(0, limit), scope: "watchlist" };
   }
 
   return { items: sorted.slice(0, limit), scope: "global" };

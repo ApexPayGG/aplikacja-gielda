@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
   GLASS_BTN_GHOST,
+  GLASS_BTN_PRIMARY,
   GLASS_INNER_PANEL,
   GLASS_LINK_ACCENT,
   GLASS_SECTION,
@@ -57,9 +58,9 @@ function formatDaysToEvent(
   days: number,
   t: (key: string, opts?: { defaultValue?: string; count?: number }) => string,
 ): string {
-  if (days <= 0) return t("marketEvents.days.today", { defaultValue: "dzisiaj" });
-  if (days === 1) return t("marketEvents.days.tomorrow", { defaultValue: "jutro" });
-  return t("marketEvents.days.inDays", { count: days, defaultValue: "za {{count}} dni" });
+  if (days <= 0) return t("marketEvents.days.today", { defaultValue: "today" });
+  if (days === 1) return t("marketEvents.days.tomorrow", { defaultValue: "tomorrow" });
+  return t("marketEvents.days.inDays", { count: days, defaultValue: "in {{count}} days" });
 }
 
 function formatEventDate(eventDate: string, locale: string): string {
@@ -84,7 +85,16 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
     [watchlistSymbols],
   );
 
+  const hasWatchlist = normalizedWatchlist.length > 0;
+
   useEffect(() => {
+    if (!hasWatchlist) {
+      setEvents([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
     let cancelled = false;
     (async () => {
       setLoading(true);
@@ -104,14 +114,14 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [hasWatchlist]);
 
   const { items: topEvents, scope } = useMemo(
     () => pickTopMarketEvents(events, normalizedWatchlist, 3),
     [events, normalizedWatchlist],
   );
 
-  const locale = i18n.resolvedLanguage || i18n.language || "pl";
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
 
   return (
     <section className={GLASS_SECTION}>
@@ -125,7 +135,7 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
           </div>
           <p className="mt-2 max-w-xl text-sm text-white/60">
             {t("marketEvents.radar.subtitle", {
-              defaultValue: "Najbliższe wydarzenia, które mogą wpłynąć na Twoje decyzje.",
+              defaultValue: "Upcoming events that may affect your decisions.",
             })}
           </p>
         </div>
@@ -133,7 +143,7 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
           to="/market-events"
           className={`${GLASS_BTN_GHOST} shrink-0 px-3 py-1.5 text-xs`}
         >
-          {t("marketEvents.radar.viewCalendar", { defaultValue: "Zobacz kalendarz" })}
+          {t("marketEvents.radar.viewCalendar", { defaultValue: "View calendar" })}
         </Link>
       </div>
 
@@ -149,28 +159,47 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
         </p>
       ) : null}
 
-      {!loading && !error && topEvents.length === 0 ? (
+      {!loading && !error && scope === "empty-watchlist" ? (
+        <div className={`${GLASS_INNER_PANEL} border-dashed px-4 py-5 text-sm`}>
+          <p className="font-medium text-white">
+            {t("marketEvents.radar.emptyWatchlistTitle", {
+              defaultValue: "Add companies to unlock your Event Risk Radar",
+            })}
+          </p>
+          <p className="mt-2 text-white/60">
+            {t("marketEvents.radar.emptyWatchlistBody", {
+              defaultValue:
+                "We will track earnings, dividends and key market events for the stocks you actually follow.",
+            })}
+          </p>
+          <Link to="/companies" className={`${GLASS_BTN_PRIMARY} mt-4 inline-flex px-4 py-2 text-xs`}>
+            {t("marketEvents.radar.browseCompanies", { defaultValue: "Browse companies" })}
+          </Link>
+        </div>
+      ) : null}
+
+      {!loading && !error && hasWatchlist && topEvents.length === 0 ? (
         <div className={`${GLASS_INNER_PANEL} border-dashed px-4 py-4 text-sm`}>
           <p className="font-medium text-white">
-            {t("marketEvents.radar.emptyTitle", { defaultValue: "Brak nadchodzących wydarzeń w tym horyzoncie" })}
+            {t("marketEvents.radar.emptyTitle", { defaultValue: "No upcoming events in this horizon" })}
           </p>
           <p className="mt-2 text-white/60">
             {t("marketEvents.radar.emptyHint", {
-              defaultValue: "Dodaj spółki do watchlisty lub sprawdź kalendarz za kilka dni.",
+              defaultValue: "Check back soon or open the calendar for the full schedule.",
             })}
           </p>
           <Link to="/market-events" className={`${GLASS_LINK_ACCENT} mt-3 inline-block text-sm`}>
-            {t("marketEvents.radar.viewCalendar", { defaultValue: "Zobacz kalendarz" })}
+            {t("marketEvents.radar.viewCalendar", { defaultValue: "View calendar" })}
           </Link>
         </div>
       ) : null}
 
       {!loading && !error && topEvents.length > 0 ? (
         <>
-          {scope === "global" && normalizedWatchlist.length > 0 ? (
+          {scope === "global" ? (
             <p className="mb-3 text-xs text-white/50">
               {t("marketEvents.radar.globalFallback", {
-                defaultValue: "Brak eventów na watchliście — pokazujemy najbliższe globalne.",
+                defaultValue: "No watchlist events found — showing nearest global events.",
               })}
             </p>
           ) : null}
@@ -223,11 +252,11 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
                         to={`/company/${encodeURIComponent(linkSymbol)}`}
                         className={`${GLASS_LINK_ACCENT} text-xs font-semibold`}
                       >
-                        {t("marketEvents.radar.prepare", { defaultValue: "Przygotuj się" })}
+                        {t("marketEvents.radar.prepare", { defaultValue: "Prepare" })}
                       </Link>
                     ) : (
                       <Link to="/market-events" className={`${GLASS_LINK_ACCENT} text-xs font-semibold`}>
-                        {t("marketEvents.radar.prepare", { defaultValue: "Przygotuj się" })}
+                        {t("marketEvents.radar.prepare", { defaultValue: "Prepare" })}
                       </Link>
                     )}
                   </div>
@@ -238,11 +267,11 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
         </>
       ) : null}
 
-      {!loading && !error && topEvents.some((e) => e.importance === "critical" || e.importance === "high") ? (
+      {!loading && !error && hasWatchlist && topEvents.some((e) => e.importance === "critical" || e.importance === "high") ? (
         <p className="mt-3 flex items-center gap-1.5 text-[11px] text-amber-200/80">
           <ExclamationTriangleIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
           {t("marketEvents.radar.highRiskHint", {
-            defaultValue: "Wysoka ważność — zaplanuj pozycję i emocje przed sesją.",
+            defaultValue: "High-importance events detected — plan your exposure before the session.",
           })}
         </p>
       ) : null}
