@@ -1,18 +1,7 @@
-import { BRAND_LOGO_SRC } from "../components/BrandLogo";
-
 export function normalizeTickerSymbol(symbol: string): string {
   const normalized = symbol.trim().toUpperCase();
   if (!normalized) return "";
   return normalized.split(".")[0]?.trim() ?? normalized;
-}
-
-/** Always use the single Stock-AI.Pro brand logo. */
-export function getLogoFallbackUrl(_symbol?: string, _sector?: string | null): string {
-  return BRAND_LOGO_SRC;
-}
-
-export function getOptimizedLogoUrl(_symbol?: string): string {
-  return BRAND_LOGO_SRC;
 }
 
 function applyLazyAttributesToImage(image: HTMLImageElement): void {

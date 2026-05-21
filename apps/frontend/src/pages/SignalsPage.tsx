@@ -12,7 +12,7 @@ import { useAuth } from "../context/AuthContext";
 import { useSignalsFilter } from "../hooks/useSignalsFilter";
 import { api } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
-import { BrandLogo, BRAND_LOGO_SRC } from "../components/BrandLogo";
+import { CompanyLogo } from "../components/CompanyLogo";
 import {
   GLASS_BTN_PRIMARY,
   GLASS_INNER_PANEL,
@@ -131,7 +131,11 @@ function parseSignal(raw: unknown): SignalListItem | null {
   const companyNameFromMap = companyMetaByTicker[ticker]?.companyName;
   const companyName = companyNameFromApi || companyNameFromMap || `${ticker} Company`;
 
-  const logoUrl = BRAND_LOGO_SRC;
+  const rawLogo = row.logoUrl ?? row.logo;
+  const logoUrl =
+    typeof rawLogo === "string" && rawLogo.trim()
+      ? rawLogo.trim()
+      : companyMetaByTicker[ticker]?.logoUrl ?? null;
   const createdAt = String(row.createdAt ?? row.timestamp ?? row.updatedAt ?? row.date ?? new Date().toISOString());
   const exchange = String(row.exchange ?? row.market ?? row.marketCode ?? "").trim() || null;
 
@@ -219,9 +223,7 @@ export function SignalsPage() {
       >
         <div className="grid gap-4 md:grid-cols-[2.2fr_1.2fr_1.2fr] md:items-center">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-white/5 text-sm font-bold uppercase text-[#22d3ee]">
-              <BrandLogo size="mini" className="h-full max-h-10 w-full object-contain" />
-            </div>
+            <CompanyLogo symbol={signal.ticker} logoUrl={signal.logoUrl} size="md" shape="rounded" />
             <div>
               <p className="text-lg font-bold text-white">{signal.ticker}</p>
               <p className="text-sm text-white/60">{signal.companyName}</p>

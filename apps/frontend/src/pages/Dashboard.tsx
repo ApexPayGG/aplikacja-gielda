@@ -21,6 +21,7 @@ import {
   GLASS_TEXT_POSITIVE,
   GLASS_WATCHLIST_CARD,
 } from "../components/behavioral-coach/glassStyles";
+import { CompanyLogo } from "../components/CompanyLogo";
 import { DailyCheckInWidget } from "../components/DailyCheckInWidget";
 import { EventRiskRadarWidget } from "../components/EventRiskRadarWidget";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
@@ -339,13 +340,7 @@ export function Dashboard() {
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-[#0a0b14]/60 p-1">
-                              {row.logoUrl ? (
-                                <img src={row.logoUrl} alt="" className="h-full w-full object-contain" loading="lazy" />
-                              ) : (
-                                <span className="text-xs font-bold text-[#22d3ee]">{row.symbol.split(".")[0]?.slice(0, 3)}</span>
-                              )}
-                            </div>
+                            <CompanyLogo symbol={row.symbol} logoUrl={row.logoUrl} size="sm" shape="rounded" />
                             <div>
                               <p className="font-semibold leading-none text-white">{row.symbol}</p>
                               <p className="mt-1 line-clamp-1 text-xs text-white/50">{row.name}</p>

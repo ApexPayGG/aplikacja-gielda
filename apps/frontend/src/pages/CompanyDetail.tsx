@@ -8,7 +8,7 @@ import { CompanyDividendPanel } from "../components/CompanyDividendPanel";
 import { CompanyPriceChart } from "../components/CompanyPriceChart";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
-import { BrandLogo } from "../components/BrandLogo";
+import { CompanyLogo } from "../components/CompanyLogo";
 import { WatchlistButton } from "../components/WatchlistButton";
 import { colors } from "../styles/designSystem";
 import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
@@ -276,12 +276,7 @@ export function CompanyDetail() {
         >
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-start gap-4">
-              <div
-                className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border"
-                style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
-              >
-                <BrandLogo size="cardLg" className="max-h-16 w-full object-contain" />
-              </div>
+              <CompanyLogo symbol={company.symbol} logoUrl={company.logoUrl} size="lg" shape="rounded" />
               <div className="min-w-0">
                 <h1 className="truncate text-2xl font-semibold lg:text-3xl" style={{ color: colors.textPrimary }}>
                   {company.name}

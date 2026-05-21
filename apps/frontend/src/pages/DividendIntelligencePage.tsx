@@ -2,7 +2,7 @@ import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getCompanyDetail, getDividendAlerts, getDividendIntelligence, type Company } from "../services/api";
-import { BrandLogo } from "../components/BrandLogo";
+import { CompanyLogo } from "../components/CompanyLogo";
 import {
   GLASS_INNER_PANEL,
   GLASS_INPUT,
@@ -217,9 +217,7 @@ export function DividendIntelligencePage() {
               </label>
 
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-[#0a0b14]/60 p-1">
-                  <BrandLogo size="mini" className="h-full max-h-10 w-full object-contain" />
-                </div>
+                <CompanyLogo symbol={symbol} logoUrl={company?.logoUrl} size="md" shape="rounded" />
                 <div>
                   <p className="text-xl font-semibold text-white">{company?.name ?? symbol}</p>
                   <p className="text-xs text-[#94a3b8]">

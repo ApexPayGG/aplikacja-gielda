@@ -6,7 +6,7 @@ import {
   isPremiumLockedSymbol,
   mockQuoteFromSymbol,
 } from "../utils/companyCardDisplay";
-import { BrandLogo } from "./BrandLogo";
+import { CompanyLogo } from "./CompanyLogo";
 import { GLASS_COMPANY_CARD, GLASS_LINK_ACCENT } from "./behavioral-coach/glassStyles";
 import { WatchlistButton } from "./WatchlistButton";
 
@@ -23,9 +23,6 @@ function readNumber(value: unknown): number | null {
   }
   return null;
 }
-
-const GLASS_ICON_SHELL =
-  "flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#a855f7]/10 bg-[#1e1b4b]/5 p-2 shadow-sm backdrop-blur-sm";
 
 export function CompanyCard({ company, onOpenBrief }: Props) {
   const companyMeta = company as Company & {
@@ -66,9 +63,7 @@ export function CompanyCard({ company, onOpenBrief }: Props) {
         </div>
 
         <div className="relative flex h-28 items-center justify-center bg-gradient-to-b from-[#22d3ee]/10 to-transparent p-4">
-          <div className={GLASS_ICON_SHELL}>
-            <BrandLogo size="mini" className="h-full max-h-10 w-full max-w-full object-contain" />
-          </div>
+          <CompanyLogo symbol={company.symbol} logoUrl={company.logoUrl} size="md" shape="circle" />
         </div>
 
         <div className="relative flex flex-1 flex-col gap-2 p-4">

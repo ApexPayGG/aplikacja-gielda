@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ExportButton } from "../components/ExportButton";
 import { useAuth } from "../context/AuthContext";
 import { getDividendGrowthScreener, type DividendGrowthRow } from "../services/api";
-import { BrandLogo } from "../components/BrandLogo";
+import { CompanyLogo } from "../components/CompanyLogo";
 import {
   GLASS_INPUT,
   GLASS_PAGE_SUBTITLE,
@@ -348,9 +348,7 @@ export function DividendPage() {
                         >
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3">
-                              <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg p-0.5">
-                                <BrandLogo size="mini" className="h-full max-h-7 w-full object-contain" />
-                              </div>
+                              <CompanyLogo symbol={company.symbol} logoUrl={company.logoUrl} size="xs" shape="rounded" />
                               <span className="font-semibold text-white">{company.symbol}</span>
                             </div>
                           </td>
