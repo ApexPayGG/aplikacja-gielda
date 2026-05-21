@@ -1,8 +1,11 @@
 import { LockClosedIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { GLASS_SECTION } from "./glassStyles";
 
 export function BrokerIntegrationPaywall() {
+  const { t } = useTranslation();
+
   return (
     <section
       className={`${GLASS_SECTION} relative overflow-hidden border-[#22d3ee]/20 bg-gradient-to-br from-[#a855f7]/25 via-[#0f111c]/50 to-[#0a0b14]/80`}
@@ -17,10 +20,14 @@ export function BrokerIntegrationPaywall() {
           </span>
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-[#22d3ee]">StockAI Pro+</p>
-            <h2 className="mt-1 text-lg font-bold text-white">Integracja z brokerem na żywo</h2>
+            <h2 className="mt-1 text-lg font-bold text-white">
+              {t("coach.paywall.title", { defaultValue: "Live broker integration" })}
+            </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/70">
-              Automatyczna integracja z API brokera (np. eToro, Interactive Brokers) w celu analizy emocji na żywo jest
-              dostępna w planie <span className="font-semibold text-[#22d3ee]">PRO+</span>.
+              {t("coach.paywall.body", {
+                defaultValue:
+                  "Automatic broker API integration (e.g. eToro, Interactive Brokers) for live emotion analysis is available on the PRO+ plan.",
+              })}
             </p>
           </div>
         </div>
@@ -30,7 +37,7 @@ export function BrokerIntegrationPaywall() {
           className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[#22d3ee]/30 bg-[#22d3ee]/15 px-5 py-3 text-sm font-semibold text-[#22d3ee] transition hover:border-[#22d3ee]/50 hover:bg-[#22d3ee]/25"
         >
           <SparklesIcon className="h-4 w-4" aria-hidden />
-          Odblokuj PRO+
+          {t("coach.paywall.cta", { defaultValue: "Unlock PRO+" })}
         </Link>
       </div>
     </section>

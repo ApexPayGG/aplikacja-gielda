@@ -1,5 +1,11 @@
-import type { CoachSnapshotLike, EmotionJournalEntry, EmotionJournalState, PsycheRadarPoint } from "./behavioralCoachData";
-import { buildPsycheRadarMetrics } from "./behavioralCoachData";
+import type {
+  CoachSnapshotLike,
+  EmotionJournalEntry,
+  EmotionJournalState,
+  PsycheMetricKey,
+  PsycheRadarPoint,
+} from "./behavioralCoachData";
+import { buildPsycheRadarMetrics, PSYCHE_METRIC_KEYS } from "./behavioralCoachData";
 
 export type PaperTradeAction = "BUY" | "SELL";
 export type PaperTradeStatus = "OPEN" | "CLOSED";
@@ -27,16 +33,6 @@ export type StoredPsycheScores = {
   updatedAt: string;
 };
 
-const METRIC_KEYS = ["fomoResilience", "discipline", "greedManagement", "patience"] as const;
-type MetricKey = (typeof METRIC_KEYS)[number];
-
-const METRIC_LABELS: Record<MetricKey, string> = {
-  fomoResilience: "Odporność na FOMO",
-  discipline: "Dyscyplina",
-  greedManagement: "Kontrola chciwości",
-  patience: "Cierpliwość",
-};
-
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
@@ -55,23 +51,21 @@ export function psycheScoresStorageKey(userId: string): string {
 
 export function scoresFromSnapshot(snapshot: CoachSnapshotLike | null): StoredPsycheScores {
   const radar = buildPsycheRadarMetrics(snapshot);
-  const find = (label: string) => radar.find((row) => row.metric === label)?.score ?? 60;
+  const find = (key: PsycheMetricKey) => radar.find((row) => row.metricKey === key)?.score ?? 60;
   return {
-    fomoResilience: find(METRIC_LABELS.fomoResilience),
-    discipline: find(METRIC_LABELS.discipline),
-    greedManagement: find(METRIC_LABELS.greedManagement),
-    patience: find(METRIC_LABELS.patience),
+    fomoResilience: find("fomoResilience"),
+    discipline: find("discipline"),
+    greedManagement: find("greedManagement"),
+    patience: find("patience"),
     updatedAt: new Date().toISOString(),
   };
 }
 
 export function toRadarMetrics(scores: StoredPsycheScores): PsycheRadarPoint[] {
-  return [
-    { metric: METRIC_LABELS.fomoResilience, score: scores.fomoResilience },
-    { metric: METRIC_LABELS.discipline, score: scores.discipline },
-    { metric: METRIC_LABELS.greedManagement, score: scores.greedManagement },
-    { metric: METRIC_LABELS.patience, score: scores.patience },
-  ];
+  return PSYCHE_METRIC_KEYS.map((metricKey) => ({
+    metricKey,
+    score: scores[metricKey],
+  }));
 }
 
 export function readPaperTrades(key: string): CoachPaperTrade[] {

@@ -1,4 +1,4 @@
-import type { PsycheRadarPoint } from "./behavioralCoachData";
+import type { PsycheMetricKey, PsycheRadarPoint } from "./behavioralCoachData";
 
 export const TRADER_PROFILE_SHARE_URL = "https://stockai.pro";
 
@@ -15,23 +15,22 @@ export type TraderProfileSharePayloads = {
   threadsIntentUrl: string;
 };
 
-function metricScore(metrics: PsycheRadarPoint[], needle: string, fallback: number): number {
-  const row = metrics.find((item) => item.metric.toLowerCase().includes(needle.toLowerCase()));
-  return row?.score ?? fallback;
+function metricScore(metrics: PsycheRadarPoint[], key: PsycheMetricKey, fallback: number): number {
+  return metrics.find((item) => item.metricKey === key)?.score ?? fallback;
 }
 
 export function buildTraderProfileSharePayloads(metrics: PsycheRadarPoint[]): TraderProfileSharePayloads {
-  const disciplineScore = metricScore(metrics, "dyscyplina", 85);
-  const fomoScore = metricScore(metrics, "fomo", 62);
+  const disciplineScore = metricScore(metrics, "discipline", 85);
+  const fomoScore = metricScore(metrics, "fomoResilience", 62);
 
   const twitterText =
-    `Mój indeks dyscypliny inwestycyjnej na StockAI Pro wynosi ${disciplineScore}%, ale muszę popracować nad odpornością na FOMO! 🧠📉 Sprawdź profil swojej psychiki tradera i okiełznaj emocje na giełdzie: ${TRADER_PROFILE_SHARE_URL} @StockAI_Pro #FinTwit #Trading`;
+    `My investment discipline index on StockAI Pro is ${disciplineScore}%, but I still need to work on FOMO resilience! 🧠📉 Check your trader psyche profile: ${TRADER_PROFILE_SHARE_URL} @StockAI_Pro #FinTwit #Trading`;
 
   const linkedInPost =
-    "Analiza mojego profilu psychologicznego jako inwestora na platformie StockAI Pro wykazuje wysoką dyscyplinę, ale wskazuje na przestrzeń do optymalizacji w zakresie zarządzania FOMO. Świetne narzędzie bazujące na AI Coachu do optymalizacji decyzji na rynkach finansowych. Polecam każdemu traderowi. #Investing #BehavioralFinance #ArtificialIntelligence";
+    "My investor psychology profile on StockAI Pro shows strong discipline with room to improve FOMO management. A solid AI Coach tool for better market decisions. #Investing #BehavioralFinance #ArtificialIntelligence";
 
   const facebookPost =
-    "Okiełznałem swoje emocje na giełdzie! Mój radar psychiki tradera na StockAI Pro pokazuje, gdzie popełniam błędy przez FOMO i chciwość. Jeśli handlujesz na akcjach lub krypto, sprawdź swój darmowy profil: https://stockai.pro #Trading #Stocks #PsychologiaInwestowania";
+    `I am working on market emotions! My trader psyche radar on StockAI Pro highlights FOMO and greed patterns. Check your profile: ${TRADER_PROFILE_SHARE_URL} #Trading #Stocks #InvestingPsychology`;
 
   const universalClipboard = `${twitterText}`;
 

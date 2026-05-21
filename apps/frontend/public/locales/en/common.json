@@ -161,26 +161,6 @@
       "paperCta": "Paper trading"
     }
   },
-  "coach": {
-    "aiCoach": "AI coach note",
-    "aiDescriptionEmpty": "No AI coach content yet.",
-    "avgHoldLoss": "Avg. hold (losers)",
-    "avgHoldWin": "Avg. hold (winners)",
-    "avgLoss": "Avg. loss",
-    "avgWin": "Avg. win",
-    "biasCutsBody": "You close winners after ~{{winHours}} h on average, but hold losers for ~{{lossHours}} h.",
-    "biases": "Detected tendencies",
-    "biasHoldsBody": "Avg. loss: {{lossPct}}%; time in losing trades: {{lossHours}} h.",
-    "biasOverBody": "More than {{maxTrades}} trades in the last 24 hours.",
-    "chartAvgLoss": "Avg. loss %",
-    "chartAvgWin": "Avg. win %",
-    "cutsWinners": "Cutting winners too early",
-    "holdsLosers": "Holding losers too long",
-    "noBiases": "No typical behavioral pitfalls detected",
-    "overtrading": "Overtrading",
-    "title": "Behavioral Coach",
-    "traderProfile": "Trader profile"
-  },
   "common": {
     "apiLiveBadge": "Live API",
     "apiMockBadge": "Mock fallback active",
@@ -1108,10 +1088,125 @@
     "exampleRule3": "Stop loss always before entry"
   },
   "coach": {
+    "title": "Behavioral Coach",
+    "brandLabel": "StockAI Coach",
     "subtitle": "Spot FOMO, revenge trading, and overtrading before they cost you real capital.",
     "mockAiDescription": "You have solid momentum potential, but you tend to close winners too early. Let trends run longer and limit daily entries to your highest-quality setups.",
     "synced": "Synced",
-    "offline": "Offline mode"
+    "offline": "Offline mode",
+    "aiCoach": "AI coach note",
+    "aiDescriptionEmpty": "No AI coach content yet.",
+    "psycheProfileTitle": "Your trader psyche profile",
+    "psycheProfileSubtitle": "Metrics synced with paper trading and your emotion journal.",
+    "psycheIndex": "Psyche index: {{score}}/100",
+    "growthTrend": "Growth trend (30 days)",
+    "scoreLabel": "Score",
+    "metrics": {
+      "fomoResilience": "FOMO resilience",
+      "discipline": "Discipline",
+      "greedManagement": "Greed control",
+      "patience": "Patience"
+    },
+    "emotionHub": {
+      "title": "Emotion center & paper trading",
+      "subtitle": "Emotion selection is required — you cannot place a simulated order or journal entry without it."
+    },
+    "emotion": {
+      "selectLegend": "Select emotion (required)",
+      "activeLegend": "Active emotion",
+      "requiredHint": "Paper trades and journal entries require a conscious emotion selection.",
+      "FEARFUL": { "label": "Fearful", "hint": "High risk aversion — consider a smaller position size." },
+      "NEUTRAL": { "label": "Neutral", "hint": "Balanced state — a good moment for your A+ setup." },
+      "GREEDY": { "label": "Greedy", "hint": "Overtrading risk — verify risk/reward before entry." },
+      "CONFIDENT": { "label": "Confident", "hint": "Confidence is fine, but watch overconfidence after a win streak." }
+    },
+    "interventions": {
+      "title": "Recent coach interventions",
+      "subtitle": "AI alert timeline protecting capital from common behavioral mistakes.",
+      "savedUsd": "Saved: ${{amount}}",
+      "revengeNvda": "Revenge trading attempt detected on NVDA.US. A 15-minute trade block helped preserve $320.",
+      "fomoAbbn": "FOMO alert: You closed ABBN too early during market panic. Coach recommends a cool-down before the next entry.",
+      "disciplineSaved": "Discipline maintained: you rejected 2 impulsive off-plan entries. Estimated capital saved: $145.",
+      "overtradingLimit": "Daily trade limit of 3 exceeded. Coach enabled caution mode for the next 4 hours of the session.",
+      "holdingLosers": "\"Holding losers\" pattern detected in the last 12 trades. Consider a tighter stop-loss and earlier exits."
+    },
+    "time": {
+      "justNow": "Just now",
+      "hoursAgo": "{{count}} h ago",
+      "daysAgo": "{{count}} d ago"
+    },
+    "paper": {
+      "title": "Quick paper trading",
+      "subtitle": "Simulated orders linked to your emotion journal and psyche radar.",
+      "openCount": "{{count}} open",
+      "symbol": "Symbol",
+      "quantity": "Quantity",
+      "entryPrice": "Entry price",
+      "mockPrice": "Mock price",
+      "buy": "Buy (Paper BUY)",
+      "disclaimer": "You are testing strategy manually. Automatic sync with a live broker account (PRO+) is locked.",
+      "closePrice": "Close price",
+      "closeSell": "Close (SELL)",
+      "closedPrefix": "{{symbol}} closed · P/L",
+      "selectEmotionFirst": "Select an emotion above before placing a paper order.",
+      "openFailed": "Could not open the position.",
+      "opened": "Opened paper BUY {{symbol}} · emotion: {{emotion}}",
+      "closeFailed": "Could not close the position.",
+      "closedRadar": "Position closed — psyche radar updated."
+    },
+    "journal": {
+      "title": "Emotion journal",
+      "subtitle": "Add context before paper trading. Emotion is shared with the simulated orders module.",
+      "activeState": "Active state: {{emotion}}",
+      "unlockHint": "Select an emotion in the section above to unlock the journal and paper trading.",
+      "tickerOptional": "Ticker (optional)",
+      "tickerPlaceholder": "e.g. AAPL",
+      "note": "Note",
+      "notePlaceholder": "Context before entry…",
+      "selectEmotionFirst": "Select an emotion in the panel above before saving an entry.",
+      "noteRequiredNeutral": "For Neutral / Confident, add a short note to unlock radar reinforcement.",
+      "saving": "Saving…",
+      "saveCta": "Save entry & update radar"
+    },
+    "share": {
+      "profileCta": "Share profile",
+      "closeMenu": "Close share menu",
+      "centerTitle": "Share center",
+      "scoresLine": "Discipline {{discipline}}% · FOMO {{fomo}}%",
+      "toastLinkedInCopied": "LinkedIn post text copied! Paste it (Ctrl+V) in the share window.",
+      "toastLinkedInManual": "LinkedIn opened — copy the post text manually from the Coach page.",
+      "toastFacebookCopied": "Post text copied! Paste it (Ctrl+V) after Facebook opens.",
+      "toastFacebookManual": "Facebook opened — paste the copied text manually (Ctrl+V).",
+      "toastCopied": "Copied to clipboard! Share with friends on Discord or Telegram.",
+      "toastCopyFailed": "Copy failed — check your browser clipboard permissions.",
+      "channels": {
+        "linkedin": { "label": "LinkedIn", "sublabel": "Professional post + link" },
+        "twitter": { "label": "X (Twitter)", "sublabel": "Tweet intent with hashtags" },
+        "facebook": { "label": "Facebook", "sublabel": "Share + text to clipboard" },
+        "threads": { "label": "Threads", "sublabel": "Same payload as X" },
+        "copy": { "label": "Copy link", "sublabel": "Discord · Telegram · WhatsApp" }
+      }
+    },
+    "paywall": {
+      "title": "Live broker integration",
+      "body": "Automatic broker API integration (e.g. eToro, Interactive Brokers) for live emotion analysis is available on the PRO+ plan.",
+      "cta": "Unlock PRO+"
+    },
+    "avgHoldLoss": "Avg. hold (losers)",
+    "avgHoldWin": "Avg. hold (winners)",
+    "avgLoss": "Avg. loss",
+    "avgWin": "Avg. win",
+    "biasCutsBody": "You close winners after ~{{winHours}} h on average, but hold losers for ~{{lossHours}} h.",
+    "biases": "Detected tendencies",
+    "biasHoldsBody": "Avg. loss: {{lossPct}}%; time in losing trades: {{lossHours}} h.",
+    "biasOverBody": "More than {{maxTrades}} trades in the last 24 hours.",
+    "chartAvgLoss": "Avg. loss %",
+    "chartAvgWin": "Avg. win %",
+    "cutsWinners": "Cutting winners too early",
+    "holdsLosers": "Holding losers too long",
+    "noBiases": "No typical behavioral pitfalls detected",
+    "overtrading": "Overtrading",
+    "traderProfile": "Trader profile"
   },
   "reactions": {
     "charCount": "{{used}} / {{max}}",

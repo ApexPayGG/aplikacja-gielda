@@ -177,7 +177,108 @@
     "noBiases": "Brak typowych błędów behawioralnych",
     "overtrading": "Overtrading",
     "title": "Coach behawioralny",
-    "traderProfile": "Profil tradera"
+    "traderProfile": "Profil tradera",
+    "brandLabel": "StockAI Coach",
+    "subtitle": "Wykryj FOMO, revenge trading i overtrading zanim kosztują Cię realny kapitał.",
+    "mockAiDescription": "Masz solidny potencjał momentum, ale zbyt wcześnie zamykasz zyski. Pozwól trendom dobiec i ogranicz dzienne wejścia do setupów A+.",
+    "synced": "Zsynchronizowano",
+    "offline": "Tryb offline",
+    "psycheProfileTitle": "Twój profil psychiki tradera",
+    "psycheProfileSubtitle": "Metryki zsynchronizowane z paper tradingiem i dziennikiem emocji.",
+    "psycheIndex": "Indeks psychiki: {{score}}/100",
+    "growthTrend": "Trend wzrostu (30 dni)",
+    "scoreLabel": "Wynik",
+    "metrics": {
+      "fomoResilience": "Odporność na FOMO",
+      "discipline": "Dyscyplina",
+      "greedManagement": "Kontrola chciwości",
+      "patience": "Cierpliwość"
+    },
+    "emotionHub": {
+      "title": "Centrum emocji i paper trading",
+      "subtitle": "Wybór emocji jest obowiązkowy — bez niego nie wykonasz symulowanego zlecenia ani wpisu w dzienniku."
+    },
+    "emotion": {
+      "selectLegend": "Wybierz emocję (wymagane)",
+      "activeLegend": "Aktywna emocja",
+      "requiredHint": "Paper trade i dziennik wymagają świadomego wyboru emocji.",
+      "FEARFUL": { "label": "Strach", "hint": "Wysoka awersja do ryzyka — rozważ mniejszy size." },
+      "NEUTRAL": { "label": "Neutralny", "hint": "Zbalansowany stan — dobry moment na plan A+." },
+      "GREEDY": { "label": "Chciwość", "hint": "Ryzyko overtradingu — zweryfikuj R:R przed wejściem." },
+      "CONFIDENT": { "label": "Pewność", "hint": "Pewność siebie OK, ale unikaj overconfidence po serii wygranych." }
+    },
+    "interventions": {
+      "title": "Ostatnie interwencje coacha",
+      "subtitle": "Timeline alertów AI chroniących kapitał przed typowymi błędami behawioralnymi.",
+      "savedUsd": "Oszczędność: ${{amount}}",
+      "revengeNvda": "Wykryto próbę revenge tradingu na NVDA.US. Blokada 15 min pomogła uratować $320.",
+      "fomoAbbn": "Alert FOMO: Zamknąłeś ABBN zbyt wcześnie pod wpływem paniki. Coach zaleca cooldown przed kolejnym wejściem.",
+      "disciplineSaved": "Dyscyplina utrzymana: odrzuciłeś 2 impulsywne wejścia poza planem. Szacowana oszczędność: $145.",
+      "overtradingLimit": "Przekroczono limit 3 transakcji dziennie. Coach włączył tryb ostrożności na 4 godziny.",
+      "holdingLosers": "Wzorzec „trzymania przegranych” w ostatnich 12 transakcjach. Rozważ twardszy stop-loss."
+    },
+    "time": {
+      "justNow": "Przed chwilą",
+      "hoursAgo": "{{count}} h temu",
+      "daysAgo": "{{count}} dni temu"
+    },
+    "paper": {
+      "title": "Szybki paper trading",
+      "subtitle": "Symulowane zlecenia powiązane z dziennikiem emocji i radarem psychiki.",
+      "openCount": "{{count}} otwartych",
+      "symbol": "Symbol",
+      "quantity": "Ilość",
+      "entryPrice": "Cena wejścia",
+      "mockPrice": "Cena mock",
+      "buy": "Kup (Paper BUY)",
+      "disclaimer": "Testujesz strategię ręcznie. Synchronizacja z kontem maklerskim (PRO+) jest zablokowana.",
+      "closePrice": "Cena zamknięcia",
+      "closeSell": "Zamknij (SELL)",
+      "closedPrefix": "{{symbol}} zamknięte · P/L",
+      "selectEmotionFirst": "Wybierz emocję powyżej przed zleceniem paper.",
+      "openFailed": "Nie udało się otworzyć pozycji.",
+      "opened": "Otwarto paper BUY {{symbol}} · emocja: {{emotion}}",
+      "closeFailed": "Nie udało się zamknąć pozycji.",
+      "closedRadar": "Pozycja zamknięta — radar psychiki zaktualizowany."
+    },
+    "journal": {
+      "title": "Dziennik emocji",
+      "subtitle": "Uzupełnij kontekst przed paper trade. Emocja jest wspólna z modułem zleceń symulowanych.",
+      "activeState": "Aktywny stan: {{emotion}}",
+      "unlockHint": "Wybierz emocję w sekcji powyżej, aby odblokować dziennik i paper trading.",
+      "tickerOptional": "Ticker (opcjonalnie)",
+      "tickerPlaceholder": "np. ABBN",
+      "note": "Notatka",
+      "notePlaceholder": "Kontekst przed wejściem…",
+      "selectEmotionFirst": "Wybierz emocję w panelu powyżej przed zapisem wpisu.",
+      "noteRequiredNeutral": "Dla Neutral / Pewność dodaj krótką notatkę, aby odblokować wzmocnienie radaru.",
+      "saving": "Zapisywanie…",
+      "saveCta": "Zapisz wpis i zaktualizuj radar"
+    },
+    "share": {
+      "profileCta": "Udostępnij profil",
+      "closeMenu": "Zamknij menu udostępniania",
+      "centerTitle": "Centrum udostępniania",
+      "scoresLine": "Dyscyplina {{discipline}}% · FOMO {{fomo}}%",
+      "toastLinkedInCopied": "Skopiowano tekst posta na LinkedIn! Wklej go (Ctrl+V) w oknie udostępniania.",
+      "toastLinkedInManual": "Otwarto LinkedIn — skopiuj tekst posta ręcznie ze strony Coacha.",
+      "toastFacebookCopied": "Skopiowano tekst posta! Wklej go (Ctrl+V) po otwarciu Facebooka.",
+      "toastFacebookManual": "Otwarto Facebook — wklej tekst ręcznie (Ctrl+V).",
+      "toastCopied": "Skopiowano do schowka! Udostępnij znajomym na Discordzie lub Telegramie.",
+      "toastCopyFailed": "Nie udało się skopiować — sprawdź uprawnienia schowka.",
+      "channels": {
+        "linkedin": { "label": "LinkedIn", "sublabel": "Profesjonalny post + link" },
+        "twitter": { "label": "X (Twitter)", "sublabel": "Intent tweet z hashtagami" },
+        "facebook": { "label": "Facebook", "sublabel": "Udostępnij + tekst w schowku" },
+        "threads": { "label": "Threads", "sublabel": "Ten sam payload co X" },
+        "copy": { "label": "Kopiuj link", "sublabel": "Discord · Telegram · WhatsApp" }
+      }
+    },
+    "paywall": {
+      "title": "Integracja z brokerem na żywo",
+      "body": "Automatyczna integracja z API brokera (np. eToro, Interactive Brokers) do analizy emocji na żywo jest dostępna w planie PRO+.",
+      "cta": "Odblokuj PRO+"
+    }
   },
   "common": {
     "apiLiveBadge": "API na żywo",

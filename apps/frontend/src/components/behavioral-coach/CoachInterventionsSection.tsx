@@ -4,12 +4,26 @@ import {
   ShieldCheckIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 import type { CoachIntervention } from "../../utils/behavioralCoachData";
 import { GLASS_SECTION, GLASS_SECTION_TITLE } from "./glassStyles";
 
 type Props = {
   interventions: CoachIntervention[];
   loading?: boolean;
+};
+
+const INTERVENTION_DEFAULTS: Record<string, string> = {
+  "coach.interventions.revengeNvda":
+    "Revenge trading attempt detected on NVDA.US. A 15-minute trade block helped preserve $320.",
+  "coach.interventions.fomoAbbn":
+    "FOMO alert: You closed ABBN too early during market panic. Coach recommends a cool-down before the next entry.",
+  "coach.interventions.disciplineSaved":
+    "Discipline maintained: you rejected 2 impulsive off-plan entries. Estimated capital saved: $145.",
+  "coach.interventions.overtradingLimit":
+    "Daily trade limit of 3 exceeded. Coach enabled caution mode for the next 4 hours of the session.",
+  "coach.interventions.holdingLosers":
+    "“Holding losers” pattern detected in the last 12 trades. Consider a tighter stop-loss and earlier exits.",
 };
 
 function interventionIcon(type: CoachIntervention["type"]) {
@@ -19,23 +33,31 @@ function interventionIcon(type: CoachIntervention["type"]) {
   return SparklesIcon;
 }
 
-function formatWhen(iso: string): string {
-  const date = new Date(iso);
-  if (!Number.isFinite(date.getTime())) return "—";
-  const now = Date.now();
-  const diffMs = now - date.getTime();
-  const hours = Math.floor(diffMs / (60 * 60 * 1000));
-  if (hours < 1) return "Przed chwilą";
-  if (hours < 24) return `${hours} h temu`;
-  const days = Math.floor(hours / 24);
-  return `${days} dni temu`;
-}
-
 export function CoachInterventionsSection({ interventions, loading }: Props) {
+  const { t } = useTranslation();
+
+  const formatWhen = (iso: string): string => {
+    const date = new Date(iso);
+    if (!Number.isFinite(date.getTime())) return "—";
+    const now = Date.now();
+    const diffMs = now - date.getTime();
+    const hours = Math.floor(diffMs / (60 * 60 * 1000));
+    if (hours < 1) return t("coach.time.justNow", { defaultValue: "Just now" });
+    if (hours < 24) return t("coach.time.hoursAgo", { count: hours, defaultValue: "{{count}} h ago" });
+    const days = Math.floor(hours / 24);
+    return t("coach.time.daysAgo", { count: days, defaultValue: "{{count}} d ago" });
+  };
+
   return (
     <section className={GLASS_SECTION}>
-      <h2 className={GLASS_SECTION_TITLE}>Ostatnie Interwencje Coacha</h2>
-      <p className="mt-1 text-sm text-white/55">Timeline alertów AI chroniących kapitał przed typowymi błędami behawioralnymi.</p>
+      <h2 className={GLASS_SECTION_TITLE}>
+        {t("coach.interventions.title", { defaultValue: "Recent coach interventions" })}
+      </h2>
+      <p className="mt-1 text-sm text-white/55">
+        {t("coach.interventions.subtitle", {
+          defaultValue: "AI alert timeline protecting capital from common behavioral mistakes.",
+        })}
+      </p>
 
       {loading ? (
         <ul className="mt-5 space-y-3" aria-hidden>
@@ -57,10 +79,17 @@ export function CoachInterventionsSection({ interventions, loading }: Props) {
                   <Icon className="h-4 w-4" />
                 </span>
                 <p className="text-xs font-semibold uppercase tracking-wide text-[#22d3ee]/80">{formatWhen(item.at)}</p>
-                <p className="mt-1 text-sm leading-relaxed text-white/85">{item.message}</p>
+                <p className="mt-1 text-sm leading-relaxed text-white/85">
+                  {t(item.messageKey, {
+                    defaultValue: INTERVENTION_DEFAULTS[item.messageKey] ?? item.messageKey,
+                  })}
+                </p>
                 {typeof item.savedUsd === "number" ? (
                   <p className="mt-2 inline-flex rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-300">
-                    Oszczędność: ${item.savedUsd}
+                    {t("coach.interventions.savedUsd", {
+                      amount: item.savedUsd,
+                      defaultValue: "Saved: ${{amount}}",
+                    })}
                   </p>
                 ) : null}
               </li>

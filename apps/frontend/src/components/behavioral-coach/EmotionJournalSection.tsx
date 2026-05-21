@@ -1,11 +1,15 @@
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { useCallback, useState, type FormEvent } from "react";
-import {
-  EMOTION_JOURNAL_LABELS,
-  type EmotionJournalEntry,
-  type EmotionJournalState,
-} from "../../utils/behavioralCoachData";
+import { useTranslation } from "react-i18next";
+import type { EmotionJournalEntry, EmotionJournalState } from "../../utils/behavioralCoachData";
 import { GLASS_SECTION, GLASS_SECTION_TITLE } from "./glassStyles";
+
+const EMOTION_LABEL_DEFAULTS: Record<EmotionJournalState, string> = {
+  FEARFUL: "Fearful",
+  NEUTRAL: "Neutral",
+  GREEDY: "Greedy",
+  CONFIDENT: "Confident",
+};
 
 type Props = {
   emotion: EmotionJournalState | null;
@@ -22,23 +26,35 @@ export function EmotionJournalSection({
   entriesLoading = false,
   onLogEntry,
 }: Props) {
+  const { t, i18n } = useTranslation();
   const [symbol, setSymbol] = useState("");
   const [note, setNote] = useState("");
   const [savedFlash, setSavedFlash] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const emotionLabel = (state: EmotionJournalState) =>
+    t(`coach.emotion.${state}.label`, { defaultValue: EMOTION_LABEL_DEFAULTS[state] });
+
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!emotion || !emotionAcknowledged) {
-        setFormError("Wybierz emocję w panelu powyżej przed zapisem wpisu.");
+        setFormError(
+          t("coach.journal.selectEmotionFirst", {
+            defaultValue: "Select an emotion in the panel above before saving an entry.",
+          }),
+        );
         return;
       }
 
       const trimmedNote = note.trim();
       if (!trimmedNote && (emotion === "NEUTRAL" || emotion === "CONFIDENT")) {
-        setFormError("Dla Neutral / Pewność dodaj krótką notatkę, aby odblokować wzmocnienie radaru.");
+        setFormError(
+          t("coach.journal.noteRequiredNeutral", {
+            defaultValue: "For Neutral / Confident, add a short note to unlock radar reinforcement.",
+          }),
+        );
         return;
       }
 
@@ -62,46 +78,53 @@ export function EmotionJournalSection({
         setSubmitting(false);
       }
     },
-    [emotion, emotionAcknowledged, note, onLogEntry, symbol],
+    [emotion, emotionAcknowledged, note, onLogEntry, symbol, t],
   );
 
   return (
     <section className={GLASS_SECTION}>
-      <h2 className={GLASS_SECTION_TITLE}>Dziennik Emocji</h2>
+      <h2 className={GLASS_SECTION_TITLE}>{t("coach.journal.title", { defaultValue: "Emotion journal" })}</h2>
       <p className="mt-1 text-sm text-white/55">
-        Uzupełnij kontekst przed paper trade. Emocja jest wspólna z modułem zleceń symulowanych.
+        {t("coach.journal.subtitle", {
+          defaultValue: "Add context before paper trading. Emotion is shared with the simulated orders module.",
+        })}
       </p>
 
       {emotion && emotionAcknowledged ? (
         <p className="mt-3 rounded-xl border border-[#22d3ee]/25 bg-[#22d3ee]/10 px-3 py-2 text-sm text-[#22d3ee]">
-          Aktywny stan: <span className="font-semibold">{EMOTION_JOURNAL_LABELS[emotion].labelPl}</span>
+          {t("coach.journal.activeState", {
+            emotion: emotionLabel(emotion),
+            defaultValue: "Active state: {{emotion}}",
+          })}
         </p>
       ) : (
         <p className="mt-3 rounded-xl border border-amber-400/25 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
-          Wybierz emocję w sekcji powyżej, aby odblokować dziennik i paper trading.
+          {t("coach.journal.unlockHint", {
+            defaultValue: "Select an emotion in the section above to unlock the journal and paper trading.",
+          })}
         </p>
       )}
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-xs font-semibold uppercase tracking-wide text-white/60">
-            Ticker (opcjonalnie)
+            {t("coach.journal.tickerOptional", { defaultValue: "Ticker (optional)" })}
             <input
               type="text"
               value={symbol}
               onChange={(e) => setSymbol(e.target.value)}
-              placeholder="np. ABBN"
+              placeholder={t("coach.journal.tickerPlaceholder", { defaultValue: "e.g. AAPL" })}
               disabled={!emotionAcknowledged}
               className="mt-1 w-full rounded-xl border border-white/10 bg-[#1e1b4b]/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 backdrop-blur-md focus:border-[#22d3ee]/40 focus:outline-none disabled:opacity-50"
             />
           </label>
           <label className="block text-xs font-semibold uppercase tracking-wide text-white/60 sm:col-span-1">
-            Notatka
+            {t("coach.journal.note", { defaultValue: "Note" })}
             <input
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Kontekst przed wejściem..."
+              placeholder={t("coach.journal.notePlaceholder", { defaultValue: "Context before entry…" })}
               disabled={!emotionAcknowledged}
               className="mt-1 w-full rounded-xl border border-white/10 bg-[#1e1b4b]/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 backdrop-blur-md focus:border-[#22d3ee]/40 focus:outline-none disabled:opacity-50"
             />
@@ -116,7 +139,9 @@ export function EmotionJournalSection({
           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#22d3ee]/80 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
         >
           {savedFlash ? <CheckCircleIcon className="h-5 w-5" /> : null}
-          {submitting ? "Zapisywanie…" : "Zapisz wpis i zaktualizuj radar"}
+          {submitting
+            ? t("coach.journal.saving", { defaultValue: "Saving…" })
+            : t("coach.journal.saveCta", { defaultValue: "Save entry & update radar" })}
         </button>
       </form>
 
@@ -129,10 +154,10 @@ export function EmotionJournalSection({
               key={entry.id}
               className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/5 bg-white/5 px-3 py-2 text-sm"
             >
-              <span className="font-medium text-white/90">{EMOTION_JOURNAL_LABELS[entry.emotion].labelPl}</span>
+              <span className="font-medium text-white/90">{emotionLabel(entry.emotion)}</span>
               {entry.symbol ? <span className="font-mono text-xs text-[#22d3ee]">{entry.symbol}</span> : null}
               <span className="text-xs text-white/45">
-                {new Date(entry.createdAt).toLocaleString("pl-PL", {
+                {new Date(entry.createdAt).toLocaleString(i18n.language, {
                   day: "numeric",
                   month: "short",
                   hour: "2-digit",

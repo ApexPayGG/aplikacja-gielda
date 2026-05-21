@@ -186,8 +186,12 @@ export function BehavioralCoachPage() {
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:py-10">
         <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#22d3ee]">StockAI Coach</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Behavioral Coach</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#22d3ee]">
+              {t("coach.brandLabel", { defaultValue: "StockAI Coach" })}
+            </p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              {t("coach.title", { defaultValue: "Behavioral Coach" })}
+            </h1>
             <p className="mt-2 max-w-2xl text-sm text-white/60 sm:text-base">
               {t("coach.subtitle", {
                 defaultValue: "Spot FOMO, revenge trading, and overtrading before they cost you real capital.",
@@ -283,7 +287,7 @@ export function BehavioralCoachPage() {
           <section className="rounded-2xl border border-[#22d3ee]/20 bg-gradient-to-br from-[#a855f7]/30 to-[#22d3ee]/10 p-5 backdrop-blur-md">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[#22d3ee]">
               <SparklesIcon className="h-4 w-4" aria-hidden />
-              {t("coach.aiCoach")}
+              {t("coach.aiCoach", { defaultValue: "AI coach note" })}
             </p>
             <p className="mt-3 text-base leading-relaxed text-white/90">“{coach.aiDescription}”</p>
           </section>

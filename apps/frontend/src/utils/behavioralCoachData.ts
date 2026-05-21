@@ -8,8 +8,17 @@ export type CoachSnapshotLike = {
   avgHoldingLossHours: number;
 };
 
+export type PsycheMetricKey = "fomoResilience" | "discipline" | "greedManagement" | "patience";
+
+export const PSYCHE_METRIC_KEYS: PsycheMetricKey[] = [
+  "fomoResilience",
+  "discipline",
+  "greedManagement",
+  "patience",
+];
+
 export type PsycheRadarPoint = {
-  metric: string;
+  metricKey: PsycheMetricKey;
   score: number;
 };
 
@@ -17,7 +26,7 @@ export type CoachIntervention = {
   id: string;
   at: string;
   type: "revenge" | "fomo" | "overtrading" | "discipline";
-  message: string;
+  messageKey: string;
   savedUsd?: number;
 };
 
@@ -53,10 +62,10 @@ export function buildPsycheRadarMetrics(snapshot: CoachSnapshotLike | null): Psy
   const patience = Math.round(clamp(40 + holdRatio * 38 - (biases.includes("CUTS_WINNERS_EARLY") ? 18 : 0), 20, 96));
 
   return [
-    { metric: "Odporność na FOMO", score: fomoResilience },
-    { metric: "Dyscyplina", score: discipline },
-    { metric: "Kontrola chciwości", score: greedManagement },
-    { metric: "Cierpliwość", score: patience },
+    { metricKey: "fomoResilience", score: fomoResilience },
+    { metricKey: "discipline", score: discipline },
+    { metricKey: "greedManagement", score: greedManagement },
+    { metricKey: "patience", score: patience },
   ];
 }
 
@@ -70,31 +79,27 @@ export function buildCoachInterventions(snapshot: CoachSnapshotLike | null): Coa
       id: "int-1",
       at: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
       type: "revenge",
-      message:
-        "Wykryto próbę Revenge Tradingu na spółce NVDA.US. Blokada transakcji na 15 minut pomogła uratować $320.",
+      messageKey: "coach.interventions.revengeNvda",
       savedUsd: 320,
     },
     {
       id: "int-2",
       at: new Date(now - 5 * 60 * 60 * 1000).toISOString(),
       type: "fomo",
-      message:
-        "Alert FOMO: Zamknąłeś pozycję ABBN zbyt wcześnie pod wpływem paniki rynkowej. Coach zaleca cooldown przed kolejnym wejściem.",
+      messageKey: "coach.interventions.fomoAbbn",
     },
     {
       id: "int-3",
       at: new Date(now - 1 * day).toISOString(),
       type: "discipline",
-      message:
-        "Dyscyplina utrzymana: odrzuciłeś 2 impulsywne wejścia poza planem. Szacowana oszczędność kapitału: $145.",
+      messageKey: "coach.interventions.disciplineSaved",
       savedUsd: 145,
     },
     {
       id: "int-4",
       at: new Date(now - 2 * day).toISOString(),
       type: "overtrading",
-      message:
-        "Przekroczono limit 3 transakcji dziennie. Coach włączył tryb ostrożności na kolejne 4 godziny sesji.",
+      messageKey: "coach.interventions.overtradingLimit",
     },
   ];
 
@@ -103,20 +108,12 @@ export function buildCoachInterventions(snapshot: CoachSnapshotLike | null): Coa
       id: "int-bias-hold",
       at: new Date(now - 3 * day).toISOString(),
       type: "discipline",
-      message:
-        "Wzorzec „trzymania przegranych” wykryty w ostatnich 12 transakcjach. Rozważ twardszy stop-loss i wcześniejsze wyjście ze strat.",
+      messageKey: "coach.interventions.holdingLosers",
     });
   }
 
   return base.slice(0, 5);
 }
-
-export const EMOTION_JOURNAL_LABELS: Record<EmotionJournalState, { label: string; labelPl: string; hint: string }> = {
-  FEARFUL: { label: "Fearful", labelPl: "Strach", hint: "Wysoka awersja do ryzyka — rozważ mniejszy size." },
-  NEUTRAL: { label: "Neutral", labelPl: "Neutralny", hint: "Zbalansowany stan — dobry moment na plan A+." },
-  GREEDY: { label: "Greedy", labelPl: "Chciwość", hint: "Ryzyko overtradingu — zweryfikuj R:R przed wejściem." },
-  CONFIDENT: { label: "Confident", labelPl: "Pewność", hint: "Pewność siebie OK, ale unikaj overconfidence po serii wygranych." },
-};
 
 export function emotionJournalStorageKey(userId: string): string {
   return `stockai:emotion-journal:${userId}`;
