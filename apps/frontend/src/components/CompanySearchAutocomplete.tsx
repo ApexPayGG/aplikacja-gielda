@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { importCompanyFromSearch, searchCompaniesAutocomplete, type CompanySearchSuggestion } from "../services/api";
+import { CompanyLogo } from "./CompanyLogo";
 import { GLASS_INPUT } from "./behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 
@@ -213,7 +214,8 @@ export function CompanySearchAutocomplete({
                       onMouseEnter={() => setHighlightedIndex(index)}
                       onClick={() => void selectCompany(company)}
                     >
-                      <div className="min-w-0">
+                      <CompanyLogo symbol={company.symbol} logoUrl={company.logoUrl} size="sm" shape="rounded" />
+                      <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-bold" style={{ color: colors.brandDark }}>
                           {company.symbol}
                         </p>

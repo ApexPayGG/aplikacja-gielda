@@ -23,6 +23,7 @@ export type CompanySearchResultItem = {
   name: string;
   exchange: string;
   sector: string;
+  logoUrl: string | null;
 };
 
 const EODHD_BASE = "https://eodhd.com/api";
@@ -111,7 +112,7 @@ async function fetchJson<T>(url: string): Promise<T> {
   }
 }
 
-function mapDbRowsToSearch(rows: Awaited<ReturnType<typeof searchCompanies>>): CompanySearchResultItem[] {
+export function mapDbRowsToSearch(rows: Awaited<ReturnType<typeof searchCompanies>>): CompanySearchResultItem[] {
   return rows.map((row) => ({
     symbol: row.symbol,
     name: row.name,
@@ -121,19 +122,24 @@ function mapDbRowsToSearch(rows: Awaited<ReturnType<typeof searchCompanies>>): C
         "UNKNOWN"
       ).toUpperCase(),
     sector: row.sector || "Unknown",
+    logoUrl: row.logoUrl ?? null,
   }));
 }
 
-function mapEodSearchRow(row: EodhdSearchRow): CompanySearchResultItem | null {
+export function mapEodSearchRow(row: EodhdSearchRow): CompanySearchResultItem | null {
   const code = toStr(row.Code ?? row.code ?? row.Symbol ?? row.symbol);
   const exchange = toStr(row.Exchange ?? row.exchange);
   if (!code || !exchange) return null;
   const symbol = `${code.toUpperCase()}.${exchange.toUpperCase()}`;
+  const logoUrl = normalizeLogoUrl(
+    row.LogoURL ?? row.LogoUrl ?? row.logoUrl ?? row.Logo ?? row.logo ?? row.Image ?? row.image,
+  );
   return {
     symbol,
     name: toStr(row.Name ?? row.name) ?? code.toUpperCase(),
     exchange: exchange.toUpperCase(),
     sector: "Unknown",
+    logoUrl,
   };
 }
 

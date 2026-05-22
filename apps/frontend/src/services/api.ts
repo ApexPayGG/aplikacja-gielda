@@ -125,6 +125,7 @@ export interface SearchResponse {
   name?: string;
   exchange?: string | null;
   sector?: string | null;
+  logoUrl?: string | null;
   source?: "database" | "eodhd";
   results?: Array<{
     symbol: string;
@@ -144,6 +145,7 @@ export interface CompanySearchSuggestion {
   name: string;
   exchange: string | null;
   sector: string;
+  logoUrl?: string | null;
 }
 
 export interface SectorListResponse {
@@ -647,6 +649,7 @@ export async function searchCompaniesAutocomplete(query: string, limit = 8): Pro
         name: row.name as string,
         exchange: row.exchange ?? null,
         sector: row.sector ?? "Unknown",
+        logoUrl: row.logoUrl ?? null,
       }));
   }
   if (Array.isArray(data.results)) {
@@ -655,6 +658,7 @@ export async function searchCompaniesAutocomplete(query: string, limit = 8): Pro
       name: row.name,
       exchange: row.exchange ?? null,
       sector: "Unknown",
+      logoUrl: row.logoUrl ?? null,
     }));
   }
   if (Array.isArray(data.data)) {
@@ -663,6 +667,7 @@ export async function searchCompaniesAutocomplete(query: string, limit = 8): Pro
       name: row.name,
       exchange: row.exchange ?? null,
       sector: row.sector ?? "Unknown",
+      logoUrl: row.logoUrl ?? null,
     }));
   }
   return [];
@@ -676,7 +681,7 @@ export async function searchCompanies(query: string, limit = 20): Promise<Compan
     exchange: row.exchange ?? null,
     sector: row.sector ?? "Unknown",
     industry: "Unknown",
-    logoUrl: null,
+    logoUrl: row.logoUrl ?? null,
     description: row.exchange ? `Exchange=${row.exchange}` : null,
     webUrl: null,
     createdAt: new Date().toISOString(),
