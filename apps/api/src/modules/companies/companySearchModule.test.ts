@@ -156,6 +156,79 @@ describe("companySearchModule merge and finalize", () => {
     assert.equal(merged.sector, "Consumer Discretionary");
   });
 
+  it("sanitizeCrossSymbolLogos keeps logo on TSLA and TSLA.US for same issuer", () => {
+    const tslaLogo = "https://eodhd.com/img/logos/US/TSLA.png";
+    const sanitized = sanitizeCrossSymbolLogos([
+      candidate(
+        {
+          symbol: "TSLA",
+          name: "Tesla Inc.",
+          exchange: "US",
+          sector: "Consumer Discretionary",
+          logoUrl: tslaLogo,
+        },
+        "db",
+      ),
+      candidate(
+        {
+          symbol: "TSLA.US",
+          name: "Tesla Inc",
+          exchange: "US",
+          sector: "Consumer Cyclical",
+          logoUrl: tslaLogo,
+        },
+        "db",
+      ),
+    ]);
+
+    assert.equal(sanitized.find((r) => r.symbol === "TSLA")?.logoUrl, tslaLogo);
+    assert.equal(sanitized.find((r) => r.symbol === "TSLA.US")?.logoUrl, tslaLogo);
+  });
+
+  it("finalizeSearchResults keeps TSLA logo when bare ticker had logo cleared by cross-symbol pool", () => {
+    const tslaLogo = "https://eodhd.com/img/logos/US/TSLA.png";
+    const results = finalizeSearchResults(
+      "TSLA",
+      [
+        candidate(
+          {
+            symbol: "TSLA",
+            name: "Tesla Inc.",
+            exchange: "US",
+            sector: "Consumer Discretionary",
+            logoUrl: tslaLogo,
+          },
+          "db",
+        ),
+        candidate(
+          {
+            symbol: "TSLA.US",
+            name: "Tesla Inc",
+            exchange: "US",
+            sector: "Consumer Cyclical",
+            logoUrl: tslaLogo,
+          },
+          "db",
+        ),
+        candidate(
+          {
+            symbol: "F.US",
+            name: "Ford Motor Co",
+            exchange: "US",
+            sector: "Unknown",
+            logoUrl: tslaLogo,
+          },
+          "eod",
+        ),
+      ],
+      3,
+    );
+
+    assert.equal(results.find((r) => r.symbol === "TSLA")?.logoUrl, tslaLogo);
+    assert.equal(results.find((r) => r.symbol === "TSLA.US")?.logoUrl, tslaLogo);
+    assert.equal(results.find((r) => r.symbol === "F.US")?.logoUrl, null);
+  });
+
   it("finalizeSearchResults preserves TSLA logo when TSLA.US shares the same logo", () => {
     const results = finalizeSearchResults(
       "TSLA",

@@ -314,6 +314,31 @@ export function areLikelySameCompanyName(a: string, b: string): boolean {
   return wa.length >= 4 && wb.length >= 4 && wa === wb;
 }
 
+/** Exchange from symbol suffix, falling back to row metadata (bare tickers like TSLA often only have exchange on the row). */
+export function listingExchange(item: CompanySearchResultCandidate): string | null {
+  const fromSymbol = parseSymbolParts(item.symbol).exchange;
+  if (fromSymbol) return fromSymbol;
+  const ex = item.exchange?.trim().toUpperCase();
+  return ex && ex !== "UNKNOWN" ? ex : null;
+}
+
+export function areSameIssuerListingGroup(items: CompanySearchResultCandidate[]): boolean {
+  if (items.length < 2) return false;
+  const anchor = items[0]!;
+  return items.every(
+    (item) => item === anchor || areLikelySameCompanyName(item.name, anchor.name),
+  );
+}
+
+function hasSameIssuerPeerInLogoGroup(
+  item: CompanySearchResultCandidate,
+  group: CompanySearchResultCandidate[],
+): boolean {
+  return group.some(
+    (other) => other !== item && areLikelySameCompanyName(item.name, other.name),
+  );
+}
+
 function resolveMergedName(
   a: CompanySearchResultCandidate,
   b: CompanySearchResultCandidate,
@@ -427,21 +452,15 @@ export function sanitizeCrossSymbolLogos(
 
     for (const sameBase of byBase.values()) {
       if (sameBase.length < 2) continue;
-      const allSameCompany = sameBase.every((item) =>
-        sameBase.every(
-          (other) => item === other || areLikelySameCompanyName(item.name, other.name),
-        ),
-      );
-      if (allSameCompany) continue;
+      if (areSameIssuerListingGroup(sameBase)) continue;
 
       const ranked = [...sameBase].sort((a, b) => {
-        const exA = parseSymbolParts(a.symbol).exchange;
-        const exB = parseSymbolParts(b.symbol).exchange;
-        return preferredExchangeBonus(exA) - preferredExchangeBonus(exB);
+        return preferredExchangeBonus(listingExchange(a)) - preferredExchangeBonus(listingExchange(b));
       });
       const baseKeeper = ranked[0]!;
       for (const item of sameBase) {
-        if (item.symbol.toUpperCase() !== baseKeeper.symbol.toUpperCase()) {
+        if (item.symbol.toUpperCase() === baseKeeper.symbol.toUpperCase()) continue;
+        if (!areLikelySameCompanyName(item.name, baseKeeper.name)) {
           symbolsToClear.add(item.symbol.toUpperCase());
         }
       }
@@ -450,6 +469,7 @@ export function sanitizeCrossSymbolLogos(
     const distinctBases = new Set(group.map((i) => parseSymbolParts(i.symbol).base));
     if (distinctBases.size > 1) {
       for (const item of group) {
+        if (hasSameIssuerPeerInLogoGroup(item, group)) continue;
         if (item.symbol.toUpperCase() === keeper.symbol.toUpperCase()) continue;
         if (areLikelySameCompanyName(item.name, keeper.name)) continue;
         symbolsToClear.add(item.symbol.toUpperCase());
