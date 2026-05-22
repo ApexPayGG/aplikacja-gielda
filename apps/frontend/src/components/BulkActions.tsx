@@ -57,7 +57,10 @@ export function BulkActions({
 
   return (
     <>
-      <div className="border-b px-4 py-3" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
+      <div
+        className="border-b border-white/10 bg-[#1e1b4b]/35 px-4 py-3 backdrop-blur-sm"
+        style={{ borderColor: colors.border }}
+      >
         <label className="inline-flex items-center gap-2 text-sm font-medium" style={{ color: colors.textSecondary }}>
           <input
             type="checkbox"
@@ -75,7 +78,10 @@ export function BulkActions({
       </div>
 
       {selectedCount > 0 ? (
-        <div className="flex flex-wrap items-center gap-2 border-b px-4 py-3" style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}>
+        <div
+          className="flex flex-wrap items-center gap-2 border-b border-white/10 bg-[#0f111c]/80 px-4 py-3 backdrop-blur-sm"
+          style={{ borderColor: colors.border }}
+        >
           <button
             type="button"
             disabled={closeDisabled}

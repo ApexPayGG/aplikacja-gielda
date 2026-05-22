@@ -29,10 +29,45 @@ export function resolveIntlLocale(language?: string): string {
   return normalized.includes("-") ? normalized : `${normalized}-${normalized.toUpperCase()}`;
 }
 
-export function formatDate(date: string | Date | number | undefined, locale = "en-US"): string {
-  if (date == null) return "n/a";
+function toValidDate(date: string | Date | number | undefined): Date | null {
+  if (date == null) return null;
   const parsed = date instanceof Date ? date : new Date(date);
-  if (Number.isNaN(parsed.getTime())) return "n/a";
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed;
+}
+
+export function formatLocaleMonthYear(date: string | Date | number | undefined, language?: string): string {
+  const parsed = toValidDate(date);
+  if (!parsed) return "n/a";
+  return parsed.toLocaleDateString(resolveIntlLocale(language), { month: "long", year: "numeric" });
+}
+
+export function formatLocaleLongDate(date: string | Date | number | undefined, language?: string): string {
+  const parsed = toValidDate(date);
+  if (!parsed) return "n/a";
+  return parsed.toLocaleDateString(resolveIntlLocale(language), {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+export function formatLocaleDateTime(date: string | Date | number | undefined, language?: string): string {
+  const parsed = toValidDate(date);
+  if (!parsed) return "n/a";
+  return parsed.toLocaleString(resolveIntlLocale(language), {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+export function formatDate(date: string | Date | number | undefined, locale = "en-US"): string {
+  const parsed = toValidDate(date);
+  if (!parsed) return "n/a";
   return parsed.toLocaleString(resolveIntlLocale(locale));
 }
 

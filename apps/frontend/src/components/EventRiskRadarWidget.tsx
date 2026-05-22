@@ -13,6 +13,8 @@ import {
 import { getMarketEvents } from "../services/api";
 import type { EventImportance, MarketEventDto, MarketEventType } from "../types/marketEvents";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { formatDividendPerShareAmount, readDividendPayload } from "../utils/dividendFormat";
+import { resolveIntlLocale } from "../utils/formatters";
 import { pickTopMarketEvents } from "../utils/marketEventRanking";
 import { eventMatchesWatchlistSymbol } from "../utils/marketEventSymbols";
 
@@ -121,7 +123,7 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
     [events, normalizedWatchlist],
   );
 
-  const locale = i18n.resolvedLanguage || i18n.language || "en";
+  const locale = resolveIntlLocale(i18n.language);
 
   return (
     <section className={GLASS_SECTION}>
@@ -238,6 +240,17 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/55">
                     <span>{formatEventDate(event.eventDate, locale)}</span>
                     <span className="font-semibold text-[#22d3ee]">{formatDaysToEvent(event.daysToEvent, t)}</span>
+                    {event.eventType === "dividend" && symbol ? (() => {
+                      const dividend = readDividendPayload(event.payload);
+                      if (dividend?.dividendPerShare == null) return null;
+                      return (
+                        <span className="font-mono text-white/75">
+                          {formatDividendPerShareAmount(dividend.dividendPerShare, symbol, {
+                            currency: dividend.currency,
+                          })}
+                        </span>
+                      );
+                    })() : null}
                   </div>
 
                   {event.summary?.trim() ? (

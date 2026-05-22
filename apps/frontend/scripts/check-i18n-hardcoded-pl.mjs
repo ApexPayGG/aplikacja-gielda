@@ -23,13 +23,19 @@ const POLISH_PHRASES = [
   "Sprawdz",
   "Oceń",
   "Ostrzeżenie",
+  "Ostrzezenie",
   "Koncentracja",
+  "Korelacja",
+  "Sektor",
+  "Czas",
   "Portfela",
   "Psychiki",
   "Udostępnij",
   "Wybierz",
   "Chciwość",
+  "Chciwosc",
   "Pewność",
+  "Pewnosc",
   "Strach",
   "Ladowanie",
   "Ładowanie",
@@ -114,6 +120,55 @@ const POLISH_PHRASES = [
   "Liczba pozycji",
   "Wartosc portfela",
   "Rozklad sektorowy",
+  "Centrum emocji",
+  "Wybierz emocj",
+  "Odpornosc na FOMO",
+  "Kontrola chciwosci",
+  "Cierpliwosc",
+  "Udostepnij profil",
+];
+
+const POLISH_MONTH_DAY_NAMES = [
+  "stycznia",
+  "lutego",
+  "marca",
+  "kwietnia",
+  "maja",
+  "czerwca",
+  "lipca",
+  "sierpnia",
+  "września",
+  "października",
+  "listopada",
+  "grudnia",
+  "Styczeń",
+  "Luty",
+  "Marzec",
+  "Kwiecień",
+  "Maj",
+  "Czerwiec",
+  "Lipiec",
+  "Sierpień",
+  "Wrzesień",
+  "Październik",
+  "Listopad",
+  "Grudzień",
+  "poniedziałek",
+  "wtorek",
+  "środa",
+  "czwartek",
+  "piątek",
+  "sobota",
+  "niedziela",
+  "Poniedziałek",
+  "Wtorek",
+  "Środa",
+  "Czwartek",
+  "Piątek",
+  "Sobota",
+  "Niedziela",
+  "Piatek",
+  "Sroda",
 ];
 
 const SKIP_REL_PREFIXES = [
@@ -137,9 +192,16 @@ const ALLOWLIST_LINE_PATTERNS = [
   /VITE_/,
   /mock-user/,
   /MOCK_/,
-  /pl-PL/,
-  /pl_PL/,
+  /resolveIntlLocale/,
+  /formatLocaleMonthYear/,
+  /formatLocaleLongDate/,
+  /formatLocaleDateTime/,
+  /inferCurrencyFromSymbol/,
+  /formatDividendPerShareAmount/,
 ];
+
+const DEFAULT_VALUE_PL_RE =
+  /defaultValue:\s*(['"`])([\s\S]*?)\1/;
 
 function walk(dir, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -163,6 +225,34 @@ function shouldSkipFile(rel) {
   return SKIP_REL_PREFIXES.some((prefix) => rel.startsWith(prefix));
 }
 
+function textIncludesToken(text, token) {
+  const trimmed = token.trim();
+  if (!trimmed) return false;
+  if (trimmed.length <= 4) {
+    const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`\\b${escaped}\\b`, "u").test(text);
+  }
+  return text.includes(trimmed);
+}
+
+function polishHitsInText(text) {
+  const hits = [];
+  if (POLISH_DIACRITICS.test(text)) hits.push("polish-diacritics");
+  for (const phrase of POLISH_PHRASES) {
+    if (textIncludesToken(text, phrase)) {
+      hits.push(`phrase:${phrase.trim()}`);
+      break;
+    }
+  }
+  for (const name of POLISH_MONTH_DAY_NAMES) {
+    if (textIncludesToken(text, name)) {
+      hits.push(`month-day:${name}`);
+      break;
+    }
+  }
+  return hits;
+}
+
 function findIssues(filePath, content) {
   const rel = path.relative(SRC_ROOT, filePath).replace(/\\/g, "/");
   if (shouldSkipFile(rel)) return [];
@@ -173,12 +263,13 @@ function findIssues(filePath, content) {
     const line = lines[i];
     if (isAllowlisted(line)) continue;
 
-    const hits = [];
-    if (POLISH_DIACRITICS.test(line)) hits.push("polish-diacritics");
-    for (const phrase of POLISH_PHRASES) {
-      if (line.includes(phrase)) {
-        hits.push(`phrase:${phrase.trim()}`);
-        break;
+    const hits = polishHitsInText(line);
+
+    const defaultMatch = line.match(DEFAULT_VALUE_PL_RE);
+    if (defaultMatch) {
+      const defaultHits = polishHitsInText(defaultMatch[2]);
+      for (const h of defaultHits) {
+        if (!hits.includes(h)) hits.push(`defaultValue:${h}`);
       }
     }
 
@@ -202,7 +293,9 @@ if (allIssues.length > 0) {
   if (allIssues.length > 80) {
     console.error(`  ... and ${allIssues.length - 80} more.\n`);
   }
-  console.error("Fix: use t('key', { defaultValue: 'English text' }) and add keys to public/locales/en/common.json\n");
+  console.error(
+    "Fix: use t('key', { defaultValue: 'English text' }) and add keys to public/locales/en/common.json\n",
+  );
   process.exit(1);
 }
 

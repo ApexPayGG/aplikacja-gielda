@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { DividendGrowthTable } from "../components/DividendGrowthTable";
 import { TaxCalculatorPL } from "../components/TaxCalculatorPL";
 import type { DividendGrowthRow, DividendHistoryItem } from "../services/api";
+import { formatDividendPerShareAmount } from "../utils/dividendFormat";
 import { getDividendHistory, getDividendGrowthScreener } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -110,7 +111,7 @@ export function Dividends() {
                   <tr key={`${r.exDate}-${i}`} className="border-t border-surface-border">
                     <td className="px-4 py-3 font-mono text-xs">{r.exDate}</td>
                     <td className="px-4 py-3 font-mono text-xs">{r.payDate}</td>
-                    <td className="px-4 py-3">{r.amount}</td>
+                    <td className="px-4 py-3">{formatDividendPerShareAmount(r.amount, symbol)}</td>
                     <td className="px-4 py-3">{r.yield != null ? r.yield : "—"}</td>
                   </tr>
                 ))}

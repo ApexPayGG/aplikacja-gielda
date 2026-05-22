@@ -10,6 +10,7 @@ import {
 } from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { formatLocaleDateTime, formatLocaleLongDate, formatLocaleMonthYear } from "../utils/formatters";
 
 type WindowType = "EARNINGS_CYCLE" | "SEASONAL" | "SECTOR_ROTATION" | "REGIME_SHIFT";
 type CalendarMode = "MONTH" | "WEEK";
@@ -151,14 +152,8 @@ function normalizeProbability(score: number): number {
   return Math.max(0, Math.min(100, Math.round(score)));
 }
 
-function formatDateTime(value: string, fallback: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return fallback;
-  return date.toLocaleString();
-}
-
 export function AlphaCalendarPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [calendar, setCalendar] = useState<AlphaCalendarResponse | null>(null);
   const [calendarLoading, setCalendarLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -230,10 +225,8 @@ export function AlphaCalendarPage() {
     [mode, selectedDate],
   );
   const selectedDayWindows = windowsByDay[selectedDayKey] ?? [];
-  const monthLabel = selectedDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-  const selectedDateLabel = selectedDate.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-  const naDate = t("common.notAvailable");
-
+  const monthLabel = formatLocaleMonthYear(selectedDate, i18n.language);
+  const selectedDateLabel = formatLocaleLongDate(selectedDate, i18n.language);
   return (
     <div className="min-h-screen text-white">
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
@@ -397,7 +390,8 @@ export function AlphaCalendarPage() {
                           </span>
                         </div>
                         <p className="mt-2 text-[11px] text-[#94a3b8]">
-                          {formatDateTime(windowItem.windowStart, naDate)} – {formatDateTime(windowItem.windowEnd, naDate)}
+                          {formatLocaleDateTime(windowItem.windowStart, i18n.language)} –{" "}
+                          {formatLocaleDateTime(windowItem.windowEnd, i18n.language)}
                         </p>
                         <div className="mt-3 space-y-1.5">
                           <div className="flex items-center justify-between text-xs">

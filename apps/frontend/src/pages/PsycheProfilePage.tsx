@@ -20,6 +20,7 @@ import {
 } from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { resolveIntlLocale } from "../utils/formatters";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
@@ -95,7 +96,7 @@ function decisionTone(log: PsycheDecisionLog): string {
 }
 
 export function PsycheProfilePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const exampleRules = useMemo(
     () => [
@@ -405,7 +406,11 @@ export function PsycheProfilePage() {
                     </div>
                     <div className="pb-2">
                       <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
-                        {new Date(entry.createdAt).toLocaleDateString()}
+                        {new Date(entry.createdAt).toLocaleDateString(resolveIntlLocale(i18n.language), {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </p>
                       <p className="text-sm font-medium">
                         {entry.action} {entry.symbol}

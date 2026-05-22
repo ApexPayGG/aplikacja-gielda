@@ -14,6 +14,7 @@ import {
 } from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { formatDividendPerShareAmount, inferCurrencyFromSymbol } from "../utils/dividendFormat";
 
 type SortKey = "symbol" | "name" | "yieldPct" | "healthScore" | "exDate" | "dividendPerShare";
 type SortDirection = "asc" | "desc";
@@ -27,6 +28,7 @@ interface DividendCompanyRow {
   healthScore: number;
   exDate: string;
   dividendPerShare: number | null;
+  currency: string;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -46,10 +48,6 @@ function formatPercent(value: number): string {
   return `${value.toFixed(2)}%`;
 }
 
-function formatDividendPerShare(value: number | null): string {
-  if (value == null || Number.isNaN(value)) return "-";
-  return `$${value.toFixed(2)}`;
-}
 
 function parseDateValue(value: string): number {
   const parsed = Date.parse(value);
@@ -84,6 +82,11 @@ function mapCompanyRow(row: DividendGrowthRow): DividendCompanyRow {
   const dividendPerShare = toNumber(
     extended.dividendPerShare ?? extended.latestDividendPerShare ?? extended.amountPerShare ?? null,
   );
+  const exchange = typeof extended.exchange === "string" ? extended.exchange : null;
+  const currency = inferCurrencyFromSymbol(row.symbol, {
+    exchange,
+    currency: typeof extended.currency === "string" ? extended.currency : typeof extended.dividendCurrency === "string" ? extended.dividendCurrency : null,
+  });
   return {
     symbol: row.symbol,
     name: typeof extended.name === "string" ? extended.name : typeof extended.companyName === "string" ? extended.companyName : row.symbol,
@@ -93,6 +96,7 @@ function mapCompanyRow(row: DividendGrowthRow): DividendCompanyRow {
     healthScore,
     exDate,
     dividendPerShare,
+    currency,
   };
 }
 
@@ -388,7 +392,11 @@ export function DividendPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 font-mono text-xs text-white/80">{company.exDate}</td>
-                          <td className="px-4 py-3 text-white/90">{formatDividendPerShare(company.dividendPerShare)}</td>
+                          <td className="px-4 py-3 text-white/90">
+                            {formatDividendPerShareAmount(company.dividendPerShare, company.symbol, {
+                              currency: company.currency,
+                            })}
+                          </td>
                         </tr>
                       );
                     })

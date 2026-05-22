@@ -12,6 +12,7 @@ import {
   placeAlpacaOrder,
 } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { resolveIntlLocale } from "../utils/formatters";
 
 function readUserId(): string {
   if (typeof window === "undefined") return "";
@@ -24,7 +25,7 @@ function asNumber(v: unknown): number {
 }
 
 export function AlpacaDashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [userId] = useState(() => readUserId());
   const [account, setAccount] = useState<Record<string, unknown> | null>(null);
   const [mode, setMode] = useState<"paper" | "live">("paper");
@@ -47,12 +48,12 @@ export function AlpacaDashboardPage() {
     () =>
       equity.map((value, idx) => ({
         equity: value,
-        t: new Date((timestamps[idx] ?? 0) * 1000).toLocaleDateString(undefined, {
+        t: new Date((timestamps[idx] ?? 0) * 1000).toLocaleDateString(resolveIntlLocale(i18n.language), {
           day: "numeric",
           month: "short",
         }),
       })),
-    [equity, timestamps],
+    [equity, timestamps, i18n.language],
   );
 
   async function loadAll(): Promise<void> {

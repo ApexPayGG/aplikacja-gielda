@@ -1,5 +1,6 @@
 import type { DividendGrowthRow } from "../services/api";
 import { useTranslation } from "react-i18next";
+import { formatDividendPerShareAmount } from "../utils/dividendFormat";
 
 interface Props {
   rows: DividendGrowthRow[];
@@ -41,7 +42,9 @@ export function DividendGrowthTable({ rows, loading, error }: Props) {
             <tr key={r.symbol} className="border-t border-surface-border hover:bg-white/5">
               <td className="px-4 py-3 font-mono font-medium text-accent">{r.symbol}</td>
               <td className="px-4 py-3">{r.latestYear}</td>
-              <td className="px-4 py-3">{r.totalAmount.toFixed(2)}</td>
+              <td className="px-4 py-3">
+                {formatDividendPerShareAmount(r.totalAmount, r.symbol)}
+              </td>
               <td className="px-4 py-3">{r.growthYoY != null ? r.growthYoY.toFixed(2) : "—"}</td>
               <td className="px-4 py-3">{r.cagr5Y != null ? r.cagr5Y.toFixed(2) : "—"}</td>
               <td className="px-4 py-3">{r.latestYield != null ? r.latestYield.toFixed(2) : "—"}</td>

@@ -12,6 +12,7 @@ import {
 } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { resolveIntlLocale } from "../utils/formatters";
 
 const DEFAULT_STATS: AdminStatsResponse = {
   totalUsers: 0,
@@ -43,10 +44,10 @@ type BreakdownRow = {
   percentage: number;
 };
 
-function formatDate(dateInput: string): string {
+function formatDate(dateInput: string, language?: string): string {
   const date = new Date(dateInput);
   if (!Number.isFinite(date.getTime())) return "—";
-  return date.toLocaleDateString("pl-PL", {
+  return date.toLocaleDateString(resolveIntlLocale(language), {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -122,7 +123,7 @@ function TierBadge({ tier }: { tier: string }) {
 }
 
 export function AdminPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<DashboardTab>("users");
   const [stats, setStats] = useState<AdminStatsResponse>(DEFAULT_STATS);
   const [affiliateStats, setAffiliateStats] = useState<AdminAffiliateStatsResponse>(
@@ -312,7 +313,7 @@ export function AdminPage() {
                               <TierBadge tier={user.tier} />
                             </td>
                             <td className="px-4 py-3" style={{ color: colors.textSecondary }}>
-                              {formatDate(user.createdAt)}
+                              {formatDate(user.createdAt, i18n.language)}
                             </td>
                             <td className="px-4 py-3">
                               <button

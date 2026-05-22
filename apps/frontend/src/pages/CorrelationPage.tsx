@@ -37,6 +37,7 @@ type CorrelatedTableRow = {
   correlation: number;
   sector: string;
   warning: string;
+  highRisk: boolean;
 };
 
 function matrixColor(value: number): string {
@@ -69,23 +70,63 @@ export function CorrelationPage() {
         ticker: row.symbol,
         correlation: row.correlation,
         sector: MARKET_UNIVERSE.find((item) => item.ticker === row.symbol)?.sector ?? "Unknown",
-        warning: row.warning ? "High concentration risk" : "Balanced exposure",
+        highRisk: Boolean(row.warning),
+        warning: row.warning
+          ? t("correlation.warningHighConcentration", { defaultValue: "High concentration risk" })
+          : t("correlation.warningBalanced", { defaultValue: "Balanced exposure" }),
       }));
     }
 
     return [
-      { ticker: "MSFT", correlation: 0.74, sector: "Technology", warning: "High concentration risk" },
-      { ticker: "XOM", correlation: 0.52, sector: "Energy", warning: "Monitor exposure" },
-      { ticker: "PFE", correlation: 0.18, sector: "Healthcare", warning: "Balanced exposure" },
-      { ticker: "JPM", correlation: -0.22, sector: "Financials", warning: "Diversifying pair" },
-      { ticker: "CAT", correlation: 0.34, sector: "Industrials", warning: "Monitor exposure" },
+      {
+        ticker: "MSFT",
+        correlation: 0.74,
+        sector: "Technology",
+        highRisk: true,
+        warning: t("correlation.warningHighConcentration", { defaultValue: "High concentration risk" }),
+      },
+      {
+        ticker: "XOM",
+        correlation: 0.52,
+        sector: "Energy",
+        highRisk: false,
+        warning: t("correlation.warningMonitor", { defaultValue: "Monitor exposure" }),
+      },
+      {
+        ticker: "PFE",
+        correlation: 0.18,
+        sector: "Healthcare",
+        highRisk: false,
+        warning: t("correlation.warningBalanced", { defaultValue: "Balanced exposure" }),
+      },
+      {
+        ticker: "JPM",
+        correlation: -0.22,
+        sector: "Financials",
+        highRisk: false,
+        warning: t("correlation.warningDiversifying", { defaultValue: "Diversifying pair" }),
+      },
+      {
+        ticker: "CAT",
+        correlation: 0.34,
+        sector: "Industrials",
+        highRisk: false,
+        warning: t("correlation.warningMonitor", { defaultValue: "Monitor exposure" }),
+      },
     ];
-  }, [data]);
+  }, [data, t]);
 
   const concentrationWarning =
     data?.highRiskPairs.length && data.highRiskPairs.length > 0
-      ? `Detected ${data.highRiskPairs.length} highly correlated pair(s). Consider rebalancing to reduce concentration risk.`
-      : "Concentration warning: avoid overexposure to one sector by keeping highly correlated positions below 35% of portfolio weight.";
+      ? t("correlation.concentrationDetected", {
+          count: data.highRiskPairs.length,
+          defaultValue:
+            "Detected {{count}} highly correlated pair(s). Consider rebalancing to reduce concentration risk.",
+        })
+      : t("correlation.concentrationDefault", {
+          defaultValue:
+            "Concentration warning: avoid overexposure to one sector by keeping highly correlated positions below 35% of portfolio weight.",
+        });
 
   async function onSubmit(event: FormEvent): Promise<void> {
     event.preventDefault();
@@ -204,13 +245,13 @@ export function CorrelationPage() {
                   Ticker
                 </th>
                 <th className="py-2 pr-4 text-xs uppercase" style={{ color: colors.textMuted }}>
-                  Korelacja %
+                  {t("correlation.colCorrelationPct", { defaultValue: "Correlation %" })}
                 </th>
                 <th className="py-2 pr-4 text-xs uppercase" style={{ color: colors.textMuted }}>
-                  Sektor
+                  {t("correlation.colSector", { defaultValue: "Sector" })}
                 </th>
                 <th className="py-2 text-xs uppercase" style={{ color: colors.textMuted }}>
-                  Ostrzezenie
+                  {t("correlation.colWarning", { defaultValue: "Warning" })}
                 </th>
               </tr>
             </thead>
@@ -230,9 +271,9 @@ export function CorrelationPage() {
                     <span
                       className="rounded-full border px-2 py-1 text-xs font-medium"
                       style={{
-                        borderColor: row.warning.includes("High") ? `${colors.negative}66` : `${colors.neutral}66`,
-                        color: row.warning.includes("High") ? colors.negative : colors.neutral,
-                        backgroundColor: row.warning.includes("High") ? `${colors.negative}12` : `${colors.neutral}12`,
+                        borderColor: row.highRisk ? `${colors.negative}66` : `${colors.neutral}66`,
+                        color: row.highRisk ? colors.negative : colors.neutral,
+                        backgroundColor: row.highRisk ? `${colors.negative}12` : `${colors.neutral}12`,
                       }}
                     >
                       {row.warning}
@@ -250,7 +291,7 @@ export function CorrelationPage() {
         style={{ borderColor: colors.brandGold, backgroundColor: `${colors.brandGold}12` }}
       >
         <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide" style={{ color: colors.brandDark }}>
-          Ostrzezenie o koncentracji
+          {t("correlation.concentrationTitle", { defaultValue: "Concentration warning" })}
         </h3>
         <p className="text-sm leading-6" style={{ color: colors.textSecondary }}>
           {concentrationWarning}

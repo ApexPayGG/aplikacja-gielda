@@ -203,7 +203,7 @@ export function AlpacaPage() {
           </span>
         </div>
 
-        <div className="mt-5 inline-flex rounded-xl border p-1" style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}>
+        <div className="mt-5 inline-flex rounded-xl border border-white/10 bg-[#0f111c]/80 p-1 backdrop-blur-sm">
           {(["paper", "live"] as const).map((value) => {
             const active = mode === value;
             return (
@@ -213,7 +213,7 @@ export function AlpacaPage() {
                 onClick={() => setMode(value)}
                 className="rounded-lg px-4 py-2 text-sm font-semibold transition"
                 style={{
-                  color: active ? colors.bgPrimary : colors.textSecondary,
+                  color: active ? "#fff" : colors.textSecondary,
                   backgroundColor: active ? colors.brandDark : "transparent",
                 }}
               >
@@ -282,7 +282,7 @@ export function AlpacaPage() {
         <div className="space-y-6">
           <article className="glass-section rounded-2xl border border-white/10 p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]">
             <h2 className="mb-4 text-lg font-semibold" style={{ color: colors.brandDark }}>
-              {t("alpaca.positionsTitle", { defaultValue: "Positions" })}
+              {t("alpaca.positions", { defaultValue: "Positions" })}
             </h2>
             <div className="overflow-x-auto">
               <table className="min-w-full text-left text-sm">

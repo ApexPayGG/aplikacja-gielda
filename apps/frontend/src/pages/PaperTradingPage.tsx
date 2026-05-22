@@ -1253,7 +1253,7 @@ export function PaperTradingPage() {
                     <th className="px-3 py-2">Entry price</th>
                     <th className="px-3 py-2">Exit price</th>
                     <th className="px-3 py-2">P&amp;L %</th>
-                    <th className="px-3 py-2">Czas</th>
+                    <th className="px-3 py-2">{t("paperTrading.timeColumn", { defaultValue: "Time" })}</th>
                   </tr>
                 </thead>
                 <tbody>
