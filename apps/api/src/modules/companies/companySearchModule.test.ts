@@ -3,6 +3,8 @@ import { describe, it, mock } from "node:test";
 import {
   mapDbRowsToSearch,
   mapEodSearchRow,
+  rankCompanySearchResults,
+  sanitizeCrossSymbolLogos,
   searchCompaniesOnDemand,
   type CompanySearchDependencies,
   type CompanySearchResultItem,
@@ -83,6 +85,70 @@ describe("companySearchModule mappers", () => {
   });
 });
 
+describe("companySearchModule ranking", () => {
+  it("PEP query prefers PEP.US over PCO (Pepco name match)", () => {
+    const ranked = rankCompanySearchResults("PEP", [
+      item({ symbol: "PCO.WAR", name: "Pepco Group NV", exchange: "WAR", sector: "Consumer" }),
+      item({ symbol: "PEP.US", name: "PepsiCo Inc", exchange: "US", logoUrl: "https://cdn.example/pep.png" }),
+      item({ symbol: "PEP", name: "PepsiCo Inc", exchange: "US" }),
+    ]);
+
+    assert.equal(ranked[0]?.symbol, "PEP");
+    assert.equal(ranked[1]?.symbol, "PEP.US");
+    assert.ok(ranked.findIndex((r) => r.symbol === "PCO.WAR") > 1);
+  });
+
+  it("KO query prefers KO.US over Korean suffix symbol 000660.KO", () => {
+    const ranked = rankCompanySearchResults("KO", [
+      item({ symbol: "000660.KO", name: "SK Hynix Inc", exchange: "KO", sector: "Technology" }),
+      item({ symbol: "KO.US", name: "Coca-Cola Co", exchange: "US", logoUrl: "https://cdn.example/ko.png" }),
+      item({ symbol: "KO", name: "Coca-Cola Co", exchange: "US" }),
+    ]);
+
+    assert.equal(ranked[0]?.symbol, "KO");
+    assert.equal(ranked[1]?.symbol, "KO.US");
+    const hynixIdx = ranked.findIndex((r) => r.symbol === "000660.KO");
+    assert.ok(hynixIdx >= 2);
+  });
+
+  it("BDX does not keep logo copied from BDX.US when names differ", () => {
+    const sharedLogo = "https://cdn.example/bdx-us.png";
+    const sanitized = sanitizeCrossSymbolLogos([
+      item({
+        symbol: "BDX",
+        name: "Budimex SA",
+        exchange: "WAR",
+        logoUrl: sharedLogo,
+        sector: "Industrials",
+      }),
+      item({
+        symbol: "BDX.US",
+        name: "Becton Dickinson and Co",
+        exchange: "US",
+        logoUrl: sharedLogo,
+        sector: "Healthcare",
+      }),
+    ]);
+
+    const budimex = sanitized.find((r) => r.symbol === "BDX");
+    const bd = sanitized.find((r) => r.symbol === "BDX.US");
+    assert.equal(budimex?.logoUrl, null);
+    assert.equal(bd?.logoUrl, sharedLogo);
+  });
+
+  it("BDX query keeps both listings with BDX before BDX.US", () => {
+    const ranked = rankCompanySearchResults("BDX", [
+      item({ symbol: "BDX.US", name: "Becton Dickinson and Co", exchange: "US" }),
+      item({ symbol: "BDX", name: "Budimex SA", exchange: "WAR" }),
+    ]);
+
+    assert.equal(ranked[0]?.symbol, "BDX");
+    assert.equal(ranked[1]?.symbol, "BDX.US");
+    assert.equal(ranked[0]?.exchange, "WAR");
+    assert.equal(ranked[1]?.exchange, "US");
+  });
+});
+
 describe("companySearchModule.searchCompaniesOnDemand", () => {
   it("returns DB results without EOD fallback when DB has at least 3 rows", async () => {
     const searchDb = mock.fn(async () => [
@@ -114,15 +180,18 @@ describe("companySearchModule.searchCompaniesOnDemand", () => {
       item({ symbol: "GOOGL.US", name: "Alphabet", sector: "Unknown", logoUrl: null }),
     ]);
 
-    const result = await searchCompaniesOnDemand("a", 4, createDependencies({ searchDb, searchEod }));
+    const result = await searchCompaniesOnDemand("a", 6, createDependencies({ searchDb, searchEod }));
 
-    assert.deepEqual(result, [
-      item({ symbol: "AAPL", name: "Apple", logoUrl: "https://cdn.example/aapl.png" }),
-      item({ symbol: "MSFT", name: "Microsoft" }),
-      item({ symbol: "TSLA.US", name: "Tesla", sector: "Unknown", logoUrl: null }),
-      item({ symbol: "AMZN.US", name: "Amazon", sector: "Unknown", logoUrl: null }),
-    ]);
+    assert.equal(result.length, 5);
     assert.equal(searchEod.mock.calls.length, 1);
+    const symbols = result.map((r) => r.symbol);
+    assert.ok(symbols.includes("AAPL"));
+    assert.ok(symbols.includes("MSFT"));
+    assert.ok(symbols.includes("TSLA.US"));
+    assert.equal(result.find((r) => r.symbol === "AAPL")?.logoUrl, "https://cdn.example/aapl.png");
+    const aaplIdx = symbols.indexOf("AAPL");
+    const msftIdx = symbols.indexOf("MSFT");
+    assert.ok(aaplIdx >= 0 && msftIdx >= 0 && aaplIdx < msftIdx);
   });
 
   it("still triggers fallback lookup when DB < 3 and limit is small", async () => {

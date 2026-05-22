@@ -31,6 +31,21 @@ const SOURCE = "EODHD";
 const IMPORT_DAYS = 365;
 const REQUEST_DELAY_MS = 200;
 
+/** Ranking bonus only — never overrides exact symbol / base-symbol tiers. */
+export const PREFERRED_SEARCH_EXCHANGES = ["US", "WAR", "XETRA", "LSE"] as const;
+
+const SEARCH_POOL_MAX = 50;
+const SEARCH_POOL_MULTIPLIER = 8;
+
+const RANK_EXACT_SYMBOL = 0;
+const RANK_EXACT_BASE = 100;
+const RANK_EXACT_BASE_PREFERRED_EXCHANGE = 150;
+const RANK_STARTS_WITH_SYMBOL = 200;
+const RANK_EXACT_NAME = 300;
+const RANK_CONTAINS_NAME = 400;
+const RANK_SUFFIX_EXCHANGE_MISMATCH = 900;
+const RANK_DEFAULT = 1000;
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -152,16 +167,199 @@ function normalizeSearchLimit(limit: number): number {
   return Math.min(50, Math.max(1, Number.isFinite(limit) ? Math.trunc(limit) : 8));
 }
 
-function dedupeBySymbol(items: CompanySearchResultItem[]): CompanySearchResultItem[] {
-  const seen = new Set<string>();
-  const out: CompanySearchResultItem[] = [];
+function searchPoolSize(limit: number): number {
+  return Math.min(SEARCH_POOL_MAX, Math.max(limit, limit * SEARCH_POOL_MULTIPLIER));
+}
+
+export function parseSymbolParts(symbol: string): { base: string; exchange: string | null; full: string } {
+  const full = symbol.trim().toUpperCase();
+  const dot = full.lastIndexOf(".");
+  if (dot > 0) {
+    return { base: full.slice(0, dot), exchange: full.slice(dot + 1), full };
+  }
+  return { base: full, exchange: null, full };
+}
+
+export type NormalizedSearchQuery = {
+  raw: string;
+  upper: string;
+  base: string;
+  exchange: string | null;
+  isTickerLike: boolean;
+};
+
+export function normalizeSearchQuery(raw: string): NormalizedSearchQuery {
+  const trimmed = raw.trim();
+  const upper = trimmed.toUpperCase();
+  const parts = parseSymbolParts(upper);
+  const isTickerLike = /^[A-Z0-9]{2,5}$/.test(parts.base);
+  return {
+    raw: trimmed,
+    upper,
+    base: parts.base,
+    exchange: parts.exchange,
+    isTickerLike,
+  };
+}
+
+function preferredExchangeBonus(exchange: string | null): number {
+  if (!exchange) return PREFERRED_SEARCH_EXCHANGES.length;
+  const idx = PREFERRED_SEARCH_EXCHANGES.indexOf(exchange as (typeof PREFERRED_SEARCH_EXCHANGES)[number]);
+  return idx === -1 ? PREFERRED_SEARCH_EXCHANGES.length : idx;
+}
+
+export function scoreSearchResult(query: NormalizedSearchQuery, item: CompanySearchResultItem): number {
+  const sym = parseSymbolParts(item.symbol);
+  const nameUpper = item.name.trim().toUpperCase();
+  const q = query.upper;
+  const qBase = query.base;
+
+  if (sym.full === q) {
+    return RANK_EXACT_SYMBOL;
+  }
+
+  if (sym.base === qBase) {
+    if (query.isTickerLike && sym.exchange && sym.base !== sym.full) {
+      const bonus = preferredExchangeBonus(sym.exchange);
+      if (sym.exchange && PREFERRED_SEARCH_EXCHANGES.includes(sym.exchange as (typeof PREFERRED_SEARCH_EXCHANGES)[number])) {
+        return RANK_EXACT_BASE_PREFERRED_EXCHANGE + bonus;
+      }
+    }
+    if (query.exchange && sym.exchange === query.exchange) {
+      return RANK_EXACT_BASE + preferredExchangeBonus(sym.exchange);
+    }
+    return RANK_EXACT_BASE + preferredExchangeBonus(sym.exchange);
+  }
+
+  if (query.isTickerLike && sym.exchange === qBase && sym.base !== qBase) {
+    return RANK_SUFFIX_EXCHANGE_MISMATCH;
+  }
+
+  if (qBase.length >= 2 && sym.base.startsWith(qBase)) {
+    return RANK_STARTS_WITH_SYMBOL + (sym.base.length - qBase.length);
+  }
+
+  if (sym.full.includes(q) || sym.base.includes(q)) {
+    return RANK_STARTS_WITH_SYMBOL + 50;
+  }
+
+  if (nameUpper === q) {
+    return RANK_EXACT_NAME;
+  }
+
+  const qLower = query.raw.toLowerCase();
+  if (qLower.length >= 2 && item.name.toLowerCase().includes(qLower)) {
+    return RANK_CONTAINS_NAME;
+  }
+
+  return RANK_DEFAULT;
+}
+
+export function sanitizeCrossSymbolLogos(items: CompanySearchResultItem[]): CompanySearchResultItem[] {
+  const byLogo = new Map<string, CompanySearchResultItem[]>();
+  for (const item of items) {
+    if (!item.logoUrl) continue;
+    const list = byLogo.get(item.logoUrl) ?? [];
+    list.push(item);
+    byLogo.set(item.logoUrl, list);
+  }
+
+  const symbolsToClear = new Set<string>();
+
+  for (const group of byLogo.values()) {
+    if (group.length < 2) continue;
+
+    const byBase = new Map<string, CompanySearchResultItem[]>();
+    for (const item of group) {
+      const base = parseSymbolParts(item.symbol).base;
+      const list = byBase.get(base) ?? [];
+      list.push(item);
+      byBase.set(base, list);
+    }
+
+    for (const sameBase of byBase.values()) {
+      if (sameBase.length < 2) continue;
+      const names = new Set(sameBase.map((i) => i.name.trim().toLowerCase()));
+      if (names.size <= 1) continue;
+
+      const ranked = [...sameBase].sort((a, b) => {
+        const exA = parseSymbolParts(a.symbol).exchange;
+        const exB = parseSymbolParts(b.symbol).exchange;
+        return preferredExchangeBonus(exA) - preferredExchangeBonus(exB);
+      });
+      const keeper = ranked[0]!;
+      for (const item of sameBase) {
+        if (item.symbol.toUpperCase() !== keeper.symbol.toUpperCase()) {
+          symbolsToClear.add(item.symbol.toUpperCase());
+        }
+      }
+    }
+
+    const distinctBases = new Set(group.map((i) => parseSymbolParts(i.symbol).base));
+    if (distinctBases.size > 1) {
+      const names = new Set(group.map((i) => i.name.trim().toLowerCase()));
+      if (names.size > 1) {
+        for (const item of group) {
+          const base = parseSymbolParts(item.symbol).base;
+          const sameBasePeers = group.filter((p) => parseSymbolParts(p.symbol).base === base);
+          if (sameBasePeers.length === 1) {
+            symbolsToClear.add(item.symbol.toUpperCase());
+          }
+        }
+      }
+    }
+  }
+
+  return items.map((item) => {
+    if (!item.logoUrl) return item;
+    if (symbolsToClear.has(item.symbol.toUpperCase())) {
+      return { ...item, logoUrl: null };
+    }
+    return item;
+  });
+}
+
+export function rankCompanySearchResults(
+  query: string,
+  items: CompanySearchResultItem[],
+): CompanySearchResultItem[] {
+  const normalized = normalizeSearchQuery(query);
+  return [...items].sort((a, b) => {
+    const scoreA = scoreSearchResult(normalized, a);
+    const scoreB = scoreSearchResult(normalized, b);
+    if (scoreA !== scoreB) return scoreA - scoreB;
+    const exA = preferredExchangeBonus(parseSymbolParts(a.symbol).exchange);
+    const exB = preferredExchangeBonus(parseSymbolParts(b.symbol).exchange);
+    if (exA !== exB) return exA - exB;
+    return a.symbol.localeCompare(b.symbol);
+  });
+}
+
+function mergeBySymbol(items: CompanySearchResultItem[]): CompanySearchResultItem[] {
+  const map = new Map<string, CompanySearchResultItem>();
   for (const row of items) {
     const key = row.symbol.trim().toUpperCase();
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    out.push(row);
+    if (!key) continue;
+    const prev = map.get(key);
+    if (!prev) {
+      map.set(key, { ...row });
+      continue;
+    }
+    map.set(key, {
+      symbol: prev.symbol,
+      name: prev.name || row.name,
+      exchange: prev.exchange !== "UNKNOWN" ? prev.exchange : row.exchange,
+      sector: prev.sector !== "Unknown" ? prev.sector : row.sector,
+      logoUrl: prev.logoUrl ?? row.logoUrl,
+    });
   }
-  return out;
+  return [...map.values()];
+}
+
+function finalizeSearchResults(query: string, items: CompanySearchResultItem[], limit: number): CompanySearchResultItem[] {
+  const merged = mergeBySymbol(items);
+  const sanitized = sanitizeCrossSymbolLogos(merged);
+  return rankCompanySearchResults(query, sanitized).slice(0, limit);
 }
 
 async function searchEodCompanies(query: string, limit: number): Promise<CompanySearchResultItem[]> {
@@ -181,7 +379,7 @@ async function searchEodCompanies(query: string, limit: number): Promise<Company
 
 const defaultSearchDependencies: CompanySearchDependencies = {
   searchDb: async (query, limit) => {
-    const dbRows = await searchCompanies(query, limit);
+    const dbRows = await searchCompanies(query, searchPoolSize(limit));
     return mapDbRowsToSearch(dbRows);
   },
   searchEod: searchEodCompanies,
@@ -356,17 +554,18 @@ export async function searchCompaniesOnDemand(
   const take = normalizeSearchLimit(limit);
 
   const dbRows = await dependencies.searchDb(q, take);
-  const merged = dedupeBySymbol(dbRows).slice(0, take);
+  let combined = [...dbRows];
+  let results = finalizeSearchResults(q, combined, take);
 
-  if (merged.length < 3) {
+  if (results.length < 3) {
     try {
-      const eodRows = await dependencies.searchEod(q, take);
-      const withFallback = dedupeBySymbol([...merged, ...eodRows]).slice(0, take);
-      return withFallback;
+      const eodRows = await dependencies.searchEod(q, searchPoolSize(take));
+      combined = [...dbRows, ...eodRows];
+      results = finalizeSearchResults(q, combined, take);
     } catch (error) {
       console.warn("[companies.search] eod fallback failed", error);
     }
   }
 
-  return merged;
+  return results;
 }
