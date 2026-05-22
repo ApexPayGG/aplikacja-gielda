@@ -8,6 +8,7 @@ import { AIBriefDrawer } from "../components/AIBriefDrawer";
 import { CompanyCard } from "../components/CompanyCard";
 import type { Company } from "../services/api";
 import { getCompanyBySector, getDividendScreener } from "../services/api";
+import { enrichCompaniesWithLogos } from "../utils/companyLogoEnrichment";
 import { useCompaniesFilter } from "../hooks/useCompaniesFilter";
 import { GLASS_INNER_PANEL, GLASS_PAGE_SUBTITLE, GLASS_PAGE_TITLE } from "../components/behavioral-coach/glassStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -64,7 +65,8 @@ export function CompaniesPage() {
         setError(apiErrorMessage(failedResponse.reason));
       }
 
-      setCompanies(Array.from(mergedCompanies.values()));
+      const merged = Array.from(mergedCompanies.values());
+      setCompanies(await enrichCompaniesWithLogos(merged));
     } catch (e) {
       setError(apiErrorMessage(e));
       setCompanies([]);
@@ -130,7 +132,7 @@ export function CompaniesPage() {
           limit={8}
           initialValue={initialSearchQuery}
           variant="glass"
-          placeholder={t("home.searchPlaceholder", { defaultValue: "Szukaj po nazwie lub tickerze..." })}
+          placeholder={t("home.searchPlaceholder", { defaultValue: "Search by name or ticker..." })}
         />
       </div>
 

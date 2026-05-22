@@ -714,6 +714,73 @@ export async function importCompanyFromSearch(symbol: string, exchange?: string 
   });
 }
 
+export function normalizeCompany(raw: unknown): Company | null {
+  if (!raw || typeof raw !== "object") return null;
+  const row = raw as Record<string, unknown>;
+  const symbol = String(row.symbol ?? "")
+    .trim()
+    .toUpperCase();
+  if (!symbol) return null;
+  const logoRaw = row.logoUrl ?? row.logo;
+  const logoUrl = typeof logoRaw === "string" && logoRaw.trim() ? logoRaw.trim() : null;
+  return {
+    symbol,
+    name: String(row.name ?? symbol),
+    exchange: row.exchange != null ? String(row.exchange) : null,
+    sector: String(row.sector ?? "Unknown"),
+    industry: String(row.industry ?? "Unknown"),
+    logoUrl,
+    description: row.description != null ? String(row.description) : null,
+    webUrl: row.webUrl != null ? String(row.webUrl) : null,
+    createdAt: String(row.createdAt ?? new Date().toISOString()),
+  };
+}
+
+export type CompanyLogoLookupItem = {
+  symbol: string;
+  logoUrl: string | null;
+  name: string | null;
+  exchange: string | null;
+};
+
+export async function resolveCompanyLogos(
+  symbols: string[],
+): Promise<Record<string, CompanyLogoLookupItem>> {
+  const unique = [...new Set(symbols.map((s) => s.trim().toUpperCase()).filter(Boolean))];
+  if (unique.length === 0) return {};
+  const { data } = await api.get<{ items: CompanyLogoLookupItem[] }>("/companies/logos", {
+    params: { symbols: unique.join(",") },
+  });
+  const out: Record<string, CompanyLogoLookupItem> = {};
+  for (const item of data.items ?? []) {
+    out[item.symbol.toUpperCase()] = item;
+  }
+  return out;
+}
+
+export type SignalFeedItem = {
+  id: string;
+  ticker: string;
+  companyName: string;
+  logoUrl: string | null;
+  setupType: string;
+  riskScore: number;
+  exchange: string | null;
+  createdAt: string;
+  changePct: number;
+  price: number;
+};
+
+export async function getSignalsFeed(limit = 200): Promise<SignalFeedItem[]> {
+  const { data } = await api.get<{ signals?: SignalFeedItem[] }>("/signals", { params: { limit } });
+  const rows = Array.isArray(data.signals) ? data.signals : [];
+  return rows.map((row) => ({
+    ...row,
+    ticker: String(row.ticker ?? "").trim().toUpperCase(),
+    logoUrl: row.logoUrl ?? null,
+  }));
+}
+
 export async function getCompanyBySector(
   sector: string,
   page = 1,
@@ -723,12 +790,19 @@ export async function getCompanyBySector(
   const { data } = await api.get<SectorListResponse>(`/companies/sector/${encoded}`, {
     params: { page, pageSize },
   });
-  return data;
+  const items = (data.items ?? [])
+    .map((row) => normalizeCompany(row))
+    .filter((row): row is Company => row !== null);
+  return { ...data, items };
 }
 
 export async function getCompanyDetail(symbol: string): Promise<Company> {
   const { data } = await api.get<Company>(`/companies/${encodeURIComponent(symbol)}`);
-  return data;
+  const company = normalizeCompany(data);
+  if (!company) {
+    throw new Error("Invalid company payload");
+  }
+  return company;
 }
 
 export async function getQuoteHistory(symbol: string, days = 30): Promise<QuoteHistoryResponse> {

@@ -65,6 +65,8 @@ import { createQuotesRouter } from "./routes/quotes";
 import { createAlphaJournalRouter } from "./routes/alphaJournal";
 import { createAlphaCalendarRouter } from "./routes/alphaCalendar";
 import { createSignalMemoryRouter } from "./routes/signalMemory";
+import { createSignalsListRouter } from "./routes/signalsList";
+import { createCompanyLogosRouter } from "./routes/companyLogos";
 import { createSignalDnaRouter } from "./routes/signalDna";
 import { createReverseScreenerRouter } from "./routes/reversescreener";
 import { createPositionSizeRouter } from "./routes/positionSize";
@@ -228,6 +230,8 @@ export function createApp(): express.Express {
   app.use(createAlphaJournalRouter());
   app.use(createAlphaCalendarRouter());
   app.use(createSignalMemoryRouter());
+  app.use(createSignalsListRouter());
+  app.use(createCompanyLogosRouter());
   app.use(createSignalDnaRouter());
   app.use(createReverseScreenerRouter());
   app.use(createBehavioralRouter());

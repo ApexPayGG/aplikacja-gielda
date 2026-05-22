@@ -10,8 +10,9 @@ import { ShareButton } from "../components/ShareButton";
 import { VirtualList } from "../components/VirtualList";
 import { useAuth } from "../context/AuthContext";
 import { useSignalsFilter } from "../hooks/useSignalsFilter";
-import { api } from "../services/api";
+import { getSignalsFeed } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { enrichItemsWithCompanyLogos } from "../utils/companyLogoEnrichment";
 import { CompanyLogo } from "../components/CompanyLogo";
 import {
   GLASS_BTN_PRIMARY,
@@ -34,12 +35,12 @@ type SignalListItem = {
   price: number;
 };
 
-const companyMetaByTicker: Record<string, { companyName: string; logoUrl: string | null }> = {
-  AAPL: { companyName: "Apple Inc.", logoUrl: null },
-  PKN: { companyName: "ORLEN S.A.", logoUrl: null },
-  SAP: { companyName: "SAP SE", logoUrl: null },
-  "7203": { companyName: "Toyota Motor", logoUrl: null },
-  MSFT: { companyName: "Microsoft Corp.", logoUrl: null },
+const companyMetaByTicker: Record<string, { companyName: string }> = {
+  AAPL: { companyName: "Apple Inc." },
+  PKN: { companyName: "ORLEN S.A." },
+  SAP: { companyName: "SAP SE" },
+  "7203": { companyName: "Toyota Motor" },
+  MSFT: { companyName: "Microsoft Corp." },
 };
 
 const mockSignals: SignalListItem[] = [
@@ -110,16 +111,6 @@ function isEndpointMissing(error: unknown): boolean {
   return axios.isAxiosError(error) && error.response?.status === 404;
 }
 
-function unpackSignalRows(data: unknown): unknown[] {
-  if (!data || typeof data !== "object") return [];
-  const rowLike = data as Record<string, unknown>;
-  if (Array.isArray(rowLike.data)) return rowLike.data;
-  if (Array.isArray(rowLike.items)) return rowLike.items;
-  if (Array.isArray(rowLike.signals)) return rowLike.signals;
-  if (Array.isArray(rowLike.signalUpdates)) return rowLike.signalUpdates;
-  return [];
-}
-
 function parseSignal(raw: unknown): SignalListItem | null {
   if (!raw || typeof raw !== "object") return null;
   const row = raw as Record<string, unknown>;
@@ -132,10 +123,7 @@ function parseSignal(raw: unknown): SignalListItem | null {
   const companyName = companyNameFromApi || companyNameFromMap || `${ticker} Company`;
 
   const rawLogo = row.logoUrl ?? row.logo;
-  const logoUrl =
-    typeof rawLogo === "string" && rawLogo.trim()
-      ? rawLogo.trim()
-      : companyMetaByTicker[ticker]?.logoUrl ?? null;
+  const logoUrl = typeof rawLogo === "string" && rawLogo.trim() ? rawLogo.trim() : null;
   const createdAt = String(row.createdAt ?? row.timestamp ?? row.updatedAt ?? row.date ?? new Date().toISOString());
   const exchange = String(row.exchange ?? row.market ?? row.marketCode ?? "").trim() || null;
 
@@ -177,18 +165,35 @@ export function SignalsPage() {
       setLoadingList(true);
       setListError(null);
       try {
-        const { data } = await api.get<Record<string, unknown>>("/signals", { params: { limit: 200 } });
-        const rows = unpackSignalRows(data)
-          .map((row) => parseSignal(row))
+        const feed = await getSignalsFeed(200);
+        const rows = feed
+          .map((row) =>
+            parseSignal({
+              id: row.id,
+              ticker: row.ticker,
+              companyName: row.companyName,
+              logoUrl: row.logoUrl,
+              setupType: row.setupType,
+              riskScore: row.riskScore,
+              exchange: row.exchange,
+              createdAt: row.createdAt,
+              changePct: row.changePct,
+              price: row.price,
+            }),
+          )
           .filter((row): row is SignalListItem => row !== null);
 
+        const base = rows.length > 0 ? rows : mockSignals;
+        const enriched = await enrichItemsWithCompanyLogos(base);
+
         if (!cancelled) {
-          setSignals(rows.length > 0 ? rows : mockSignals);
+          setSignals(enriched);
         }
       } catch (error) {
         if (cancelled) return;
         if (isEndpointMissing(error)) {
-          setSignals(mockSignals);
+          const enriched = await enrichItemsWithCompanyLogos(mockSignals);
+          setSignals(enriched);
         } else {
           setListError(apiErrorMessage(error));
           setSignals([]);

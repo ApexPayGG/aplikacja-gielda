@@ -27,6 +27,7 @@ import { EventRiskRadarWidget } from "../components/EventRiskRadarWidget";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import { useAuth } from "../context/AuthContext";
 import { getCompanyDetail, getLatestQuoteBySymbol, getWatchlist } from "../services/api";
+import { enrichItemsWithCompanyLogos } from "../utils/companyLogoEnrichment";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatCurrency, formatNumber, formatPercent } from "../utils/formatters";
 
@@ -95,7 +96,22 @@ export function Dashboard() {
         );
 
         if (!cancelled) {
-          setWatchlistRows(enriched);
+          const withLogos = await enrichItemsWithCompanyLogos(
+            enriched.map((row) => ({
+              ...row,
+              ticker: row.symbol,
+            })),
+          );
+          setWatchlistRows(
+            withLogos.map((row) => ({
+              symbol: row.symbol,
+              name: row.name,
+              exchange: row.exchange,
+              logoUrl: row.logoUrl ?? null,
+              close: row.close,
+              changePct: row.changePct,
+            })),
+          );
         }
       } catch (error) {
         if (!cancelled) {
@@ -404,9 +420,12 @@ export function Dashboard() {
                     const isPositive = (row.changePct ?? 0) >= 0;
                     return (
                       <li key={`signal-${row.symbol}`} className="flex items-center justify-between gap-3 px-4 py-3">
-                        <div className="min-w-0">
-                          <p className="font-semibold text-white">{row.symbol}</p>
-                          <p className="line-clamp-1 text-xs text-white/50">{row.name}</p>
+                        <div className="flex min-w-0 items-center gap-3">
+                          <CompanyLogo symbol={row.symbol} logoUrl={row.logoUrl} size="sm" shape="rounded" />
+                          <div className="min-w-0">
+                            <p className="font-semibold text-white">{row.symbol}</p>
+                            <p className="line-clamp-1 text-xs text-white/50">{row.name}</p>
+                          </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <span
