@@ -40,11 +40,11 @@ function formatSignedPct(value: number): string {
   return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
 }
 
-function formatDate(value: string | null): string {
+function formatDate(value: string | null, locale: string): string {
   if (!value) return "—";
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return "—";
-  return parsed.toLocaleString();
+  return parsed.toLocaleString(locale);
 }
 
 function mapHistoryRows(payload: PaperHistoryResponse): TradeHistoryRow[] {
@@ -95,7 +95,7 @@ function fallbackRows(metrics: TrackRecordPublicResponse): TradeHistoryRow[] {
 }
 
 export function TrackRecordPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { hash } = useParams<{ hash?: string }>();
   const isPublicView = Boolean(hash);
   const [loading, setLoading] = useState(false);
@@ -113,7 +113,11 @@ export function TrackRecordPage() {
         ? `https://stock-ai.pro/track-record/public/${effectiveHash}`
         : null;
   const shareText = metrics
-    ? `📊 Mój track record: Win rate ${metrics.winRate.toFixed(2)}% | ${metrics.totalTrades} transakcji | StockAI Pro`
+    ? t("trackrecord.shareTweet", {
+        defaultValue: "📊 My track record: Win rate {{winRate}}% | {{totalTrades}} trades | StockAI Pro",
+        winRate: metrics.winRate.toFixed(2),
+        totalTrades: metrics.totalTrades,
+      })
     : undefined;
   const tableRows = useMemo(() => {
     if (historyRows.length > 0) return historyRows;
@@ -240,7 +244,7 @@ export function TrackRecordPage() {
         {metrics ? (
           <section className="space-y-5">
             <article className="glass-section rounded-2xl p-5 shadow-[0_12px_30px_rgba(168,85,247,0.08)]">
-              <h2 className="text-lg font-semibold text-white">Publiczny profil</h2>
+              <h2 className="text-lg font-semibold text-white">{t("trackrecord.publicProfileHeading")}</h2>
               <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard label="Win rate" value={`${metrics.winRate.toFixed(2)}%`} />
                 <StatCard label="Avg return" value={`${metrics.avgReturn.toFixed(2)}%`} />
@@ -254,13 +258,17 @@ export function TrackRecordPage() {
                   <span className="font-mono text-white">{shareProfileUrl ?? t("common.notAvailable")}</span>
                 </p>
                 {shareProfileUrl ? (
-                  <ShareButton label="Udostępnij swój Track Record" url={shareProfileUrl} twitterText={shareText} />
+                  <ShareButton
+                    label={t("trackrecord.shareStyleLabel", { defaultValue: "Share your Track Record" })}
+                    url={shareProfileUrl}
+                    twitterText={shareText}
+                  />
                 ) : null}
               </div>
             </article>
 
             <article className="glass-section rounded-2xl p-5 shadow-[0_12px_30px_rgba(168,85,247,0.08)]">
-              <h3 className="text-lg font-semibold text-white">Historia transakcji</h3>
+              <h3 className="text-lg font-semibold text-white">{t("trackrecord.tradeHistoryHeading")}</h3>
               {historyLoading ? (
                 <p className="mt-3 glass-muted text-sm">{t("common.loading")}</p>
               ) : tableRows.length === 0 ? (
@@ -284,7 +292,7 @@ export function TrackRecordPage() {
                           <tr key={row.id} className="text-white">
                             <td className="px-2 py-2 font-semibold text-white">{row.symbol}</td>
                             <td className="px-2 py-2 glass-muted">{row.direction}</td>
-                            <td className="px-2 py-2 glass-muted">{formatDate(row.closedAt)}</td>
+                            <td className="px-2 py-2 glass-muted">{formatDate(row.closedAt, i18n.language)}</td>
                             <td className={`px-2 py-2 text-right font-semibold ${positive ? "text-positive" : "text-negative"}`}>
                               {row.pnlValue === 0 ? "—" : `${row.pnlValue >= 0 ? "+" : ""}${row.pnlValue.toFixed(2)}`}
                             </td>

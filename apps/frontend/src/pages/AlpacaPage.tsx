@@ -282,7 +282,7 @@ export function AlpacaPage() {
         <div className="space-y-6">
           <article className="glass-section rounded-2xl border border-white/10 p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]">
             <h2 className="mb-4 text-lg font-semibold" style={{ color: colors.brandDark }}>
-              Pozycje
+              {t("alpaca.positionsTitle", { defaultValue: "Positions" })}
             </h2>
             <div className="overflow-x-auto">
               <table className="min-w-full text-left text-sm">
@@ -293,7 +293,7 @@ export function AlpacaPage() {
                     <th className="px-2 py-2">Avg Price</th>
                     <th className="px-2 py-2">Current</th>
                     <th className="px-2 py-2">P&amp;L %</th>
-                    <th className="px-2 py-2">Akcje</th>
+                    <th className="px-2 py-2">{t("alpaca.actionsColumn", { defaultValue: "Actions" })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -328,7 +328,7 @@ export function AlpacaPage() {
                               setSide("sell");
                             }}
                           >
-                            Sprzedaj
+                            {t("alpaca.sell", { defaultValue: "Sell" })}
                           </button>
                         </td>
                       </tr>
@@ -352,7 +352,7 @@ export function AlpacaPage() {
                     <th className="px-2 py-2">Side</th>
                     <th className="px-2 py-2">Type</th>
                     <th className="px-2 py-2">Status</th>
-                    <th className="px-2 py-2">Akcje</th>
+                    <th className="px-2 py-2">{t("alpaca.actionsColumn", { defaultValue: "Actions" })}</th>
                   </tr>
                 </thead>
                 <tbody>

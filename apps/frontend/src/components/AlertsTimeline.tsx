@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { DividendAlert } from "../types/dividend";
 
 export interface AlertsTimelineProps {
@@ -28,12 +29,12 @@ function formatDate(iso: string): string {
   }
 }
 
-/** Oś czasu alertów (najnowsze u góry). */
 export function AlertsTimeline({ alerts, symbol }: AlertsTimelineProps) {
+  const { t } = useTranslation();
   if (alerts.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-surface-border bg-surface-elevated/50 p-8 text-center text-sm text-slate-500">
-        Brak alertów dla {symbol}.
+        {t("alertsTimeline.empty", { defaultValue: "No alerts for {{symbol}}.", symbol })}
       </div>
     );
   }
@@ -41,7 +42,9 @@ export function AlertsTimeline({ alerts, symbol }: AlertsTimelineProps) {
   return (
     <section className="rounded-lg border border-surface-border bg-surface-elevated p-6">
       <h2 className="text-sm font-medium uppercase tracking-wide text-slate-400">Alerts</h2>
-      <p className="mt-1 text-xs text-slate-500">Oś czasu dla {symbol}</p>
+      <p className="mt-1 text-xs text-slate-500">
+        {t("alertsTimeline.timelineFor", { defaultValue: "Timeline for {{symbol}}", symbol })}
+      </p>
       <ol className="relative mt-6 space-y-6 border-l border-surface-border pl-6">
         {alerts.map((a, i) => (
           <li key={`${a.createdAt}-${i}`} className="relative">

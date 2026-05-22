@@ -904,7 +904,7 @@ export function LandingPage() {
       {/* ═══ TICKER BAR (demo quotes) ═══ */}
       <div
         className="h-10 overflow-hidden bg-[#0A0A0F]"
-        aria-label="Przykładowe notowania rynkowe — dane demo"
+        aria-label={t("landingAria.demoTickerTape", { defaultValue: "Sample market listings — demo data" })}
       >
         <div className="animate-marquee-ticker flex h-10 w-max items-center whitespace-nowrap">
           {tickerMarqueeTrack.map((row, i) => (
@@ -933,7 +933,7 @@ export function LandingPage() {
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-6 md:py-5">
-          <Link to="/" className="flex min-w-0 shrink-0 items-center py-1" aria-label="Stock-AI.Pro — strona główna">
+          <Link to="/" className="flex min-w-0 shrink-0 items-center py-1" aria-label={t("landingAria.homeLogo", { defaultValue: "Stock-AI.Pro — home" })}>
             <BrandLogo size="nav" />
           </Link>
 
@@ -994,7 +994,11 @@ export function LandingPage() {
               className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#a855f7]/20 text-[#a855f7] transition hover:bg-[#1e1b4b]/5 md:hidden"
               aria-expanded={mobileNavOpen}
               aria-controls="landing-mobile-nav"
-              aria-label={mobileNavOpen ? "Zamknij menu" : "Otwórz menu"}
+              aria-label={
+                mobileNavOpen
+                  ? t("landingAria.closeMenu", { defaultValue: "Close menu" })
+                  : t("landingAria.openMenu", { defaultValue: "Open menu" })
+              }
               onClick={() => setMobileNavOpen((open) => !open)}
             >
               {mobileNavOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
@@ -1626,7 +1630,7 @@ export function LandingPage() {
       <footer className="text-white" style={{ backgroundColor: BRAND.dark }}>
         <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 md:grid-cols-4">
           <div>
-            <Link to="/" className="inline-flex" aria-label="Stock-AI.Pro — strona główna">
+            <Link to="/" className="inline-flex" aria-label={t("landingAria.homeLogo", { defaultValue: "Stock-AI.Pro — home" })}>
               <BrandLogo size="footer" />
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-white/60">

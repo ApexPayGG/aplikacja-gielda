@@ -127,7 +127,7 @@ export function ShareButton({ url, twitterText, className, label }: ShareButtonP
         }}
       >
         <ShareIcon className="h-4 w-4" aria-hidden="true" />
-        <span>{label ?? t("share.button", { defaultValue: "Udostępnij" })}</span>
+        <span>{label ?? t("share.button", { defaultValue: "Share" })}</span>
       </button>
 
       {open ? (

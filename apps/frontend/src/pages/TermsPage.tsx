@@ -1,18 +1,25 @@
+import { useTranslation } from "react-i18next";
 import { LegalAccordion } from "../components/legal/LegalAccordion";
 import { LegalPageLayout } from "../components/legal/LegalPageLayout";
 import { COMPANY_LEGAL } from "../constants/companyLegal";
 import { termsSections } from "../content/termsSections";
 
 export function TermsPage() {
+  const { t } = useTranslation();
+
   return (
     <LegalPageLayout
-      title="Regulamin użytkowania"
-      documentLabel="Warunki korzystania"
+      title={t("legal.termsPageTitle", { defaultValue: "Terms of use" })}
+      documentLabel={t("legal.termsDocumentLabel", { defaultValue: "Terms of service" })}
       effectiveDate={COMPANY_LEGAL.privacyEffectiveDate}
       intro={
         <p>
-          Regulamin określa zasady korzystania z platformy StockAI Pro ({COMPANY_LEGAL.website}) świadczonej przez{" "}
-          {COMPANY_LEGAL.name}. Korzystając z Platformy, akceptujesz poniższe warunki.
+          {t("legal.termsIntro", {
+            defaultValue:
+              "These terms govern use of the StockAI Pro platform ({{website}}) provided by {{company}}. By using the Platform, you accept the conditions below.",
+            website: COMPANY_LEGAL.website,
+            company: COMPANY_LEGAL.name,
+          })}
         </p>
       }
     >

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getUserProfile, updateUserProfile, type UserProfile } from "../services/api";
@@ -51,6 +52,7 @@ function getInitials(name: string, email: string): string {
 }
 
 export function ProfilePage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const userId = user?.id ?? "";
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -107,7 +109,7 @@ export function ProfilePage() {
         timezone,
       });
       setProfile(updated);
-      setStatusMessage("Zmiany zostały zapisane.");
+      setStatusMessage(t("profilePage.saved", { defaultValue: "Your changes were saved." }));
     } catch (error) {
       setErrorMessage(apiErrorMessage(error));
     } finally {
@@ -119,7 +121,7 @@ export function ProfilePage() {
     return (
       <div className="min-h-screen px-4 py-8" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
         <div className="mx-auto max-w-4xl rounded-2xl border p-6 glass-section">
-          Ładowanie profilu...
+          {t("profilePage.loadingProfile", { defaultValue: "Loading profile…" })}
         </div>
       </div>
     );
@@ -130,7 +132,7 @@ export function ProfilePage() {
       <div className="mx-auto max-w-4xl space-y-6">
         <header>
           <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>
-            Mój profil
+            {t("profilePage.title", { defaultValue: "My profile" })}
           </h1>
         </header>
 
@@ -144,7 +146,7 @@ export function ProfilePage() {
               style={{ backgroundColor: colors.brandDark }}
             >
               {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar użytkownika" className="h-full w-full object-cover" />
+                <img src={avatarUrl} alt={t("profilePage.avatarAlt", { defaultValue: "User avatar" })} className="h-full w-full object-cover" />
               ) : (
                 avatarLabel
               )}
@@ -156,7 +158,7 @@ export function ProfilePage() {
                 className="rounded-xl border px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
                 style={{ borderColor: colors.borderStrong, color: colors.textSecondary }}
               >
-                Zmień avatar
+                {t("profilePage.changeAvatar", { defaultValue: "Change avatar" })}
               </button>
             </div>
           </div>
@@ -169,7 +171,7 @@ export function ProfilePage() {
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-1.5">
               <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>
-                Imię i nazwisko
+                {t("profilePage.fullName", { defaultValue: "Full name" })}
               </span>
               <input
                 type="text"
@@ -182,7 +184,7 @@ export function ProfilePage() {
 
             <label className="space-y-1.5">
               <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>
-                Email
+                {t("auth.email")}
               </span>
               <input
                 type="email"
@@ -195,7 +197,7 @@ export function ProfilePage() {
 
             <label className="space-y-1.5">
               <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>
-                Język
+                {t("profilePage.language", { defaultValue: "Language" })}
               </span>
               <select
                 value={language}
@@ -213,7 +215,7 @@ export function ProfilePage() {
 
             <label className="space-y-1.5">
               <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>
-                Strefa czasowa
+                {t("profilePage.timezone", { defaultValue: "Time zone" })}
               </span>
               <select
                 value={timezone}
@@ -238,7 +240,7 @@ export function ProfilePage() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-sm" style={{ color: colors.textSecondary }}>
-                Obecny plan
+                {t("profilePage.currentPlan", { defaultValue: "Current plan" })}
               </p>
               <span
                 className="mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold text-white"
@@ -252,7 +254,7 @@ export function ProfilePage() {
               className="rounded-xl px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
               style={{ backgroundColor: colors.brandMedium }}
             >
-              Upgrade
+              {t("profilePage.upgrade", { defaultValue: "Upgrade" })}
             </Link>
           </div>
         </section>
@@ -268,7 +270,7 @@ export function ProfilePage() {
             className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
             style={{ backgroundColor: colors.brandDark }}
           >
-            {saving ? "Zapisywanie..." : "Zapisz zmiany"}
+            {saving ? t("profilePage.saving", { defaultValue: "Saving…" }) : t("profilePage.saveChanges", { defaultValue: "Save changes" })}
           </button>
 
           <button
@@ -276,7 +278,7 @@ export function ProfilePage() {
             className="text-sm underline transition hover:opacity-80"
             style={{ color: colors.negative }}
           >
-            Usuń konto
+            {t("profilePage.deleteAccount", { defaultValue: "Delete account" })}
           </button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { importCompanyFromSearch, searchCompaniesAutocomplete, type CompanySearchSuggestion } from "../services/api";
 import { GLASS_INPUT } from "./behavioral-coach/glassStyles";
@@ -20,7 +21,7 @@ const DEFAULT_LIMIT = 8;
 const DEBOUNCE_MS = 300;
 
 export function CompanySearchAutocomplete({
-  placeholder = "Szukaj po symbolu lub nazwie...",
+  placeholder,
   initialValue = "",
   limit = DEFAULT_LIMIT,
   navigateOnSelect = true,
@@ -29,6 +30,9 @@ export function CompanySearchAutocomplete({
   onQueryChange,
   onSelectCompany,
 }: CompanySearchAutocompleteProps) {
+  const { t } = useTranslation();
+  const resolvedPlaceholder =
+    placeholder ?? t("companySearch.placeholder", { defaultValue: "Search by symbol or name..." });
   const navigate = useNavigate();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [query, setQuery] = useState(initialValue);
@@ -153,7 +157,7 @@ export function CompanySearchAutocomplete({
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={onKeyDown}
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder}
           className={
             variant === "glass"
               ? `${GLASS_INPUT} shadow-sm ${compact ? "h-10 pl-10 pr-3" : "h-12 pl-12 pr-4"}`
@@ -194,7 +198,7 @@ export function CompanySearchAutocomplete({
             </div>
           ) : itemsToRender.length === 0 ? (
             <p className="px-4 py-3 text-sm" style={{ color: colors.textSecondary }}>
-              Nie znaleziono spółki
+              {t("companySearch.notFound", { defaultValue: "Company not found" })}
             </p>
           ) : (
             <ul className="max-h-80 overflow-auto py-2">

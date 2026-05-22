@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 
 function normalizePlanLabel(plan: string | null): string {
@@ -21,12 +22,15 @@ function resolvePlanLabel(params: URLSearchParams): string {
 const confettiOffsets = [4, 10, 16, 22, 28, 34, 40, 46, 52, 58, 64, 70, 76, 82, 88, 94];
 
 export function PaymentSuccessPage() {
+  const { t } = useTranslation();
   const [params] = useSearchParams();
   const plan = useMemo(() => resolvePlanLabel(params), [params]);
 
   useEffect(() => {
-    document.title = "Płatność zakończona sukcesem | StockAI Pro";
-  }, []);
+    document.title = t("errorPages.seoPaymentSuccessTitle", {
+      defaultValue: "Payment completed | StockAI Pro",
+    });
+  }, [t]);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bgSecondary px-4 py-10">
@@ -48,14 +52,18 @@ export function PaymentSuccessPage() {
         <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-positive/15 text-6xl font-bold text-positive">
           ✓
         </div>
-        <h1 className="mt-6 text-3xl font-bold text-textPrimary">Płatność zakończona sukcesem!</h1>
-        <p className="mt-3 text-base text-textSecondary">Twój plan {plan} jest aktywny</p>
+        <h1 className="mt-6 text-3xl font-bold text-textPrimary">
+          {t("errorPages.paymentSuccessTitle", { defaultValue: "Payment successful!" })}
+        </h1>
+        <p className="mt-3 text-base text-textSecondary">
+          {t("errorPages.paymentSuccessSubtitle", { plan, defaultValue: "Your {{plan}} plan is active." })}
+        </p>
 
         <Link
           to="/dashboard"
           className="mt-8 inline-flex w-full justify-center rounded-xl bg-brandDark px-5 py-3 text-sm font-semibold text-white transition hover:brightness-110"
         >
-          Przejdź do aplikacji
+          {t("errorPages.goToApp", { defaultValue: "Go to app" })}
         </Link>
       </section>
     </div>

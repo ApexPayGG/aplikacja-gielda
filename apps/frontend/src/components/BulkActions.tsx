@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { colors } from "../styles/designSystem";
 
 type BulkActionsProps = {
@@ -45,6 +46,7 @@ export function BulkActions({
   onExportSelected,
   onClearSelection,
 }: BulkActionsProps) {
+  const { t } = useTranslation();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const hasRows = totalCount > 0;
 
@@ -65,7 +67,7 @@ export function BulkActions({
             className="h-4 w-4 rounded border"
             style={{ borderColor: colors.borderStrong, accentColor: colors.brandDark }}
           />
-          Zaznacz wszystkie
+          {t("bulkActions.selectAll", { defaultValue: "Select all" })}
           <span className="text-xs" style={{ color: colors.textMuted }}>
             ({selectedCount}/{totalCount})
           </span>
@@ -81,7 +83,7 @@ export function BulkActions({
             className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
             style={{ backgroundColor: colors.negative }}
           >
-            Zamknij zaznaczone ({selectedCount})
+            {t("bulkActions.closeSelected", { count: selectedCount, defaultValue: "Close selected ({{count}})" })}
           </button>
           <button
             type="button"
@@ -89,7 +91,7 @@ export function BulkActions({
             className="rounded-lg border px-3 py-1.5 text-xs font-semibold transition hover:brightness-95"
             style={{ borderColor: colors.brandDark, color: colors.brandDark }}
           >
-            Eksportuj zaznaczone
+            {t("bulkActions.exportSelected", { defaultValue: "Export selected" })}
           </button>
           <button
             type="button"
@@ -97,7 +99,7 @@ export function BulkActions({
             className="px-2 py-1 text-xs font-semibold transition hover:opacity-85"
             style={{ color: colors.textMuted }}
           >
-            Odznacz
+            {t("bulkActions.clearSelection", { defaultValue: "Clear selection" })}
           </button>
         </div>
       ) : null}
@@ -109,10 +111,13 @@ export function BulkActions({
             style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
           >
             <h3 className="text-base font-semibold" style={{ color: colors.brandDark }}>
-              Potwierdź zamknięcie pozycji
+              {t("bulkActions.confirmTitle", { defaultValue: "Confirm close positions" })}
             </h3>
             <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
-              Czy na pewno chcesz zamknąć zaznaczone pozycje ({selectedCount})?
+              {t("bulkActions.confirmBody", {
+                count: selectedCount,
+                defaultValue: "Are you sure you want to close the selected positions ({{count}})?",
+              })}
             </p>
             <div className="mt-5 flex justify-end gap-2">
               <button
@@ -121,7 +126,7 @@ export function BulkActions({
                 className="rounded-lg border px-3 py-1.5 text-sm font-semibold"
                 style={{ borderColor: colors.borderStrong, color: colors.textSecondary }}
               >
-                Anuluj
+                {t("common.cancel", { defaultValue: "Cancel" })}
               </button>
               <button
                 type="button"
@@ -129,7 +134,7 @@ export function BulkActions({
                 className="rounded-lg px-3 py-1.5 text-sm font-semibold text-white"
                 style={{ backgroundColor: colors.negative }}
               >
-                Zamknij
+                {t("bulkActions.confirmClose", { defaultValue: "Close" })}
               </button>
             </div>
           </div>

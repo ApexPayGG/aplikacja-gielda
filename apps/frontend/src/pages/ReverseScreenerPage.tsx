@@ -22,7 +22,7 @@ export function ReverseScreenerPage() {
   async function onFind() {
     const normalizedSymbol = symbol.trim().toUpperCase();
     if (!normalizedSymbol) {
-      setError("Podaj ticker, aby rozpocząć wyszukiwanie.");
+      setError(t("reverseScreenerPage.errorTickerRequired", { defaultValue: "Enter a ticker to start the search." }));
       return;
     }
 
@@ -39,16 +39,23 @@ export function ReverseScreenerPage() {
     }
   }
 
+  const displaySymbol = symbol.trim().toUpperCase() || "ticker";
+
   return (
     <div className="min-h-screen px-4 py-10" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
       <div className="mx-auto max-w-5xl">
         <header className="mb-8 space-y-2">
           <h1 className="text-4xl font-bold tracking-tight">Reverse Screener</h1>
           <p className="text-sm md:text-base" style={{ color: colors.textSecondary }}>
-            Historyczne setupy podobne do dzisiejszego układu świec i wolumenu.
+            {t("reverseScreenerPage.introSimilarSetups", {
+              defaultValue: "Historical setups similar to today's candle shape and volume.",
+            })}
           </p>
           <p className="text-sm font-medium" style={{ color: colors.brandMedium }}>
-            Które spółki historycznie wyglądały tak samo jak {symbol.trim().toUpperCase() || "ticker"} dziś?
+            {t("reverseScreenerPage.promptWhichLookedSame", {
+              symbol: displaySymbol,
+              defaultValue: "Which stocks historically looked the same as {{symbol}} today?",
+            })}
           </p>
         </header>
 
@@ -61,7 +68,7 @@ export function ReverseScreenerPage() {
               id="rs-symbol"
               className="h-11 flex-1 rounded-xl border px-4 text-base outline-none transition-colors"
               style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
-              placeholder="np. AAPL"
+              placeholder={t("reverseScreenerPage.tickerPlaceholder", { defaultValue: "e.g. AAPL" })}
               value={symbol}
               onChange={(e) => setSymbol(e.target.value)}
               autoCapitalize="characters"
@@ -73,7 +80,7 @@ export function ReverseScreenerPage() {
               disabled={loading}
               onClick={() => void onFind()}
             >
-              {loading ? t("common.loading") : "Szukaj podobnych"}
+              {loading ? t("common.loading") : t("reverseScreenerPage.findSimilar", { defaultValue: "Find similar" })}
             </button>
           </div>
         </section>
@@ -87,15 +94,18 @@ export function ReverseScreenerPage() {
         {result ? (
           <section className="mt-8 space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Wyniki</h2>
+              <h2 className="text-lg font-semibold">
+                {t("reverseScreenerPage.resultsHeading", { defaultValue: "Results" })}
+              </h2>
               <span className="text-sm" style={{ color: colors.textSecondary }}>
-                Średni wynik: <strong style={{ color: colors.brandDark }}>{formatPct(result.avgOutcome)}</strong>
+                {t("reverseScreenerPage.avgOutcomeLabel", { defaultValue: "Average outcome:" })}{" "}
+                <strong style={{ color: colors.brandDark }}>{formatPct(result.avgOutcome)}</strong>
               </span>
             </div>
 
             {result.matches.length === 0 ? (
               <p className="rounded-xl glass-section px-4 py-3 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
-                Brak dopasowań dla podanego tickera.
+                {t("reverseScreenerPage.emptyMatches", { defaultValue: "No matches for this ticker." })}
               </p>
             ) : (
               <ul className="space-y-3">
@@ -116,7 +126,7 @@ export function ReverseScreenerPage() {
                       </div>
                       <div>
                         <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-                          Data
+                          Date
                         </p>
                         <p className="font-medium">{match.date}</p>
                       </div>
@@ -130,7 +140,9 @@ export function ReverseScreenerPage() {
                       </div>
                       <div>
                         <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-                          Co się wydarzyło potem
+                          {t("reverseScreenerPage.followUpHeading", {
+                            defaultValue: "What happened next",
+                          })}
                         </p>
                         <p className="font-medium" style={{ color: colors.textSecondary }}>
                           {formatFollowUp(match.outcome5d, match.outcome10d)}

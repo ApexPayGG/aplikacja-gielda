@@ -1,4 +1,6 @@
 import type { CSSProperties } from "react";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { colors } from "../styles/designSystem";
 
@@ -21,22 +23,55 @@ type EndpointDoc = {
 
 type EndpointSection = {
   id: string;
-  title: string;
-  description: string;
-  endpoint: EndpointDoc;
+  titleKey: string;
+  titleDefault: string;
+  descriptionTranslationKey:
+    | "apiDocsPage.quotes.sectionDesc"
+    | "apiDocsPage.signals.sectionDesc"
+    | "apiDocsPage.companies.sectionDesc"
+    | "apiDocsPage.dividend.sectionDesc"
+    | "apiDocsPage.portfolio.sectionDesc";
+  endpoint: EndpointDoc & {
+    descriptionTranslationKey:
+      | "apiDocsPage.quotes.endpointDesc"
+      | "apiDocsPage.signals.endpointDesc"
+      | "apiDocsPage.companies.endpointDesc"
+      | "apiDocsPage.dividend.endpointDesc"
+      | "apiDocsPage.portfolio.endpointDesc";
+    paramTranslationKeys?: Record<string, string>;
+  };
 };
 
-const endpointSections: EndpointSection[] = [
+type EndpointSectionTemplate = Omit<EndpointSection, "endpoint"> & {
+  endpoint: Omit<
+    EndpointSection["endpoint"],
+    "description" | "params"
+  > & {
+    params: Array<
+      Omit<EndpointParam, "description"> & {
+        translationKey: string;
+      }
+    >;
+  };
+};
+
+const endpointSectionsTemplate: EndpointSectionTemplate[] = [
   {
     id: "quotes",
-    title: "Quotes",
-    description: "Pobieraj najnowsze notowania i podstawowe dane cenowe.",
+    titleKey: "apiDocsPage.navQuotes",
+    titleDefault: "Quotes",
+    descriptionTranslationKey: "apiDocsPage.quotes.sectionDesc",
     endpoint: {
       method: "GET",
       path: "/api/quotes/latest?ticker={symbol}",
-      description: "Zwraca najnowszy dostępny quote dla wskazanego symbolu.",
+      descriptionTranslationKey: "apiDocsPage.quotes.endpointDesc",
       params: [
-        { name: "ticker", type: "string", required: "yes", description: "Ticker instrumentu, np. AAPL." },
+        {
+          name: "ticker",
+          type: "string",
+          required: "yes",
+          translationKey: "apiDocsPage.quotes.tickerParam",
+        },
       ],
       responseExample: `{
   "ticker": "AAPL",
@@ -48,14 +83,20 @@ const endpointSections: EndpointSection[] = [
   },
   {
     id: "signals",
-    title: "Signals",
-    description: "Przeglądaj sygnały inwestycyjne generowane przez StockAI Pro.",
+    titleKey: "apiDocsPage.navSignals",
+    titleDefault: "Signals",
+    descriptionTranslationKey: "apiDocsPage.signals.sectionDesc",
     endpoint: {
       method: "GET",
       path: "/api/signals?limit=20",
-      description: "Pobiera listę ostatnich sygnałów, domyślnie z limitem.",
+      descriptionTranslationKey: "apiDocsPage.signals.endpointDesc",
       params: [
-        { name: "limit", type: "number", required: "no", description: "Liczba rekordów do pobrania (max 100)." },
+        {
+          name: "limit",
+          type: "number",
+          required: "no",
+          translationKey: "apiDocsPage.signals.limitParam",
+        },
       ],
       responseExample: `{
   "items": [
@@ -67,13 +108,21 @@ const endpointSections: EndpointSection[] = [
   },
   {
     id: "companies",
-    title: "Companies",
-    description: "Wyszukuj spółki po nazwie, tickerze lub słowie kluczowym.",
+    titleKey: "apiDocsPage.navCompanies",
+    titleDefault: "Companies",
+    descriptionTranslationKey: "apiDocsPage.companies.sectionDesc",
     endpoint: {
       method: "GET",
       path: "/api/companies/search?q={query}",
-      description: "Zwraca listę spółek dopasowanych do zapytania.",
-      params: [{ name: "q", type: "string", required: "yes", description: "Fraza wyszukiwania." }],
+      descriptionTranslationKey: "apiDocsPage.companies.endpointDesc",
+      params: [
+        {
+          name: "q",
+          type: "string",
+          required: "yes",
+          translationKey: "apiDocsPage.companies.qParam",
+        },
+      ],
       responseExample: `{
   "items": [
     { "ticker": "TSLA", "name": "Tesla, Inc.", "exchange": "NASDAQ" },
@@ -84,15 +133,26 @@ const endpointSections: EndpointSection[] = [
   },
   {
     id: "dividend",
-    title: "Dividend",
-    description: "Analizuj spółki dywidendowe i filtrowanie screenera.",
+    titleKey: "apiDocsPage.navDividend",
+    titleDefault: "Dividend",
+    descriptionTranslationKey: "apiDocsPage.dividend.sectionDesc",
     endpoint: {
       method: "GET",
       path: "/api/dividend/screener",
-      description: "Pobiera wyniki domyślnego screenera dywidendowego.",
+      descriptionTranslationKey: "apiDocsPage.dividend.endpointDesc",
       params: [
-        { name: "sector", type: "string", required: "no", description: "Opcjonalny filtr sektora." },
-        { name: "minYield", type: "number", required: "no", description: "Minimalna stopa dywidendy." },
+        {
+          name: "sector",
+          type: "string",
+          required: "no",
+          translationKey: "apiDocsPage.dividend.sectorParam",
+        },
+        {
+          name: "minYield",
+          type: "number",
+          required: "no",
+          translationKey: "apiDocsPage.dividend.minYieldParam",
+        },
       ],
       responseExample: `{
   "items": [
@@ -104,13 +164,21 @@ const endpointSections: EndpointSection[] = [
   },
   {
     id: "portfolio",
-    title: "Portfolio",
-    description: "Pobieraj portfel paper trading dla konkretnego użytkownika.",
+    titleKey: "apiDocsPage.navPortfolio",
+    titleDefault: "Portfolio",
+    descriptionTranslationKey: "apiDocsPage.portfolio.sectionDesc",
     endpoint: {
       method: "GET",
       path: "/api/paper/portfolio/:userId",
-      description: "Zwraca aktualny stan portfela paper trading.",
-      params: [{ name: "userId", type: "string", required: "yes", description: "Id użytkownika w ścieżce URL." }],
+      descriptionTranslationKey: "apiDocsPage.portfolio.endpointDesc",
+      params: [
+        {
+          name: "userId",
+          type: "string",
+          required: "yes",
+          translationKey: "apiDocsPage.portfolio.userIdParam",
+        },
+      ],
       responseExample: `{
   "userId": "usr_1234",
   "cash": 14500.21,
@@ -124,15 +192,6 @@ const endpointSections: EndpointSection[] = [
   },
 ];
 
-const sidebarItems = [
-  { id: "authentication", label: "Authentication" },
-  { id: "quotes", label: "Quotes" },
-  { id: "signals", label: "Signals" },
-  { id: "companies", label: "Companies" },
-  { id: "dividend", label: "Dividend" },
-  { id: "portfolio", label: "Portfolio" },
-];
-
 function methodBadgeStyle(method: HttpMethod): CSSProperties {
   if (method === "POST") {
     return { backgroundColor: `${colors.positive}1A`, color: colors.positive, borderColor: `${colors.positive}66` };
@@ -144,11 +203,49 @@ function methodBadgeStyle(method: HttpMethod): CSSProperties {
 }
 
 export function ApiDocsPage() {
+  const { t } = useTranslation();
+
+  const sidebarItems = useMemo(
+    () => [
+      {
+        id: "authentication",
+        label: t("apiDocsPage.authentication.title", { defaultValue: "Authentication" }),
+      },
+      ...endpointSectionsTemplate.map((section) => ({
+        id: section.id,
+        label: t(section.titleKey, { defaultValue: section.titleDefault }),
+      })),
+    ],
+    [t],
+  );
+
+  const endpointSections = useMemo(
+    () =>
+      endpointSectionsTemplate.map((section) => ({
+        ...section,
+        title: t(section.titleKey, { defaultValue: section.titleDefault }),
+        description: t(section.descriptionTranslationKey),
+        endpoint: {
+          ...section.endpoint,
+          description: t(section.endpoint.descriptionTranslationKey),
+          params: section.endpoint.params.map((param) => ({
+            name: param.name,
+            type: param.type,
+            required: param.required,
+            description: t(param.translationKey),
+          })),
+        },
+      })),
+    [t],
+  );
+
   return (
     <div className="min-h-screen bg-bgSecondary px-4 py-10 text-white sm:px-6">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[220px_1fr]">
         <aside className="hidden h-fit glass-section rounded-2xl p-4 shadow-sm lg:sticky lg:top-24 lg:block">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/50">Sections</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/50">
+            {t("apiDocsPage.sectionsLabel", { defaultValue: "Sections" })}
+          </p>
           <nav className="space-y-1">
             {sidebarItems.map((item) => (
               <a
@@ -167,28 +264,30 @@ export function ApiDocsPage() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h1 className="text-3xl font-bold text-white">API Documentation</h1>
-                <p className="mt-2 glass-muted text-sm">Dostęp do danych StockAI Pro przez REST API</p>
+                <p className="mt-2 glass-muted text-sm">{t("apiDocsPage.heroSubtitle")}</p>
               </div>
               <span
                 className="inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
                 style={{ backgroundColor: colors.brandDark, borderColor: colors.brandDark }}
               >
-                Pro+ only
+                {t("apiDocsPage.proPlusBadge", { defaultValue: "Pro+ only" })}
               </span>
             </div>
-            <p className="mt-4 rounded-lg border border-brandGold/50 bg-brandGold/10 px-3 py-2 text-sm text-white">
-              Pro+ required for real access. Endpointy są pokazane publicznie wyłącznie w celach dokumentacyjnych.
-            </p>
+            <p className="mt-4 rounded-lg border border-brandGold/50 bg-brandGold/10 px-3 py-2 text-sm text-white">{t("apiDocsPage.proPlusNote")}</p>
           </header>
 
           <section id="authentication" className="glass-section rounded-2xl p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-white">Authentication</h2>
-            <p className="mt-2 glass-muted text-sm">Użyj API key z ustawień konta</p>
+            <h2 className="text-xl font-semibold text-white">{t("apiDocsPage.authentication.title", { defaultValue: "Authentication" })}</h2>
+            <p className="mt-2 glass-muted text-sm">{t("apiDocsPage.authHint")}</p>
             <pre className="mt-4 overflow-x-auto rounded-xl glass-panel border border-white/10 bg-white/5 p-4 text-sm text-white">
               <code>{`curl -H "Authorization: Bearer {api_key}" https://stock-ai.pro/api/...`}</code>
             </pre>
             <div className="mt-4 glass-muted text-sm">
-              Klucz API znajdziesz w <Link to="/settings" className="font-semibold text-white hover:text-brandMedium">Settings</Link>.
+              {t("apiDocsPage.authKeyLead")}{" "}
+              <Link to="/settings" className="font-semibold text-white hover:text-brandMedium">
+                {t("apiDocsPage.settingsLinkLabel")}
+              </Link>
+              .
             </div>
           </section>
 
@@ -213,10 +312,10 @@ export function ApiDocsPage() {
                   <table className="min-w-full text-left text-sm">
                     <thead className="bg-bgSecondary glass-muted">
                       <tr>
-                        <th className="px-3 py-2 font-semibold">Parametr</th>
-                        <th className="px-3 py-2 font-semibold">Typ</th>
-                        <th className="px-3 py-2 font-semibold">Wymagany</th>
-                        <th className="px-3 py-2 font-semibold">Opis</th>
+                        <th className="px-3 py-2 font-semibold">{t("apiDocsPage.paramTableName")}</th>
+                        <th className="px-3 py-2 font-semibold">{t("apiDocsPage.paramTableType")}</th>
+                        <th className="px-3 py-2 font-semibold">{t("apiDocsPage.paramTableRequired")}</th>
+                        <th className="px-3 py-2 font-semibold">{t("apiDocsPage.paramTableDesc")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -224,7 +323,11 @@ export function ApiDocsPage() {
                         <tr key={param.name} className="border-t border-white/10">
                           <td className="px-3 py-2 font-mono text-xs text-white">{param.name}</td>
                           <td className="px-3 py-2 glass-muted">{param.type}</td>
-                          <td className="px-3 py-2 glass-muted">{param.required}</td>
+                          <td className="px-3 py-2 glass-muted">
+                            {param.required === "yes"
+                              ? t("apiDocsPage.requiredYes", { defaultValue: "yes" })
+                              : t("apiDocsPage.requiredNo", { defaultValue: "no" })}
+                          </td>
                           <td className="px-3 py-2 glass-muted">{param.description}</td>
                         </tr>
                       ))}

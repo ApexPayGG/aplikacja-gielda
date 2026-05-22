@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ComponentProps, type ComponentType } from "react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import {
   AcademicCapIcon,
   BellAlertIcon,
@@ -20,18 +22,18 @@ import { colors } from "../styles/designSystem";
 type IconProps = ComponentProps<"svg">;
 type NotificationIcon = ComponentType<IconProps>;
 
-function formatRelativeTime(value: string): string {
+function formatRelativeTime(value: string, t: TFunction): string {
   const nowMs = Date.now();
   const createdAtMs = new Date(value).getTime();
   if (!Number.isFinite(createdAtMs)) return "";
   const diffSec = Math.max(0, Math.floor((nowMs - createdAtMs) / 1000));
-  if (diffSec < 60) return "przed chwilą";
+  if (diffSec < 60) return t("notifications.justNow", { defaultValue: "just now" });
   const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin} min temu`;
+  if (diffMin < 60) return t("notifications.minutesAgo", { defaultValue: "{{count}} min ago", count: diffMin });
   const diffHours = Math.floor(diffMin / 60);
-  if (diffHours < 24) return `${diffHours} godz temu`;
+  if (diffHours < 24) return t("notifications.hoursAgo", { defaultValue: "{{count}} h ago", count: diffHours });
   const diffDays = Math.floor(diffHours / 24);
-  return `${diffDays} d temu`;
+  return t("notifications.daysAgo", { defaultValue: "{{count}} d ago", count: diffDays });
 }
 
 function typeColor(type: NotificationType): string {
@@ -49,6 +51,7 @@ function typeIcon(type: NotificationType): NotificationIcon {
 }
 
 export function NotificationsCenter() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -154,7 +157,7 @@ export function NotificationsCenter() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border transition hover:border-brandDark/35"
-        aria-label="Powiadomienia"
+        aria-label={t("notifications.aria", { defaultValue: "Notifications" })}
         aria-expanded={open}
       >
         <BellIcon className="h-5 w-5" style={{ color: colors.brandDark }} aria-hidden />
@@ -172,7 +175,7 @@ export function NotificationsCenter() {
         <div className="absolute right-0 top-full z-50 mt-2 w-[24rem] max-w-[90vw] rounded-xl border border-border bg-white shadow-lg">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <h3 className="text-sm font-semibold" style={{ color: colors.brandDark }}>
-              Powiadomienia
+              {t("notifications.title", { defaultValue: "Notifications" })}
             </h3>
             <button
               type="button"
@@ -181,14 +184,14 @@ export function NotificationsCenter() {
               className="text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
               style={{ color: colors.brandMedium }}
             >
-              Oznacz wszystkie jako przeczytane
+              {t("notifications.markAllRead", { defaultValue: "Mark all as read" })}
             </button>
           </div>
 
           <div className="max-h-96 overflow-y-auto">
             {items.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm" style={{ color: colors.textMuted }}>
-                Brak powiadomień
+                {t("notifications.empty", { defaultValue: "No notifications" })}
               </div>
             ) : (
               items.map((notification) => {
@@ -218,7 +221,7 @@ export function NotificationsCenter() {
                           {notification.message}
                         </p>
                         <p className="mt-1 text-[11px]" style={{ color: colors.textMuted }}>
-                          {formatRelativeTime(notification.createdAt)}
+                          {formatRelativeTime(notification.createdAt, t)}
                         </p>
                       </div>
                     </div>

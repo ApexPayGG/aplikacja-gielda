@@ -162,19 +162,19 @@ const mockExitSignals: Record<string, ExitSignal> = {
     tradeId: "pt-open-1",
     ticker: "AAPL",
     action: "HOLD",
-    reason: "Pozycja rozwija się zgodnie z oczekiwaniami.",
+    reason: "Position is developing as expected.",
     urgency: "LOW",
     currentPnlPct: 1.2,
-    aiAdvice: "Trzymaj pozycję i obserwuj wolumen.",
+    aiAdvice: "Hold the position and watch volume.",
   },
   "pt-open-2": {
     tradeId: "pt-open-2",
     ticker: "MSFT",
     action: "TIGHTEN_SL",
-    reason: "Zabezpiecz zysk na podwyższonej zmienności.",
+    reason: "Protect gains amid elevated volatility.",
     urgency: "HIGH",
     currentPnlPct: 2.8,
-    aiAdvice: "Podnieś stop i pilnuj słabości rynku.",
+    aiAdvice: "Tighten the stop and watch for market weakness.",
   },
 };
 
@@ -236,7 +236,8 @@ function emotionLabel(t: (key: string) => string, emotion: ReflectionEmotion): s
 }
 
 export function PaperTradingPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.toLowerCase().startsWith("pl") ? "pl-PL" : "en-US";
   const { user } = useAuth();
   const USER_ID = user?.id ?? "";
   const [form, setForm] = useState<OpenTradeForm>({
@@ -397,17 +398,17 @@ export function PaperTradingPage() {
               tradeId: trade.id,
               ticker: trade.ticker,
               action: "HOLD",
-              reason: "Brak sygnału wyjścia.",
+              reason: t("paperTrading.exitNoSignal", { defaultValue: "No exit signal." }),
               urgency: "LOW",
               currentPnlPct: 0,
-              aiAdvice: "Monitoruj pozycję.",
+              aiAdvice: t("paperTrading.exitMonitor", { defaultValue: "Monitor the position." }),
             } as ExitSignal);
         }
       }),
     );
     setExitSignals(nextExitSignals);
     setUsingMock(portfolioFallback || historyFallback);
-  }, [loadReceipts]);
+  }, [USER_ID, loadReceipts, t]);
 
   useEffect(() => {
     void loadData();
@@ -520,8 +521,15 @@ export function PaperTradingPage() {
     anchor.click();
     anchor.remove();
     URL.revokeObjectURL(url);
-    pushToast("success", "Eksport gotowy", `Wyeksportowano ${selectedOpenTrades.length} pozycji.`);
-  }, [pushToast, selectedOpenTrades]);
+    pushToast(
+      "success",
+      t("paperTrading.toast.exportReady", { defaultValue: "Export ready" }),
+      t("paperTrading.toast.exportedCount", {
+        defaultValue: "Exported {{count}} positions.",
+        count: selectedOpenTrades.length,
+      }),
+    );
+  }, [pushToast, selectedOpenTrades, t]);
 
   const onPrintReport = useCallback(() => {
     const tradesForPrint = [
@@ -557,8 +565,18 @@ export function PaperTradingPage() {
       "Open positions": positionRows.length,
       "Closed positions": history.length,
     };
-    printPortfolioReport(tradesForPrint, stats);
-  }, [history, portfolioBalance, positionRows, realizedPnl, totalUnrealized, winRate]);
+    printPortfolioReport(tradesForPrint, stats, {
+      locale: i18n.language,
+      labels: {
+        title: t("paperTrading.printReportTitle", { defaultValue: "StockAI Pro — Portfolio report" }),
+        generatedAt: t("paperTrading.printReportGenerated", { defaultValue: "Generated" }),
+        tradesHeading: t("paperTrading.printReportTrades", { defaultValue: "Trades" }),
+        summaryHeading: t("paperTrading.printReportSummary", { defaultValue: "Summary" }),
+        colDirection: t("paperTrading.direction", { defaultValue: "Direction" }),
+        colQuantity: t("paperTrading.quantity", { defaultValue: "Quantity" }),
+      },
+    });
+  }, [history, i18n.language, portfolioBalance, positionRows, realizedPnl, t, totalUnrealized, winRate]);
 
   const openTradeNow = async (
     payload: { ticker: string; entryPrice: number; quantity: number; direction: Direction },
@@ -568,8 +586,12 @@ export function PaperTradingPage() {
     const entryPrice = payload.entryPrice;
     const quantity = payload.quantity;
     if (!ticker || !Number.isFinite(entryPrice) || entryPrice <= 0 || !Number.isFinite(quantity) || quantity <= 0) {
-      setError("Uzupełnij poprawnie: ticker, entry price i quantity > 0.");
-      pushToast("error", "Nieprawidłowe dane wejściowe", "Sprawdź ticker, cenę wejścia i ilość.");
+      setError(t("paperTrading.error.openFields", { defaultValue: "Enter a valid ticker, entry price, and quantity > 0." }));
+      pushToast(
+        "error",
+        t("paperTrading.toast.invalidInput", { defaultValue: "Invalid input" }),
+        t("paperTrading.toast.checkTickerQty", { defaultValue: "Check ticker, entry price, and quantity." }),
+      );
       return;
     }
     setSubmittingOpen(true);
@@ -609,7 +631,11 @@ export function PaperTradingPage() {
       setForm((prev) => ({ ...prev, ticker: "", entryPrice: "", stopLoss: "", takeProfit: "" }));
       setOpenTradePanelVisible(false);
       await loadData();
-      pushToast("success", "Pozycja otwarta", `${ticker} • ${payload.direction} • ${quantity}`);
+      pushToast(
+        "success",
+        t("paperTrading.toast.positionOpened", { defaultValue: "Position opened" }),
+        `${ticker} • ${payload.direction} • ${quantity}`,
+      );
     } catch (e) {
       if (isFallbackError(e)) {
         const fallbackTrade: PaperTrade = {
@@ -628,11 +654,19 @@ export function PaperTradingPage() {
         }));
         setPositionRows((prev) => [{ ...fallbackTrade, currentPrice: entryPrice, pnl: 0, pnlPct: 0 }, ...prev]);
         setUsingMock(true);
-        pushToast("info", "Pozycja zapisana lokalnie", `${ticker} dodany w trybie mock.`);
+        pushToast(
+          "info",
+          t("paperTrading.toast.savedLocally", { defaultValue: "Position saved locally" }),
+          t("paperTrading.toast.mockAdded", { defaultValue: "{{ticker}} added in mock mode.", ticker }),
+        );
       } else {
         const nextError = apiErrorMessage(e);
         setError(nextError);
-        pushToast("error", "Nie udało się otworzyć pozycji", nextError);
+        pushToast(
+          "error",
+          t("paperTrading.toast.openFailed", { defaultValue: "Could not open position" }),
+          nextError,
+        );
       }
     } finally {
       setSubmittingOpen(false);
@@ -655,8 +689,16 @@ export function PaperTradingPage() {
       !Number.isFinite(stopLoss) ||
       !Number.isFinite(takeProfit)
     ) {
-      setError("Uzupełnij poprawnie: ticker, entry/stop/take price i quantity > 0.");
-      pushToast("error", "Nieprawidłowe dane wejściowe", "Wprowadź także stop loss i take profit.");
+      setError(
+        t("paperTrading.error.openWithStops", {
+          defaultValue: "Enter a valid ticker, entry/stop/take price, and quantity > 0.",
+        }),
+      );
+      pushToast(
+        "error",
+        t("paperTrading.toast.invalidInput", { defaultValue: "Invalid input" }),
+        t("paperTrading.toast.includeStops", { defaultValue: "Also enter stop loss and take profit." }),
+      );
       return;
     }
 
@@ -684,7 +726,7 @@ export function PaperTradingPage() {
       !Number.isFinite(quantity) ||
       quantity <= 0
     ) {
-      setError("Uzupełnij poprawnie dane Pre-Mortem.");
+      setError(t("paperTrading.error.premortemFields", { defaultValue: "Fill in Pre-Mortem fields correctly." }));
       return;
     }
 
@@ -755,7 +797,7 @@ export function PaperTradingPage() {
       });
       const exitPrice = Number(quoteRes.data.quote?.price);
       if (!Number.isFinite(exitPrice) || exitPrice <= 0) {
-        throw new Error("Nie udało się pobrać aktualnej ceny.");
+        throw new Error(t("paperTrading.error.priceFetch", { defaultValue: "Could not fetch current price." }));
       }
       const { data: closed } = await api.post<PaperTrade>("/paper/trade/close", { tradeId: trade.id, exitPrice });
       if (closed.pnl != null && closed.pnl < 0 && closed.id) {
@@ -793,7 +835,11 @@ export function PaperTradingPage() {
         }
       }
       await loadData();
-      pushToast("success", "Pozycja zamknięta", `${trade.ticker} @ ${formatCurrency(exitPrice, "USD")}`);
+      pushToast(
+        "success",
+        t("paperTrading.toast.positionClosed", { defaultValue: "Position closed" }),
+        `${trade.ticker} @ ${formatCurrency(exitPrice, "USD")}`,
+      );
     } catch (e) {
       if (isFallbackError(e)) {
         const exitPrice = trade.currentPrice;
@@ -813,11 +859,19 @@ export function PaperTradingPage() {
         }));
         setHistory((prev) => [closedTrade, ...prev].slice(0, 10));
         setUsingMock(true);
-        pushToast("info", "Zamknięto w trybie mock", `${trade.ticker} • ${formatPercent(pnlPct)}`);
+        pushToast(
+          "info",
+          t("paperTrading.toast.closedMock", { defaultValue: "Closed in mock mode" }),
+          `${trade.ticker} • ${formatPercent(pnlPct)}`,
+        );
       } else {
         const nextError = apiErrorMessage(e);
         setError(nextError);
-        pushToast("error", "Nie udało się zamknąć pozycji", nextError);
+        pushToast(
+          "error",
+          t("paperTrading.toast.closeFailed", { defaultValue: "Could not close position" }),
+          nextError,
+        );
       }
     } finally {
       setClosingTradeId(null);
@@ -1146,7 +1200,7 @@ export function PaperTradingPage() {
                           >
                             {formatPercent(row.pnlPct)}
                           </td>
-                          <td className="px-3 py-2 text-xs" style={{ color: colors.textSecondary }} title={formatDate(row.entryAt, "pl-PL")}>
+                          <td className="px-3 py-2 text-xs" style={{ color: colors.textSecondary }} title={formatDate(row.entryAt, dateLocale)}>
                             {durationText(row.entryAt, new Date(nowMs).toISOString())}
                           </td>
                           <td className="px-3 py-2">

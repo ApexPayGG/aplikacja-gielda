@@ -1,6 +1,7 @@
 import type { ErrorInfo, ReactNode } from "react";
 import React from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
+import i18n from "../i18n";
 import { colors } from "../styles/designSystem";
 
 type ErrorBoundaryProps = {
@@ -60,10 +61,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           </div>
 
           <h1 className="mt-6 text-center text-3xl font-bold" style={{ color: colors.textPrimary }}>
-            Coś poszło nie tak
+            {i18n.t("errorBoundary.title", { defaultValue: "Something went wrong" })}
           </h1>
           <p className="mt-3 text-center text-sm leading-6" style={{ color: colors.textSecondary }}>
-            Wystąpił nieoczekiwany błąd. Spróbuj odświeżyć stronę albo wróć do strony głównej.
+            {i18n.t("errorBoundary.message", {
+              defaultValue: "An unexpected error occurred. Try refreshing the page or return to the home page.",
+            })}
           </p>
 
           {isDevMode && this.state.error ? (
@@ -87,7 +90,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
               style={{ backgroundColor: colors.brandDark }}
             >
-              Odśwież stronę
+              {i18n.t("errorBoundary.refresh", { defaultValue: "Refresh page" })}
             </button>
             <button
               type="button"
@@ -99,7 +102,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 backgroundColor: colors.bgPrimary,
               }}
             >
-              Wróć do strony głównej
+              {i18n.t("errorBoundary.backHome", { defaultValue: "Back to home" })}
             </button>
           </div>
         </div>

@@ -7,9 +7,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { useEffect, useId, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { Company } from "../services/api";
 import { InvestmentDisclaimer } from "./InvestmentDisclaimer";
-import { buildAIBriefInsight } from "../utils/aiBriefContent";
+import { buildAIBriefInsight, sentimentLabelText } from "../utils/aiBriefContent";
 import { CompanyLogo } from "./CompanyLogo";
 
 type Props = {
@@ -18,7 +19,17 @@ type Props = {
   onClose: () => void;
 };
 
-function SentimentGauge({ score, label }: { score: number; label: string }) {
+function SentimentGauge({
+  score,
+  label,
+  bearishLabel,
+  bullishLabel,
+}: {
+  score: number;
+  label: string;
+  bearishLabel: string;
+  bullishLabel: string;
+}) {
   const clamped = Math.max(0, Math.min(100, score));
 
   return (
@@ -38,13 +49,13 @@ function SentimentGauge({ score, label }: { score: number; label: string }) {
       <div className="flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
         <span className="flex items-center gap-1 text-red-300/90">
           <ArrowTrendingDownIcon className="h-3.5 w-3.5" aria-hidden />
-          Niedźwiedzi
+          {bearishLabel}
         </span>
         <span className="rounded-full border border-[#22d3ee]/30 bg-[#22d3ee]/10 px-2.5 py-0.5 font-semibold text-[#22d3ee]">
           {label} · {clamped}%
         </span>
         <span className="flex items-center gap-1 text-[#22d3ee]">
-          Byczy
+          {bullishLabel}
           <ArrowTrendingUpIcon className="h-3.5 w-3.5" aria-hidden />
         </span>
       </div>
@@ -53,14 +64,15 @@ function SentimentGauge({ score, label }: { score: number; label: string }) {
 }
 
 export function AIBriefDrawer({ company, open, onClose }: Props) {
+  const { t } = useTranslation();
   const panelId = useId();
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   const insight = useMemo(() => {
     if (!company) return null;
-    return buildAIBriefInsight(company.symbol, company.sector);
-  }, [company]);
+    return buildAIBriefInsight(company.symbol, company.sector, t);
+  }, [company, t]);
 
   const premiumHref = company ? `/company/${encodeURIComponent(company.symbol)}/premium` : "/pricing";
 
@@ -94,7 +106,7 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
       <button
         type="button"
         className="absolute inset-0 bg-[#0a0b14]/55 backdrop-blur-sm transition-opacity"
-        aria-label="Zamknij panel AI Brief"
+        aria-label={t("aiBriefDrawer.closeOverlay", { defaultValue: "Close AI Brief panel" })}
         onClick={onClose}
       />
 
@@ -131,7 +143,7 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
               type="button"
               onClick={onClose}
               className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#1e1b4b]/10 text-white/80 backdrop-blur-md transition hover:border-[#22d3ee]/40 hover:text-white"
-              aria-label="Zamknij AI Brief"
+              aria-label={t("aiBriefDrawer.close", { defaultValue: "Close AI Brief" })}
             >
               <XMarkIcon className="h-5 w-5" />
             </button>
@@ -139,13 +151,15 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
 
           <span className="inline-flex items-center gap-1.5 rounded-full border border-[#22d3ee]/25 bg-[#22d3ee]/10 px-3 py-1 text-[11px] font-medium text-[#22d3ee] backdrop-blur-md">
             <SparklesIcon className="h-3.5 w-3.5" aria-hidden />
-            Analysis powered by Claude 3.5 Sonnet
+            {t("aiBriefDrawer.poweredBy", { defaultValue: "Analysis powered by Claude 3.5 Sonnet" })}
           </span>
         </header>
 
         <div className="relative flex-1 space-y-5 overflow-y-auto px-5 py-5 sm:px-6">
           <section className="rounded-2xl border border-white/10 bg-[#1e1b4b]/10 p-4 backdrop-blur-md">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-white/90">Szybki Przegląd Poranny</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wide text-white/90">
+              {t("aiBriefDrawer.morningTitle", { defaultValue: "Morning quick brief" })}
+            </h2>
             <ul className="mt-3 space-y-3 text-sm leading-relaxed text-white/80">
               {insight.morningBullets.map((bullet) => (
                 <li key={bullet.slice(0, 48)} className="flex gap-2.5">
@@ -157,20 +171,34 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-[#1e1b4b]/10 p-4 backdrop-blur-md">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-white/90">Sentyment Sektorowy</h2>
-            <p className="mt-1 text-xs text-white/50">Na podstawie agregacji newsów i sygnałów makro w sektorze {company.sector}.</p>
+            <h2 className="text-sm font-bold uppercase tracking-wide text-white/90">
+              {t("aiBriefDrawer.sectorSentiment", { defaultValue: "Sector sentiment" })}
+            </h2>
+            <p className="mt-1 text-xs text-white/50">
+              {t("aiBriefDrawer.sectorSentimentHint", {
+                defaultValue: "Based on aggregated news and macro signals in the {{sector}} sector.",
+                sector: company.sector,
+              })}
+            </p>
             <div className="mt-4">
-              <SentimentGauge score={insight.sentiment.score} label={insight.sentiment.label} />
+              <SentimentGauge
+                score={insight.sentiment.score}
+                label={sentimentLabelText(insight.sentiment.label, t)}
+                bearishLabel={t("aiBriefDrawer.bearish", { defaultValue: "Bearish" })}
+                bullishLabel={t("aiBriefDrawer.bullish", { defaultValue: "Bullish" })}
+              />
             </div>
           </section>
 
           <section className="rounded-2xl border border-amber-400/25 bg-gradient-to-br from-amber-500/10 to-[#9333ea]/10 p-4 backdrop-blur-md">
             <div className="flex items-center gap-2">
               <ExclamationTriangleIcon className="h-5 w-5 text-amber-300" aria-hidden />
-              <h2 className="text-sm font-bold uppercase tracking-wide text-amber-100">Behavioral Warning</h2>
+              <h2 className="text-sm font-bold uppercase tracking-wide text-amber-100">
+                {t("aiBriefDrawer.behavioralWarning", { defaultValue: "Behavioral warning" })}
+              </h2>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-amber-50/90">
-              <span className="font-semibold text-amber-200">AI Coach: </span>
+              <span className="font-semibold text-amber-200">{t("aiBriefDrawer.coachPrefix", { defaultValue: "AI Coach:" })} </span>
               {insight.behavioralWarning}
             </p>
           </section>
@@ -183,8 +211,14 @@ export function AIBriefDrawer({ company, open, onClose }: Props) {
             onClick={onClose}
             className="block rounded-2xl border border-[#22d3ee]/20 bg-gradient-to-r from-[#a855f7]/20 to-[#22d3ee]/10 px-4 py-3.5 text-center text-sm leading-snug text-white/85 backdrop-blur-md transition hover:border-[#22d3ee]/40 hover:from-[#a855f7]/30"
           >
-            <span className="text-white/70">Chcesz codziennych powiadomień SMS/Push dla tej spółki?</span>{" "}
-            <span className="font-semibold text-[#22d3ee]">Odblokuj alerty StockAI Pro</span>
+            <span className="text-white/70">
+              {t("aiBriefDrawer.alertsPrompt", {
+                defaultValue: "Want daily SMS/Push alerts for this company?",
+              })}{" "}
+            </span>
+            <span className="font-semibold text-[#22d3ee]">
+              {t("aiBriefDrawer.unlockAlerts", { defaultValue: "Unlock StockAI Pro alerts" })}
+            </span>
           </Link>
         </footer>
       </aside>

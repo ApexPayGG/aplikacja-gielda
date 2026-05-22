@@ -35,9 +35,15 @@ export function RegisterPage() {
   const inputClassName =
     "w-full rounded-xl border border-white/12 bg-white/[0.04] px-3 py-2.5 text-white outline-none transition placeholder:text-[#94a3b8] focus:border-[#22d3ee]/50 focus:ring-2 focus:ring-[#22d3ee]/20";
   const registrationBenefits = [
-    "Dostęp do personalizowanych analiz AI i alertów",
-    "Jedno miejsce do monitorowania portfela i sygnałów",
-    "Szybsze decyzje dzięki automatycznym insightom rynkowym",
+    t("auth.registerBenefit1", {
+      defaultValue: "Personalized AI analysis and alerts",
+    }),
+    t("auth.registerBenefit2", {
+      defaultValue: "One hub for portfolio monitoring and signals",
+    }),
+    t("auth.registerBenefit3", {
+      defaultValue: "Faster decisions with automated market insights",
+    }),
   ];
 
   return (
@@ -48,19 +54,22 @@ export function RegisterPage() {
             <form onSubmit={onSubmit} className="space-y-4">
               <div>
                 <h1 className="text-2xl font-bold text-textPrimary">
-                  {t("auth.registerTitle", { defaultValue: "Rejestracja" })}
+                  {t("auth.registerTitle", { defaultValue: "Sign up" })}
                 </h1>
                 <p className="mt-1 text-sm text-textSecondary">Start free · No credit card required</p>
               </div>
 
               {registeredEmail ? (
                 <p className="rounded-xl border border-positive/30 bg-positive/10 px-3 py-2 text-sm text-positive">
-                  Sprawdź swoją skrzynkę - wysłaliśmy link aktywacyjny na {registeredEmail}
+                  {t("auth.registerCheckEmail", {
+                    email: registeredEmail ?? "",
+                    defaultValue: "Check your inbox — we sent an activation link to {{email}}",
+                  })}
                 </p>
               ) : null}
 
               <label className="block space-y-1.5 text-sm text-textSecondary">
-                <span>{t("auth.nameOptional", { defaultValue: "Imię (opcjonalnie)" })}</span>
+                <span>{t("auth.nameOptional", { defaultValue: "Name (optional)" })}</span>
                 <input value={name} onChange={(e) => setName(e.target.value)} className={inputClassName} />
               </label>
 
@@ -76,7 +85,7 @@ export function RegisterPage() {
               </label>
 
               <label className="block space-y-1.5 text-sm text-textSecondary">
-                <span>{t("auth.passwordMin", { defaultValue: "Hasło (min. 8 znaków)" })}</span>
+                <span>{t("auth.passwordMin", { defaultValue: "Password (min. 8 characters)" })}</span>
                 <input
                   type="password"
                   required
@@ -95,23 +104,23 @@ export function RegisterPage() {
                 className="w-full rounded-xl bg-brandDark px-4 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
               >
                 {loading
-                  ? t("auth.registerLoading", { defaultValue: "Rejestracja..." })
-                  : t("auth.registerButton", { defaultValue: "Utwórz konto" })}
+                  ? t("auth.registerLoading", { defaultValue: "Creating account..." })
+                  : t("auth.registerButton", { defaultValue: "Create account" })}
               </button>
 
               <p className="text-sm text-textSecondary">
                 <Link to="/login" className="font-medium text-brandCyan">
-                  {t("auth.loginLink", { defaultValue: "Masz już konto? Zaloguj się" })}
+                  {t("auth.loginLink", { defaultValue: "Already have an account? Sign in" })}
                 </Link>
               </p>
               <p className="text-xs leading-relaxed text-textSecondary">
-                Rejestrując się, akceptujesz{" "}
+                {t("auth.registerAcceptTermsLead", { defaultValue: "By signing up you accept our" })}{" "}
                 <Link to="/terms" className="font-medium text-brandCyan hover:underline">
-                  Regulamin
+                  {t("auth.registerTermsLink", { defaultValue: "Terms of Service" })}
                 </Link>{" "}
-                i{" "}
+                {t("auth.registerAndWord", { defaultValue: "and" })}{" "}
                 <Link to="/privacy" className="font-medium text-brandCyan hover:underline">
-                  Politykę prywatności
+                  {t("auth.registerPrivacyLink", { defaultValue: "Privacy Policy" })}
                 </Link>
                 .
               </p>
@@ -122,8 +131,10 @@ export function RegisterPage() {
             className="hidden flex-col justify-center p-10 text-white lg:flex"
             style={{ background: `linear-gradient(140deg, ${colors.brandDark}, ${colors.brandMedium})` }}
           >
-            <h2 className="text-2xl font-semibold">Korzyści z rejestracji</h2>
-            <p className="mt-2 text-sm text-white/85">Dołącz do StockAI Pro i zacznij inwestować mądrzej.</p>
+            <h2 className="text-2xl font-semibold">{t("auth.registerBenefitsAsideTitle", { defaultValue: "Benefits of signing up" })}</h2>
+            <p className="mt-2 text-sm text-white/85">
+              {t("auth.registerBenefitsAsideSubtitle", { defaultValue: "Join StockAI Pro and invest with more clarity." })}
+            </p>
             <ul className="mt-8 space-y-4">
               {registrationBenefits.map((benefit) => (
                 <li key={benefit} className="flex items-start gap-3 text-sm text-white/95">

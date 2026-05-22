@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { SEOHead } from "../components/SEOHead";
 import { colors } from "../styles/designSystem";
 
@@ -5,73 +7,87 @@ type ChangelogCategory = "launch" | "feature" | "fix" | "security";
 
 type ChangelogEntry = {
   version: string;
-  date: string;
-  title: string;
+  dateKey: string;
+  titleKey: string;
   category: ChangelogCategory;
-  changes: string[];
-};
-
-const CATEGORY_BADGES: Record<ChangelogCategory, string> = {
-  launch: "🚀 Launch",
-  feature: "✨ Feature",
-  fix: "🐛 Fix",
-  security: "🔒 Security",
+  bodyKeys: string[];
 };
 
 const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
     version: "v1.0.0",
-    date: "May 2026",
-    title: "Launch 🚀",
+    dateKey: "changelogPage.dateMay2026",
+    titleKey: "changelogPage.v100Title",
     category: "launch",
-    changes: [
-      "Platforma inwestycyjna AI dla GPW, NYSE, DAX i 130+ giełd",
-      "27 modułów AI (sygnały, behavioral coach, paper trading)",
-      "9 języków",
-      "Integracja Alpaca (US trading)",
-      "eToro affiliate",
+    bodyKeys: [
+      "changelogPage.v100change1",
+      "changelogPage.v100change2",
+      "changelogPage.v100change3",
+      "changelogPage.v100change4",
+      "changelogPage.v100change5",
     ],
   },
   {
     version: "v0.9.0",
-    date: "May 2026",
-    title: "Premium Analysis",
+    dateKey: "changelogPage.dateMay2026",
+    titleKey: "changelogPage.v090Title",
     category: "feature",
-    changes: [
-      "5-ekranowe Premium Company Analysis",
-      "Historical Twin (pgvector)",
-      "Trader Psyche System",
-      "Stripe payments",
+    bodyKeys: [
+      "changelogPage.v090change1",
+      "changelogPage.v090change2",
+      "changelogPage.v090change3",
+      "changelogPage.v090change4",
     ],
   },
   {
     version: "v0.8.0",
-    date: "April 2026",
-    title: "Behavioral Layer",
+    dateKey: "changelogPage.dateApril2026",
+    titleKey: "changelogPage.v080Title",
     category: "feature",
-    changes: ["Behavioral Coach", "Pre-Mortem AI", "Strategy DNA Match", "Loss Streak Cool-Down"],
+    bodyKeys: [
+      "changelogPage.v080change1",
+      "changelogPage.v080change2",
+      "changelogPage.v080change3",
+      "changelogPage.v080change4",
+    ],
   },
 ];
 
 export function ChangelogPage() {
+  const { t } = useTranslation();
+
+  const categoryBadges = useMemo(
+    (): Record<ChangelogCategory, string> => ({
+      launch: t("changelogPage.badgeLaunch", { defaultValue: "🚀 Launch" }),
+      feature: t("changelogPage.badgeFeature", { defaultValue: "✨ Feature" }),
+      fix: t("changelogPage.badgeFix", { defaultValue: "🐛 Fix" }),
+      security: t("changelogPage.badgeSecurity", { defaultValue: "🔒 Security" }),
+    }),
+    [t],
+  );
+
   return (
     <div className="min-h-screen bg-bgSecondary px-4 py-10 text-white md:px-6">
       <SEOHead
         title="StockAI Pro Changelog"
-        description="Najnowsze funkcje i poprawki w StockAI Pro."
+        description={t("changelogPage.seoDescription", {
+          defaultValue: "Latest features and fixes in StockAI Pro.",
+        })}
         ogType="website"
       />
       <div className="mx-auto max-w-4xl">
         <header className="mb-10">
           <h1 className="text-4xl font-bold md:text-5xl" style={{ color: colors.brandDark }}>
-            Co nowego
+            {t("changelogPage.title", { defaultValue: "What's new" })}
           </h1>
           <p className="mt-3 text-lg" style={{ color: colors.textSecondary }}>
-            Najnowsze funkcje i poprawki
+            {t("changelogPage.subtitle", {
+              defaultValue: "Latest features and fixes",
+            })}
           </p>
         </header>
 
-        <section aria-label="Changelog timeline" className="relative space-y-8 pl-8">
+        <section aria-label={t("changelogPage.title", { defaultValue: "Changelog timeline" })} className="relative space-y-8 pl-8">
           <div
             className="pointer-events-none absolute bottom-0 left-2 top-0 w-0.5"
             style={{ backgroundColor: colors.brandCyan }}
@@ -100,20 +116,20 @@ export function ChangelogPage() {
                   className="rounded-full border px-3 py-1 text-xs font-semibold"
                   style={{ borderColor: colors.borderStrong, color: colors.textSecondary }}
                 >
-                  {CATEGORY_BADGES[entry.category]}
+                  {categoryBadges[entry.category]}
                 </span>
               </div>
 
               <p className="text-sm font-medium" style={{ color: colors.textMuted }}>
-                {entry.date}
+                {t(entry.dateKey)}
               </p>
               <h2 className="mt-1 text-2xl font-bold" style={{ color: colors.textPrimary }}>
-                {entry.title}
+                {t(entry.titleKey)}
               </h2>
 
               <ul className="mt-4 list-disc space-y-2 pl-5" style={{ color: colors.textSecondary }}>
-                {entry.changes.map((change) => (
-                  <li key={change}>{change}</li>
+                {entry.bodyKeys.map((key) => (
+                  <li key={key}>{t(key)}</li>
                 ))}
               </ul>
             </article>

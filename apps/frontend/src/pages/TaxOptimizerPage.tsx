@@ -184,7 +184,7 @@ export function TaxOptimizerPage() {
 
   const handleCalculate = useCallback(async () => {
     if (!customRateValid) {
-      setError("Wprowadź poprawną stawkę dla trybu Custom.");
+      setError(t("taxOptimizer.customCountryRateInvalid"));
       return;
     }
     const source = data;
@@ -211,7 +211,7 @@ export function TaxOptimizerPage() {
       }),
     });
     await persistCountry();
-  }, [country, customRateValid, data, dividendsInput, grossGainsInput, lossesInput, persistCountry, taxYearInput]);
+  }, [country, customRateValid, data, dividendsInput, grossGainsInput, lossesInput, persistCountry, taxYearInput, t]);
 
   const titleCountryCode = (data?.country ?? country).toUpperCase();
   const countryName = TAX_COUNTRY_ENGLISH_NAMES[titleCountryCode] ?? titleCountryCode;
@@ -307,7 +307,7 @@ export function TaxOptimizerPage() {
         {country === "CUSTOM" && (
           <label className="mt-4 flex max-w-xs flex-col gap-1.5 text-sm">
             <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Custom rate (%)
+              {t("tax.customRate", { defaultValue: "Custom tax rate (%)" })}
             </span>
             <input
               value={customRate}
@@ -340,7 +340,7 @@ export function TaxOptimizerPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <article className="rounded-2xl border p-4 glass-panel">
               <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
-                Podatek należny
+                {t("taxOptimizer.toPay")}
               </p>
               <p className="mt-2 text-4xl font-bold" style={{ color: colors.negative }}>
                 -{fmt(summary.taxDue)}
@@ -349,7 +349,7 @@ export function TaxOptimizerPage() {
 
             <article className="rounded-2xl border p-4 glass-panel">
               <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
-                Potencjalna oszczędność
+                {t("taxOptimizer.potentialSavings")}
               </p>
               <p className="mt-2 text-4xl font-bold" style={{ color: colors.positive }}>
                 +{fmt(summary.potentialSavings)}
@@ -359,7 +359,7 @@ export function TaxOptimizerPage() {
 
           <div className="mt-5">
             <h2 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-              Sugestie optymalizacji
+              {t("taxOptimizer.suggestionsTitle")}
             </h2>
             <div className="mt-3 space-y-3">
               {summary.suggestions.map((suggestion) => (
@@ -380,7 +380,10 @@ export function TaxOptimizerPage() {
           </div>
 
           <p className="mt-5 text-xs" style={{ color: colors.textMuted }}>
-            Kraj: {countryName} • Efektywna stawka: {(activeTaxRate * 100).toFixed(2)}%
+            {t("taxOptimizer.countryRateFooter", {
+              country: countryName,
+              rate: `${(activeTaxRate * 100).toFixed(2)}%`,
+            })}
           </p>
         </section>
       ) : null}

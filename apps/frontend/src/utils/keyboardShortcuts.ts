@@ -29,6 +29,6 @@ export const KEYBOARD_SHORTCUTS_HELP_ITEMS: ReadonlyArray<KeyboardShortcutHelpIt
   { key: "G + P", description: "Go Paper Trading" },
   { key: "G + A", description: "Go Alpaca" },
   { key: "/", description: "Focus search bar" },
-  { key: "Escape", description: "Zamknij dropdown/modal" },
-  { key: "?", description: "Pokaż shortcuts help" },
+  { key: "Escape", description: "Close dropdown or modal" },
+  { key: "?", description: "Show shortcuts help" },
 ];

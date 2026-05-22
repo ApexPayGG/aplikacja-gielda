@@ -106,7 +106,7 @@ export function ExportButton({ endpoint, userId, label }: ExportButtonProps) {
             style={{ color: colors.textMuted }}
           >
             <span>Excel</span>
-            <span className="text-xs">wkrótce</span>
+            <span className="text-xs">{t("export.comingSoon", { defaultValue: "coming soon" })}</span>
           </button>
         </div>
       ) : null}

@@ -99,12 +99,12 @@ export function useCoachPaperTrading(
   const openPaperTrade = useCallback(
     (input: OpenTradeInput) => {
       if (!emotionAcknowledged || !input.emotion) {
-        return { ok: false as const, error: "Wybierz emocję przed zleceniem paper." };
+        return { ok: false as const, error: "Select an emotion before placing a paper order." };
       }
 
       const symbol = input.symbol.trim().toUpperCase();
       if (!symbol || input.quantity <= 0 || input.entryPrice <= 0) {
-        return { ok: false as const, error: "Uzupełnij symbol, ilość i cenę wejścia." };
+        return { ok: false as const, error: "Enter symbol, quantity, and entry price." };
       }
 
       const seed = Date.now();
@@ -140,7 +140,7 @@ export function useCoachPaperTrading(
         return { ok: false as const, error: "Nie znaleziono otwartej pozycji." };
       }
       if (input.closePrice <= 0) {
-        return { ok: false as const, error: "Podaj prawidłową cenę zamknięcia." };
+        return { ok: false as const, error: "Enter a valid closing price." };
       }
 
       const profitLoss = calculateProfitLoss(trade.action, trade.entryPrice, input.closePrice, trade.quantity);

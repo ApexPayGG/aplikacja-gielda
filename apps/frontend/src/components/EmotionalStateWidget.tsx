@@ -26,7 +26,7 @@ function clamp(value: number, min: number, max: number): number {
 
 function looksLikeTradeIntent(text: string): boolean {
   const t = text.toLowerCase();
-  return /(trade|buy|sell|open position|close position|confirm|otwórz|zamknij|kup|sprzedaj)/.test(t);
+  return /(trade|buy|sell|open position|close position|confirm)/.test(t);
 }
 
 function getElementText(target: EventTarget | null): string {

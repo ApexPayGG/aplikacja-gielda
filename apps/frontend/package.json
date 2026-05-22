@@ -7,6 +7,7 @@
     "dev": "vite",
     "i18n:sync": "node ../../scripts/translate-locales.mjs",
     "i18n:jargon": "node scripts/sync-locale-jargon.mjs",
+    "check:i18n": "node scripts/check-i18n-hardcoded-pl.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview"
   },

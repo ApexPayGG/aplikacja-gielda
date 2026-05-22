@@ -142,7 +142,7 @@ export function CompaniesFilter({
           onChange={(event) => onPeRangeChange(Number(event.target.value), filters.peMax)}
           className="h-2 w-full cursor-pointer appearance-none rounded-full"
           style={{ background: peFill }}
-          aria-label="Minimalny wskaźnik P/E"
+          aria-label={t("companies.peMinAria", { defaultValue: "Minimum P/E ratio" })}
         />
         <input
           type="range"
@@ -153,7 +153,7 @@ export function CompaniesFilter({
           onChange={(event) => onPeRangeChange(filters.peMin, Number(event.target.value))}
           className="h-2 w-full cursor-pointer appearance-none rounded-full"
           style={{ background: peFill }}
-          aria-label="Maksymalny wskaźnik P/E"
+          aria-label={t("companies.peMaxAria", { defaultValue: "Maximum P/E ratio" })}
         />
       </div>
 

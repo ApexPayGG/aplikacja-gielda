@@ -82,7 +82,7 @@ export function InsiderMirrorPage() {
     event.preventDefault();
     const symbol = symbolInput.trim().toUpperCase();
     if (!symbol) {
-      setError(t("insider.validationSymbol", { defaultValue: "Podaj symbol spółki." }));
+      setError(t("insider.validationSymbol", { defaultValue: "Please provide a valid symbol." }));
       setResult(null);
       return;
     }
@@ -136,10 +136,10 @@ export function InsiderMirrorPage() {
   }, [filteredTransactions]);
   const sentimentLabel = result
     ? result.netSentiment === "BUY"
-      ? t("insider.sentimentBuy", { defaultValue: "Net sentiment: Kup" })
+      ? t("insider.sentimentBuy", { defaultValue: "Net buying" })
       : result.netSentiment === "SELL"
-        ? t("insider.sentimentSell", { defaultValue: "Net sentiment: Sprzedaj" })
-        : t("insider.sentimentNeutral", { defaultValue: "Net sentiment: Neutralny" })
+        ? t("insider.sentimentSell", { defaultValue: "Net selling" })
+        : t("insider.sentimentNeutral", { defaultValue: "Neutral" })
     : "";
   const sentimentColor =
     result?.netSentiment === "BUY"
@@ -157,7 +157,7 @@ export function InsiderMirrorPage() {
           </h1>
           <p className="mt-2 text-sm md:text-base" style={{ color: colors.textSecondary }}>
             {t("insider.redesignSubtitle", {
-              defaultValue: "Śledź najnowsze transakcje insiderów i szybko oceniaj kierunek ich działania.",
+              defaultValue: "Track recent insider transactions and assess their directional bias.",
             })}
           </p>
         </header>
@@ -179,8 +179,8 @@ export function InsiderMirrorPage() {
               style={{ backgroundColor: colors.brandDark }}
             >
               {loading
-                ? t("common.loading", { defaultValue: "Ładowanie..." })
-                : t("insider.fetchTransactions", { defaultValue: "Pobierz transakcje" })}
+                ? t("common.loading", { defaultValue: "Loading..." })
+                : t("insider.fetchTransactions", { defaultValue: "Fetch transactions" })}
             </button>
           </form>
         </section>
@@ -240,23 +240,23 @@ export function InsiderMirrorPage() {
 
             <div className="rounded-2xl border p-5 glass-section">
               <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-                {t("insider.transactionsTitle", { defaultValue: "Transakcje insiderów" })}
+                {t("insider.transactionsTitle", { defaultValue: "Transactions (last 30 days, > $50k)" })}
               </h3>
 
               {filteredTransactions.length === 0 ? (
                 <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
-                  {t("insider.emptyTransactions", { defaultValue: "Brak transakcji dla wybranego filtra." })}
+                  {t("insider.emptyTransactions", { defaultValue: "No transactions for the selected filter." })}
                 </p>
               ) : (
                 <div className="mt-3 overflow-x-auto rounded-xl border" style={{ borderColor: colors.border }}>
                   <table className="min-w-full text-left text-sm">
                     <thead style={{ backgroundColor: colors.bgSecondary, color: colors.textSecondary }}>
                       <tr>
-                        <th className="px-4 py-3 font-semibold">Logo+Symbol</th>
-                        <th className="px-4 py-3 font-semibold">Insider</th>
-                        <th className="px-4 py-3 font-semibold">Typ (Kup/Sprzedaj)</th>
-                        <th className="px-4 py-3 text-right font-semibold">Wartość</th>
-                        <th className="px-4 py-3 font-semibold">Data</th>
+                        <th className="px-4 py-3 font-semibold">{t("insider.colLogoSymbol", { defaultValue: "Logo & symbol" })}</th>
+                        <th className="px-4 py-3 font-semibold">{t("insider.colName", { defaultValue: "Name" })}</th>
+                        <th className="px-4 py-3 font-semibold">{t("insider.colType", { defaultValue: "Side (buy/sell)" })}</th>
+                        <th className="px-4 py-3 text-right font-semibold">{t("insider.colValue", { defaultValue: "Value" })}</th>
+                        <th className="px-4 py-3 font-semibold">{t("insider.colDate", { defaultValue: "Date" })}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -293,7 +293,9 @@ export function InsiderMirrorPage() {
                                   color: isPurchase ? colors.positive : colors.negative,
                                 }}
                               >
-                                {isPurchase ? "Kup" : "Sprzedaj"}
+                                {isPurchase
+                                  ? t("insider.insiderBuyShort", { defaultValue: "Buy" })
+                                  : t("insider.insiderSellShort", { defaultValue: "Sell" })}
                               </span>
                             </td>
                             <td className="px-4 py-3 text-right font-mono" style={{ color: colors.textPrimary }}>
@@ -317,7 +319,7 @@ export function InsiderMirrorPage() {
               </h3>
               {topInsiders.length === 0 ? (
                 <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
-                  {t("insider.emptyTopInsiders", { defaultValue: "Brak danych dla sekcji Top insiders." })}
+                  {t("insider.emptyTopInsiders", { defaultValue: "No data available for Top insiders." })}
                 </p>
               ) : (
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
@@ -340,10 +342,17 @@ export function InsiderMirrorPage() {
                         </div>
                       </div>
                       <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
-                        Łączna wartość: <span style={{ color: colors.brandDark, fontWeight: 700 }}>{formatUsd(insider.totalValue)}</span>
+                        {t("insider.totalValueLabel", {
+                          defaultValue: "Total value: {{value}}",
+                          value: formatUsd(insider.totalValue),
+                        })}
                       </p>
                       <p className="mt-1 text-xs" style={{ color: colors.textSecondary }}>
-                        Kup: {insider.purchases} · Sprzedaj: {insider.sales}
+                        {t("insider.countsBuySell", {
+                          defaultValue: "Buys: {{buys}} · Sells: {{sells}}",
+                          buys: insider.purchases,
+                          sells: insider.sales,
+                        })}
                       </p>
                     </article>
                   ))}

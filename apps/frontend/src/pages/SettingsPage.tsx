@@ -142,13 +142,13 @@ export function SettingsPage() {
           minSignalScore: normalizeSignalScore(Number(data.minSignalScore)),
         });
       } catch {
-        setNotificationsError("Nie udało się pobrać ustawień powiadomień.");
+        setNotificationsError(t("settingsPageNotifications.loadFailed", { defaultValue: "Failed to load notification settings." }));
       } finally {
         setLoadingNotifications(false);
       }
     };
     void loadNotificationPreferences();
-  }, [userId]);
+  }, [userId, t]);
 
   useEffect(() => {
     const loadAffiliateImpact = async () => {
@@ -244,9 +244,9 @@ export function SettingsPage() {
         notifyDividends: Boolean(data.notifyDividends),
         minSignalScore: normalizeSignalScore(data.minSignalScore),
       });
-      setNotificationsNotice("Preferencje powiadomień zapisane.");
+      setNotificationsNotice(t("settingsPageNotifications.saved", { defaultValue: "Notification preferences saved." }));
     } catch {
-      setNotificationsError("Nie udało się zapisać preferencji powiadomień.");
+      setNotificationsError(t("settingsPageNotifications.saveFailed", { defaultValue: "Failed to save notification preferences." }));
     } finally {
       setSavingNotifications(false);
     }
@@ -262,12 +262,21 @@ export function SettingsPage() {
         const channels = [data.discordSent ? "Discord" : null, data.telegramSent ? "Telegram" : null]
           .filter(Boolean)
           .join(" + ");
-        setNotificationsNotice(`Wysłano test na: ${channels}.`);
+        setNotificationsNotice(
+          t("settingsPageNotifications.testSent", {
+            channels,
+            defaultValue: "Test sent to: {{channels}}.",
+          }),
+        );
         return;
       }
-      setNotificationsError("Brak aktywnych kanałów lub nie udało się wysłać testu.");
+      setNotificationsError(
+        t("settingsPageNotifications.testNoChannels", {
+          defaultValue: "No active channels or the test send failed.",
+        }),
+      );
     } catch {
-      setNotificationsError("Nie udało się wysłać testowego powiadomienia.");
+      setNotificationsError(t("settingsPageNotifications.testSendFailed", { defaultValue: "Failed to send a test notification." }));
     } finally {
       setTestingNotifications(false);
     }
@@ -359,10 +368,10 @@ export function SettingsPage() {
           <div className="mt-6 rounded-xl glass-panel border border-white/10 bg-white/5 p-3">
             <p className="text-xs uppercase tracking-wide text-white/50">Product</p>
             <Link to="/changelog" className="mt-2 inline-flex text-sm font-semibold text-white transition hover:text-brandMedium">
-              Co nowego (Changelog)
+              {t("settingsPageSections.changelogLink", { defaultValue: "What's new (Changelog)" })}
             </Link>
             <Link to="/help" className="mt-1 inline-flex text-sm font-semibold text-white transition hover:text-brandMedium">
-              Centrum pomocy
+              {t("settingsPageSections.helpCenterLink", { defaultValue: "Help center" })}
             </Link>
           </div>
         </aside>
@@ -370,10 +379,12 @@ export function SettingsPage() {
         <div className="space-y-6">
           <section id="settings-profile" className={cardClass}>
             <h2 className="text-lg font-semibold text-white">Profile</h2>
-            <p className="mt-1 glass-muted text-sm">Twoje informacje konta i ustawienia mentora.</p>
+            <p className="mt-1 glass-muted text-sm">
+              {t("settingsPageSections.profileSubtitle", { defaultValue: "Your account details and mentor settings." })}
+            </p>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div className={nestedCardClass}>
-                <p className="text-xs uppercase tracking-wide text-white/50">Email</p>
+                <p className="text-xs uppercase tracking-wide text-white/50">{t("auth.email")}</p>
                 <p className="mt-1 font-medium text-white">{user?.email ?? "—"}</p>
               </div>
               <div className={nestedCardClass}>
@@ -435,7 +446,11 @@ export function SettingsPage() {
 
           <section id="settings-subscription" className={cardClass}>
             <h2 className="text-lg font-semibold text-white">Subscription</h2>
-            <p className="mt-1 glass-muted text-sm">Zarządzaj planem i odblokuj dodatkowe funkcje platformy.</p>
+            <p className="mt-1 glass-muted text-sm">
+              {t("settingsPageSections.subscriptionSubtitle", {
+                defaultValue: "Manage your plan and unlock more platform capabilities.",
+              })}
+            </p>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-xl glass-panel border border-white/10 bg-white/5 p-4">
               <div>
                 <p className="text-xs uppercase tracking-wide text-white/50">Current plan</p>
@@ -453,7 +468,10 @@ export function SettingsPage() {
             </div>
             <div className="mt-4 rounded-xl border border-brandCyan/40 bg-brandCyan/10 p-4">
               <p className="text-sm text-white">
-                API REST to funkcja planu <span className="font-semibold text-white">Pro+</span>.
+                {t("settingsPageSections.apiProBanner", {
+                  plan: "Pro+",
+                  defaultValue: "REST API is included on the {{plan}} plan.",
+                })}
               </p>
               <Link to="/api-docs" className="mt-2 inline-flex text-sm font-semibold text-white transition hover:text-brandMedium">
                 Zobacz API Documentation
@@ -676,13 +694,19 @@ export function SettingsPage() {
           <section id="settings-notifications" className={cardClass}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-white">Powiadomienia</h2>
+                <h2 className="text-lg font-semibold text-white">
+                  {t("settingsPageSections.notificationsTitle", { defaultValue: "Notifications" })}
+                </h2>
                 <p className="glass-muted text-sm">
-                  Skonfiguruj kanały Discord/Telegram i progi wysyłki sygnałów.
+                  {t("settingsPageSections.notificationsSubtitle", {
+                    defaultValue: "Configure Discord/Telegram channels and signal delivery thresholds.",
+                  })}
                 </p>
               </div>
               <span className="rounded-full bg-brandDark px-3 py-1 text-xs font-semibold text-white">
-                {notifications.discordWebhook || notifications.telegramChatId ? "Aktywne" : "Nieaktywne"}
+                {notifications.discordWebhook || notifications.telegramChatId
+                  ? t("settingsPageSections.notificationsBadgeActive", { defaultValue: "Active" })
+                  : t("settingsPageSections.notificationsBadgeInactive", { defaultValue: "Inactive" })}
               </span>
             </div>
 
@@ -705,14 +729,16 @@ export function SettingsPage() {
                 onChange={(e) =>
                   setNotifications((prev) => ({ ...prev, telegramChatId: e.target.value.trim() || null }))
                 }
-                placeholder="np. 123456789"
+                placeholder={t("settingsPageSections.telegramPlaceholder", { defaultValue: "e.g. 123456789" })}
                 className={fieldClass}
               />
             </label>
 
             <div className="mt-4 grid gap-3 md:grid-cols-2">
               <label className="flex items-center justify-between rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2 text-sm">
-                <span className="glass-muted">Sygnały</span>
+                <span className="glass-muted">
+                  {t("settingsPageSections.signalsToggle", { defaultValue: "Signals" })}
+                </span>
                 <input
                   type="checkbox"
                   checked={notifications.notifySignals}
@@ -721,7 +747,9 @@ export function SettingsPage() {
                 />
               </label>
               <label className="flex items-center justify-between rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2 text-sm">
-                <span className="glass-muted">Dywidendy</span>
+                <span className="glass-muted">
+                  {t("settingsPageSections.dividendsToggle", { defaultValue: "Dividends" })}
+                </span>
                 <input
                   type="checkbox"
                   checked={notifications.notifyDividends}
@@ -733,7 +761,9 @@ export function SettingsPage() {
 
             <div className="mt-4 space-y-2 rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-3">
               <div className="flex items-center justify-between text-sm">
-                <span className="glass-muted">Minimalny score sygnału</span>
+                <span className="glass-muted">
+                  {t("settingsPageSections.minSignalScore", { defaultValue: "Minimum signal score" })}
+                </span>
                 <span className="font-mono text-white">{normalizeSignalScore(notifications.minSignalScore)}</span>
               </div>
               <input
@@ -767,7 +797,7 @@ export function SettingsPage() {
                 onClick={() => void testNotificationDelivery()}
                 className={secondaryButtonClass}
               >
-                {testingNotifications ? t("common.loading") : "Testuj powiadomienie"}
+                {testingNotifications ? t("common.loading") : t("settingsPageSections.testNotification", { defaultValue: "Send test notification" })}
               </button>
             </div>
 
@@ -779,7 +809,11 @@ export function SettingsPage() {
 
           <section id="settings-language" className={cardClass}>
             <h2 className="text-lg font-semibold text-white">Language</h2>
-            <p className="mt-1 glass-muted text-sm">Wybierz język interfejsu aplikacji.</p>
+            <p className="mt-1 glass-muted text-sm">
+              {t("settingsPageSections.languageSubtitle", {
+                defaultValue: "Choose the app interface language.",
+              })}
+            </p>
             <div className="mt-4 max-w-xs">
               <select
                 value={selectedLanguage}

@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { colors } from "../../styles/designSystem";
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export function LegalPageLayout({ title, documentLabel, effectiveDate, intro, children }: Props) {
+  const { t } = useTranslation();
   useEffect(() => {
     document.title = `${title} | StockAI Pro`;
   }, [title]);
@@ -25,7 +27,9 @@ export function LegalPageLayout({ title, documentLabel, effectiveDate, intro, ch
           <p className="text-xs font-semibold uppercase tracking-wide text-brandCyan">{documentLabel}</p>
           <h1 className="mt-2 text-3xl font-bold text-textPrimary">{title}</h1>
           {effectiveDate ? (
-            <p className="mt-2 text-sm text-textSecondary">Data wejścia w życie: {effectiveDate}</p>
+            <p className="mt-2 text-sm text-textSecondary">
+              {t("legal.effectiveDate", { defaultValue: "Effective date: {{date}}", date: effectiveDate })}
+            </p>
           ) : null}
           <div className="mt-3 text-sm leading-6 text-textSecondary">{intro}</div>
         </header>
@@ -37,13 +41,13 @@ export function LegalPageLayout({ title, documentLabel, effectiveDate, intro, ch
             to="/"
             className="inline-flex items-center rounded-lg bg-brandDark px-4 py-2 text-sm font-semibold text-white transition hover:bg-brandMedium"
           >
-            Powrót na stronę główną
+            {t("legal.backHome", { defaultValue: "Back to home" })}
           </Link>
           <Link to="/privacy" className="text-sm font-medium text-brandCyan hover:underline">
-            Polityka prywatności
+            {t("legal.privacy", { defaultValue: "Privacy policy" })}
           </Link>
           <Link to="/terms" className="text-sm font-medium text-brandCyan hover:underline">
-            Regulamin
+            {t("legal.terms", { defaultValue: "Terms" })}
           </Link>
         </footer>
       </div>

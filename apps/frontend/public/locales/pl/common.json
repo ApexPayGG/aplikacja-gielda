@@ -108,7 +108,51 @@
     "loginAsideSubtitle": "Platforma inwestycyjna zbudowana dla nowoczesnych traderów.",
     "loginAsideFeature1": "Analityka AI dla świadomych decyzji inwestycyjnych",
     "loginAsideFeature2": "Zautomatyzowane alerty i monitorowanie rynku 24/7",
-    "loginAsideFeature3": "Wgląd w portfel i wyniki w jednym miejscu"
+    "loginAsideFeature3": "Wgląd w portfel i wyniki w jednym miejscu",
+    "registerCheckEmail": "Sprawdź skrzynkę — wysłaliśmy link aktywacyjny na {{email}}",
+    "registerBenefitsAsideTitle": "Korzyści z rejestracji",
+    "registerBenefitsAsideSubtitle": "Dołącz do StockAI Pro i zacznij inwestować mądrzej.",
+    "registerBenefit1": "Dostęp do personalizowanych analiz AI i alertów",
+    "registerBenefit2": "Jedno miejsce do monitorowania portfela i sygnałów",
+    "registerBenefit3": "Szybsze decyzje dzięki automatycznym insightom rynkowym",
+    "registerAcceptTermsLead": "Rejestrując się, akceptujesz",
+    "registerTermsLink": "Regulamin",
+    "registerPrivacyLink": "Politykę prywatności",
+    "registerAndWord": "i",
+    "forgotPasswordTitle": "Reset hasła",
+    "forgotPasswordSubtitle": "Podaj adres e-mail przypisany do konta.",
+    "forgotPasswordSent": "Sprawdź skrzynkę.",
+    "forgotPasswordSending": "Wysyłanie…",
+    "forgotPasswordSubmit": "Wyślij link resetujący",
+    "resetPasswordMissingToken": "Brak tokenu resetu hasła.",
+    "resetPasswordTooShort": "Hasło musi mieć minimum 8 znaków.",
+    "resetPasswordMismatch": "Hasła muszą być identyczne.",
+    "resetPasswordTitle": "Ustaw nowe hasło",
+    "resetPasswordSubtitle": "Wprowadź nowe hasło do konta.",
+    "resetPasswordSuccess": "Hasło zostało zmienione. Możesz się zalogować.",
+    "resetPasswordNewLabel": "Nowe hasło",
+    "resetPasswordConfirmLabel": "Potwierdź hasło",
+    "resetPasswordSaving": "Zapisywanie…",
+    "resetPasswordSubmit": "Ustaw nowe hasło",
+    "verifyEmailWorking": "Weryfikujemy email…",
+    "verifyEmailInvalidLink": "Link wygasł lub jest nieprawidłowy.",
+    "verifyBackRegister": "Wróć do rejestracji",
+    "backToLogin": "Powrót do logowania"
+  },
+  "profilePage": {
+    "saved": "Zmiany zostały zapisane.",
+    "loadingProfile": "Ładowanie profilu…",
+    "title": "Mój profil",
+    "avatarAlt": "Avatar użytkownika",
+    "changeAvatar": "Zmień avatar",
+    "fullName": "Imię i nazwisko",
+    "language": "Język",
+    "timezone": "Strefa czasowa",
+    "currentPlan": "Obecny plan",
+    "upgrade": "Upgrade",
+    "saving": "Zapisywanie…",
+    "saveChanges": "Zapisz zmiany",
+    "deleteAccount": "Usuń konto"
   },
   "backtest": {
     "avgReturn": "Śr. zwrot",
@@ -453,10 +497,18 @@
     "cardDateLabel": "Data digestu",
     "emailSent": "Wysłano testowy email dla {{date}}.",
     "emptyState": "Kliknij podgląd, aby wygenerować dzisiejszy digest.",
+    "noPreviousDigests": "Brak wcześniejszych digestów do wyświetlenia.",
+    "subscribeLabel": "Subskrypcja",
+    "frequencyDaily": "Codziennie",
+    "frequencyWeekly": "Tygodniowo",
+    "pageSubtitle": "Codzienny skrót najważniejszych informacji inwestycyjnych i sygnałów rynku.",
+    "todayLabel": "Dzisiejszy digest",
+    "previousSectionTitle": "Poprzednie digesty",
     "previewButton": "Podgląd digestu",
     "sendButton": "Wyślij testowy e-mail",
+    "sendNow": "Wyślij teraz",
     "subtitle": "Wygeneruj codzienne podsumowanie AI i wyślij testowy email.",
-    "title": "Daily Digest"
+    "title": "Codzienny digest"
   },
   "discord": {
     "active": "Webhook aktywny",
@@ -561,11 +613,17 @@
   },
   "earnings": {
     "confidence": "Pewność",
+    "factorsSubtitle": "Symulowane czynniki na bazie confidence score.",
+    "historyAccuracyNote": "Symulowana historia skuteczności modelu.",
+    "historyTitle": "Historia predykcji",
     "nextDate": "Data kolejnych wyników",
     "noDate": "Brak dostępnej daty",
+    "pageLead": "Model przewiduje kierunek zaskoczenia wyniku i wskazuje czynniki wpływu na najbliższy raport.",
     "predictButton": "Przewiduj",
+    "quarterColumn": "Okres",
     "reasoning": "Uzasadnienie AI",
     "resultFor": "Predykcja dla",
+    "searchPlaceholderMixed": "Szukaj spółki (np. MSFT)",
     "subtitle": "Oceń prawdopodobieństwo BEAT, MISS lub IN_LINE przed kolejnym raportem.",
     "symbolPlaceholder": "Wpisz symbol (np. AAPL)",
     "title": "Earnings Surprise Predictor",
@@ -624,11 +682,23 @@
     "actionSell": "SPRZEDAJ",
     "colAction": "Akcja",
     "colDate": "Data",
+    "colLogoSymbol": "Logo + symbol",
+    "colType": "Typ (kup/sprzedaj)",
+    "countsBuySell": "Kupna: {{buys}} · Sprzedaże: {{sells}}",
+    "emptyTopInsiders": "Brak danych dla sekcji Top insiders.",
     "colName": "Imię",
     "colRole": "Rola",
     "colValue": "Wartość",
-    "emptyTransactions": "Brak kwalifikujących się transakcji insiderów z ostatnich 30 dni.",
+    "emptyTransactions": "Brak transakcji dla wybranego filtra.",
+    "fetchTransactions": "Pobierz transakcje",
+    "totalValueLabel": "Łączna wartość: {{value}}",
+    "insiderBuyShort": "Kup",
+    "insiderSellShort": "Sprzedaj",
     "insight": "AI Insight",
+    "topInsiders": "Top insiders",
+    "netSentimentPrefix": "Nastroj netto:",
+    "redesignSubtitle": "Śledź najnowsze transakcje insiderów i szybko oceniaj kierunek ich działania.",
+    "redesignTitle": "Insider Mirror",
     "resultFor": "Aktywność insiderów dla",
     "searchButton": "Pokaż insiderów",
     "sentimentBuy": "Przewaga zakupów",
@@ -637,8 +707,8 @@
     "subtitle": "Śledź ostatnie zakupy i sprzedaże akcji przez insiderów spółki.",
     "symbolPlaceholder": "Wpisz symbol (np. AAPL)",
     "title": "Insider Mirror",
-    "transactionsTitle": "Transakcje (ostatnie 30 dni, > 50 tys. USD)",
-    "validationSymbol": "Podaj poprawny symbol."
+    "transactionsTitle": "Transakcje insiderów",
+    "validationSymbol": "Podaj symbol spółki."
   },
   "landing": {
     "footerCta": {
@@ -945,7 +1015,9 @@
     "empty": "Brak ostatnich newsów dla tego symbolu.",
     "expired": "Expired",
     "halfLifeDaysBadge": "{{days}} dni",
+    "halfLifeHoursBadge": "{{hours}}h",
     "halfLifeDaysLabel": "Half-life: {{days}} dni",
+    "sourceDateLine": "Źródło: {{source}} · Data: {{date}}",
     "mostImpactful": "Najważniejszy news",
     "reasonLabel": "Powód",
     "remainingLabel": "Pozostały czas",
@@ -964,6 +1036,11 @@
     "openPosition": "Otwórz pozycję",
     "pnl": "P&L",
     "portfolio": "Portfel",
+    "printReport": "Drukuj raport",
+    "printReportGenerated": "Wygenerowano",
+    "printReportSummary": "Podsumowanie",
+    "printReportTitle": "StockAI Pro — Raport portfela",
+    "printReportTrades": "Transakcje",
     "quantity": "Ilość",
     "short": "Short",
     "title": "Paper Trading"
@@ -1227,6 +1304,48 @@
       "headline": "{{ticker}} — setup: {{setup}}",
       "riskNote": "Poczekaj na potwierdzenie zamknięcia świecy i utrzymuj ścisłą dyscyplinę stop loss."
     },
+    "fallback": {
+      "communication": {
+        "0": "Operatorzy telekomunikacyjni raportują stabilny wzrost ARPU w segmencie usług łączonych",
+        "1": "Rynek reklamy wideo w Polsce rośnie dwucyfrowo; nadawcy linear i OTT konkurują o inventory",
+        "2": "Prawa do transmisji sportowych pozostają kluczowym czynnikiem kosztowym dla grup medialnych"
+      },
+      "technology": {
+        "0": "Spółki software'owe notują wzrost zamówień enterprise w segmencie chmury hybrydowej",
+        "1": "Regulacje AI w UE wpływają na harmonogramy wdrożeń produktów technologicznych",
+        "2": "Sektor tech GPW: inwestorzy oceniają marże po sezonie wyników kwartalnych"
+      },
+      "financials": {
+        "0": "Banki centralne sygnalizują ostrożniejsze tempo obniżek stóp procentowych",
+        "1": "Sektor bankowy: marża odsetkowa netto pod presją konkurencji depozytowej",
+        "2": "Kredyt hipoteczny: popyt stabilizuje się po wcześniejszej korekcie"
+      },
+      "healthcare": {
+        "0": "Producenci pharma monitorują listy refundacyjne i harmonogramy wprowadzeń leków",
+        "1": "Sektor med-tech raportuje rosnące zamówienia na sprzęt diagnostyczny",
+        "2": "Inwestorzy oceniają pipeline R&D w kontekście presji cenowej w UE"
+      },
+      "energy": {
+        "0": "Ceny gazu ziemnego stabilizują się po wcześniejszej zmienności sezonowej",
+        "1": "Spółki energetyczne aktualizują plany inwestycji w OZE i magazyny energii",
+        "2": "Rynek węgla notuje umiarkowany popyt przemysłowy w regionie CEE"
+      },
+      "consumer": {
+        "0": "Detaliści raportują poprawę sprzedaży same-store w segmencie non-food",
+        "1": "Konsumenci reagują na promocje; marże detaliczne pozostają pod obserwacją",
+        "2": "Sektor FMCG: producenci przenoszą część kosztów surowców na ceny końcowe"
+      },
+      "industrial": {
+        "0": "PMI przemysłowy w strefie euro wskazuje ostrożne odbicie zamówień B2B",
+        "1": "Producentów industrial dotykają koszty logistyki i terminów dostaw komponentów",
+        "2": "Backlog zamówień w sektorze capital goods pozostaje na podwyższonym poziomie"
+      },
+      "general": {
+        "0": "GPW: indeks WIG20 konsoliduje się po wcześniejszej zmienności makro",
+        "1": "Inwestorzy instytucjonalni zwiększają alokację w spółkach o stabilnej dywidendzie",
+        "2": "Analitycy aktualizują modele wyceny po publikacji danych makroekonomicznych"
+      }
+    },
     "narrative": "Narracja",
     "narrativeBodyFallback": "API nie zwróciło treści narracji.",
     "narrativeConfidence": {
@@ -1396,6 +1515,9 @@
     "title": "Tax Optimizer"
   },
   "taxOptimizer": {
+    "pageSubtitle": "Symuluj scenariusze podatkowe dla portfela i planuj obciążenia przed końcem roku.",
+    "calculate": "Oblicz",
+    "dividends": "Dywidendy",
     "alreadyPaid": "Zaliczka u brokera (placeholder): {{amount}}",
     "closedTrades": "Zamknięte transakcje (paper)",
     "colClose": "Zamknięcie",
@@ -1416,8 +1538,11 @@
     "suggestionsTitle": "Sugestie optymalizacji",
     "tax19": "Podatek Belki 19%",
     "title": "Tax Optimizer",
-    "toPay": "Do zapłaty",
-    "year": "Rok rozliczeniowy"
+    "toPay": "Podatek należny",
+    "year": "Rok rozliczeniowy",
+    "potentialSavings": "Potencjalna oszczędność",
+    "customCountryRateInvalid": "Wprowadź poprawną stawkę dla trybu Custom.",
+    "countryRateFooter": "Kraj: {{country}} • Efektywna stawka: {{rate}}%"
   },
   "trackrecord": {
     "avgReturn": "Średni zwrot",
@@ -1433,7 +1558,11 @@
     "title": "Anonimowy Track Record",
     "totalTrades": "Liczba transakcji",
     "winRate": "Win rate",
-    "worstTradePct": "Najgorsza transakcja"
+    "worstTradePct": "Najgorsza transakcja",
+    "publicProfileHeading": "Publiczny profil",
+    "tradeHistoryHeading": "Historia transakcji",
+    "shareStyleLabel": "Udostępnij swój Track Record",
+    "shareTweet": "📊 Mój track record: Win rate {{winRate}}% | {{totalTrades}} transakcji | StockAI Pro"
   },
   "volatility": {
     "errors": {
@@ -1504,10 +1633,78 @@
     "weekOf": "Tydzień od"
   },
   "legal": {
+    "address": "Adres",
+    "administrator": "Administrator",
+    "backHome": "Wróć na stronę główną",
+    "effectiveDate": "Data obowiązywania: {{date}}",
+    "email": "E-mail",
     "investmentDisclaimer": "Zastrzeżenie prawne: Wszelkie analizy, sygnały rynkowe oraz materiały generowane przez sztuczną inteligencję (w tym Claude AI) na platformie StockAI Pro mają charakter wyłącznie edukacyjny i informacyjny. Nie stanowią one rekomendacji inwestycyjnych ani porad finansowych w rozumieniu przepisów prawa. Inwestowanie na rynkach finansowych wiąże się z wysokim ryzykiem utraty kapitału. AMC Energy Sp. z o.o. nie ponosi odpowiedzialności za decyzje finansowe podjęte na podstawie danych w aplikacji.",
+    "privacy": "Polityka prywatności",
+    "privacyDocumentLabel": "RODO / GDPR",
+    "privacyIntro": "Niniejsza polityka opisuje, jak {{company}} przetwarza dane osobowe użytkowników StockAI Pro.",
+    "privacyPageTitle": "Polityka prywatności",
+    "terms": "Regulamin",
+    "termsDocumentLabel": "Warunki korzystania",
+    "termsIntro": "Regulamin określa zasady korzystania z platformy StockAI Pro ({{website}}) świadczonej przez {{company}}. Korzystając z Platformy, akceptujesz poniższe warunki.",
+    "termsPageTitle": "Regulamin użytkowania",
     "termsLink": "Pełny regulamin",
     "ariaLabel": "Zastrzeżenie prawne inwestycyjne",
     "showDisclaimer": "Zastrzeżenie inwestycyjne"
+  },
+  "admin": {
+    "clicksChart7d": "Wykres kliknięć (ostatnie 7 dni)",
+    "clicksLast30Days": "Kliknięcia ostatnie 30 dni:",
+    "colActions": "Akcje",
+    "conversions": "Konwersje",
+    "last7Days": "Ostatnie 7 dni",
+    "noData": "Brak danych.",
+    "noUsers": "Brak użytkowników.",
+    "perLanguage": "Per język",
+    "totalClicks": "Łączne kliknięcia"
+  },
+  "aiBrief": {
+    "mock": {
+      "morning0": {
+        "bullet1": "Sesja otwiera się pod presją rotacji kapitału z growth do wartości; inwestorzy instytucjonalni redukują ekspozycję na krótki horyzont po silnym raporcie makro.",
+        "bullet2": "Kalendarz wyników wskazuje na kluczowe odczyty marż operacyjnych — konsensus zakłada stabilizację, lecz guidance może zaskoczyć w górę przy utrzymaniu popytu B2B.",
+        "bullet3": "Płynność w pierwszej godzinie handlu jest podwyższona; wolumen overnight sugeruje aktywną dywersyfikację portfeli przed decyzją Fed w tym tygodniu."
+      },
+      "morning1": {
+        "bullet1": "Notowania reagują na publikację danych PMI sektora usług powyżej prognoz, co wspiera narrację soft-landing i krótkoterminowy risk-on w defensywie cyklicznej.",
+        "bullet2": "Spread obligacji korporacyjnych zwęża się, sygnalizując poprawę apetytu na ryzyko; dywidendy i buybacki pozostają głównym katalizatorem wyceny w segmencie large-cap.",
+        "bullet3": "Analitycy podnoszą cele cenowe po lepszych od szacunków przychodach segmentowych; uwaga skupia się na utrzymaniu free cash flow w Q2."
+      },
+      "morning2": {
+        "bullet1": "Rynek dyskontuje scenariusz spowolnienia popytu konsumenckiego, jednak zamówienia z wyprzedzeniem w łańcuchu dostaw pozostają zgodne z planem produkcyjnym.",
+        "bullet2": "Wahania surowców energetycznych hamują ekspansję marży brutto; zarząd sygnalizował hedging kosztów do końca roku obrotowego.",
+        "bullet3": "Krótkie pozycje spekulacyjne maleją po publikacji pozytywnego komentarza zarządu na konferencji branżowej — sentyment poprawia się stopniowo."
+      },
+      "morning3": {
+        "bullet1": "Indeks sektorowy notuje korektę techniczną po testowaniu oporu; kapitał wraca do spółek z silnym bilansem i niskim zadłużeniem netto.",
+        "bullet2": "Publikacja danych o zatrudnieniu w USA wzmacnia oczekiwania na dłuższą pauzę w cyklu podwyżek stóp, co sprzyja wycenom growth w średnim terminie.",
+        "bullet3": "Transakcje insider buying w ostatnich dwóch tygodniach wspierają tezę o atrakcyjnej wycenie względem średniej historycznej EV/EBITDA."
+      },
+      "warning0": "Sentyment detaliczny jest skrajnie euforyczny. Rekomendowana dyscyplina i unikanie FOMO przy obecnych wycenach.",
+      "warning1": "Wolumen spekulacyjny rośnie szybciej niż fundamenty. Rozważ limitowanie rozmiaru pozycji i zaplanowany poziom stop-loss przed wejściem.",
+      "warning2": "Medialny szum po wynikach kwartalnych zniekształca percepcję ryzyka. Odczekaj na potwierdzenie trendu wolumenem instytucjonalnym.",
+      "warning3": "Korelacja z indeksem szerokim rynku jest wysoka — dywersyfikacja w obrębie sektora nie redukuje ryzyka systemowego w krótkim horyzoncie.",
+      "warning4": "Historyczna zmienność po publikacji guidance bywa podwójna od średniej. Unikaj decyzji impulsywnych w pierwszej godzinie notowań."
+    }
+  },
+  "aiBriefDrawer": {
+    "alertsPrompt": "Chcesz codzienne alerty SMS/push dla tej spółki?",
+    "bearish": "Niedźwiedzi",
+    "behavioralWarning": "Ostrzeżenie behawioralne",
+    "bullish": "Byczy",
+    "close": "Zamknij AI Brief",
+    "closeOverlay": "Zamknij panel AI Brief",
+    "coachPrefix": "AI Coach:",
+    "morningTitle": "Poranny skrót",
+    "neutral": "Neutralny",
+    "poweredBy": "Analiza wspierana przez Claude 3.5 Sonnet",
+    "sectorSentiment": "Sentyment sektora",
+    "sectorSentimentHint": "Na podstawie zagregowanych newsów i sygnałów makro w sektorze {{sector}}.",
+    "unlockAlerts": "Odblokuj alerty StockAI Pro"
   },
   "onboarding": {
     "skip": "Pomiń",
@@ -1650,6 +1847,291 @@
         "answer": "Symulacja inwestowania na danych rynkowych bez ryzyka kapitału — idealna do nauki."
       }
     }
+  },
+  "replayModePage": {
+    "aiAnalyzing": "Analiza decyzji...",
+    "actualOutcomeLabel": "Faktyczny wynik:",
+    "chartHistorical": "Wykres historyczny",
+    "datePickerHint": "Date picker",
+    "decisionLabel": "Decyzja:",
+    "decisionPanel": "Panel decyzji",
+    "errorSymbolRequired": "Wpisz symbol spółki.",
+    "historyLoad": "Załaduj historię",
+    "loading": "Ładowanie...",
+    "priceDayLabel": "Cena na wybrany dzień",
+    "searchingSymbols": "Szukam symboli...",
+    "companySearchPlaceholder": "Wyszukaj spółkę...",
+    "skip": "Pomiń",
+    "sell": "Sprzedaj",
+    "subtitle": "Cofnij się w czasie i zagraj „co bym zrobił”",
+    "symbolTickerOrNameHint": "Wpisz ticker lub nazwę",
+    "symbolSearchHint": "Symbol search",
+    "thinkingPlaceholder": "Opisz swój tok myślenia…",
+    "whyLabel": "Dlaczego?",
+    "buy": "Kup",
+    "skipExplained": "Pominięcie zostało uzasadnione: {{reason}}",
+    "skipNeutral": "Pominięcie może być dobrą decyzją, jeśli setup nie spełnia Twoich kryteriów."
+  },
+  "strategyDnaPage": {
+    "shareLabel": "Udostępnij swój styl",
+    "shareTweet": "🧬 Mój styl inwestowania: {{style}} | {{match}}% podobny do {{investor}} | StockAI Pro",
+    "subtitle": "Poznaj wzorce decyzji i dominujący styl inwestowania.",
+    "avgWin": "Śr. zysk",
+    "avgLoss": "Śr. strata",
+    "avgHoldDays": "{{days}} dni",
+    "fromMistakesTitle": "Kontekst z biblioteki błędów",
+    "fromMistakesSymbols": "Symbole z błędów: {{symbols}}.",
+    "notEnoughTrades": "Potrzebujesz co najmniej 20 zamkniętych transakcji.",
+    "recFocusRisk": {
+      "body": "Aktualna tolerancja ryzyka to {{pct}}. Utrzymuj wielkość pozycji spójną z planem.",
+      "title": "Pilnuj ryzyka pozycji"
+    },
+    "recPlayStyle": {
+      "body": "Najwyższe dopasowanie to {{style}} ({{pct}}). Buduj checklistę pod ten profil.",
+      "title": "Graj pod swój dominant style"
+    },
+    "recRotateSetup": {
+      "body": "Skup się na 2-3 setupach, które powtarzają się najczęściej i notuj ich skuteczność tydzień do tygodnia.",
+      "title": "Rotuj setupy sektorowe"
+    },
+    "recommendationsHeading": "Rekomendacje",
+    "setupsSectorPrefix": "Setup sektorowy: {{sector}}",
+    "fallbackSetup1": "Mean reversion po gwałtownym spadku",
+    "fallbackSetup2": "Kontynuacja trendu po wybiciu",
+    "fallbackSetup3": "Setup defensywny na wysokiej zmienności",
+    "setupsHeading": "Twoje setup-y",
+    "yourStyleHeading": "Twój styl inwestowania",
+    "title": "Strategy DNA"
+  },
+  "reverseScreenerPage": {
+    "avgOutcomeLabel": "Średni wynik:",
+    "emptyMatches": "Brak dopasowań dla podanego tickera.",
+    "errorTickerRequired": "Podaj ticker, aby rozpocząć wyszukiwanie.",
+    "findSimilar": "Szukaj podobnych",
+    "introSimilarSetups": "Historyczne setupy podobne do dzisiejszego układu świec i wolumenu.",
+    "promptWhichLookedSame": "Które spółki historycznie wyglądały tak samo jak {{symbol}} dziś?",
+    "followUpHeading": "Co się wydarzyło potem",
+    "resultsHeading": "Wyniki",
+    "tickerPlaceholder": "np. AAPL"
+  },
+  "lossStreakPage": {
+    "cooldownHeading": "Zasady cool-down",
+    "cooldownIntro": "Cooldown timer:",
+    "currentStreak": "Aktualny streak",
+    "rule1": "Po 3 stratach z rzędu system uruchamia 30-minutowy cooldown.",
+    "rule2": "W trakcie cooldownu nie otwieraj nowych pozycji i wykonaj checklistę ryzyka.",
+    "rule3": "Po zakończeniu cooldownu wróć wyłącznie do setupów z planu dnia.",
+    "streakHistory": "Historia streaków",
+    "subtitle": "Kontroluj serię strat i automatyczny cooldown, aby nie eskalować ryzyka po emocjonalnych decyzjach."
+  },
+  "landingAria": {
+    "demoTickerTape": "Przykładowe notowania rynkowe — dane demo",
+    "homeLogo": "Stock-AI.Pro — strona główna",
+    "closeMenu": "Zamknij menu",
+    "openMenu": "Otwórz menu"
+  },
+  "waitlistPage": {
+    "seoDescription": "Dołącz do listy Early Access i odbierz cenę Early Adopter dla StockAI Pro.",
+    "benefit1": "Stała cena Early Adopter: Pro $9/mo na zawsze.",
+    "benefit2": "Priorytetowy dostęp do nowych modułów AI.",
+    "benefit3": "Wpływ na roadmapę produktu i funkcje premium.",
+    "benefit4": "Dedykowane onboardingowe materiały dla pierwszych użytkowników.",
+    "countWaiting": "Już {{count}} osób czeka",
+    "countWaitingUnknown": "osób czeka",
+    "ctaJoin": "Dołącz do waitlisty",
+    "ctaSubmitting": "Wysyłanie...",
+    "benefitsHeading": "Korzyści Early Access",
+    "emailLabel": "Email",
+    "nameLabel": "Imię (opcjonalne)",
+    "namePlaceholder": "Twoje imię",
+    "subhead": "Pierwsze 500 kont otrzyma cenę Early Adopter na zawsze: Pro $9/mo",
+    "successOnList": "Jesteś na liście! Sprawdź swoją skrzynkę.",
+    "title": "Dołącz do Early Access"
+  },
+  "contactPage": {
+    "title": "Kontakt",
+    "docTitle": "Kontakt | StockAI Pro",
+    "intro": "Masz pytanie o StockAI Pro? Napisz do nas — wrócimy z odpowiedzią maksymalnie w 24h.",
+    "contactInfoHeading": "Informacje kontaktowe",
+    "responseTimeHeading": "Czas odpowiedzi",
+    "responseTimeHint": "Odpowiadamy w ciągu 24h",
+    "writeUsHeading": "Napisz do nas",
+    "fullName": "Imię i nazwisko",
+    "subject": "Temat",
+    "message": "Wiadomość",
+    "sending": "Wysyłanie...",
+    "send": "Wyślij",
+    "success": "Wiadomość wysłana! Odpiszemy w ciągu 24h.",
+    "errorGeneric": "Coś poszło nie tak. Spróbuj ponownie.",
+    "socialLinks": "Media społecznościowe",
+    "subjectPayments": "Płatności",
+    "subjectBug": "Bug",
+    "subjectSuggestion": "Sugestia",
+    "subjectOther": "Inne"
+  },
+  "changelogPage": {
+    "seoDescription": "Najnowsze funkcje i poprawki w StockAI Pro.",
+    "title": "Co nowego",
+    "subtitle": "Najnowsze funkcje i poprawki",
+    "dateMay2026": "Maj 2026",
+    "dateApril2026": "Kwiecień 2026",
+    "badgeLaunch": "🚀 Launch",
+    "badgeFeature": "✨ Feature",
+    "badgeFix": "🐛 Fix",
+    "badgeSecurity": "🔒 Security",
+    "v100Title": "Launch 🚀",
+    "v100change1": "Platforma inwestycyjna AI dla GPW, NYSE, DAX i 130+ giełd",
+    "v100change2": "27 modułów AI (sygnały, behavioral coach, paper trading)",
+    "v100change3": "9 języków",
+    "v100change4": "Integracja Alpaca (US trading)",
+    "v100change5": "Affiliate eToro",
+    "v090Title": "Premium Analysis",
+    "v090change1": "5-ekranowe Premium Company Analysis",
+    "v090change2": "Historical Twin (pgvector)",
+    "v090change3": "Trader Psyche System",
+    "v090change4": "Płatności Stripe",
+    "v080Title": "Warstwa behawioralna",
+    "v080change1": "Behavioral Coach",
+    "v080change2": "Pre-Mortem AI",
+    "v080change3": "Strategy DNA Match",
+    "v080change4": "Loss Streak Cool-Down"
+  },
+  "apiDocsPage": {
+    "heroSubtitle": "Dostęp do danych StockAI Pro przez REST API",
+    "proPlusBadge": "Tylko Pro+",
+    "requiredYes": "tak",
+    "requiredNo": "nie",
+    "navAuthentication": "Authentication",
+    "navQuotes": "Quotes",
+    "navSignals": "Signals",
+    "navCompanies": "Companies",
+    "navDividend": "Dividend",
+    "navPortfolio": "Portfolio",
+    "proPlusNote": "Wymagany Pro+ do realnego dostępu. Endpointy są pokazane publicznie wyłącznie w celach dokumentacyjnych.",
+    "authHint": "Użyj API key z ustawień konta",
+    "authKeyLead": "Klucz API znajdziesz w",
+    "settingsLinkLabel": "Settings",
+    "sectionsLabel": "Sections",
+    "paramTableName": "Parametr",
+    "paramTableType": "Typ",
+    "paramTableRequired": "Wymagany",
+    "paramTableDesc": "Opis",
+    "authentication": {
+      "title": "Authentication",
+      "description": "Uwierzytelniaj żądania przy użyciu osobistego klucza API."
+    },
+    "quotes": {
+      "sectionDesc": "Pobieraj najnowsze notowania i podstawowe dane cenowe.",
+      "endpointDesc": "Zwraca najnowszy dostępny quote dla wskazanego symbolu.",
+      "tickerParam": "Ticker instrumentu, np. AAPL."
+    },
+    "signals": {
+      "sectionDesc": "Przeglądaj sygnały inwestycyjne generowane przez StockAI Pro.",
+      "endpointDesc": "Pobiera listę ostatnich sygnałów, domyślnie z limitem.",
+      "limitParam": "Liczba rekordów do pobrania (max 100)."
+    },
+    "companies": {
+      "sectionDesc": "Wyszukuj spółki po nazwie, tickerze lub słowie kluczowym.",
+      "endpointDesc": "Zwraca listę spółek dopasowanych do zapytania.",
+      "qParam": "Fraza wyszukiwania."
+    },
+    "dividend": {
+      "sectionDesc": "Analizuj spółki dywidendowe i filtrowanie screenera.",
+      "endpointDesc": "Pobiera wyniki domyślnego screenera dywidendowego.",
+      "sectorParam": "Opcjonalny filtr sektora.",
+      "minYieldParam": "Minimalna stopa dywidendy."
+    },
+    "portfolio": {
+      "sectionDesc": "Pobieraj portfel paper trading dla konkretnego użytkownika.",
+      "endpointDesc": "Zwraca aktualny stan portfela paper trading.",
+      "userIdParam": "Id użytkownika w ścieżce URL."
+    }
+  },
+  "newsHalfLifePage": {
+    "placeholderTicker": "Ticker (np. AAPL)",
+    "subtitle": "Śledź jak szybko wygasa wpływ publikacji i filtruj sygnały według typu wydarzeń.",
+    "emptyFilter": "Brak newsów dla wybranego filtra.",
+    "sourceDate": "Źródło: {{source}} • Data: {{date}}",
+    "search": "Szukaj",
+    "daySuffixShort": "{{count}} dni",
+    "hourSuffixShort": "{{count}}h",
+    "halfLifeDaysRounded": "{{count}} dni"
+  },
+  "adminPage": {
+    "noUsers": "Brak użytkowników.",
+    "totalClicks": "Łączne kliknięcia",
+    "conversions": "Konwersje",
+    "last7DaysStat": "Ostatnie 7 dni",
+    "clicksChartTitle": "Wykres kliknięć (ostatnie 7 dni)",
+    "byLanguageTable": "Per język",
+    "clicks30dSummary": "Kliknięcia ostatnie 30 dni:",
+    "noBreakdownData": "Brak danych.",
+    "actionsColumn": "Akcje",
+    "chartAria": "Wykres kliknięć afiliacyjnych (ostatnie 7 dni)"
+  },
+  "privacyPageLayout": {
+    "title": "Polityka prywatności",
+    "documentLabel": "RODO / GDPR",
+    "administrator": "Administrator",
+    "address": "Adres",
+    "email": "Email",
+    "intro": "Niniejsza polityka opisuje, jak {{company}} przetwarza dane osobowe użytkowników StockAI Pro."
+  },
+  "termsPageLayout": {
+    "title": "Regulamin użytkowania",
+    "documentLabel": "Warunki korzystania",
+    "intro": "Regulamin określa zasady korzystania z platformy StockAI Pro ({{website}}) świadczonej przez {{company}}. Korzystając z Platformy, akceptujesz poniższe warunki."
+  },
+  "errorPages": {
+    "notFoundTitle": "Nie znaleziono strony",
+    "notFoundBody": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
+    "notFoundHome": "Wróć do strony głównej",
+    "genericTitle": "Wystąpił błąd",
+    "genericBody": "Coś poszło nie tak podczas ładowania tej sekcji. Odśwież stronę lub wróć do poprzedniego widoku.",
+    "refresh": "Odśwież",
+    "back": "Wróć",
+    "paymentSuccessTitle": "Płatność zakończona sukcesem!",
+    "paymentSuccessSubtitle": "Twój plan {{plan}} jest aktywny",
+    "goToApp": "Przejdź do aplikacji",
+    "seoPaymentSuccessTitle": "Płatność zakończona sukcesem | StockAI Pro",
+    "paymentCancelTitle": "Płatność anulowana",
+    "paymentCancelBody": "Możesz wrócić do cennika i dokończyć zakup w dowolnym momencie.",
+    "backToPricing": "Wróć do cennika"
+  },
+  "settingsPageNotifications": {
+    "loadFailed": "Nie udało się pobrać ustawień powiadomień.",
+    "saved": "Preferencje powiadomień zapisane.",
+    "saveFailed": "Nie udało się zapisać preferencji powiadomień.",
+    "testSent": "Wysłano test na: {{channels}}.",
+    "testNoChannels": "Brak aktywnych kanałów lub nie udało się wysłać testu.",
+    "testSendFailed": "Nie udało się wysłać testowego powiadomienia."
+  },
+  "settingsPageSections": {
+    "profileSubtitle": "Twoje informacje konta i ustawienia mentora.",
+    "subscriptionSubtitle": "Zarządzaj planem i odblokuj dodatkowe funkcje platformy.",
+    "notificationsTitle": "Powiadomienia",
+    "notificationsSubtitle": "Skonfiguruj kanały Discord/Telegram i progi wysyłki sygnałów.",
+    "signalsToggle": "Sygnały",
+    "dividendsToggle": "Dywidendy",
+    "minSignalScore": "Minimalny score sygnału",
+    "languageSubtitle": "Wybierz język interfejsu aplikacji.",
+    "changelogLink": "Co nowego (Changelog)",
+    "helpCenterLink": "Centrum pomocy",
+    "notificationsBadgeActive": "Aktywne",
+    "notificationsBadgeInactive": "Nieaktywne",
+    "telegramPlaceholder": "np. 123456789",
+    "testNotification": "Testuj powiadomienie",
+    "apiProBanner": "API REST to funkcja planu {{plan}}."
+  },
+  "notifications": {
+    "aria": "Powiadomienia",
+    "title": "Powiadomienia",
+    "markAllRead": "Oznacz wszystkie jako przeczytane",
+    "empty": "Brak powiadomień",
+    "justNow": "przed chwilą",
+    "minutesAgo": "{{count}} min temu",
+    "hoursAgo": "{{count}} godz. temu",
+    "daysAgo": "{{count}} d temu"
   },
   "companies": {
     "filterDividend": "Tylko spółki z dywidendą",

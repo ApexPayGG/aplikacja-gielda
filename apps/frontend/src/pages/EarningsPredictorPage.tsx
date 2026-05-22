@@ -1,4 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   getEarningsPrediction,
   type EarningsPredictionLabel,
@@ -75,6 +76,7 @@ function buildHistory(result: EarningsPredictionResponse): HistoryRow[] {
 }
 
 export function EarningsPredictorPage() {
+  const { t } = useTranslation();
   const [symbolInput, setSymbolInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,7 +89,7 @@ export function EarningsPredictorPage() {
     event.preventDefault();
     const symbol = symbolInput.trim().toUpperCase();
     if (!symbol) {
-      setError("Wpisz ticker spółki.");
+      setError(t("earnings.validationSymbol", { defaultValue: "Please provide a valid symbol." }));
       setResult(null);
       return;
     }
@@ -115,7 +117,10 @@ export function EarningsPredictorPage() {
           Earnings Surprise Predictor
         </h1>
         <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
-          Model przewiduje kierunek zaskoczenia wynikowego i wskazuje czynniki wpływu dla najbliższego raportu.
+          {t("earnings.pageLead", {
+            defaultValue:
+              "The model predicts the surprise direction and surfaces impact factors for the next report.",
+          })}
         </p>
       </header>
 
@@ -124,7 +129,7 @@ export function EarningsPredictorPage() {
           <input
             value={symbolInput}
             onChange={(event) => setSymbolInput(event.target.value)}
-            placeholder="Search spółki (np. MSFT)"
+            placeholder={t("earnings.searchPlaceholderMixed", { defaultValue: "Search company (e.g. MSFT)" })}
             className="w-full rounded-xl border px-4 py-2 outline-none"
             style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
             maxLength={16}
@@ -135,7 +140,7 @@ export function EarningsPredictorPage() {
             className="rounded-xl px-5 py-2 font-semibold text-white disabled:opacity-60"
             style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
           >
-            {loading ? "Ładowanie..." : "Predict"}
+            {loading ? t("common.loading", { defaultValue: "Loading..." }) : t("earnings.predictButton", { defaultValue: "Predict" })}
           </button>
         </form>
       </section>
@@ -174,7 +179,9 @@ export function EarningsPredictorPage() {
                 Factors impact
               </h2>
               <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
-                Symulowane czynniki na bazie confidence score.
+                {t("earnings.factorsSubtitle", {
+                  defaultValue: "Simulated factors derived from the confidence score.",
+                })}
               </p>
               <ul className="mt-4 space-y-3">
                 {factors.map((factor) => (
@@ -196,16 +203,16 @@ export function EarningsPredictorPage() {
 
           <article className="rounded-2xl border p-5 glass-panel">
             <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-              Historia predykcji
+              {t("earnings.historyTitle", { defaultValue: "Prediction history" })}
             </h3>
             <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
-              Symulowana historia skuteczności modelu.
+              {t("earnings.historyAccuracyNote", { defaultValue: "Simulated model accuracy history." })}
             </p>
             <div className="mt-3 overflow-x-auto rounded-xl border" style={{ borderColor: colors.border }}>
               <table className="w-full min-w-[420px] text-left text-sm">
                 <thead style={{ backgroundColor: colors.bgPrimary, color: colors.textSecondary }}>
                   <tr>
-                    <th className="px-4 py-2.5 font-semibold">Okres</th>
+                    <th className="px-4 py-2.5 font-semibold">{t("earnings.quarterColumn", { defaultValue: "Period" })}</th>
                     <th className="px-4 py-2.5 font-semibold">Prediction</th>
                     <th className="px-4 py-2.5 font-semibold">Accuracy %</th>
                   </tr>

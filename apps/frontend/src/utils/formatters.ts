@@ -21,11 +21,19 @@ export function formatPercent(value: number): string {
   return `${parsedValue >= 0 ? "+" : ""}${parsedValue.toFixed(2)}%`;
 }
 
-export function formatDate(date: string | Date | number | undefined, locale = "pl-PL"): string {
+/** Maps i18next language code to BCP 47 locale for Intl formatters. */
+export function resolveIntlLocale(language?: string): string {
+  const normalized = (language ?? "en").trim().toLowerCase();
+  if (normalized.startsWith("pl")) return "pl-PL";
+  if (normalized.startsWith("en")) return "en-US";
+  return normalized.includes("-") ? normalized : `${normalized}-${normalized.toUpperCase()}`;
+}
+
+export function formatDate(date: string | Date | number | undefined, locale = "en-US"): string {
   if (date == null) return "n/a";
   const parsed = date instanceof Date ? date : new Date(date);
   if (Number.isNaN(parsed.getTime())) return "n/a";
-  return parsed.toLocaleString(locale);
+  return parsed.toLocaleString(resolveIntlLocale(locale));
 }
 
 export function formatNumber(value: number, decimals = 2): string {

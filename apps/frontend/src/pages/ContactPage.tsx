@@ -1,23 +1,45 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { sendContactMessage } from "../services/api";
 import { colors } from "../styles/designSystem";
 
-const SUBJECT_OPTIONS = ["Płatności", "Bug", "Sugestia", "Inne"] as const;
-
-type ContactSubject = (typeof SUBJECT_OPTIONS)[number];
+type ContactSubjectValue = "Billing" | "Bug" | "Suggestion" | "Other";
 
 export function ContactPage() {
+  const { t } = useTranslation();
+
+  const subjectOptions = useMemo(
+    (): Array<{ value: ContactSubjectValue; labelKey: string }> => [
+      { value: "Billing", labelKey: "contactPage.subjectPayments" },
+      { value: "Bug", labelKey: "contactPage.subjectBug" },
+      { value: "Suggestion", labelKey: "contactPage.subjectSuggestion" },
+      { value: "Other", labelKey: "contactPage.subjectOther" },
+    ],
+    [],
+  );
+
+  const subjectLabels = useMemo(
+    () =>
+      subjectOptions.map((option) => ({
+        value: option.value,
+        label: t(option.labelKey, {
+          defaultValue: option.value,
+        }),
+      })),
+    [subjectOptions, t],
+  );
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState<ContactSubject>("Płatności");
+  const [subject, setSubject] = useState<ContactSubjectValue>("Billing");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = "Kontakt | StockAI Pro";
-  }, []);
+    document.title = t("contactPage.docTitle", { defaultValue: "Contact | StockAI Pro" });
+  }, [t]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,13 +54,13 @@ export function ContactPage() {
         subject,
         message: message.trim(),
       });
-      setSuccessMessage("Wiadomość wysłana! Odpiszemy w ciągu 24h.");
+      setSuccessMessage(t("contactPage.success", { defaultValue: "Message sent! We'll reply within 24 hours." }));
       setName("");
       setEmail("");
-      setSubject("Płatności");
+      setSubject("Billing");
       setMessage("");
     } catch {
-      setErrorMessage("Coś poszło nie tak. Spróbuj ponownie.");
+      setErrorMessage(t("contactPage.errorGeneric", { defaultValue: "Something went wrong. Please try again." }));
     } finally {
       setSubmitting(false);
     }
@@ -51,28 +73,40 @@ export function ContactPage() {
     >
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white md:text-5xl">Kontakt</h1>
+          <h1 className="text-4xl font-bold text-white md:text-5xl">
+            {t("contactPage.title", { defaultValue: "Contact" })}
+          </h1>
           <p className="mt-3 max-w-2xl text-base glass-muted md:text-lg">
-            Masz pytanie o StockAI Pro? Napisz do nas — wrócimy z odpowiedzią maksymalnie w 24h.
+            {t("contactPage.intro", {
+              defaultValue: "Questions about StockAI Pro? Reach out — we answer within 24 hours.",
+            })}
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <section className="glass-section rounded-3xl p-6 shadow-sm md:p-8">
-            <h2 className="text-xl font-semibold text-white">Informacje kontaktowe</h2>
+            <h2 className="text-xl font-semibold text-white">
+              {t("contactPage.contactInfoHeading", { defaultValue: "Contact details" })}
+            </h2>
             <div className="mt-6 space-y-5">
               <div>
-                <p className="text-sm font-semibold text-white">Email</p>
+                <p className="text-sm font-semibold text-white">
+                  {t("privacyPageLayout.email", { defaultValue: "Email" })}
+                </p>
                 <a href="mailto:support@stock-ai.pro" className="mt-1 inline-block text-sm text-white hover:underline">
                   support@stock-ai.pro
                 </a>
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">Czas odpowiedzi</p>
-                <p className="mt-1 glass-muted text-sm">Odpowiadamy w ciągu 24h</p>
+                <p className="text-sm font-semibold text-white">
+                  {t("contactPage.responseTimeHeading", { defaultValue: "Response time" })}
+                </p>
+                <p className="mt-1 glass-muted text-sm">{t("contactPage.responseTimeHint")}</p>
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">Social links</p>
+                <p className="text-sm font-semibold text-white">
+                  {t("contactPage.socialLinks", { defaultValue: "Social links" })}
+                </p>
                 <div className="mt-2 flex flex-wrap gap-3 text-sm">
                   <a
                     href="https://www.linkedin.com/company/stock-ai-pro"
@@ -104,11 +138,13 @@ export function ContactPage() {
           </section>
 
           <section className="glass-section rounded-3xl p-6 shadow-sm md:p-8">
-            <h2 className="text-xl font-semibold text-white">Napisz do nas</h2>
+            <h2 className="text-xl font-semibold text-white">
+              {t("contactPage.writeUsHeading", { defaultValue: "Write to us" })}
+            </h2>
             <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="contact-name" className="mb-1 block text-sm font-medium text-white">
-                  Imię i nazwisko
+                  {t("contactPage.fullName", { defaultValue: "Full name" })}
                 </label>
                 <input
                   id="contact-name"
@@ -122,7 +158,7 @@ export function ContactPage() {
 
               <div>
                 <label htmlFor="contact-email" className="mb-1 block text-sm font-medium text-white">
-                  Email
+                  {t("privacyPageLayout.email", { defaultValue: "Email" })}
                 </label>
                 <input
                   id="contact-email"
@@ -136,18 +172,18 @@ export function ContactPage() {
 
               <div>
                 <label htmlFor="contact-subject" className="mb-1 block text-sm font-medium text-white">
-                  Temat
+                  {t("contactPage.subject", { defaultValue: "Topic" })}
                 </label>
                 <select
                   id="contact-subject"
                   required
                   value={subject}
-                  onChange={(event) => setSubject(event.target.value as ContactSubject)}
+                  onChange={(event) => setSubject(event.target.value as ContactSubjectValue)}
                   className="w-full rounded-lg glass-panel border border-white/10 px-4 py-2.5 text-sm text-white outline-none transition focus:border-brandDark focus:ring-2 focus:ring-brandDark/20"
                 >
-                  {SUBJECT_OPTIONS.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
+                  {subjectLabels.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </select>
@@ -155,7 +191,7 @@ export function ContactPage() {
 
               <div>
                 <label htmlFor="contact-message" className="mb-1 block text-sm font-medium text-white">
-                  Wiadomość
+                  {t("contactPage.message", { defaultValue: "Message" })}
                 </label>
                 <textarea
                   id="contact-message"
@@ -174,7 +210,9 @@ export function ContactPage() {
                 className="inline-flex rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
                 style={{ backgroundColor: colors.brandDark }}
               >
-                {submitting ? "Wysyłanie..." : "Wyślij"}
+                {submitting
+                  ? t("contactPage.sending", { defaultValue: "Sending…" })
+                  : t("contactPage.send", { defaultValue: "Send" })}
               </button>
 
               {successMessage ? <p className="text-sm font-medium text-positive">{successMessage}</p> : null}

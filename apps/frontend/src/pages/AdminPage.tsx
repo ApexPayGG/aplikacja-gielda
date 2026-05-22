@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   getAdminAffiliateStats,
   getAdminStats,
@@ -121,6 +122,7 @@ function TierBadge({ tier }: { tier: string }) {
 }
 
 export function AdminPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<DashboardTab>("users");
   const [stats, setStats] = useState<AdminStatsResponse>(DEFAULT_STATS);
   const [affiliateStats, setAffiliateStats] = useState<AdminAffiliateStatsResponse>(
@@ -275,7 +277,7 @@ export function AdminPage() {
                       <th className="px-4 py-3 text-left font-semibold">Email</th>
                       <th className="px-4 py-3 text-left font-semibold">Tier</th>
                       <th className="px-4 py-3 text-left font-semibold">Joined</th>
-                      <th className="px-4 py-3 text-left font-semibold">Akcje</th>
+                      <th className="px-4 py-3 text-left font-semibold">{t("admin.colActions", { defaultValue: "Actions" })}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -296,7 +298,7 @@ export function AdminPage() {
                           className="px-4 py-6 text-center"
                           style={{ color: colors.textSecondary }}
                         >
-                          Brak użytkowników.
+                          {t("admin.noUsers", { defaultValue: "No users." })}
                         </td>
                       </tr>
                     ) : (
@@ -377,9 +379,9 @@ export function AdminPage() {
         ) : (
           <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <StatCard label="Total kliknięcia" value={affiliateStats.totalClicks} />
-              <StatCard label="Ostatnie 7 dni" value={affiliateClicksLast7Days} />
-              <StatCard label="Konwersje" value="—" />
+              <StatCard label={t("admin.totalClicks", { defaultValue: "Total clicks" })} value={affiliateStats.totalClicks} />
+              <StatCard label={t("admin.last7Days", { defaultValue: "Last 7 days" })} value={affiliateClicksLast7Days} />
+              <StatCard label={t("admin.conversions", { defaultValue: "Conversions" })} value="—" />
               <StatCard label="Revenue" value="—" />
             </div>
 
@@ -388,7 +390,7 @@ export function AdminPage() {
               style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
             >
               <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
-                Wykres kliknięć (ostatnie 7 dni)
+                {t("admin.clicksChart7d", { defaultValue: "Clicks chart (last 7 days)" })}
               </h2>
               <div className="mt-3">
                 <AffiliateLineChart data={affiliateStats.clicksLast7Days} />
@@ -396,16 +398,34 @@ export function AdminPage() {
             </section>
 
             <div className="grid gap-4 lg:grid-cols-3">
-              <BreakdownTable title="Top pages" firstColumnLabel="Page" rows={pageRows} />
-              <BreakdownTable title="Per broker" firstColumnLabel="Broker" rows={brokerRows} />
-              <BreakdownTable title="Per język" firstColumnLabel="Lang" rows={langRows} />
+              <BreakdownTable
+                title="Top pages"
+                firstColumnLabel="Page"
+                rows={pageRows}
+                emptyLabel={t("admin.noData", { defaultValue: "No data." })}
+              />
+              <BreakdownTable
+                title="Per broker"
+                firstColumnLabel="Broker"
+                rows={brokerRows}
+                emptyLabel={t("admin.noData", { defaultValue: "No data." })}
+              />
+              <BreakdownTable
+                title={t("admin.perLanguage", { defaultValue: "Per language" })}
+                firstColumnLabel="Lang"
+                rows={langRows}
+                emptyLabel={t("admin.noData", { defaultValue: "No data." })}
+              />
             </div>
 
             <div
               className="rounded-2xl border px-4 py-3 text-sm"
               style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary, color: colors.textSecondary }}
             >
-              Kliknięcia ostatnie 30 dni: <strong style={{ color: colors.textPrimary }}>{affiliateStats.clicksLast30Days}</strong>
+              {t("admin.clicksLast30Days", {
+                defaultValue: "Clicks in the last 30 days:",
+              })}{" "}
+              <strong style={{ color: colors.textPrimary }}>{affiliateStats.clicksLast30Days}</strong>
             </div>
           </div>
         )}
@@ -511,10 +531,12 @@ function BreakdownTable({
   title,
   firstColumnLabel,
   rows,
+  emptyLabel,
 }: {
   title: string;
   firstColumnLabel: string;
   rows: BreakdownRow[];
+  emptyLabel: string;
 }) {
   return (
     <section
@@ -537,7 +559,7 @@ function BreakdownTable({
             {rows.length === 0 ? (
               <tr>
                 <td className="px-4 py-4 text-sm" colSpan={3} style={{ color: colors.textSecondary }}>
-                  Brak danych.
+                  {emptyLabel}
                 </td>
               </tr>
             ) : (

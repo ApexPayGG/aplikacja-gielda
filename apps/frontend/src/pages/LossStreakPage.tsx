@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { getBehavioralCooldown, type BehavioralCooldownResponse } from "../services/api";
 import { colors } from "../styles/designSystem";
@@ -33,12 +34,28 @@ function statusStyle(status: "NORMAL" | "WARNING" | "COOLDOWN"): { bg: string; c
 }
 
 export function LossStreakPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const userId = user?.id ?? FALLBACK_USER_ID;
   const [cooldown, setCooldown] = useState<BehavioralCooldownResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nowTs, setNowTs] = useState(() => Date.now());
+
+  const cooldownRules = useMemo(
+    () => [
+      t("lossStreakPage.rule1", {
+        defaultValue: "After 3 consecutive losses the system activates a 30-minute cooldown.",
+      }),
+      t("lossStreakPage.rule2", {
+        defaultValue: "During cooldown, do not open new positions — run through your risk checklist.",
+      }),
+      t("lossStreakPage.rule3", {
+        defaultValue: "When cooldown ends, return only to setups from your daily plan.",
+      }),
+    ],
+    [t],
+  );
 
   useEffect(() => {
     const timer = setInterval(() => setNowTs(Date.now()), 1000);
@@ -88,7 +105,10 @@ export function LossStreakPage() {
         <header className="space-y-2">
           <h1 className="text-4xl font-bold tracking-tight">Loss Streak Monitor</h1>
           <p className="text-sm md:text-base" style={{ color: colors.textSecondary }}>
-            Kontroluj serię strat i automatyczny cooldown, aby nie eskalować ryzyka po emocjonalnych decyzjach.
+            {t("lossStreakPage.subtitle", {
+              defaultValue:
+                "Manage loss streaks and automatic cooldown so you do not escalate risk after emotional trades.",
+            })}
           </p>
         </header>
 
@@ -101,7 +121,7 @@ export function LossStreakPage() {
         <section className="grid gap-4 md:grid-cols-3">
           <article className="rounded-2xl glass-section p-5 shadow-sm md:col-span-2" style={{ borderColor: colors.border }}>
             <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Aktualny streak
+              {t("lossStreakPage.currentStreak", { defaultValue: "Current streak" })}
             </p>
             <p
               className="mt-3 text-6xl font-bold leading-none"
@@ -123,7 +143,7 @@ export function LossStreakPage() {
             </span>
             {countdown ? (
               <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
-                Cooldown timer:
+                {t("lossStreakPage.cooldownIntro", { defaultValue: "Cooldown timer:" })}
                 <span className="ml-2 font-mono text-lg font-bold" style={{ color: colors.brandDark }}>
                   {countdown}
                 </span>
@@ -133,7 +153,7 @@ export function LossStreakPage() {
         </section>
 
         <section className="rounded-2xl glass-section p-5 shadow-sm" style={{ borderColor: colors.border }}>
-          <h2 className="text-base font-semibold">Historia streaków</h2>
+          <h2 className="text-base font-semibold">{t("lossStreakPage.streakHistory", { defaultValue: "Streak history" })}</h2>
           <p className="mt-1 text-xs" style={{ color: colors.textSecondary }}>
             Mini chart placeholder
           </p>
@@ -156,13 +176,11 @@ export function LossStreakPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-semibold">Zasady cool-down</h2>
+          <h2 className="text-base font-semibold">
+            {t("lossStreakPage.cooldownHeading", { defaultValue: "Cool-down principles" })}
+          </h2>
           <div className="grid gap-3 md:grid-cols-3">
-            {[
-              "Po 3 stratach z rzędu system uruchamia 30-minutowy cooldown.",
-              "W trakcie cooldownu nie otwieraj nowych pozycji i wykonaj checklistę ryzyka.",
-              "Po zakończeniu cooldownu wróć wyłącznie do setupów z planu dnia.",
-            ].map((rule) => (
+            {cooldownRules.map((rule) => (
               <article key={rule} className="rounded-xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
                 <p className="text-sm" style={{ color: colors.textSecondary }}>
                   {rule}

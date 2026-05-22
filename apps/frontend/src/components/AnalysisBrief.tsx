@@ -27,7 +27,7 @@ export function AnalysisBrief({ analysis, loading, error, limitReached }: Props)
         <p>
           {t("analysisBrief.limitReached", {
             defaultValue:
-              "Wykorzystałeś dzienny limit ({{used}}/{{limit}}). Przejdź na Pro aby uzyskać nieograniczony dostęp.",
+              "You have used your daily limit ({{used}}/{{limit}}). Upgrade to Pro for unlimited access.",
             used: limit,
             limit,
           })}
@@ -36,7 +36,7 @@ export function AnalysisBrief({ analysis, loading, error, limitReached }: Props)
           to="/pricing"
           className="mt-4 inline-flex rounded-lg bg-brandDark px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
         >
-          {t("analysisBrief.upgradeCta", { defaultValue: "Zobacz plany Pro" })}
+          {t("analysisBrief.upgradeCta", { defaultValue: "View Pro plans" })}
         </Link>
       </div>
     );

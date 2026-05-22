@@ -1,4 +1,6 @@
+import type { TFunction } from "i18next";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { ShareButton } from "../components/ShareButton";
 import { getStrategyDna, type StrategyDnaResponse } from "../services/api";
@@ -37,23 +39,33 @@ function investorMatchPct(
   return clampPercent(fallback);
 }
 
-function buildSetups(data: StrategyDnaResponse): SetupItem[] {
+function buildSetups(data: StrategyDnaResponse, t: TFunction): SetupItem[] {
   const sectors = data.stats.preferredSectors ?? [];
   if (sectors.length > 0) {
     return sectors.slice(0, 4).map((sector, index) => ({
-      name: `Setup sektorowy: ${sector}`,
+      name: t("strategyDnaPage.setupsSectorPrefix", {
+        sector,
+        defaultValue: "Sector setup: {{sector}}",
+      }),
       frequency: clampPercent(74 - index * 14),
     }));
   }
 
   return [
-    { name: "Mean reversion po gwałtownym spadku", frequency: 62 },
-    { name: "Kontynuacja trendu po wybiciu", frequency: 51 },
-    { name: "Setup defensywny na wysokiej zmienności", frequency: 37 },
+    { name: t("strategyDnaPage.fallbackSetup1", { defaultValue: "Mean reversion after a sharp drop" }), frequency: 62 },
+    {
+      name: t("strategyDnaPage.fallbackSetup2", { defaultValue: "Trend continuation after a breakout" }),
+      frequency: 51,
+    },
+    {
+      name: t("strategyDnaPage.fallbackSetup3", { defaultValue: "Defensive setup in high volatility" }),
+      frequency: 37,
+    },
   ];
 }
 
 export function StrategyDnaPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [data, setData] = useState<StrategyDnaResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -97,11 +109,14 @@ export function StrategyDnaPage() {
   const investorMatch = data ? clampPercent(data.primary.pct) : 0;
   const shareInvestor = dominantStyle;
   const strategyShareUrl =
-    USER_ID.length > 0
-      ? `https://stock-ai.pro/strategy-dna/${encodeURIComponent(USER_ID)}`
-      : "https://stock-ai.pro/strategy-dna";
+    USER_ID.length > 0 ? `https://stock-ai.pro/strategy-dna/${encodeURIComponent(USER_ID)}` : "https://stock-ai.pro/strategy-dna";
   const strategyShareText = data
-    ? `🧬 Mój styl inwestowania: ${dominantStyle} | ${investorMatch}% podobny do ${shareInvestor} | StockAI Pro`
+    ? t("strategyDnaPage.shareTweet", {
+        style: dominantStyle,
+        match: investorMatch,
+        investor: shareInvestor,
+        defaultValue: "🧬 My investing style: {{style}} | {{match}}% match vs {{investor}} | StockAI Pro",
+      })
     : undefined;
 
   return (
@@ -110,30 +125,51 @@ export function StrategyDnaPage() {
         className="glass-section rounded-3xl p-6 shadow-[0_18px_45px_rgba(168,85,247,0.1)]"
         style={{ background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
       >
-        <h1 className="glass-page-title text-3xl">Strategy DNA</h1>
-        <p className="mt-2 glass-muted text-sm">Poznaj wzorce decyzji i dominujący styl inwestowania.</p>
+        <h1 className="glass-page-title text-3xl">{t("strategyDnaPage.title", { defaultValue: "Strategy DNA" })}</h1>
+        <p className="mt-2 glass-muted text-sm">
+          {t("strategyDnaPage.subtitle", {
+            defaultValue: "Discover your decision patterns and dominant investing profile.",
+          })}
+        </p>
         {data && data.hasEnoughData ? (
           <div className="mt-4">
-            <ShareButton label="Udostępnij swój styl" url={strategyShareUrl} twitterText={strategyShareText} />
+            <ShareButton
+              label={t("strategyDnaPage.shareLabel", { defaultValue: "Share your style" })}
+              url={strategyShareUrl}
+              twitterText={strategyShareText}
+            />
           </div>
         ) : null}
       </header>
 
       {fromMistakes && highlightSymbols.length > 0 ? (
         <div className="rounded-xl border border-brandGold/45 bg-brandGold/10 px-4 py-3 text-sm text-white">
-          <p className="font-semibold text-white">Kontekst z biblioteki błędów</p>
-          <p className="mt-1 glass-muted">Symbole z błędów: {highlightSymbols.join(", ")}.</p>
+          <p className="font-semibold text-white">
+            {t("strategyDnaPage.fromMistakesTitle", { defaultValue: "Context from mistake library" })}
+          </p>
+          <p className="mt-1 glass-muted">
+            {t("strategyDnaPage.fromMistakesSymbols", {
+              symbols: highlightSymbols.join(", "),
+              defaultValue: "Symbols from mistakes: {{symbols}}.",
+            })}
+          </p>
         </div>
       ) : null}
 
-      {loading && <p className="text-sm text-white/50">Ładowanie...</p>}
-      {error && <p className="rounded-xl border border-negative/30 bg-negative/10 px-4 py-3 text-sm font-medium text-negative">{error}</p>}
+      {loading ? (
+        <p className="text-sm text-white/50">{t("common.loading", { defaultValue: "Loading..." })}</p>
+      ) : null}
+      {error && (
+        <p className="rounded-xl border border-negative/30 bg-negative/10 px-4 py-3 text-sm font-medium text-negative">{error}</p>
+      )}
 
-      {!loading && !error && data && (
+      {!loading && !error && data ? (
         <>
           {data.hasEnoughData ? (
             <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-              <h2 className="text-lg font-semibold text-white">Twój styl inwestowania</h2>
+              <h2 className="text-lg font-semibold text-white">
+                {t("strategyDnaPage.yourStyleHeading", { defaultValue: "Your investing style" })}
+              </h2>
               <div className="mt-5 grid gap-6 md:grid-cols-[260px_1fr]">
                 <div className="flex flex-col items-center justify-center rounded-2xl glass-panel border border-white/10 bg-white/5 p-5">
                   <div
@@ -147,33 +183,31 @@ export function StrategyDnaPage() {
                 </div>
 
                 <div className="space-y-5">
-                  <MatchBar
-                    label="Lynch"
-                    value={investorMatchPct(data, "LYNCH", data.stats.winRate * 0.85)}
-                  />
-                  <MatchBar
-                    label="Buffett"
-                    value={investorMatchPct(data, "BUFFETT", 100 - data.stats.riskTolerance)}
-                  />
-                  <MatchBar
-                    label="Graham"
-                    value={investorMatchPct(data, "GREENBLATT", data.stats.winRate * 0.75)}
-                  />
+                  <MatchBar label="Lynch" value={investorMatchPct(data, "LYNCH", data.stats.winRate * 0.85)} />
+                  <MatchBar label="Buffett" value={investorMatchPct(data, "BUFFETT", 100 - data.stats.riskTolerance)} />
+                  <MatchBar label="Graham" value={investorMatchPct(data, "GREENBLATT", data.stats.winRate * 0.75)} />
                 </div>
               </div>
             </section>
           ) : (
             <section className="rounded-2xl border border-brandGold/40 bg-brandGold/10 p-6 text-center">
-              <p className="text-lg font-semibold text-white">Potrzebujesz co najmniej 20 zamkniętych transakcji.</p>
+              <p className="text-lg font-semibold text-white">
+                {t("strategyDnaPage.notEnoughTrades", { defaultValue: "You need at least 20 closed trades." })}
+              </p>
             </section>
           )}
 
           <section className="grid gap-6 md:grid-cols-2">
             <div className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-              <h3 className="text-lg font-semibold text-white">Twoje setup-y</h3>
+              <h3 className="text-lg font-semibold text-white">
+                {t("strategyDnaPage.setupsHeading", { defaultValue: "Your setups" })}
+              </h3>
               <ul className="mt-4 space-y-3">
-                {buildSetups(data).map((setup) => (
-                  <li key={setup.name} className="flex items-center justify-between gap-3 rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5">
+                {buildSetups(data, t).map((setup) => (
+                  <li
+                    key={setup.name}
+                    className="flex items-center justify-between gap-3 rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5"
+                  >
                     <span className="text-sm font-medium text-white">{setup.name}</span>
                     <span
                       className="rounded-full px-2.5 py-1 text-xs font-semibold"
@@ -192,32 +226,61 @@ export function StrategyDnaPage() {
 
               <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
                 <StatTile label="Win rate" value={pct(data.stats.winRate)} />
-                <StatTile label="Avg holding" value={`${Math.round(data.stats.avgHoldingDays)} dni`} />
-                <StatTile label="Śr. zysk" value={`${data.stats.avgWinPct.toFixed(1)}%`} />
-                <StatTile label="Śr. strata" value={`${data.stats.avgLossPct.toFixed(1)}%`} />
+                <StatTile
+                  label="Avg holding"
+                  value={t("strategyDnaPage.avgHoldDays", {
+                    days: Math.round(data.stats.avgHoldingDays),
+                    defaultValue: "{{days}} days",
+                  })}
+                />
+                <StatTile
+                  label={t("strategyDnaPage.avgWin", { defaultValue: "Avg win" })}
+                  value={`${data.stats.avgWinPct.toFixed(1)}%`}
+                />
+                <StatTile
+                  label={t("strategyDnaPage.avgLoss", { defaultValue: "Avg loss" })}
+                  value={`${data.stats.avgLossPct.toFixed(1)}%`}
+                />
               </div>
             </div>
           </section>
 
           <section className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-            <h3 className="text-lg font-semibold text-white">Rekomendacje</h3>
+            <h3 className="text-lg font-semibold text-white">
+              {t("strategyDnaPage.recommendationsHeading", { defaultValue: "Recommendations" })}
+            </h3>
             <div className="mt-4 grid gap-3 md:grid-cols-3">
               <RecommendationCard
-                title="Graj pod swój dominant style"
-                body={`Najwyższe dopasowanie to ${legendLabel(data.primary.name)} (${pct(data.primary.pct)}). Buduj checklistę pod ten profil.`}
+                title={t("strategyDnaPage.recPlayStyle.title", {
+                  defaultValue: "Trade your dominant style",
+                })}
+                body={t("strategyDnaPage.recPlayStyle.body", {
+                  style: legendLabel(data.primary.name),
+                  pct: pct(data.primary.pct),
+                  defaultValue:
+                    "Highest match is {{style}} ({{pct}}). Build a playbook for that profile.",
+                })}
               />
               <RecommendationCard
-                title="Rotuj setupy sektorowe"
-                body="Skup się na 2-3 setupach, które powtarzają się najczęściej i notuj ich skuteczność tydzień do tygodnia."
+                title={t("strategyDnaPage.recRotateSetup.title", {
+                  defaultValue: "Rotate sector setups",
+                })}
+                body={t("strategyDnaPage.recRotateSetup.body")}
               />
               <RecommendationCard
-                title="Pilnuj ryzyka pozycji"
-                body={`Aktualna tolerancja ryzyka to ${pct(data.stats.riskTolerance)}. Utrzymuj wielkość pozycji spójną z planem.`}
+                title={t("strategyDnaPage.recFocusRisk.title", {
+                  defaultValue: "Watch position risk",
+                })}
+                body={t("strategyDnaPage.recFocusRisk.body", {
+                  pct: pct(data.stats.riskTolerance),
+                  defaultValue:
+                    "Current risk tolerance is {{pct}}. Keep position sizing aligned with your plan.",
+                })}
               />
             </div>
           </section>
         </>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 export interface SectorHeatmapProps {
   sectorData: Record<string, number>;
   selectedSymbolSector: string;
@@ -10,8 +12,8 @@ function heatColor(score: number, min: number, max: number): string {
   return `rgba(59, 130, 246, ${alpha})`;
 }
 
-/** Siatka sektorów — intensywność = średni safety score; podświetlenie sektora symbolu. */
 export function SectorHeatmap({ sectorData, selectedSymbolSector }: SectorHeatmapProps) {
+  const { t } = useTranslation();
   const entries = Object.entries(sectorData).sort(([a], [b]) => a.localeCompare(b));
   const values = entries.map(([, v]) => v);
   const min = values.length ? Math.min(...values) : 0;
@@ -21,7 +23,7 @@ export function SectorHeatmap({ sectorData, selectedSymbolSector }: SectorHeatma
   if (entries.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-surface-border bg-surface-elevated/50 p-8 text-center text-sm text-slate-500">
-        Brak danych sektorów (wczytaj porównanie).
+        {t("sectorHeatmap.empty", { defaultValue: "No sector data (load a comparison first)." })}
       </div>
     );
   }
@@ -29,7 +31,11 @@ export function SectorHeatmap({ sectorData, selectedSymbolSector }: SectorHeatma
   return (
     <section className="rounded-lg border border-surface-border bg-surface-elevated p-6">
       <h2 className="text-sm font-medium uppercase tracking-wide text-slate-400">Sector heatmap</h2>
-      <p className="mt-1 text-xs text-slate-500">Średni safety score per sektor (ciemniejszy = wyższy).</p>
+      <p className="mt-1 text-xs text-slate-500">
+        {t("sectorHeatmap.hint", {
+          defaultValue: "Average safety score per sector (darker = higher).",
+        })}
+      </p>
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {entries.map(([sector, score]) => {
           const isSelected = sector === selected;
@@ -41,8 +47,8 @@ export function SectorHeatmap({ sectorData, selectedSymbolSector }: SectorHeatma
               }`}
               style={{ backgroundColor: heatColor(score, min, max) }}
             >
-              <div className="font-medium text-white">{sector}</div>
-              <div className="mt-1 font-mono text-xs text-slate-200">{score.toFixed(1)}</div>
+              <p className="font-medium text-slate-200">{sector}</p>
+              <p className="mt-1 text-xs text-slate-400">{Math.round(score)}</p>
             </div>
           );
         })}

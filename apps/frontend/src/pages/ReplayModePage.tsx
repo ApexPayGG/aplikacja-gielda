@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   evaluateReplayDecision,
   getReplaySnapshot,
@@ -19,6 +20,7 @@ function formatPrice(value: number): string {
 }
 
 export function ReplayModePage() {
+  const { t } = useTranslation();
   const [symbolInput, setSymbolInput] = useState("PKN");
   const [symbolOptions, setSymbolOptions] = useState<string[]>(SYMBOL_OPTIONS);
   const [date, setDate] = useState("");
@@ -53,9 +55,7 @@ export function ReplayModePage() {
         const remoteSymbols = companies
           .map((row) => row.symbol?.trim().toUpperCase())
           .filter((item): item is string => Boolean(item));
-        const merged = Array.from(
-          new Set([query.toUpperCase(), ...remoteSymbols, ...SYMBOL_OPTIONS]),
-        );
+        const merged = Array.from(new Set([query.toUpperCase(), ...remoteSymbols, ...SYMBOL_OPTIONS]));
         setSymbolOptions(merged.slice(0, 12));
       } catch {
         if (!cancelled) {
@@ -78,7 +78,7 @@ export function ReplayModePage() {
     event.preventDefault();
     const normalizedSymbol = symbolInput.trim().toUpperCase();
     if (!normalizedSymbol) {
-      setError("Wpisz symbol spółki.");
+      setError(t("replayModePage.errorSymbolRequired", { defaultValue: "Enter a ticker symbol." }));
       return;
     }
 
@@ -104,12 +104,19 @@ export function ReplayModePage() {
     setSelectedDecision(decision);
 
     if (decision === "SKIP") {
+      const trimmed = reason.trim();
+      const explanation =
+        trimmed.length > 0
+          ? t("replayModePage.skipExplained", {
+              reason: trimmed,
+              defaultValue: "Skip justified: {{reason}}",
+            })
+          : t("replayModePage.skipNeutral", {
+              defaultValue: "Skipping can be a good idea when the setup does not match your checklist.",
+            });
       setEvaluation({
         score: 6,
-        explanation:
-          reason.trim().length > 0
-            ? `Pominięcie zostało uzasadnione: ${reason.trim()}`
-            : "Pominięcie może być dobrą decyzją, jeśli setup nie spełnia Twoich kryteriów.",
+        explanation,
         actualOutcome: snapshot.priceChange5d,
       });
       return;
@@ -133,6 +140,12 @@ export function ReplayModePage() {
     }
   }
 
+  function decisionVerb(action: ReplayDecision | null): string {
+    if (action === "BUY") return t("replayModePage.buy", { defaultValue: "Buy" });
+    if (action === "SELL") return t("replayModePage.sell", { defaultValue: "Sell" });
+    return t("replayModePage.skip", { defaultValue: "Skip" });
+  }
+
   return (
     <div className="min-h-screen bg-bgSecondary">
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 text-white">
@@ -141,7 +154,11 @@ export function ReplayModePage() {
           style={{ background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
         >
           <h1 className="glass-page-title text-3xl">Replay Mode</h1>
-          <p className="mt-2 glass-muted text-sm">Cofnij się w czasie i zagraj &quot;co bym zrobił&quot;</p>
+          <p className="mt-2 glass-muted text-sm">
+            {t("replayModePage.subtitle", {
+              defaultValue: "Step back in time and play \"what would I do\"",
+            })}
+          </p>
         </header>
 
         {error ? (
@@ -153,13 +170,15 @@ export function ReplayModePage() {
         <section className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
           <form onSubmit={onLoadSnapshot} className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium glass-muted">Symbol search</span>
+              <span className="font-medium glass-muted">
+                {t("replayModePage.symbolSearchHint", { defaultValue: "Symbol search" })}
+              </span>
               <input
                 list="replay-symbols"
                 type="search"
                 value={symbolInput}
                 onChange={(e) => setSymbolInput(e.target.value.toUpperCase())}
-                placeholder="Wyszukaj spółkę..."
+                placeholder={t("replayModePage.companySearchPlaceholder", { defaultValue: "Search for a company…" })}
                 className="rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5 text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
                 required
               />
@@ -170,11 +189,17 @@ export function ReplayModePage() {
                   </option>
                 ))}
               </datalist>
-              <span className="text-xs text-white/50">{loadingSymbols ? "Szukam symboli..." : "Wpisz ticker lub nazwę"}</span>
+              <span className="text-xs text-white/50">
+                {loadingSymbols
+                  ? t("replayModePage.searchingSymbols", { defaultValue: "Searching symbols…" })
+                  : t("replayModePage.symbolTickerOrNameHint", { defaultValue: "Enter a ticker or name" })}
+              </span>
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium glass-muted">Date picker</span>
+              <span className="font-medium glass-muted">
+                {t("replayModePage.datePickerHint", { defaultValue: "Date picker" })}
+              </span>
               <input
                 type="date"
                 value={date}
@@ -192,7 +217,9 @@ export function ReplayModePage() {
                 className="w-full rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
                 style={{ backgroundColor: colors.brandDark }}
               >
-                {loadingSnapshot ? "Ładowanie..." : "Załaduj historię"}
+                {loadingSnapshot
+                  ? t("replayModePage.loading", { defaultValue: "Loading..." })
+                  : t("replayModePage.historyLoad", { defaultValue: "Load history" })}
               </button>
             </div>
           </form>
@@ -205,7 +232,9 @@ export function ReplayModePage() {
               style={{ backgroundColor: colors.bgSecondary }}
             >
               <div>
-                <p className="text-sm font-medium text-white/50">Wykres historyczny</p>
+                <p className="text-sm font-medium text-white/50">
+                  {t("replayModePage.chartHistorical", { defaultValue: "Historical chart" })}
+                </p>
                 <p className="mt-2 text-xs text-white/50">
                   {snapshot.symbol} • {snapshot.date}
                 </p>
@@ -213,9 +242,13 @@ export function ReplayModePage() {
             </article>
 
             <aside className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-              <p className="text-sm font-semibold glass-muted">Panel decyzji</p>
+              <p className="text-sm font-semibold glass-muted">
+                {t("replayModePage.decisionPanel", { defaultValue: "Decision panel" })}
+              </p>
               <div className="mt-4 rounded-xl glass-panel border border-white/10 bg-white/5 p-3">
-                <p className="text-xs uppercase tracking-wide text-white/50">Cena na wybrany dzień</p>
+                <p className="text-xs uppercase tracking-wide text-white/50">
+                  {t("replayModePage.priceDayLabel", { defaultValue: "Price on selected day" })}
+                </p>
                 <p className="mt-1 font-mono text-2xl font-bold text-white">{formatPrice(snapshot.close)}</p>
               </div>
 
@@ -227,7 +260,7 @@ export function ReplayModePage() {
                   className="rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
                   style={{ backgroundColor: colors.positive }}
                 >
-                  Kup
+                  {t("replayModePage.buy", { defaultValue: "Buy" })}
                 </button>
                 <button
                   type="button"
@@ -236,7 +269,7 @@ export function ReplayModePage() {
                   className="rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
                   style={{ backgroundColor: colors.negative }}
                 >
-                  Sprzedaj
+                  {t("replayModePage.sell", { defaultValue: "Sell" })}
                 </button>
                 <button
                   type="button"
@@ -245,22 +278,28 @@ export function ReplayModePage() {
                   className="rounded-lg border border-white/10 px-3 py-2 text-sm font-semibold transition hover:bg-bgSecondary disabled:opacity-60"
                   style={{ color: colors.textMuted }}
                 >
-                  Pomiń
+                  {t("replayModePage.skip", { defaultValue: "Skip" })}
                 </button>
               </div>
 
               <label className="mt-4 block text-sm">
-                <span className="font-medium glass-muted">Dlaczego?</span>
+                <span className="font-medium glass-muted">
+                  {t("replayModePage.whyLabel", { defaultValue: "Why?" })}
+                </span>
                 <textarea
                   value={reason}
                   onChange={(event) => setReason(event.target.value)}
                   rows={5}
-                  placeholder="Opisz swój tok myślenia..."
+                  placeholder={t("replayModePage.thinkingPlaceholder", {
+                    defaultValue: "Describe your thought process…",
+                  })}
                   className="mt-1 w-full rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
                 />
               </label>
 
-              {loadingEvaluation ? <p className="mt-3 text-xs text-white/50">Analiza decyzji...</p> : null}
+              {loadingEvaluation ? (
+                <p className="mt-3 text-xs text-white/50">{t("replayModePage.aiAnalyzing", { defaultValue: "Analyzing decision..." })}</p>
+              ) : null}
             </aside>
           </section>
         ) : null}
@@ -273,16 +312,14 @@ export function ReplayModePage() {
             <h2 className="text-lg font-semibold text-white">AI Feedback</h2>
             <div className="mt-3 grid gap-3 text-sm md:grid-cols-3">
               <p>
-                <span className="text-white/70">Decyzja:</span>{" "}
-                <span className="font-semibold">
-                  {selectedDecision === "BUY" ? "Kup" : selectedDecision === "SELL" ? "Sprzedaj" : "Pomiń"}
-                </span>
+                <span className="text-white/70">{t("replayModePage.decisionLabel", { defaultValue: "Decision:" })} </span>
+                <span className="font-semibold">{decisionVerb(selectedDecision)}</span>
               </p>
               <p>
                 <span className="text-white/70">Score:</span> <span className="font-semibold">{evaluation.score}/10</span>
               </p>
               <p>
-                <span className="text-white/70">Faktyczny wynik:</span>{" "}
+                <span className="text-white/70">{t("replayModePage.actualOutcomeLabel", { defaultValue: "Realized outcome:" })}{" "}</span>
                 <span className="font-semibold">
                   {evaluation.actualOutcome >= 0 ? "+" : ""}
                   {evaluation.actualOutcome.toFixed(2)}%

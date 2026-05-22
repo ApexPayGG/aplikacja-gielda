@@ -110,7 +110,51 @@
     "loginAsideSubtitle": "An investment platform built for modern traders.",
     "loginAsideFeature1": "AI analytics for informed investment decisions",
     "loginAsideFeature2": "Automated alerts and 24/7 market monitoring",
-    "loginAsideFeature3": "Portfolio insights and performance in one place"
+    "loginAsideFeature3": "Portfolio insights and performance in one place",
+    "registerCheckEmail": "Check your inbox — we sent an activation link to {{email}}",
+    "registerBenefitsAsideTitle": "Benefits of signing up",
+    "registerBenefitsAsideSubtitle": "Join StockAI Pro and invest with more clarity.",
+    "registerBenefit1": "Personalized AI analysis and alerts",
+    "registerBenefit2": "One hub for portfolio monitoring and signals",
+    "registerBenefit3": "Faster decisions with automated market insights",
+    "registerAcceptTermsLead": "By signing up you accept our",
+    "registerTermsLink": "Terms of Service",
+    "registerPrivacyLink": "Privacy Policy",
+    "registerAndWord": "and",
+    "forgotPasswordTitle": "Reset password",
+    "forgotPasswordSubtitle": "Enter the email address linked to your account.",
+    "forgotPasswordSent": "Check your inbox.",
+    "forgotPasswordSending": "Sending…",
+    "forgotPasswordSubmit": "Send reset link",
+    "resetPasswordMissingToken": "Missing password reset token.",
+    "resetPasswordTooShort": "Password must be at least 8 characters.",
+    "resetPasswordMismatch": "Passwords must match.",
+    "resetPasswordTitle": "Choose a new password",
+    "resetPasswordSubtitle": "Enter a new password for your account.",
+    "resetPasswordSuccess": "Password updated. You can sign in.",
+    "resetPasswordNewLabel": "New password",
+    "resetPasswordConfirmLabel": "Confirm password",
+    "resetPasswordSaving": "Saving…",
+    "resetPasswordSubmit": "Set new password",
+    "verifyEmailWorking": "Verifying email…",
+    "verifyEmailInvalidLink": "The link expired or is invalid.",
+    "verifyBackRegister": "Back to sign up",
+    "backToLogin": "Back to login"
+  },
+  "profilePage": {
+    "saved": "Your changes were saved.",
+    "loadingProfile": "Loading profile…",
+    "title": "My profile",
+    "avatarAlt": "User avatar",
+    "changeAvatar": "Change avatar",
+    "fullName": "Full name",
+    "language": "Language",
+    "timezone": "Time zone",
+    "currentPlan": "Current plan",
+    "upgrade": "Upgrade",
+    "saving": "Saving…",
+    "saveChanges": "Save changes",
+    "deleteAccount": "Delete account"
   },
   "backtest": {
     "avgReturn": "Avg return",
@@ -363,8 +407,16 @@
     "cardDateLabel": "Digest date",
     "emailSent": "Test email sent for {{date}}.",
     "emptyState": "Click preview to generate today's digest.",
+    "noPreviousDigests": "No previous digests to show.",
+    "subscribeLabel": "Subscribe",
+    "frequencyDaily": "Daily",
+    "frequencyWeekly": "Weekly",
+    "pageSubtitle": "A concise daily rundown of investing highlights and market signals.",
     "previewButton": "Preview my digest",
+    "todayLabel": "Today's digest",
+    "previousSectionTitle": "Previous digests",
     "sendButton": "Send test email",
+    "sendNow": "Send now",
     "subtitle": "Generate your AI market recap and send a test email instantly.",
     "title": "Daily Digest"
   },
@@ -520,11 +572,17 @@
   },
   "earnings": {
     "confidence": "Confidence",
+    "factorsSubtitle": "Simulated factors derived from the confidence score.",
+    "historyAccuracyNote": "Simulated model accuracy history.",
+    "historyTitle": "Prediction history",
     "nextDate": "Next earnings date",
     "noDate": "Date unavailable",
+    "pageLead": "The model predicts the surprise direction and surfaces impact factors for the next report.",
     "predictButton": "Predict",
+    "quarterColumn": "Period",
     "reasoning": "AI reasoning",
     "resultFor": "Prediction for",
+    "searchPlaceholderMixed": "Search company (e.g. MSFT)",
     "subtitle": "Estimate the probability of BEAT, MISS, or IN_LINE before the next report.",
     "symbolPlaceholder": "Enter symbol (e.g. AAPL)",
     "title": "Earnings Surprise Predictor",
@@ -584,11 +642,23 @@
     "actionSell": "SELL",
     "colAction": "Action",
     "colDate": "Date",
+    "colLogoSymbol": "Logo & symbol",
+    "colType": "Side (buy/sell)",
+    "countsBuySell": "Buys: {{buys}} · Sells: {{sells}}",
+    "emptyTopInsiders": "No data available for Top insiders.",
     "colName": "Name",
     "colRole": "Role",
     "colValue": "Value",
     "emptyTransactions": "No qualifying insider transactions in the last 30 days.",
+    "fetchTransactions": "Fetch transactions",
+    "totalValueLabel": "Total value: {{value}}",
+    "insiderBuyShort": "Buy",
+    "insiderSellShort": "Sell",
     "insight": "AI Insight",
+    "topInsiders": "Top insiders",
+    "netSentimentPrefix": "Net sentiment:",
+    "redesignSubtitle": "Track recent insider transactions and assess their directional bias.",
+    "redesignTitle": "Insider Mirror",
     "resultFor": "Insider activity for",
     "searchButton": "Mirror insiders",
     "sentimentBuy": "Net buying",
@@ -924,7 +994,9 @@
     "empty": "No recent news found for this symbol.",
     "expired": "Expired",
     "halfLifeDaysBadge": "{{days}} days",
+    "halfLifeHoursBadge": "{{hours}}h",
     "halfLifeDaysLabel": "Half-life: {{days}} days",
+    "sourceDateLine": "Source: {{source}} · Date: {{date}}",
     "mostImpactful": "Most impactful news",
     "reasonLabel": "Reason",
     "remainingLabel": "Time left",
@@ -953,6 +1025,10 @@
     "pnl": "P&L",
     "portfolio": "Portfolio",
     "printReport": "Print report",
+    "printReportGenerated": "Generated",
+    "printReportSummary": "Summary",
+    "printReportTitle": "StockAI Pro — Portfolio report",
+    "printReportTrades": "Trades",
     "quantity": "Quantity",
     "recentCount": "Latest {{count}}",
     "selectTicker": "Select {{ticker}}",
@@ -1382,6 +1458,48 @@
       "headline": "{{ticker}} setup: {{setup}}",
       "riskNote": "Wait for candle close confirmation and keep strict stop discipline."
     },
+    "fallback": {
+      "communication": {
+        "0": "Telecom operators report stable ARPU growth in bundled service segments",
+        "1": "Video ad markets are growing double digits; linear and OTT broadcasters compete for inventory",
+        "2": "Sports broadcast rights remain a key cost driver for media groups"
+      },
+      "technology": {
+        "0": "Software companies report rising enterprise orders in hybrid cloud",
+        "1": "EU AI regulation affects rollout timelines for technology products",
+        "2": "Tech sector: investors reassess margins after the quarterly earnings season"
+      },
+      "financials": {
+        "0": "Central banks signal a more cautious pace of rate cuts",
+        "1": "Banking sector: net interest margin under pressure from deposit competition",
+        "2": "Mortgage lending: demand stabilizes after an earlier correction"
+      },
+      "healthcare": {
+        "0": "Pharma producers monitor reimbursement lists and drug launch schedules",
+        "1": "Med-tech sector reports rising orders for diagnostic equipment",
+        "2": "Investors evaluate R&D pipelines amid pricing pressure in the EU"
+      },
+      "energy": {
+        "0": "Natural gas prices stabilize after earlier seasonal volatility",
+        "1": "Energy companies update renewable and storage investment plans",
+        "2": "Coal markets show moderate industrial demand in the CEE region"
+      },
+      "consumer": {
+        "0": "Retailers report improved same-store sales in non-food segments",
+        "1": "Consumers react to promotions; retail margins remain under watch",
+        "2": "FMCG: producers pass part of raw-material costs through to end prices"
+      },
+      "industrial": {
+        "0": "Eurozone manufacturing PMI points to a cautious rebound in B2B orders",
+        "1": "Industrial producers face logistics costs and component lead times",
+        "2": "Capital goods order backlog remains elevated"
+      },
+      "general": {
+        "0": "Broad index consolidates after earlier macro volatility",
+        "1": "Institutional investors increase allocation to stable dividend names",
+        "2": "Analysts update valuation models after macro data releases"
+      }
+    },
     "narrative": "Narrative",
     "narrativeBodyFallback": "No narrative body returned by the API.",
     "narrativeConfidence": {
@@ -1587,7 +1705,10 @@
     "tax19": "Belka tax 19%",
     "title": "Tax Optimizer",
     "toPay": "Tax due",
-    "year": "Tax year"
+    "year": "Tax year",
+    "potentialSavings": "Potential savings",
+    "customCountryRateInvalid": "Enter a valid tax rate for Custom mode.",
+    "countryRateFooter": "Country: {{country}} · Effective rate: {{rate}}%"
   },
   "trackrecord": {
     "avgReturn": "Average return",
@@ -1603,7 +1724,296 @@
     "title": "Anonymous Track Record",
     "totalTrades": "Total trades",
     "winRate": "Win rate",
-    "worstTradePct": "Worst trade"
+    "worstTradePct": "Worst trade",
+    "publicProfileHeading": "Public profile",
+    "tradeHistoryHeading": "Trade history",
+    "shareStyleLabel": "Share your Track Record",
+    "shareTweet": "📊 My track record: Win rate {{winRate}}% | {{totalTrades}} trades | StockAI Pro"
+  },
+  "replayModePage": {
+    "aiAnalyzing": "Analyzing decision...",
+    "actualOutcomeLabel": "Realized outcome:",
+    "chartHistorical": "Historical chart",
+    "datePickerHint": "Date picker",
+    "decisionLabel": "Decision:",
+    "decisionPanel": "Decision panel",
+    "errorSymbolRequired": "Enter a ticker symbol.",
+    "historyLoad": "Load history",
+    "loading": "Loading...",
+    "priceDayLabel": "Price on selected day",
+    "searchingSymbols": "Searching symbols…",
+    "companySearchPlaceholder": "Search for a company…",
+    "skip": "Skip",
+    "sell": "Sell",
+    "subtitle": "Step back in time and play \"what would I do\"",
+    "symbolTickerOrNameHint": "Enter a ticker or name",
+    "symbolSearchHint": "Symbol search",
+    "thinkingPlaceholder": "Describe your thought process…",
+    "whyLabel": "Why?",
+    "buy": "Buy",
+    "skipExplained": "Skip justified: {{reason}}",
+    "skipNeutral": "Skipping can be a good idea when the setup does not match your checklist."
+  },
+  "strategyDnaPage": {
+    "shareLabel": "Share your style",
+    "shareTweet": "🧬 My investing style: {{style}} | {{match}}% match vs {{investor}} | StockAI Pro",
+    "subtitle": "Discover your decision patterns and dominant investing profile.",
+    "avgWin": "Avg win",
+    "avgLoss": "Avg loss",
+    "avgHoldDays": "{{days}} days",
+    "fromMistakesTitle": "Context from mistake library",
+    "fromMistakesSymbols": "Symbols from mistakes: {{symbols}}.",
+    "notEnoughTrades": "You need at least 20 closed trades.",
+    "recFocusRisk": {
+      "body": "Current risk tolerance is {{pct}}. Keep position sizing aligned with your plan.",
+      "title": "Watch position risk"
+    },
+    "recPlayStyle": {
+      "body": "Highest match is {{style}} ({{pct}}). Build a playbook for that profile.",
+      "title": "Trade your dominant style"
+    },
+    "recRotateSetup": {
+      "body": "Focus on the 2–3 setups that repeat most often and log win rates week over week.",
+      "title": "Rotate sector setups"
+    },
+    "recommendationsHeading": "Recommendations",
+    "setupsSectorPrefix": "Sector setup: {{sector}}",
+    "fallbackSetup1": "Mean reversion after a sharp drop",
+    "fallbackSetup2": "Trend continuation after a breakout",
+    "fallbackSetup3": "Defensive setup in high volatility",
+    "setupsHeading": "Your setups",
+    "yourStyleHeading": "Your investing style",
+    "title": "Strategy DNA"
+  },
+  "reverseScreenerPage": {
+    "avgOutcomeLabel": "Average outcome:",
+    "emptyMatches": "No matches for this ticker.",
+    "errorTickerRequired": "Enter a ticker to start the search.",
+    "findSimilar": "Find similar",
+    "introSimilarSetups": "Historical setups similar to today's candle shape and volume.",
+    "promptWhichLookedSame": "Which stocks historically looked the same as {{symbol}} today?",
+    "followUpHeading": "What happened next",
+    "resultsHeading": "Results",
+    "tickerPlaceholder": "e.g. AAPL"
+  },
+  "lossStreakPage": {
+    "cooldownHeading": "Cool-down principles",
+    "cooldownIntro": "Cooldown timer:",
+    "currentStreak": "Current streak",
+    "rule1": "After 3 consecutive losses the system activates a 30-minute cooldown.",
+    "rule2": "During cooldown, do not open new positions — run through your risk checklist.",
+    "rule3": "When cooldown ends, return only to setups from your daily plan.",
+    "streakHistory": "Streak history",
+    "subtitle": "Manage loss streaks and automatic cooldown so you do not escalate risk after emotional trades."
+  },
+  "notifications": {
+    "aria": "Notifications",
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications yet",
+    "justNow": "just now",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}} h ago",
+    "daysAgo": "{{count}} d ago"
+  },
+  "landingAria": {
+    "demoTickerTape": "Sample market listings — demo data",
+    "homeLogo": "Stock-AI.Pro — home",
+    "closeMenu": "Close menu",
+    "openMenu": "Open menu"
+  },
+  "waitlistPage": {
+    "seoDescription": "Join the Early Access list and lock in the Early Adopter price for StockAI Pro.",
+    "benefit1": "Permanent Early Adopter price: Pro $9/mo — forever.",
+    "benefit2": "Priority access to new AI modules.",
+    "benefit3": "Influence the product roadmap and premium features.",
+    "benefit4": "Dedicated onboarding materials for founding users.",
+    "countWaiting": "{{count}} people already waiting",
+    "countWaitingUnknown": "people already waiting",
+    "ctaJoin": "Join the waitlist",
+    "ctaSubmitting": "Submitting…",
+    "benefitsHeading": "Early Access benefits",
+    "emailLabel": "Email",
+    "nameLabel": "Name (optional)",
+    "namePlaceholder": "Your first name",
+    "subhead": "The first 500 accounts get the Early Adopter price forever: Pro $9/mo.",
+    "successOnList": "You are on the list! Check your inbox.",
+    "title": "Join Early Access"
+  },
+  "contactPage": {
+    "title": "Contact",
+    "docTitle": "Contact | StockAI Pro",
+    "intro": "Questions about StockAI Pro? Reach out — we answer within 24 hours.",
+    "contactInfoHeading": "Contact details",
+    "responseTimeHeading": "Response time",
+    "responseTimeHint": "We reply within 24 hours",
+    "writeUsHeading": "Write to us",
+    "fullName": "Full name",
+    "subject": "Topic",
+    "message": "Message",
+    "sending": "Sending…",
+    "send": "Send",
+    "success": "Message sent! We'll reply within 24 hours.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "socialLinks": "Social links",
+    "subjectPayments": "Billing",
+    "subjectBug": "Bug",
+    "subjectSuggestion": "Suggestion",
+    "subjectOther": "Other"
+  },
+  "changelogPage": {
+    "seoDescription": "Latest features and fixes in StockAI Pro.",
+    "title": "What's new",
+    "subtitle": "Latest features and fixes",
+    "dateMay2026": "May 2026",
+    "dateApril2026": "April 2026",
+    "badgeLaunch": "🚀 Launch",
+    "badgeFeature": "✨ Feature",
+    "badgeFix": "🐛 Fix",
+    "badgeSecurity": "🔒 Security",
+    "v100Title": "Launch 🚀",
+    "v100change1": "AI investing platform for WSE, NYSE, DAX and 130+ exchanges",
+    "v100change2": "27 AI modules (signals, behavioral coach, paper trading)",
+    "v100change3": "9 languages",
+    "v100change4": "Alpaca integration (US trading)",
+    "v100change5": "eToro affiliate",
+    "v090Title": "Premium Analysis",
+    "v090change1": "5-screen Premium Company Analysis",
+    "v090change2": "Historical Twin (pgvector)",
+    "v090change3": "Trader Psyche System",
+    "v090change4": "Stripe payments",
+    "v080Title": "Behavioral Layer",
+    "v080change1": "Behavioral Coach",
+    "v080change2": "Pre-Mortem AI",
+    "v080change3": "Strategy DNA Match",
+    "v080change4": "Loss Streak Cool-Down"
+  },
+  "apiDocsPage": {
+    "heroSubtitle": "Access StockAI Pro data through our REST API",
+    "proPlusBadge": "Pro+ only",
+    "requiredYes": "yes",
+    "requiredNo": "no",
+    "navAuthentication": "Authentication",
+    "navQuotes": "Quotes",
+    "navSignals": "Signals",
+    "navCompanies": "Companies",
+    "navDividend": "Dividend",
+    "navPortfolio": "Portfolio",
+    "proPlusNote": "Pro+ required for real access. Endpoints are shown publicly for documentation only.",
+    "authHint": "Use your API key from account settings",
+    "authKeyLead": "You can find the API key under",
+    "settingsLinkLabel": "Settings",
+    "sectionsLabel": "Sections",
+    "paramTableName": "Parameter",
+    "paramTableType": "Type",
+    "paramTableRequired": "Required",
+    "paramTableDesc": "Description",
+    "authentication": {
+      "title": "Authentication",
+      "description": "Authenticate requests with your personal API key."
+    },
+    "quotes": {
+      "sectionDesc": "Fetch the latest quotes and basic price fields.",
+      "endpointDesc": "Returns the newest available quote for the given symbol.",
+      "tickerParam": "Instrument ticker (e.g. AAPL)."
+    },
+    "signals": {
+      "sectionDesc": "Inspect investment signals generated by StockAI Pro.",
+      "endpointDesc": "Fetches the latest signal list with an optional row limit.",
+      "limitParam": "Number of records to return (max 100)."
+    },
+    "companies": {
+      "sectionDesc": "Search companies by name, ticker or keyword.",
+      "endpointDesc": "Returns companies matching your query.",
+      "qParam": "Search phrase."
+    },
+    "dividend": {
+      "sectionDesc": "Analyze dividend equities and screening filters.",
+      "endpointDesc": "Returns the default dividend screener result set.",
+      "sectorParam": "Optional sector filter.",
+      "minYieldParam": "Minimum dividend yield."
+    },
+    "portfolio": {
+      "sectionDesc": "Fetch a user's paper-trading portfolio.",
+      "endpointDesc": "Returns the current simulated portfolio snapshot.",
+      "userIdParam": "User id in the URL path."
+    }
+  },
+  "newsHalfLifePage": {
+    "placeholderTicker": "Ticker (e.g. AAPL)",
+    "subtitle": "Track how fast headlines fade and filter signals by event type.",
+    "emptyFilter": "No news for the selected filter.",
+    "sourceDate": "Source: {{source}} · Date: {{date}}",
+    "search": "Search",
+    "daySuffixShort": "{{count}}d",
+    "hourSuffixShort": "{{count}}h",
+    "halfLifeDaysRounded": "{{count}} days"
+  },
+  "adminPage": {
+    "noUsers": "No users.",
+    "totalClicks": "Total clicks",
+    "conversions": "Conversions",
+    "last7DaysStat": "Last 7 days",
+    "clicksChartTitle": "Click chart (last 7 days)",
+    "byLanguageTable": "By language",
+    "clicks30dSummary": "Clicks last 30 days:",
+    "noBreakdownData": "No data.",
+    "actionsColumn": "Actions",
+    "chartAria": "Affiliate clicks chart for the last seven days"
+  },
+  "privacyPageLayout": {
+    "title": "Privacy policy",
+    "documentLabel": "GDPR",
+    "administrator": "Controller",
+    "address": "Address",
+    "email": "Email",
+    "intro": "This policy describes how {{company}} processes personal data of StockAI Pro users."
+  },
+  "termsPageLayout": {
+    "title": "Terms of use",
+    "documentLabel": "Terms & conditions",
+    "intro": "These terms define the rules for using the StockAI Pro platform ({{website}}) provided by {{company}}. By using the Platform, you accept the conditions below."
+  },
+  "errorPages": {
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The page you are looking for does not exist or was moved.",
+    "notFoundHome": "Back to home",
+    "genericTitle": "Something went wrong",
+    "genericBody": "Something went wrong while loading this section. Refresh the page or go back.",
+    "refresh": "Refresh",
+    "back": "Go back",
+    "paymentSuccessTitle": "Payment successful!",
+    "paymentSuccessSubtitle": "Your {{plan}} plan is active.",
+    "goToApp": "Go to app",
+    "seoPaymentSuccessTitle": "Payment completed | StockAI Pro",
+    "paymentCancelTitle": "Payment canceled",
+    "paymentCancelBody": "You can return to pricing and finish checkout anytime.",
+    "backToPricing": "Back to pricing"
+  },
+  "settingsPageNotifications": {
+    "loadFailed": "Failed to load notification settings.",
+    "saved": "Notification preferences saved.",
+    "saveFailed": "Failed to save notification preferences.",
+    "testSent": "Test sent to: {{channels}}.",
+    "testNoChannels": "No active channels or the test send failed.",
+    "testSendFailed": "Failed to send a test notification."
+  },
+  "settingsPageSections": {
+    "profileSubtitle": "Your account details and mentor settings.",
+    "subscriptionSubtitle": "Manage your plan and unlock more platform capabilities.",
+    "notificationsTitle": "Notifications",
+    "notificationsSubtitle": "Configure Discord/Telegram channels and signal delivery thresholds.",
+    "signalsToggle": "Signals",
+    "dividendsToggle": "Dividends",
+    "minSignalScore": "Minimum signal score",
+    "languageSubtitle": "Choose the app interface language.",
+    "changelogLink": "What's new (Changelog)",
+    "helpCenterLink": "Help center",
+    "notificationsBadgeActive": "Active",
+    "notificationsBadgeInactive": "Inactive",
+    "telegramPlaceholder": "e.g. 123456789",
+    "testNotification": "Send test notification",
+    "apiProBanner": "REST API is included on the {{plan}} plan."
   },
   "volatility": {
     "errors": {
@@ -1674,10 +2084,78 @@
     "weekOf": "Week of"
   },
   "legal": {
+    "address": "Address",
+    "administrator": "Controller",
+    "backHome": "Back to home",
+    "effectiveDate": "Effective date: {{date}}",
+    "email": "Email",
     "investmentDisclaimer": "Legal notice: All analyses, market signals, and materials generated by artificial intelligence (including Claude AI) on StockAI Pro are for educational and informational purposes only. They do not constitute investment recommendations or financial advice under applicable law. Investing in financial markets involves a high risk of capital loss. AMC Energy Sp. z o.o. is not liable for financial decisions made based on data in the application.",
+    "privacy": "Privacy policy",
+    "privacyDocumentLabel": "GDPR",
+    "privacyIntro": "This policy describes how {{company}} processes personal data of StockAI Pro users.",
+    "privacyPageTitle": "Privacy policy",
+    "terms": "Terms",
+    "termsDocumentLabel": "Terms of service",
+    "termsIntro": "These terms govern use of the StockAI Pro platform ({{website}}) provided by {{company}}. By using the Platform, you accept the conditions below.",
+    "termsPageTitle": "Terms of use",
     "termsLink": "Full terms of service",
     "ariaLabel": "Investment legal disclaimer",
     "showDisclaimer": "Investment disclaimer"
+  },
+  "admin": {
+    "clicksChart7d": "Clicks chart (last 7 days)",
+    "clicksLast30Days": "Clicks in the last 30 days:",
+    "colActions": "Actions",
+    "conversions": "Conversions",
+    "last7Days": "Last 7 days",
+    "noData": "No data.",
+    "noUsers": "No users.",
+    "perLanguage": "Per language",
+    "totalClicks": "Total clicks"
+  },
+  "aiBrief": {
+    "mock": {
+      "morning0": {
+        "bullet1": "The session opens under rotation pressure from growth into value; institutional investors are trimming short-horizon exposure after a strong macro print.",
+        "bullet2": "The earnings calendar points to key operating-margin reads — consensus expects stabilization, but guidance could surprise higher if B2B demand holds.",
+        "bullet3": "Liquidity in the first trading hour is elevated; overnight volume suggests active portfolio diversification ahead of this week's Fed decision."
+      },
+      "morning1": {
+        "bullet1": "Prices are reacting to services PMI above forecasts, supporting a soft-landing narrative and short-term risk-on in cyclical defensives.",
+        "bullet2": "Corporate bond spreads are tightening, signaling improved risk appetite; dividends and buybacks remain the main valuation catalyst in large caps.",
+        "bullet3": "Analysts are raising price targets after better-than-expected segment revenue; focus is on sustaining free cash flow in Q2."
+      },
+      "morning2": {
+        "bullet1": "The market is discounting slower consumer demand, yet advance orders in the supply chain still align with the production plan.",
+        "bullet2": "Energy commodity swings are capping gross-margin expansion; management signaled cost hedging through fiscal year-end.",
+        "bullet3": "Short speculative positions are shrinking after positive management commentary at an industry conference — sentiment is improving gradually."
+      },
+      "morning3": {
+        "bullet1": "The sector index is in a technical pullback after testing resistance; capital is returning to companies with strong balance sheets and low net debt.",
+        "bullet2": "US employment data reinforces expectations for a longer pause in the rate-hike cycle, which supports medium-term growth valuations.",
+        "bullet3": "Insider buying over the last two weeks supports the thesis of attractive pricing versus historical average EV/EBITDA."
+      },
+      "warning0": "Retail sentiment is extremely euphoric. Stay disciplined and avoid FOMO at current valuations.",
+      "warning1": "Speculative volume is rising faster than fundamentals. Consider capping position size and planning a stop-loss before entry.",
+      "warning2": "Media noise after quarterly results distorts risk perception. Wait for confirmation from institutional volume.",
+      "warning3": "Correlation with the broad market index is high — diversification within the sector does not reduce systemic risk in the short term.",
+      "warning4": "Historical volatility after guidance releases can be double the average. Avoid impulsive decisions in the first hour of trading."
+    }
+  },
+  "aiBriefDrawer": {
+    "alertsPrompt": "Want daily SMS/Push alerts for this company?",
+    "bearish": "Bearish",
+    "behavioralWarning": "Behavioral warning",
+    "bullish": "Bullish",
+    "close": "Close AI Brief",
+    "closeOverlay": "Close AI Brief panel",
+    "coachPrefix": "AI Coach:",
+    "morningTitle": "Morning quick brief",
+    "neutral": "Neutral",
+    "poweredBy": "Analysis powered by Claude 3.5 Sonnet",
+    "sectorSentiment": "Sector sentiment",
+    "sectorSentimentHint": "Based on aggregated news and macro signals in the {{sector}} sector.",
+    "unlockAlerts": "Unlock StockAI Pro alerts"
   },
   "onboarding": {
     "skip": "Skip",

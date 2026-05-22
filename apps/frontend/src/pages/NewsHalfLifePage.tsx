@@ -1,21 +1,31 @@
+import type { TFunction } from "i18next";
 import { FormEvent, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getNewsHalfLife, type NewsHalfLifeItem, type NewsHalfLifeResponse } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { resolveIntlLocale } from "../utils/formatters";
 
 function formatDate(value: string, locale: string): string {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return "-";
-  return parsed.toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" });
+  return parsed.toLocaleDateString(resolveIntlLocale(locale), { year: "numeric", month: "short", day: "numeric" });
 }
 
 type NewsFilter = "All" | "Earnings" | "Fed" | "Geopolitics" | "Company";
 const FILTERS: NewsFilter[] = ["All", "Earnings", "Fed", "Geopolitics", "Company"];
 
-function halfLifeLabel(days: number): string {
-  if (days < 3) return `${Math.max(1, Math.round(days * 24))}h`;
-  return `${Math.round(days)} dni`;
+function halfLifeLabel(days: number, t: TFunction): string {
+  if (days < 3) {
+    return t("newshalflife.halfLifeHoursBadge", {
+      defaultValue: "{{hours}}h",
+      hours: Math.max(1, Math.round(days * 24)),
+    });
+  }
+  return t("newshalflife.halfLifeDaysBadge", {
+    defaultValue: "{{days}} days",
+    days: Math.round(days),
+  });
 }
 
 function isLongHalfLife(days: number): boolean {
@@ -37,7 +47,7 @@ function readSource(item: NewsHalfLifeItem): string {
 }
 
 export function NewsHalfLifePage() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [symbol, setSymbol] = useState("AAPL");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +88,9 @@ export function NewsHalfLifePage() {
           News Half-Life
         </h1>
         <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
-          Śledź jak szybko wygasa wpływ publikacji i filtruj sygnały według typu wydarzeń.
+          {t("newshalflife.subtitle", {
+            defaultValue: "Estimate how quickly each news item loses impact on price.",
+          })}
         </p>
       </header>
 
@@ -87,7 +99,7 @@ export function NewsHalfLifePage() {
           <input
             value={symbol}
             onChange={(event) => setSymbol(event.target.value.toUpperCase())}
-            placeholder="Ticker (np. AAPL)"
+            placeholder={t("newshalflife.symbolPlaceholder", { defaultValue: "Enter symbol (e.g. AAPL)" })}
             className="w-full rounded-xl border px-3 py-2 outline-none"
             style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
           />
@@ -97,7 +109,7 @@ export function NewsHalfLifePage() {
             className="rounded-xl px-4 py-2 font-semibold text-white disabled:opacity-60"
             style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
           >
-            {loading ? "Ładowanie..." : "Szukaj"}
+            {loading ? t("common.loading", { defaultValue: "Loading..." }) : t("newshalflife.searchButton", { defaultValue: "Analyze news" })}
           </button>
         </div>
       </form>
@@ -129,7 +141,11 @@ export function NewsHalfLifePage() {
         })}
       </div>
 
-      {data && filteredNews.length === 0 ? <p style={{ color: colors.textMuted }}>Brak newsów dla wybranego filtra.</p> : null}
+      {data && filteredNews.length === 0 ? (
+        <p style={{ color: colors.textMuted }}>
+          {t("newshalflife.empty", { defaultValue: "No recent news found for this symbol." })}
+        </p>
+      ) : null}
 
       <section className="space-y-4">
         {filteredNews.map((item, idx) => {
@@ -150,7 +166,7 @@ export function NewsHalfLifePage() {
                     color: longLife ? colors.brandGold : colors.textMuted,
                   }}
                 >
-                  {halfLifeLabel(item.halfLifeDays)}
+                  {halfLifeLabel(item.halfLifeDays, t)}
                 </span>
               </div>
 
@@ -159,7 +175,11 @@ export function NewsHalfLifePage() {
               </h3>
 
               <p className="mt-2 text-xs" style={{ color: colors.textSecondary }}>
-                Źródło: {readSource(item)} • Data: {formatDate(item.date, i18n.language || "en-US")}
+                {t("newshalflife.sourceDateLine", {
+                  defaultValue: "Source: {{source}} · Date: {{date}}",
+                  source: readSource(item),
+                  date: formatDate(item.date, i18n.language || "en"),
+                })}
               </p>
             </article>
           );

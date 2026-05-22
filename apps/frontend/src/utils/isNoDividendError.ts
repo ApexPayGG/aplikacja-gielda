@@ -5,7 +5,8 @@ const NO_DIVIDEND_PATTERNS = [
   "dividend data not found",
   "no valid dividend rows",
   "no_dividend",
-  "nie wypłaca dywidend",
+  "does not pay a dividend",
+  "no dividend",
 ] as const;
 
 function messageLooksLikeNoDividend(message: string): boolean {

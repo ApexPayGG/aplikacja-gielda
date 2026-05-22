@@ -52,29 +52,29 @@ function NoDividendEmptyState({
         <div className="min-w-0 flex-1">
           <h3 className="text-base font-semibold leading-snug" style={{ color: colors.textPrimary }}>
             {t("company.dividend.noDividend.title", {
-              defaultValue: "Ta spółka nie wypłaca dywidend",
+              defaultValue: "This company does not pay dividends",
             })}
           </h3>
           <p className="mt-1 text-sm font-medium" style={{ color: colors.brandDark }}>
             {t("company.dividend.noDividend.lead", {
-              defaultValue: "I to jest w porządku.",
+              defaultValue: "And that is perfectly fine.",
             })}
           </p>
           <p className="mt-3 text-sm leading-relaxed" style={{ color: colors.textSecondary }}>
             {companyName?.trim()
               ? t("company.dividend.noDividend.description", {
                   defaultValue:
-                    "{{companyName}} skupia się na wzroście i reinwestuje zyski zamiast wypłacać je akcjonariuszom — tak działa wiele spółek technologicznych.",
+                    "{{companyName}} focuses on growth and reinvests profits instead of paying shareholders — common for many tech companies.",
                   companyName: displayName,
                 })
               : t("company.dividend.noDividend.descriptionGeneric", {
                   defaultValue:
-                    "Wiele spółek wzrostowych reinwestuje zyski zamiast wypłacać dywidendę — to świadoma strategia, nie brak danych.",
+                    "Many growth companies reinvest profits instead of paying dividends — a deliberate strategy, not missing data.",
                 })}
           </p>
           <p className="mt-3 text-sm leading-relaxed" style={{ color: colors.textMuted }}>
             {t("company.dividend.noDividend.hint", {
-              defaultValue: "Szukasz innych metryk? Sprawdź zakładki Przegląd lub AI Brief.",
+              defaultValue: "Looking for other metrics? Check the Overview or AI Brief tabs.",
             })}
           </p>
         </div>

@@ -163,7 +163,7 @@ export function DigestPage() {
               className="rounded-xl px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
               style={{ backgroundColor: colors.brandDark }}
             >
-              {loadingPreview ? t("common.loading") : "Wyślij teraz"}
+              {loadingPreview ? t("common.loading") : t("digest.sendNow", { defaultValue: "Send now" })}
             </button>
 
             <button
@@ -191,7 +191,7 @@ export function DigestPage() {
             }}
           >
             <p className="text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-              Dzisiejszy digest
+              {t("digest.todayLabel")}
             </p>
             <p className="mt-1 text-sm" style={{ color: colors.textMuted }}>
               {digest.date}
@@ -211,7 +211,7 @@ export function DigestPage() {
 
         <section className="space-y-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-            Poprzednie digesty
+            {t("digest.previousSectionTitle")}
           </h2>
           {previousDigests.length > 0 ? (
             previousDigests.map((entry) => (
@@ -230,7 +230,7 @@ export function DigestPage() {
             ))
           ) : (
             <p className="text-sm" style={{ color: colors.textMuted }}>
-              Brak poprzednich digestow do wyswietlenia.
+              {t("digest.noPreviousDigests")}
             </p>
           )}
         </section>

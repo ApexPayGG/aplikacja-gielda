@@ -18,8 +18,11 @@ import { buildSignalsFallbackNews } from "../utils/signalsFallback";
 
 function formatMarketCap(value: number, currency: string, locale: string): string {
   const amountFmt = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  if (value >= 1_000_000_000) return `${amountFmt.format(value / 1_000_000_000)} mld ${currency}`;
-  if (value >= 1_000_000) return `${amountFmt.format(value / 1_000_000)} mln ${currency}`;
+  const isPl = locale.toLowerCase().startsWith("pl");
+  const billionSuffix = isPl ? "mld" : "B";
+  const millionSuffix = isPl ? "mln" : "M";
+  if (value >= 1_000_000_000) return `${amountFmt.format(value / 1_000_000_000)} ${billionSuffix} ${currency}`;
+  if (value >= 1_000_000) return `${amountFmt.format(value / 1_000_000)} ${millionSuffix} ${currency}`;
   return `${new Intl.NumberFormat(locale).format(value)} ${currency}`;
 }
 
@@ -169,12 +172,15 @@ export function CompanyDetail() {
     : null;
   const displayNews = useMemo(() => {
     if (news.length > 0) return news;
-    return buildSignalsFallbackNews({
-      symbol: sym,
-      sector: company?.sector,
-      industry: company?.industry,
-    });
-  }, [news, sym, company?.sector, company?.industry]);
+    return buildSignalsFallbackNews(
+      {
+        symbol: sym,
+        sector: company?.sector,
+        industry: company?.industry,
+      },
+      t,
+    );
+  }, [news, sym, company?.sector, company?.industry, t]);
 
   useEffect(() => {
     if (!sym) return;
