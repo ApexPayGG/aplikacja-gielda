@@ -263,6 +263,41 @@ export function isUnknownSector(sector: string): boolean {
   return sector.trim().toLowerCase() === "unknown";
 }
 
+export function enrichmentScore(item: CompanySearchResultCandidate): number {
+  return (
+    (item.source === "db" ? 8 : 0) +
+    (item.logoUrl ? 4 : 0) +
+    (!isUnknownSector(item.sector) ? 2 : 0) +
+    (item.exchange !== "UNKNOWN" ? 1 : 0)
+  );
+}
+
+function pickBestEnrichedCandidate(items: CompanySearchResultCandidate[]): CompanySearchResultCandidate {
+  return items.reduce((best, cur) => (enrichmentScore(cur) >= enrichmentScore(best) ? cur : best));
+}
+
+/** Resolve duplicate logo URLs across unrelated tickers without stripping DB-enriched rows. */
+function pickLogoConflictKeeper(group: CompanySearchResultCandidate[]): CompanySearchResultCandidate {
+  const dbEnriched = group.filter(
+    (item) => item.source === "db" && item.logoUrl && !isUnknownSector(item.sector),
+  );
+  if (dbEnriched.length === 1) {
+    return dbEnriched[0]!;
+  }
+
+  const usListing = group.find((item) => parseSymbolParts(item.symbol).exchange === "US");
+  if (
+    usListing &&
+    group.some(
+      (other) => other !== usListing && !areLikelySameCompanyName(other.name, usListing.name),
+    )
+  ) {
+    return usListing;
+  }
+
+  return pickBestEnrichedCandidate(group);
+}
+
 /** True when two issuer names likely refer to the same company (e.g. Tesla vs Tesla Inc). */
 export function areLikelySameCompanyName(a: string, b: string): boolean {
   const norm = (value: string) =>
@@ -313,8 +348,42 @@ export function mergeSearchResultItems(
   };
 }
 
-export function sanitizeCrossSymbolLogos(items: CompanySearchResultItem[]): CompanySearchResultItem[] {
-  const byLogo = new Map<string, CompanySearchResultItem[]>();
+/** Share DB/EOD-enriched fields across listings that share the same base ticker (e.g. TSLA + TSLA.US). */
+export function propagateEnrichedFieldsByBase(
+  items: CompanySearchResultCandidate[],
+): CompanySearchResultCandidate[] {
+  const byBase = new Map<string, CompanySearchResultCandidate[]>();
+  for (const item of items) {
+    const base = parseSymbolParts(item.symbol).base;
+    const list = byBase.get(base) ?? [];
+    list.push(item);
+    byBase.set(base, list);
+  }
+
+  const donorByBase = new Map<string, CompanySearchResultCandidate>();
+  for (const [base, group] of byBase) {
+    donorByBase.set(base, pickBestEnrichedCandidate(group));
+  }
+
+  return items.map((item) => {
+    const base = parseSymbolParts(item.symbol).base;
+    const donor = donorByBase.get(base);
+    if (!donor || donor.symbol.toUpperCase() === item.symbol.toUpperCase()) {
+      return item;
+    }
+    const merged = mergeSearchResultItems(donor, item);
+    return {
+      ...merged,
+      symbol: item.symbol,
+      exchange: item.exchange !== "UNKNOWN" ? item.exchange : merged.exchange,
+    };
+  });
+}
+
+export function sanitizeCrossSymbolLogos(
+  items: CompanySearchResultCandidate[],
+): CompanySearchResultCandidate[] {
+  const byLogo = new Map<string, CompanySearchResultCandidate[]>();
   for (const item of items) {
     if (!item.logoUrl) continue;
     const list = byLogo.get(item.logoUrl) ?? [];
@@ -326,8 +395,9 @@ export function sanitizeCrossSymbolLogos(items: CompanySearchResultItem[]): Comp
 
   for (const group of byLogo.values()) {
     if (group.length < 2) continue;
+    const keeper = pickLogoConflictKeeper(group);
 
-    const byBase = new Map<string, CompanySearchResultItem[]>();
+    const byBase = new Map<string, CompanySearchResultCandidate[]>();
     for (const item of group) {
       const base = parseSymbolParts(item.symbol).base;
       const list = byBase.get(base) ?? [];
@@ -349,9 +419,9 @@ export function sanitizeCrossSymbolLogos(items: CompanySearchResultItem[]): Comp
         const exB = parseSymbolParts(b.symbol).exchange;
         return preferredExchangeBonus(exA) - preferredExchangeBonus(exB);
       });
-      const keeper = ranked[0]!;
+      const baseKeeper = ranked[0]!;
       for (const item of sameBase) {
-        if (item.symbol.toUpperCase() !== keeper.symbol.toUpperCase()) {
+        if (item.symbol.toUpperCase() !== baseKeeper.symbol.toUpperCase()) {
           symbolsToClear.add(item.symbol.toUpperCase());
         }
       }
@@ -359,15 +429,10 @@ export function sanitizeCrossSymbolLogos(items: CompanySearchResultItem[]): Comp
 
     const distinctBases = new Set(group.map((i) => parseSymbolParts(i.symbol).base));
     if (distinctBases.size > 1) {
-      const names = new Set(group.map((i) => i.name.trim().toLowerCase()));
-      if (names.size > 1) {
-        for (const item of group) {
-          const base = parseSymbolParts(item.symbol).base;
-          const sameBasePeers = group.filter((p) => parseSymbolParts(p.symbol).base === base);
-          if (sameBasePeers.length === 1) {
-            symbolsToClear.add(item.symbol.toUpperCase());
-          }
-        }
+      for (const item of group) {
+        if (item.symbol.toUpperCase() === keeper.symbol.toUpperCase()) continue;
+        if (areLikelySameCompanyName(item.name, keeper.name)) continue;
+        symbolsToClear.add(item.symbol.toUpperCase());
       }
     }
   }
@@ -397,7 +462,7 @@ export function rankCompanySearchResults(
   });
 }
 
-function mergeBySymbol(items: CompanySearchResultCandidate[]): CompanySearchResultItem[] {
+function mergeBySymbol(items: CompanySearchResultCandidate[]): CompanySearchResultCandidate[] {
   const map = new Map<string, CompanySearchResultCandidate>();
   for (const row of items) {
     const key = row.symbol.trim().toUpperCase();
@@ -409,7 +474,7 @@ function mergeBySymbol(items: CompanySearchResultCandidate[]): CompanySearchResu
     }
     map.set(key, mergeSearchResultItems(prev, row));
   }
-  return [...map.values()].map(stripSearchCandidateMeta);
+  return [...map.values()];
 }
 
 function stripSearchCandidateMeta(item: CompanySearchResultCandidate): CompanySearchResultItem {
@@ -423,7 +488,8 @@ export function finalizeSearchResults(
   limit: number,
 ): CompanySearchResultItem[] {
   const merged = mergeBySymbol(items);
-  const sanitized = sanitizeCrossSymbolLogos(merged);
+  const propagated = propagateEnrichedFieldsByBase(merged);
+  const sanitized = sanitizeCrossSymbolLogos(propagated).map(stripSearchCandidateMeta);
   return rankCompanySearchResults(query, sanitized).slice(0, limit);
 }
 

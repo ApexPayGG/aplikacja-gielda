@@ -5,6 +5,7 @@ import {
   mapDbRowsToSearch,
   mapEodSearchRow,
   mergeSearchResultItems,
+  propagateEnrichedFieldsByBase,
   rankCompanySearchResults,
   sanitizeCrossSymbolLogos,
   searchCompaniesOnDemand,
@@ -181,6 +182,60 @@ describe("companySearchModule merge and finalize", () => {
       assert.equal(results[0]?.logoUrl, logoUrl);
     });
   }
+
+  it("sanitizeCrossSymbolLogos keeps DB logo when unrelated ticker shares the same logo URL", () => {
+    const tslaLogo = "https://eodhd.com/img/logos/US/TSLA.png";
+    const sanitized = sanitizeCrossSymbolLogos([
+      candidate(
+        {
+          symbol: "TSLA",
+          name: "Tesla Inc",
+          sector: "Consumer Discretionary",
+          logoUrl: tslaLogo,
+        },
+        "db",
+      ),
+      candidate(
+        {
+          symbol: "F.US",
+          name: "Ford Motor Co",
+          sector: "Unknown",
+          logoUrl: tslaLogo,
+        },
+        "eod",
+      ),
+    ]);
+
+    assert.equal(sanitized.find((r) => r.symbol === "TSLA")?.logoUrl, tslaLogo);
+    assert.equal(sanitized.find((r) => r.symbol === "F.US")?.logoUrl, null);
+  });
+
+  it("propagateEnrichedFieldsByBase copies logo from bare ticker to exchange suffix listing", () => {
+    const tslaLogo = "https://eodhd.com/img/logos/US/TSLA.png";
+    const propagated = propagateEnrichedFieldsByBase([
+      candidate(
+        {
+          symbol: "TSLA",
+          name: "Tesla Inc",
+          sector: "Consumer Discretionary",
+          logoUrl: tslaLogo,
+        },
+        "db",
+      ),
+      candidate(
+        {
+          symbol: "TSLA.US",
+          name: "Tesla Inc",
+          sector: "Unknown",
+          logoUrl: null,
+        },
+        "eod",
+      ),
+    ]);
+
+    assert.equal(propagated.find((r) => r.symbol === "TSLA.US")?.logoUrl, tslaLogo);
+    assert.equal(propagated.find((r) => r.symbol === "TSLA.US")?.sector, "Consumer Discretionary");
+  });
 });
 
 describe("companySearchModule ranking", () => {
@@ -212,20 +267,20 @@ describe("companySearchModule ranking", () => {
   it("BDX does not keep logo copied from BDX.US when names differ", () => {
     const sharedLogo = "https://cdn.example/bdx-us.png";
     const sanitized = sanitizeCrossSymbolLogos([
-      item({
+      candidate({
         symbol: "BDX",
         name: "Budimex SA",
         exchange: "WAR",
         logoUrl: sharedLogo,
         sector: "Industrials",
-      }),
-      item({
+      }, "db"),
+      candidate({
         symbol: "BDX.US",
         name: "Becton Dickinson and Co",
         exchange: "US",
         logoUrl: sharedLogo,
         sector: "Healthcare",
-      }),
+      }, "eod"),
     ]);
 
     const budimex = sanitized.find((r) => r.symbol === "BDX");
