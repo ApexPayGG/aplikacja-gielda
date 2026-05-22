@@ -7,6 +7,10 @@ node_modules/
 .env.*.local
 .env.production
 
+# Private beta nginx credentials (VPS: /etc/nginx/private-beta/.htpasswd)
+private-beta/.htpasswd
+.htpasswd
+
 # Build outputs
 dist/
 build/

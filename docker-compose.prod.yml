@@ -79,6 +79,8 @@ services:
     volumes:
       - ./nginx-prod.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      # Private beta Basic Auth — create on VPS only (never commit). See docs/PRIVATE_BETA_ACCESS.md
+      - /etc/nginx/private-beta/.htpasswd:/etc/nginx/private-beta/.htpasswd:ro
     depends_on:
       - api
       - frontend
