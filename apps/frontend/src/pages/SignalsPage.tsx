@@ -107,6 +107,12 @@ const mockSignals: SignalListItem[] = [
 ];
 
 const SIGNAL_ROW_HEIGHT = 360;
+
+/** Set VITE_ENABLE_DEMO_SIGNALS=true locally to show sample cards when /api/signals is missing (404). */
+const DEMO_SIGNALS_ENABLED = import.meta.env.VITE_ENABLE_DEMO_SIGNALS === "true";
+
+type SignalsFeedSource = "api" | "empty" | "demo";
+
 function isEndpointMissing(error: unknown): boolean {
   return axios.isAxiosError(error) && error.response?.status === 404;
 }
@@ -153,6 +159,7 @@ export function SignalsPage() {
   const { token, user } = useAuth();
   const isLoggedIn = Boolean(token);
   const [signals, setSignals] = useState<SignalListItem[]>([]);
+  const [feedSource, setFeedSource] = useState<SignalsFeedSource>("empty");
   const [loadingList, setLoadingList] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
   const [hoveredSignalId, setHoveredSignalId] = useState<string | null>(null);
@@ -183,20 +190,29 @@ export function SignalsPage() {
           )
           .filter((row): row is SignalListItem => row !== null);
 
-        const base = rows.length > 0 ? rows : mockSignals;
-        const enriched = await enrichItemsWithCompanyLogos(base);
+        if (cancelled) return;
 
-        if (!cancelled) {
+        if (rows.length > 0) {
+          const enriched = await enrichItemsWithCompanyLogos(rows);
           setSignals(enriched);
+          setFeedSource("api");
+        } else {
+          setSignals([]);
+          setFeedSource("empty");
         }
       } catch (error) {
         if (cancelled) return;
-        if (isEndpointMissing(error)) {
+        if (isEndpointMissing(error) && DEMO_SIGNALS_ENABLED) {
           const enriched = await enrichItemsWithCompanyLogos(mockSignals);
           setSignals(enriched);
+          setFeedSource("demo");
+        } else if (isEndpointMissing(error)) {
+          setSignals([]);
+          setFeedSource("empty");
         } else {
           setListError(apiErrorMessage(error));
           setSignals([]);
+          setFeedSource("empty");
         }
       } finally {
         if (!cancelled) setLoadingList(false);
@@ -350,7 +366,28 @@ export function SignalsPage() {
               <div className="rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{listError}</div>
             ) : null}
 
-            {!loadingList && !listError && filteredSignals.length === 0 ? (
+            {!loadingList && !listError && feedSource === "demo" ? (
+              <div
+                className="rounded-2xl border border-amber-400/35 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-200"
+                role="status"
+              >
+                {t("signals.demoBanner", {
+                  defaultValue: "Demo signals — sample data for preview only, not live market feed.",
+                })}
+              </div>
+            ) : null}
+
+            {!loadingList && !listError && signals.length === 0 ? (
+              <div className={`${GLASS_INNER_PANEL} px-4 py-6 text-center text-sm text-white/60`}>
+                <p>
+                  {t("signals.emptyFeed", {
+                    defaultValue: "No active signals right now. New setups will appear when the scanner finds matches.",
+                  })}
+                </p>
+              </div>
+            ) : null}
+
+            {!loadingList && !listError && signals.length > 0 && filteredSignals.length === 0 ? (
               <div className={`${GLASS_INNER_PANEL} px-4 py-6 text-center text-sm text-white/60`}>
                 {t("signals.emptyFiltered", { defaultValue: "No signals for the selected filter." })}
               </div>

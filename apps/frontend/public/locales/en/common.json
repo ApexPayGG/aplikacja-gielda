@@ -1620,6 +1620,8 @@
     "shareSignal": "Share signal {{ticker}} {{change}}",
     "shareTwitter": "AI signal: {{ticker}} {{setup}} | Score: {{score}}/100 | StockAI Pro",
     "emptyFiltered": "No signals for the selected filter.",
+    "emptyFeed": "No active signals right now. New setups will appear when the scanner finds matches.",
+    "demoBanner": "Demo signals — sample data for preview only, not live market feed.",
     "filtersTitle": "Signal filters",
     "closeFiltersPanel": "Close filter panel",
     "loginForAi": "Sign in to view AI analysis",

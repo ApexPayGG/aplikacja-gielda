@@ -1473,7 +1473,10 @@
       "SSE": "SSE"
     },
     "unknownSetup": "Nieznany setup",
-    "winRate": "Win rate"
+    "winRate": "Win rate",
+    "emptyFeed": "Brak aktywnych sygnałów. Nowe setupy pojawią się, gdy skaner znajdzie dopasowania.",
+    "emptyFiltered": "Brak sygnałów dla wybranego filtra.",
+    "demoBanner": "Sygnały demo — dane przykładowe wyłącznie do podglądu, nie na żywo z rynku."
   },
   "skilltree": {
     "celebrationTitle": "Nowe umiejętności odblokowane!",
