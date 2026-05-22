@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it, mock } from "node:test";
 import {
   applySameIssuerEnrichment,
+  areLikelySameCompanyName,
   canShareEnrichedFieldsBetween,
   finalizeSearchResults,
   mapDbRowsToSearch,
@@ -38,6 +39,34 @@ const candidate = (
   partial: Partial<CompanySearchResultItem> & Pick<CompanySearchResultItem, "symbol" | "name">,
   source: "db" | "eod",
 ) => ({ ...item(partial), source });
+
+describe("areLikelySameCompanyName", () => {
+  const expectMatch = (a: string, b: string) => {
+    assert.equal(areLikelySameCompanyName(a, b), true, `expected match: ${a} <> ${b}`);
+  };
+  const expectNoMatch = (a: string, b: string) => {
+    assert.equal(areLikelySameCompanyName(a, b), false, `expected no match: ${a} <> ${b}`);
+  };
+
+  it("matches same issuer spelling variants", () => {
+    expectMatch("Siemens AG", "Siemens Aktiengesellschaft");
+    expectMatch("Allianz SE", "Allianz SE VNA O.N.");
+    expectMatch("Tesla Inc.", "Tesla Inc");
+    expectMatch("Apple Inc", "Apple Inc.");
+    expectMatch("Alphabet Inc", "Alphabet Inc Class A");
+    expectMatch("Allegro.eu S.A.", "Allegro.eu S.A.");
+  });
+
+  it("rejects unrelated issuers sharing a short stem", () => {
+    expectNoMatch("Budimex S.A.", "Becton Dickinson and Company");
+    expectNoMatch("Cyfrowy Polsat SA", "Cooper-Standard Holdings Inc");
+    expectNoMatch("ING Bank Śląski SA", "ING Groep NV");
+    expectNoMatch("Mercator Medical S.A.", "MRC Global Inc");
+    expectNoMatch("TEN SQUARE GAMES SA", "Tsakos Energy Navigation Ltd");
+    expectNoMatch("Merck KGaA", "Merck & Co");
+    expectNoMatch("Merck KGaA", "Merck & Company Inc");
+  });
+});
 
 describe("companySearchModule mappers", () => {
   it("mapDbRowsToSearch returns logoUrl from DB row", () => {

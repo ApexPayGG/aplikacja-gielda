@@ -71,6 +71,55 @@ describe("companyLogoBackfill matching", () => {
     assert.equal(result.donor.logoUrl, "https://cdn.example/tsla.png");
   });
 
+  it("MRK does not receive logo from MRK.US when Merck KGaA vs Merck & Co", () => {
+    const donors = indexCompaniesWithLogo([
+      row({
+        symbol: "MRK.US",
+        name: "Merck & Company Inc",
+        exchange: "US",
+        logoUrl: "https://eodhd.com/img/logos/US/mrk.png",
+      }),
+    ]);
+    const result = pickLogoDonorFromVariants(
+      row({ symbol: "MRK", name: "Merck KGaA", exchange: "DAX", logoUrl: null }),
+      donors,
+    );
+    assert.ok(result && "skipped" in result);
+    assert.equal(result.skipped, "unsafe");
+  });
+
+  it("runCompanyLogoBackfill skips MRK dbVariant copy from MRK.US", async () => {
+    const update = mock.fn(async () => ({}));
+    const findMany = mock.fn(async (args: { where?: { logoUrl?: null } }) => {
+      if (args.where?.logoUrl === null) {
+        return [{ symbol: "MRK", name: "Merck KGaA", exchange: "DAX", logoUrl: null }];
+      }
+      return [
+        {
+          symbol: "MRK.US",
+          name: "Merck & Company Inc",
+          exchange: "US",
+          logoUrl: "https://eodhd.com/img/logos/US/mrk.png",
+        },
+      ];
+    });
+
+    const result = await runCompanyLogoBackfill(
+      { limit: 1, dryRun: true, verbose: true },
+      {
+        db: { company: { findMany: findMany as never, update: update as never } },
+        fetchEodhd: async () => null,
+        fetchFinnhub: async () => null,
+        sleep: async () => {},
+      },
+    );
+
+    assert.equal(result.summary.updated, 0);
+    assert.equal(result.summary.skippedUnsafeMatch, 1);
+    assert.equal(result.log.plannedUpdates.length, 0);
+    assert.equal(update.mock.calls.length, 0);
+  });
+
   it("BDX does not receive logo from BDX.US when names differ", () => {
     const donors = indexCompaniesWithLogo([
       row({

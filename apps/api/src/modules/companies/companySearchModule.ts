@@ -294,24 +294,143 @@ function pickLogoConflictKeeper(group: CompanySearchResultCandidate[]): CompanyS
   return pickBestEnrichedCandidate(group);
 }
 
+const TRAILING_LISTING_SUFFIX =
+  /\s+(incorporated|corporation|corp|ltd|limited|plc|llc|lp|class\s+[a-z0-9]+|adr|ads|vna|o\.?\s*n\.?)\s*$/i;
+const TRAILING_INC_SUFFIX = /\s+inc\s*$/i;
+
+/** Single-token stems that often collide across unrelated issuers (Merck DE vs US, ING PL vs NL). */
+const AMBIGUOUS_NAME_STEMS = new Set([
+  "merck",
+  "ing",
+  "co",
+  "ten",
+  "mrc",
+  "peo",
+  "bdx",
+]);
+
+const TOKEN_CANONICAL: Record<string, string> = {
+  aktiengesellschaft: "ag",
+  ag: "ag",
+  societaseuropea: "se",
+  se: "se",
+};
+
+const BENIGN_LISTING_SUFFIX_TOKENS = new Set([
+  "class",
+  "a",
+  "b",
+  "c",
+  "vna",
+  "on",
+  "n",
+  "ordinary",
+  "shares",
+  "adr",
+  "ads",
+]);
+
+function normalizeCompanyNameForMatch(name: string): string {
+  let value = name
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/\./g, " ")
+    .replace(/[,'’]/g, "")
+    .replace(/&/g, " and ")
+    .replace(/\s+/g, " ")
+    .trim();
+  while (TRAILING_LISTING_SUFFIX.test(value)) {
+    value = value.replace(TRAILING_LISTING_SUFFIX, "").trim();
+  }
+  const tokenCount = value.split(" ").filter(Boolean).length;
+  if (tokenCount >= 3 && TRAILING_INC_SUFFIX.test(value)) {
+    value = value.replace(TRAILING_INC_SUFFIX, "").trim();
+  }
+  return value;
+}
+
+function tokenizeCompanyName(name: string): string[] {
+  return normalizeCompanyNameForMatch(name).split(" ").filter(Boolean);
+}
+
+function canonicalizeNameToken(token: string): string {
+  return TOKEN_CANONICAL[token] ?? token;
+}
+
+function canonicalNameTokens(name: string): string[] {
+  return tokenizeCompanyName(name).map(canonicalizeNameToken);
+}
+
+function commonTokenPrefixLength(a: string[], b: string[]): number {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i += 1;
+  return i;
+}
+
+function isAmbiguousSingleWordStem(token: string): boolean {
+  return token.length < 6 || AMBIGUOUS_NAME_STEMS.has(token);
+}
+
+function onlyBenignListingSuffixes(tokens: string[]): boolean {
+  if (tokens.length === 0) return true;
+  const joined = tokens.join(" ");
+  if (/^class [a-z0-9]$/i.test(joined)) return true;
+  return tokens.every((token) => BENIGN_LISTING_SUFFIX_TOKENS.has(token));
+}
+
+function distinctiveSuffixesCompatible(a: string[], b: string[]): boolean {
+  const left = a.map(canonicalizeNameToken).join(" ");
+  const right = b.map(canonicalizeNameToken).join(" ");
+  return left === right;
+}
+
 /** True when two issuer names likely refer to the same company (e.g. Tesla vs Tesla Inc). */
 export function areLikelySameCompanyName(a: string, b: string): boolean {
-  const norm = (value: string) =>
-    value
-      .trim()
-      .toLowerCase()
-      .replace(/[.,']/g, "")
-      .replace(/\s+(inc|corp|corporation|co|company|ltd|sa|nv|plc|group|holdings)\b/gi, "")
-      .replace(/\s+/g, " ")
-      .trim();
-  const na = norm(a);
-  const nb = norm(b);
-  if (!na || !nb) return false;
-  if (na === nb) return true;
-  if (na.includes(nb) || nb.includes(na)) return true;
-  const wa = na.split(" ")[0] ?? "";
-  const wb = nb.split(" ")[0] ?? "";
-  return wa.length >= 4 && wb.length >= 4 && wa === wb;
+  const ta = canonicalNameTokens(a);
+  const tb = canonicalNameTokens(b);
+  if (ta.length === 0 || tb.length === 0) return false;
+
+  const joinedA = ta.join(" ");
+  const joinedB = tb.join(" ");
+  if (joinedA === joinedB) return true;
+
+  const shorter = ta.length <= tb.length ? ta : tb;
+  const longer = ta.length <= tb.length ? tb : ta;
+  const prefixLen = commonTokenPrefixLength(shorter, longer);
+  const restShort = shorter.slice(prefixLen);
+  const restLong = longer.slice(prefixLen);
+
+  if (prefixLen === shorter.length) {
+    if (restLong.length === 0) return true;
+    if (onlyBenignListingSuffixes(restLong)) return true;
+    if (shorter.length === 1 && isAmbiguousSingleWordStem(shorter[0]!)) {
+      return false;
+    }
+    // Multi-token base name with extra descriptive words (Apple Inc → Apple Inc Long Name).
+    if (shorter.length >= 2) return true;
+    return distinctiveSuffixesCompatible(restShort, restLong);
+  }
+
+  if (prefixLen > 0 && restShort.length > 0 && restLong.length > 0) {
+    if (shorter.length === 1 && isAmbiguousSingleWordStem(shorter[0]!)) {
+      return false;
+    }
+    return distinctiveSuffixesCompatible(restShort, restLong);
+  }
+
+  const shortJoined = shorter.join(" ");
+  const longJoined = longer.join(" ");
+  if (longJoined.includes(shortJoined)) {
+    if (shorter.length === 1 && isAmbiguousSingleWordStem(shorter[0]!)) {
+      return false;
+    }
+    const extra = longJoined.slice(shortJoined.length).trim().split(" ").filter(Boolean);
+    return onlyBenignListingSuffixes(extra);
+  }
+
+  return false;
 }
 
 /** Exchange from symbol suffix, falling back to row metadata (bare tickers like TSLA often only have exchange on the row). */
