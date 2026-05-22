@@ -38,6 +38,10 @@ Example blocker: `BDX` / Budimex S.A. / WAR + Finnhub logo for US **Becton Dicki
 
 Verbose output includes `--- skippedProviderNameMismatch ---` with target and provider identity fields.
 
+## Logo audit (existing DB rows)
+
+Read-only audit for contaminated `logoUrl` values: `npm run logos:audit`. See [COMPANY_LOGO_AUDIT.md](./COMPANY_LOGO_AUDIT.md).
+
 ## dbVariant logo URL exchange check
 
 For donors with EODHD URLs (`/img/logos/{EXCHANGE}/...`), the path exchange must match the donor or target listing (with **DAX ↔ XETRA** equivalence). Finnhub/static URLs without an exchange segment are allowed when the issuer name matches.
