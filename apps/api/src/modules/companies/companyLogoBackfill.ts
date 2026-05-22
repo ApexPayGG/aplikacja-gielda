@@ -23,6 +23,7 @@ export type CompanyLogoBackfillSummary = {
   updated: number;
   skippedNoProviderLogo: number;
   skippedUnsafeMatch: number;
+  skippedProviderNameMismatch: number;
   copiedFromExistingVariant: number;
   fetchedFromEodhd: number;
   fetchedFromFinnhub: number;
@@ -50,15 +51,34 @@ export type UnsafeVariantSkip = {
   reason: string;
 };
 
+export type ProviderNameMismatchSkip = {
+  targetSymbol: string;
+  targetName: string;
+  targetExchange: string;
+  provider: "eodhd" | "finnhub";
+  providerSymbol: string | null;
+  providerName: string | null;
+  providerExchange: string | null;
+  reason: string;
+};
+
 export type LogoBackfillError = {
   symbol: string;
   step: string;
   message: string;
 };
 
+export type ProviderLogoCandidate = {
+  logoUrl: string;
+  name: string | null;
+  symbol: string | null;
+  exchange: string | null;
+};
+
 export type CompanyLogoBackfillLog = {
   plannedUpdates: PlannedLogoUpdate[];
   unsafeSkips: UnsafeVariantSkip[];
+  providerNameMismatches: ProviderNameMismatchSkip[];
   errors: LogoBackfillError[];
 };
 
@@ -82,13 +102,19 @@ export type CompanyLogoBackfillDeps = {
       update: PrismaClient["company"]["update"];
     };
   };
-  fetchEodhdLogo: (symbol: string, exchange: string) => Promise<string | null>;
-  fetchFinnhubLogo: (symbol: string) => Promise<string | null>;
+  fetchEodhd: (symbol: string, exchange: string) => Promise<ProviderLogoCandidate | null>;
+  fetchFinnhub: (symbol: string, exchange: string) => Promise<ProviderLogoCandidate | null>;
   sleep: (ms: number) => Promise<void>;
 };
 
 function sleepMs(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function toStr(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const v = value.trim();
+  return v ? v : null;
 }
 
 function exchangeForRow(row: CompanyLogoRow): string {
@@ -105,10 +131,76 @@ function buildEodTicker(symbol: string, exchange: string): string {
   return `${parts.base}.${ex}`;
 }
 
-function finnhubSymbol(symbol: string, exchange: string): string {
+function finnhubQuerySymbol(symbol: string, exchange: string): string {
   const parts = parseSymbolParts(symbol);
   if (parts.exchange === "US" || exchange === "US") return parts.base;
   return parts.full.includes(".") ? parts.base : symbol;
+}
+
+const PROVIDER_NAME_MISMATCH_REASON =
+  "provider company identity does not match target issuer (name validation failed)";
+
+const BARE_TICKER_NO_NAME_REASON =
+  "bare ticker without exchange suffix — provider logo rejected without matching company name";
+
+const EXCHANGE_MISMATCH_REASON =
+  "provider exchange does not match target listing exchange";
+
+const SYMBOL_MISMATCH_NO_NAME_REASON =
+  "listed symbol with suffix requires matching provider symbol when provider name is missing";
+
+export function acceptProviderLogoForTarget(
+  target: CompanyLogoRow,
+  candidate: ProviderLogoCandidate,
+): { accepted: true; logoUrl: string } | { accepted: false; reason: string } {
+  const logoUrl = candidate.logoUrl?.trim();
+  if (!logoUrl) {
+    return { accepted: false, reason: "provider returned no logo URL" };
+  }
+
+  const providerName = candidate.name?.trim();
+  if (providerName) {
+    if (areLikelySameCompanyName(providerName, target.name)) {
+      return { accepted: true, logoUrl };
+    }
+    return { accepted: false, reason: PROVIDER_NAME_MISMATCH_REASON };
+  }
+
+  const targetParts = parseSymbolParts(target.symbol);
+  if (!targetParts.exchange) {
+    return { accepted: false, reason: BARE_TICKER_NO_NAME_REASON };
+  }
+
+  const targetEx = exchangeForRow(target);
+  const providerEx = candidate.exchange?.trim().toUpperCase() ?? null;
+  if (providerEx && providerEx !== targetEx) {
+    return { accepted: false, reason: EXCHANGE_MISMATCH_REASON };
+  }
+
+  const providerSymbol = candidate.symbol?.trim().toUpperCase() ?? null;
+  if (providerSymbol && providerSymbol === target.symbol.trim().toUpperCase()) {
+    return { accepted: true, logoUrl };
+  }
+
+  return { accepted: false, reason: SYMBOL_MISMATCH_NO_NAME_REASON };
+}
+
+export function buildProviderNameMismatchSkip(
+  target: CompanyLogoRow,
+  candidate: ProviderLogoCandidate,
+  provider: "eodhd" | "finnhub",
+  reason: string,
+): ProviderNameMismatchSkip {
+  return {
+    targetSymbol: target.symbol,
+    targetName: target.name,
+    targetExchange: exchangeForRow(target),
+    provider,
+    providerSymbol: candidate.symbol,
+    providerName: candidate.name,
+    providerExchange: candidate.exchange,
+    reason,
+  };
 }
 
 export function indexCompaniesWithLogo(rows: CompanyLogoRow[]): Map<string, CompanyLogoRow[]> {
@@ -187,7 +279,7 @@ function sanitizeErrorMessage(error: unknown): string {
 }
 
 function emptyBackfillLog(): CompanyLogoBackfillLog {
-  return { plannedUpdates: [], unsafeSkips: [], errors: [] };
+  return { plannedUpdates: [], unsafeSkips: [], providerNameMismatches: [], errors: [] };
 }
 
 function sourceLabel(source: LogoBackfillSource): string {
@@ -196,11 +288,11 @@ function sourceLabel(source: LogoBackfillSource): string {
   return "finnhub";
 }
 
-export async function fetchEodhdFundamentalsLogo(
+export async function fetchEodhdFundamentalsIdentity(
   symbol: string,
   exchange: string,
   apiToken: string,
-): Promise<string | null> {
+): Promise<ProviderLogoCandidate | null> {
   const eodTicker = buildEodTicker(symbol, exchange);
   const params = new URLSearchParams({ api_token: apiToken, fmt: "json" });
   const url = `${EODHD_BASE}/fundamentals/${encodeURIComponent(eodTicker)}?${params.toString()}`;
@@ -214,7 +306,39 @@ export async function fetchEodhdFundamentalsLogo(
     throw new Error(payload.error);
   }
   const general = payload.General ?? {};
-  return normalizeLogoUrl(general.LogoURL ?? general.Logo);
+  const logoUrl = normalizeLogoUrl(general.LogoURL ?? general.Logo);
+  if (!logoUrl) return null;
+  return {
+    logoUrl,
+    name: toStr(general.Name),
+    symbol: eodTicker,
+    exchange: exchange.trim().toUpperCase() || parseSymbolParts(eodTicker).exchange,
+  };
+}
+
+/** @deprecated Use fetchEodhdFundamentalsIdentity — logo only, no name validation. */
+export async function fetchEodhdFundamentalsLogo(
+  symbol: string,
+  exchange: string,
+  apiToken: string,
+): Promise<string | null> {
+  const row = await fetchEodhdFundamentalsIdentity(symbol, exchange, apiToken);
+  return row?.logoUrl ?? null;
+}
+
+function recordProviderRejection(
+  target: CompanyLogoRow,
+  candidate: ProviderLogoCandidate,
+  provider: "eodhd" | "finnhub",
+  reason: string,
+  summary: CompanyLogoBackfillSummary,
+  log: CompanyLogoBackfillLog,
+  verbose: boolean,
+): void {
+  summary.skippedProviderNameMismatch += 1;
+  if (verbose) {
+    log.providerNameMismatches.push(buildProviderNameMismatchSkip(target, candidate, provider, reason));
+  }
 }
 
 function createDefaultDeps(): CompanyLogoBackfillDeps {
@@ -224,21 +348,22 @@ function createDefaultDeps(): CompanyLogoBackfillDeps {
   return {
     db: defaultPrisma,
     sleep: sleepMs,
-    fetchEodhdLogo: async (symbol, exchange) => {
+    fetchEodhd: async (symbol, exchange) => {
       if (!eodToken) return null;
-      return fetchEodhdFundamentalsLogo(symbol, exchange, eodToken);
+      return fetchEodhdFundamentalsIdentity(symbol, exchange, eodToken);
     },
-    fetchFinnhubLogo: async (symbol) => {
+    fetchFinnhub: async (symbol, exchange) => {
       if (!finnhubEnabled) return null;
       try {
-        const ex = exchangeForRow({
-          symbol,
-          name: symbol,
-          exchange: parseSymbolParts(symbol).exchange ?? "US",
-          logoUrl: null,
-        });
-        const profile = await fetchCompanyProfile(finnhubSymbol(symbol, ex));
-        return profile.logoUrl?.trim() || null;
+        const profile = await fetchCompanyProfile(finnhubQuerySymbol(symbol, exchange));
+        const logoUrl = profile.logoUrl?.trim();
+        if (!logoUrl) return null;
+        return {
+          logoUrl,
+          name: profile.name?.trim() || null,
+          symbol: profile.symbol?.trim().toUpperCase() || finnhubQuerySymbol(symbol, exchange),
+          exchange,
+        };
       } catch {
         return null;
       }
@@ -262,6 +387,7 @@ export async function runCompanyLogoBackfill(
     updated: 0,
     skippedNoProviderLogo: 0,
     skippedUnsafeMatch: 0,
+    skippedProviderNameMismatch: 0,
     copiedFromExistingVariant: 0,
     fetchedFromEodhd: 0,
     fetchedFromFinnhub: 0,
@@ -318,17 +444,32 @@ export async function runCompanyLogoBackfill(
       if (!resolvedLogo) {
         step = "eodhd";
         const ex = exchangeForRow(target);
-        resolvedLogo = await deps.fetchEodhdLogo(target.symbol, ex);
-        if (resolvedLogo) {
-          source = "eodhd";
-          await deps.sleep(delayMs);
+        const eodCandidate = await deps.fetchEodhd(target.symbol, ex);
+        if (eodCandidate) {
+          const validated = acceptProviderLogoForTarget(target, eodCandidate);
+          if (validated.accepted) {
+            resolvedLogo = validated.logoUrl;
+            source = "eodhd";
+            await deps.sleep(delayMs);
+          } else {
+            recordProviderRejection(target, eodCandidate, "eodhd", validated.reason, summary, log, verbose);
+          }
         }
       }
 
       if (!resolvedLogo) {
         step = "finnhub";
-        resolvedLogo = await deps.fetchFinnhubLogo(target.symbol);
-        if (resolvedLogo) source = "finnhub";
+        const ex = exchangeForRow(target);
+        const finnhubCandidate = await deps.fetchFinnhub(target.symbol, ex);
+        if (finnhubCandidate) {
+          const validated = acceptProviderLogoForTarget(target, finnhubCandidate);
+          if (validated.accepted) {
+            resolvedLogo = validated.logoUrl;
+            source = "finnhub";
+          } else {
+            recordProviderRejection(target, finnhubCandidate, "finnhub", validated.reason, summary, log, verbose);
+          }
+        }
       }
 
       if (!resolvedLogo) {
@@ -392,11 +533,16 @@ export function formatBackfillSummary(summary: CompanyLogoBackfillSummary): stri
     `fetchedFromFinnhub: ${summary.fetchedFromFinnhub}`,
     `skippedNoProviderLogo: ${summary.skippedNoProviderLogo}`,
     `skippedUnsafeMatch: ${summary.skippedUnsafeMatch}`,
+    `skippedProviderNameMismatch: ${summary.skippedProviderNameMismatch}`,
     `errors: ${summary.errors}`,
   ].join("\n");
 }
 
 function formatLogoUrl(value: string | null): string {
+  return value?.trim() ? value.trim() : "(null)";
+}
+
+function formatNullable(value: string | null): string {
   return value?.trim() ? value.trim() : "(null)";
 }
 
@@ -432,6 +578,23 @@ export function formatBackfillVerboseLog(
         [
           `target: ${row.targetSymbol} (${row.targetName})`,
           `donor: ${row.donorSymbol} (${row.donorName})`,
+          `reason: ${row.reason}`,
+        ].join("\n  "),
+      );
+      lines.push("");
+    }
+  }
+
+  if (log.providerNameMismatches.length > 0) {
+    lines.push("--- skippedProviderNameMismatch ---");
+    for (const row of log.providerNameMismatches) {
+      lines.push(
+        [
+          `target: ${row.targetSymbol} (${row.targetName}) exchange=${row.targetExchange}`,
+          `provider: ${row.provider}`,
+          `providerSymbol: ${formatNullable(row.providerSymbol)}`,
+          `providerName: ${formatNullable(row.providerName)}`,
+          `providerExchange: ${formatNullable(row.providerExchange)}`,
           `reason: ${row.reason}`,
         ].join("\n  "),
       );

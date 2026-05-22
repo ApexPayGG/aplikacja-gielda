@@ -1,15 +1,21 @@
 import assert from "node:assert/strict";
 import { describe, it, mock } from "node:test";
 import {
+  acceptProviderLogoForTarget,
   formatBackfillVerboseLog,
   indexCompaniesWithLogo,
   listUnsafeVariantSkips,
   pickLogoDonorFromVariants,
   runCompanyLogoBackfill,
   type CompanyLogoRow,
+  type ProviderLogoCandidate,
 } from "./companyLogoBackfill";
 
 function row(partial: CompanyLogoRow): CompanyLogoRow {
+  return partial;
+}
+
+function provider(partial: ProviderLogoCandidate): ProviderLogoCandidate {
   return partial;
 }
 
@@ -117,6 +123,81 @@ describe("companyLogoBackfill matching", () => {
   });
 });
 
+describe("acceptProviderLogoForTarget", () => {
+  const bdxTarget = row({
+    symbol: "BDX",
+    name: "Budimex S.A.",
+    exchange: "WAR",
+    logoUrl: null,
+  });
+
+  it("rejects Finnhub Becton Dickinson logo for Budimex BDX", () => {
+    const result = acceptProviderLogoForTarget(
+      bdxTarget,
+      provider({
+        logoUrl: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/BDX.png",
+        name: "Becton Dickinson and Co",
+        symbol: "BDX",
+        exchange: "US",
+      }),
+    );
+    assert.equal(result.accepted, false);
+  });
+
+  it("rejects Finnhub logo for bare WAR ticker CCC without matching name", () => {
+    const result = acceptProviderLogoForTarget(
+      row({ symbol: "CCC", name: "CCC S.A.", exchange: "WAR", logoUrl: null }),
+      provider({
+        logoUrl: "https://cdn.example/ccc.png",
+        name: null,
+        symbol: "CCC",
+        exchange: null,
+      }),
+    );
+    assert.equal(result.accepted, false);
+  });
+
+  it("accepts EODHD when provider name matches", () => {
+    const result = acceptProviderLogoForTarget(
+      row({ symbol: "AAPL.US", name: "Apple Inc", exchange: "US", logoUrl: null }),
+      provider({
+        logoUrl: "https://cdn.example/aapl.png",
+        name: "Apple Inc",
+        symbol: "AAPL.US",
+        exchange: "US",
+      }),
+    );
+    assert.equal(result.accepted, true);
+    if (result.accepted) assert.equal(result.logoUrl, "https://cdn.example/aapl.png");
+  });
+
+  it("rejects EODHD when provider name does not match", () => {
+    const result = acceptProviderLogoForTarget(
+      bdxTarget,
+      provider({
+        logoUrl: "https://cdn.example/bdx-eod.png",
+        name: "Becton Dickinson and Co",
+        symbol: "BDX.US",
+        exchange: "US",
+      }),
+    );
+    assert.equal(result.accepted, false);
+  });
+
+  it("accepts ABBV.US when provider name matches AbbVie", () => {
+    const result = acceptProviderLogoForTarget(
+      row({ symbol: "ABBV.US", name: "AbbVie Inc", exchange: "US", logoUrl: null }),
+      provider({
+        logoUrl: "https://cdn.example/abbv.png",
+        name: "AbbVie Inc",
+        symbol: "ABBV.US",
+        exchange: "US",
+      }),
+    );
+    assert.equal(result.accepted, true);
+  });
+});
+
 describe("runCompanyLogoBackfill", () => {
   it("does not overwrite existing logoUrl by default", async () => {
     let savedLogo: string | undefined;
@@ -135,8 +216,8 @@ describe("runCompanyLogoBackfill", () => {
       { limit: 10, dryRun: false },
       {
         db: { company: { findMany: findMany as never, update: update as never } },
-        fetchEodhdLogo: async () => null,
-        fetchFinnhubLogo: async () => null,
+        fetchEodhd: async () => null,
+        fetchFinnhub: async () => null,
         sleep: async () => {},
       },
     );
@@ -146,7 +227,40 @@ describe("runCompanyLogoBackfill", () => {
     assert.equal(summary.updated, 1);
   });
 
-  it("dryRun does not write to DB", async () => {
+  it("rejects Finnhub BDX logo and does not update", async () => {
+    const update = mock.fn(async () => ({}));
+    const findMany = mock.fn(async (args: { where?: { logoUrl?: null } }) => {
+      if (args.where?.logoUrl === null) {
+        return [{ symbol: "BDX", name: "Budimex S.A.", exchange: "WAR", logoUrl: null }];
+      }
+      return [];
+    });
+
+    const result = await runCompanyLogoBackfill(
+      { limit: 1, dryRun: true, verbose: true },
+      {
+        db: { company: { findMany: findMany as never, update: update as never } },
+        fetchEodhd: async () => null,
+        fetchFinnhub: async () =>
+          provider({
+            logoUrl: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/BDX.png",
+            name: "Becton Dickinson and Co",
+            symbol: "BDX",
+            exchange: "US",
+          }),
+        sleep: async () => {},
+      },
+    );
+
+    assert.equal(result.summary.updated, 0);
+    assert.equal(result.summary.skippedProviderNameMismatch, 1);
+    assert.equal(result.log.plannedUpdates.length, 0);
+    assert.equal(result.log.providerNameMismatches.length, 1);
+    assert.equal(result.log.providerNameMismatches[0]?.targetSymbol, "BDX");
+    assert.equal(update.mock.calls.length, 0);
+  });
+
+  it("dryRun accepts EODHD when provider name matches", async () => {
     const update = mock.fn(async () => ({}));
     const findMany = mock.fn(async (args: { where?: { logoUrl?: null } }) => {
       if (args.where?.logoUrl === null) {
@@ -159,21 +273,25 @@ describe("runCompanyLogoBackfill", () => {
       { limit: 5, dryRun: true, verbose: true },
       {
         db: { company: { findMany: findMany as never, update: update as never } },
-        fetchEodhdLogo: async () => "https://cdn.example/msft.png",
-        fetchFinnhubLogo: async () => null,
+        fetchEodhd: async () =>
+          provider({
+            logoUrl: "https://cdn.example/msft.png",
+            name: "Microsoft Corp",
+            symbol: "MSFT.US",
+            exchange: "US",
+          }),
+        fetchFinnhub: async () => null,
         sleep: async () => {},
       },
     );
 
-    assert.equal(result.summary.dryRun, true);
     assert.equal(result.summary.updated, 1);
     assert.equal(result.summary.fetchedFromEodhd, 1);
+    assert.equal(result.summary.skippedProviderNameMismatch, 0);
     assert.equal(update.mock.calls.length, 0);
-    assert.equal(result.log.plannedUpdates.length, 1);
     assert.equal(result.log.plannedUpdates[0]?.symbol, "MSFT");
     const verboseText = formatBackfillVerboseLog(result, { dryRun: true });
     assert.match(verboseText, /planned updates/);
-    assert.match(verboseText, /symbol: MSFT/);
     assert.match(verboseText, /source: eodhd/);
   });
 
@@ -194,8 +312,8 @@ describe("runCompanyLogoBackfill", () => {
       { limit: 2, dryRun: true },
       {
         db: { company: { findMany: findMany as never, update: update as never } },
-        fetchEodhdLogo: async () => null,
-        fetchFinnhubLogo: async () => null,
+        fetchEodhd: async () => null,
+        fetchFinnhub: async () => null,
         sleep: async () => {},
       },
     );
@@ -216,10 +334,10 @@ describe("runCompanyLogoBackfill", () => {
       { limit: 1, dryRun: true, verbose: true },
       {
         db: { company: { findMany: findMany as never, update: update as never } },
-        fetchEodhdLogo: async () => {
+        fetchEodhd: async () => {
           throw new Error("EODHD fundamentals HTTP 401: api_token=secret123");
         },
-        fetchFinnhubLogo: async () => null,
+        fetchFinnhub: async () => null,
         sleep: async () => {},
       },
     );

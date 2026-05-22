@@ -25,6 +25,19 @@ For each company (batch, `logoUrl IS NULL` by default):
 
 Updates are skipped when no provider returns a logo. Existing `logoUrl` values are **not** overwritten unless `--force` is passed.
 
+## Provider identity validation (required)
+
+Before any EODHD or Finnhub logo is saved:
+
+1. If the provider returns a **company name**, it must pass `areLikelySameCompanyName()` against the target row in DB.
+2. If the provider returns **no name**:
+   - **Bare tickers** without exchange suffix (e.g. `BDX` on WAR) are always rejected — symbol-only Finnhub/EODHD matches are not trusted.
+   - **Listed symbols with suffix** (e.g. `AAPL.US`) may be accepted only when provider exchange matches and provider symbol equals the target symbol.
+
+Example blocker: `BDX` / Budimex S.A. / WAR + Finnhub logo for US **Becton Dickinson** → `skippedProviderNameMismatch`, no update.
+
+Verbose output includes `--- skippedProviderNameMismatch ---` with target and provider identity fields.
+
 ## Safety rules (no cross-company contamination)
 
 | Case | Allowed? |
@@ -67,6 +80,7 @@ fetchedFromEodhd: 142
 fetchedFromFinnhub: 22
 skippedNoProviderLogo: 188
 skippedUnsafeMatch: 37
+skippedProviderNameMismatch: 1
 errors: 0
 ```
 
