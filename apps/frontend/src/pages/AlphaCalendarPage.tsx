@@ -10,7 +10,12 @@ import {
 } from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
-import { formatLocaleDateTime, formatLocaleLongDate, formatLocaleMonthYear } from "../utils/formatters";
+import {
+  buildWeekdayShortLabels,
+  formatLocaleDateTime,
+  formatLocaleLongDate,
+  formatLocaleMonthYear,
+} from "../utils/formatters";
 
 type WindowType = "EARNINGS_CYCLE" | "SEASONAL" | "SECTOR_ROTATION" | "REGIME_SHIFT";
 type CalendarMode = "MONTH" | "WEEK";
@@ -40,7 +45,6 @@ const probabilityWindowTypeMeta: Record<ProbabilityWindowType, { label: string; 
   NEUTRAL: { label: "NEUTRAL", color: colors.textMuted },
 };
 
-const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
 const mockCalendar: AlphaCalendarResponse = {
   generatedAt: new Date().toISOString(),
@@ -227,6 +231,7 @@ export function AlphaCalendarPage() {
   const selectedDayWindows = windowsByDay[selectedDayKey] ?? [];
   const monthLabel = formatLocaleMonthYear(selectedDate, i18n.language);
   const selectedDateLabel = formatLocaleLongDate(selectedDate, i18n.language);
+  const weekdayLabels = useMemo(() => buildWeekdayShortLabels(i18n.language), [i18n.language]);
   return (
     <div className="min-h-screen text-white">
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">

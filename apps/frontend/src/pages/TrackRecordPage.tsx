@@ -10,6 +10,7 @@ import {
 import { ShareButton } from "../components/ShareButton";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { resolveIntlLocale } from "../utils/formatters";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
@@ -44,7 +45,7 @@ function formatDate(value: string | null, locale: string): string {
   if (!value) return "—";
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return "—";
-  return parsed.toLocaleString(locale);
+  return parsed.toLocaleString(resolveIntlLocale(locale));
 }
 
 function mapHistoryRows(payload: PaperHistoryResponse): TradeHistoryRow[] {

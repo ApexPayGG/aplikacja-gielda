@@ -275,7 +275,7 @@ export function DividendPage() {
                 <tr>
                   <th className="px-4 py-3">
                     <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("symbol")}>
-                      {t("dividend.columnSymbol", { defaultValue: "Symbol" })}
+                      {t("dividend.columnSymbol", { defaultValue: "Ticker" })}
                       {sortIndicator("symbol")}
                     </button>
                   </th>

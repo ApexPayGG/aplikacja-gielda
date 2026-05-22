@@ -9,6 +9,7 @@ import {
 } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { resolveIntlLocale } from "../utils/formatters";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 const TOTAL_SKILLS = 10;
@@ -17,7 +18,7 @@ function formatDate(value: string | null, locale: string): string {
   if (!value) return "-";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "-";
-  return date.toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" });
+  return date.toLocaleDateString(resolveIntlLocale(locale), { year: "numeric", month: "short", day: "numeric" });
 }
 
 export function SkillTreePage() {

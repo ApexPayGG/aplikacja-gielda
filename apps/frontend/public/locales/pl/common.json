@@ -207,6 +207,7 @@
   "coach": {
     "aiCoach": "Komentarz coacha AI",
     "aiDescriptionEmpty": "Brak treści od coacha AI.",
+    "noBehavioralData": "Brak danych do analizy behawioralnej.",
     "avgHoldLoss": "Śr. czas trzymania straty",
     "avgHoldWin": "Śr. czas trzymania zysku",
     "avgLoss": "Śr. strata",
@@ -1053,6 +1054,8 @@
     "printReportTrades": "Transakcje",
     "quantity": "Ilość",
     "short": "Short",
+    "timeColumn": "Czas",
+    "colLogoTicker": "Logo + Ticker",
     "title": "Paper Trading"
   },
   "pearls": {
@@ -1138,7 +1141,17 @@
     "subtitle": "Twój behawioralny punkt odniesienia: DNA, reguły i dziennik decyzji.",
     "title": "Profil psychiki tradera",
     "topBiases": "Top biases",
-    "tradingStyle": "Styl tradingu"
+    "tradingStyle": "Styl tradingu",
+    "exampleRule1": "Max 2 transakcje dziennie",
+    "exampleRule2": "Nie handluj w piątek po 14:00",
+    "exampleRule3": "Stop loss zawsze przed wejściem",
+    "rules": {
+      "max2PerDay": "Max 2 transakcje dziennie",
+      "noFridayAfter14": "Nie handluj w piątek po 14:00",
+      "stopLossBeforeEntry": "Stop loss zawsze przed wejściem"
+    },
+    "updatedAt": "Zaktualizowano",
+    "waitingProfile": "Oczekiwanie na dane profilu"
   },
   "reactions": {
     "charCount": "{{used}} / {{max}}",

@@ -5,6 +5,7 @@ import type { AnalysisResponse } from "../services/api";
 import { pickBriefSectionsForLocale } from "../utils/briefLocale";
 import { GLASS_SECTION } from "./behavioral-coach/glassStyles";
 import { sanitizeApiErrorMessage } from "../utils/sanitizeApiErrorMessage";
+import { formatLocaleDateTime } from "../utils/formatters";
 
 export type BriefLimitReached = {
   limit: number;
@@ -90,7 +91,8 @@ export function AnalysisBrief({ analysis, loading, error, limitReached }: Props)
         </h3>
       </div>
       <p className="mb-4 text-xs text-textSecondary">
-        {t("analysisBrief.updated", { defaultValue: "Updated" })} {new Date(analysis.updatedAt).toLocaleString()}
+        {t("analysisBrief.updated", { defaultValue: "Updated" })}{" "}
+        {formatLocaleDateTime(analysis.updatedAt, i18n.language)}
       </p>
       <div className="max-h-[480px] overflow-y-auto text-sm leading-relaxed text-textPrimary">
         {sections.map((sec, index) => (

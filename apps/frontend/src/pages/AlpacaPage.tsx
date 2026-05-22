@@ -427,7 +427,7 @@ export function AlpacaPage() {
               <p className="mb-1 text-sm font-medium" style={{ color: colors.textSecondary }}>
                 Side
               </p>
-              <div className="grid grid-cols-2 gap-2 rounded-xl border p-1" style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}>
+              <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/10 bg-[#0f111c]/80 p-1 backdrop-blur-sm">
                 <button
                   type="button"
                   className="rounded-lg px-3 py-2 text-sm font-semibold transition"
@@ -458,8 +458,7 @@ export function AlpacaPage() {
               <input
                 type="number"
                 min={1}
-                className="mt-1 w-full rounded-xl border px-3 py-2 text-sm outline-none transition"
-                style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+                className="mt-1 w-full rounded-xl border border-white/10 bg-[#1e1b4b]/30 px-3 py-2 text-sm text-white outline-none backdrop-blur-sm transition focus:border-[#22d3ee]/40"
                 value={qty}
                 onChange={(event) => setQty(Math.max(1, Math.trunc(Number(event.target.value) || 1)))}
               />
@@ -468,8 +467,7 @@ export function AlpacaPage() {
             <label className="block text-sm font-medium" style={{ color: colors.textSecondary }}>
               Order type
               <select
-                className="mt-1 w-full rounded-xl border px-3 py-2 text-sm outline-none transition"
-                style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+                className="mt-1 w-full rounded-xl border border-white/10 bg-[#1e1b4b]/30 px-3 py-2 text-sm text-white outline-none backdrop-blur-sm transition focus:border-[#22d3ee]/40"
                 value={orderType}
                 onChange={(event) => setOrderType(event.target.value as AlpacaOrderType)}
               >
@@ -485,8 +483,7 @@ export function AlpacaPage() {
                   type="number"
                   min={0.01}
                   step={0.01}
-                  className="mt-1 w-full rounded-xl border px-3 py-2 text-sm outline-none transition"
-                  style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+                  className="mt-1 w-full rounded-xl border border-white/10 bg-[#1e1b4b]/30 px-3 py-2 text-sm text-white outline-none backdrop-blur-sm transition focus:border-[#22d3ee]/40"
                   value={Number.isFinite(limitPrice) ? limitPrice : 0}
                   onChange={(event) => setLimitPrice(Math.max(0, Number(event.target.value) || 0))}
                 />

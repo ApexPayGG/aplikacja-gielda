@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { createWeeklyReview, getCurrentWeeklyReview, getWeeklyReviewHistory, type WeeklyReview } from "../services/api";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
-import { resolveIntlLocale } from "../utils/formatters";
+import { formatLocaleDate, formatLocaleDateRange } from "../utils/formatters";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
@@ -37,15 +37,6 @@ const REFLECTION_QUESTIONS: Array<{ key: ReflectionQuestionKey; index: number }>
   { key: "q5", index: 5 },
 ];
 
-function toDateLabel(value: string | Date, language?: string): string {
-  const date = typeof value === "string" ? new Date(value) : value;
-  return date.toLocaleDateString(resolveIntlLocale(language), {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-  });
-}
-
 function toWeekRangeLabel(weekStart: string | undefined, language?: string): string {
   const base = weekStart ? new Date(weekStart) : new Date();
   const start = new Date(base);
@@ -57,7 +48,7 @@ function toWeekRangeLabel(weekStart: string | undefined, language?: string): str
   const end = new Date(start);
   end.setDate(start.getDate() + 6);
 
-  return `${toDateLabel(start, language)} - ${toDateLabel(end, language)}`;
+  return formatLocaleDateRange(start, end, language);
 }
 
 function scoreAverage(review: WeeklyReview): string {
@@ -242,9 +233,9 @@ export function WeeklyReviewPage() {
           <h2 className="text-lg font-semibold text-white">{t("weekly.aiLetterTitle")}</h2>
           {submitting ? (
             <div className="mt-4 flex items-center gap-2 text-white/80">
-              <span className="h-2 w-2 animate-bounce rounded-full bg-white [animation-delay:-0.2s]" />
-              <span className="h-2 w-2 animate-bounce rounded-full bg-white [animation-delay:-0.1s]" />
-              <span className="h-2 w-2 animate-bounce rounded-full bg-white" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-[#22d3ee]/90 [animation-delay:-0.2s]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-[#22d3ee]/90 [animation-delay:-0.1s]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-[#22d3ee]/90" />
               <span className="ml-1 text-sm">{t("weekly.generating")}</span>
             </div>
           ) : (
@@ -272,7 +263,7 @@ export function WeeklyReviewPage() {
               <article key={row.id} className="glass-panel rounded-xl p-4 shadow-[0_10px_22px_rgba(168,85,247,0.08)]">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-white">
-                    {t("weekly.weekOf")}: {toDateLabel(row.weekStart, i18n.language)}
+                    {t("weekly.weekOf", { defaultValue: "Week of" })}: {formatLocaleDate(row.weekStart, i18n.language)}
                   </p>
                   <span
                     className="rounded-full px-3 py-1 text-xs font-semibold"
@@ -281,7 +272,7 @@ export function WeeklyReviewPage() {
                     Avg {scoreAverage(row)}/5
                   </span>
                 </div>
-                <p className="mt-2 text-xs text-white/50">{toDateLabel(row.createdAt, i18n.language)}</p>
+                <p className="mt-2 text-xs text-white/50">{formatLocaleDate(row.createdAt, i18n.language)}</p>
                 {row.aiLetter ? <p className="mt-3 text-sm leading-6 glass-muted">{row.aiLetter}</p> : null}
               </article>
             ))}

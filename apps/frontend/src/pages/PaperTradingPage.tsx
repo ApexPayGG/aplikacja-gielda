@@ -17,7 +17,7 @@ import {
 } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatQuoteAge } from "../utils/formatQuoteAge";
-import { formatCurrency, formatDate, formatNumber, formatPercent } from "../utils/formatters";
+import { formatCurrency, formatDate, formatNumber, formatPercent, resolveIntlLocale } from "../utils/formatters";
 import { printPortfolioReport } from "../utils/printReport";
 import { colors } from "../styles/designSystem";
 
@@ -237,7 +237,7 @@ function emotionLabel(t: (key: string) => string, emotion: ReflectionEmotion): s
 
 export function PaperTradingPage() {
   const { t, i18n } = useTranslation();
-  const dateLocale = i18n.language?.toLowerCase().startsWith("pl") ? "pl-PL" : "en-US";
+  const dateLocale = resolveIntlLocale(i18n.language);
   const { user } = useAuth();
   const USER_ID = user?.id ?? "";
   const [form, setForm] = useState<OpenTradeForm>({
@@ -1139,7 +1139,7 @@ export function PaperTradingPage() {
                 <thead className="text-left text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
                   <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
                     <th className="px-3 py-2">#</th>
-                    <th className="px-3 py-2">Logo + Symbol</th>
+                    <th className="px-3 py-2">{t("paperTrading.colLogoTicker", { defaultValue: "Logo + Ticker" })}</th>
                     <th className="px-3 py-2">Entry price</th>
                     <th className="px-3 py-2">Current price</th>
                     <th className="px-3 py-2">P&amp;L %</th>
@@ -1249,7 +1249,7 @@ export function PaperTradingPage() {
               <table className="min-w-full text-xs">
                 <thead className="text-left uppercase tracking-wide" style={{ color: colors.textSecondary }}>
                   <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
-                    <th className="px-3 py-2">Logo + Symbol</th>
+                    <th className="px-3 py-2">{t("paperTrading.colLogoTicker", { defaultValue: "Logo + Ticker" })}</th>
                     <th className="px-3 py-2">Entry price</th>
                     <th className="px-3 py-2">Exit price</th>
                     <th className="px-3 py-2">P&amp;L %</th>

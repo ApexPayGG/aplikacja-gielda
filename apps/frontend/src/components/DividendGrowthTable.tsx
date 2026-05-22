@@ -29,7 +29,7 @@ export function DividendGrowthTable({ rows, loading, error }: Props) {
       <table className="min-w-full text-left text-sm text-slate-300">
         <thead className="bg-surface-elevated text-xs uppercase text-slate-400">
           <tr>
-            <th className="px-4 py-3">{t("dividend.colSymbol", { defaultValue: "Symbol" })}</th>
+            <th className="px-4 py-3">{t("dividend.colSymbol", { defaultValue: "Ticker" })}</th>
             <th className="px-4 py-3">{t("dividend.colYear", { defaultValue: "Year" })}</th>
             <th className="px-4 py-3">{t("dividend.colAnnual", { defaultValue: "Annual dividend" })}</th>
             <th className="px-4 py-3">{t("dividend.colGrowth", { defaultValue: "Growth YoY %" })}</th>

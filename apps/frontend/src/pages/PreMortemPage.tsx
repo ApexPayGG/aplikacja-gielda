@@ -140,7 +140,7 @@ export function PreMortemPage() {
         <form onSubmit={onSubmit} className={GLASS_SECTION}>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="flex flex-col gap-1.5 text-sm">
-              <span className={GLASS_LABEL}>{t("premortem.symbol", { defaultValue: "Symbol" })}</span>
+              <span className={GLASS_LABEL}>{t("premortem.symbol", { defaultValue: "Ticker" })}</span>
               <input
                 value={form.ticker}
                 onChange={(event) => setForm((prev) => ({ ...prev, ticker: event.target.value.toUpperCase() }))}

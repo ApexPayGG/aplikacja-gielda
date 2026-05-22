@@ -101,7 +101,7 @@ export function CoachPaperTradingCard({
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="block text-xs font-semibold uppercase tracking-wide text-white/60">
-          {t("coach.paper.symbol", { defaultValue: "Symbol" })}
+          {t("coach.paper.symbol", { defaultValue: "Ticker" })}
           <select
             value={symbol}
             onChange={(e) => setSymbol(e.target.value)}

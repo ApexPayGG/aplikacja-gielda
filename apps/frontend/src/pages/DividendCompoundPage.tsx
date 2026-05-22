@@ -16,6 +16,7 @@ import {
 } from "../components/behavioral-coach/glassStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { formatCurrency as formatMoney } from "../utils/formatters";
 
 type FormState = {
   company: string;
@@ -49,16 +50,8 @@ function sliderFillStyle(value: number, min: number, max: number): CSSProperties
   };
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("pl-PL", {
-    style: "currency",
-    currency: "PLN",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
 export function DividendCompoundPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [form, setForm] = useState<FormState>(DEFAULT_FORM);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -157,7 +150,7 @@ export function DividendCompoundPage() {
             <label className="flex flex-col gap-2 text-sm md:col-span-2">
               <span className="flex items-center justify-between font-semibold" style={{ color: colors.textSecondary }}>
                 <span>{t("dividendcompound.initialAmount", { defaultValue: "Initial amount (PLN)" })}</span>
-                <span style={{ color: colors.brandDark }}>{formatCurrency(form.investmentAmount)}</span>
+                <span style={{ color: colors.brandDark }}>{formatMoney(form.investmentAmount, "USD", i18n.language)}</span>
               </span>
               <input
                 type="range"
@@ -172,8 +165,8 @@ export function DividendCompoundPage() {
                 style={sliderFillStyle(form.investmentAmount, 5000, 300000)}
               />
               <div className="flex justify-between text-xs" style={{ color: colors.textMuted }}>
-                <span>5 000 PLN</span>
-                <span>300 000 PLN</span>
+                <span>{formatMoney(5000, "USD", i18n.language)}</span>
+                <span>{formatMoney(300000, "USD", i18n.language)}</span>
               </div>
             </label>
 
@@ -193,8 +186,8 @@ export function DividendCompoundPage() {
                 style={sliderFillStyle(form.years, 1, 30)}
               />
               <div className="flex justify-between text-xs" style={{ color: colors.textMuted }}>
-                <span>1 rok</span>
-                <span>30 lat</span>
+                <span>{t("dividendcompound.yearMin", { defaultValue: "1 year" })}</span>
+                <span>{t("dividendcompound.yearMax", { count: 30, defaultValue: "30 years" })}</span>
               </div>
             </label>
           </div>
@@ -218,14 +211,14 @@ export function DividendCompoundPage() {
           <article className={GLASS_STAT_CARD}>
             <p className="text-xs uppercase tracking-wide text-white/50">{t("dividendcompound.chartTitle", { defaultValue: "Portfolio value year by year" })}</p>
             <p className="mt-3 text-4xl font-extrabold text-white">
-              {selectedResult ? formatCurrency(selectedResult.final) : "-"}
+              {selectedResult ? formatMoney(selectedResult.final, "USD", i18n.language) : "-"}
             </p>
           </article>
 
           <article className={GLASS_STAT_CARD}>
             <p className="text-xs uppercase tracking-wide text-white/50">{t("dividendcompound.difference", { defaultValue: "Difference (compound bonus)" })}</p>
             <p className="mt-3 text-4xl font-extrabold text-white">
-              {selectedResult ? formatCurrency(totalDividends) : "-"}
+              {selectedResult ? formatMoney(totalDividends, "USD", i18n.language) : "-"}
             </p>
           </article>
 

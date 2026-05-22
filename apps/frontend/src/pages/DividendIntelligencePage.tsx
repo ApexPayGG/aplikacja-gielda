@@ -205,7 +205,7 @@ export function DividendIntelligencePage() {
             <div className="space-y-4">
               <label className="block text-sm">
                 <span className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
-                  {t("dividendIntelligence.symbol", { defaultValue: "Symbol" })}
+                  {t("dividendIntelligence.symbol", { defaultValue: "Ticker" })}
                 </span>
                 <input
                   value={input}

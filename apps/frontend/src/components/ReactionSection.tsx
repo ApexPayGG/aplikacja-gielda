@@ -8,6 +8,7 @@ import {
   type TradeReactionItem,
 } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { formatLocaleDateTime } from "../utils/formatters";
 
 const MAX_LEN = 500;
 
@@ -16,7 +17,7 @@ type Props =
   | { variant: "signal"; signalId: string; userId: string };
 
 export function ReactionSection(props: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [items, setItems] = useState<TradeReactionItem[]>([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
@@ -83,7 +84,7 @@ export function ReactionSection(props: Props) {
               <div className="flex flex-wrap items-baseline justify-between gap-2 text-[11px] text-slate-500">
                 <span className="font-mono text-slate-400">{r.userId}</span>
                 <time dateTime={r.createdAt} className="shrink-0">
-                  {new Date(r.createdAt).toLocaleString()}
+                  {formatLocaleDateTime(r.createdAt, i18n.language)}
                 </time>
               </div>
               <p className="mt-1 whitespace-pre-wrap text-slate-200">{r.content}</p>

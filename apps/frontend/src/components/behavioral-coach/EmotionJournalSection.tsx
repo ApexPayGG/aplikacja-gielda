@@ -3,6 +3,7 @@ import { useCallback, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import type { EmotionJournalEntry, EmotionJournalState } from "../../utils/behavioralCoachData";
 import { GLASS_SECTION, GLASS_SECTION_TITLE } from "./glassStyles";
+import { formatLocaleDateTime } from "../../utils/formatters";
 
 const EMOTION_LABEL_DEFAULTS: Record<EmotionJournalState, string> = {
   FEARFUL: "Fearful",
@@ -157,12 +158,7 @@ export function EmotionJournalSection({
               <span className="font-medium text-white/90">{emotionLabel(entry.emotion)}</span>
               {entry.symbol ? <span className="font-mono text-xs text-[#22d3ee]">{entry.symbol}</span> : null}
               <span className="text-xs text-white/45">
-                {new Date(entry.createdAt).toLocaleString(i18n.language, {
-                  day: "numeric",
-                  month: "short",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {formatLocaleDateTime(entry.createdAt, i18n.language)}
               </span>
             </li>
           ))}

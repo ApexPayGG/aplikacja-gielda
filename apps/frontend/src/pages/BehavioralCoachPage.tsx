@@ -17,6 +17,8 @@ import type { SyncSource } from "../utils/psycheSync";
 import { api, getBehavioralCooldown, type BehavioralCooldownResponse } from "../services/api";
 import { buildCoachInterventions, type CoachSnapshotLike } from "../utils/behavioralCoachData";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import { normalizeCoachAiDescription } from "../utils/runtimeI18n";
+import { resolveUiLocaleForCopy } from "../i18n";
 import { isFreePlan } from "../utils/subscriptionTier";
 
 type CoachSnapshot = CoachSnapshotLike & {
@@ -61,7 +63,7 @@ function isFallbackError(e: unknown): boolean {
 const MOCK_AI_KEY = "coach.mockAiDescription";
 
 export function BehavioralCoachPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const USER_ID = user?.id ?? MOCK_USER_ID;
   const syncUserId = user?.id ?? null;
@@ -180,6 +182,11 @@ export function BehavioralCoachPage() {
 
   const interventions = useMemo(() => buildCoachInterventions(snapshot), [snapshot]);
   const radarLoading = loading || !hydrated || psycheSync.loading;
+  const uiLanguage = resolveUiLocaleForCopy(i18n);
+  const coachAiNote = useMemo(
+    () => normalizeCoachAiDescription(coach?.aiDescription ?? "", t, uiLanguage),
+    [coach?.aiDescription, t, uiLanguage],
+  );
 
   return (
     <div className="relative overflow-x-hidden">
@@ -283,13 +290,19 @@ export function BehavioralCoachPage() {
 
         {showBrokerPaywall ? <BrokerIntegrationPaywall /> : null}
 
-        {!loading && coach?.aiDescription?.trim() ? (
+        {!loading && coachAiNote ? (
           <section className="rounded-2xl border border-[#22d3ee]/20 bg-gradient-to-br from-[#a855f7]/30 to-[#22d3ee]/10 p-5 backdrop-blur-md">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[#22d3ee]">
               <SparklesIcon className="h-4 w-4" aria-hidden />
               {t("coach.aiCoach", { defaultValue: "AI coach note" })}
             </p>
-            <p className="mt-3 text-base leading-relaxed text-white/90">“{coach.aiDescription}”</p>
+            <p className="mt-3 text-base leading-relaxed text-white/90">“{coachAiNote}”</p>
+          </section>
+        ) : !loading ? (
+          <section className="rounded-2xl border border-white/10 bg-[#1e1b4b]/15 p-5 backdrop-blur-md">
+            <p className="text-sm text-white/60">
+              {t("coach.aiDescriptionEmpty", { defaultValue: "No AI coach content yet." })}
+            </p>
           </section>
         ) : null}
 

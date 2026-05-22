@@ -196,7 +196,7 @@ export function AlpacaDashboardPage() {
         <div className="grid gap-3 sm:grid-cols-3">
           <input
             className="rounded-md border border-surface-border bg-surface px-3 py-2 text-white"
-            placeholder={t("alpaca.symbol", { defaultValue: "Symbol" })}
+            placeholder={t("alpaca.symbol", { defaultValue: "Ticker" })}
             value={symbol}
             onChange={(e) => setSymbol(e.target.value.toUpperCase())}
           />

@@ -67,7 +67,7 @@ export function Dividends() {
         </h2>
         <div className="mt-4 flex flex-wrap items-end gap-4">
           <label className="text-sm">
-            <span className="text-slate-400">{t("dividend.symbol", { defaultValue: "Symbol" })}</span>
+            <span className="text-slate-400">{t("dividend.symbol", { defaultValue: "Ticker" })}</span>
             <input
               className="mt-1 block rounded-md border border-surface-border bg-surface px-3 py-2 font-mono text-white"
               value={symbol}

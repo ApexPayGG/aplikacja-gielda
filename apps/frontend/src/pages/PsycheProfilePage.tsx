@@ -21,6 +21,7 @@ import {
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { resolveIntlLocale } from "../utils/formatters";
+import { normalizeTradingRuleText } from "../utils/runtimeI18n";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
 
@@ -254,7 +255,9 @@ export function PsycheProfilePage() {
               <div>
                 <p className="text-xl font-semibold">{displayName}</p>
                 <p className="text-xs" style={{ color: colors.textMuted }}>
-                  {hasProfile && profile?.updatedAt ? `Updated ${new Date(profile.updatedAt).toLocaleString()}` : "Waiting for profile data"}
+                  {hasProfile && profile?.updatedAt
+                    ? `${t("psyche.updatedAt", { defaultValue: "Updated" })} ${new Date(profile.updatedAt).toLocaleString(resolveIntlLocale(i18n.language))}`
+                    : t("psyche.waitingProfile", { defaultValue: "Waiting for profile data" })}
                 </p>
               </div>
             </div>
@@ -328,7 +331,9 @@ export function PsycheProfilePage() {
                   <li key={rule.id} className="rounded-xl border px-3 py-2" style={{ borderColor: colors.border }}>
                     <div className="flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-sm font-medium">{rule.rule}</p>
+                        <p className="text-sm font-medium">
+                          {normalizeTradingRuleText(rule.rule, t, i18n.language)}
+                        </p>
                         <p className="text-xs" style={{ color: colors.textMuted }}>
                           Breaches: {rule.breaches}
                         </p>

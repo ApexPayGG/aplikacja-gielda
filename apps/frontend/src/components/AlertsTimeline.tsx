@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { DividendAlert } from "../types/dividend";
+import { resolveIntlLocale } from "../utils/formatters";
 
 export interface AlertsTimelineProps {
   alerts: DividendAlert[];
@@ -21,16 +22,16 @@ function badgeClass(type: string): string {
   }
 }
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, language?: string): string {
   try {
-    return new Date(iso).toLocaleString();
+    return new Date(iso).toLocaleString(resolveIntlLocale(language));
   } catch {
     return iso;
   }
 }
 
 export function AlertsTimeline({ alerts, symbol }: AlertsTimelineProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   if (alerts.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-surface-border bg-surface-elevated/50 p-8 text-center text-sm text-slate-500">
@@ -53,7 +54,7 @@ export function AlertsTimeline({ alerts, symbol }: AlertsTimelineProps) {
               <span className={`rounded border px-2 py-0.5 text-xs font-medium ${badgeClass(a.alertType)}`}>
                 {a.alertType.replace(/_/g, " ")}
               </span>
-              <span className="text-xs text-slate-500">{formatDate(a.createdAt)}</span>
+              <span className="text-xs text-slate-500">{formatDate(a.createdAt, i18n.language)}</span>
             </div>
             <div className="mt-2 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-surface">
               <div className="h-full rounded-full bg-accent-muted" style={{ width: `${a.severity}%` }} />

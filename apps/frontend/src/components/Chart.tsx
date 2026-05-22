@@ -10,6 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import type { QuoteRow } from "../services/api";
 import { GLASS_INNER_PANEL, GLASS_SECTION } from "./behavioral-coach/glassStyles";
+import { resolveIntlLocale } from "../utils/formatters";
 
 type Props = {
   quotes: QuoteRow[];
@@ -19,7 +20,7 @@ type Props = {
 export function Chart({ quotes, title = "Close (latest window)" }: Props) {
   const { t, i18n } = useTranslation();
   const data = quotes.map((q) => ({
-    t: new Date(q.timestamp).toLocaleDateString(i18n.resolvedLanguage || "en", {
+    t: new Date(q.timestamp).toLocaleDateString(resolveIntlLocale(i18n.language), {
       day: "numeric",
       month: "short",
     }),

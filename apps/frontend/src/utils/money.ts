@@ -1,6 +1,9 @@
-export function formatCurrency(value: number, currency = "PLN"): string {
-  const normalized = typeof currency === "string" && currency.trim() ? currency.trim().toUpperCase() : "PLN";
-  return new Intl.NumberFormat("pl-PL", {
+import { resolveIntlLocale } from "./formatters";
+
+export function formatCurrency(value: number, currency = "USD", language?: string): string {
+  const normalized = typeof currency === "string" && currency.trim() ? currency.trim().toUpperCase() : "USD";
+  const locale = resolveIntlLocale(language);
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: normalized,
     minimumFractionDigits: 2,

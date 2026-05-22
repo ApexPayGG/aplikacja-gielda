@@ -19,6 +19,7 @@ import type { PsycheHistoryPoint } from "../../utils/psycheSync";
 import { useCompactViewport } from "../../utils/useCompactViewport";
 import { GLASS_SECTION, GLASS_SECTION_TITLE } from "./glassStyles";
 import { TraderProfileShareMenu } from "./TraderProfileShareMenu";
+import { resolveIntlLocale } from "../../utils/formatters";
 
 const METRIC_DEFAULTS: Record<PsycheMetricKey, string> = {
   fomoResilience: "FOMO resilience",
@@ -73,7 +74,10 @@ export function TraderPsycheProfileSection({ metrics, growthScore, history = [],
       [...history]
         .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
         .map((row) => ({
-          label: new Date(row.createdAt).toLocaleDateString(i18n.language, { day: "numeric", month: "short" }),
+          label: new Date(row.createdAt).toLocaleDateString(resolveIntlLocale(i18n.language), {
+            day: "numeric",
+            month: "short",
+          }),
           growth: row.growthScore,
         })),
     [history, i18n.language],

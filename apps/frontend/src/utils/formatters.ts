@@ -3,11 +3,11 @@ function asFiniteNumber(value: unknown): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-export function formatCurrency(amount: number, currency: string): string {
+export function formatCurrency(amount: number, currency: string, language?: string): string {
   const parsedAmount = asFiniteNumber(amount);
   if (parsedAmount == null) return "—";
   const normalizedCurrency = currency?.trim().toUpperCase() || "USD";
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(resolveIntlLocale(language), {
     style: "currency",
     currency: normalizedCurrency,
     minimumFractionDigits: 2,
@@ -62,6 +62,42 @@ export function formatLocaleDateTime(date: string | Date | number | undefined, l
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+  });
+}
+
+/** Short date, e.g. May 18, 2026 / 18 maj 2026 */
+export function formatLocaleDate(date: string | Date | number | undefined, language?: string): string {
+  const parsed = toValidDate(date);
+  if (!parsed) return "n/a";
+  return parsed.toLocaleDateString(resolveIntlLocale(language), {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+export function formatLocaleDateRange(
+  start: string | Date | number | undefined,
+  end: string | Date | number | undefined,
+  language?: string,
+): string {
+  const startLabel = formatLocaleDate(start, language);
+  const endLabel = formatLocaleDate(end, language);
+  if (startLabel === "n/a" && endLabel === "n/a") return "n/a";
+  if (startLabel === "n/a") return endLabel;
+  if (endLabel === "n/a") return startLabel;
+  return `${startLabel} - ${endLabel}`;
+}
+
+/** Mon–Sun short labels for calendar headers. */
+export function buildWeekdayShortLabels(language?: string, weekStartsOnMonday = true): string[] {
+  const locale = resolveIntlLocale(language);
+  const formatter = new Intl.DateTimeFormat(locale, { weekday: "short" });
+  const base = weekStartsOnMonday ? 1 : 0;
+  return Array.from({ length: 7 }, (_, index) => {
+    const day = (base + index) % 7;
+    const date = new Date(2024, 0, day === 0 ? 7 : day);
+    return formatter.format(date);
   });
 }
 

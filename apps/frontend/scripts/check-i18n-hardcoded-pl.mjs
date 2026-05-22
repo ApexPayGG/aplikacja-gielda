@@ -177,6 +177,7 @@ const SKIP_REL_PREFIXES = [
 
 const SKIP_REL_FILES = new Set([
   "constants/companyLegal.ts", // factual registered address in Poland
+  "utils/runtimeI18n.ts", // intentional PL→EN mapping table
 ]);
 
 const ALLOWLIST_LINE_PATTERNS = [
@@ -198,6 +199,10 @@ const ALLOWLIST_LINE_PATTERNS = [
   /formatLocaleDateTime/,
   /inferCurrencyFromSymbol/,
   /formatDividendPerShareAmount/,
+  /normalizeCoachAiDescription/,
+  /normalizeTradingRuleText/,
+  /KNOWN_TRADING_RULES/,
+  /KNOWN_COACH_AI_PL/,
 ];
 
 const DEFAULT_VALUE_PL_RE =
@@ -274,7 +279,19 @@ function findIssues(filePath, content) {
     }
 
     if (hits.length > 0) {
-      issues.push({ rel, line: i + 1, hits, snippet: line.trim().slice(0, 140) });
+      const fragment =
+        defaultMatch?.[2]?.trim().slice(0, 80) ||
+        POLISH_PHRASES.find((p) => textIncludesToken(line, p)) ||
+        POLISH_MONTH_DAY_NAMES.find((n) => textIncludesToken(line, n)) ||
+        line.trim().slice(0, 80);
+      issues.push({
+        rel,
+        line: i + 1,
+        hits,
+        problemType: hits.join(", "),
+        fragment,
+        snippet: line.trim().slice(0, 140),
+      });
     }
   }
 
@@ -287,7 +304,9 @@ const allIssues = files.flatMap((f) => findIssues(f, fs.readFileSync(f, "utf8"))
 if (allIssues.length > 0) {
   console.error(`\n[i18n] Found ${allIssues.length} potential Polish hardcoded string(s) in apps/frontend/src:\n`);
   for (const issue of allIssues.slice(0, 80)) {
-    console.error(`  ${issue.rel}:${issue.line} [${issue.hits.join(", ")}]`);
+    console.error(`  ${issue.rel}:${issue.line}`);
+    console.error(`    type: ${issue.problemType}`);
+    console.error(`    fragment: ${issue.fragment}`);
     console.error(`    ${issue.snippet}\n`);
   }
   if (allIssues.length > 80) {
