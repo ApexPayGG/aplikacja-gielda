@@ -724,7 +724,7 @@
   "landing": {
     "footerCta": {
       "button": "Zacznij za darmo",
-      "disclaimer": "Zacznij za darmo — bez karty kredytowej. Upgrade w każdej chwili.",
+      "disclaimer": "Produkt edukacyjny. To nie jest porada inwestycyjna. Inwestowanie wiąże się z ryzykiem.",
       "pricing": "Zobacz cennik",
       "title": "Gotowy żeby inwestować mądrzej?"
     },
@@ -742,8 +742,67 @@
       "widgetTitle": "Puls rynku na żywo",
       "coachAlertTitle": "Alert coacha",
       "coachAlertBody": "Unikasz FOMO dziś ✓",
-      "aiSignalBuy": "Sygnał AI: KUP",
-      "winRate": "Win Rate"
+      "contextNoteTitle": "Kontekst",
+      "contextNoteBody": "Podwyższona zmienność — sprawdź ryzyko przed decyzją"
+    },
+    "compliance": {
+      "ariaLabel": "Informacja edukacyjna i prawna",
+      "title": "Ważna informacja",
+      "educational": "StockAI Pro ma charakter edukacyjny i informacyjny.",
+      "notAdvice": "Nie świadczy doradztwa inwestycyjnego.",
+      "decisionSupport": "Wyniki AI wspierają decyzje — nie są rekomendacjami.",
+      "marketData": "Dane rynkowe mogą być opóźnione lub niedostępne w zależności od dostawcy."
+    },
+    "searchTeaser": {
+      "title": "Wyszukaj spółkę — bez konta",
+      "subtitle": "Publiczne wyszukiwanie symboli. Zaloguj się, aby odblokować AI Brief i watchlistę.",
+      "placeholder": "Symbol lub nazwa… np. AAPL, PKN",
+      "empty": "Brak wyników. Spróbuj innego symbolu lub giełdy.",
+      "error": "Wyszukiwanie chwilowo niedostępne. Spróbuj za chwilę.",
+      "unlockBrief": "Załóż konto, aby odblokować AI Brief",
+      "signInWatchlist": "Zaloguj się, aby dodać do watchlisty"
+    },
+    "aiBriefDemo": {
+      "badge": "Przykładowy AI Brief — podgląd edukacyjny",
+      "title": "Jak AI Brief porządkuje kontekst",
+      "subtitle": "Przykład ilustracyjny. Nie jest generowany dla Twojego portfela i nie jest sygnałem transakcyjnym.",
+      "symbolLabel": "Przykładowy symbol",
+      "symbol": "AAPL",
+      "disclaimer": "Podgląd edukacyjny. To nie jest porada inwestycyjna. Bez kupna/sprzedaży, celu cenowego ani rekomendacji.",
+      "highlights": ["Wsparcie decyzji", "Świadomość ryzyka", "Ochrona behawioralna"],
+      "sections": [
+        {
+          "heading": "Kontekst rynku",
+          "body": "Duża spółka technologiczna z wysoką płynnością; ostatnie sesje mają szersze wahania niż mediana z 30 dni."
+        },
+        {
+          "heading": "Czynniki ryzyka",
+          "body": "Sezon wyników, koncentracja w indeksach i oczekiwania stóp mogą wzmagać krótkoterminowe ruchy."
+        },
+        {
+          "heading": "Kontrola behawioralna",
+          "body": "Jeśli reagujesz na nagłówek — zatrzymaj się i porównaj setup ze swoimi zapisanymi regułami przed rozmiarem pozycji."
+        }
+      ],
+      "cta": "Zarejestruj się, aby generować briefy dla watchlisty"
+    },
+    "productTrust": {
+      "title": "Dla zdyscyplinowanego podejmowania decyzji",
+      "subtitle": "Uporządkowany kontekst i coaching — bez obietnic zwrotu.",
+      "items": [
+        {
+          "title": "Przestrzeń wspierająca decyzje",
+          "body": "AI Brief, Signal DNA i Pre-Mortem pomagają rozważyć scenariusze — to nie są instrukcje transakcyjne."
+        },
+        {
+          "title": "Ochrona behawioralna",
+          "body": "Alerty coacha pokazują wzorce emocjonalne, żebyś zwolnił zanim zareagujesz impulsywnie."
+        },
+        {
+          "title": "Jasne limity danych",
+          "body": "Notowania i fundamenty zależą od dostawców zewnętrznych — możliwe opóźnienia lub luki."
+        }
+      ]
     },
     "pricing": {
       "badge": "Cena dla pierwszych użytkowników",
@@ -874,23 +933,7 @@
         "languages": "9 języków",
         "modules": "27 modułów AI"
       },
-      "testimonials": [
-        {
-          "author": "Kasia, Warszawa",
-          "quote": "Kiedyś skakałam między 5 aplikacjami. Teraz mam jeden ekran i wiem co robię."
-        },
-        {
-          "author": "Lukas, Berlin",
-          "quote": "Behavioral Coach pokazał mi że traciłem przez FOMO, nie przez złe sygnały."
-        },
-        {
-          "author": "Clara, Madryt",
-          "quote": "Pre-Mortem AI zmienił moje podejście do ryzyka. Teraz myślę zanim klikam."
-        }
-      ],
-      "testimonialsSubtitle": "Krótkie historie z pierwszej linii — mniej chaosu.",
-      "testimonialsTitle": "Co mówią inwestorzy?",
-      "title": "Dołącz do inwestorów którzy już inwestują mądrzej"
+      "title": "Early access — platforma edukacyjna"
     },
     "solution": {
       "subtitle": "StockAI Pro zastępuje 5 narzędzi i dodaje to, czego żadne z nich nie ma.",
@@ -898,7 +941,7 @@
       "titleAccent": "Pełny obraz.",
       "features": {
         "aiBrief": {
-          "body": "Nie sam score — pełne wyjaśnienie dlaczego warto lub nie.",
+          "body": "Uporządkowany kontekst narracyjny pod Twój proces decyzyjny — bez sygnału kupna/sprzedaży.",
           "title": "AI Brief z narracją"
         },
         "behavioralCoach": {
@@ -914,7 +957,7 @@
           "title": "Paper Trading"
         },
         "preMortemAi": {
-          "body": "Zanim kupisz — AI pokazuje najbardziej prawdopodobny scenariusz straty.",
+          "body": "Zanim działasz — przejrzyj prawdopodobny scenariusz straty; to nie gwarantowany wynik.",
           "title": "Pre-Mortem AI"
         },
         "signalDna": {
@@ -923,7 +966,7 @@
         }
       }
     },
-    "heroSocialProof": "Dołącz do grona zadowolonych inwestorów"
+    "heroSocialProof": "Przestrzeń wspierająca decyzje dla zdyscyplinowanych inwestorów."
   },
   "mentor": {
     "currentStatus": "Aktualny status",

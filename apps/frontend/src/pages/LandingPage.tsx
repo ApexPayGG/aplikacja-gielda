@@ -12,6 +12,9 @@ import { useTranslation } from "react-i18next";
 import { createStripeCheckoutSession } from "../services/api";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
+import { LandingAiBriefPreview } from "../components/landing/LandingAiBriefPreview";
+import { LandingCompanySearchTeaser } from "../components/landing/LandingCompanySearchTeaser";
+import { LandingComplianceBlock } from "../components/landing/LandingComplianceBlock";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { SEOHead } from "../components/SEOHead";
 import { BrandLogo } from "../components/BrandLogo";
@@ -321,9 +324,9 @@ function FloatingCards() {
             style={{ boxShadow: "0 0 8px #00A86B" }}
           />
           <span className="text-[11px] font-bold text-[#a855f7]">AAPL</span>
-          <span className="text-[11px] font-semibold text-[#00A86B]">+2.4% ↑</span>
+          <span className="text-[11px] font-semibold text-[#94a3b8]">{t("landing.hero.contextNoteTitle")}</span>
         </div>
-        <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.aiSignalBuy")}</div>
+        <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.contextNoteBody")}</div>
       </div>
 
       <div
@@ -334,17 +337,6 @@ function FloatingCards() {
       >
         <div className="text-[11px] font-bold text-[#a855f7]">🧠 {t("landing.hero.coachAlertTitle")}</div>
         <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.coachAlertBody")}</div>
-      </div>
-
-      <div
-        className="animate-float absolute right-2 top-[6rem] z-20 origin-top-right scale-[0.78] rounded-2xl px-3 py-2 shadow-[0_8px_32px_rgba(168,85,247,0.3)] sm:right-1 sm:top-6 sm:scale-90 md:right-0 md:top-4 md:scale-100 md:px-4 md:py-3"
-        style={{
-          animationDelay: "3s",
-          background: "linear-gradient(135deg, #a855f7, #9333ea)",
-        }}
-      >
-        <div className="text-[20px] font-black text-white">73%</div>
-        <div className="text-[10px] text-white/60">{t("landing.hero.winRate")}</div>
       </div>
     </>
   );
@@ -497,13 +489,8 @@ function WorldClockFace({ timeZone, now }: { timeZone: string; now: Date }) {
   );
 }
 
-type LandingTestimonial = { quote: string; author: string };
 type HowItWorksStep = { title: string; desc: string };
-
-function parseTestimonialAuthor(author: string): { initials: string; name: string; loc: string } {
-  const [name = "", loc = ""] = author.split(",").map((part) => part.trim());
-  return { initials: (name.charAt(0) || "?").toUpperCase(), name, loc };
-}
+type ProductTrustItem = { title: string; body: string };
 
 function LandingFooterLanguages() {
   const { t, i18n } = useTranslation("common");
@@ -796,17 +783,17 @@ export function LandingPage() {
     return [];
   }, [t, i18n.language]);
 
-  const testimonials = useMemo((): LandingTestimonial[] => {
-    const translated = t("landing.socialProof.testimonials", { returnObjects: true });
+  const productTrustItems = useMemo((): ProductTrustItem[] => {
+    const translated = t("landing.productTrust.items", { returnObjects: true });
     if (Array.isArray(translated)) {
       return translated.filter(
-        (item): item is LandingTestimonial =>
+        (item): item is ProductTrustItem =>
           typeof item === "object" &&
           item !== null &&
-          "quote" in item &&
-          "author" in item &&
-          typeof (item as LandingTestimonial).quote === "string" &&
-          typeof (item as LandingTestimonial).author === "string",
+          "title" in item &&
+          "body" in item &&
+          typeof (item as ProductTrustItem).title === "string" &&
+          typeof (item as ProductTrustItem).body === "string",
       );
     }
     return [];
@@ -1150,29 +1137,9 @@ export function LandingPage() {
               </a>
             </div>
 
-            <div className="landing-hero-trust mt-10 flex items-center gap-4">
-              <div className="flex -space-x-3">
-                <span
-                  className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white text-xs font-bold text-white ring-2 ring-white"
-                  style={{ backgroundColor: BRAND.medium }}
-                >
-                  K
-                </span>
-                <span
-                  className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white text-xs font-bold text-white ring-2 ring-white"
-                  style={{ backgroundColor: BRAND.cyan }}
-                >
-                  M
-                </span>
-                <span
-                  className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white text-xs font-bold text-white ring-2 ring-white"
-                  style={{ backgroundColor: BRAND.dark }}
-                >
-                  A
-                </span>
-              </div>
-              <p className="text-sm font-medium text-[#94a3b8]">{t("landing.heroSocialProof")}</p>
-            </div>
+            <p className="landing-hero-trust mt-10 max-w-lg text-sm font-medium leading-relaxed text-[#94a3b8]">
+              {t("landing.heroSocialProof")}
+            </p>
           </div>
 
           {/* Right column — Hero visual */}
@@ -1310,7 +1277,13 @@ export function LandingPage() {
             );
           })}
         </div>
+
+        <div className="relative z-10 mx-auto mt-14 max-w-3xl px-4">
+          <LandingComplianceBlock />
+        </div>
       </section>
+
+      <LandingCompanySearchTeaser />
 
       {/* ═══ HOW IT WORKS ═══ */}
       <section id="how-it-works" className="relative scroll-mt-24 overflow-hidden px-4 py-20">
@@ -1374,6 +1347,8 @@ export function LandingPage() {
         </div>
       </section>
 
+      <LandingAiBriefPreview />
+
       <WorldClocks />
 
       {/* ═══ ETORO PARTNER ═══ */}
@@ -1384,52 +1359,25 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ═══ TESTIMONIALS ═══ */}
+      {/* ═══ PRODUCT TRUST (no testimonials) ═══ */}
       <section className="relative overflow-hidden px-4 py-20">
         <SignalWave offset={60} opacity={0.1} />
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <h2 className="section-h2 text-white">{t("landing.socialProof.testimonialsTitle")}</h2>
-          <p className="landing-body mt-4 text-[#94a3b8]">{t("landing.socialProof.testimonialsSubtitle")}</p>
+          <h2 className="section-h2 text-white">{t("landing.productTrust.title")}</h2>
+          <p className="landing-body mt-4 text-[#94a3b8]">{t("landing.productTrust.subtitle")}</p>
         </div>
         <div className="relative z-10 mx-auto mt-14 grid max-w-6xl gap-8 md:grid-cols-3">
-          {testimonials.map((item, index) => {
-            const { initials, name, loc } = parseTestimonialAuthor(item.author);
+          {productTrustItems.map((item, index) => {
             const staggerClass = index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
             return (
-              <div key={`${item.author}-${index}`} className={`reveal relative group ${staggerClass}`}>
-                <div
-                  className="pointer-events-none absolute inset-x-3 bottom-[-8px] -z-10 h-full scale-95 rounded-2xl"
-                  style={{
-                    background: "rgba(168,85,247,0.08)",
-                    filter: "blur(8px)",
-                  }}
-                  aria-hidden
-                />
-                <blockquote className="glass-section relative z-10 p-8 transition-[transform,box-shadow] duration-300 ease-out group-hover:-translate-y-2 group-hover:shadow-[0_12px_48px_rgba(168,85,247,0.2)]">
-                  <p
-                    className="pointer-events-none absolute left-6 top-4 font-serif text-7xl opacity-30"
-                    style={{ color: BRAND.cyan }}
-                    aria-hidden
-                  >
-                    &ldquo;
-                  </p>
-                  <p className="relative z-10 text-lg leading-relaxed text-white">{item.quote}</p>
-                  <footer className="relative z-10 mt-6 flex items-center gap-3">
-                    <span
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-                      style={{
-                        background: `linear-gradient(135deg, ${BRAND.dark}, ${BRAND.medium})`,
-                      }}
-                    >
-                      {initials}
-                    </span>
-                    <div>
-                      <div className="font-bold text-white">{name}</div>
-                      <div className="text-sm text-[#94a3b8]">{loc}</div>
-                    </div>
-                  </footer>
-                </blockquote>
-              </div>
+              <article
+                key={`${item.title}-${index}`}
+                className={`glass-section reveal border-t-[3px] p-8 ${staggerClass}`}
+                style={{ borderTopColor: BRAND.cyan }}
+              >
+                <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                <p className="landing-body mt-3 text-[#94a3b8]">{item.body}</p>
+              </article>
             );
           })}
         </div>
@@ -1475,6 +1423,10 @@ export function LandingPage() {
           <p className="mt-6 text-center text-sm font-medium text-[#94a3b8]">
             ⚡ {t("landing.pricing.earlyAdopter")}
           </p>
+
+          <div className="mx-auto mt-10 max-w-3xl">
+            <LandingComplianceBlock />
+          </div>
 
           <div className="mt-10 grid grid-cols-1 items-stretch gap-6 sm:mt-14 sm:gap-8 md:grid-cols-2 lg:grid-cols-3 lg:items-center">
             {pricingTiers.map((tier) => {

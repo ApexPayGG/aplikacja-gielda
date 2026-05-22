@@ -637,10 +637,7 @@ export async function updateUserProfile(
   return data.profile;
 }
 
-export async function searchCompaniesAutocomplete(query: string, limit = 8): Promise<CompanySearchSuggestion[]> {
-  const { data } = await api.get<SearchResponse>("/companies/search", {
-    params: { q: query, limit },
-  });
+function normalizeCompanySearchResponse(data: SearchResponse): CompanySearchSuggestion[] {
   if (Array.isArray(data)) {
     return data
       .filter((row): row is SearchResponse => typeof row?.symbol === "string" && typeof row?.name === "string")
@@ -671,6 +668,21 @@ export async function searchCompaniesAutocomplete(query: string, limit = 8): Pro
     }));
   }
   return [];
+}
+
+/** Public company search (no auth) — for landing teaser and unauthenticated flows. */
+export async function searchCompaniesPublic(query: string, limit = 8): Promise<CompanySearchSuggestion[]> {
+  const { data } = await publicApi.get<SearchResponse>("/companies/search", {
+    params: { q: query, limit },
+  });
+  return normalizeCompanySearchResponse(data);
+}
+
+export async function searchCompaniesAutocomplete(query: string, limit = 8): Promise<CompanySearchSuggestion[]> {
+  const { data } = await api.get<SearchResponse>("/companies/search", {
+    params: { q: query, limit },
+  });
+  return normalizeCompanySearchResponse(data);
 }
 
 export async function searchCompanies(query: string, limit = 20): Promise<Company[]> {

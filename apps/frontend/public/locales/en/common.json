@@ -703,8 +703,67 @@
       "widgetTitle": "Live market pulse",
       "coachAlertTitle": "Coach Alert",
       "coachAlertBody": "You're avoiding FOMO today ✓",
-      "aiSignalBuy": "AI Signal: BUY",
-      "winRate": "Win Rate"
+      "contextNoteTitle": "Context",
+      "contextNoteBody": "Volatility elevated — review risk before acting"
+    },
+    "compliance": {
+      "ariaLabel": "Educational and legal notice",
+      "title": "Important notice",
+      "educational": "StockAI Pro is educational and informational.",
+      "notAdvice": "It does not provide investment advice.",
+      "decisionSupport": "AI outputs are decision-support, not recommendations.",
+      "marketData": "Market data may be delayed or unavailable depending on provider status."
+    },
+    "searchTeaser": {
+      "title": "Search companies — no account required",
+      "subtitle": "Try a public symbol lookup. Sign in to unlock AI Briefs and your watchlist.",
+      "placeholder": "Search by symbol or name… e.g. AAPL, PKN",
+      "empty": "No matches. Try another symbol or exchange suffix.",
+      "error": "Search is temporarily unavailable. Try again shortly.",
+      "unlockBrief": "Create account to unlock AI Brief",
+      "signInWatchlist": "Sign in to add to watchlist"
+    },
+    "aiBriefDemo": {
+      "badge": "Sample AI Brief — educational preview",
+      "title": "How an AI Brief frames context",
+      "subtitle": "Illustrative example only. Not generated for your portfolio and not a trade call.",
+      "symbolLabel": "Example symbol",
+      "symbol": "AAPL",
+      "disclaimer": "Educational preview. Not investment advice. No buy/sell, price target, or recommendation.",
+      "highlights": ["Decision-support", "Risk-aware", "Behavioral guardrails"],
+      "sections": [
+        {
+          "heading": "Market context",
+          "body": "Large-cap tech with liquid trading; recent sessions show wider intraday ranges than the 30-day median."
+        },
+        {
+          "heading": "Risk factors to weigh",
+          "body": "Earnings-season headlines, index concentration, and macro rate expectations can amplify short-term moves."
+        },
+        {
+          "heading": "Behavioral check",
+          "body": "If you are reacting to a headline spike, pause and compare the setup to your written rules before sizing."
+        }
+      ],
+      "cta": "Sign up to generate briefs for your watchlist"
+    },
+    "productTrust": {
+      "title": "Built for disciplined decision-making",
+      "subtitle": "Structured context and coaching — not promises of returns.",
+      "items": [
+        {
+          "title": "Decision-support workspace",
+          "body": "AI Briefs, Signal DNA, and Pre-Mortem views help you think through scenarios — they are not trade instructions."
+        },
+        {
+          "title": "Behavioral guardrails",
+          "body": "Coach alerts surface emotional patterns so you can slow down before acting on impulse."
+        },
+        {
+          "title": "Transparent data limits",
+          "body": "Quotes and fundamentals depend on third-party providers; delays or gaps can occur."
+        }
+      ]
     },
     "nav": {
       "features": "Features",
@@ -835,23 +894,7 @@
         "languages": "9 languages",
         "modules": "27 AI modules"
       },
-      "testimonials": [
-        {
-          "author": "Kasia, Warsaw",
-          "quote": "I used to jump between 5 apps. Now I have one screen and know what I'm doing."
-        },
-        {
-          "author": "Lukas, Berlin",
-          "quote": "Behavioral Coach showed me I was losing to FOMO, not bad signals."
-        },
-        {
-          "author": "Clara, Madrid",
-          "quote": "Pre-Mortem AI changed how I think about risk. I pause before I click."
-        }
-      ],
-      "testimonialsSubtitle": "Short stories from the front line — less chaos.",
-      "testimonialsTitle": "What investors say",
-      "title": "Join our early access community"
+      "title": "Early access — educational platform"
     },
     "solution": {
       "subtitle": "StockAI Pro replaces 5 tools and adds what none of them have.",
@@ -859,7 +902,7 @@
       "titleAccent": "Full picture.",
       "features": {
         "aiBrief": {
-          "body": "Not just a score - a full explanation of why it is worth it or not.",
+          "body": "Structured narrative context for your own decision process — not a buy/sell call.",
           "title": "AI Brief with narrative"
         },
         "behavioralCoach": {
@@ -875,7 +918,7 @@
           "title": "Paper Trading"
         },
         "preMortemAi": {
-          "body": "Before you buy, AI shows the most likely loss scenario.",
+          "body": "Before you act, explore a plausible downside scenario — not a guaranteed outcome.",
           "title": "Pre-Mortem AI"
         },
         "signalDna": {
@@ -884,7 +927,7 @@
         }
       }
     },
-    "heroSocialProof": "Join our growing investor community"
+    "heroSocialProof": "A decision-support workspace for disciplined investors."
   },
   "mentor": {
     "currentStatus": "Current status",
