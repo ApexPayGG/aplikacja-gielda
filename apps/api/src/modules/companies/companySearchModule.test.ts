@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it, mock } from "node:test";
 import {
+  applySameIssuerEnrichment,
+  canShareEnrichedFieldsBetween,
   finalizeSearchResults,
   mapDbRowsToSearch,
   mapEodSearchRow,
@@ -95,6 +97,28 @@ describe("companySearchModule mappers", () => {
 
 describe("companySearchModule merge and finalize", () => {
   const tslaLogo = "https://eodhd.com/img/logos/US/TSLA.png";
+
+  it("mergeSearchResultItems does not merge logo when same symbol but different issuers", () => {
+    const merged = mergeSearchResultItems(
+      candidate(
+        { symbol: "BDX", name: "Budimex S.A.", exchange: "WAR", sector: "Industrials", logoUrl: null },
+        "db",
+      ),
+      candidate(
+        {
+          symbol: "BDX",
+          name: "Becton Dickinson and Company",
+          exchange: "WAR",
+          sector: "Unknown",
+          logoUrl: "https://eodhd.com/img/logos/US/bdx.png",
+        },
+        "eod",
+      ),
+    );
+
+    assert.equal(merged.name, "Budimex S.A.");
+    assert.equal(merged.logoUrl, null);
+  });
 
   it("mergeSearchResultItems keeps logoUrl when EOD row is merged after DB row", () => {
     const merged = mergeSearchResultItems(
@@ -210,7 +234,7 @@ describe("companySearchModule merge and finalize", () => {
     assert.equal(sanitized.find((r) => r.symbol === "F.US")?.logoUrl, null);
   });
 
-  it("propagateEnrichedFieldsByBase copies logo from bare ticker to exchange suffix listing", () => {
+  it("propagateEnrichedFieldsByBase copies logo only for same issuer (TSLA + TSLA.US)", () => {
     const tslaLogo = "https://eodhd.com/img/logos/US/TSLA.png";
     const propagated = propagateEnrichedFieldsByBase([
       candidate(
@@ -235,20 +259,164 @@ describe("companySearchModule merge and finalize", () => {
 
     assert.equal(propagated.find((r) => r.symbol === "TSLA.US")?.logoUrl, tslaLogo);
     assert.equal(propagated.find((r) => r.symbol === "TSLA.US")?.sector, "Consumer Discretionary");
+    assert.equal(propagated.find((r) => r.symbol === "TSLA")?.name, "Tesla Inc");
+  });
+
+  it("propagateEnrichedFieldsByBase does not copy BDX.US data onto BDX Budimex", () => {
+    const bdxUsLogo = "https://eodhd.com/img/logos/US/bdx.png";
+    const propagated = propagateEnrichedFieldsByBase([
+      candidate(
+        {
+          symbol: "BDX",
+          name: "Budimex S.A.",
+          exchange: "WAR",
+          sector: "Industrials",
+          logoUrl: null,
+        },
+        "db",
+      ),
+      candidate(
+        {
+          symbol: "BDX.US",
+          name: "Becton Dickinson and Company",
+          exchange: "US",
+          sector: "Healthcare",
+          logoUrl: bdxUsLogo,
+        },
+        "db",
+      ),
+    ]);
+
+    const budimex = propagated.find((r) => r.symbol === "BDX");
+    const bd = propagated.find((r) => r.symbol === "BDX.US");
+    assert.equal(budimex?.name, "Budimex S.A.");
+    assert.equal(budimex?.exchange, "WAR");
+    assert.equal(budimex?.logoUrl, null);
+    assert.equal(bd?.logoUrl, bdxUsLogo);
+    assert.equal(canShareEnrichedFieldsBetween(
+      candidate({ symbol: "BDX", name: "Budimex S.A." }, "db"),
+      candidate({ symbol: "BDX.US", name: "Becton Dickinson and Company" }, "db"),
+    ), false);
+  });
+
+  it("finalizeSearchResults BDX: Budimex stays Budimex, BDX.US stays Becton", () => {
+    const bdxUsLogo = "https://eodhd.com/img/logos/US/bdx.png";
+    const results = finalizeSearchResults(
+      "BDX",
+      [
+        candidate(
+          {
+            symbol: "BDX",
+            name: "Budimex S.A.",
+            exchange: "WAR",
+            sector: "Industrials",
+            logoUrl: null,
+          },
+          "db",
+        ),
+        candidate(
+          {
+            symbol: "BDX.US",
+            name: "Becton Dickinson and Company",
+            exchange: "US",
+            sector: "Healthcare",
+            logoUrl: bdxUsLogo,
+          },
+          "db",
+        ),
+        candidate(
+          {
+            symbol: "BDX",
+            name: "Becton Dickinson and Company",
+            exchange: "WAR",
+            sector: "Unknown",
+            logoUrl: bdxUsLogo,
+          },
+          "eod",
+        ),
+      ],
+      3,
+    );
+
+    const budimex = results.find((r) => r.symbol === "BDX");
+    const bd = results.find((r) => r.symbol === "BDX.US");
+    assert.equal(budimex?.name, "Budimex S.A.");
+    assert.equal(budimex?.exchange, "WAR");
+    assert.equal(budimex?.logoUrl, null);
+    assert.equal(bd?.name, "Becton Dickinson and Company");
+    assert.equal(bd?.logoUrl, bdxUsLogo);
+    assert.equal(results[0]?.symbol, "BDX");
+  });
+
+  it("finalizeSearchResults SAP keeps logo on cross-listed same-name variants", () => {
+    const sapLogo = "https://eodhd.com/img/logos/US/SAP.png";
+    const results = finalizeSearchResults(
+      "SAP",
+      [
+        candidate(
+          {
+            symbol: "SAP",
+            name: "SAP SE",
+            exchange: "XETRA",
+            sector: "Technology",
+            logoUrl: sapLogo,
+          },
+          "db",
+        ),
+        candidate(
+          {
+            symbol: "SAP.XETRA",
+            name: "SAP SE",
+            exchange: "XETRA",
+            sector: "Unknown",
+            logoUrl: null,
+          },
+          "eod",
+        ),
+      ],
+      3,
+    );
+
+    assert.equal(results.find((r) => r.symbol === "SAP")?.logoUrl, sapLogo);
+    assert.equal(results.find((r) => r.symbol === "SAP.XETRA")?.logoUrl, sapLogo);
+  });
+
+  it("applySameIssuerEnrichment never changes target name or symbol", () => {
+    const enriched = applySameIssuerEnrichment(
+      candidate({ symbol: "AAPL", name: "Apple Inc", exchange: "US", logoUrl: null }, "db"),
+      candidate(
+        {
+          symbol: "AAPL.US",
+          name: "Apple Inc. Long Name",
+          exchange: "US",
+          logoUrl: "https://eodhd.com/img/aapl.png",
+        },
+        "eod",
+      ),
+    );
+    assert.equal(enriched.symbol, "AAPL");
+    assert.equal(enriched.name, "Apple Inc");
+    assert.equal(enriched.logoUrl, "https://eodhd.com/img/aapl.png");
   });
 });
 
 describe("companySearchModule ranking", () => {
-  it("PEP query prefers PEP.US over PCO (Pepco name match)", () => {
+  it("PEP query prefers PEP / PEP.US over PCO and secondary PEP listings without logo", () => {
     const ranked = rankCompanySearchResults("PEP", [
       item({ symbol: "PCO.WAR", name: "Pepco Group NV", exchange: "WAR", sector: "Consumer" }),
+      item({ symbol: "PEP.DU", name: "PepsiCo Inc", exchange: "DU", sector: "Unknown", logoUrl: null }),
+      item({ symbol: "PEP.F", name: "PepsiCo Inc", exchange: "F", sector: "Unknown", logoUrl: null }),
+      item({ symbol: "PEP.HM", name: "PepsiCo Inc", exchange: "HM", sector: "Unknown", logoUrl: null }),
       item({ symbol: "PEP.US", name: "PepsiCo Inc", exchange: "US", logoUrl: "https://cdn.example/pep.png" }),
-      item({ symbol: "PEP", name: "PepsiCo Inc", exchange: "US" }),
+      item({ symbol: "PEP", name: "PepsiCo Inc", exchange: "US", logoUrl: "https://cdn.example/pep.png" }),
     ]);
 
     assert.equal(ranked[0]?.symbol, "PEP");
     assert.equal(ranked[1]?.symbol, "PEP.US");
-    assert.ok(ranked.findIndex((r) => r.symbol === "PCO.WAR") > 1);
+    const pcoIdx = ranked.findIndex((r) => r.symbol === "PCO.WAR");
+    const duIdx = ranked.findIndex((r) => r.symbol === "PEP.DU");
+    assert.ok(pcoIdx >= 2);
+    assert.ok(duIdx >= 2);
   });
 
   it("KO query prefers KO.US over Korean suffix symbol 000660.KO", () => {

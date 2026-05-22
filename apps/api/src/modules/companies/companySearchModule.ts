@@ -43,7 +43,6 @@ const SEARCH_POOL_MULTIPLIER = 8;
 
 const RANK_EXACT_SYMBOL = 0;
 const RANK_EXACT_BASE = 100;
-const RANK_EXACT_BASE_PREFERRED_EXCHANGE = 150;
 const RANK_STARTS_WITH_SYMBOL = 200;
 const RANK_EXACT_NAME = 300;
 const RANK_CONTAINS_NAME = 400;
@@ -224,10 +223,7 @@ export function scoreSearchResult(query: NormalizedSearchQuery, item: CompanySea
 
   if (sym.base === qBase) {
     if (query.isTickerLike && sym.exchange && sym.base !== sym.full) {
-      const bonus = preferredExchangeBonus(sym.exchange);
-      if (sym.exchange && PREFERRED_SEARCH_EXCHANGES.includes(sym.exchange as (typeof PREFERRED_SEARCH_EXCHANGES)[number])) {
-        return RANK_EXACT_BASE_PREFERRED_EXCHANGE + bonus;
-      }
+      return RANK_EXACT_BASE + preferredExchangeBonus(sym.exchange);
     }
     if (query.exchange && sym.exchange === query.exchange) {
       return RANK_EXACT_BASE + preferredExchangeBonus(sym.exchange);
@@ -318,10 +314,49 @@ export function areLikelySameCompanyName(a: string, b: string): boolean {
   return wa.length >= 4 && wb.length >= 4 && wa === wb;
 }
 
+function resolveMergedName(
+  a: CompanySearchResultCandidate,
+  b: CompanySearchResultCandidate,
+): string {
+  if (a.source === "db" && b.source !== "db") return a.name;
+  if (b.source === "db" && a.source !== "db") return b.name;
+  return a.name.length >= b.name.length ? a.name : b.name;
+}
+
+export function canShareEnrichedFieldsBetween(
+  a: CompanySearchResultCandidate,
+  b: CompanySearchResultCandidate,
+): boolean {
+  return areLikelySameCompanyName(a.name, b.name);
+}
+
+/** Copy only enrichable fields; never symbol, name, or listing exchange from another issuer. */
+export function applySameIssuerEnrichment(
+  target: CompanySearchResultCandidate,
+  donor: CompanySearchResultCandidate,
+): CompanySearchResultCandidate {
+  if (!canShareEnrichedFieldsBetween(target, donor)) {
+    return target;
+  }
+  return {
+    ...target,
+    logoUrl: target.logoUrl || donor.logoUrl,
+    sector: !isUnknownSector(target.sector) ? target.sector : donor.sector,
+    exchange: target.exchange !== "UNKNOWN" ? target.exchange : donor.exchange,
+    source: target.source === "db" || donor.source === "db" ? "db" : target.source ?? donor.source,
+  };
+}
+
 export function mergeSearchResultItems(
   a: CompanySearchResultCandidate,
   b: CompanySearchResultCandidate,
 ): CompanySearchResultCandidate {
+  if (!canShareEnrichedFieldsBetween(a, b)) {
+    if (a.source === "db" && b.source !== "db") return { ...a };
+    if (b.source === "db" && a.source !== "db") return { ...b };
+    return enrichmentScore(a) >= enrichmentScore(b) ? { ...a } : { ...b };
+  }
+
   const preferPrimary = (() => {
     if (a.source === "db" && b.source !== "db") return a;
     if (b.source === "db" && a.source !== "db") return b;
@@ -333,7 +368,7 @@ export function mergeSearchResultItems(
 
   return {
     symbol: preferPrimary.symbol,
-    name: preferPrimary.name.length >= secondary.name.length ? preferPrimary.name : secondary.name,
+    name: resolveMergedName(a, b),
     exchange:
       preferPrimary.exchange !== "UNKNOWN" && preferPrimary.exchange
         ? preferPrimary.exchange
@@ -348,35 +383,20 @@ export function mergeSearchResultItems(
   };
 }
 
-/** Share DB/EOD-enriched fields across listings that share the same base ticker (e.g. TSLA + TSLA.US). */
+/** Share logo/sector only across listings of the same issuer (name match), never by base ticker alone. */
 export function propagateEnrichedFieldsByBase(
   items: CompanySearchResultCandidate[],
 ): CompanySearchResultCandidate[] {
-  const byBase = new Map<string, CompanySearchResultCandidate[]>();
-  for (const item of items) {
-    const base = parseSymbolParts(item.symbol).base;
-    const list = byBase.get(base) ?? [];
-    list.push(item);
-    byBase.set(base, list);
-  }
-
-  const donorByBase = new Map<string, CompanySearchResultCandidate>();
-  for (const [base, group] of byBase) {
-    donorByBase.set(base, pickBestEnrichedCandidate(group));
-  }
-
   return items.map((item) => {
-    const base = parseSymbolParts(item.symbol).base;
-    const donor = donorByBase.get(base);
-    if (!donor || donor.symbol.toUpperCase() === item.symbol.toUpperCase()) {
-      return item;
+    let enriched = item;
+    for (const peer of items) {
+      if (peer.symbol.toUpperCase() === item.symbol.toUpperCase()) continue;
+      if (parseSymbolParts(peer.symbol).base !== parseSymbolParts(item.symbol).base) continue;
+      if (!canShareEnrichedFieldsBetween(item, peer)) continue;
+      const donor = enrichmentScore(peer) > enrichmentScore(enriched) ? peer : enriched;
+      enriched = applySameIssuerEnrichment(enriched, donor);
     }
-    const merged = mergeSearchResultItems(donor, item);
-    return {
-      ...merged,
-      symbol: item.symbol,
-      exchange: item.exchange !== "UNKNOWN" ? item.exchange : merged.exchange,
-    };
+    return enriched;
   });
 }
 
@@ -446,6 +466,15 @@ export function sanitizeCrossSymbolLogos(
   });
 }
 
+export function searchResultQualityScore(item: CompanySearchResultItem): number {
+  const exchange = parseSymbolParts(item.symbol).exchange;
+  return (
+    (item.logoUrl ? 8 : 0) +
+    (!isUnknownSector(item.sector) ? 4 : 0) +
+    (PREFERRED_SEARCH_EXCHANGES.length - preferredExchangeBonus(exchange))
+  );
+}
+
 export function rankCompanySearchResults(
   query: string,
   items: CompanySearchResultItem[],
@@ -458,6 +487,9 @@ export function rankCompanySearchResults(
     const exA = preferredExchangeBonus(parseSymbolParts(a.symbol).exchange);
     const exB = preferredExchangeBonus(parseSymbolParts(b.symbol).exchange);
     if (exA !== exB) return exA - exB;
+    const qualityA = searchResultQualityScore(a);
+    const qualityB = searchResultQualityScore(b);
+    if (qualityA !== qualityB) return qualityB - qualityA;
     return a.symbol.localeCompare(b.symbol);
   });
 }
