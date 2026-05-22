@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it, mock } from "node:test";
 import {
+  formatBackfillVerboseLog,
   indexCompaniesWithLogo,
+  listUnsafeVariantSkips,
   pickLogoDonorFromVariants,
   runCompanyLogoBackfill,
   type CompanyLogoRow,
@@ -80,6 +82,24 @@ describe("companyLogoBackfill matching", () => {
     assert.equal(result.skipped, "unsafe");
   });
 
+  it("listUnsafeVariantSkips describes BDX vs BDX.US mismatch", () => {
+    const donors = indexCompaniesWithLogo([
+      row({
+        symbol: "BDX.US",
+        name: "Becton Dickinson and Co",
+        exchange: "US",
+        logoUrl: "https://cdn.example/bdx-us.png",
+      }),
+    ]);
+    const skips = listUnsafeVariantSkips(
+      row({ symbol: "BDX", name: "Budimex SA", exchange: "WAR", logoUrl: null }),
+      donors,
+    );
+    assert.equal(skips.length, 1);
+    assert.equal(skips[0]?.donorSymbol, "BDX.US");
+    assert.equal(skips[0]?.targetSymbol, "BDX");
+  });
+
   it("different issuer names on same base do not pass", () => {
     const donors = indexCompaniesWithLogo([
       row({
@@ -111,7 +131,7 @@ describe("runCompanyLogoBackfill", () => {
       return [{ symbol: "AAPL", name: "Apple Inc", exchange: "US", logoUrl: "https://cdn.example/aapl.png" }];
     });
 
-    await runCompanyLogoBackfill(
+    const { summary } = await runCompanyLogoBackfill(
       { limit: 10, dryRun: false },
       {
         db: { company: { findMany: findMany as never, update: update as never } },
@@ -123,6 +143,7 @@ describe("runCompanyLogoBackfill", () => {
 
     assert.equal(update.mock.calls.length, 1);
     assert.equal(savedLogo, "https://cdn.example/aapl.png");
+    assert.equal(summary.updated, 1);
   });
 
   it("dryRun does not write to DB", async () => {
@@ -134,8 +155,8 @@ describe("runCompanyLogoBackfill", () => {
       return [];
     });
 
-    const summary = await runCompanyLogoBackfill(
-      { limit: 5, dryRun: true },
+    const result = await runCompanyLogoBackfill(
+      { limit: 5, dryRun: true, verbose: true },
       {
         db: { company: { findMany: findMany as never, update: update as never } },
         fetchEodhdLogo: async () => "https://cdn.example/msft.png",
@@ -144,10 +165,16 @@ describe("runCompanyLogoBackfill", () => {
       },
     );
 
-    assert.equal(summary.dryRun, true);
-    assert.equal(summary.updated, 1);
-    assert.equal(summary.fetchedFromEodhd, 1);
+    assert.equal(result.summary.dryRun, true);
+    assert.equal(result.summary.updated, 1);
+    assert.equal(result.summary.fetchedFromEodhd, 1);
     assert.equal(update.mock.calls.length, 0);
+    assert.equal(result.log.plannedUpdates.length, 1);
+    assert.equal(result.log.plannedUpdates[0]?.symbol, "MSFT");
+    const verboseText = formatBackfillVerboseLog(result, { dryRun: true });
+    assert.match(verboseText, /planned updates/);
+    assert.match(verboseText, /symbol: MSFT/);
+    assert.match(verboseText, /source: eodhd/);
   });
 
   it("respects limit", async () => {
@@ -163,7 +190,7 @@ describe("runCompanyLogoBackfill", () => {
     });
     const update = mock.fn(async () => ({}));
 
-    const summary = await runCompanyLogoBackfill(
+    const { summary } = await runCompanyLogoBackfill(
       { limit: 2, dryRun: true },
       {
         db: { company: { findMany: findMany as never, update: update as never } },
@@ -174,5 +201,32 @@ describe("runCompanyLogoBackfill", () => {
     );
 
     assert.equal(summary.scanned, 2);
+  });
+
+  it("verbose logs sanitized errors without persisting", async () => {
+    const findMany = mock.fn(async (args: { where?: { logoUrl?: null } }) => {
+      if (args.where?.logoUrl === null) {
+        return [{ symbol: "ERR", name: "Error Co", exchange: "US", logoUrl: null }];
+      }
+      return [];
+    });
+    const update = mock.fn(async () => ({}));
+
+    const result = await runCompanyLogoBackfill(
+      { limit: 1, dryRun: true, verbose: true },
+      {
+        db: { company: { findMany: findMany as never, update: update as never } },
+        fetchEodhdLogo: async () => {
+          throw new Error("EODHD fundamentals HTTP 401: api_token=secret123");
+        },
+        fetchFinnhubLogo: async () => null,
+        sleep: async () => {},
+      },
+    );
+
+    assert.equal(result.summary.errors, 1);
+    assert.equal(result.log.errors[0]?.symbol, "ERR");
+    assert.match(result.log.errors[0]?.message ?? "", /api_token=\*\*\*/);
+    assert.equal(update.mock.calls.length, 0);
   });
 });

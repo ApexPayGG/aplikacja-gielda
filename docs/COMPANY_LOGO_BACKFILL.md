@@ -45,6 +45,9 @@ From `apps/api`:
 # Preview (no DB writes)
 npm run logos:backfill -- --limit=500 --dry-run
 
+# Auditable dry-run: per-symbol planned updates, unsafe skips, errors
+npm run logos:backfill -- --limit=500 --dry-run --verbose
+
 # Apply updates (up to 500 rows with null logoUrl)
 npm run logos:backfill -- --limit=500
 

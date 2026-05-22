@@ -30,11 +30,49 @@ export type CompanyLogoBackfillSummary = {
   dryRun: boolean;
 };
 
+export type LogoBackfillSource = "dbVariant" | "eodhd" | "finnhub";
+
+export type PlannedLogoUpdate = {
+  symbol: string;
+  name: string;
+  exchange: string;
+  oldLogoUrl: string | null;
+  newLogoUrl: string;
+  source: LogoBackfillSource;
+  donorSymbol?: string;
+};
+
+export type UnsafeVariantSkip = {
+  targetSymbol: string;
+  targetName: string;
+  donorSymbol: string;
+  donorName: string;
+  reason: string;
+};
+
+export type LogoBackfillError = {
+  symbol: string;
+  step: string;
+  message: string;
+};
+
+export type CompanyLogoBackfillLog = {
+  plannedUpdates: PlannedLogoUpdate[];
+  unsafeSkips: UnsafeVariantSkip[];
+  errors: LogoBackfillError[];
+};
+
+export type CompanyLogoBackfillResult = {
+  summary: CompanyLogoBackfillSummary;
+  log: CompanyLogoBackfillLog;
+};
+
 export type CompanyLogoBackfillOptions = {
   limit?: number;
   dryRun?: boolean;
   force?: boolean;
   delayMs?: number;
+  verbose?: boolean;
 };
 
 export type CompanyLogoBackfillDeps = {
@@ -117,6 +155,47 @@ export function pickLogoDonorFromVariants(
   return { donor, reason: "variant" };
 }
 
+const UNSAFE_VARIANT_REASON =
+  "same base ticker but company names do not match (cross-company contamination guard)";
+
+export function listUnsafeVariantSkips(
+  target: CompanyLogoRow,
+  donorsByBase: Map<string, CompanyLogoRow[]>,
+): UnsafeVariantSkip[] {
+  const base = parseSymbolParts(target.symbol).base;
+  const peers = donorsByBase.get(base) ?? [];
+  return peers
+    .filter((peer) => peer.logoUrl?.trim() && peer.symbol !== target.symbol)
+    .filter((peer) => !areLikelySameCompanyName(peer.name, target.name))
+    .map((peer) => ({
+      targetSymbol: target.symbol,
+      targetName: target.name,
+      donorSymbol: peer.symbol,
+      donorName: peer.name,
+      reason: UNSAFE_VARIANT_REASON,
+    }));
+}
+
+function sanitizeErrorMessage(error: unknown): string {
+  const raw = error instanceof Error ? error.message : String(error);
+  return raw
+    .replace(/api_token=[^&\s"']+/gi, "api_token=***")
+    .replace(/token=[^&\s"']+/gi, "token=***")
+    .replace(/Bearer\s+\S+/gi, "Bearer ***")
+    .trim()
+    .slice(0, 240);
+}
+
+function emptyBackfillLog(): CompanyLogoBackfillLog {
+  return { plannedUpdates: [], unsafeSkips: [], errors: [] };
+}
+
+function sourceLabel(source: LogoBackfillSource): string {
+  if (source === "dbVariant") return "dbVariant";
+  if (source === "eodhd") return "eodhd";
+  return "finnhub";
+}
+
 export async function fetchEodhdFundamentalsLogo(
   symbol: string,
   exchange: string,
@@ -170,11 +249,13 @@ function createDefaultDeps(): CompanyLogoBackfillDeps {
 export async function runCompanyLogoBackfill(
   options: CompanyLogoBackfillOptions = {},
   deps: CompanyLogoBackfillDeps = createDefaultDeps(),
-): Promise<CompanyLogoBackfillSummary> {
+): Promise<CompanyLogoBackfillResult> {
   const limit = Math.max(1, Math.min(10_000, options.limit ?? 500));
   const dryRun = options.dryRun ?? false;
   const force = options.force ?? false;
   const delayMs = options.delayMs ?? EODHD_DELAY_MS;
+  const verbose = options.verbose ?? false;
+  const log = emptyBackfillLog();
 
   const summary: CompanyLogoBackfillSummary = {
     scanned: 0,
@@ -217,18 +298,25 @@ export async function runCompanyLogoBackfill(
     }
 
     let resolvedLogo: string | null = null;
-    let source: "variant" | "eodhd" | "finnhub" | null = null;
+    let source: LogoBackfillSource | null = null;
+    let donorSymbol: string | undefined;
+    let step = "resolve";
 
     try {
       const donorResult = pickLogoDonorFromVariants(target, donorsByBase);
       if (donorResult && "skipped" in donorResult) {
         summary.skippedUnsafeMatch += 1;
+        if (verbose) {
+          log.unsafeSkips.push(...listUnsafeVariantSkips(target, donorsByBase));
+        }
       } else if (donorResult && "donor" in donorResult) {
         resolvedLogo = donorResult.donor.logoUrl;
-        source = "variant";
+        source = "dbVariant";
+        donorSymbol = donorResult.donor.symbol;
       }
 
       if (!resolvedLogo) {
+        step = "eodhd";
         const ex = exchangeForRow(target);
         resolvedLogo = await deps.fetchEodhdLogo(target.symbol, ex);
         if (resolvedLogo) {
@@ -238,6 +326,7 @@ export async function runCompanyLogoBackfill(
       }
 
       if (!resolvedLogo) {
+        step = "finnhub";
         resolvedLogo = await deps.fetchFinnhubLogo(target.symbol);
         if (resolvedLogo) source = "finnhub";
       }
@@ -248,6 +337,7 @@ export async function runCompanyLogoBackfill(
       }
 
       if (!dryRun) {
+        step = "persist";
         await deps.db.company.update({
           where: { symbol: target.symbol },
           data: { logoUrl: resolvedLogo },
@@ -262,15 +352,34 @@ export async function runCompanyLogoBackfill(
       }
 
       summary.updated += 1;
-      if (source === "variant") summary.copiedFromExistingVariant += 1;
+      if (source === "dbVariant") summary.copiedFromExistingVariant += 1;
       if (source === "eodhd") summary.fetchedFromEodhd += 1;
       if (source === "finnhub") summary.fetchedFromFinnhub += 1;
-    } catch {
+
+      if (verbose && source) {
+        log.plannedUpdates.push({
+          symbol: target.symbol,
+          name: target.name,
+          exchange: exchangeForRow(target),
+          oldLogoUrl: target.logoUrl,
+          newLogoUrl: resolvedLogo,
+          source,
+          ...(donorSymbol ? { donorSymbol } : {}),
+        });
+      }
+    } catch (error) {
       summary.errors += 1;
+      if (verbose) {
+        log.errors.push({
+          symbol: target.symbol,
+          step,
+          message: sanitizeErrorMessage(error),
+        });
+      }
     }
   }
 
-  return summary;
+  return { summary, log };
 }
 
 export function formatBackfillSummary(summary: CompanyLogoBackfillSummary): string {
@@ -285,4 +394,60 @@ export function formatBackfillSummary(summary: CompanyLogoBackfillSummary): stri
     `skippedUnsafeMatch: ${summary.skippedUnsafeMatch}`,
     `errors: ${summary.errors}`,
   ].join("\n");
+}
+
+function formatLogoUrl(value: string | null): string {
+  return value?.trim() ? value.trim() : "(null)";
+}
+
+export function formatBackfillVerboseLog(
+  result: CompanyLogoBackfillResult,
+  options: { dryRun: boolean },
+): string {
+  const lines: string[] = [];
+  const { log } = result;
+
+  if (options.dryRun && log.plannedUpdates.length > 0) {
+    lines.push("--- planned updates (dry-run) ---");
+    for (const row of log.plannedUpdates) {
+      lines.push(
+        [
+          `symbol: ${row.symbol}`,
+          `name: ${row.name}`,
+          `exchange: ${row.exchange}`,
+          `oldLogoUrl: ${formatLogoUrl(row.oldLogoUrl)}`,
+          `newLogoUrl: ${row.newLogoUrl}`,
+          `source: ${sourceLabel(row.source)}`,
+          ...(row.donorSymbol ? [`donorSymbol: ${row.donorSymbol}`] : []),
+        ].join("\n  "),
+      );
+      lines.push("");
+    }
+  }
+
+  if (log.unsafeSkips.length > 0) {
+    lines.push("--- skippedUnsafeMatch ---");
+    for (const row of log.unsafeSkips) {
+      lines.push(
+        [
+          `target: ${row.targetSymbol} (${row.targetName})`,
+          `donor: ${row.donorSymbol} (${row.donorName})`,
+          `reason: ${row.reason}`,
+        ].join("\n  "),
+      );
+      lines.push("");
+    }
+  }
+
+  if (log.errors.length > 0) {
+    lines.push("--- errors ---");
+    for (const row of log.errors) {
+      lines.push(
+        [`symbol: ${row.symbol}`, `step: ${row.step}`, `message: ${row.message}`].join("\n  "),
+      );
+      lines.push("");
+    }
+  }
+
+  return lines.join("\n").trimEnd();
 }
