@@ -4,7 +4,9 @@ import {
   acceptProviderLogoForTarget,
   formatBackfillVerboseLog,
   indexCompaniesWithLogo,
+  isLogoUrlExchangeConsistent,
   listUnsafeVariantSkips,
+  parseEodhdLogoUrlExchange,
   pickLogoDonorFromVariants,
   runCompanyLogoBackfill,
   type CompanyLogoRow,
@@ -19,14 +21,62 @@ function provider(partial: ProviderLogoCandidate): ProviderLogoCandidate {
   return partial;
 }
 
+describe("logo URL exchange consistency", () => {
+  it("parses EODHD logo path exchange segment", () => {
+    assert.equal(
+      parseEodhdLogoUrlExchange("https://eodhd.com/img/logos/US/mrk.png"),
+      "US",
+    );
+    assert.equal(
+      parseEodhdLogoUrlExchange("https://eodhd.com/img/logos/XETRA/SIE.png"),
+      "XETRA",
+    );
+  });
+
+  it("rejects MRK.XETRA donor with US path for MRK DAX target", () => {
+    const target = row({ symbol: "MRK", name: "Merck KGaA", exchange: "DAX", logoUrl: null });
+    const donor = row({
+      symbol: "MRK.XETRA",
+      name: "Merck KGaA",
+      exchange: "XETRA",
+      logoUrl: "https://eodhd.com/img/logos/US/mrk.png",
+    });
+    assert.equal(isLogoUrlExchangeConsistent(donor.logoUrl!, donor, target), false);
+  });
+
+  it("accepts DAX target with XETRA donor and XETRA EODHD path", () => {
+    const target = row({ symbol: "SIE", name: "Siemens AG", exchange: "DAX", logoUrl: null });
+    const donor = row({
+      symbol: "SIE.XETRA",
+      name: "Siemens AG",
+      exchange: "XETRA",
+      logoUrl: "https://eodhd.com/img/logos/XETRA/SIE.png",
+    });
+    assert.equal(isLogoUrlExchangeConsistent(donor.logoUrl!, donor, target), true);
+  });
+
+  it("accepts Finnhub logo without exchange path when names match", () => {
+    const target = row({ symbol: "AAPL.US", name: "Apple Inc", exchange: "US", logoUrl: null });
+    const donor = row({
+      symbol: "AAPL",
+      name: "Apple Inc",
+      exchange: "US",
+      logoUrl: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/AAPL.png",
+    });
+    assert.equal(isLogoUrlExchangeConsistent(donor.logoUrl!, donor, target), true);
+  });
+});
+
 describe("companyLogoBackfill matching", () => {
-  it("AAPL.US can receive logo from AAPL when names match", () => {
+  it("AAPL.US can receive logo from AAPL with Finnhub URL when names match", () => {
+    const finnhubLogo =
+      "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/AAPL.png";
     const donors = indexCompaniesWithLogo([
       row({
         symbol: "AAPL",
         name: "Apple Inc",
         exchange: "US",
-        logoUrl: "https://cdn.example/aapl.png",
+        logoUrl: finnhubLogo,
       }),
     ]);
     const result = pickLogoDonorFromVariants(
@@ -34,7 +84,127 @@ describe("companyLogoBackfill matching", () => {
       donors,
     );
     assert.ok(result && "donor" in result);
-    assert.equal(result.donor.logoUrl, "https://cdn.example/aapl.png");
+    assert.equal(result.donor.logoUrl, finnhubLogo);
+  });
+
+  it("MSFT.US can receive logo from MSFT with Finnhub URL when names match", () => {
+    const finnhubLogo =
+      "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/MSFT.png";
+    const donors = indexCompaniesWithLogo([
+      row({
+        symbol: "MSFT",
+        name: "Microsoft Corp",
+        exchange: "US",
+        logoUrl: finnhubLogo,
+      }),
+    ]);
+    const result = pickLogoDonorFromVariants(
+      row({ symbol: "MSFT.US", name: "Microsoft Corp", exchange: "US", logoUrl: null }),
+      donors,
+    );
+    assert.ok(result && "donor" in result);
+    assert.equal(result.donor.logoUrl, finnhubLogo);
+  });
+
+  it("SIE accepts SIE.XETRA donor with XETRA EODHD logo for DAX target", () => {
+    const donors = indexCompaniesWithLogo([
+      row({
+        symbol: "SIE.XETRA",
+        name: "Siemens AG",
+        exchange: "XETRA",
+        logoUrl: "https://eodhd.com/img/logos/XETRA/SIE.png",
+      }),
+    ]);
+    const result = pickLogoDonorFromVariants(
+      row({ symbol: "SIE", name: "Siemens AG", exchange: "DAX", logoUrl: null }),
+      donors,
+    );
+    assert.ok(result && "donor" in result);
+    assert.equal(result.donor.symbol, "SIE.XETRA");
+  });
+
+  it("BAS accepts BAS.XETRA donor with XETRA EODHD logo for DAX target", () => {
+    const donors = indexCompaniesWithLogo([
+      row({
+        symbol: "BAS.XETRA",
+        name: "BASF SE",
+        exchange: "XETRA",
+        logoUrl: "https://eodhd.com/img/logos/XETRA/BAS.png",
+      }),
+    ]);
+    const result = pickLogoDonorFromVariants(
+      row({ symbol: "BAS", name: "BASF SE", exchange: "DAX", logoUrl: null }),
+      donors,
+    );
+    assert.ok(result && "donor" in result);
+  });
+
+  it("ALV accepts ALV.XETRA donor with XETRA EODHD logo for DAX target", () => {
+    const donors = indexCompaniesWithLogo([
+      row({
+        symbol: "ALV.XETRA",
+        name: "Allianz SE",
+        exchange: "XETRA",
+        logoUrl: "https://eodhd.com/img/logos/XETRA/ALV.png",
+      }),
+    ]);
+    const result = pickLogoDonorFromVariants(
+      row({ symbol: "ALV", name: "Allianz SE", exchange: "DAX", logoUrl: null }),
+      donors,
+    );
+    assert.ok(result && "donor" in result);
+  });
+
+  it("MRK rejects MRK.XETRA donor with US EODHD logo path", () => {
+    const donors = indexCompaniesWithLogo([
+      row({
+        symbol: "MRK.XETRA",
+        name: "Merck KGaA",
+        exchange: "XETRA",
+        logoUrl: "https://eodhd.com/img/logos/US/mrk.png",
+      }),
+    ]);
+    const result = pickLogoDonorFromVariants(
+      row({ symbol: "MRK", name: "Merck KGaA", exchange: "DAX", logoUrl: null }),
+      donors,
+    );
+    assert.equal(result, null);
+  });
+
+  it("runCompanyLogoBackfill skips MRK copy from MRK.XETRA with US logo path", async () => {
+    const update = mock.fn(async () => ({}));
+    const findMany = mock.fn(async (args: { where?: { logoUrl?: null } }) => {
+      if (args.where?.logoUrl === null) {
+        return [{ symbol: "MRK", name: "Merck KGaA", exchange: "DAX", logoUrl: null }];
+      }
+      return [
+        {
+          symbol: "MRK.XETRA",
+          name: "Merck KGaA",
+          exchange: "XETRA",
+          logoUrl: "https://eodhd.com/img/logos/US/mrk.png",
+        },
+      ];
+    });
+
+    const result = await runCompanyLogoBackfill(
+      { limit: 1, dryRun: true, verbose: true },
+      {
+        db: { company: { findMany: findMany as never, update: update as never } },
+        fetchEodhd: async () => null,
+        fetchFinnhub: async () => null,
+        sleep: async () => {},
+      },
+    );
+
+    assert.equal(result.summary.updated, 0);
+    assert.equal(result.summary.skippedSuspiciousDonorLogo, 1);
+    assert.equal(result.log.plannedUpdates.length, 0);
+    assert.equal(result.log.suspiciousDonorLogos[0]?.donorSymbol, "MRK.XETRA");
+    assert.equal(result.log.suspiciousDonorLogos[0]?.urlExchange, "US");
+    assert.equal(update.mock.calls.length, 0);
+    const verboseText = formatBackfillVerboseLog(result, { dryRun: true });
+    assert.match(verboseText, /skippedSuspiciousDonorLogo/);
   });
 
   it("ALE can receive logo from ALE.WAR when names match", () => {

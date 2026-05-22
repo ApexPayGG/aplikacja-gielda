@@ -24,6 +24,7 @@ export type CompanyLogoBackfillSummary = {
   skippedNoProviderLogo: number;
   skippedUnsafeMatch: number;
   skippedProviderNameMismatch: number;
+  skippedSuspiciousDonorLogo: number;
   copiedFromExistingVariant: number;
   fetchedFromEodhd: number;
   fetchedFromFinnhub: number;
@@ -62,6 +63,18 @@ export type ProviderNameMismatchSkip = {
   reason: string;
 };
 
+export type SuspiciousDonorLogoSkip = {
+  targetSymbol: string;
+  targetName: string;
+  targetExchange: string;
+  donorSymbol: string;
+  donorName: string;
+  donorExchange: string;
+  logoUrl: string;
+  urlExchange: string | null;
+  reason: string;
+};
+
 export type LogoBackfillError = {
   symbol: string;
   step: string;
@@ -78,6 +91,7 @@ export type ProviderLogoCandidate = {
 export type CompanyLogoBackfillLog = {
   plannedUpdates: PlannedLogoUpdate[];
   unsafeSkips: UnsafeVariantSkip[];
+  suspiciousDonorLogos: SuspiciousDonorLogoSkip[];
   providerNameMismatches: ProviderNameMismatchSkip[];
   errors: LogoBackfillError[];
 };
@@ -135,6 +149,52 @@ function finnhubQuerySymbol(symbol: string, exchange: string): string {
   const parts = parseSymbolParts(symbol);
   if (parts.exchange === "US" || exchange === "US") return parts.base;
   return parts.full.includes(".") ? parts.base : symbol;
+}
+
+const EODHD_LOGO_URL_EXCHANGE = /\/img\/logos\/([A-Z0-9]+)\//i;
+
+const DAX_XETRA_LOGO_EXCHANGES = new Set(["DAX", "XETRA"]);
+
+const SUSPICIOUS_DONOR_LOGO_REASON =
+  "EODHD logo URL exchange does not match donor or target listing exchange";
+
+/** Exchange segment from EODHD static logo path, e.g. `/img/logos/US/mrk.png` → `US`. */
+export function parseEodhdLogoUrlExchange(logoUrl: string): string | null {
+  const match = logoUrl.trim().match(EODHD_LOGO_URL_EXCHANGE);
+  return match?.[1]?.toUpperCase() ?? null;
+}
+
+function isFinnhubLogoUrl(logoUrl: string): boolean {
+  return /finnhub\.io/i.test(logoUrl);
+}
+
+function areLogoExchangesEquivalent(a: string, b: string): boolean {
+  const left = a.trim().toUpperCase();
+  const right = b.trim().toUpperCase();
+  if (left === right) return true;
+  return DAX_XETRA_LOGO_EXCHANGES.has(left) && DAX_XETRA_LOGO_EXCHANGES.has(right);
+}
+
+/** True when donor logo URL listing path aligns with donor/target exchanges (or Finnhub without path). */
+export function isLogoUrlExchangeConsistent(
+  logoUrl: string,
+  donor: CompanyLogoRow,
+  target: CompanyLogoRow,
+): boolean {
+  const url = logoUrl.trim();
+  if (!url) return false;
+
+  if (isFinnhubLogoUrl(url)) return true;
+
+  const urlExchange = parseEodhdLogoUrlExchange(url);
+  if (!urlExchange) return true;
+
+  const donorEx = exchangeForRow(donor);
+  const targetEx = exchangeForRow(target);
+  return (
+    areLogoExchangesEquivalent(urlExchange, donorEx) ||
+    areLogoExchangesEquivalent(urlExchange, targetEx)
+  );
 }
 
 const PROVIDER_NAME_MISMATCH_REASON =
@@ -227,10 +287,14 @@ export function pickLogoDonorFromVariants(
   if (peers.length > 0 && safe.length === 0) {
     return { skipped: "unsafe" };
   }
+  const logoConsistent = safe.filter((peer) =>
+    isLogoUrlExchangeConsistent(peer.logoUrl!, peer, target),
+  );
   if (safe.length === 0) return null;
+  if (logoConsistent.length === 0) return null;
 
   const targetEx = exchangeForRow(target);
-  const ranked = [...safe].sort((a, b) => {
+  const ranked = [...logoConsistent].sort((a, b) => {
     const score = (row: CompanyLogoRow) => {
       let s = 0;
       if (row.symbol === target.symbol) s += 1000;
@@ -249,6 +313,29 @@ export function pickLogoDonorFromVariants(
 
 const UNSAFE_VARIANT_REASON =
   "same base ticker but company names do not match (cross-company contamination guard)";
+
+export function listSuspiciousDonorLogoSkips(
+  target: CompanyLogoRow,
+  donorsByBase: Map<string, CompanyLogoRow[]>,
+): SuspiciousDonorLogoSkip[] {
+  const base = parseSymbolParts(target.symbol).base;
+  const peers = donorsByBase.get(base) ?? [];
+  return peers
+    .filter((peer) => peer.logoUrl?.trim() && peer.symbol !== target.symbol)
+    .filter((peer) => areLikelySameCompanyName(peer.name, target.name))
+    .filter((peer) => !isLogoUrlExchangeConsistent(peer.logoUrl!, peer, target))
+    .map((peer) => ({
+      targetSymbol: target.symbol,
+      targetName: target.name,
+      targetExchange: exchangeForRow(target),
+      donorSymbol: peer.symbol,
+      donorName: peer.name,
+      donorExchange: exchangeForRow(peer),
+      logoUrl: peer.logoUrl!.trim(),
+      urlExchange: parseEodhdLogoUrlExchange(peer.logoUrl!),
+      reason: SUSPICIOUS_DONOR_LOGO_REASON,
+    }));
+}
 
 export function listUnsafeVariantSkips(
   target: CompanyLogoRow,
@@ -279,7 +366,13 @@ function sanitizeErrorMessage(error: unknown): string {
 }
 
 function emptyBackfillLog(): CompanyLogoBackfillLog {
-  return { plannedUpdates: [], unsafeSkips: [], providerNameMismatches: [], errors: [] };
+  return {
+    plannedUpdates: [],
+    unsafeSkips: [],
+    suspiciousDonorLogos: [],
+    providerNameMismatches: [],
+    errors: [],
+  };
 }
 
 function sourceLabel(source: LogoBackfillSource): string {
@@ -388,6 +481,7 @@ export async function runCompanyLogoBackfill(
     skippedNoProviderLogo: 0,
     skippedUnsafeMatch: 0,
     skippedProviderNameMismatch: 0,
+    skippedSuspiciousDonorLogo: 0,
     copiedFromExistingVariant: 0,
     fetchedFromEodhd: 0,
     fetchedFromFinnhub: 0,
@@ -430,6 +524,13 @@ export async function runCompanyLogoBackfill(
 
     try {
       const donorResult = pickLogoDonorFromVariants(target, donorsByBase);
+      const suspiciousDonorSkips = listSuspiciousDonorLogoSkips(target, donorsByBase);
+      if (suspiciousDonorSkips.length > 0) {
+        summary.skippedSuspiciousDonorLogo += suspiciousDonorSkips.length;
+        if (verbose) {
+          log.suspiciousDonorLogos.push(...suspiciousDonorSkips);
+        }
+      }
       if (donorResult && "skipped" in donorResult) {
         summary.skippedUnsafeMatch += 1;
         if (verbose) {
@@ -534,6 +635,7 @@ export function formatBackfillSummary(summary: CompanyLogoBackfillSummary): stri
     `skippedNoProviderLogo: ${summary.skippedNoProviderLogo}`,
     `skippedUnsafeMatch: ${summary.skippedUnsafeMatch}`,
     `skippedProviderNameMismatch: ${summary.skippedProviderNameMismatch}`,
+    `skippedSuspiciousDonorLogo: ${summary.skippedSuspiciousDonorLogo}`,
     `errors: ${summary.errors}`,
   ].join("\n");
 }
@@ -578,6 +680,22 @@ export function formatBackfillVerboseLog(
         [
           `target: ${row.targetSymbol} (${row.targetName})`,
           `donor: ${row.donorSymbol} (${row.donorName})`,
+          `reason: ${row.reason}`,
+        ].join("\n  "),
+      );
+      lines.push("");
+    }
+  }
+
+  if (log.suspiciousDonorLogos.length > 0) {
+    lines.push("--- skippedSuspiciousDonorLogo ---");
+    for (const row of log.suspiciousDonorLogos) {
+      lines.push(
+        [
+          `target: ${row.targetSymbol} (${row.targetName}) exchange=${row.targetExchange}`,
+          `donor: ${row.donorSymbol} (${row.donorName}) exchange=${row.donorExchange}`,
+          `logoUrl: ${row.logoUrl}`,
+          `urlExchange: ${formatNullable(row.urlExchange)}`,
           `reason: ${row.reason}`,
         ].join("\n  "),
       );

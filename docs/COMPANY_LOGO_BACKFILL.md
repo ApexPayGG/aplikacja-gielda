@@ -38,6 +38,12 @@ Example blocker: `BDX` / Budimex S.A. / WAR + Finnhub logo for US **Becton Dicki
 
 Verbose output includes `--- skippedProviderNameMismatch ---` with target and provider identity fields.
 
+## dbVariant logo URL exchange check
+
+For donors with EODHD URLs (`/img/logos/{EXCHANGE}/...`), the path exchange must match the donor or target listing (with **DAX ↔ XETRA** equivalence). Finnhub/static URLs without an exchange segment are allowed when the issuer name matches.
+
+Example: `MRK` / DAX + donor `MRK.XETRA` with `.../logos/US/mrk.png` → `skippedSuspiciousDonorLogo`, no copy.
+
 ## Safety rules (no cross-company contamination)
 
 | Case | Allowed? |
