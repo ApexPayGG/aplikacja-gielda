@@ -26,6 +26,10 @@ export type CompanySearchResultItem = {
   logoUrl: string | null;
 };
 
+type CompanySearchResultCandidate = CompanySearchResultItem & {
+  source?: "db" | "eod";
+};
+
 const EODHD_BASE = "https://eodhd.com/api";
 const SOURCE = "EODHD";
 const IMPORT_DAYS = 365;
@@ -255,6 +259,60 @@ export function scoreSearchResult(query: NormalizedSearchQuery, item: CompanySea
   return RANK_DEFAULT;
 }
 
+export function isUnknownSector(sector: string): boolean {
+  return sector.trim().toLowerCase() === "unknown";
+}
+
+/** True when two issuer names likely refer to the same company (e.g. Tesla vs Tesla Inc). */
+export function areLikelySameCompanyName(a: string, b: string): boolean {
+  const norm = (value: string) =>
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/[.,']/g, "")
+      .replace(/\s+(inc|corp|corporation|co|company|ltd|sa|nv|plc|group|holdings)\b/gi, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  const na = norm(a);
+  const nb = norm(b);
+  if (!na || !nb) return false;
+  if (na === nb) return true;
+  if (na.includes(nb) || nb.includes(na)) return true;
+  const wa = na.split(" ")[0] ?? "";
+  const wb = nb.split(" ")[0] ?? "";
+  return wa.length >= 4 && wb.length >= 4 && wa === wb;
+}
+
+export function mergeSearchResultItems(
+  a: CompanySearchResultCandidate,
+  b: CompanySearchResultCandidate,
+): CompanySearchResultCandidate {
+  const preferPrimary = (() => {
+    if (a.source === "db" && b.source !== "db") return a;
+    if (b.source === "db" && a.source !== "db") return b;
+    const score = (item: CompanySearchResultCandidate) =>
+      (item.logoUrl ? 4 : 0) + (!isUnknownSector(item.sector) ? 2 : 0) + (item.exchange !== "UNKNOWN" ? 1 : 0);
+    return score(a) >= score(b) ? a : b;
+  })();
+  const secondary = preferPrimary === a ? b : a;
+
+  return {
+    symbol: preferPrimary.symbol,
+    name: preferPrimary.name.length >= secondary.name.length ? preferPrimary.name : secondary.name,
+    exchange:
+      preferPrimary.exchange !== "UNKNOWN" && preferPrimary.exchange
+        ? preferPrimary.exchange
+        : secondary.exchange,
+    sector: !isUnknownSector(preferPrimary.sector)
+      ? preferPrimary.sector
+      : !isUnknownSector(secondary.sector)
+        ? secondary.sector
+        : preferPrimary.sector,
+    logoUrl: a.logoUrl || b.logoUrl,
+    source: a.source === "db" || b.source === "db" ? "db" : a.source ?? b.source,
+  };
+}
+
 export function sanitizeCrossSymbolLogos(items: CompanySearchResultItem[]): CompanySearchResultItem[] {
   const byLogo = new Map<string, CompanySearchResultItem[]>();
   for (const item of items) {
@@ -279,8 +337,12 @@ export function sanitizeCrossSymbolLogos(items: CompanySearchResultItem[]): Comp
 
     for (const sameBase of byBase.values()) {
       if (sameBase.length < 2) continue;
-      const names = new Set(sameBase.map((i) => i.name.trim().toLowerCase()));
-      if (names.size <= 1) continue;
+      const allSameCompany = sameBase.every((item) =>
+        sameBase.every(
+          (other) => item === other || areLikelySameCompanyName(item.name, other.name),
+        ),
+      );
+      if (allSameCompany) continue;
 
       const ranked = [...sameBase].sort((a, b) => {
         const exA = parseSymbolParts(a.symbol).exchange;
@@ -335,8 +397,8 @@ export function rankCompanySearchResults(
   });
 }
 
-function mergeBySymbol(items: CompanySearchResultItem[]): CompanySearchResultItem[] {
-  const map = new Map<string, CompanySearchResultItem>();
+function mergeBySymbol(items: CompanySearchResultCandidate[]): CompanySearchResultItem[] {
+  const map = new Map<string, CompanySearchResultCandidate>();
   for (const row of items) {
     const key = row.symbol.trim().toUpperCase();
     if (!key) continue;
@@ -345,18 +407,21 @@ function mergeBySymbol(items: CompanySearchResultItem[]): CompanySearchResultIte
       map.set(key, { ...row });
       continue;
     }
-    map.set(key, {
-      symbol: prev.symbol,
-      name: prev.name || row.name,
-      exchange: prev.exchange !== "UNKNOWN" ? prev.exchange : row.exchange,
-      sector: prev.sector !== "Unknown" ? prev.sector : row.sector,
-      logoUrl: prev.logoUrl ?? row.logoUrl,
-    });
+    map.set(key, mergeSearchResultItems(prev, row));
   }
-  return [...map.values()];
+  return [...map.values()].map(stripSearchCandidateMeta);
 }
 
-function finalizeSearchResults(query: string, items: CompanySearchResultItem[], limit: number): CompanySearchResultItem[] {
+function stripSearchCandidateMeta(item: CompanySearchResultCandidate): CompanySearchResultItem {
+  const { source: _source, ...rest } = item;
+  return rest;
+}
+
+export function finalizeSearchResults(
+  query: string,
+  items: CompanySearchResultCandidate[],
+  limit: number,
+): CompanySearchResultItem[] {
   const merged = mergeBySymbol(items);
   const sanitized = sanitizeCrossSymbolLogos(merged);
   return rankCompanySearchResults(query, sanitized).slice(0, limit);
@@ -554,13 +619,18 @@ export async function searchCompaniesOnDemand(
   const take = normalizeSearchLimit(limit);
 
   const dbRows = await dependencies.searchDb(q, take);
-  let combined = [...dbRows];
+  const dbCandidates: CompanySearchResultCandidate[] = dbRows.map((row) => ({ ...row, source: "db" }));
+  let combined: CompanySearchResultCandidate[] = [...dbCandidates];
   let results = finalizeSearchResults(q, combined, take);
 
   if (results.length < 3) {
     try {
       const eodRows = await dependencies.searchEod(q, searchPoolSize(take));
-      combined = [...dbRows, ...eodRows];
+      const eodCandidates: CompanySearchResultCandidate[] = eodRows.map((row) => ({
+        ...row,
+        source: "eod",
+      }));
+      combined = [...dbCandidates, ...eodCandidates];
       results = finalizeSearchResults(q, combined, take);
     } catch (error) {
       console.warn("[companies.search] eod fallback failed", error);

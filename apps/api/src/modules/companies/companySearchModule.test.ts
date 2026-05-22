@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it, mock } from "node:test";
 import {
+  finalizeSearchResults,
   mapDbRowsToSearch,
   mapEodSearchRow,
+  mergeSearchResultItems,
   rankCompanySearchResults,
   sanitizeCrossSymbolLogos,
   searchCompaniesOnDemand,
@@ -28,6 +30,11 @@ const item = (
   logoUrl: null,
   ...partial,
 });
+
+const candidate = (
+  partial: Partial<CompanySearchResultItem> & Pick<CompanySearchResultItem, "symbol" | "name">,
+  source: "db" | "eod",
+) => ({ ...item(partial), source });
 
 describe("companySearchModule mappers", () => {
   it("mapDbRowsToSearch returns logoUrl from DB row", () => {
@@ -83,6 +90,97 @@ describe("companySearchModule mappers", () => {
     assert.ok(mapped);
     assert.equal(mapped.logoUrl, "https://eodhd.com/img/logos/US/aapl.png");
   });
+});
+
+describe("companySearchModule merge and finalize", () => {
+  const tslaLogo = "https://eodhd.com/img/logos/US/TSLA.png";
+
+  it("mergeSearchResultItems keeps logoUrl when EOD row is merged after DB row", () => {
+    const merged = mergeSearchResultItems(
+      candidate(
+        {
+          symbol: "TSLA",
+          name: "Tesla Inc",
+          sector: "Consumer Discretionary",
+          logoUrl: tslaLogo,
+        },
+        "db",
+      ),
+      candidate({ symbol: "TSLA", name: "Tesla Inc", sector: "Unknown", logoUrl: null }, "eod"),
+    );
+
+    assert.equal(merged.logoUrl, tslaLogo);
+    assert.equal(merged.sector, "Consumer Discretionary");
+  });
+
+  it("mergeSearchResultItems keeps logoUrl when DB row is merged after EOD row", () => {
+    const merged = mergeSearchResultItems(
+      candidate({ symbol: "TSLA", name: "Tesla Inc", sector: "Unknown", logoUrl: null }, "eod"),
+      candidate(
+        {
+          symbol: "TSLA",
+          name: "Tesla Inc",
+          sector: "Consumer Discretionary",
+          logoUrl: tslaLogo,
+        },
+        "db",
+      ),
+    );
+
+    assert.equal(merged.logoUrl, tslaLogo);
+    assert.equal(merged.sector, "Consumer Discretionary");
+  });
+
+  it("finalizeSearchResults preserves TSLA logo when TSLA.US shares the same logo", () => {
+    const results = finalizeSearchResults(
+      "TSLA",
+      [
+        candidate(
+          {
+            symbol: "TSLA",
+            name: "Tesla Inc",
+            sector: "Consumer Discretionary",
+            logoUrl: tslaLogo,
+          },
+          "db",
+        ),
+        candidate(
+          {
+            symbol: "TSLA.US",
+            name: "Tesla Inc",
+            sector: "Unknown",
+            logoUrl: tslaLogo,
+          },
+          "eod",
+        ),
+      ],
+      3,
+    );
+
+    const tsla = results.find((r) => r.symbol === "TSLA");
+    assert.equal(tsla?.logoUrl, tslaLogo);
+    assert.equal(results[0]?.symbol, "TSLA");
+  });
+
+  for (const [symbol, name, logoUrl, sector] of [
+    ["XOM", "Exxon Mobil Corporation", "https://eodhd.com/img/logos/US/XOM.png", "Energy"],
+    ["CVX", "Chevron Corporation", "https://eodhd.com/img/logos/US/cvx.png", "Energy"],
+    ["PG", "Procter & Gamble Company", "https://eodhd.com/img/logos/US/PG.png", "Consumer Staples"],
+  ] as const) {
+    it(`${symbol} exact match keeps DB logoUrl through EOD merge`, () => {
+      const results = finalizeSearchResults(
+        symbol,
+        [
+          candidate({ symbol, name, sector, logoUrl }, "db"),
+          candidate({ symbol, name, sector: "Unknown", logoUrl: null }, "eod"),
+        ],
+        3,
+      );
+
+      assert.equal(results[0]?.symbol, symbol);
+      assert.equal(results[0]?.logoUrl, logoUrl);
+    });
+  }
 });
 
 describe("companySearchModule ranking", () => {
@@ -215,6 +313,29 @@ describe("companySearchModule.searchCompaniesOnDemand", () => {
     assert.deepEqual(result, []);
     assert.equal(searchDb.mock.calls.length, 0);
     assert.equal(searchEod.mock.calls.length, 0);
+  });
+
+  it("TSLA exact search keeps logoUrl from DB over EOD null for same symbol", async () => {
+    const tslaLogo = "https://eodhd.com/img/logos/US/TSLA.png";
+    const searchDb = mock.fn(async () => [
+      item({
+        symbol: "TSLA",
+        name: "Tesla Inc",
+        sector: "Consumer Discretionary",
+        logoUrl: tslaLogo,
+      }),
+    ]);
+    const searchEod = mock.fn(async () => [
+      item({ symbol: "TSLA", name: "Tesla Inc", sector: "Unknown", logoUrl: null }),
+      item({ symbol: "TSLA.US", name: "Tesla Inc", sector: "Unknown", logoUrl: null }),
+      item({ symbol: "TSM.US", name: "Taiwan Semiconductor", sector: "Unknown", logoUrl: null }),
+    ]);
+
+    const result = await searchCompaniesOnDemand("TSLA", 3, createDependencies({ searchDb, searchEod }));
+
+    assert.equal(result[0]?.symbol, "TSLA");
+    assert.equal(result[0]?.logoUrl, tslaLogo);
+    assert.equal(searchEod.mock.calls.length, 1);
   });
 
   it("keeps DB results when EOD fallback fails", async () => {
