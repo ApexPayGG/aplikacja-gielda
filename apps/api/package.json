@@ -10,6 +10,7 @@
     "seed:companies": "tsx src/scripts/seedCompanies.ts",
     "import:eodhd": "tsx src/scripts/importEodhd.ts",
     "import:eodhd:global": "tsx src/scripts/importEodhdGlobal.ts",
+    "logos:backfill": "tsx src/scripts/backfillCompanyLogos.ts",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed",

@@ -73,7 +73,7 @@ function toStr(value: unknown): string | null {
   return v ? v : null;
 }
 
-function normalizeLogoUrl(value: unknown): string | null {
+export function normalizeLogoUrl(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = value.trim();
   if (!raw) return null;
