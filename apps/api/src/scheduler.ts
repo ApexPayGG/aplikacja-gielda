@@ -1,3 +1,4 @@
+import "./load-env";
 import { Queue, Worker } from "bullmq";
 import path from "node:path";
 import process from "node:process";
@@ -48,6 +49,7 @@ import {
   STANDARD_INGEST_JOB_OPTIONS,
   WEEKDAY_REALTIME_CRON,
 } from "./jobs/schedulerConfig";
+import { autopilotWorker } from "./workers/autopilot.worker";
 
 const QUEUE_NAME = "market-scrape";
 const SYMBOLS = ["AAPL", "GOOGL", "MSFT"] as const;
@@ -368,6 +370,10 @@ export async function startScheduler(): Promise<void> {
   });
   await scheduleDailyMarketEventsDigest(marketEventsDigestQueue);
 
+  console.log(
+    "[Scheduler] Autopilot Worker successfully initialized and listening on queue: autopilot-execution-queue",
+  );
+
   console.log("[scheduler] BullMQ worker started; hourly job scheduled");
   console.log("[scheduler] Dividend hybrid sync: daily @ 01:00 UTC (queue dividend-sync)");
   console.log("[scheduler] Dividend alerts: daily @ 06:00 UTC (queue dividend-alerts)");
@@ -394,8 +400,27 @@ const schedulerFile = path.resolve(fileURLToPath(import.meta.url));
 const entryFile = process.argv[1] ? path.resolve(process.argv[1]) : "";
 const runSchedulerCli = entryFile === schedulerFile;
 
+async function shutdownScheduler(signal: string): Promise<void> {
+  console.log(`\n[scheduler] ${signal} received, shutting down…`);
+  try {
+    await autopilotWorker.close();
+  } catch (error) {
+    console.error(
+      "[scheduler] autopilot worker close failed:",
+      error instanceof Error ? error.message : error,
+    );
+  }
+  process.exit(0);
+}
+
 if (runSchedulerCli) {
-  await import("./load-env");
+  process.on("SIGINT", () => {
+    void shutdownScheduler("SIGINT");
+  });
+  process.on("SIGTERM", () => {
+    void shutdownScheduler("SIGTERM");
+  });
+
   startScheduler().catch((e) => {
     console.error(e);
     process.exit(1);

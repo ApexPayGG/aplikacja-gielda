@@ -9,6 +9,7 @@ import { getCacheRedis } from "./redis";
 import { startScheduler } from "./scheduler";
 import { startServer } from "./server";
 import { startTelegramBot, stopTelegramBot } from "./telegram/index";
+import { autopilotWorker } from "./workers/autopilot.worker";
 
 async function main(): Promise<void> {
   const port = parseInt(process.env.PORT ?? "3000", 10);
@@ -25,14 +26,27 @@ async function main(): Promise<void> {
   await startTelegramBot();
 }
 
-function shutdown(signal: string): void {
+async function shutdown(signal: string): Promise<void> {
   console.log(`\n${signal} received, shutting down…`);
   stopTelegramBot();
-  void prisma.$disconnect().finally(() => process.exit(0));
+  try {
+    await autopilotWorker.close();
+  } catch (error) {
+    console.error(
+      "[shutdown] autopilot worker close failed:",
+      error instanceof Error ? error.message : error,
+    );
+  }
+  await prisma.$disconnect();
+  process.exit(0);
 }
 
-process.on("SIGINT", () => shutdown("SIGINT"));
-process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => {
+  void shutdown("SIGINT");
+});
+process.on("SIGTERM", () => {
+  void shutdown("SIGTERM");
+});
 
 main().catch((e) => {
   console.error(e);

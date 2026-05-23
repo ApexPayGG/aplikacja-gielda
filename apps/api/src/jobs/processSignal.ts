@@ -4,6 +4,12 @@ import pino from "pino";
 import { prisma } from "../db/index";
 import { getMarketRegime, type MarketRegime } from "../marketRegime";
 import { getDividendHealth, type DividendData } from "../modules/dividend/dividendModule";
+import {
+  autopilotOrchestratorService,
+  type AutopilotAiVerdict,
+  type DispatchAiIntentPayload,
+  type DispatchAiIntentResult,
+} from "../modules/autopilot/AutopilotOrchestratorService";
 import { generateNarrative, type NarrativeContext } from "../modules/narrativeEngine/narrativeEngine";
 import { getSignalDnaSummary } from "../modules/signalDna/signalDna";
 import { enqueueDiscordSignalAlert } from "../queues/discordSignalAlerts";
@@ -135,6 +141,8 @@ export interface ProcessSignalDeps {
     confidence: number;
     score: number;
   }) => Promise<Array<Record<string, unknown>>>;
+  dispatchAutopilotIntent?: (payload: DispatchAiIntentPayload) => Promise<DispatchAiIntentResult>;
+  getAutopilotEligibleUserIds?: (input: { ticker: string }) => Promise<string[]>;
 }
 
 export const processSignalLogger = pino({
@@ -435,6 +443,128 @@ async function defaultGetUsersWithMatchingCriteria(_input: {
   }
 }
 
+function deriveAiVerdictFromSignal(input: {
+  pattern_type: string;
+  score: number | null;
+  confidence: number;
+}): AutopilotAiVerdict {
+  const setup = input.pattern_type.toLowerCase();
+  const score = input.score ?? 0;
+
+  const bearishKeywords = ["bear", "sell", "breakdown", "distribution", "overbought", "short"];
+  const bullishKeywords = ["breakout", "momentum", "bounce", "support", "buy", "bull", "oversold"];
+
+  if (bearishKeywords.some((keyword) => setup.includes(keyword)) && score >= 55) {
+    return "BEARISH_SELL";
+  }
+  if (bullishKeywords.some((keyword) => setup.includes(keyword)) && score >= 60) {
+    return "BULLISH_BUY";
+  }
+  if (score >= 75 && !bearishKeywords.some((keyword) => setup.includes(keyword))) {
+    return "BULLISH_BUY";
+  }
+  return "HOLD";
+}
+
+function resolveSignalCurrentPrice(technicalData: Record<string, unknown>): number {
+  const candidates = [
+    technicalData.current_price,
+    technicalData.entry_price,
+    technicalData.close,
+    technicalData.last_price,
+  ];
+  for (const candidate of candidates) {
+    const parsed = Number(candidate);
+    if (Number.isFinite(parsed) && parsed > 0) {
+      return parsed;
+    }
+  }
+  return 0;
+}
+
+async function defaultGetAutopilotEligibleUserIds(input: { ticker: string }): Promise<string[]> {
+  const ticker = input.ticker.trim().toUpperCase();
+  if (!ticker) return [];
+
+  const watchlistRows = await prisma.watchlist.findMany({
+    where: { symbol: ticker },
+    select: { userId: true },
+  });
+  const watchlistUserIds = [...new Set(watchlistRows.map((row) => row.userId))];
+  if (watchlistUserIds.length === 0) return [];
+
+  const enabledSettings = await prisma.userAutopilotSettings.findMany({
+    where: {
+      isAutopilotEnabled: true,
+      userId: { in: watchlistUserIds },
+    },
+    select: { userId: true },
+  });
+
+  return enabledSettings.map((row) => row.userId);
+}
+
+async function dispatchAutopilotForProcessedSignal(
+  signal: {
+    id: string;
+    userId?: string | null;
+    ticker: string;
+    pattern_type: string;
+    score: number | null;
+    confidence: number;
+  },
+  technicalData: Record<string, unknown>,
+  deps: Pick<
+    ProcessSignalDeps,
+    "dispatchAutopilotIntent" | "getAutopilotEligibleUserIds"
+  >,
+): Promise<void> {
+  try {
+    const aiVerdict = deriveAiVerdictFromSignal(signal);
+    const currentPrice = resolveSignalCurrentPrice(technicalData);
+    const dispatch = deps.dispatchAutopilotIntent ?? autopilotOrchestratorService.dispatchAiIntent.bind(
+      autopilotOrchestratorService,
+    );
+    const getEligibleUserIds =
+      deps.getAutopilotEligibleUserIds ??
+      ((input: { ticker: string }) => defaultGetAutopilotEligibleUserIds(input));
+
+    const userIds = signal.userId?.trim()
+      ? [signal.userId.trim()]
+      : await getEligibleUserIds({ ticker: signal.ticker });
+
+    for (const userId of userIds) {
+      try {
+        const autopilotResult = await dispatch({
+          userId,
+          ticker: signal.ticker,
+          aiVerdict,
+          currentPrice,
+          signalSourceId: signal.id,
+        });
+
+        console.log(
+          `[SignalProcessor] Autopilot dispatch result for user ${userId}:`,
+          JSON.stringify(autopilotResult),
+        );
+      } catch (error) {
+        processSignalLogger.warn({
+          msg: "autopilot_dispatch_user_failed",
+          signalId: signal.id,
+          userId,
+          err: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+  } catch (error) {
+    processSignalLogger.warn({
+      msg: "autopilot_dispatch_non_critical_failure",
+      signalId: signal.id,
+      err: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
 export async function runProcessSignalJob(
   input: ProcessSignalJobInput,
   depsInput?: Partial<ProcessSignalDeps>,
@@ -486,6 +616,8 @@ export async function runProcessSignalJob(
           } as LowSignalStore)
         : ((redis ?? getCacheRedis()) as unknown as LowSignalStore))),
     getUsersWithMatchingCriteria: depsInput?.getUsersWithMatchingCriteria ?? defaultGetUsersWithMatchingCriteria,
+    dispatchAutopilotIntent: depsInput?.dispatchAutopilotIntent,
+    getAutopilotEligibleUserIds: depsInput?.getAutopilotEligibleUserIds,
   };
 
   if (!input.signalId?.trim()) {
@@ -583,6 +715,19 @@ export async function runProcessSignalJob(
         regimeConfidence: regime.confidence,
       },
     });
+
+    await dispatchAutopilotForProcessedSignal(
+      {
+        id: updated.id,
+        userId: (updated as { userId?: string | null }).userId ?? null,
+        ticker: updated.ticker,
+        pattern_type: updated.pattern_type,
+        score: updated.score,
+        confidence: updated.confidence,
+      },
+      technicalData,
+      deps,
+    );
 
     await deps.logAlphaJournal({
       ts: new Date().toISOString(),

@@ -68,6 +68,7 @@ const VolatilityPage = lazyNamed(() => import("./pages/VolatilityPage"), "Volati
 const BacktestPage = lazyNamed(() => import("./pages/BacktestPage"), "BacktestPage");
 const RegisterPage = lazyNamed(() => import("./pages/RegisterPage"), "RegisterPage");
 const AlpacaPage = lazyNamed(() => import("./pages/AlpacaPage"), "AlpacaPage");
+const AutopilotSettings = lazyNamed(() => import("./pages/AutopilotSettings"), "AutopilotSettings");
 const AdminAffiliatePage = lazyNamed(() => import("./pages/AdminAffiliatePage"), "AdminAffiliatePage");
 const AdminPage = lazyNamed(() => import("./pages/AdminPage"), "AdminPage");
 const OnboardingPage = lazyNamed(() => import("./pages/OnboardingPage"), "OnboardingPage");
@@ -194,6 +195,7 @@ export default function App() {
               <Route path="/psyche-profile" element={<ProtectedRoute><PsycheProfilePage /></ProtectedRoute>} />
               <Route path="/weekly-review" element={<ProtectedRoute><WeeklyReviewPage /></ProtectedRoute>} />
               <Route path="/alpaca" element={<ProtectedRoute><AlpacaPage /></ProtectedRoute>} />
+              <Route path="/autopilot" element={<ProtectedRoute><AutopilotSettings /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               <Route path="/mistake-library" element={<ProtectedRoute><MistakeLibraryPage /></ProtectedRoute>} />

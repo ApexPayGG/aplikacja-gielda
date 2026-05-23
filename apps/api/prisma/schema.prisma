@@ -61,40 +61,48 @@ enum AlpacaMode {
   LIVE
 }
 
+enum AutopilotExecutionStatus {
+  EXECUTED
+  REJECTED_BY_SAFE_GUARD
+  SYSTEM_ERROR
+}
+
 model User {
-  id                    String                 @id @default(cuid())
-  email                 String                 @unique
-  emailVerified         Boolean                @default(false) @map("email_verified")
-  verifyToken           String?                @map("verify_token")
-  verifyTokenExp        DateTime?              @map("verify_token_exp")
-  passwordResetToken    String?                @map("password_reset_token")
-  passwordResetTokenExp DateTime?              @map("password_reset_token_exp")
-  passwordHash          String                 @map("password_hash")
-  name                  String?
-  language              String?                @default("pl")
-  timezone              String?                @default("Europe/Warsaw")
-  avatarUrl             String?                @map("avatar_url")
-  tier                  String                 @default("FREE")
-  role                  String                 @default("USER")
-  stripeCustomerId      String?                @map("stripe_customer_id")
-  subscriptionStatus    String?                @default("free") @map("subscription_status")
-  subscriptionEnd       DateTime?              @map("subscription_end")
-  discordWebhook        String?
-  telegramChatId        String?
-  notifySignals         Boolean                @default(true)
-  notifyDividends       Boolean                @default(true)
-  minSignalScore        Int                    @default(70)
-  createdAt             DateTime               @default(now()) @map("created_at")
-  lastLoginAt           DateTime?              @map("last_login_at")
-  onboardingEmail2Sent  Boolean                @default(false) @map("onboarding_email2_sent")
-  onboardingEmail3Sent  Boolean                @default(false) @map("onboarding_email3_sent")
-  virtual_trades        VirtualTrade[]
-  portfolio_snapshots   PortfolioSnapshot[]
-  affiliateClicks       AffiliateClick[]
-  affiliateConversions  AffiliateConversion[]
-  emotionJournalEntries EmotionJournalEntry[]
-  psycheSnapshots       PsycheSnapshot[]
-  autopilotSettings     UserAutopilotSettings?
+  id                     String                  @id @default(cuid())
+  email                  String                  @unique
+  emailVerified          Boolean                 @default(false) @map("email_verified")
+  verifyToken            String?                 @map("verify_token")
+  verifyTokenExp         DateTime?               @map("verify_token_exp")
+  passwordResetToken     String?                 @map("password_reset_token")
+  passwordResetTokenExp  DateTime?               @map("password_reset_token_exp")
+  passwordHash           String                  @map("password_hash")
+  name                   String?
+  language               String?                 @default("pl")
+  timezone               String?                 @default("Europe/Warsaw")
+  avatarUrl              String?                 @map("avatar_url")
+  tier                   String                  @default("FREE")
+  role                   String                  @default("USER")
+  stripeCustomerId       String?                 @map("stripe_customer_id")
+  subscriptionStatus     String?                 @default("free") @map("subscription_status")
+  subscriptionEnd        DateTime?               @map("subscription_end")
+  discordWebhook         String?
+  telegramChatId         String?
+  notifySignals          Boolean                 @default(true)
+  notifyDividends        Boolean                 @default(true)
+  minSignalScore         Int                     @default(70)
+  createdAt              DateTime                @default(now()) @map("created_at")
+  lastLoginAt            DateTime?               @map("last_login_at")
+  onboardingEmail2Sent   Boolean                 @default(false) @map("onboarding_email2_sent")
+  onboardingEmail3Sent   Boolean                 @default(false) @map("onboarding_email3_sent")
+  virtual_trades         VirtualTrade[]
+  portfolio_snapshots    PortfolioSnapshot[]
+  affiliateClicks        AffiliateClick[]
+  affiliateConversions   AffiliateConversion[]
+  emotionJournalEntries  EmotionJournalEntry[]
+  psycheSnapshots        PsycheSnapshot[]
+  autopilotSettings      UserAutopilotSettings?
+  autopilotExecutionLogs AutopilotExecutionLog[]
+  autopilotStats         UserAutopilotStats?
 
   @@map("users")
 }
@@ -375,7 +383,8 @@ model Signal {
   expires_at     DateTime
   user_triggered Boolean  @default(false)
 
-  tradeReactions TradeReaction[]
+  tradeReactions         TradeReaction[]
+  autopilotExecutionLogs AutopilotExecutionLog[]
 
   @@index([ticker, created_at])
   @@index([exchange, created_at])
@@ -463,6 +472,41 @@ model UserAutopilotSettings {
 
   @@index([isAutopilotEnabled], map: "idx_user_autopilot_settings_enabled")
   @@map("user_autopilot_settings")
+}
+
+/// Immutable audit trail for Autopilot Safe Guard decisions and Alpaca order routing.
+model AutopilotExecutionLog {
+  id             String                   @id @default(uuid()) @db.Uuid
+  userId         String                   @map("user_id")
+  ticker         String                   @db.VarChar(20)
+  side           TradeSide
+  status         AutopilotExecutionStatus
+  reason         String?                  @db.Text
+  alpacaOrderId  String?                  @unique @map("alpaca_order_id")
+  calculatedQty  Int                      @map("calculated_qty")
+  executionMode  AlpacaMode               @map("execution_mode")
+  signalSourceId String?                  @map("signal_source_id")
+  createdAt      DateTime                 @default(now()) @map("created_at")
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  signal Signal? @relation(fields: [signalSourceId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt(sort: Desc)], map: "idx_autopilot_execution_logs_user_created")
+  @@index([ticker], map: "idx_autopilot_execution_logs_ticker")
+  @@index([status], map: "idx_autopilot_execution_logs_status")
+  @@map("autopilot_execution_logs")
+}
+
+/// Aggregated Autopilot counters for UI dashboards and drawdown guard state.
+model UserAutopilotStats {
+  userId              String    @id @map("user_id")
+  totalTradesExecuted Int       @default(0) @map("total_trades_executed")
+  lastExecutedAt      DateTime? @map("last_executed_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_autopilot_stats")
 }
 
 model AffiliateBroker {

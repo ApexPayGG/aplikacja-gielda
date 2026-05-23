@@ -1,5 +1,7 @@
 # Company logo backfill (API)
 
+> Pełny brief (logo + API + infra): [COMPANY_LOGO_BRIEF.md](./COMPANY_LOGO_BRIEF.md)
+
 Systemically fills `companies.logoUrl` for rows that are `null`, without hand-editing individual tickers in the UI.
 
 ## Why

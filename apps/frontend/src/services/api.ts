@@ -2090,6 +2090,67 @@ export async function resetPassword(token: string, newPassword: string): Promise
   return data;
 }
 
+export type AlpacaAutopilotMode = "PAPER" | "LIVE";
+
+export interface AutopilotSettingsPayload {
+  isAutopilotEnabled: boolean;
+  alpacaMode: AlpacaAutopilotMode;
+  maxCapitalPerTradePct: string;
+  maxDailyDrawdownPct: string;
+  hasKeys: boolean;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface AutopilotStatsPayload {
+  totalTradesExecuted: number;
+  lastExecutedAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface AutopilotSettingsResponse {
+  settings: AutopilotSettingsPayload;
+  stats: AutopilotStatsPayload;
+}
+
+export async function getAutopilotSettings(): Promise<AutopilotSettingsResponse> {
+  const { data } = await api.get<AutopilotSettingsResponse>("/v1/autopilot/settings");
+  return data;
+}
+
+export async function saveAutopilotSettings(body: {
+  maxCapitalPerTradePct?: number | string;
+  maxDailyDrawdownPct?: number | string;
+  alpacaMode?: AlpacaAutopilotMode;
+}): Promise<{ saved: boolean; settings: AutopilotSettingsPayload }> {
+  const { data } = await api.post<{ saved: boolean; settings: AutopilotSettingsPayload }>(
+    "/v1/autopilot/settings",
+    body,
+  );
+  return data;
+}
+
+export async function saveAutopilotKeys(body: {
+  alpacaApiKey: string;
+  alpacaApiSecret: string;
+}): Promise<{ saved: boolean; hasKeys: boolean }> {
+  const { data } = await api.post<{ saved: boolean; hasKeys: boolean }>("/v1/autopilot/keys", body);
+  return data;
+}
+
+export async function toggleAutopilot(isEnabled: boolean): Promise<{
+  saved: boolean;
+  isAutopilotEnabled: boolean;
+  hasKeys: boolean;
+}> {
+  const { data } = await api.post<{
+    saved: boolean;
+    isAutopilotEnabled: boolean;
+    hasKeys: boolean;
+  }>("/v1/autopilot/toggle", { isEnabled });
+  return data;
+}
+
 export type { MarketEventDto } from "../types/marketEvents";
 
 export async function getMarketEvents(params?: { limit?: number }): Promise<MarketEventDto[]> {
