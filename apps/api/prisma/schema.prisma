@@ -985,3 +985,24 @@ model EventDelivery {
   @@index([status])
   @@map("event_deliveries")
 }
+
+/// Institutional flow intelligence — OPTIONS_FLOW, DARK_POOL, SEC_FILING, etc.
+/// Timescale hypertable conversion (if used) is handled by separate ops migrations, not here.
+model MarketSignal {
+  id              String   @id @default(uuid())
+  ticker          String
+  signalType      String   @map("signal_type")
+  source          String
+  confidenceScore Int      @map("confidence_score")
+  title           String
+  summary         String?
+  rawPayload      Json?    @map("raw_payload")
+  eventTime       DateTime @map("event_time")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([ticker, eventTime])
+  @@index([signalType, eventTime])
+  @@index([ticker, signalType, eventTime])
+  @@map("market_signals")
+}

@@ -1,0 +1,84 @@
+import type { NextFunction, Request, Response } from "express";
+import { Router } from "express";
+import { getAuthenticatedUserId, requireAuth } from "../auth/authMiddleware";
+import {
+  clampLookbackDays,
+  MarketSignalsService,
+  marketSignalsService,
+  parseMarketSignalIngestInput,
+  parseMarketSignalType,
+} from "./marketSignals.service";
+
+type MarketSignalsRouterDeps = {
+  service: MarketSignalsService;
+  requireAuthMiddleware: typeof requireAuth;
+};
+
+function parseOptionalNumber(raw: unknown): number | undefined {
+  if (raw === undefined || raw === null || raw === "") return undefined;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : undefined;
+}
+
+export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRouterDeps>): Router {
+  const deps: MarketSignalsRouterDeps = {
+    service: depsInput?.service ?? marketSignalsService,
+    requireAuthMiddleware: depsInput?.requireAuthMiddleware ?? requireAuth,
+  };
+
+  const router = Router();
+  router.use("/api/v1/market-signals", deps.requireAuthMiddleware);
+
+  router.get("/api/v1/market-signals/:ticker", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      void getAuthenticatedUserId(req);
+      const ticker = String(req.params.ticker ?? "").trim();
+      if (!ticker) {
+        res.status(400).json({ error: "ticker is required" });
+        return;
+      }
+
+      const lookbackDays = clampLookbackDays(parseOptionalNumber(req.query.lookbackDays));
+      const minConfidence = parseOptionalNumber(req.query.minConfidence) ?? 0;
+      const signalTypeRaw = req.query.signalType;
+      const signalType =
+        signalTypeRaw === undefined || signalTypeRaw === ""
+          ? undefined
+          : parseMarketSignalType(signalTypeRaw);
+
+      if (signalTypeRaw !== undefined && signalTypeRaw !== "" && !signalType) {
+        res.status(400).json({ error: "signalType must be a supported institutional signal type" });
+        return;
+      }
+
+      const result = await deps.service.listSignals({
+        ticker,
+        lookbackDays,
+        minConfidence,
+        signalType: signalType ?? undefined,
+      });
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.post("/api/v1/market-signals/ingest", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      void getAuthenticatedUserId(req);
+      // TODO: restrict ingest to ADMIN/internal service account once dedicated middleware is wired.
+      const parsed = parseMarketSignalIngestInput(req.body as Record<string, unknown>, new Date());
+      if (!parsed.ok) {
+        res.status(400).json({ error: parsed.error });
+        return;
+      }
+
+      const result = await deps.service.ingestSignal(parsed.value);
+      res.status(201).json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  return router;
+}
