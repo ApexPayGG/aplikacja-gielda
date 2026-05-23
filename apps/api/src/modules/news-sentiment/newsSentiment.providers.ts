@@ -223,7 +223,7 @@ async function generateActWithAnthropic(
   try {
     const client = new Anthropic({ apiKey });
     const message = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
       max_tokens: 400,
       temperature: 0,
       messages: [{ role: "user", content: prompt }],
