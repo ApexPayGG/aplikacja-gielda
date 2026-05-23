@@ -105,20 +105,44 @@ export function hasCompanyAliasMatch(text: string, ticker: string): boolean {
   return aliases.some((alias) => buildAliasRegex(alias).test(text));
 }
 
+export function headlineHasTargetSignal(headline: string, targetTicker: string): boolean {
+  return hasExactTickerToken(headline, targetTicker) || hasCompanyAliasMatch(headline, targetTicker);
+}
+
+export function headlineHasForeignCompanySignal(headline: string, targetTicker: string): boolean {
+  const normalizedTarget = normalizeTickerSymbol(targetTicker);
+
+  for (const [ticker, aliases] of Object.entries(COMPANY_ALIAS_MAP)) {
+    if (normalizeTickerSymbol(ticker) === normalizedTarget) {
+      continue;
+    }
+
+    if (hasExactTickerToken(headline, ticker)) {
+      return true;
+    }
+
+    if (aliases.some((alias) => buildAliasRegex(alias).test(headline))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function isNewsItemRelevantToTicker(item: FilterableNewsItem, targetTicker: string): boolean {
   const normalizedTarget = normalizeTickerSymbol(targetTicker);
   if (!normalizedTarget) return false;
 
+  const headlineTargetMatch = headlineHasTargetSignal(item.headline, normalizedTarget);
   const relatedTickers = extractProviderRelatedTickers(item.providerMetadata);
-  if (relatedTickers.includes(normalizedTarget)) {
+  const providerTickerMatch = relatedTickers.includes(normalizedTarget);
+  const foreignCompanySignal = headlineHasForeignCompanySignal(item.headline, normalizedTarget);
+
+  if (headlineTargetMatch) {
     return true;
   }
 
-  if (hasExactTickerToken(item.headline, normalizedTarget)) {
-    return true;
-  }
-
-  if (hasCompanyAliasMatch(item.headline, normalizedTarget)) {
+  if (providerTickerMatch && !foreignCompanySignal) {
     return true;
   }
 
