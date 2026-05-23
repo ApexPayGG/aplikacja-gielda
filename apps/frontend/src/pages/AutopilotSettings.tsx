@@ -42,7 +42,7 @@ const CAPITAL_PCT_MIN = 0.5;
 const CAPITAL_PCT_MAX = 10;
 const CAPITAL_PCT_STEP = 0.5;
 const DRAWDOWN_PCT_MIN = 1;
-const DRAWDOWN_PCT_MAX = 50;
+const DRAWDOWN_PCT_MAX = 20;
 const DRAWDOWN_PCT_STEP = 1;
 
 function decimalStringToPercent(value: string, fallback: number): number {
@@ -107,7 +107,7 @@ export function AutopilotSettings() {
 
   const applySettings = useCallback((settings: AutopilotSettingsPayload) => {
     setIsAutopilotEnabled(settings.isAutopilotEnabled);
-    setHasKeys(settings.hasKeys);
+    setHasKeys(settings.hasAlpacaApiKey && settings.hasAlpacaApiSecret);
     setAlpacaMode(settings.alpacaMode);
     setCapitalPct(decimalStringToPercent(settings.maxCapitalPerTradePct, 2));
     setDrawdownPct(decimalStringToPercent(settings.maxDailyDrawdownPct, 5));
@@ -158,7 +158,7 @@ export function AutopilotSettings() {
     try {
       const result = await toggleAutopilot(nextEnabled);
       setIsAutopilotEnabled(result.isAutopilotEnabled);
-      setHasKeys(result.hasKeys);
+      setHasKeys(result.hasAlpacaApiKey && result.hasAlpacaApiSecret);
       pushToast(
         "success",
         result.isAutopilotEnabled
@@ -203,7 +203,7 @@ export function AutopilotSettings() {
         alpacaApiKey: trimmedKey,
         alpacaApiSecret: trimmedSecret,
       });
-      setHasKeys(result.hasKeys);
+      setHasKeys(result.hasAlpacaApiKey && result.hasAlpacaApiSecret);
       setAlpacaApiKey("");
       setAlpacaApiSecret("");
       pushToast(

@@ -1,18 +1,20 @@
 import BigNumber from "bignumber.js";
-import type { AlpacaMode, Prisma } from "@prisma/client";
-import type { NextFunction, Request, Response } from "express";
+import type { AlpacaMode, Prisma, PrismaClient } from "@prisma/client";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { Router } from "express";
-import { prisma } from "../../db";
+import { prisma as defaultPrisma } from "../../db";
 import { getAuthenticatedUserId, requireAuth } from "../auth/authMiddleware";
-import { requirePlanProPlus } from "../../middleware/requirePlanProPlus";
-import { autopilotCryptoService } from "./crypto.service";
+import {
+  requirePlanProPlus as defaultRequirePlanProPlus,
+} from "../../middleware/requirePlanProPlus";
+import { AutopilotCryptoService, autopilotCryptoService } from "./crypto.service";
 
 const MAX_CAPITAL_PER_TRADE_PCT = new BigNumber("0.10");
 const MIN_CAPITAL_PER_TRADE_PCT = new BigNumber("0.0001");
-const MAX_DAILY_DRAWDOWN_PCT = new BigNumber("0.50");
+const MAX_DAILY_DRAWDOWN_PCT = new BigNumber("0.20");
 const MIN_DAILY_DRAWDOWN_PCT = new BigNumber("0.0001");
 
-type AutopilotSettingsRow = {
+export type AutopilotSettingsRow = {
   isAutopilotEnabled: boolean;
   alpacaMode: AlpacaMode;
   alpacaApiKeyEncrypted: string | null;
@@ -29,17 +31,26 @@ type AutopilotStatsRow = {
   updatedAt: Date;
 };
 
+type AutopilotRouterDeps = {
+  db: Pick<PrismaClient, "userAutopilotSettings" | "userAutopilotStats">;
+  crypto: Pick<AutopilotCryptoService, "encrypt">;
+  requirePlanProPlus: RequestHandler;
+};
+
 function decimalToString(value: Prisma.Decimal): string {
   return value.toString();
 }
 
-function hasStoredAlpacaKeys(settings: Pick<
-  AutopilotSettingsRow,
-  "alpacaApiKeyEncrypted" | "alpacaApiSecretEncrypted"
-> | null): boolean {
-  return Boolean(
-    settings?.alpacaApiKeyEncrypted?.trim() && settings?.alpacaApiSecretEncrypted?.trim(),
-  );
+export function hasAlpacaApiKey(
+  settings: Pick<AutopilotSettingsRow, "alpacaApiKeyEncrypted"> | null,
+): boolean {
+  return Boolean(settings?.alpacaApiKeyEncrypted?.trim());
+}
+
+export function hasAlpacaApiSecret(
+  settings: Pick<AutopilotSettingsRow, "alpacaApiSecretEncrypted"> | null,
+): boolean {
+  return Boolean(settings?.alpacaApiSecretEncrypted?.trim());
 }
 
 function parseAlpacaMode(raw: unknown): AlpacaMode | null {
@@ -49,7 +60,7 @@ function parseAlpacaMode(raw: unknown): AlpacaMode | null {
   return null;
 }
 
-function parseRiskPct(
+export function parseRiskPct(
   raw: unknown,
   fieldName: string,
   min: BigNumber,
@@ -76,12 +87,13 @@ function parseRiskPct(
   return { ok: true, value };
 }
 
-function serializeSettingsResponse(settings: AutopilotSettingsRow | null): {
+export function serializeSettingsResponse(settings: AutopilotSettingsRow | null): {
   isAutopilotEnabled: boolean;
   alpacaMode: AlpacaMode;
   maxCapitalPerTradePct: string;
   maxDailyDrawdownPct: string;
-  hasKeys: boolean;
+  hasAlpacaApiKey: boolean;
+  hasAlpacaApiSecret: boolean;
   createdAt: string | null;
   updatedAt: string | null;
 } {
@@ -94,7 +106,8 @@ function serializeSettingsResponse(settings: AutopilotSettingsRow | null): {
     maxDailyDrawdownPct: settings
       ? decimalToString(settings.maxDailyDrawdownPct)
       : "0.05",
-    hasKeys: hasStoredAlpacaKeys(settings),
+    hasAlpacaApiKey: hasAlpacaApiKey(settings),
+    hasAlpacaApiSecret: hasAlpacaApiSecret(settings),
     createdAt: settings?.createdAt.toISOString() ?? null,
     updatedAt: settings?.updatedAt.toISOString() ?? null,
   };
@@ -112,7 +125,23 @@ function serializeStatsResponse(stats: AutopilotStatsRow | null): {
   };
 }
 
-export function createAutopilotRouter(): Router {
+function parseToggleEnabled(body: Record<string, unknown>): boolean | null {
+  if (Object.prototype.hasOwnProperty.call(body, "enabled")) {
+    return typeof body.enabled === "boolean" ? body.enabled : null;
+  }
+  if (Object.prototype.hasOwnProperty.call(body, "isEnabled")) {
+    return typeof body.isEnabled === "boolean" ? body.isEnabled : null;
+  }
+  return null;
+}
+
+export function createAutopilotRouter(depsInput?: Partial<AutopilotRouterDeps>): Router {
+  const deps: AutopilotRouterDeps = {
+    db: depsInput?.db ?? defaultPrisma,
+    crypto: depsInput?.crypto ?? autopilotCryptoService,
+    requirePlanProPlus: depsInput?.requirePlanProPlus ?? defaultRequirePlanProPlus,
+  };
+
   const router = Router();
   router.use("/api/v1/autopilot", requireAuth);
 
@@ -121,8 +150,8 @@ export function createAutopilotRouter(): Router {
       const userId = getAuthenticatedUserId(req);
 
       const [settings, stats] = await Promise.all([
-        prisma.userAutopilotSettings.findUnique({ where: { userId } }),
-        prisma.userAutopilotStats.findUnique({ where: { userId } }),
+        deps.db.userAutopilotSettings.findUnique({ where: { userId } }),
+        deps.db.userAutopilotStats.findUnique({ where: { userId } }),
       ]);
 
       res.json({
@@ -134,7 +163,7 @@ export function createAutopilotRouter(): Router {
     }
   });
 
-  router.post("/api/v1/autopilot/settings", requirePlanProPlus, async (req: Request, res: Response, next: NextFunction) => {
+  router.post("/api/v1/autopilot/settings", deps.requirePlanProPlus, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = getAuthenticatedUserId(req);
       const body = req.body as Record<string, unknown>;
@@ -188,7 +217,7 @@ export function createAutopilotRouter(): Router {
         alpacaMode = parsedMode;
       }
 
-      const settings = await prisma.userAutopilotSettings.upsert({
+      const settings = await deps.db.userAutopilotSettings.upsert({
         where: { userId },
         create: {
           userId,
@@ -216,7 +245,7 @@ export function createAutopilotRouter(): Router {
     }
   });
 
-  router.post("/api/v1/autopilot/keys", requirePlanProPlus, async (req: Request, res: Response, next: NextFunction) => {
+  router.post("/api/v1/autopilot/keys", deps.requirePlanProPlus, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = getAuthenticatedUserId(req);
       const body = req.body as Record<string, unknown>;
@@ -236,15 +265,15 @@ export function createAutopilotRouter(): Router {
       let alpacaApiKeyEncrypted: string;
       let alpacaApiSecretEncrypted: string;
       try {
-        alpacaApiKeyEncrypted = autopilotCryptoService.encrypt(alpacaApiKey);
-        alpacaApiSecretEncrypted = autopilotCryptoService.encrypt(alpacaApiSecret);
+        alpacaApiKeyEncrypted = deps.crypto.encrypt(alpacaApiKey);
+        alpacaApiSecretEncrypted = deps.crypto.encrypt(alpacaApiSecret);
       } catch (error) {
         const message = error instanceof Error ? error.message : "Encryption failed";
         res.status(500).json({ error: message });
         return;
       }
 
-      const settings = await prisma.userAutopilotSettings.upsert({
+      const settings = await deps.db.userAutopilotSettings.upsert({
         where: { userId },
         create: {
           userId,
@@ -258,54 +287,53 @@ export function createAutopilotRouter(): Router {
       });
 
       res.json({
-        saved: true,
-        hasKeys: hasStoredAlpacaKeys(settings),
+        success: true,
+        hasAlpacaApiKey: hasAlpacaApiKey(settings),
+        hasAlpacaApiSecret: hasAlpacaApiSecret(settings),
       });
     } catch (error) {
       next(error);
     }
   });
 
-  router.post("/api/v1/autopilot/toggle", requirePlanProPlus, async (req: Request, res: Response, next: NextFunction) => {
+  router.post("/api/v1/autopilot/toggle", deps.requirePlanProPlus, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = getAuthenticatedUserId(req);
       const body = req.body as Record<string, unknown>;
 
-      if (!Object.prototype.hasOwnProperty.call(body, "isEnabled")) {
-        res.status(400).json({ error: "isEnabled is required" });
+      const enabled = parseToggleEnabled(body);
+      if (enabled === null) {
+        res.status(400).json({ error: "enabled must be a boolean" });
         return;
       }
 
-      if (typeof body.isEnabled !== "boolean") {
-        res.status(400).json({ error: "isEnabled must be a boolean" });
-        return;
-      }
-
-      const isEnabled = body.isEnabled;
-
-      if (isEnabled) {
-        const existing = await prisma.userAutopilotSettings.findUnique({ where: { userId } });
-        if (!hasStoredAlpacaKeys(existing)) {
-          res.status(400).json({ error: "Alpaca API keys must be configured before enabling Autopilot" });
+      if (enabled) {
+        const existing = await deps.db.userAutopilotSettings.findUnique({ where: { userId } });
+        if (!hasAlpacaApiKey(existing) || !hasAlpacaApiSecret(existing)) {
+          res.status(400).json({
+            error: "MISSING_ALPACA_KEYS",
+            message: "Alpaca API keys must be configured before enabling Autopilot",
+          });
           return;
         }
       }
 
-      const settings = await prisma.userAutopilotSettings.upsert({
+      const settings = await deps.db.userAutopilotSettings.upsert({
         where: { userId },
         create: {
           userId,
-          isAutopilotEnabled: isEnabled,
+          isAutopilotEnabled: enabled,
         },
         update: {
-          isAutopilotEnabled: isEnabled,
+          isAutopilotEnabled: enabled,
         },
       });
 
       res.json({
         saved: true,
         isAutopilotEnabled: settings.isAutopilotEnabled,
-        hasKeys: hasStoredAlpacaKeys(settings),
+        hasAlpacaApiKey: hasAlpacaApiKey(settings),
+        hasAlpacaApiSecret: hasAlpacaApiSecret(settings),
       });
     } catch (error) {
       next(error);

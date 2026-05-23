@@ -2097,7 +2097,8 @@ export interface AutopilotSettingsPayload {
   alpacaMode: AlpacaAutopilotMode;
   maxCapitalPerTradePct: string;
   maxDailyDrawdownPct: string;
-  hasKeys: boolean;
+  hasAlpacaApiKey: boolean;
+  hasAlpacaApiSecret: boolean;
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -2133,21 +2134,27 @@ export async function saveAutopilotSettings(body: {
 export async function saveAutopilotKeys(body: {
   alpacaApiKey: string;
   alpacaApiSecret: string;
-}): Promise<{ saved: boolean; hasKeys: boolean }> {
-  const { data } = await api.post<{ saved: boolean; hasKeys: boolean }>("/v1/autopilot/keys", body);
+}): Promise<{ success: boolean; hasAlpacaApiKey: boolean; hasAlpacaApiSecret: boolean }> {
+  const { data } = await api.post<{
+    success: boolean;
+    hasAlpacaApiKey: boolean;
+    hasAlpacaApiSecret: boolean;
+  }>("/v1/autopilot/keys", body);
   return data;
 }
 
-export async function toggleAutopilot(isEnabled: boolean): Promise<{
+export async function toggleAutopilot(enabled: boolean): Promise<{
   saved: boolean;
   isAutopilotEnabled: boolean;
-  hasKeys: boolean;
+  hasAlpacaApiKey: boolean;
+  hasAlpacaApiSecret: boolean;
 }> {
   const { data } = await api.post<{
     saved: boolean;
     isAutopilotEnabled: boolean;
-    hasKeys: boolean;
-  }>("/v1/autopilot/toggle", { isEnabled });
+    hasAlpacaApiKey: boolean;
+    hasAlpacaApiSecret: boolean;
+  }>("/v1/autopilot/toggle", { enabled });
   return data;
 }
 

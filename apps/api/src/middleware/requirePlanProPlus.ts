@@ -9,7 +9,7 @@ const ALLOWED_SUBSCRIPTION_STATUSES = new Set(["active", "trialing"]);
 export const UPGRADE_REQUIRED_RESPONSE = {
   success: false as const,
   error: "UPGRADE_REQUIRED" as const,
-  message: "Autopilot autonomous execution requires a StockAI Pro+ subscription plan.",
+  message: "Autopilot requires Pro+ plan.",
 };
 
 type RequirePlanProPlusDeps = {
