@@ -50,6 +50,8 @@ import {
   WEEKDAY_REALTIME_CRON,
 } from "./jobs/schedulerConfig";
 import { autopilotWorker } from "./workers/autopilot.worker";
+import { newsSentimentWorker } from "./workers/newsSentiment.worker";
+import { enqueueNewsSentimentWarmBatch } from "./modules/news-sentiment/newsSentiment.queue";
 
 const QUEUE_NAME = "market-scrape";
 const SYMBOLS = ["AAPL", "GOOGL", "MSFT"] as const;
@@ -373,6 +375,16 @@ export async function startScheduler(): Promise<void> {
   console.log(
     "[Scheduler] Autopilot Worker successfully initialized and listening on queue: autopilot-execution-queue",
   );
+  console.log(
+    "[Scheduler] News Sentiment Worker successfully initialized and listening on queue: news-sentiment-queue",
+  );
+
+  void enqueueNewsSentimentWarmBatch().catch((error) => {
+    console.error(
+      "[scheduler] news sentiment warm-cache-batch enqueue failed:",
+      error instanceof Error ? error.message : error,
+    );
+  });
 
   console.log("[scheduler] BullMQ worker started; hourly job scheduled");
   console.log("[scheduler] Dividend hybrid sync: daily @ 01:00 UTC (queue dividend-sync)");
@@ -407,6 +419,14 @@ async function shutdownScheduler(signal: string): Promise<void> {
   } catch (error) {
     console.error(
       "[scheduler] autopilot worker close failed:",
+      error instanceof Error ? error.message : error,
+    );
+  }
+  try {
+    await newsSentimentWorker.close();
+  } catch (error) {
+    console.error(
+      "[scheduler] news sentiment worker close failed:",
       error instanceof Error ? error.message : error,
     );
   }
