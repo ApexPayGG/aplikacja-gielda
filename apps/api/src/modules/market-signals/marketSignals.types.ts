@@ -54,6 +54,23 @@ export type MarketSignalIngestResponse = {
   signal: MarketSignalDto;
 };
 
+export const MARKET_SIGNAL_PROVIDERS = [
+  "POLYGON_OPTIONS_FLOW",
+  "POLYGON_DARK_POOL",
+  "SEC_FILINGS",
+  "EODHD_INSIDER_ACTIVITY",
+] as const;
+
+export type MarketSignalProvider = (typeof MARKET_SIGNAL_PROVIDERS)[number];
+
+export type MarketSignalIngestionResult = {
+  provider: MarketSignalProvider;
+  parsedCount: number;
+  savedCount: number;
+  rejectedCount: number;
+  signals: MarketSignalDto[];
+};
+
 export type SummarizableMarketSignal = {
   signalType: MarketSignalType;
   confidenceScore: number;

@@ -2,6 +2,11 @@ import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import { getAuthenticatedUserId, requireAuth } from "../auth/authMiddleware";
 import {
+  createMarketSignalIngestionService,
+  parseMarketSignalProvider,
+} from "./marketSignals.ingestion";
+import type { MarketSignalIngestionService } from "./marketSignals.ingestion";
+import {
   clampLookbackDays,
   MarketSignalsService,
   marketSignalsService,
@@ -11,6 +16,7 @@ import {
 
 type MarketSignalsRouterDeps = {
   service: MarketSignalsService;
+  ingestionService: MarketSignalIngestionService;
   requireAuthMiddleware: typeof requireAuth;
 };
 
@@ -21,8 +27,12 @@ function parseOptionalNumber(raw: unknown): number | undefined {
 }
 
 export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRouterDeps>): Router {
+  const service = depsInput?.service ?? marketSignalsService;
   const deps: MarketSignalsRouterDeps = {
-    service: depsInput?.service ?? marketSignalsService,
+    service,
+    ingestionService:
+      depsInput?.ingestionService ??
+      createMarketSignalIngestionService({ marketSignalService: service }),
     requireAuthMiddleware: depsInput?.requireAuthMiddleware ?? requireAuth,
   };
 
@@ -79,6 +89,31 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
       next(error);
     }
   });
+
+  router.post(
+    "/api/v1/market-signals/provider-ingest",
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        void getAuthenticatedUserId(req);
+        // TODO: replace with admin/internal auth before production external use
+        const body = req.body as Record<string, unknown>;
+        const provider = parseMarketSignalProvider(body.provider);
+        if (!provider) {
+          res.status(400).json({ error: "provider must be a supported market signal provider" });
+          return;
+        }
+        if (body.payload === undefined) {
+          res.status(400).json({ error: "payload is required" });
+          return;
+        }
+
+        const result = await deps.ingestionService.ingestProviderPayload(provider, body.payload);
+        res.status(201).json(result);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
 
   return router;
 }
