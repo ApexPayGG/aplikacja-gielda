@@ -56,39 +56,45 @@ enum AlphaWindowType {
   REGIME_SHIFT
 }
 
+enum AlpacaMode {
+  PAPER
+  LIVE
+}
+
 model User {
-  id                   String               @id @default(cuid())
-  email                String               @unique
-  emailVerified        Boolean              @default(false) @map("email_verified")
-  verifyToken          String?              @map("verify_token")
-  verifyTokenExp       DateTime?            @map("verify_token_exp")
-  passwordResetToken   String?              @map("password_reset_token")
-  passwordResetTokenExp DateTime?           @map("password_reset_token_exp")
-  passwordHash         String               @map("password_hash")
-  name                 String?
-  language             String?              @default("pl")
-  timezone             String?              @default("Europe/Warsaw")
-  avatarUrl            String?              @map("avatar_url")
-  tier                 String               @default("FREE")
-  role                 String               @default("USER")
-  stripeCustomerId     String?              @map("stripe_customer_id")
-  subscriptionStatus   String?              @default("free") @map("subscription_status")
-  subscriptionEnd      DateTime?            @map("subscription_end")
-  discordWebhook       String?
-  telegramChatId       String?
-  notifySignals        Boolean              @default(true)
-  notifyDividends      Boolean              @default(true)
-  minSignalScore       Int                  @default(70)
-  createdAt            DateTime             @default(now()) @map("created_at")
-  lastLoginAt          DateTime?            @map("last_login_at")
-  onboardingEmail2Sent Boolean              @default(false) @map("onboarding_email2_sent")
-  onboardingEmail3Sent Boolean              @default(false) @map("onboarding_email3_sent")
-  virtual_trades       VirtualTrade[]
-  portfolio_snapshots  PortfolioSnapshot[]
-  affiliateClicks      AffiliateClick[]
-  affiliateConversions AffiliateConversion[]
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  emailVerified         Boolean                @default(false) @map("email_verified")
+  verifyToken           String?                @map("verify_token")
+  verifyTokenExp        DateTime?              @map("verify_token_exp")
+  passwordResetToken    String?                @map("password_reset_token")
+  passwordResetTokenExp DateTime?              @map("password_reset_token_exp")
+  passwordHash          String                 @map("password_hash")
+  name                  String?
+  language              String?                @default("pl")
+  timezone              String?                @default("Europe/Warsaw")
+  avatarUrl             String?                @map("avatar_url")
+  tier                  String                 @default("FREE")
+  role                  String                 @default("USER")
+  stripeCustomerId      String?                @map("stripe_customer_id")
+  subscriptionStatus    String?                @default("free") @map("subscription_status")
+  subscriptionEnd       DateTime?              @map("subscription_end")
+  discordWebhook        String?
+  telegramChatId        String?
+  notifySignals         Boolean                @default(true)
+  notifyDividends       Boolean                @default(true)
+  minSignalScore        Int                    @default(70)
+  createdAt             DateTime               @default(now()) @map("created_at")
+  lastLoginAt           DateTime?              @map("last_login_at")
+  onboardingEmail2Sent  Boolean                @default(false) @map("onboarding_email2_sent")
+  onboardingEmail3Sent  Boolean                @default(false) @map("onboarding_email3_sent")
+  virtual_trades        VirtualTrade[]
+  portfolio_snapshots   PortfolioSnapshot[]
+  affiliateClicks       AffiliateClick[]
+  affiliateConversions  AffiliateConversion[]
   emotionJournalEntries EmotionJournalEntry[]
   psycheSnapshots       PsycheSnapshot[]
+  autopilotSettings     UserAutopilotSettings?
 
   @@map("users")
 }
@@ -139,11 +145,11 @@ model Company {
   webUrl      String?  @map("web_url")
   createdAt   DateTime @default(now())
 
-  quotes               Quote[]
-  news                 News[]
-  technicalIndicators  TechnicalIndicator[]
-  dividends            Dividend[]
-  dividendHistories    DividendHistory[]
+  quotes                      Quote[]
+  news                        News[]
+  technicalIndicators         TechnicalIndicator[]
+  dividends                   Dividend[]
+  dividendHistories           DividendHistory[]
   dividendAlerts              DividendAlert[]
   dividendIntelligence        DividendIntelligence?
   dividendSustainabilityScore DividendSustainabilityScore?
@@ -235,7 +241,7 @@ model Fundamental {
 
 /// Premium Company Analysis — historical setup snapshots for twin matching.
 model StockSetupHistory {
-  id             String   @id @default(cuid())
+  id             String                    @id @default(cuid())
   symbol         String
   snapshotDate   DateTime
   priceClose     Float?
@@ -247,7 +253,7 @@ model StockSetupHistory {
   outcome20d     Float?
   outcome60d     Float?
   embedding      Unsupported("vector(9)")?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime                  @default(now())
 
   @@unique([symbol, snapshotDate])
   @@map("stock_setups_history")
@@ -318,28 +324,28 @@ model DividendIntelligence {
 
 /// Phase 11 Sprint 3 — snapshot deterministycznego scoringu zrównoważenia dywidendy.
 model DividendSustainabilityScore {
-  id                 String   @id @default(cuid())
-  symbol             String   @unique @db.VarChar(10)
-  finalScore         Int      @map("final_score")
-  payoutScore        Int      @map("payout_score")
-  coverageScore      Int      @map("coverage_score")
-  consistencyScore  Int      @map("consistency_score")
-  payoutRatio        Float?   @map("payout_ratio")
-  fcfCoverage        Float?   @map("fcf_coverage")
-  explanation        String   @db.Text
-  componentsJson     String?  @map("components_json") @db.Text
-  lastCalculatedAt   DateTime @default(now()) @map("last_calculated_at")
-  modelVersion       String   @default("1.0") @map("model_version")
-  company            Company  @relation(fields: [symbol], references: [symbol], onUpdate: Cascade)
+  id               String   @id @default(cuid())
+  symbol           String   @unique @db.VarChar(10)
+  finalScore       Int      @map("final_score")
+  payoutScore      Int      @map("payout_score")
+  coverageScore    Int      @map("coverage_score")
+  consistencyScore Int      @map("consistency_score")
+  payoutRatio      Float?   @map("payout_ratio")
+  fcfCoverage      Float?   @map("fcf_coverage")
+  explanation      String   @db.Text
+  componentsJson   String?  @map("components_json") @db.Text
+  lastCalculatedAt DateTime @default(now()) @map("last_calculated_at")
+  modelVersion     String   @default("1.0") @map("model_version")
+  company          Company  @relation(fields: [symbol], references: [symbol], onUpdate: Cascade)
 
   @@index([symbol, lastCalculatedAt])
   @@map("dividend_sustainability_scores")
 }
 
 model Signal {
-  id        String @id @default(cuid())
-  ticker    String
-  exchange  String
+  id       String @id @default(cuid())
+  ticker   String
+  exchange String
 
   // Detection metadata
   pattern_type   String
@@ -353,15 +359,15 @@ model Signal {
   max_drawdown     Float?
 
   // AI fields (populated later in Phase 6)
-  brief_pl          String?
-  brief_en          String?
-  score             Int?
-  scoring_reasoning String?
-  marketRegime      String?
-  regimeConfidence  Int?
-  narrativeHeadline String?
-  narrativeBody     String?
-  narrativeRisk     String?
+  brief_pl            String?
+  brief_en            String?
+  score               Int?
+  scoring_reasoning   String?
+  marketRegime        String?
+  regimeConfidence    Int?
+  narrativeHeadline   String?
+  narrativeBody       String?
+  narrativeRisk       String?
   narrativeConfidence String?
 
   // Meta
@@ -391,52 +397,72 @@ model DlqEvent {
 }
 
 model VirtualTrade {
-  id        String    @id @default(cuid())
-  user      User      @relation(fields: [userId], references: [id])
-  userId    String
-  ticker    String
-  exchange  String
-  side      TradeSide
-  quantity  Float
-  price     Float
-  executed_at DateTime @default(now())
-  signal_id String?
-  notes     String?
-  pnl_amount Float?
-  pnl_pct   Float?
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  ticker      String
+  exchange    String
+  side        TradeSide
+  quantity    Float
+  price       Float
+  executed_at DateTime  @default(now())
+  signal_id   String?
+  notes       String?
+  pnl_amount  Float?
+  pnl_pct     Float?
 
   @@index([userId, executed_at])
 }
 
 model PortfolioSnapshot {
-  id               String   @id @default(cuid())
-  user             User     @relation(fields: [userId], references: [id])
-  userId           String
-  date             DateTime @default(now())
-  total_value      Float
-  cash             Float
-  holdings         Json
-  pnl_daily        Float
-  pnl_total        Float
-  pnl_pct          Float
-  benchmark_wig    Float?
-  benchmark_sp500  Float?
+  id              String   @id @default(cuid())
+  user            User     @relation(fields: [userId], references: [id])
+  userId          String
+  date            DateTime @default(now())
+  total_value     Float
+  cash            Float
+  holdings        Json
+  pnl_daily       Float
+  pnl_total       Float
+  pnl_pct         Float
+  benchmark_wig   Float?
+  benchmark_sp500 Float?
 
   @@index([userId, date])
 }
 
 model UserSettings {
-  id             String  @id @default(cuid())
-  userId         String  @unique
-  discordWebhook String?
-  mentorMode     Boolean @default(false)
-  digestEmail    String?
-  alpacaApiKey   String?
+  id              String  @id @default(cuid())
+  userId          String  @unique
+  discordWebhook  String?
+  mentorMode      Boolean @default(false)
+  digestEmail     String?
+  alpacaApiKey    String?
   alpacaApiSecret String?
-  alpacaMode     String? @default("paper")
-  taxCountry     String? @default("PL")
+  alpacaMode      String? @default("paper")
+  taxCountry      String? @default("PL")
 
   @@map("user_settings")
+}
+
+/// Autonomous agent (Autopilot) — encrypted BYOK Alpaca credentials and hard Safe Guard risk caps.
+/// Legacy plaintext Alpaca fields remain on `UserSettings` until migrated by application code.
+model UserAutopilotSettings {
+  id                       String     @id @default(cuid())
+  userId                   String     @unique @map("user_id")
+  isAutopilotEnabled       Boolean    @default(false) @map("is_autopilot_enabled")
+  alpacaMode               AlpacaMode @default(PAPER) @map("alpaca_mode")
+  alpacaApiKeyEncrypted    String?    @map("alpaca_api_key_encrypted") @db.Text
+  alpacaApiSecretEncrypted String?    @map("alpaca_api_secret_encrypted") @db.Text
+  maxCapitalPerTradePct    Decimal    @default(0.02) @map("max_capital_per_trade_pct") @db.Decimal(6, 4)
+  maxDailyDrawdownPct      Decimal    @default(0.05) @map("max_daily_drawdown_pct") @db.Decimal(6, 4)
+  createdAt                DateTime   @default(now()) @map("created_at")
+  updatedAt                DateTime   @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isAutopilotEnabled], map: "idx_user_autopilot_settings_enabled")
+  @@map("user_autopilot_settings")
 }
 
 model AffiliateBroker {
@@ -475,29 +501,29 @@ model AffiliateBroker {
 }
 
 model AffiliateClick {
-  id           String   @id @default(cuid())
-  clickId      String   @unique @map("click_id")
-  userId       String?  @map("user_id")
-  brokerId     String   @map("broker_id")
-  sourcePage   String?  @map("source_page")
-  sourceTicker String?  @map("source_ticker")
-  sourceSignalId String? @map("source_signal_id")
-  contextData  Json?    @map("context_data")
-  ipAddress    String?  @map("ip_address")
-  userAgent    String?  @map("user_agent")
-  countryCode  String?  @map("country_code")
-  language     String?
-  deviceType   String?  @map("device_type")
-  utmSource    String?  @map("utm_source")
-  utmMedium    String?  @map("utm_medium")
-  utmCampaign  String?  @map("utm_campaign")
-  redirectUrl  String   @map("redirect_url")
-  clickedAt    DateTime @default(now()) @map("clicked_at")
+  id             String   @id @default(cuid())
+  clickId        String   @unique @map("click_id")
+  userId         String?  @map("user_id")
+  brokerId       String   @map("broker_id")
+  sourcePage     String?  @map("source_page")
+  sourceTicker   String?  @map("source_ticker")
+  sourceSignalId String?  @map("source_signal_id")
+  contextData    Json?    @map("context_data")
+  ipAddress      String?  @map("ip_address")
+  userAgent      String?  @map("user_agent")
+  countryCode    String?  @map("country_code")
+  language       String?
+  deviceType     String?  @map("device_type")
+  utmSource      String?  @map("utm_source")
+  utmMedium      String?  @map("utm_medium")
+  utmCampaign    String?  @map("utm_campaign")
+  redirectUrl    String   @map("redirect_url")
+  clickedAt      DateTime @default(now()) @map("clicked_at")
 
-  broker            AffiliateBroker        @relation(fields: [brokerId], references: [id], onDelete: Cascade)
-  user              User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
-  conversionRefs    AffiliateConversion[]  @relation("AffiliateConversionClickRef")
-  conversionMatches AffiliateConversion[]  @relation("AffiliateConversionMatchedClick")
+  broker            AffiliateBroker       @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  user              User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  conversionRefs    AffiliateConversion[] @relation("AffiliateConversionClickRef")
+  conversionMatches AffiliateConversion[] @relation("AffiliateConversionMatchedClick")
 
   @@index([userId], map: "idx_affiliate_clicks_user")
   @@index([brokerId], map: "idx_affiliate_clicks_broker")
@@ -524,10 +550,10 @@ model AffiliateConversion {
   paidAt                DateTime? @map("paid_at")
   rawBrokerData         Json?     @map("raw_broker_data")
 
-  broker      AffiliateBroker @relation(fields: [brokerId], references: [id], onDelete: Cascade)
-  user        User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
-  clickByRef  AffiliateClick? @relation("AffiliateConversionClickRef", fields: [clickIdRef], references: [clickId], onDelete: SetNull)
-  clickById   AffiliateClick? @relation("AffiliateConversionMatchedClick", fields: [matchedClickId], references: [id], onDelete: SetNull)
+  broker     AffiliateBroker @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  user       User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  clickByRef AffiliateClick? @relation("AffiliateConversionClickRef", fields: [clickIdRef], references: [clickId], onDelete: SetNull)
+  clickById  AffiliateClick? @relation("AffiliateConversionMatchedClick", fields: [matchedClickId], references: [id], onDelete: SetNull)
 
   @@index([brokerId, conversionDate], map: "idx_affiliate_conversions_broker_date")
   @@index([conversionStatus], map: "idx_affiliate_conversions_status")
@@ -738,8 +764,8 @@ model AlphaWindow {
 }
 
 model MirrorPermission {
-  id           String @id @default(cuid())
-  traderId     String @unique @map("trader_id")
+  id           String  @id @default(cuid())
+  traderId     String  @unique @map("trader_id")
   enabled      Boolean @default(false)
   revenueShare Float   @default(0) @map("revenue_share")
   followers    Int     @default(0)
@@ -886,7 +912,7 @@ model EventSubscription {
   symbol        String?
   watchlistOnly Boolean  @default(true) @map("watchlist_only")
   eventTypes    String[] @default([]) @map("event_types")
-  channels      String[] @default(["in_app"]) 
+  channels      String[] @default(["in_app"])
   minImportance String   @default("medium") @map("min_importance")
   daysBefore    Int[]    @default([7, 3, 1, 0]) @map("days_before")
   webhookUrl    String?  @map("webhook_url")
@@ -899,16 +925,16 @@ model EventSubscription {
 }
 
 model EventDelivery {
-  id        String    @id @default(cuid())
-  eventId   String    @map("event_id")
-  userId    String    @map("user_id")
+  id        String      @id @default(cuid())
+  eventId   String      @map("event_id")
+  userId    String      @map("user_id")
   channel   String
-  status    String    @default("pending")
-  attempts  Int       @default(0)
-  lastError String?   @map("last_error")
-  dedupeKey String    @unique @map("dedupe_key")
-  sentAt    DateTime? @map("sent_at")
-  createdAt DateTime  @default(now()) @map("created_at")
+  status    String      @default("pending")
+  attempts  Int         @default(0)
+  lastError String?     @map("last_error")
+  dedupeKey String      @unique @map("dedupe_key")
+  sentAt    DateTime?   @map("sent_at")
+  createdAt DateTime    @default(now()) @map("created_at")
   event     MarketEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt(sort: Desc)])
