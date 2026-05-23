@@ -39,7 +39,7 @@ export async function enqueueRefreshTickerIntel(
   if (!normalized) return undefined;
   const data: RefreshTickerIntelJobData = { ticker: normalized, force: options?.force ?? false };
   const job = await getNewsSentimentQueue().add(NEWS_SENTIMENT_JOB_NAMES.REFRESH_TICKER_INTEL, data, {
-    jobId: `refresh:${normalized}:${Date.now()}`,
+    jobId: `refresh__${normalized}__${Date.now()}`,
   });
   return job.id ?? undefined;
 }
@@ -49,7 +49,7 @@ export async function enqueueInvalidateTickerIntel(ticker: string, reason: strin
   if (!normalized) return undefined;
   const data: InvalidateTickerIntelJobData = { ticker: normalized, reason };
   const job = await getNewsSentimentQueue().add(NEWS_SENTIMENT_JOB_NAMES.INVALIDATE_TICKER_INTEL, data, {
-    jobId: `invalidate:${normalized}:${Date.now()}`,
+    jobId: `invalidate__${normalized}__${Date.now()}`,
   });
   return job.id ?? undefined;
 }
@@ -57,7 +57,7 @@ export async function enqueueInvalidateTickerIntel(ticker: string, reason: strin
 export async function enqueueNewsSentimentWarmBatch(tickers?: string[]): Promise<string | undefined> {
   const data: WarmCacheBatchJobData = { tickers: resolveWarmCacheTickers(tickers) };
   const job = await getNewsSentimentQueue().add(NEWS_SENTIMENT_JOB_NAMES.WARM_CACHE_BATCH, data, {
-    jobId: `warm-batch:${Date.now()}`,
+    jobId: `warm-batch__${Date.now()}`,
   });
   return job.id ?? undefined;
 }
