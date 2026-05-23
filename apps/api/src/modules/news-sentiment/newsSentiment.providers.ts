@@ -42,6 +42,9 @@ const COMPANY_ALIAS_MAP: Readonly<Record<string, readonly string[]>> = {
   WMT: ["Walmart"],
   PG: ["Procter & Gamble", "P&G"],
   "BRK.B": ["Berkshire Hathaway"],
+  AXP: ["American Express"],
+  CDL: ["CDL"],
+  MAG7: ["Magnificent Seven"],
 };
 
 export function normalizeTickerSymbol(ticker: string): string {
