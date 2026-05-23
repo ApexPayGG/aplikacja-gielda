@@ -18,6 +18,137 @@ import type {
   ProviderStatus,
 } from "./newsSentiment.types";
 
+type FilterableNewsItem = ProviderNewsItem & {
+  providerMetadata?: Record<string, unknown>;
+};
+
+const COMPANY_ALIAS_MAP: Readonly<Record<string, readonly string[]>> = {
+  AAPL: ["Apple", "Apple Inc.", "Apple Inc"],
+  MSFT: ["Microsoft", "Microsoft Corp.", "Microsoft Corporation"],
+  GOOGL: ["Alphabet", "Google"],
+  GOOG: ["Alphabet", "Google"],
+  META: ["Meta Platforms", "Facebook", "Meta"],
+  AMZN: ["Amazon"],
+  NVDA: ["Nvidia", "NVIDIA"],
+  TSLA: ["Tesla"],
+  INTC: ["Intel"],
+  AMD: ["Advanced Micro Devices", "AMD"],
+  AVGO: ["Broadcom"],
+  JPM: ["JPMorgan", "JPMorgan Chase"],
+  V: ["Visa"],
+  MA: ["Mastercard"],
+  XOM: ["Exxon", "Exxon Mobil", "ExxonMobil"],
+  JNJ: ["Johnson & Johnson"],
+  WMT: ["Walmart"],
+  PG: ["Procter & Gamble", "P&G"],
+  "BRK.B": ["Berkshire Hathaway"],
+};
+
+export function normalizeTickerSymbol(ticker: string): string {
+  return normalizeNewsSentimentTicker(ticker);
+}
+
+export function getCompanyAliasesForTicker(ticker: string): readonly string[] {
+  return COMPANY_ALIAS_MAP[normalizeTickerSymbol(ticker)] ?? [];
+}
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function extractProviderRelatedTickers(metadata: Record<string, unknown> | undefined): string[] {
+  if (!metadata) return [];
+
+  const tickers = new Set<string>();
+  const related = metadata.related;
+  if (typeof related === "string") {
+    for (const part of related.split(",")) {
+      const normalized = normalizeTickerSymbol(part);
+      if (normalized) tickers.add(normalized);
+    }
+  }
+
+  for (const key of ["symbol", "ticker", "symbols", "tickers"] as const) {
+    const value = metadata[key];
+    if (typeof value === "string") {
+      const normalized = normalizeTickerSymbol(value);
+      if (normalized) tickers.add(normalized);
+      continue;
+    }
+    if (Array.isArray(value)) {
+      for (const entry of value) {
+        if (typeof entry === "string") {
+          const normalized = normalizeTickerSymbol(entry);
+          if (normalized) tickers.add(normalized);
+        }
+      }
+    }
+  }
+
+  return [...tickers];
+}
+
+export function hasExactTickerToken(text: string, ticker: string): boolean {
+  const normalizedTicker = normalizeTickerSymbol(ticker);
+  if (!normalizedTicker) return false;
+  const pattern = new RegExp(`(?<![A-Z0-9.])${escapeRegex(normalizedTicker)}(?![A-Z0-9.])`, "i");
+  return pattern.test(text);
+}
+
+function buildAliasRegex(alias: string): RegExp {
+  const trimmed = alias.trim();
+  return new RegExp(`(?:^|[^\\w&])${escapeRegex(trimmed)}(?:[^\\w]|$)`, "i");
+}
+
+export function hasCompanyAliasMatch(text: string, ticker: string): boolean {
+  const aliases = getCompanyAliasesForTicker(ticker);
+  return aliases.some((alias) => buildAliasRegex(alias).test(text));
+}
+
+export function isNewsItemRelevantToTicker(item: FilterableNewsItem, targetTicker: string): boolean {
+  const normalizedTarget = normalizeTickerSymbol(targetTicker);
+  if (!normalizedTarget) return false;
+
+  const relatedTickers = extractProviderRelatedTickers(item.providerMetadata);
+  if (relatedTickers.includes(normalizedTarget)) {
+    return true;
+  }
+
+  if (hasExactTickerToken(item.headline, normalizedTarget)) {
+    return true;
+  }
+
+  if (hasCompanyAliasMatch(item.headline, normalizedTarget)) {
+    return true;
+  }
+
+  return false;
+}
+
+export function sanitizeNewsForTicker(
+  items: FilterableNewsItem[],
+  targetTicker: string,
+): ProviderNewsItem[] {
+  const normalizedTarget = normalizeTickerSymbol(targetTicker);
+  const sanitized: ProviderNewsItem[] = [];
+
+  for (const item of items) {
+    if (isNewsItemRelevantToTicker(item, normalizedTarget)) {
+      sanitized.push({
+        headline: item.headline,
+        source: item.source,
+        datetime: item.datetime,
+        url: item.url,
+      });
+      continue;
+    }
+
+    console.debug(`[NewsFilter] Rejected item unrelated to ${normalizedTarget}: ${item.headline}`);
+  }
+
+  return sanitized;
+}
+
 export const SP500_WARM_TICKERS: readonly string[] = [
   "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "BRK.B", "UNH", "JPM",
   "V", "XOM", "LLY", "JNJ", "WMT", "MA", "PG", "AVGO", "HD", "CVX",
@@ -54,7 +185,7 @@ function toEodhdSymbol(ticker: string): string {
   return `${normalizeNewsSentimentTicker(ticker)}.US`;
 }
 
-async function safeFinnhubNews(ticker: string, status: ProviderStatus): Promise<ProviderNewsItem[]> {
+async function safeFinnhubNews(ticker: string, status: ProviderStatus): Promise<FilterableNewsItem[]> {
   if (!process.env.FINNHUB_API_KEY?.trim()) {
     status.finnhub = "missing_key";
     return [];
@@ -67,6 +198,7 @@ async function safeFinnhubNews(ticker: string, status: ProviderStatus): Promise<
       source: row.source || "finnhub",
       datetime: row.datetime < 1e12 ? row.datetime * 1000 : row.datetime,
       url: row.url,
+      providerMetadata: row as unknown as Record<string, unknown>,
     }));
   } catch {
     status.finnhub = "error";
@@ -135,12 +267,14 @@ export async function fetchNewsSentimentProviderContext(
   const ticker = normalizeNewsSentimentTicker(tickerInput);
   const providerStatus = emptyProviderStatus();
 
-  const [news, quote, eodhdCloses, polygonCloses] = await Promise.all([
+  const [rawNews, quote, eodhdCloses, polygonCloses] = await Promise.all([
     safeFinnhubNews(ticker, providerStatus),
     safeFinnhubQuote(ticker, providerStatus),
     safeEodhdCloses(ticker, providerStatus),
     safePolygonCloses(ticker, providerStatus),
   ]);
+
+  const news = sanitizeNewsForTicker(rawNews, ticker);
 
   const dailyCloses = eodhdCloses;
   const currentPrice = quote?.price ?? polygonCloses.at(-1) ?? dailyCloses.at(-1) ?? null;
