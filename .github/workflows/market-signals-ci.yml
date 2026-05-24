@@ -1,0 +1,67 @@
+# MarketSignals-only CI - install, typecheck, scoped unit tests, frontend build.
+# Does NOT deploy, does NOT call live providers, does NOT require secrets.
+name: MarketSignals CI
+
+on:
+  pull_request:
+    paths:
+      - "apps/api/src/modules/market-signals/**"
+      - "apps/api/src/middleware/requireAdminOrInternal.ts"
+      - "apps/api/src/middleware/requireAdminOrInternal.test.ts"
+      - "apps/frontend/src/components/market-signals/**"
+      - "apps/frontend/src/pages/CompanyDetail.tsx"
+      - "apps/frontend/src/services/api.ts"
+      - ".github/workflows/market-signals-ci.yml"
+      - "docs/market-signals-qa-runbook.md"
+  workflow_dispatch:
+
+concurrency:
+  group: market-signals-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  market-signals-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: |
+            apps/api/package-lock.json
+            apps/frontend/package-lock.json
+
+      - name: Install API dependencies
+        working-directory: apps/api
+        run: npm ci
+
+      - name: API typecheck
+        working-directory: apps/api
+        run: npm run build
+
+      - name: MarketSignals unit tests
+        working-directory: apps/api
+        run: |
+          node --import tsx/esm --test \
+            src/modules/market-signals/marketSignals.adapters.test.ts \
+            src/modules/market-signals/marketSignals.ingestion.test.ts \
+            src/modules/market-signals/marketSignals.queue.test.ts \
+            src/modules/market-signals/marketSignals.fetchers.test.ts \
+            src/modules/market-signals/marketSignals.scheduler.test.ts \
+            src/modules/market-signals/marketSignals.ops.test.ts \
+            src/modules/market-signals/marketSignals.providerCheck.test.ts \
+            src/modules/market-signals/marketSignals.service.test.ts \
+            src/middleware/requireAdminOrInternal.test.ts
+
+      - name: Install frontend dependencies
+        working-directory: apps/frontend
+        run: npm ci
+
+      - name: Frontend TypeScript + Vite build
+        working-directory: apps/frontend
+        run: npm run build
