@@ -5,12 +5,18 @@ import {
   parseMarketSignalProvider,
   type MarketSignalIngestionService,
 } from "./marketSignals.ingestion";
+import {
+  fetchProviderPayload,
+  shouldIngestFetchedPayload,
+} from "./marketSignals.fetchers";
 import type { MarketSignalIngestionResult, MarketSignalProvider } from "./marketSignals.types";
 
 export const MARKET_SIGNALS_QUEUE_NAME = "market-signals-ingestion-queue";
 
 export const MARKET_SIGNALS_JOB_NAMES = {
   INGEST_PROVIDER_PAYLOAD: "ingest-provider-payload",
+  FETCH_PROVIDER_AND_INGEST: "fetch-provider-and-ingest",
+  SCHEDULE_MARKET_SIGNALS_BATCH: "schedule-market-signals-batch",
 } as const;
 
 export type IngestProviderPayloadJobData = {
@@ -19,6 +25,19 @@ export type IngestProviderPayloadJobData = {
   requestedByUserId?: string;
   reason?: string;
 };
+
+export type FetchProviderAndIngestJobData = {
+  provider: MarketSignalProvider;
+  ticker: string;
+  reason?: string;
+};
+
+export type ScheduleMarketSignalsBatchJobData = Record<string, never>;
+
+export type MarketSignalWorkerJobData =
+  | IngestProviderPayloadJobData
+  | FetchProviderAndIngestJobData
+  | ScheduleMarketSignalsBatchJobData;
 
 export type MarketSignalEnqueueResult = {
   queued: true;
@@ -38,10 +57,10 @@ type QueueAddResult = {
 };
 
 export type MarketSignalsQueueDeps = {
-  queue: {
+  queue?: {
     add: (
       name: string,
-      data: IngestProviderPayloadJobData,
+      data: MarketSignalWorkerJobData,
       options: { jobId: string },
     ) => Promise<QueueAddResult>;
   };
@@ -75,6 +94,14 @@ export function buildMarketSignalsJobId(provider: MarketSignalProvider, now = Da
   return `market-signals__${provider}__${now}`;
 }
 
+export function buildMarketSignalsFetchJobId(
+  provider: MarketSignalProvider,
+  ticker: string,
+  now = Date.now(),
+): string {
+  return `market-signals__fetch__${provider}__${ticker}__${now}`;
+}
+
 export async function enqueueProviderPayload(
   input: MarketSignalsQueueAddInput,
   deps?: MarketSignalsQueueDeps,
@@ -102,6 +129,41 @@ export async function enqueueProviderPayload(
   };
 }
 
+export async function enqueueFetchProviderAndIngest(
+  input: {
+    provider: MarketSignalProvider | string;
+    ticker: string;
+    reason?: string;
+  },
+  deps?: MarketSignalsQueueDeps & {
+    buildJobId?: typeof buildMarketSignalsFetchJobId;
+  },
+): Promise<MarketSignalEnqueueResult & { ticker: string }> {
+  const provider = parseMarketSignalProvider(input.provider);
+  if (!provider) {
+    throw new InvalidMarketSignalProviderError(input.provider);
+  }
+
+  const ticker = input.ticker.trim().toUpperCase();
+  const buildJobId = deps?.buildJobId ?? buildMarketSignalsFetchJobId;
+  const jobId = buildJobId(provider, ticker, deps?.now?.() ?? Date.now());
+  const data: FetchProviderAndIngestJobData = {
+    provider,
+    ticker,
+    reason: input.reason?.trim() || undefined,
+  };
+
+  const queue = deps?.queue ?? getMarketSignalsQueue();
+  const job = await queue.add(MARKET_SIGNALS_JOB_NAMES.FETCH_PROVIDER_AND_INGEST, data, { jobId });
+
+  return {
+    queued: true,
+    jobId: job.id ?? jobId,
+    provider,
+    ticker,
+  };
+}
+
 export async function closeMarketSignalsQueue(): Promise<void> {
   if (queueInstance) {
     await queueInstance.close();
@@ -111,22 +173,71 @@ export async function closeMarketSignalsQueue(): Promise<void> {
 
 export type MarketSignalsWorkerDeps = {
   ingestionService: MarketSignalIngestionService;
+  fetchProviderPayload?: typeof fetchProviderPayload;
+  runScheduledBatch?: () => Promise<{ enqueued: number }>;
 };
+
+export type FetchProviderAndIngestWorkerResult = MarketSignalIngestionResult & {
+  fetchOk: boolean;
+  errorCode?: string;
+  skippedIngest?: boolean;
+};
+
+async function processFetchProviderAndIngestJob(
+  data: FetchProviderAndIngestJobData,
+  deps: MarketSignalsWorkerDeps,
+): Promise<FetchProviderAndIngestWorkerResult> {
+  const provider = parseMarketSignalProvider(data.provider);
+  if (!provider) {
+    throw new InvalidMarketSignalProviderError(data.provider);
+  }
+
+  const fetchFn = deps.fetchProviderPayload ?? fetchProviderPayload;
+  const fetchResult = await fetchFn(provider, data.ticker);
+
+  if (!shouldIngestFetchedPayload(fetchResult)) {
+    return {
+      provider,
+      parsedCount: 0,
+      savedCount: 0,
+      rejectedCount: 0,
+      signals: [],
+      fetchOk: fetchResult.ok,
+      errorCode: fetchResult.errorCode,
+      skippedIngest: true,
+    };
+  }
+
+  const ingestionResult = await deps.ingestionService.ingestProviderPayload(provider, fetchResult.payload);
+  return {
+    ...ingestionResult,
+    fetchOk: fetchResult.ok,
+    errorCode: fetchResult.errorCode,
+  };
+}
 
 export function createMarketSignalsWorkerHandler(
   deps: MarketSignalsWorkerDeps,
-): (job: Job<IngestProviderPayloadJobData>) => Promise<MarketSignalIngestionResult> {
+): (job: Job<MarketSignalWorkerJobData>) => Promise<unknown> {
   return async (job) => {
-    if (job.name !== MARKET_SIGNALS_JOB_NAMES.INGEST_PROVIDER_PAYLOAD) {
-      throw new Error(`Unknown market signals job: ${job.name}`);
+    switch (job.name) {
+      case MARKET_SIGNALS_JOB_NAMES.INGEST_PROVIDER_PAYLOAD: {
+        const data = job.data as IngestProviderPayloadJobData;
+        const provider = parseMarketSignalProvider(data.provider);
+        if (!provider) {
+          throw new InvalidMarketSignalProviderError(data.provider);
+        }
+        return deps.ingestionService.ingestProviderPayload(provider, data.payload);
+      }
+      case MARKET_SIGNALS_JOB_NAMES.FETCH_PROVIDER_AND_INGEST:
+        return processFetchProviderAndIngestJob(job.data as FetchProviderAndIngestJobData, deps);
+      case MARKET_SIGNALS_JOB_NAMES.SCHEDULE_MARKET_SIGNALS_BATCH:
+        if (!deps.runScheduledBatch) {
+          throw new Error("Market signals scheduler batch handler is not configured");
+        }
+        return deps.runScheduledBatch();
+      default:
+        throw new Error(`Unknown market signals job: ${job.name}`);
     }
-
-    const data = job.data;
-    const provider = parseMarketSignalProvider(data.provider);
-    if (!provider) {
-      throw new InvalidMarketSignalProviderError(data.provider);
-    }
-
-    return deps.ingestionService.ingestProviderPayload(provider, data.payload);
   };
 }

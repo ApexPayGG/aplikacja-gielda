@@ -53,6 +53,7 @@ import { autopilotWorker } from "./workers/autopilot.worker";
 import { marketSignalsWorker } from "./workers/marketSignals.worker";
 import { newsSentimentWorker } from "./workers/newsSentiment.worker";
 import { enqueueNewsSentimentWarmBatch } from "./modules/news-sentiment/newsSentiment.queue";
+import { registerMarketSignalsScheduler } from "./modules/market-signals/marketSignals.scheduler";
 
 const QUEUE_NAME = "market-scrape";
 const SYMBOLS = ["AAPL", "GOOGL", "MSFT"] as const;
@@ -382,6 +383,8 @@ export async function startScheduler(): Promise<void> {
   console.log(
     "[Scheduler] Market Signals Worker successfully initialized and listening on queue: market-signals-ingestion-queue",
   );
+
+  await registerMarketSignalsScheduler();
 
   void enqueueNewsSentimentWarmBatch().catch((error) => {
     console.error(

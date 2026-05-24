@@ -8,6 +8,7 @@ import { createMarketSignalIngestionService, InvalidMarketSignalProviderError } 
 import type {
   MarketSignalIngestInput,
   MarketSignalIngestResponse,
+  MarketSignalIngestionResult,
   MarketSignalProvider,
 } from "./marketSignals.types";
 import {
@@ -40,7 +41,7 @@ describe("marketSignals.queue", () => {
         now: () => 1_700_000_000_111,
         queue: {
           add: async (name, data, options) => {
-            added.push({ name, data, jobId: options.jobId });
+            added.push({ name, data: data as IngestProviderPayloadJobData, jobId: options.jobId });
             return { id: options.jobId };
           },
         },
@@ -105,14 +106,14 @@ describe("marketSignals.worker handler", () => {
       ],
     };
 
-    const result = await handler({
+    const result = (await handler({
       id: "job-1",
       name: MARKET_SIGNALS_JOB_NAMES.INGEST_PROVIDER_PAYLOAD,
       data: {
         provider: "POLYGON_DARK_POOL",
         payload,
       },
-    } as Job<IngestProviderPayloadJobData>);
+    } as Job<IngestProviderPayloadJobData>)) as MarketSignalIngestionResult;
 
     assert.deepEqual(calls, [{ provider: "POLYGON_DARK_POOL", payload }]);
     assert.equal(result.savedCount, 1);
@@ -147,14 +148,14 @@ describe("marketSignals.worker handler", () => {
       ingestionService: createMarketSignalIngestionService({ marketSignalService: repo }),
     });
 
-    const result = await handler({
+    const result = (await handler({
       id: "job-2",
       name: MARKET_SIGNALS_JOB_NAMES.INGEST_PROVIDER_PAYLOAD,
       data: {
         provider: "POLYGON_OPTIONS_FLOW",
         payload: "malformed",
       },
-    } as Job<IngestProviderPayloadJobData>);
+    } as Job<IngestProviderPayloadJobData>)) as MarketSignalIngestionResult;
 
     assert.equal(result.savedCount, 0);
     assert.equal(result.parsedCount, 0);

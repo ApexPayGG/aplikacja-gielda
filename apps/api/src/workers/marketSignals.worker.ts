@@ -1,10 +1,12 @@
 import { Worker, type ConnectionOptions } from "bullmq";
 import { createRedisConnection } from "../redis";
 import { createMarketSignalIngestionService } from "../modules/market-signals/marketSignals.ingestion";
+import { createMarketSignalsScheduledBatchRunner } from "../modules/market-signals/marketSignals.scheduler";
 import {
   createMarketSignalsWorkerHandler,
   getMarketSignalsQueue,
   MARKET_SIGNALS_QUEUE_NAME,
+  type FetchProviderAndIngestJobData,
   type IngestProviderPayloadJobData,
 } from "../modules/market-signals/marketSignals.queue";
 import type { MarketSignalIngestionResult } from "../modules/market-signals/marketSignals.types";
@@ -21,12 +23,17 @@ const defaultIngestionService = createMarketSignalIngestionService({
   marketSignalService: marketSignalsService,
 });
 
+const marketSignalsWorkerHandler = createMarketSignalsWorkerHandler({
+  ingestionService: defaultIngestionService,
+  runScheduledBatch: createMarketSignalsScheduledBatchRunner(),
+});
+
 export { createMarketSignalsWorkerHandler } from "../modules/market-signals/marketSignals.queue";
 export type { MarketSignalsWorkerDeps } from "../modules/market-signals/marketSignals.queue";
 
 export const marketSignalsWorker = new Worker(
   MARKET_SIGNALS_QUEUE_NAME,
-  createMarketSignalsWorkerHandler({ ingestionService: defaultIngestionService }),
+  marketSignalsWorkerHandler,
   {
     connection: createRedisConnection() as unknown as ConnectionOptions,
     concurrency: resolveMarketSignalsWorkerConcurrency(),

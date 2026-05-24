@@ -530,6 +530,10 @@ function shouldEnqueueFetchedPayload(result: MarketSignalFetchResult): boolean {
   return result.errorCode === "MISSING_API_KEY" || result.errorCode === "MISSING_SEC_USER_AGENT";
 }
 
+export function shouldIngestFetchedPayload(result: MarketSignalFetchResult): boolean {
+  return shouldEnqueueFetchedPayload(result);
+}
+
 export async function fetchProviderPayload(
   providerInput: MarketSignalProvider | string,
   tickerInput: string,
