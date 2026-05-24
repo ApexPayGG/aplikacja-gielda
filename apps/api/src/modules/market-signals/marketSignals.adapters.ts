@@ -197,14 +197,80 @@ function isInsiderPurchaseCode(code: string | null): boolean {
   return normalized === "P" || normalized === "PURCHASE";
 }
 
+export type EodhdTransactionDirection = "purchase" | "sale" | "transaction";
+
+function toPositiveNumber(value: unknown): number | null {
+  const parsed = toNumber(value);
+  return parsed != null && parsed > 0 ? parsed : null;
+}
+
+export function getEodhdTransactionDirection(item: Record<string, unknown>): EodhdTransactionDirection {
+  const transactionCode = toStringValue(item.transactionCode)?.toUpperCase() ?? "";
+  if (transactionCode === "P" || isInsiderPurchaseCode(transactionCode)) return "purchase";
+  if (transactionCode === "S" || transactionCode === "SALE") return "sale";
+
+  const acquiredDisposed = toStringValue(item.transactionAcquiredDisposed)?.toUpperCase() ?? "";
+  if (acquiredDisposed === "A") return "purchase";
+  if (acquiredDisposed === "D") return "sale";
+
+  return "transaction";
+}
+
+export function getEodhdTransactionValue(item: Record<string, unknown>): number | null {
+  const transactionAmount = toPositiveNumber(item.transactionAmount);
+  if (transactionAmount != null) return transactionAmount;
+
+  const securitiesTransacted = toPositiveNumber(item.securitiesTransacted);
+  const transactionPrice = toPositiveNumber(item.transactionPrice);
+  if (securitiesTransacted != null && transactionPrice != null) {
+    return securitiesTransacted * transactionPrice;
+  }
+
+  const transactionShares = toPositiveNumber(item.transactionShares);
+  if (transactionShares != null && transactionPrice != null) {
+    return transactionShares * transactionPrice;
+  }
+
+  return null;
+}
+
 function scoreEodhdInsiderActivity(
-  item: Record<string, unknown>,
-  transactionValue: number,
+  direction: EodhdTransactionDirection,
+  transactionValue: number | null,
 ): number {
-  let score = 60;
-  if (isInsiderPurchaseCode(toStringValue(item.transactionCode))) score += 15;
-  if (transactionValue >= 1_000_000) score += 10;
+  let score = 55;
+  if (direction === "sale") score = 60;
+  if (direction === "purchase") score = 65;
+
+  if (transactionValue != null) {
+    if (transactionValue >= 1_000_000) score += 10;
+    if (transactionValue >= 10_000_000) score += 5;
+  }
+
   return clampConfidence(score);
+}
+
+function buildEodhdInsiderTitle(
+  ticker: string,
+  direction: EodhdTransactionDirection,
+  ownerName: string,
+  transactionValue: number | null,
+): string {
+  if (transactionValue != null) {
+    return `${ticker} insider ${direction}: ${formatUsdShort(transactionValue)} by ${ownerName}`;
+  }
+  return `${ticker} insider ${direction} disclosed by ${ownerName}`;
+}
+
+function buildEodhdInsiderSummary(
+  direction: EodhdTransactionDirection,
+  ownerName: string,
+  transactionValue: number | null,
+): string {
+  if (transactionValue != null) {
+    return `Reported insider ${direction} by ${ownerName}. Estimated transaction value: ${formatUsdShort(transactionValue)}.`;
+  }
+  return `Reported insider ${direction} by ${ownerName}. Transaction value was not disclosed in provider payload.`;
 }
 
 export function parseEodhdInsiderActivityPayload(
@@ -220,17 +286,17 @@ export function parseEodhdInsiderActivityPayload(
     const ticker = normalizeProviderTicker(entry.code);
     if (!ticker) continue;
 
-    const securitiesTransacted = toNumber(entry.securitiesTransacted) ?? 0;
-    const transactionPrice = toNumber(entry.transactionPrice) ?? 0;
-    const transactionValue = securitiesTransacted * transactionPrice;
+    const direction = getEodhdTransactionDirection(entry);
+    const transactionValue = getEodhdTransactionValue(entry);
     const ownerName = toStringValue(entry.ownerName) ?? "Unknown insider";
 
     signals.push({
       ticker,
       signalType: "INSIDER_ACTIVITY",
       source,
-      confidenceScore: scoreEodhdInsiderActivity(entry, transactionValue),
-      title: `${ticker} insider purchase: ${formatUsdShort(transactionValue)} by ${ownerName}`,
+      confidenceScore: scoreEodhdInsiderActivity(direction, transactionValue),
+      title: buildEodhdInsiderTitle(ticker, direction, ownerName, transactionValue),
+      summary: buildEodhdInsiderSummary(direction, ownerName, transactionValue),
       rawPayload: entry,
       eventTime: parseIsoEventTime(entry.transactionDate),
     });
