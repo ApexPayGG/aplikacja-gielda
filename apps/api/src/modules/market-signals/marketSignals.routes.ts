@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
+import { requireAdminOrInternal } from "../../middleware/requireAdminOrInternal";
 import { getAuthenticatedUserId, requireAuth } from "../auth/authMiddleware";
 import {
   createMarketSignalIngestionService,
@@ -32,6 +33,7 @@ type MarketSignalsRouterDeps = {
     reason?: string;
   }) => Promise<MarketSignalFetchEnqueueResult>;
   requireAuthMiddleware: typeof requireAuth;
+  requireAdminOrInternalMiddleware: typeof requireAdminOrInternal;
 };
 
 function parseOptionalNumber(raw: unknown): number | undefined {
@@ -50,7 +52,11 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
     enqueueProviderPayload: depsInput?.enqueueProviderPayload ?? enqueueProviderPayload,
     fetchAndEnqueueMarketSignal: depsInput?.fetchAndEnqueueMarketSignal ?? fetchAndEnqueueMarketSignal,
     requireAuthMiddleware: depsInput?.requireAuthMiddleware ?? requireAuth,
+    requireAdminOrInternalMiddleware:
+      depsInput?.requireAdminOrInternalMiddleware ?? requireAdminOrInternal,
   };
+
+  const writeGuard = deps.requireAdminOrInternalMiddleware;
 
   const router = Router();
   router.use("/api/v1/market-signals", deps.requireAuthMiddleware);
@@ -89,10 +95,12 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
     }
   });
 
-  router.post("/api/v1/market-signals/ingest", async (req: Request, res: Response, next: NextFunction) => {
+  router.post(
+    "/api/v1/market-signals/ingest",
+    writeGuard,
+    async (req: Request, res: Response, next: NextFunction) => {
     try {
       void getAuthenticatedUserId(req);
-      // TODO: restrict ingest to ADMIN/internal service account once dedicated middleware is wired.
       const parsed = parseMarketSignalIngestInput(req.body as Record<string, unknown>, new Date());
       if (!parsed.ok) {
         res.status(400).json({ error: parsed.error });
@@ -104,14 +112,15 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
     } catch (error) {
       next(error);
     }
-  });
+  },
+  );
 
   router.post(
     "/api/v1/market-signals/provider-ingest",
+    writeGuard,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         void getAuthenticatedUserId(req);
-        // TODO: replace with admin/internal auth before production external use
         const body = req.body as Record<string, unknown>;
         const provider = parseMarketSignalProvider(body.provider);
         if (!provider) {
@@ -133,10 +142,10 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
 
   router.post(
     "/api/v1/market-signals/provider-enqueue",
+    writeGuard,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const userId = getAuthenticatedUserId(req);
-        // TODO: replace with admin/internal auth before production external use
         const body = req.body as Record<string, unknown>;
         const provider = parseMarketSignalProvider(body.provider);
         if (!provider) {
@@ -166,10 +175,10 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
 
   router.post(
     "/api/v1/market-signals/provider-fetch-enqueue",
+    writeGuard,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const userId = getAuthenticatedUserId(req);
-        // TODO: replace with admin/internal auth before production external use
         const body = req.body as Record<string, unknown>;
         const provider = parseMarketSignalProvider(body.provider);
         if (!provider) {

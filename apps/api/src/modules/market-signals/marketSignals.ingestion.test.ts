@@ -291,6 +291,7 @@ describe("marketSignals provider-ingest route", () => {
           };
           next();
         },
+        requireAdminOrInternalMiddleware: (_req, _res, next) => next(),
       }),
     );
 

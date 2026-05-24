@@ -232,6 +232,7 @@ describe("marketSignals provider-enqueue route", () => {
           };
           next();
         },
+        requireAdminOrInternalMiddleware: (_req, _res, next) => next(),
       }),
     );
 
