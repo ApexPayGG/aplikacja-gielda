@@ -103,6 +103,7 @@ import { createAutopilotRouter } from "./modules/autopilot/autopilot.routes";
 import { createNewsSentimentRouter } from "./modules/news-sentiment/newsSentiment.routes";
 import { createTraderPsycheRouter } from "./modules/trader-psyche/traderPsyche.routes";
 import { createMarketSignalsRouter } from "./modules/market-signals/marketSignals.routes";
+import { createCompanyRouter } from "./modules/company/company.routes";
 import { createAffiliateRouter } from "./routes/affiliate";
 import { createAdminAffiliateRouter } from "./routes/adminAffiliate";
 import { createAdminRouter } from "./routes/admin";
@@ -266,6 +267,7 @@ export function createApp(): express.Express {
   app.use(createNewsSentimentRouter());
   app.use(createTraderPsycheRouter());
   app.use(createMarketSignalsRouter());
+  app.use(createCompanyRouter());
   app.use(createAffiliateRouter());
   app.use(createAdminRouter());
   app.use(createAdminAffiliateRouter());
