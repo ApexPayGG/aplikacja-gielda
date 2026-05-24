@@ -194,6 +194,57 @@ export async function handleSubscriptionDeleted(subscription: any): Promise<void
   });
 }
 
+function resolveSubscriptionTier(subscription: {
+  metadata?: { tier?: string };
+  items?: { data?: Array<{ price?: { id?: string } }> };
+}): UserTier | null {
+  const metadataTier = subscription.metadata?.tier;
+  if (metadataTier === "PRO" || metadataTier === "PRO_PLUS") {
+    return metadataTier;
+  }
+  const priceId = subscription.items?.data?.[0]?.price?.id;
+  return getTierFromPriceId(priceId);
+}
+
+export async function handleSubscriptionUpdated(subscription: any): Promise<void> {
+  const customerId =
+    typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id;
+  if (!customerId) return;
+
+  const status = String(subscription.status ?? "").trim();
+  const tier = resolveSubscriptionTier(subscription);
+  const data: {
+    subscriptionStatus: string;
+    subscriptionEnd: Date | null;
+    tier?: UserTier;
+  } = {
+    subscriptionStatus: status || "unknown",
+    subscriptionEnd: parsePeriodEnd(subscription.current_period_end),
+  };
+
+  if ((status === "active" || status === "trialing") && tier) {
+    data.tier = tier;
+  }
+
+  await prisma.user.updateMany({
+    where: { stripeCustomerId: customerId },
+    data,
+  });
+}
+
+export async function handleInvoicePaymentFailed(invoice: any): Promise<void> {
+  const customerId =
+    typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
+  if (!customerId) return;
+
+  await prisma.user.updateMany({
+    where: { stripeCustomerId: customerId },
+    data: {
+      subscriptionStatus: "past_due",
+    },
+  });
+}
+
 export async function getUserSubscription(userId: string): Promise<SubscriptionState> {
   const user = await prisma.user.findUnique({
     where: { id: userId },

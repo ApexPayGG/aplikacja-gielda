@@ -1,12 +1,19 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import Stripe from "stripe";
+import { prisma } from "../db/index";
+import {
+  getAuthenticatedUserId,
+  requireAuth,
+} from "../modules/auth/authMiddleware";
 import {
   constructWebhookEvent,
   createCheckoutSession,
   getUserSubscription,
   handleCheckoutSessionCompleted,
+  handleInvoicePaymentFailed,
   handleSubscriptionDeleted,
+  handleSubscriptionUpdated,
   type StripeBilling,
   type StripePlan,
 } from "../modules/stripe/stripeModule";
@@ -16,7 +23,11 @@ type StripeRouteDeps = {
   getUserSubscriptionFn: typeof getUserSubscription;
   handleCheckoutSessionCompletedFn: typeof handleCheckoutSessionCompleted;
   handleSubscriptionDeletedFn: typeof handleSubscriptionDeleted;
+  handleSubscriptionUpdatedFn: typeof handleSubscriptionUpdated;
+  handleInvoicePaymentFailedFn: typeof handleInvoicePaymentFailed;
   constructWebhookEventFn: typeof constructWebhookEvent;
+  requireAuthMiddleware: typeof requireAuth;
+  getUserRoleFn: (userId: string) => Promise<string | null>;
 };
 
 function isStripeConfigurationError(error: unknown): boolean {
@@ -38,6 +49,17 @@ function isBilling(value: unknown): value is StripeBilling {
 
 type RequestWithRawBody = Request & { rawBody?: Buffer };
 
+async function canReadSubscription(
+  req: Request,
+  requestedUserId: string,
+  getUserRoleFn: StripeRouteDeps["getUserRoleFn"],
+): Promise<boolean> {
+  const authUserId = getAuthenticatedUserId(req);
+  if (requestedUserId === authUserId) return true;
+  const role = await getUserRoleFn(authUserId);
+  return role === "ADMIN";
+}
+
 export function createStripeRouter(depsInput?: Partial<StripeRouteDeps>): Router {
   const deps: StripeRouteDeps = {
     createCheckoutSessionFn: depsInput?.createCheckoutSessionFn ?? createCheckoutSession,
@@ -45,23 +67,51 @@ export function createStripeRouter(depsInput?: Partial<StripeRouteDeps>): Router
     handleCheckoutSessionCompletedFn:
       depsInput?.handleCheckoutSessionCompletedFn ?? handleCheckoutSessionCompleted,
     handleSubscriptionDeletedFn: depsInput?.handleSubscriptionDeletedFn ?? handleSubscriptionDeleted,
+    handleSubscriptionUpdatedFn:
+      depsInput?.handleSubscriptionUpdatedFn ?? handleSubscriptionUpdated,
+    handleInvoicePaymentFailedFn:
+      depsInput?.handleInvoicePaymentFailedFn ?? handleInvoicePaymentFailed,
     constructWebhookEventFn: depsInput?.constructWebhookEventFn ?? constructWebhookEvent,
+    requireAuthMiddleware: depsInput?.requireAuthMiddleware ?? requireAuth,
+    getUserRoleFn:
+      depsInput?.getUserRoleFn ??
+      (async (userId) => {
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { role: true },
+        });
+        return user?.role ?? null;
+      }),
   };
 
   const router = Router();
 
   router.post(
     "/api/stripe/create-checkout-session",
+    deps.requireAuthMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
+        const authUserId = getAuthenticatedUserId(req);
         const body = req.body as Record<string, unknown>;
-        const userId = String(body.userId ?? "").trim();
+        const bodyUserIdRaw = body.userId;
+        if (bodyUserIdRaw !== undefined && bodyUserIdRaw !== null && String(bodyUserIdRaw).trim() !== "") {
+          const bodyUserId = String(bodyUserIdRaw).trim();
+          if (bodyUserId !== authUserId) {
+            return res.status(403).json({ error: "Forbidden" });
+          }
+        }
+
         const plan = body.plan;
         const billing = body.billing;
-        if (!userId || !isPlan(plan) || !isBilling(billing)) {
+        if (!isPlan(plan) || !isBilling(billing)) {
           return res.status(400).json({ error: "Invalid payload" });
         }
-        const url = await deps.createCheckoutSessionFn({ userId, plan, billing });
+
+        const url = await deps.createCheckoutSessionFn({
+          userId: authUserId,
+          plan,
+          billing,
+        });
         res.json({ url });
       } catch (error) {
         if (error instanceof Error && error.message === "User not found") {
@@ -98,6 +148,10 @@ export function createStripeRouter(depsInput?: Partial<StripeRouteDeps>): Router
         await deps.handleCheckoutSessionCompletedFn(event.data.object);
       } else if (event.type === "customer.subscription.deleted") {
         await deps.handleSubscriptionDeletedFn(event.data.object);
+      } else if (event.type === "customer.subscription.updated") {
+        await deps.handleSubscriptionUpdatedFn(event.data.object);
+      } else if (event.type === "invoice.payment_failed") {
+        await deps.handleInvoicePaymentFailedFn(event.data.object);
       }
       res.json({ received: true });
     } catch (error) {
@@ -108,21 +162,28 @@ export function createStripeRouter(depsInput?: Partial<StripeRouteDeps>): Router
     }
   });
 
-  router.get("/api/stripe/subscription/:userId", async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const userId = String(req.params.userId ?? "").trim();
-      if (!userId) {
-        return res.status(400).json({ error: "Missing userId" });
+  router.get(
+    "/api/stripe/subscription/:userId",
+    deps.requireAuthMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const userId = String(req.params.userId ?? "").trim();
+        if (!userId) {
+          return res.status(400).json({ error: "Missing userId" });
+        }
+        if (!(await canReadSubscription(req, userId, deps.getUserRoleFn))) {
+          return res.status(403).json({ error: "Forbidden" });
+        }
+        const payload = await deps.getUserSubscriptionFn(userId);
+        res.json(payload);
+      } catch (error) {
+        if (error instanceof Error && error.message === "User not found") {
+          return res.status(404).json({ error: error.message });
+        }
+        next(error);
       }
-      const payload = await deps.getUserSubscriptionFn(userId);
-      res.json(payload);
-    } catch (error) {
-      if (error instanceof Error && error.message === "User not found") {
-        return res.status(404).json({ error: error.message });
-      }
-      next(error);
-    }
-  });
+    },
+  );
 
   return router;
 }
