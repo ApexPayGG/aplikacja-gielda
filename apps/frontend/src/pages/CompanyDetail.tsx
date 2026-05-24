@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { AnalysisBrief, type BriefLimitReached } from "../components/AnalysisBrief";
 import { CompanyDividendPanel } from "../components/CompanyDividendPanel";
+import { MarketSignalsPanel } from "../components/market-signals/MarketSignalsPanel";
 import { CompanyPriceChart } from "../components/CompanyPriceChart";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
@@ -493,45 +494,50 @@ export function CompanyDetail() {
           ) : null}
 
           {activeTab === "signals" ? (
-            <section
-              className="rounded-xl border p-4"
-              style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-            >
-              <h2 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>
-                Signals
-              </h2>
-              <ul className="mt-3 divide-y rounded-lg border" style={{ borderColor: colors.border }}>
-                {displayNews.map((n) => (
-                  <li key={`${n.id}-${n.timestamp}`} className="px-4 py-3" style={{ borderColor: colors.border }}>
-                    {n.url && n.url !== "#" ? (
-                      <a
-                        href={n.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium hover:underline"
-                        style={{ color: colors.brandDark }}
-                      >
-                        {n.title}
-                      </a>
-                    ) : (
-                      <p className="font-medium" style={{ color: colors.brandDark }}>
-                        {n.title}
+            <div className="space-y-4">
+              <section>
+                <MarketSignalsPanel ticker={sym} lookbackDays={30} />
+              </section>
+              <section
+                className="rounded-xl border p-4"
+                style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
+              >
+                <h2 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>
+                  {t("company.signals.newsHeading", { defaultValue: "News headlines" })}
+                </h2>
+                <ul className="mt-3 divide-y rounded-lg border" style={{ borderColor: colors.border }}>
+                  {displayNews.map((n) => (
+                    <li key={`${n.id}-${n.timestamp}`} className="px-4 py-3" style={{ borderColor: colors.border }}>
+                      {n.url && n.url !== "#" ? (
+                        <a
+                          href={n.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium hover:underline"
+                          style={{ color: colors.brandDark }}
+                        >
+                          {n.title}
+                        </a>
+                      ) : (
+                        <p className="font-medium" style={{ color: colors.brandDark }}>
+                          {n.title}
+                        </p>
+                      )}
+                      <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
+                        {new Date(n.timestamp).toLocaleDateString(i18n.resolvedLanguage || "en", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        · {n.source}
                       </p>
-                    )}
-                    <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
-                      {new Date(n.timestamp).toLocaleDateString(i18n.resolvedLanguage || "en", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}{" "}
-                      · {n.source}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </section>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
           ) : null}
 
           {activeTab === "dividend" ? (

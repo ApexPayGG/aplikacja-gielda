@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import type { DividendAlertsResponse, DividendIntelligence, SectorComparison } from "../types/dividend";
+import type { MarketSignalType, MarketSignalsResponse } from "../components/market-signals/marketSignals.types";
 import type { MarketEventDto } from "../types/marketEvents";
 
 const AUTH_TOKEN_STORAGE_KEY = "auth_token";
@@ -856,6 +857,27 @@ export async function getNews(symbol: string, limit = 10): Promise<NewsRow[]> {
     params: { limit },
   });
   return data.data;
+}
+
+export async function getMarketSignals(
+  ticker: string,
+  params?: {
+    lookbackDays?: number;
+    signalType?: MarketSignalType;
+    minConfidence?: number;
+  },
+): Promise<MarketSignalsResponse> {
+  const normalized = ticker.trim().toUpperCase();
+  const lookbackDays = params?.lookbackDays ?? 30;
+  const query: Record<string, string | number> = { lookbackDays };
+  if (params?.signalType) query.signalType = params.signalType;
+  if (params?.minConfidence !== undefined) query.minConfidence = params.minConfidence;
+
+  const { data } = await api.get<MarketSignalsResponse>(
+    `/v1/market-signals/${encodeURIComponent(normalized)}`,
+    { params: query },
+  );
+  return data;
 }
 
 export async function getNewsHalfLife(symbol: string): Promise<NewsHalfLifeResponse> {
