@@ -1,6 +1,6 @@
 import { Queue } from "bullmq";
 import type IORedis from "ioredis";
-import IORedisClient from "ioredis";
+import { createRedisConnection } from "../../redis";
 import {
   AUTOPILOT_EXECUTION_QUEUE_NAME,
   type AutopilotJobData,
@@ -24,27 +24,6 @@ export type DispatchAiIntentResult = {
 
 const EXECUTE_AUTOPILOT_TRADE_JOB_NAME = "execute-autopilot-trade";
 
-function createAutopilotQueueConnection(): IORedis {
-  const redisUrl = process.env.REDIS_URL?.trim();
-  if (redisUrl) {
-    return new IORedisClient(redisUrl, {
-      maxRetriesPerRequest: null,
-      enableReadyCheck: true,
-    });
-  }
-
-  const host = process.env.REDIS_HOST?.trim() || "127.0.0.1";
-  const parsedPort = Number.parseInt(process.env.REDIS_PORT?.trim() || "6379", 10);
-  const port = Number.isFinite(parsedPort) ? parsedPort : 6379;
-
-  return new IORedisClient({
-    host,
-    port,
-    maxRetriesPerRequest: null,
-    enableReadyCheck: true,
-  });
-}
-
 function mapAiVerdictToSide(verdict: Exclude<AutopilotAiVerdict, "HOLD">): AutopilotJobData["side"] {
   return verdict === "BULLISH_BUY" ? "BUY" : "SELL";
 }
@@ -62,7 +41,7 @@ export class AutopilotOrchestratorService {
       return;
     }
 
-    const redis = createAutopilotQueueConnection();
+    const redis = createRedisConnection();
     this.connection = redis;
     this.ownsConnection = true;
     this.queue = new Queue<AutopilotJobData>(AUTOPILOT_EXECUTION_QUEUE_NAME, { connection: redis });

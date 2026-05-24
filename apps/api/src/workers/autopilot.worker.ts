@@ -1,8 +1,8 @@
 import Alpaca from "@alpacahq/alpaca-trade-api";
 import type { AlpacaMode, AutopilotExecutionStatus, PrismaClient, TradeSide } from "@prisma/client";
 import { Worker, type ConnectionOptions } from "bullmq";
-import IORedis from "ioredis";
 import { prisma as defaultPrisma } from "../db";
+import { createRedisConnection } from "../redis";
 import { autopilotCryptoService } from "../modules/autopilot/crypto.service";
 import { SafeGuardManager } from "../modules/autopilot/SafeGuardManager";
 
@@ -23,19 +23,6 @@ type AutopilotWorkerDeps = {
   safeGuard: SafeGuardManager;
   crypto: typeof autopilotCryptoService;
 };
-
-function createAutopilotRedisConnection(): IORedis {
-  const host = process.env.REDIS_HOST?.trim() || "127.0.0.1";
-  const parsedPort = Number.parseInt(process.env.REDIS_PORT?.trim() || "6379", 10);
-  const port = Number.isFinite(parsedPort) ? parsedPort : 6379;
-
-  return new IORedis({
-    host,
-    port,
-    maxRetriesPerRequest: null,
-    enableReadyCheck: true,
-  });
-}
 
 function mapJobSideToTradeSide(side: AutopilotJobData["side"]): TradeSide {
   return side === "BUY" ? "BUY" : "SELL";
@@ -229,15 +216,13 @@ export async function processAutopilotJob(
   }
 }
 
-const redisConnection = createAutopilotRedisConnection();
-
 export const autopilotWorker = new Worker<AutopilotJobData>(
   AUTOPILOT_EXECUTION_QUEUE_NAME,
   async (job) => {
     await processAutopilotJob(job.data);
   },
   {
-    connection: redisConnection as unknown as ConnectionOptions,
+    connection: createRedisConnection() as unknown as ConnectionOptions,
     concurrency: 5,
   },
 );
