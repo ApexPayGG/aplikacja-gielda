@@ -10,6 +10,7 @@ import { startScheduler } from "./scheduler";
 import { startServer } from "./server";
 import { startTelegramBot, stopTelegramBot } from "./telegram/index";
 import { autopilotWorker } from "./workers/autopilot.worker";
+import { marketSignalsWorker } from "./workers/marketSignals.worker";
 import { newsSentimentWorker } from "./workers/newsSentiment.worker";
 
 async function main(): Promise<void> {
@@ -43,6 +44,14 @@ async function shutdown(signal: string): Promise<void> {
   } catch (error) {
     console.error(
       "[shutdown] news sentiment worker close failed:",
+      error instanceof Error ? error.message : error,
+    );
+  }
+  try {
+    await marketSignalsWorker.close();
+  } catch (error) {
+    console.error(
+      "[shutdown] market signals worker close failed:",
       error instanceof Error ? error.message : error,
     );
   }

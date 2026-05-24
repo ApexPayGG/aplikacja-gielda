@@ -50,6 +50,7 @@ import {
   WEEKDAY_REALTIME_CRON,
 } from "./jobs/schedulerConfig";
 import { autopilotWorker } from "./workers/autopilot.worker";
+import { marketSignalsWorker } from "./workers/marketSignals.worker";
 import { newsSentimentWorker } from "./workers/newsSentiment.worker";
 import { enqueueNewsSentimentWarmBatch } from "./modules/news-sentiment/newsSentiment.queue";
 
@@ -378,6 +379,9 @@ export async function startScheduler(): Promise<void> {
   console.log(
     "[Scheduler] News Sentiment Worker successfully initialized and listening on queue: news-sentiment-queue",
   );
+  console.log(
+    "[Scheduler] Market Signals Worker successfully initialized and listening on queue: market-signals-ingestion-queue",
+  );
 
   void enqueueNewsSentimentWarmBatch().catch((error) => {
     console.error(
@@ -427,6 +431,14 @@ async function shutdownScheduler(signal: string): Promise<void> {
   } catch (error) {
     console.error(
       "[scheduler] news sentiment worker close failed:",
+      error instanceof Error ? error.message : error,
+    );
+  }
+  try {
+    await marketSignalsWorker.close();
+  } catch (error) {
+    console.error(
+      "[scheduler] market signals worker close failed:",
       error instanceof Error ? error.message : error,
     );
   }
