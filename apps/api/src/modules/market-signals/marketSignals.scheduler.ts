@@ -14,13 +14,15 @@ export const SCHEDULED_MARKET_SIGNALS_REASON = "scheduled-market-signals";
 
 export const DEFAULT_MARKET_SIGNALS_SCHEDULER_TICKERS = ["AAPL", "MSFT", "NVDA"] as const;
 export const DEFAULT_MARKET_SIGNALS_SCHEDULER_PROVIDERS: MarketSignalProvider[] = [
-  "POLYGON_DARK_POOL",
-  "POLYGON_OPTIONS_FLOW",
   "EODHD_INSIDER_ACTIVITY",
-  "SEC_FILINGS",
 ];
 export const DEFAULT_MARKET_SIGNALS_SCHEDULER_INTERVAL_MINUTES = 240;
 export const DEFAULT_MARKET_SIGNALS_SCHEDULER_MAX_TICKERS = 25;
+
+export const POLYGON_SCHEDULER_PROVIDERS: MarketSignalProvider[] = [
+  "POLYGON_DARK_POOL",
+  "POLYGON_OPTIONS_FLOW",
+];
 
 export type MarketSignalsSchedulerConfig = {
   enabled: boolean;
@@ -66,27 +68,113 @@ export function isMarketSignalsSchedulerEnabled(getEnv: EnvGetter = defaultGetEn
   return getEnv("MARKET_SIGNALS_SCHEDULER_ENABLED") === "true";
 }
 
-export function parseMarketSignalsSchedulerConfig(
-  getEnv: EnvGetter = defaultGetEnv,
-): MarketSignalsSchedulerConfig {
-  const enabled = isMarketSignalsSchedulerEnabled(getEnv);
-  const maxTickers = parsePositiveInt(
-    getEnv("MARKET_SIGNALS_SCHEDULER_MAX_TICKERS"),
-    DEFAULT_MARKET_SIGNALS_SCHEDULER_MAX_TICKERS,
-  );
-  const intervalMinutes = parsePositiveInt(
-    getEnv("MARKET_SIGNALS_SCHEDULER_INTERVAL_MINUTES"),
-    DEFAULT_MARKET_SIGNALS_SCHEDULER_INTERVAL_MINUTES,
-  );
+export function isMarketSignalsAllowPolygonScheduler(getEnv: EnvGetter = defaultGetEnv): boolean {
+  return getEnv("MARKET_SIGNALS_ALLOW_POLYGON_SCHEDULER") === "true";
+}
 
-  const rawTickers = parseCsv(getEnv("MARKET_SIGNALS_SCHEDULER_TICKERS"));
-  const tickerSource = enabled && rawTickers.length === 0 ? [...DEFAULT_MARKET_SIGNALS_SCHEDULER_TICKERS] : rawTickers;
+function isPolygonSchedulerProvider(provider: MarketSignalProvider): boolean {
+  return POLYGON_SCHEDULER_PROVIDERS.includes(provider);
+}
 
+function parseValidSchedulerProviders(rawProviders: string[]): MarketSignalProvider[] {
+  const providers: MarketSignalProvider[] = [];
+  const seenProviders = new Set<MarketSignalProvider>();
+  for (const rawProvider of rawProviders) {
+    const provider = parseMarketSignalProvider(rawProvider);
+    if (!provider || !MARKET_SIGNAL_PROVIDERS.includes(provider)) continue;
+    if (seenProviders.has(provider)) continue;
+    seenProviders.add(provider);
+    providers.push(provider);
+  }
+  return providers;
+}
+
+function warnPolygonProvidersConfiguredWithoutOverride(
+  rawProviders: string[],
+  getEnv: EnvGetter,
+): void {
+  if (!isMarketSignalsSchedulerEnabled(getEnv) || isMarketSignalsAllowPolygonScheduler(getEnv)) {
+    return;
+  }
+
+  const polygonProviders = rawProviders
+    .map((rawProvider) => parseMarketSignalProvider(rawProvider))
+    .filter(
+      (provider): provider is MarketSignalProvider =>
+        provider !== null &&
+        MARKET_SIGNAL_PROVIDERS.includes(provider) &&
+        isPolygonSchedulerProvider(provider),
+    );
+
+  if (polygonProviders.length === 0) {
+    return;
+  }
+
+  console.warn(
+    JSON.stringify({
+      level: "warn",
+      event: "market_signals_scheduler_polygon_configured_without_override",
+      providers: polygonProviders,
+      hint: "Set MARKET_SIGNALS_ALLOW_POLYGON_SCHEDULER=true after provider-check confirms Polygon entitlement.",
+    }),
+  );
+}
+
+export function applySchedulerProviderGuards(
+  parsedProviders: MarketSignalProvider[],
+  getEnv: EnvGetter,
+  logger?: MarketSignalsSchedulerLogger,
+): MarketSignalProvider[] {
+  const allowPolygon = isMarketSignalsAllowPolygonScheduler(getEnv);
+  const hasSecUserAgent = Boolean(getEnv("SEC_USER_AGENT"));
+  const allowed: MarketSignalProvider[] = [];
+  const seenProviders = new Set<MarketSignalProvider>();
+
+  for (const provider of parsedProviders) {
+    if (seenProviders.has(provider)) continue;
+
+    if (isPolygonSchedulerProvider(provider) && !allowPolygon) {
+      logger?.info("market_signals_scheduler_polygon_skipped_no_override", { provider });
+      continue;
+    }
+
+    if (provider === "SEC_FILINGS" && !hasSecUserAgent) {
+      logger?.info("market_signals_scheduler_sec_skipped_missing_user_agent", { provider });
+      continue;
+    }
+
+    seenProviders.add(provider);
+    allowed.push(provider);
+    logger?.info("market_signals_scheduler_provider_allowed", { provider });
+  }
+
+  return allowed;
+}
+
+function resolveSchedulerProviderSource(
+  enabled: boolean,
+  getEnv: EnvGetter,
+): { rawProviders: string[]; parsedProviders: MarketSignalProvider[] } {
   const rawProviders = parseCsv(getEnv("MARKET_SIGNALS_SCHEDULER_PROVIDERS"));
   const providerSource =
     enabled && rawProviders.length === 0
       ? [...DEFAULT_MARKET_SIGNALS_SCHEDULER_PROVIDERS]
       : rawProviders;
+
+  return {
+    rawProviders: providerSource,
+    parsedProviders: parseValidSchedulerProviders(providerSource),
+  };
+}
+
+function resolveSchedulerTickers(
+  enabled: boolean,
+  getEnv: EnvGetter,
+  maxTickers: number,
+): string[] {
+  const rawTickers = parseCsv(getEnv("MARKET_SIGNALS_SCHEDULER_TICKERS"));
+  const tickerSource =
+    enabled && rawTickers.length === 0 ? [...DEFAULT_MARKET_SIGNALS_SCHEDULER_TICKERS] : rawTickers;
 
   const tickers: string[] = [];
   const seenTickers = new Set<string>();
@@ -101,15 +189,29 @@ export function parseMarketSignalsSchedulerConfig(
     if (tickers.length >= maxTickers) break;
   }
 
-  const providers: MarketSignalProvider[] = [];
-  const seenProviders = new Set<MarketSignalProvider>();
-  for (const rawProvider of providerSource) {
-    const provider = parseMarketSignalProvider(rawProvider);
-    if (!provider || !MARKET_SIGNAL_PROVIDERS.includes(provider)) continue;
-    if (seenProviders.has(provider)) continue;
-    seenProviders.add(provider);
-    providers.push(provider);
+  return tickers;
+}
+
+export function parseMarketSignalsSchedulerConfig(
+  getEnv: EnvGetter = defaultGetEnv,
+): MarketSignalsSchedulerConfig {
+  const enabled = isMarketSignalsSchedulerEnabled(getEnv);
+  const maxTickers = parsePositiveInt(
+    getEnv("MARKET_SIGNALS_SCHEDULER_MAX_TICKERS"),
+    DEFAULT_MARKET_SIGNALS_SCHEDULER_MAX_TICKERS,
+  );
+  const intervalMinutes = parsePositiveInt(
+    getEnv("MARKET_SIGNALS_SCHEDULER_INTERVAL_MINUTES"),
+    DEFAULT_MARKET_SIGNALS_SCHEDULER_INTERVAL_MINUTES,
+  );
+
+  const { rawProviders, parsedProviders } = resolveSchedulerProviderSource(enabled, getEnv);
+  if (enabled) {
+    warnPolygonProvidersConfiguredWithoutOverride(rawProviders, getEnv);
   }
+
+  const tickers = resolveSchedulerTickers(enabled, getEnv, maxTickers);
+  const providers = applySchedulerProviderGuards(parsedProviders, getEnv);
 
   return {
     enabled,
@@ -129,14 +231,12 @@ export function resolveMarketSignalsSchedulerPairs(
 ): Array<{ ticker: string; provider: MarketSignalProvider }> {
   const getEnv = deps?.getEnv ?? defaultGetEnv;
   const logger = deps?.logger ?? defaultLogger();
+
   const rawTickers = parseCsv(getEnv("MARKET_SIGNALS_SCHEDULER_TICKERS"));
   const tickerSource =
     config.enabled && rawTickers.length === 0 ? [...DEFAULT_MARKET_SIGNALS_SCHEDULER_TICKERS] : rawTickers;
-  const rawProviders = parseCsv(getEnv("MARKET_SIGNALS_SCHEDULER_PROVIDERS"));
-  const providerSource =
-    config.enabled && rawProviders.length === 0
-      ? [...DEFAULT_MARKET_SIGNALS_SCHEDULER_PROVIDERS]
-      : rawProviders;
+
+  const { rawProviders, parsedProviders } = resolveSchedulerProviderSource(config.enabled, getEnv);
 
   const validTickers: string[] = [];
   const seenTickers = new Set<string>();
@@ -152,17 +252,20 @@ export function resolveMarketSignalsSchedulerPairs(
     if (validTickers.length >= config.maxTickers) break;
   }
 
-  const validProviders: MarketSignalProvider[] = [];
-  const seenProviders = new Set<MarketSignalProvider>();
-  for (const rawProvider of providerSource) {
-    const provider = parseMarketSignalProvider(rawProvider);
-    if (!provider || !MARKET_SIGNAL_PROVIDERS.includes(provider)) {
-      logger.info("market_signals_scheduler_invalid_provider_skipped", { provider: rawProvider });
-      continue;
-    }
-    if (seenProviders.has(provider)) continue;
-    seenProviders.add(provider);
-    validProviders.push(provider);
+  const invalidProviderEntries = parseCsv(getEnv("MARKET_SIGNALS_SCHEDULER_PROVIDERS")).filter(
+    (rawProvider) => {
+      const provider = parseMarketSignalProvider(rawProvider);
+      return !provider || !MARKET_SIGNAL_PROVIDERS.includes(provider);
+    },
+  );
+  for (const rawProvider of invalidProviderEntries) {
+    logger.info("market_signals_scheduler_invalid_provider_skipped", { provider: rawProvider });
+  }
+
+  const validProviders = applySchedulerProviderGuards(parsedProviders, getEnv, logger);
+
+  if (config.enabled) {
+    warnPolygonProvidersConfiguredWithoutOverride(rawProviders, getEnv);
   }
 
   const pairs: Array<{ ticker: string; provider: MarketSignalProvider }> = [];
@@ -267,6 +370,7 @@ export async function registerMarketSignalsScheduler(
     intervalMinutes: config.intervalMinutes,
     maxTickers: config.maxTickers,
     pairCount: config.tickers.length * config.providers.length,
+    allowPolygonScheduler: isMarketSignalsAllowPolygonScheduler(getEnv),
   });
 
   return {
