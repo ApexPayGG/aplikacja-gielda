@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { trackEvent } from "../utils/analytics";
 import { normalizeUserPlan } from "../utils/subscriptionTier";
 
 function formatPlanLabel(tier: string | null | undefined): string {
@@ -29,6 +30,16 @@ export function PaymentSuccessPage() {
   }, [refreshUser]);
 
   const plan = useMemo(() => formatPlanLabel(user?.tier), [user?.tier]);
+  const paymentEventSent = useRef(false);
+
+  useEffect(() => {
+    if (isRefreshing || paymentEventSent.current) return;
+    paymentEventSent.current = true;
+    const normalizedPlan = normalizeUserPlan(user?.tier);
+    trackEvent("payment_success", {
+      plan: normalizedPlan === "PRO+" ? "pro_plus" : normalizedPlan.toLowerCase(),
+    });
+  }, [isRefreshing, user?.tier]);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bgSecondary px-4 py-10">

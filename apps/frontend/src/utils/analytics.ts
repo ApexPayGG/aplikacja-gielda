@@ -57,8 +57,24 @@ export function initializeGA4(): void {
   }
 
   window.gtag("js", new Date());
-  window.gtag("config", measurementId);
+  window.gtag("config", measurementId, { send_page_view: false });
   window.__stockAiGaInitialized = true;
+}
+
+export function trackPageView(path: string, title?: string): void {
+  if (typeof window === "undefined" || !canUseAnalytics() || !isGa4Configured()) {
+    return;
+  }
+
+  initializeGA4();
+  const pagePath = path.startsWith("/") ? path : `/${path}`;
+  const pageTitle = title?.trim() || document.title;
+  if (window.gtag) {
+    window.gtag("event", "page_view", {
+      page_path: pagePath,
+      page_title: pageTitle,
+    });
+  }
 }
 
 export function trackEvent(name: string, params?: Record<string, string | number>) {

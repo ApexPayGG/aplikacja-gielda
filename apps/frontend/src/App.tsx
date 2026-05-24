@@ -12,7 +12,7 @@ import { EmotionalStateWidget } from "./components/EmotionalStateWidget";
 import { PageErrorBoundary } from "./components/PageErrorBoundary";
 import { useAuth } from "./context/AuthContext";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
-import { initializeGA4 } from "./utils/analytics";
+import { initializeGA4, trackPageView } from "./utils/analytics";
 import { getCookieConsent, type CookieConsentType } from "./utils/cookieConsent";
 import { GlassAmbient } from "./components/behavioral-coach/GlassAmbient";
 import { hasCompletedOnboarding } from "./utils/onboarding";
@@ -135,6 +135,11 @@ export default function App() {
       initializeGA4();
     }
   }, [cookieConsent]);
+
+  useEffect(() => {
+    if (cookieConsent !== "all") return;
+    trackPageView(`${location.pathname}${location.search}`, document.title);
+  }, [cookieConsent, location.pathname, location.search]);
 
   return (
     <div className={`app-shell min-h-screen ${glassApp ? "glass-app" : ""}`}>
