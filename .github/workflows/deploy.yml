@@ -1,5 +1,12 @@
 # Scheduled Polygon quote ingestion (every 5 min, SSH → docker exec) lives in
 # `.github/workflows/polygon-live-ingest.yml` so pushes to main do not rebuild/deploy on that cadence.
+#
+# DEPLOY ENV AUDIT (LAUNCH.6): The "Create .env.production" step below writes only a subset of
+# production variables. After CI deploy, complete `/root/aplikacja-gielda/.env.production` on the VPS
+# manually from `.env.production.example` — at minimum:
+#   JWT_SECRET, ENCRYPTION_SECRET, STRIPE_* , FRONTEND_BASE_URL, INTERNAL_API_KEY,
+#   MARKET_SIGNALS_SCHEDULER_ENABLED=false, MARKET_SIGNALS_ALLOW_POLYGON_SCHEDULER=false
+# Never commit real secrets. See docs/production-launch-smoke-checklist.md
 name: Deploy
 
 on:

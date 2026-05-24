@@ -7,6 +7,8 @@
 ✅ CI/CD automated deployment
 ✅ SSH key configured
 
+**Launch ops:** [Production smoke checklist](docs/production-launch-smoke-checklist.md) · [Env template](.env.production.example) · [Private beta nginx auth](docs/PRIVATE_BETA_ACCESS.md)
+
 ## Live data ingestion (Polygon → `live_quotes`)
 
 End-to-end flow: GitHub Actions (`.github/workflows/polygon-live-ingest.yml`, every 5 minutes UTC) SSH into the Hetzner host and runs `docker exec stockai-pro node --import tsx/esm scripts/trigger-fetch-quotes.ts`, which enqueues BullMQ job `fetch-quotes`. The API process (`npm run start` / `src/index.ts`) runs a worker that calls Polygon, upserts rows into `live_quotes` (5-minute idempotency via `idempotency_key`), and pushes per-ticker failures to the `fetch-quotes-dlq` queue.
