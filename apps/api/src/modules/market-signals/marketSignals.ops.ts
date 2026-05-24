@@ -88,7 +88,9 @@ export function buildMarketSignalsOpsWarnings(input: {
   databaseStatsUnavailable?: boolean;
   databaseErrorMessage?: string;
 }): string[] {
-  const warnings: string[] = [];
+  const warnings: string[] = [
+    "Provider readiness in this endpoint is env-level only; use GET /ops/provider-check for live entitlement.",
+  ];
 
   if (!input.providerReadiness.polygon.apiKeyConfigured) {
     warnings.push("POLYGON_API_KEY is missing or empty.");

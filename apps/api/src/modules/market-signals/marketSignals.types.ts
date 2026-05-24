@@ -149,3 +149,61 @@ export type MarketSignalsOpsHealthResponse = {
   database: MarketSignalsOpsDatabaseStats;
   warnings: string[];
 };
+
+export const PROVIDER_CHECK_PROVIDERS = ["POLYGON", "EODHD", "SEC", "ALL"] as const;
+
+export type ProviderCheckProvider = (typeof PROVIDER_CHECK_PROVIDERS)[number];
+
+export type ProviderCheckErrorCode =
+  | "MISSING_API_KEY"
+  | "HTTP_401"
+  | "HTTP_403"
+  | "HTTP_ERROR"
+  | "TIMEOUT"
+  | "NETWORK_ERROR";
+
+export type ProviderCheckEndpointResult = {
+  checked: boolean;
+  httpStatus: number | null;
+  ok: boolean;
+  errorCode?: ProviderCheckErrorCode;
+};
+
+export type ProviderCheckEntitledEndpointResult = ProviderCheckEndpointResult & {
+  entitled: boolean;
+};
+
+export type MarketSignalsPolygonProviderCheck = {
+  apiKeyConfigured: boolean;
+  referenceTicker: ProviderCheckEndpointResult;
+  tradesEndpoint: ProviderCheckEntitledEndpointResult;
+  optionsSnapshotEndpoint: ProviderCheckEntitledEndpointResult;
+  usableForMarketSignals: boolean;
+};
+
+export type MarketSignalsEodhdProviderCheck = {
+  apiKeyConfigured: boolean;
+  insiderActivityEndpoint: ProviderCheckEndpointResult & {
+    hasData: boolean | null;
+    sizeBytes?: number;
+  };
+  usableForMarketSignals: boolean;
+};
+
+export type MarketSignalsSecProviderCheck = {
+  userAgentConfigured: boolean;
+  submissionsEndpoint: ProviderCheckEndpointResult;
+  usableForMarketSignals: boolean;
+};
+
+export type MarketSignalsProviderCheckResponse = {
+  ok: boolean;
+  generatedAt: string;
+  ticker: string;
+  checks: {
+    polygon?: MarketSignalsPolygonProviderCheck;
+    eodhd?: MarketSignalsEodhdProviderCheck;
+    sec?: MarketSignalsSecProviderCheck;
+  };
+  warnings: string[];
+};

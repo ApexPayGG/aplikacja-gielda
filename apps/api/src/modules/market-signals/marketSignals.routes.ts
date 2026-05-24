@@ -13,8 +13,12 @@ import {
   fetchAndEnqueueMarketSignal,
   normalizeFetchTicker,
 } from "./marketSignals.fetchers";
-import type { MarketSignalFetchEnqueueResult, MarketSignalsOpsHealthResponse } from "./marketSignals.types";
+import type { MarketSignalFetchEnqueueResult, MarketSignalsOpsHealthResponse, MarketSignalsProviderCheckResponse } from "./marketSignals.types";
 import { buildMarketSignalsOpsHealth } from "./marketSignals.ops";
+import {
+  buildMarketSignalsProviderCheck,
+  parseProviderCheckProvider,
+} from "./marketSignals.providerCheck";
 import {
   clampLookbackDays,
   MarketSignalsService,
@@ -36,6 +40,10 @@ type MarketSignalsRouterDeps = {
   requireAuthMiddleware: typeof requireAuth;
   requireAdminOrInternalMiddleware: typeof requireAdminOrInternal;
   getOpsHealth?: () => Promise<MarketSignalsOpsHealthResponse>;
+  runProviderCheck?: (input: {
+    provider: NonNullable<ReturnType<typeof parseProviderCheckProvider>>;
+    ticker: string;
+  }) => Promise<MarketSignalsProviderCheckResponse>;
 };
 
 function parseOptionalNumber(raw: unknown): number | undefined {
@@ -57,6 +65,9 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
     requireAdminOrInternalMiddleware:
       depsInput?.requireAdminOrInternalMiddleware ?? requireAdminOrInternal,
     getOpsHealth: depsInput?.getOpsHealth ?? buildMarketSignalsOpsHealth,
+    runProviderCheck:
+      depsInput?.runProviderCheck ??
+      ((input) => buildMarketSignalsProviderCheck({ provider: input.provider, ticker: input.ticker })),
   };
 
   const writeGuard = deps.requireAdminOrInternalMiddleware;
@@ -71,6 +82,32 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
       try {
         void getAuthenticatedUserId(req);
         const result = await deps.getOpsHealth!();
+        res.json(result);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  router.get(
+    "/api/v1/market-signals/ops/provider-check",
+    writeGuard,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        void getAuthenticatedUserId(req);
+        const provider = parseProviderCheckProvider(req.query.provider);
+        if (provider == null) {
+          res.status(400).json({ error: "provider must be one of POLYGON, EODHD, SEC, or ALL" });
+          return;
+        }
+
+        const tickerRaw = String(req.query.ticker ?? "AAPL").trim();
+        if (!normalizeFetchTicker(tickerRaw)) {
+          res.status(400).json({ error: "ticker must match /^[A-Z0-9.\\-]{1,16}$/i" });
+          return;
+        }
+
+        const result = await deps.runProviderCheck!({ provider, ticker: tickerRaw });
         res.json(result);
       } catch (error) {
         next(error);
