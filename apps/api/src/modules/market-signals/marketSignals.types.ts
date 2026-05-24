@@ -75,3 +75,29 @@ export type SummarizableMarketSignal = {
   signalType: MarketSignalType;
   confidenceScore: number;
 };
+
+export type MarketSignalFetchErrorCode =
+  | "MISSING_API_KEY"
+  | "MISSING_SEC_USER_AGENT"
+  | "HTTP_ERROR"
+  | "TIMEOUT"
+  | "PROVIDER_ERROR"
+  | "INVALID_TICKER";
+
+export type MarketSignalFetchResult = {
+  ok: boolean;
+  provider: MarketSignalProvider;
+  ticker: string;
+  payload: unknown;
+  errorCode?: MarketSignalFetchErrorCode;
+  statusCode?: number;
+};
+
+export type MarketSignalFetchEnqueueResult = {
+  queued: boolean;
+  provider: MarketSignalProvider;
+  ticker: string;
+  fetchOk: boolean;
+  errorCode?: MarketSignalFetchErrorCode;
+  jobId?: string;
+};

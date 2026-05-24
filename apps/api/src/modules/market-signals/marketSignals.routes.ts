@@ -9,6 +9,11 @@ import type { MarketSignalIngestionService } from "./marketSignals.ingestion";
 import { enqueueProviderPayload } from "./marketSignals.queue";
 import type { MarketSignalsQueueAddInput, MarketSignalEnqueueResult } from "./marketSignals.queue";
 import {
+  fetchAndEnqueueMarketSignal,
+  normalizeFetchTicker,
+} from "./marketSignals.fetchers";
+import type { MarketSignalFetchEnqueueResult } from "./marketSignals.types";
+import {
   clampLookbackDays,
   MarketSignalsService,
   marketSignalsService,
@@ -20,6 +25,12 @@ type MarketSignalsRouterDeps = {
   service: MarketSignalsService;
   ingestionService: MarketSignalIngestionService;
   enqueueProviderPayload: (input: MarketSignalsQueueAddInput) => Promise<MarketSignalEnqueueResult>;
+  fetchAndEnqueueMarketSignal: (input: {
+    provider: string;
+    ticker: string;
+    requestedByUserId?: string;
+    reason?: string;
+  }) => Promise<MarketSignalFetchEnqueueResult>;
   requireAuthMiddleware: typeof requireAuth;
 };
 
@@ -37,6 +48,7 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
       depsInput?.ingestionService ??
       createMarketSignalIngestionService({ marketSignalService: service }),
     enqueueProviderPayload: depsInput?.enqueueProviderPayload ?? enqueueProviderPayload,
+    fetchAndEnqueueMarketSignal: depsInput?.fetchAndEnqueueMarketSignal ?? fetchAndEnqueueMarketSignal,
     requireAuthMiddleware: depsInput?.requireAuthMiddleware ?? requireAuth,
   };
 
@@ -146,6 +158,51 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
           reason: reason || undefined,
         });
         res.status(202).json(result);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  router.post(
+    "/api/v1/market-signals/provider-fetch-enqueue",
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const userId = getAuthenticatedUserId(req);
+        // TODO: replace with admin/internal auth before production external use
+        const body = req.body as Record<string, unknown>;
+        const provider = parseMarketSignalProvider(body.provider);
+        if (!provider) {
+          res.status(400).json({ error: "provider must be a supported market signal provider" });
+          return;
+        }
+
+        const tickerRaw = String(body.ticker ?? "").trim();
+        if (!tickerRaw) {
+          res.status(400).json({ error: "ticker is required" });
+          return;
+        }
+        if (!normalizeFetchTicker(tickerRaw)) {
+          res.status(400).json({ error: "ticker must match /^[A-Z0-9.\\-]{1,16}$/i" });
+          return;
+        }
+
+        const reasonRaw = body.reason;
+        const reason = typeof reasonRaw === "string" ? reasonRaw.trim() : undefined;
+
+        const result = await deps.fetchAndEnqueueMarketSignal({
+          provider,
+          ticker: tickerRaw,
+          requestedByUserId: userId,
+          reason: reason || undefined,
+        });
+
+        if (!result.queued && result.errorCode === "INVALID_TICKER") {
+          res.status(400).json({ error: "ticker must match /^[A-Z0-9.\\-]{1,16}$/i" });
+          return;
+        }
+
+        res.status(result.queued ? 202 : 200).json(result);
       } catch (error) {
         next(error);
       }
