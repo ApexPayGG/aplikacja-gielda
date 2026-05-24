@@ -3,7 +3,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { Router } from "express";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db/index";
-import { requireAuth } from "../modules/auth/authMiddleware";
+import { getAuthenticatedUserId, requireAuth } from "../modules/auth/authMiddleware";
 import {
   ConversionImportService,
   type ConversionImportResult,
@@ -77,15 +77,40 @@ function parseBrokerWriteInput(body: BrokerWriteBody) {
   };
 }
 
-export function createAdminAffiliateRouter(): Router {
+type AdminAffiliateRouteDeps = {
+  db?: typeof prisma;
+  requireAuthMiddleware?: typeof requireAuth;
+};
+
+export function createAdminAffiliateRouter(inputDeps?: AdminAffiliateRouteDeps): Router {
   const router = Router();
+  const db = inputDeps?.db ?? prisma;
+  const requireAuthMiddleware = inputDeps?.requireAuthMiddleware ?? requireAuth;
   const conversionImportService = new ConversionImportService();
-  router.use("/api/admin", requireAuth);
-  router.use("/api/v1/admin", requireAuth);
+
+  const requireAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = getAuthenticatedUserId(req);
+      const user = await db.user.findUnique({
+        where: { id: userId },
+        select: { role: true },
+      });
+      if (!user || user.role !== "ADMIN") {
+        res.status(403).json({ error: "Forbidden" });
+        return;
+      }
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  router.use("/api/admin", requireAuthMiddleware, requireAdmin);
+  router.use("/api/v1/admin", requireAuthMiddleware, requireAdmin);
 
   router.get("/api/admin/affiliate/brokers", async (_req: Request, res: Response, next: NextFunction) => {
     try {
-      const brokers = await prisma.affiliateBroker.findMany({
+      const brokers = await db.affiliateBroker.findMany({
         orderBy: [{ priority: "asc" }, { displayName: "asc" }],
       });
       res.json({ brokers });
@@ -100,7 +125,7 @@ export function createAdminAffiliateRouter(): Router {
       try {
         const slug = String(req.params.slug ?? "").trim().toLowerCase();
         if (!slug) return res.status(400).json({ error: "Missing slug" });
-        const broker = await prisma.affiliateBroker.findUnique({ where: { slug } });
+        const broker = await db.affiliateBroker.findUnique({ where: { slug } });
         if (!broker) return res.status(404).json({ error: "Broker not found" });
         res.json({ broker });
       } catch (error) {
@@ -112,7 +137,7 @@ export function createAdminAffiliateRouter(): Router {
   router.post("/api/admin/affiliate/brokers", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const input = parseBrokerWriteInput(req.body as BrokerWriteBody);
-      const broker = await prisma.affiliateBroker.create({ data: input });
+      const broker = await db.affiliateBroker.create({ data: input });
       res.status(201).json({ broker });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Invalid payload";
@@ -196,7 +221,7 @@ export function createAdminAffiliateRouter(): Router {
           riskWarning:
             body.riskWarning !== undefined ? toJsonField(body.riskWarning) : undefined,
         };
-        const broker = await prisma.affiliateBroker.update({
+        const broker = await db.affiliateBroker.update({
           where: { slug },
           data: partial,
         });
@@ -213,7 +238,7 @@ export function createAdminAffiliateRouter(): Router {
       try {
         const slug = String(req.params.slug ?? "").trim().toLowerCase();
         if (!slug) return res.status(400).json({ error: "Missing slug" });
-        await prisma.affiliateBroker.delete({ where: { slug } });
+        await db.affiliateBroker.delete({ where: { slug } });
         res.json({ deleted: true });
       } catch (error) {
         next(error);
@@ -269,23 +294,23 @@ export function createAdminAffiliateRouter(): Router {
       const convWhere = since ? { recordedAt: { gte: since } } : {};
 
       const [clicks, conversions, byBroker, byCountry, bySource] = await Promise.all([
-        prisma.affiliateClick.count({ where: clickWhere }),
-        prisma.affiliateConversion.findMany({
+        db.affiliateClick.count({ where: clickWhere }),
+        db.affiliateConversion.findMany({
           where: convWhere,
           select: { conversionType: true, commissionAmount: true },
         }),
-        prisma.affiliateConversion.groupBy({
+        db.affiliateConversion.groupBy({
           by: ["brokerId"],
           where: convWhere,
           _count: { _all: true },
           _sum: { commissionAmount: true },
         }),
-        prisma.affiliateClick.groupBy({
+        db.affiliateClick.groupBy({
           by: ["countryCode"],
           where: clickWhere,
           _count: { _all: true },
         }),
-        prisma.affiliateClick.groupBy({
+        db.affiliateClick.groupBy({
           by: ["sourcePage"],
           where: clickWhere,
           _count: { _all: true },
@@ -294,7 +319,7 @@ export function createAdminAffiliateRouter(): Router {
 
       const brokerMap = new Map(
         (
-          await prisma.affiliateBroker.findMany({
+          await db.affiliateBroker.findMany({
             select: { id: true, slug: true, displayName: true },
           })
         ).map((b) => [b.id, b]),
@@ -332,7 +357,7 @@ export function createAdminAffiliateRouter(): Router {
     try {
       const brokerSlug = String(req.params.brokerSlug ?? "").trim().toLowerCase();
       if (!brokerSlug) return res.status(400).json({ error: "Missing brokerSlug" });
-      const broker = await prisma.affiliateBroker.findUnique({ where: { slug: brokerSlug } });
+      const broker = await db.affiliateBroker.findUnique({ where: { slug: brokerSlug } });
       if (!broker) return res.status(404).json({ error: "Broker not found" });
 
       const incomingSig = String(req.headers["x-signature"] ?? "");
@@ -359,9 +384,9 @@ export function createAdminAffiliateRouter(): Router {
       const conversionDateRaw = String(payload.conversion_date ?? payload.date ?? "");
       const conversionDate = conversionDateRaw ? new Date(conversionDateRaw) : new Date();
       const matchedClick = clickIdRef
-        ? await prisma.affiliateClick.findUnique({ where: { clickId: clickIdRef } })
+        ? await db.affiliateClick.findUnique({ where: { clickId: clickIdRef } })
         : null;
-      await prisma.affiliateConversion.create({
+      await db.affiliateConversion.create({
         data: {
           clickIdRef,
           brokerId: broker.id,

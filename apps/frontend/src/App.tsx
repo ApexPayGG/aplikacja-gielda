@@ -226,7 +226,16 @@ export default function App() {
               <Route path="/dividend-screener" element={<DividendPage />} />
               <Route path="/dividend/intelligence" element={<ProtectedRoute><DividendIntelligencePage /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><AdminOnlyRoute><AdminPage /></AdminOnlyRoute></ProtectedRoute>} />
-              <Route path="/admin/affiliate" element={<ProtectedRoute><AdminAffiliatePage /></ProtectedRoute>} />
+              <Route
+                path="/admin/affiliate"
+                element={
+                  <ProtectedRoute>
+                    <AdminOnlyRoute>
+                      <AdminAffiliatePage />
+                    </AdminOnlyRoute>
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
               <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
               <Route

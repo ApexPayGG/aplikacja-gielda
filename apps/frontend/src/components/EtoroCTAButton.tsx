@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { api } from "../services/api";
+import { api, getAffiliateBrokers } from "../services/api";
 import { colors } from "../styles/designSystem";
+import { trackEvent } from "../utils/analytics";
+import { DisclosureNote } from "./affiliate/DisclosureNote";
 
 type EtoroCTAButtonProps = {
   sourcePage: string;
@@ -9,6 +11,8 @@ type EtoroCTAButtonProps = {
   signalId?: string;
   className?: string;
 };
+
+const ETORO_BROKER = { slug: "etoro" } as const;
 
 const ETORO_LINKS: Record<string, string> = {
   pl: "https://med.etoro.com/B9219_A129734_TClick_Sstockaipro-main.aspx",
@@ -32,6 +36,24 @@ function getEtoroFallbackLink(lang: string): string {
 export function EtoroCTAButton({ sourcePage, ticker, signalId, className = "" }: EtoroCTAButtonProps) {
   const { t, i18n } = useTranslation("common");
   const [isLoading, setIsLoading] = useState(false);
+  const [trackingAvailable, setTrackingAvailable] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getAffiliateBrokers();
+        if (cancelled) return;
+        const hasActiveEtoro = data.brokers.some((broker) => broker.slug.trim().toLowerCase() === "etoro");
+        setTrackingAvailable(hasActiveEtoro);
+      } catch {
+        if (!cancelled) setTrackingAvailable(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleClick = async (): Promise<void> => {
     const lang = normalizeLanguage(i18n.resolvedLanguage || i18n.language || "en");
@@ -40,16 +62,23 @@ export function EtoroCTAButton({ sourcePage, ticker, signalId, className = "" }:
 
     try {
       setIsLoading(true);
-      const { data } = await api.post<{ url?: string }>("/affiliate/click", {
-        broker: "etoro",
-        lang,
-        page: sourcePage,
-        ticker,
-        signalId,
-      });
-      const redirectUrl = typeof data?.url === "string" && data.url.trim() ? data.url : fallbackUrl;
-      window.location.assign(redirectUrl);
+      if (trackingAvailable) {
+        const { data } = await api.post<{ url?: string }>("/affiliate/click", {
+          broker: "etoro",
+          lang,
+          page: sourcePage,
+          ticker,
+          signalId,
+        });
+        const redirectUrl = typeof data?.url === "string" && data.url.trim() ? data.url : fallbackUrl;
+        trackEvent("affiliate_click", { broker: "etoro", tracked: "true" });
+        window.location.assign(redirectUrl);
+        return;
+      }
+      trackEvent("affiliate_click", { broker: "etoro", tracked: "false" });
+      window.location.assign(fallbackUrl);
     } catch {
+      trackEvent("affiliate_click", { broker: "etoro", tracked: "false" });
       window.location.assign(fallbackUrl);
     } finally {
       setIsLoading(false);
@@ -57,7 +86,8 @@ export function EtoroCTAButton({ sourcePage, ticker, signalId, className = "" }:
   };
 
   return (
-    <div className={`space-y-2 ${className}`.trim()}>
+    <div className={`space-y-3 ${className}`.trim()}>
+      <DisclosureNote broker={ETORO_BROKER} variant="full" />
       <button
         type="button"
         onClick={() => void handleClick()}
@@ -72,9 +102,6 @@ export function EtoroCTAButton({ sourcePage, ticker, signalId, className = "" }:
           ? t("common.loading", { defaultValue: "Loading..." })
           : t("etoro.cta", { defaultValue: "Open account on eToro" })}
       </button>
-      <p className="text-xs" style={{ color: colors.textSecondary }}>
-        {t("etoro.subtitle", { defaultValue: "Trade stocks through a licensed broker" })}
-      </p>
     </div>
   );
 }
