@@ -458,13 +458,22 @@ export function SettingsPage() {
                   {currentPlan}
                 </span>
               </div>
-              <button
-                type="button"
-                className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:brightness-110"
-                style={{ background: `linear-gradient(130deg, ${colors.brandDark}, ${colors.brandMedium})` }}
-              >
-                Upgrade plan
-              </button>
+              {currentPlan === "FREE" ? (
+                <Link
+                  to="/pricing"
+                  className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:brightness-110"
+                  style={{ background: `linear-gradient(130deg, ${colors.brandDark}, ${colors.brandMedium})` }}
+                >
+                  Upgrade plan
+                </Link>
+              ) : (
+                <p className="text-sm text-white/80">
+                  {t("settingsPageSections.planActive", {
+                    plan: currentPlan,
+                    defaultValue: "Your {{plan}} plan is active.",
+                  })}
+                </p>
+              )}
             </div>
             <div className="mt-4 rounded-xl border border-brandCyan/40 bg-brandCyan/10 p-4">
               <p className="text-sm text-white">

@@ -13,6 +13,7 @@ import { createStripeCheckoutSession } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
+import { normalizeUserPlan } from "../utils/subscriptionTier";
 
 type Tier = "FREE" | "PRO" | "PRO_PLUS";
 
@@ -55,18 +56,11 @@ function resolveVerdict(score: number, label: string | undefined): "BULL" | "BEA
   return "NEUTRAL";
 }
 
-function readTier(): Tier {
-  if (typeof window === "undefined") return "FREE";
-  const raw = (window.localStorage.getItem("userTier") || "FREE").toUpperCase();
-  if (raw === "PRO_PLUS") return "PRO_PLUS";
-  if (raw === "PRO") return "PRO";
+function toPremiumTier(tier: string | null | undefined): Tier {
+  const plan = normalizeUserPlan(tier);
+  if (plan === "PRO+") return "PRO_PLUS";
+  if (plan === "PRO") return "PRO";
   return "FREE";
-}
-
-function readUserId(): string {
-  if (typeof window === "undefined") return "";
-  const raw = window.localStorage.getItem("userId");
-  return raw && raw.trim() ? raw.trim() : "";
 }
 
 function monthBucket(): string {
@@ -98,10 +92,10 @@ function readTrackedTickers(key: string): string[] {
 export function PremiumCompanyAnalysis() {
   const { symbol = "" } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const ticker = decodeURIComponent(symbol).toUpperCase();
-  const [userTier] = useState<Tier>(() => readTier());
-  const [userId] = useState<string>(() => readUserId());
+  const userId = user?.id ?? "";
+  const userTier = useMemo(() => toPremiumTier(user?.tier), [user?.tier]);
   const [monthlyCount, setMonthlyCount] = useState(0);
   const [isUpgrading, setIsUpgrading] = useState(false);
   const {
@@ -124,15 +118,16 @@ export function PremiumCompanyAnalysis() {
   const typedCatch = catchData as PremiumCatchResponse | null;
 
   const lockedFrom = useMemo(() => {
+    if (isAuthLoading) return undefined;
     if (userTier === "PRO_PLUS") return undefined;
     if (userTier === "PRO") return 5;
     return 2;
-  }, [userTier]);
+  }, [isAuthLoading, userTier]);
   const usageLimit = useMemo(() => getUsageLimit(userTier), [userTier]);
   const overLimit = Number.isFinite(usageLimit) ? monthlyCount >= usageLimit : false;
 
   useEffect(() => {
-    if (!ticker) return;
+    if (!ticker || isAuthLoading) return;
     const bucket = monthBucket();
     const usageKey = `premium-usage:${userId}:${bucket}`;
     const tickersKey = trackedTickersKey(userId, bucket);
@@ -158,15 +153,15 @@ export function PremiumCompanyAnalysis() {
     return () => {
       reset();
     };
-  }, [loadAnalysis, reset, ticker, usageLimit, userId]);
+  }, [isAuthLoading, loadAnalysis, reset, ticker, usageLimit, userId]);
 
   useEffect(() => {
     if (!ticker) return;
     trackEvent("premium_analysis_view", { symbol: ticker });
   }, [ticker]);
 
-  const isScreenLocked = lockedFrom != null && currentScreen >= lockedFrom;
-  const showUpgradeBlock = overLimit || isScreenLocked;
+  const isScreenLocked = !isAuthLoading && lockedFrom != null && currentScreen >= lockedFrom;
+  const showUpgradeBlock = !isAuthLoading && (overLimit || isScreenLocked);
 
   const verdictTone = useMemo(
     () => resolveVerdict(typedVerdict?.score ?? 50, typedVerdict?.label),
@@ -550,7 +545,7 @@ export function PremiumCompanyAnalysis() {
             </div>
           </div>
           <span className="rounded-full px-4 py-2 text-xs font-semibold text-white" style={{ backgroundColor: colors.brandDark }}>
-            {formatTierLabel(userTier)}
+            {isAuthLoading ? "..." : formatTierLabel(userTier)}
           </span>
         </header>
 
