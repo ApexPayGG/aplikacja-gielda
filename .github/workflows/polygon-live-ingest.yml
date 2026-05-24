@@ -1,12 +1,9 @@
-# Triggers Polygon live quote ingestion on the Hetzner host every 5 minutes (UTC).
-# Full CI/CD deploy stays in deploy.yml — this workflow only enqueues BullMQ work inside the running API container.
+# Manually triggers Polygon live quote ingestion on the Hetzner host.
+# This workflow only enqueues BullMQ work inside the running API container and is intentionally manual.
 name: Polygon live ingest
 
 on:
-  schedule:
-    - cron: "*/5 * * * *"
   workflow_dispatch:
-
 jobs:
   trigger-ingest:
     runs-on: ubuntu-latest
@@ -27,3 +24,5 @@ jobs:
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
             "${HETZNER_USER}@${HETZNER_IP}" \
             'docker exec stockai-api-prod npm run -s job:fetch-quotes || { echo "--- stockai-api-prod logs (tail) ---"; docker logs --tail 120 stockai-api-prod 2>&1; exit 1; }'
+
+
