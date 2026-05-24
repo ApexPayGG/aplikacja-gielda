@@ -101,3 +101,51 @@ export type MarketSignalFetchEnqueueResult = {
   errorCode?: MarketSignalFetchErrorCode;
   jobId?: string;
 };
+
+export type MarketSignalsOpsProviderReadiness = {
+  polygon: {
+    apiKeyConfigured: boolean;
+    usable: boolean;
+  };
+  eodhd: {
+    apiKeyConfigured: boolean;
+    usable: boolean;
+  };
+  sec: {
+    userAgentConfigured: boolean;
+    usable: boolean;
+  };
+};
+
+export type MarketSignalsOpsQueueStats = {
+  name: "market-signals-ingestion-queue";
+  waiting: number;
+  active: number;
+  delayed: number;
+  completed: number;
+  failed: number;
+};
+
+export type MarketSignalsOpsDatabaseStats = {
+  totalSignals24h: number;
+  totalSignals7d: number;
+  byType24h: Partial<Record<MarketSignalType, number>>;
+  bySource24h: Record<string, number>;
+  latestSignalAt: string | null;
+};
+
+export type MarketSignalsOpsHealthResponse = {
+  ok: boolean;
+  generatedAt: string;
+  scheduler: {
+    enabled: boolean;
+    intervalMinutes: number;
+    maxTickers: number;
+    configuredTickers: string[];
+    configuredProviders: MarketSignalProvider[];
+  };
+  providerReadiness: MarketSignalsOpsProviderReadiness;
+  queue: MarketSignalsOpsQueueStats;
+  database: MarketSignalsOpsDatabaseStats;
+  warnings: string[];
+};

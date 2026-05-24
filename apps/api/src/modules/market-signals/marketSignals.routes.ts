@@ -13,7 +13,8 @@ import {
   fetchAndEnqueueMarketSignal,
   normalizeFetchTicker,
 } from "./marketSignals.fetchers";
-import type { MarketSignalFetchEnqueueResult } from "./marketSignals.types";
+import type { MarketSignalFetchEnqueueResult, MarketSignalsOpsHealthResponse } from "./marketSignals.types";
+import { buildMarketSignalsOpsHealth } from "./marketSignals.ops";
 import {
   clampLookbackDays,
   MarketSignalsService,
@@ -34,6 +35,7 @@ type MarketSignalsRouterDeps = {
   }) => Promise<MarketSignalFetchEnqueueResult>;
   requireAuthMiddleware: typeof requireAuth;
   requireAdminOrInternalMiddleware: typeof requireAdminOrInternal;
+  getOpsHealth?: () => Promise<MarketSignalsOpsHealthResponse>;
 };
 
 function parseOptionalNumber(raw: unknown): number | undefined {
@@ -54,12 +56,27 @@ export function createMarketSignalsRouter(depsInput?: Partial<MarketSignalsRoute
     requireAuthMiddleware: depsInput?.requireAuthMiddleware ?? requireAuth,
     requireAdminOrInternalMiddleware:
       depsInput?.requireAdminOrInternalMiddleware ?? requireAdminOrInternal,
+    getOpsHealth: depsInput?.getOpsHealth ?? buildMarketSignalsOpsHealth,
   };
 
   const writeGuard = deps.requireAdminOrInternalMiddleware;
 
   const router = Router();
   router.use("/api/v1/market-signals", deps.requireAuthMiddleware);
+
+  router.get(
+    "/api/v1/market-signals/ops/health",
+    writeGuard,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        void getAuthenticatedUserId(req);
+        const result = await deps.getOpsHealth!();
+        res.json(result);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
 
   router.get("/api/v1/market-signals/:ticker", async (req: Request, res: Response, next: NextFunction) => {
     try {
