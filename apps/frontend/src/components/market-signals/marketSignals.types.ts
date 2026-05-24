@@ -38,6 +38,22 @@ export type MarketSignalsResponse = {
 
 export type ConfidenceTier = "high" | "medium" | "low";
 
+const SOURCE_LABELS: Record<string, string> = {
+  "eodhd-insider-activity": "EODHD Insider Activity",
+  "polygon-dark-pool": "Polygon Dark Pool",
+  "polygon-options-flow": "Polygon Options Flow",
+  "sec-filings": "SEC Filings",
+};
+
+export const CONFIDENCE_TIER_HINTS: Record<ConfidenceTier, string> = {
+  high: "≥80",
+  medium: "60–79",
+  low: "<60",
+};
+
+export const MARKET_SIGNALS_READONLY_FOOTNOTE =
+  "Institutional signals are read-only and generated from configured providers. This panel never triggers provider fetches.";
+
 export function getSignalTypeLabel(signalType: MarketSignalType): string {
   switch (signalType) {
     case "DARK_POOL":
@@ -63,19 +79,54 @@ export function getConfidenceTier(score: number): ConfidenceTier {
   return "low";
 }
 
+export function getConfidenceTierLabel(tier: ConfidenceTier): string {
+  switch (tier) {
+    case "high":
+      return "High";
+    case "medium":
+      return "Medium";
+    case "low":
+      return "Low";
+  }
+}
+
+export function getSourceLabel(source: string): string {
+  const normalized = source.trim().toLowerCase();
+  if (SOURCE_LABELS[normalized]) return SOURCE_LABELS[normalized];
+  return source
+    .split(/[-_]/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function formatPayloadFieldLabel(key: string): string {
+  return key
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[-_]/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatPayloadScalar(value: unknown): string | null {
+  if (value == null || value === "") return null;
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+  return null;
+}
+
 export function summarizeRawPayload(raw: unknown, maxFields = 5): string[] {
   if (raw == null || typeof raw !== "object" || Array.isArray(raw)) return [];
   const lines: string[] = [];
   for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
     if (lines.length >= maxFields) break;
-    if (value == null || value === "") continue;
-    if (typeof value === "object") {
-      const preview = JSON.stringify(value);
-      lines.push(`${key}: ${preview.length > 72 ? `${preview.slice(0, 72)}…` : preview}`);
-      continue;
-    }
-    const text = String(value);
-    lines.push(`${key}: ${text.length > 72 ? `${text.slice(0, 72)}…` : text}`);
+    const formatted = formatPayloadScalar(value);
+    if (formatted == null) continue;
+    const text = formatted.length > 72 ? `${formatted.slice(0, 72)}…` : formatted;
+    lines.push(`${formatPayloadFieldLabel(key)}: ${text}`);
   }
   return lines;
 }

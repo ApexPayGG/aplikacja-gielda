@@ -6,6 +6,7 @@ import { GLASS_SECTION } from "../behavioral-coach/glassStyles";
 import { MarketSignalCard } from "./MarketSignalCard";
 import { MarketSignalsEmptyState } from "./MarketSignalsEmptyState";
 import { MarketSignalsSkeleton } from "./MarketSignalsSkeleton";
+import { MarketSignalsFootnote } from "./MarketSignalsFootnote";
 import { MarketSignalsSummary } from "./MarketSignalsSummary";
 import type { MarketSignalsResponse } from "./marketSignals.types";
 
@@ -98,10 +99,12 @@ export function MarketSignalsPanel({ ticker, lookbackDays = 30, compact = false 
       </div>
 
       {compact && data.signals.length > visibleSignals.length ? (
-        <p className="mt-3 text-xs text-[#64748b]">
-          +{data.signals.length - visibleSignals.length} more signals in the last {data.lookbackDays} days
+        <p className="mt-3 text-xs font-medium text-[#94a3b8]">
+          +{data.signals.length - visibleSignals.length} more signals
         </p>
       ) : null}
+
+      <MarketSignalsFootnote compact={compact} showConfidenceLegend={!compact} />
     </div>
   );
 }

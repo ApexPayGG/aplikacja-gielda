@@ -33,7 +33,10 @@ export function MarketSignalsSummary({ summary, compact = false }: Props) {
       <div className={`grid gap-2 ${compact ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-4"}`}>
         <StatBlock label="Total signals" value={String(summary.total)} />
         <StatBlock label="Strongest type" value={strongestLabel} />
-        <StatBlock label="Avg confidence" value={`${Math.round(summary.averageConfidenceScore)}%`} />
+        <StatBlock
+          label="Avg confidence"
+          value={`${Math.round(summary.averageConfidenceScore)}%`}
+        />
         <StatBlock
           label="Whale activity"
           value={summary.whaleAccumulationDetected ? "Yes" : "No"}
