@@ -58,6 +58,14 @@ import { registerMarketSignalsScheduler } from "./modules/market-signals/marketS
 const QUEUE_NAME = "market-scrape";
 const SYMBOLS = ["AAPL", "GOOGL", "MSFT"] as const;
 
+function isPolygonLiveQuotesEnabled(): boolean {
+  return process.env.POLYGON_LIVE_QUOTES_ENABLED?.trim() === "true";
+}
+
+function hasPolygonApiKey(): boolean {
+  return Boolean(process.env.POLYGON_API_KEY?.trim());
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -296,7 +304,7 @@ export async function startScheduler(): Promise<void> {
   });
   await scheduleScanSignalsJob(scanQueue);
 
-  if (process.env.POLYGON_API_KEY) {
+  if (isPolygonLiveQuotesEnabled() && hasPolygonApiKey()) {
     const { queue: fetchQuotesQueue, worker: fetchQuotesWorker } = registerFetchPolygonQuotes(
       fetchQuotesConn,
       fetchQuotesWorkerConn,
@@ -319,8 +327,12 @@ export async function startScheduler(): Promise<void> {
       });
     });
     await scheduleFetchPolygonQuotesJob(fetchQuotesQueue);
-  } else {
+  } else if (isPolygonLiveQuotesEnabled() && !hasPolygonApiKey()) {
     console.log("[scheduler] Polygon live quotes: disabled (POLYGON_API_KEY not set)");
+  } else {
+    console.log(
+      "[scheduler] Polygon live quotes: disabled (POLYGON_LIVE_QUOTES_ENABLED is not true)",
+    );
   }
 
   // Register process signal worker
@@ -410,7 +422,7 @@ export async function startScheduler(): Promise<void> {
   console.log("[scheduler] Alpha calendar: daily @ 07:00 UTC (queue alpha-calendar)");
   console.log("[scheduler] Market events sync: weekdays @ 05:30 UTC (queue market-events-sync)");
   console.log("[scheduler] Market events digest: weekdays @ 07:00 UTC (queue market-events-digest)");
-  if (process.env.POLYGON_API_KEY) {
+  if (isPolygonLiveQuotesEnabled() && hasPolygonApiKey()) {
     console.log("[scheduler] Polygon live quotes: every 5 min Mon–Fri UTC (queue fetch-quotes)");
   }
 }

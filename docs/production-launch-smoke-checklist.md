@@ -100,6 +100,20 @@ curl -fsS https://stock-ai.pro/api/health
 
 **Pass criteria:** `/health` returns 200; frontend HTML contains `<div id="root">` or app shell; no crash loop in API logs.
 
+**Polygon live quotes (`fetch-quotes` repeat job):** On API restart, the BullMQ repeat job is registered **only** when `POLYGON_LIVE_QUOTES_ENABLED=true` **and** `POLYGON_API_KEY` is set. With the default `POLYGON_LIVE_QUOTES_ENABLED=false`, logs should show:
+
+`[scheduler] Polygon live quotes: disabled (POLYGON_LIVE_QUOTES_ENABLED is not true)`
+
+Do **not** enable until Polygon entitlement is confirmed (e.g. provider-check). After deploy, verify the repeat job is **absent** unless explicitly enabled:
+
+```bash
+grep POLYGON_LIVE_QUOTES_ENABLED /root/aplikacja-gielda/.env.production
+docker logs stockai-api-prod --tail=200 2>&1 | grep -i 'polygon live quotes'
+# Optional: inspect BullMQ repeat jobs in Redis (fetch-quotes queue) — should be empty when disabled
+```
+
+Manual one-shot ingest (`npm run job:fetch-quotes` / GitHub polygon-live-ingest workflow) remains available when `POLYGON_API_KEY` is set; it does not require `POLYGON_LIVE_QUOTES_ENABLED`.
+
 ---
 
 ## 4. Stripe smoke
@@ -267,6 +281,10 @@ docker exec stockai-api-prod curl -sS \
 # Scheduler must stay disabled unless canary signed off
 grep MARKET_SIGNALS_SCHEDULER_ENABLED /root/aplikacja-gielda/.env.production
 # Expected: false or unset
+
+# Polygon live quotes repeat job (fetch-quotes) — separate flag; keep false unless entitlement confirmed
+grep POLYGON_LIVE_QUOTES_ENABLED /root/aplikacja-gielda/.env.production
+# Expected: false or unset (see §3 Core health)
 
 # Institutional evidence - no JWT -> 401
 docker exec stockai-api-prod curl -sS -w "\n%{http_code}" \
