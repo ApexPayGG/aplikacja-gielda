@@ -59,6 +59,11 @@ import { createPaperTradingRouter } from "./routes/paperTrading";
 import { createExitIntelligenceRouter } from "./routes/exitIntelligence";
 import { createAnalysisRouter, createCompanyBriefHandler } from "./routes/analysis";
 import { createAiBriefRateLimitMiddleware } from "./services/aiBriefRateLimit";
+import { requireAuth } from "./modules/auth/authMiddleware";
+import {
+  requireActiveAccess,
+  requireActiveAccessIfAuthenticated,
+} from "./middleware/requireActiveAccess";
 import { createPremiumLlmRateLimitMiddleware } from "./services/premiumLlmRateLimit";
 import { optionalAuth } from "./modules/auth/authMiddleware";
 import { createQuotesRouter } from "./routes/quotes";
@@ -273,7 +278,7 @@ export function createApp(): express.Express {
   app.use(createAdminAffiliateRouter());
   const premiumLlmRateLimit = createPremiumLlmRateLimitMiddleware({ prisma });
   const premiumRouter = createPremiumCompanyRouter(prisma);
-  app.use("/api/premium", premiumLlmRateLimit, premiumRouter);
+  app.use("/api/premium", requireAuth, requireActiveAccess, premiumLlmRateLimit, premiumRouter);
   app.use(createHistoricalTwinsRouter(prisma));
   app.use("/api/position-size", createPositionSizeRouter(prisma));
   app.use("/api/stress-test", createStressTestRouter(prisma));
@@ -405,9 +410,9 @@ export function createApp(): express.Express {
 
   const aiBriefRateLimit = createAiBriefRateLimitMiddleware({ prisma });
   const handleCompanyBrief = createCompanyBriefHandler({ prisma });
-  app.use("/api/brief", aiBriefRateLimit, createAnalysisRouter({ prisma }));
-  app.use("/api/analysis", aiBriefRateLimit, createAnalysisRouter({ prisma }));
-  app.get("/api/companies/:symbol/brief", aiBriefRateLimit, optionalAuth, handleCompanyBrief);
+  app.use("/api/brief", optionalAuth, requireActiveAccessIfAuthenticated, aiBriefRateLimit, createAnalysisRouter({ prisma }));
+  app.use("/api/analysis", optionalAuth, requireActiveAccessIfAuthenticated, aiBriefRateLimit, createAnalysisRouter({ prisma }));
+  app.get("/api/companies/:symbol/brief", optionalAuth, requireActiveAccessIfAuthenticated, aiBriefRateLimit, handleCompanyBrief);
 
   app.get("/api/companies/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {

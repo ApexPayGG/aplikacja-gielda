@@ -1,7 +1,7 @@
 # Audyt pricingu StockAI Pro - migracja USD -> EUR
 
 **Data audytu:** 2026-05-22  
-**Ostatnia aktualizacja:** PRICING.1 (2026-05-25) - trial-first EUR model foundation  
+**Ostatnia aktualizacja:** PRICING.4 (2026-05-25) - trial lifecycle and access enforcement  
 **Zakres:** `apps/frontend` (pełny przegląd), `apps/api` (tylko odczyt, bez zmian kodu)  
 **Cel:** inwentaryzacja miejsc z cenami / USD / checkoutem oraz plan wdrożenia EUR bez implementacji w tym PR.
 
@@ -51,11 +51,79 @@ STRIPE_PRICE_INVESTOR_OS_YEARLY_EUR
 
 ### Remaining implementation (post PRICING.1)
 
-- DB fields: `trial_ends_at`, `trial_kind`, `access_state`
-- Middleware: Trial Expired Mode enforcement
+- ~~DB fields: `trial_ends_at`, `trial_kind`, `access_state`~~ **Done in PRICING.4**
+- ~~Middleware: Trial Expired Mode enforcement~~ **Done in PRICING.4** (conservative rollout on premium/AI routes)
 - ~~Stripe: EUR Price objects + wire `stripeModule` to new env keys~~ **Done in PRICING.3** (checkout gated; enable after Dashboard setup)
 - i18n: replace $9/$19 across 9 locales - **Done in PRICING.2**
 - LandingPage, Terms, waitlist Early Adopter copy - **Done in PRICING.2 / 2A**
+
+---
+
+## PRICING.4 - Trial lifecycle and access enforcement (2026-05-25)
+
+**Status:** 7-day no-card trial on registration; API + frontend gates; Stripe webhook sync.
+
+### Database migration
+
+`20260525120000_add_user_trial_access_fields`
+
+| Column | Purpose |
+|--------|---------|
+| `trial_started_at` | Registration or backfill from `created_at` |
+| `trial_ends_at` | `trial_started_at + 7 days` (no-card trial) |
+| `trial_kind` | `without_card` or `with_card` (Stripe checkout) |
+| `access_state` | Cached resolver output: `TRIAL_ACTIVE`, `TRIAL_EXPIRED`, `SUBSCRIPTION_ACTIVE`, `SUBSCRIPTION_TRIALING`, `NO_ACCESS` |
+
+Existing users backfilled with 7-day window from `created_at`.
+
+### Access resolver
+
+`apps/api/src/services/userAccessState.ts` - `getUserAccessState(user)`:
+
+1. Admin -> full access
+2. `subscription_status` active -> `SUBSCRIPTION_ACTIVE`
+3. `subscription_status` trialing -> `SUBSCRIPTION_TRIALING`
+4. `trial_ends_at` in future -> `TRIAL_ACTIVE`
+5. `trial_ends_at` in past -> `TRIAL_EXPIRED`
+6. Else -> `NO_ACCESS`
+
+### API
+
+| Endpoint / middleware | Purpose |
+|-----------------------|---------|
+| `GET /api/auth/me/access` | `{ tier, subscriptionStatus, accessState, trialEndsAt, daysRemaining, canUseProduct, upgradeRequired }` |
+| `requireActiveAccess` | 403 `{ error: "TRIAL_EXPIRED", upgradeRequired: true }` |
+| `requireActiveAccessIfAuthenticated` | Blocks expired trial for logged-in users on optional-auth routes |
+
+**Wired routes (initial):**
+
+- `/api/premium/*` - `requireAuth` + `requireActiveAccess`
+- `/api/brief/*`, `/api/analysis/*`, `/api/companies/:symbol/brief` - `requireActiveAccessIfAuthenticated`
+
+**Not gated:** auth, legal, health, stripe webhook, affiliate, autopilot Pro+ gate (unchanged).
+
+### Registration
+
+`registerUser` sets 7-day trial (`TRIAL_RULES.without_card.days`), `tier=FREE`, `access_state=TRIAL_ACTIVE`.
+
+### Stripe webhooks
+
+- Checkout complete: subscription status from Stripe (`trialing` or `active`); `trial_kind=with_card`
+- Subscription updated/deleted: recomputes `access_state`; canceled subscription falls back to no-card trial if still valid
+
+### Frontend
+
+- `fetchUserAccess()` -> `/auth/me/access`
+- `AccessBanner` - trial active / expired messaging
+- `ProtectedProductRoute` - redirects expired trial to `/pricing` (settings/profile remain accessible)
+
+### Tests
+
+```bash
+cd apps/api
+npm test -- src/services/__tests__/userAccessState.test.ts
+npm test -- src/middleware/__tests__/requireActiveAccess.test.ts
+```
 
 ---
 

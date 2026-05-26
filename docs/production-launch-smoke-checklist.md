@@ -41,6 +41,8 @@ cd apps/api
 npm.cmd run build
 npm.cmd test -- src/routes/__tests__/stripe.test.ts
 npm.cmd test -- src/routes/__tests__/adminAffiliate.test.ts
+npm.cmd test -- src/services/__tests__/userAccessState.test.ts
+npm.cmd test -- src/middleware/__tests__/requireActiveAccess.test.ts
 
 # Frontend
 cd ../frontend
@@ -109,7 +111,13 @@ curl -fsS https://stock-ai.pro/api/health
 4. Set `VITE_EUR_CHECKOUT_ENABLED=true` only after smoke checkout in test mode.
 5. Grep built frontend/locales: no `$9/mo`, `$19/mo`, Early Adopter.
 
-Trial Expired Mode enforcement is not yet in middleware - verify manually after PRICING.4+.
+Trial Expired Mode enforcement (PRICING.4): verify `GET /api/auth/me/access` and premium/AI 403 when trial expired.
+
+```bash
+# After migration 20260525120000_add_user_trial_access_fields
+docker exec stockai-api-prod wget -qO- --header="Authorization: Bearer $TOKEN" http://api:3000/api/auth/me/access
+# Expired trial user on premium route -> 403 {"error":"TRIAL_EXPIRED","upgradeRequired":true}
+```
 
 **Polygon live quotes (`fetch-quotes` repeat job):** On API restart, the BullMQ repeat job is registered **only** when `POLYGON_LIVE_QUOTES_ENABLED=true` **and** `POLYGON_API_KEY` is set. With the default `POLYGON_LIVE_QUOTES_ENABLED=false`, logs should show:
 

@@ -62,7 +62,7 @@ export function optionalAuth(req: Request, _res: Response, next: NextFunction): 
       email: payload.email,
     };
   } catch {
-    // Stale/invalid token — treat as anonymous (IP-based FREE quota).
+    // Stale/invalid token - treat as anonymous (IP-based FREE quota).
   }
   next();
 }

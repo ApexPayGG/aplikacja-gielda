@@ -1933,6 +1933,13 @@
       "dashboard": "Przejdź do Dashboard →"
     }
   },
+  "accessBanner": {
+    "trialActive": "Okres probny aktywny - pozostalo {{days}} dni",
+    "trialExpired": "Twoj okres probny sie zakonczyl. Wybierz plan, aby kontynuowac.",
+    "subscriptionTrialing": "Okres probny subskrypcji aktywny",
+    "viewPlans": "Zobacz plany",
+    "upgrade": "Ulepsz plan"
+  },
   "pricingPage": {
     "seo": {
       "title": "Pricing - StockAI Pro",

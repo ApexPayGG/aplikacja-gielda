@@ -9,6 +9,7 @@ import {
   verifyEmailToken,
 } from "../modules/auth/authModule";
 import { getAuthenticatedUserId, requireAuth } from "../modules/auth/authMiddleware";
+import { getUserAccessById } from "../services/userAccessState";
 
 type AuthRouteDeps = {
   registerFn: typeof registerUser;
@@ -152,6 +153,19 @@ export function createAuthRouter(depsInput?: Partial<AuthRouteDeps>): Router {
         return;
       }
       res.json({ user });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.get("/api/auth/me/access", requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const access = await getUserAccessById(getAuthenticatedUserId(req));
+      if (!access) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+      res.json(access);
     } catch (error) {
       next(error);
     }

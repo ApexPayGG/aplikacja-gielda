@@ -5,6 +5,7 @@ import {
   resolveEurStripePrice,
   type EurCheckoutPlan,
 } from "../../config/stripeEurPricing";
+import { resolveStoredAccessState, type StoredAccessState } from "../../services/userAccessState";
 
 export type StripePlan = EurCheckoutPlan;
 export type StripeBilling = "monthly" | "yearly";
@@ -58,6 +59,97 @@ function getStripe() {
 function parsePeriodEnd(periodEnd: number | null | undefined): Date | null {
   if (!periodEnd || !Number.isFinite(periodEnd)) return null;
   return new Date(periodEnd * 1000);
+}
+
+export type StripeTrialSyncResult = {
+  trialStartedAt: Date;
+  trialEndsAt: Date;
+  trialKind: "with_card";
+};
+
+/** When Stripe subscription is trialing, map trial_end into user trial access fields. */
+export function buildStripeTrialSyncFields(input: {
+  subscriptionStatus: string;
+  trialEndUnix: number | null | undefined;
+  existingTrialStartedAt: Date | null;
+}): StripeTrialSyncResult | null {
+  if (input.subscriptionStatus.trim().toLowerCase() !== "trialing") {
+    return null;
+  }
+
+  const trialEndsAt = parsePeriodEnd(input.trialEndUnix);
+  if (!trialEndsAt) {
+    return null;
+  }
+
+  return {
+    trialStartedAt: input.existingTrialStartedAt ?? new Date(),
+    trialEndsAt,
+    trialKind: "with_card",
+  };
+}
+
+type SubscriptionAccessUser = {
+  role: string;
+  tier: string;
+  subscriptionStatus: string | null;
+  trialStartedAt: Date | null;
+  trialEndsAt: Date | null;
+  trialKind: string | null;
+};
+
+export function buildSubscriptionAccessPatch(input: {
+  user: SubscriptionAccessUser;
+  nextTier: UserTier;
+  subscriptionStatus: string;
+  subscriptionEnd: Date | null;
+  stripeTrialEndUnix?: number | null;
+}): {
+  tier: UserTier;
+  subscriptionStatus: string;
+  subscriptionEnd: Date | null;
+  trialStartedAt?: Date;
+  trialEndsAt?: Date;
+  trialKind?: "with_card";
+  accessState: StoredAccessState;
+} {
+  const status = input.subscriptionStatus.trim().toLowerCase();
+  const trialSync = buildStripeTrialSyncFields({
+    subscriptionStatus: input.subscriptionStatus,
+    trialEndUnix: input.stripeTrialEndUnix,
+    existingTrialStartedAt: input.user.trialStartedAt,
+  });
+
+  const trialStartedAt = trialSync?.trialStartedAt ?? input.user.trialStartedAt;
+  const trialEndsAt = trialSync?.trialEndsAt ?? input.user.trialEndsAt;
+  const trialKind =
+    trialSync?.trialKind ??
+    (status === "trialing" || status === "active" ? "with_card" : input.user.trialKind);
+
+  const accessState = resolveStoredAccessState({
+    ...input.user,
+    tier: input.nextTier,
+    subscriptionStatus: input.subscriptionStatus,
+    trialStartedAt,
+    trialEndsAt,
+    trialKind,
+  });
+
+  return {
+    tier: input.nextTier,
+    subscriptionStatus: input.subscriptionStatus,
+    subscriptionEnd: input.subscriptionEnd,
+    accessState,
+    ...(trialSync
+      ? {
+          trialStartedAt: trialSync.trialStartedAt,
+          trialEndsAt: trialSync.trialEndsAt,
+          trialKind: trialSync.trialKind,
+        }
+      : status === "trialing" || status === "active"
+        ? { trialKind: "with_card" as const }
+        : {}),
+  };
 }
 
 export async function createCheckoutSession(input: CreateCheckoutSessionInput): Promise<string> {
@@ -171,14 +263,57 @@ export async function handleCheckoutSessionCompleted(session: any): Promise<void
   if (!userId) return;
   const customerId =
     typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
-  const { tier, periodEnd } = await resolveSessionTier(session);
+
+  let tier: UserTier =
+    session.metadata?.tier === "PRO_PLUS"
+      ? "PRO_PLUS"
+      : session.metadata?.tier === "PRO"
+        ? "PRO"
+        : "PRO";
+  let periodEnd: Date | null = null;
+  let subscriptionStatus = "active";
+  let stripeTrialEndUnix: number | null | undefined;
+
+  if (session.subscription && typeof session.subscription === "string") {
+    const stripe = getStripe();
+    const sub = await stripe.subscriptions.retrieve(session.subscription);
+    subscriptionStatus = String(sub.status ?? "active");
+    stripeTrialEndUnix = sub.trial_end ?? null;
+    const item = sub.items.data[0];
+    tier = getTierFromPriceId(item?.price?.id) ?? tier;
+    periodEnd = parsePeriodEnd((sub as unknown as { current_period_end?: number }).current_period_end);
+  } else {
+    const resolved = await resolveSessionTier(session);
+    tier = resolved.tier;
+    periodEnd = resolved.periodEnd;
+  }
+
+  const existing = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      role: true,
+      tier: true,
+      subscriptionStatus: true,
+      trialStartedAt: true,
+      trialEndsAt: true,
+      trialKind: true,
+    },
+  });
+  if (!existing) return;
+
+  const patch = buildSubscriptionAccessPatch({
+    user: existing,
+    nextTier: tier,
+    subscriptionStatus,
+    subscriptionEnd: periodEnd,
+    stripeTrialEndUnix,
+  });
+
   await prisma.user.update({
     where: { id: userId },
     data: {
-      tier,
+      ...patch,
       stripeCustomerId: customerId ?? undefined,
-      subscriptionStatus: "active",
-      subscriptionEnd: periodEnd,
     },
   });
 }
@@ -187,14 +322,39 @@ export async function handleSubscriptionDeleted(subscription: any): Promise<void
   const customerId =
     typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id;
   if (!customerId) return;
-  await prisma.user.updateMany({
+
+  const users = await prisma.user.findMany({
     where: { stripeCustomerId: customerId },
-    data: {
-      tier: "FREE",
-      subscriptionStatus: "canceled",
-      subscriptionEnd: parsePeriodEnd(subscription.current_period_end),
+    select: {
+      id: true,
+      role: true,
+      tier: true,
+      subscriptionStatus: true,
+      trialStartedAt: true,
+      trialEndsAt: true,
+      trialKind: true,
     },
   });
+
+  const subscriptionEnd = parsePeriodEnd(subscription.current_period_end);
+
+  for (const user of users) {
+    const accessState = resolveStoredAccessState({
+      ...user,
+      tier: "FREE",
+      subscriptionStatus: "canceled",
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        tier: "FREE",
+        subscriptionStatus: "canceled",
+        subscriptionEnd,
+        accessState,
+      },
+    });
+  }
 }
 
 function resolveSubscriptionTier(subscription: {
@@ -216,23 +376,39 @@ export async function handleSubscriptionUpdated(subscription: any): Promise<void
 
   const status = String(subscription.status ?? "").trim();
   const tier = resolveSubscriptionTier(subscription);
-  const data: {
-    subscriptionStatus: string;
-    subscriptionEnd: Date | null;
-    tier?: UserTier;
-  } = {
-    subscriptionStatus: status || "unknown",
-    subscriptionEnd: parsePeriodEnd(subscription.current_period_end),
-  };
+  const subscriptionEnd = parsePeriodEnd(subscription.current_period_end);
 
-  if ((status === "active" || status === "trialing") && tier) {
-    data.tier = tier;
-  }
-
-  await prisma.user.updateMany({
+  const users = await prisma.user.findMany({
     where: { stripeCustomerId: customerId },
-    data,
+    select: {
+      id: true,
+      role: true,
+      tier: true,
+      subscriptionStatus: true,
+      trialStartedAt: true,
+      trialEndsAt: true,
+      trialKind: true,
+    },
   });
+
+  for (const user of users) {
+    const paidActive = status === "active" || status === "trialing";
+    const nextTier: UserTier =
+      paidActive && tier ? tier : status === "canceled" || status === "unpaid" ? "FREE" : (user.tier as UserTier);
+    const normalizedStatus = status || "unknown";
+    const patch = buildSubscriptionAccessPatch({
+      user,
+      nextTier,
+      subscriptionStatus: normalizedStatus,
+      subscriptionEnd,
+      stripeTrialEndUnix: subscription.trial_end ?? null,
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: patch,
+    });
+  }
 }
 
 export async function handleInvoicePaymentFailed(invoice: any): Promise<void> {

@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import process from "node:process";
 import bcrypt from "bcrypt";
 import { prisma } from "../../db/index";
+import { TRIAL_RULES } from "../../config/pricing";
 import { generatePasswordResetEmail } from "../../templates/passwordResetEmail";
 import { generateVerificationEmail } from "../../templates/emailVerification";
 import { generateWelcomeEmail } from "../../templates/welcomeEmail";
@@ -140,11 +141,19 @@ export async function registerUser(input: {
   const id = crypto.randomUUID();
   const verifyToken = crypto.randomBytes(32).toString("hex");
   const verifyTokenExp = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const trialStartedAt = new Date();
+  const trialEndsAt = new Date(trialStartedAt.getTime() + TRIAL_RULES.without_card.days * 24 * 60 * 60 * 1000);
   const users = await prisma.$queryRaw<
     Array<{ id: string; email: string; name: string | null; tier: string; role: string }>
   >`
-    INSERT INTO users (id, email, password_hash, name, tier, role, created_at, email_verified, verify_token, verify_token_exp)
-    VALUES (${id}, ${email}, ${passwordHash}, ${name}, 'FREE', 'USER', NOW(), false, ${verifyToken}, ${verifyTokenExp})
+    INSERT INTO users (
+      id, email, password_hash, name, tier, role, created_at, email_verified, verify_token, verify_token_exp,
+      trial_started_at, trial_ends_at, trial_kind, access_state, subscription_status
+    )
+    VALUES (
+      ${id}, ${email}, ${passwordHash}, ${name}, 'FREE', 'USER', NOW(), false, ${verifyToken}, ${verifyTokenExp},
+      ${trialStartedAt}, ${trialEndsAt}, 'without_card', 'TRIAL_ACTIVE', 'free'
+    )
     RETURNING id, email, name, tier, role
   `;
   const user = users[0];

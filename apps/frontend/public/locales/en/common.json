@@ -2373,6 +2373,13 @@
       "dashboard": "Go to Dashboard →"
     }
   },
+  "accessBanner": {
+    "trialActive": "Trial active - {{days}} days left",
+    "trialExpired": "Your trial has ended. Choose a plan to continue.",
+    "subscriptionTrialing": "Subscription trial active",
+    "viewPlans": "View plans",
+    "upgrade": "Upgrade"
+  },
   "pricingPage": {
     "seo": {
       "title": "Pricing - StockAI Pro",

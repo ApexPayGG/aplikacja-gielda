@@ -85,6 +85,10 @@ model User {
   stripeCustomerId       String?                 @map("stripe_customer_id")
   subscriptionStatus     String?                 @default("free") @map("subscription_status")
   subscriptionEnd        DateTime?               @map("subscription_end")
+  trialStartedAt         DateTime?               @map("trial_started_at")
+  trialEndsAt            DateTime?               @map("trial_ends_at")
+  trialKind              String?                 @map("trial_kind")
+  accessState            String?                 @map("access_state")
   discordWebhook         String?
   telegramChatId         String?
   notifySignals          Boolean                 @default(true)
