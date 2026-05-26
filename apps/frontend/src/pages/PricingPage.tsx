@@ -1,9 +1,14 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
+import { useAuth } from "../context/AuthContext";
+import { createStripeCheckoutSession } from "../services/api";
+import { EUR_CHECKOUT_ENABLED } from "../config/checkout";
 import { colors } from "../styles/designSystem";
+import { trackEvent } from "../utils/analytics";
+import { apiErrorMessage } from "../utils/apiErrorMessage";
 import {
   annualSavingsPercent,
   formatEurPrice,
@@ -12,6 +17,7 @@ import {
 } from "../config/pricing";
 
 type BillingCycle = "monthly" | "yearly";
+type PaidPlan = "pro" | "pro_plus";
 
 const FEATURE_KEYS = [
   "paperTrading",
@@ -64,8 +70,15 @@ function PlanFeatureList({
 
 export function PricingPage() {
   const { t } = useTranslation("common");
+  const { token } = useAuth();
+  const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<PaidPlan | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  const isLoggedIn = Boolean(token);
+  const checkoutEnabled = EUR_CHECKOUT_ENABLED;
 
   const pricingNote = useMemo(
     () =>
@@ -115,6 +128,54 @@ export function PricingPage() {
     ],
     [t],
   );
+
+  const handleCheckout = async (plan: PaidPlan): Promise<void> => {
+    if (!checkoutEnabled) return;
+
+    setCheckoutError(null);
+
+    if (!isLoggedIn) {
+      navigate("/login", { state: { from: "/pricing", checkoutPlan: plan, billing: billingCycle } });
+      return;
+    }
+
+    const userId = typeof window !== "undefined" ? window.localStorage.getItem("userId")?.trim() ?? "" : "";
+    if (!userId) {
+      navigate("/login", { state: { from: "/pricing", checkoutPlan: plan, billing: billingCycle } });
+      return;
+    }
+
+    try {
+      setCheckoutLoadingPlan(plan);
+      window.localStorage.setItem("checkout_plan", plan);
+      trackEvent("begin_checkout", { plan, billing: billingCycle, currency: "EUR" });
+      const { url } = await createStripeCheckoutSession({
+        userId,
+        plan,
+        billing: billingCycle,
+      });
+      window.location.href = url;
+    } catch (error) {
+      console.error("Failed to start Stripe checkout", error);
+      const message = apiErrorMessage(error);
+      if (message.includes("EUR_CHECKOUT_NOT_CONFIGURED")) {
+        setCheckoutError(
+          t("pricingPage.checkoutMigration.notConfigured", {
+            defaultValue: "EUR checkout is not configured yet. Join the beta waitlist or contact us.",
+          }),
+        );
+      } else {
+        setCheckoutError(
+          message ||
+            t("pricingPage.checkoutError", {
+              defaultValue: "Could not start checkout. Please try again in a moment.",
+            }),
+        );
+      }
+    } finally {
+      setCheckoutLoadingPlan(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-bgSecondary glass-muted">
@@ -179,12 +240,15 @@ export function PricingPage() {
             </button>
           </div>
           <p className="text-center text-sm text-white/50">{pricingNote}</p>
-          <p className="max-w-xl text-center text-sm text-brandCyan">
-            {t("pricingPage.checkoutMigration.banner", {
-              defaultValue:
-                "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
-            })}
-          </p>
+          {!checkoutEnabled ? (
+            <p className="max-w-xl text-center text-sm text-brandCyan">
+              {t("pricingPage.checkoutMigration.banner", {
+                defaultValue:
+                  "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
+              })}
+            </p>
+          ) : null}
+          {checkoutError ? <p className="text-center text-sm text-negative">{checkoutError}</p> : null}
         </div>
 
         <section className="mt-10 grid gap-6 md:grid-cols-3">
@@ -229,12 +293,25 @@ export function PricingPage() {
             </p>
             <p className="mt-3 text-sm text-white/90">{PRICING_PLANS.PRO.tagline}</p>
             <PlanFeatureList planKey="pro" textClassName="text-white/90" />
-            <Link
-              to="/waitlist"
-              className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary"
-            >
-              {t("pricingPage.cta.startProTrialSoon", { defaultValue: "Start trial soon" })}
-            </Link>
+            {checkoutEnabled ? (
+              <button
+                type="button"
+                onClick={() => void handleCheckout("pro")}
+                disabled={checkoutLoadingPlan !== null}
+                className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {checkoutLoadingPlan === "pro"
+                  ? t("pricingPage.cta.redirecting", { defaultValue: "Redirecting..." })
+                  : t("pricingPage.cta.startProTrial", { defaultValue: "Start Pro trial" })}
+              </button>
+            ) : (
+              <Link
+                to="/waitlist?source=pricing"
+                className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary"
+              >
+                {t("pricingPage.cta.startProTrialSoon", { defaultValue: "Start trial soon" })}
+              </Link>
+            )}
           </article>
 
           <article
@@ -253,24 +330,39 @@ export function PricingPage() {
             </p>
             <p className="mt-3 text-sm text-white/90">{PRICING_PLANS.PRO_PLUS.tagline}</p>
             <PlanFeatureList planKey="proPlus" textClassName="text-white/90" />
-            <Link
-              to="/waitlist"
-              className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary"
-            >
-              {t("pricingPage.cta.startProPlusTrialSoon", { defaultValue: "Start Pro+ trial soon" })}
-            </Link>
+            {checkoutEnabled ? (
+              <button
+                type="button"
+                onClick={() => void handleCheckout("pro_plus")}
+                disabled={checkoutLoadingPlan !== null}
+                className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {checkoutLoadingPlan === "pro_plus"
+                  ? t("pricingPage.cta.redirecting", { defaultValue: "Redirecting..." })
+                  : t("pricingPage.cta.startProPlusTrial", { defaultValue: "Start Pro+ trial" })}
+              </button>
+            ) : (
+              <Link
+                to="/waitlist?source=pricing"
+                className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary"
+              >
+                {t("pricingPage.cta.startProPlusTrialSoon", { defaultValue: "Start Pro+ trial soon" })}
+              </Link>
+            )}
           </article>
         </section>
 
-        <p className="mt-6 text-center text-sm text-white/50">
-          {t("pricingPage.checkoutMigration.note", {
-            defaultValue:
-              "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
-          })}{" "}
-          <Link to="/contact" className="font-semibold text-brandCyan hover:underline">
-            {t("pricingPage.checkoutMigration.contactLink", { defaultValue: "Contact us" })}
-          </Link>
-        </p>
+        {!checkoutEnabled ? (
+          <p className="mt-6 text-center text-sm text-white/50">
+            {t("pricingPage.checkoutMigration.note", {
+              defaultValue:
+                "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
+            })}{" "}
+            <Link to="/contact" className="font-semibold text-brandCyan hover:underline">
+              {t("pricingPage.checkoutMigration.contactLink", { defaultValue: "Contact us" })}
+            </Link>
+          </p>
+        ) : null}
 
         <section
           className="mt-8 rounded-2xl border p-6 text-center"

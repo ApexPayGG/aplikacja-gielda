@@ -17,6 +17,10 @@ import {
   type StripeBilling,
   type StripePlan,
 } from "../modules/stripe/stripeModule";
+import {
+  EurCheckoutNotConfiguredError,
+  InvestorOsCheckoutNotSupportedError,
+} from "../config/stripeEurPricing";
 
 type StripeRouteDeps = {
   createCheckoutSessionFn: typeof createCheckoutSession;
@@ -34,13 +38,16 @@ function isStripeConfigurationError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
   return (
     error.message === "STRIPE_SECRET_KEY is not set" ||
-    error.message === "STRIPE_WEBHOOK_SECRET is not set" ||
-    error.message === "STRIPE_PRICE_IDS are not configured"
+    error.message === "STRIPE_WEBHOOK_SECRET is not set"
   );
 }
 
 function isPlan(value: unknown): value is StripePlan {
   return value === "pro" || value === "pro_plus";
+}
+
+function isInvestorOsPlan(value: unknown): boolean {
+  return value === "investor_os";
 }
 
 function isBilling(value: unknown): value is StripeBilling {
@@ -103,6 +110,9 @@ export function createStripeRouter(depsInput?: Partial<StripeRouteDeps>): Router
 
         const plan = body.plan;
         const billing = body.billing;
+        if (isInvestorOsPlan(plan)) {
+          return res.status(501).json({ error: "INVESTOR_OS_CHECKOUT_NOT_SUPPORTED" });
+        }
         if (!isPlan(plan) || !isBilling(billing)) {
           return res.status(400).json({ error: "Invalid payload" });
         }
@@ -114,6 +124,12 @@ export function createStripeRouter(depsInput?: Partial<StripeRouteDeps>): Router
         });
         res.json({ url });
       } catch (error) {
+        if (error instanceof EurCheckoutNotConfiguredError) {
+          return res.status(503).json({ error: "EUR_CHECKOUT_NOT_CONFIGURED" });
+        }
+        if (error instanceof InvestorOsCheckoutNotSupportedError) {
+          return res.status(501).json({ error: "INVESTOR_OS_CHECKOUT_NOT_SUPPORTED" });
+        }
         if (error instanceof Error && error.message === "User not found") {
           return res.status(404).json({ error: error.message });
         }

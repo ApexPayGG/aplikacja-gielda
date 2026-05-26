@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, it } from "node:test";
 import express, { type Request } from "express";
 import { signAuthToken } from "../../modules/auth/authJwt";
 import type { AuthenticatedRequest } from "../../modules/auth/authMiddleware";
+import { EurCheckoutNotConfiguredError } from "../../config/stripeEurPricing";
 import { createStripeRouter } from "../stripe";
 
 describe("stripe routes", () => {
@@ -49,7 +50,7 @@ describe("stripe routes", () => {
             throw new Error("STRIPE_SECRET_KEY is not set");
           }
           if (userId === "prices") {
-            throw new Error("STRIPE_PRICE_IDS are not configured");
+            throw new EurCheckoutNotConfiguredError("STRIPE_PRICE_PRO_MONTHLY_EUR");
           }
           if (userId === "boom") {
             throw new Error("Database unavailable");
@@ -115,6 +116,69 @@ describe("stripe routes", () => {
     const body = (await res.json()) as { url: string };
     assert.equal(body.url, "https://checkout.stripe.test/u-1/pro/monthly");
     assert.equal(lastCheckoutUserId, "u-1");
+  });
+
+  it("POST /api/stripe/create-checkout-session returns EUR_CHECKOUT_NOT_CONFIGURED", async () => {
+    const app = express();
+    app.use(express.json());
+    app.use(
+      createStripeRouter({
+        requireAuthMiddleware: (req: Request, _res, next) => {
+          (req as AuthenticatedRequest).auth = {
+            userId: "u-eur",
+            email: "user@example.com",
+          };
+          next();
+        },
+        getUserRoleFn: async () => "USER",
+        createCheckoutSessionFn: async () => {
+          throw new EurCheckoutNotConfiguredError("STRIPE_PRICE_PRO_MONTHLY_EUR");
+        },
+        getUserSubscriptionFn: async () => ({
+          tier: "FREE",
+          status: "free",
+          currentPeriodEnd: null,
+        }),
+        constructWebhookEventFn: () => ({ type: "noop", data: { object: {} } }) as never,
+        handleCheckoutSessionCompletedFn: async () => {},
+        handleSubscriptionDeletedFn: async () => {},
+        handleSubscriptionUpdatedFn: async () => {},
+        handleInvoicePaymentFailedFn: async () => {},
+      }),
+    );
+
+    await new Promise<void>((resolve) => {
+      server = app.listen(0, () => resolve());
+    });
+    const addr = server!.address();
+    if (!addr || typeof addr === "string") throw new Error("no port");
+    const eurBaseUrl = `http://127.0.0.1:${addr.port}`;
+
+    const res = await fetch(`${eurBaseUrl}/api/stripe/create-checkout-session`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({ plan: "pro", billing: "monthly" }),
+    });
+    assert.equal(res.status, 503);
+    const body = (await res.json()) as { error: string };
+    assert.equal(body.error, "EUR_CHECKOUT_NOT_CONFIGURED");
+  });
+
+  it("POST /api/stripe/create-checkout-session rejects investor_os with 501", async () => {
+    const res = await fetch(`${baseUrl}/api/stripe/create-checkout-session`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({ plan: "investor_os", billing: "monthly" }),
+    });
+    assert.equal(res.status, 501);
+    const body = (await res.json()) as { error: string };
+    assert.equal(body.error, "INVESTOR_OS_CHECKOUT_NOT_SUPPORTED");
   });
 
   it("POST /api/stripe/create-checkout-session rejects unauthenticated request", async () => {

@@ -101,7 +101,15 @@ curl -fsS https://stock-ai.pro/api/health
 
 **Pass criteria:** `/health` returns 200; frontend HTML contains `<div id="root">` or app shell; no crash loop in API logs.
 
-**Pricing (PRICING.1):** Until EUR Stripe is live, checkout may still use legacy USD Price IDs while `/pricing` displays EUR from `apps/frontend/src/config/pricing.ts`. Trial Expired Mode enforcement is not yet in middleware - verify manually after PRICING.2+.
+**Pricing (PRICING.3):** EUR checkout uses `STRIPE_PRICE_*_EUR` env keys only (no legacy USD fallback). Frontend checkout is **off by default** (`VITE_EUR_CHECKOUT_ENABLED=false`). Before enabling:
+
+1. Create EUR recurring Prices in Stripe Dashboard.
+2. Set all four Pro/Pro+ EUR Price ID env vars on API.
+3. Verify `POST /api/stripe/create-checkout-session` returns `503 EUR_CHECKOUT_NOT_CONFIGURED` when env is missing.
+4. Set `VITE_EUR_CHECKOUT_ENABLED=true` only after smoke checkout in test mode.
+5. Grep built frontend/locales: no `$9/mo`, `$19/mo`, Early Adopter.
+
+Trial Expired Mode enforcement is not yet in middleware - verify manually after PRICING.4+.
 
 **Polygon live quotes (`fetch-quotes` repeat job):** On API restart, the BullMQ repeat job is registered **only** when `POLYGON_LIVE_QUOTES_ENABLED=true` **and** `POLYGON_API_KEY` is set. With the default `POLYGON_LIVE_QUOTES_ENABLED=false`, logs should show:
 

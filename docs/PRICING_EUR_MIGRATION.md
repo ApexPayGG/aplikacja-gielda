@@ -53,9 +53,55 @@ STRIPE_PRICE_INVESTOR_OS_YEARLY_EUR
 
 - DB fields: `trial_ends_at`, `trial_kind`, `access_state`
 - Middleware: Trial Expired Mode enforcement
-- Stripe: EUR Price objects + wire `stripeModule` to new env keys
-- i18n: replace $9/$19 across 9 locales
-- LandingPage, Terms, waitlist Early Adopter copy
+- ~~Stripe: EUR Price objects + wire `stripeModule` to new env keys~~ **Done in PRICING.3** (checkout gated; enable after Dashboard setup)
+- i18n: replace $9/$19 across 9 locales - **Done in PRICING.2**
+- LandingPage, Terms, waitlist Early Adopter copy - **Done in PRICING.2 / 2A**
+
+---
+
+## PRICING.3 - EUR Stripe checkout wiring (2026-05-25)
+
+**Status:** Backend resolver + frontend feature flag. **Checkout disabled by default until EUR Price IDs exist.**
+
+### Backend
+
+| File | Purpose |
+|------|---------|
+| `apps/api/src/config/stripeEurPricing.ts` | Strict EUR Price ID resolver - **no fallback to legacy USD** |
+| `apps/api/src/modules/stripe/stripeModule.ts` | Checkout uses EUR resolver; 14-day Stripe trial; metadata `plan`, `billing`, `currency=EUR` |
+| `apps/api/src/routes/stripe.ts` | `503 EUR_CHECKOUT_NOT_CONFIGURED` / `501 INVESTOR_OS_CHECKOUT_NOT_SUPPORTED` |
+
+**Required env (API):**
+
+```
+STRIPE_PRICE_PRO_MONTHLY_EUR=
+STRIPE_PRICE_PRO_YEARLY_EUR=
+STRIPE_PRICE_PRO_PLUS_MONTHLY_EUR=
+STRIPE_PRICE_PRO_PLUS_YEARLY_EUR=
+# Optional future:
+STRIPE_PRICE_INVESTOR_OS_MONTHLY_EUR=
+STRIPE_PRICE_INVESTOR_OS_YEARLY_EUR=
+```
+
+Legacy `STRIPE_PRO_*` / `STRIPE_PROPLUS_*` remain for **webhook mapping of existing USD subscriptions only**.
+
+### Frontend
+
+| Setting | Default | Effect |
+|---------|---------|--------|
+| `VITE_EUR_CHECKOUT_ENABLED` | `false` | `/pricing` shows waitlist CTAs + migration copy |
+| `VITE_EUR_CHECKOUT_ENABLED=true` | - | Pro/Pro+ call `createStripeCheckoutSession` (EUR backend) |
+
+Template: `apps/frontend/.env.example`
+
+### Enable checklist (production)
+
+1. Create **EUR recurring Prices** in Stripe Dashboard (Pro €29/€290, Pro+ €59/€590).
+2. Set all four `STRIPE_PRICE_*_EUR` env vars on API.
+3. Smoke: `POST /api/stripe/create-checkout-session` without env -> `503 EUR_CHECKOUT_NOT_CONFIGURED`.
+4. Smoke: checkout session uses EUR Price ID (verify in Stripe Dashboard test mode).
+5. Set `VITE_EUR_CHECKOUT_ENABLED=true` on frontend build **only after** step 2-4 pass.
+6. Grep built assets: no `$9/mo`, `$19/mo`, Early Adopter.
 
 ---
 

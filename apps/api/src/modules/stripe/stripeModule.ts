@@ -1,7 +1,12 @@
 import Stripe from "stripe";
 import { prisma } from "../../db/index";
+import {
+  listEurPriceIdTierMappings,
+  resolveEurStripePrice,
+  type EurCheckoutPlan,
+} from "../../config/stripeEurPricing";
 
-export type StripePlan = "pro" | "pro_plus";
+export type StripePlan = EurCheckoutPlan;
 export type StripeBilling = "monthly" | "yearly";
 export type UserTier = "FREE" | "PRO" | "PRO_PLUS";
 
@@ -22,13 +27,14 @@ const TIER_BY_PLAN: Record<StripePlan, UserTier> = {
   pro_plus: "PRO_PLUS",
 };
 
-const PLACEHOLDER_PRICE_IDS = new Set([
+const LEGACY_PLACEHOLDER_PRICE_IDS = new Set([
   "price_pro_monthly",
   "price_pro_yearly",
   "price_proplus_monthly",
   "price_proplus_yearly",
 ]);
 
+/** @deprecated Legacy USD IDs - webhook mapping only. Checkout uses EUR resolver. */
 export function isStripePriceIdsConfigured(): boolean {
   const ids = [
     process.env.STRIPE_PRO_MONTHLY_PRICE_ID?.trim(),
@@ -36,8 +42,10 @@ export function isStripePriceIdsConfigured(): boolean {
     process.env.STRIPE_PROPLUS_MONTHLY_PRICE_ID?.trim(),
     process.env.STRIPE_PROPLUS_YEARLY_PRICE_ID?.trim(),
   ];
-  return ids.every((id) => Boolean(id) && !PLACEHOLDER_PRICE_IDS.has(id!));
+  return ids.every((id) => Boolean(id) && !LEGACY_PLACEHOLDER_PRICE_IDS.has(id!));
 }
+
+export { EurCheckoutNotConfiguredError } from "../../config/stripeEurPricing";
 
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY?.trim();
@@ -47,32 +55,13 @@ function getStripe() {
   return new Stripe(key);
 }
 
-function getPriceId(plan: StripePlan, billing: StripeBilling): string {
-  let id: string | undefined;
-  if (plan === "pro" && billing === "monthly") {
-    id = process.env.STRIPE_PRO_MONTHLY_PRICE_ID?.trim();
-  } else if (plan === "pro" && billing === "yearly") {
-    id = process.env.STRIPE_PRO_YEARLY_PRICE_ID?.trim();
-  } else if (plan === "pro_plus" && billing === "monthly") {
-    id = process.env.STRIPE_PROPLUS_MONTHLY_PRICE_ID?.trim();
-  } else {
-    id = process.env.STRIPE_PROPLUS_YEARLY_PRICE_ID?.trim();
-  }
-  if (!id || PLACEHOLDER_PRICE_IDS.has(id)) {
-    throw new Error("STRIPE_PRICE_IDS are not configured");
-  }
-  return id;
-}
-
 function parsePeriodEnd(periodEnd: number | null | undefined): Date | null {
   if (!periodEnd || !Number.isFinite(periodEnd)) return null;
   return new Date(periodEnd * 1000);
 }
 
 export async function createCheckoutSession(input: CreateCheckoutSessionInput): Promise<string> {
-  if (!isStripePriceIdsConfigured()) {
-    throw new Error("STRIPE_PRICE_IDS are not configured");
-  }
+  const resolved = resolveEurStripePrice({ plan: input.plan, billing: input.billing });
   const stripe = getStripe();
   const user = await prisma.user.findUnique({
     where: { id: input.userId },
@@ -100,17 +89,24 @@ export async function createCheckoutSession(input: CreateCheckoutSessionInput): 
     mode: "subscription",
     customer: customerId,
     payment_method_types: ["card"],
-    line_items: [{ price: getPriceId(input.plan, input.billing), quantity: 1 }],
+    line_items: [{ price: resolved.priceId, quantity: 1 }],
     success_url: "https://stock-ai.pro/payment-success?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: "https://stock-ai.pro/payment-cancel",
     metadata: {
       userId: user.id,
       tier,
+      plan: input.plan,
+      billing: input.billing,
+      currency: "EUR",
     },
     subscription_data: {
+      trial_period_days: resolved.trialPeriodDays,
       metadata: {
         userId: user.id,
         tier,
+        plan: input.plan,
+        billing: input.billing,
+        currency: "EUR",
       },
     },
   });
@@ -124,6 +120,13 @@ export async function createCheckoutSession(input: CreateCheckoutSessionInput): 
 
 function getTierFromPriceId(priceId: string | undefined): UserTier | null {
   if (!priceId) return null;
+
+  for (const mapping of listEurPriceIdTierMappings()) {
+    if (priceId === mapping.priceId) {
+      return mapping.tier;
+    }
+  }
+
   const proMonthly = process.env.STRIPE_PRO_MONTHLY_PRICE_ID?.trim() || "price_pro_monthly";
   const proYearly = process.env.STRIPE_PRO_YEARLY_PRICE_ID?.trim() || "price_pro_yearly";
   const proPlusMonthly =
