@@ -30,7 +30,7 @@ export function AboutPage() {
       titleKey: "aboutPage.valueAccessTitle",
       titleDefault: "Accessibility",
       descKey: "aboutPage.valueAccessDesc",
-      descDefault: "9 languages, 130+ exchanges, and a free tier to get started.",
+      descDefault: "9 languages, 130+ exchanges, and a trial to get started.",
     },
   ] as const;
 

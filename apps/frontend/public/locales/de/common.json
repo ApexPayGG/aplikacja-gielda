@@ -7,7 +7,7 @@
     },
     "disclosure": {
       "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider.",
-      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and trial access. Our recommendations are based on data and your profile, not partner payouts.",
       "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
       "title": "StockAI Pro transparency"
     },
@@ -525,17 +525,17 @@
       "terms": "Nutzungsbedingungen"
     },
     "footerCta": {
-      "button": "Kostenloses Konto erstellen",
+      "button": "Start trial",
       "disclaimer": "Bildungsprodukt. Keine Finanzberatung. Investieren ist mit Risiken verbunden.",
-      "pricing": "Preise ansehen",
-      "title": "Starten Sie heute Ihr kostenloses Konto"
+      "pricing": "View pricing",
+      "title": "Start your trial today"
     },
     "hero": {
       "aiSignalBuy": "KI-Signal: KAUF",
       "badge": "KI-GESTÜTZTE PLATTFORM · 130+ Börsen · 9 Sprachen",
       "coachAlertBody": "Sie vermeiden heute FOMO ✓",
       "coachAlertTitle": "Coach-Alarm",
-      "ctaPrimary": "Kostenlos starten",
+      "ctaPrimary": "Start trial",
       "ctaSecondary": "Demo ansehen",
       "scrollHint": "Scrollen",
       "subtitle": "Eine Plattform mit 130+ Börsen statt fünf Browser-Tabs. KI analysiert, Ihr Coach hütet Ihre Emotionen — Sie treffen fundierte Entscheidungen.",
@@ -572,51 +572,61 @@
       "searchPlaceholder": "Unternehmen suchen..."
     },
     "pricing": {
-      "badge": "Frühbucherpreis",
-      "checkoutError": "Checkout konnte nicht gestartet werden.",
-      "earlyAdopter": "Die ersten 500 Pro-Konten bleiben für immer bei 9 $/Monat",
-      "monthly": "Monatlich",
-      "popular": "Am beliebtesten",
-      "save": "27 % sparen",
-      "saveProPlus": "34 % sparen",
+      "badge": "Trial-first",
+      "checkoutError": "Checkout is not available yet.",
+      "monthly": "monthly",
+      "popular": "Most Popular",
+      "save": "Save ~17%",
+      "saveProPlus": "Save ~17%",
       "tiers": {
-        "free": {
-          "body": "Grundfunktionen für mehr Konstanz beim Investieren.",
-          "cta": "Kostenlos starten",
-          "features": [
-            "Kern-Dashboard",
-            "Basis-KI-Signale",
-            "Community-Zugang"
-          ],
-          "name": "Free",
-          "price": "$0/mo"
-        },
         "pro": {
-          "body": "Voller Zugriff für aktive Anleger.",
-          "cta": "Get Pro",
+          "body": "Know what is happening.",
+          "cta": "Join beta",
           "features": [
-            "Alle KI-Module",
-            "Verhaltenscoaching",
-            "Trader-Psychologieprofil"
+            "AI Brief",
+            "Signals",
+            "Basic Premium Analysis",
+            "Watchlist"
           ],
-          "name": "Pro",
-          "price": "$9/mo"
+          "name": "Pro"
         },
         "proPlus": {
-          "body": "Für Power-User und Automatisierungs-Workflows.",
-          "cta": "Get Pro+",
+          "body": "Know what it means.",
+          "cta": "Join beta",
           "features": [
-            "Alles aus Pro",
-            "API-Zugang",
-            "Broker-Integration"
+            "Full Premium Analysis",
+            "Historical Twins",
+            "Behavioral Coach",
+            "Decision Journal"
           ],
-          "name": "Pro+",
-          "price": "$19/mo"
+          "name": "Pro+"
+        },
+        "trial": {
+          "name": "Trial",
+          "body": "7-day Pro+ experience without a credit card.",
+          "cta": "Start trial",
+          "duration": "7 days",
+          "features": [
+            "Limited Pro+ modules",
+            "Limited AI usage",
+            "No card required"
+          ]
+        },
+        "investorOs": {
+          "name": "Investor OS",
+          "body": "Know what it means for you.",
+          "comingSoon": "Coming soon",
+          "features": [
+            "Personal Fit Score",
+            "Portfolio-aware analysis",
+            "Trader Psyche",
+            "Priority AI"
+          ]
         }
       },
-      "title": "Einfache Preise",
-      "trial": "14 Tage kostenlos",
-      "yearly": "Jährlich"
+      "title": "EUR pricing",
+      "yearly": "yearly",
+      "betaNote": "EUR checkout migration in progress. Join the beta waitlist for trial access while Stripe EUR prices are configured."
     },
     "problem": {
       "cards": {
@@ -1458,18 +1468,18 @@
   },
   "pricingPage": {
     "seo": {
-      "title": "Preise — StockAI Pro",
-      "description": "Free, Pro $9/Mo., Pro+ $19/Mo. KI-Investmentrecherche."
+      "title": "Pricing - StockAI Pro",
+      "description": "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo. AI investment research for international investors."
     },
     "title": "Wählen Sie Ihren Plan",
-    "subtitle": "Passen Sie den Plan an Ihre Phase an. Jederzeit wechseln oder kündigen.",
+    "subtitle": "Start with a trial - no classic free plan. Upgrade when you are ready; cancel anytime.",
     "billing": {
       "toggleLabel": "Abrechnungszeitraum",
       "monthly": "Monatlich",
       "yearly": "Jährlich",
       "saveBadge": "Sparen",
-      "monthlyNote": "Plan jederzeit im Konto wechseln oder kündigen.",
-      "yearlyNote": "Jährliche Abrechnung in USD — günstiger als 12× monatlich."
+      "monthlyNote": "Switch plans or cancel anytime from your account.",
+      "yearlyNote": "Annual billing in EUR - save ~17% on Pro and Pro+ vs monthly."
     },
     "signInHint": "Bereits ein Konto?",
     "signInLink": "Anmelden",
@@ -1479,21 +1489,24 @@
       "getPro": "Get Pro",
       "getProPlus": "Get Pro+",
       "redirecting": "Weiterleitung…",
-      "signIn": "Anmelden zum Abonnieren"
+      "signIn": "Anmelden zum Abonnieren",
+      "startProTrialSoon": "Start trial soon",
+      "startProPlusTrialSoon": "Start Pro+ trial soon"
     },
     "plans": {
-      "billedMonthly": "Monatliche Abrechnung (USD)",
-      "billedYearly": "Jährliche Abrechnung (USD)",
-      "free": {
-        "tagline": "Paper Trading und Basis-Tools — keine Kreditkarte.",
-        "cta": "Kostenlos starten"
-      },
+      "billedMonthly": "Billed monthly in EUR",
+      "billedYearly": "Billed annually in EUR",
       "pro": {
-        "popular": "Am beliebtesten",
+        "popular": "Most popular",
         "tagline": "Bestes Preis-Leistungs-Verhältnis für aktive Anleger."
       },
       "proPlus": {
         "tagline": "Volles Analyse-Paket, API-Zugang und Priority-Support."
+      },
+      "trial": {
+        "duration": "7 days - Pro+ experience",
+        "tagline": "Limited Pro+ access - no credit card required to start.",
+        "cta": "Start trial"
       }
     },
     "features": {
@@ -1511,12 +1524,12 @@
         "answer": "Ja. Kündigung in den Kontoeinstellungen. Zugang bis Periodenende."
       },
       "trial": {
-        "question": "Gibt es eine Testphase?",
-        "answer": "Pro enthält eine 14-tägige Testphase mit vollem Funktionsumfang."
+        "question": "Is there a free trial?",
+        "answer": "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live."
       },
       "payment": {
         "question": "Welche Zahlungsmethoden?",
-        "answer": "Zahlung in USD über Stripe — gängige Karten und lokale Methoden."
+        "answer": "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured."
       },
       "security": {
         "question": "Sind meine Daten sicher?",
@@ -1526,10 +1539,32 @@
         "question": "Was ist Paper Trading?",
         "answer": "Simulation mit Echtzeitdaten ohne Kapitalrisiko — ideal zum Üben."
       }
+    },
+    "checkoutMigration": {
+      "banner": "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
+      "note": "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
+      "contactLink": "Contact us"
+    },
+    "investorOs": {
+      "comingSoon": "Coming soon",
+      "note": "Checkout not available yet - join the beta waitlist for early access."
     }
   },
   "companies": {
     "filterDividend": "Nur Dividendenaktien",
     "filterDividendLoading": "Dividendenliste wird geladen…"
+  },
+  "about": {
+    "valueAccessDesc": "9 languages, 130+ exchanges, and a trial to get started."
+  },
+  "waitlistPage": {
+    "seoDescription": "Join the beta waitlist for StockAI Pro EUR trial access.",
+    "benefit1": "Priority access to the 7-day trial and beta features.",
+    "benefit2": "Priority access to new AI modules.",
+    "benefit3": "Influence the product roadmap and premium features.",
+    "benefit4": "Dedicated onboarding materials for founding users.",
+    "subhead": "Join the waitlist for trial-first EUR access while checkout migration is in progress.",
+    "title": "Join the beta",
+    "ctaJoin": "Join beta"
   }
 }

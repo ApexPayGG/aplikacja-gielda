@@ -7,7 +7,7 @@
     },
     "disclosure": {
       "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider.",
-      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and trial access. Our recommendations are based on data and your profile, not partner payouts.",
       "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
       "title": "StockAI Pro transparency"
     },
@@ -525,17 +525,17 @@
       "terms": "सेवा की शर्तें"
     },
     "footerCta": {
-      "button": "मुफ़्त खाता बनाएँ",
+      "button": "Start trial",
       "disclaimer": "शैक्षिक उत्पाद। वित्तीय सलाह नहीं। निवेश में जोखिम है।",
-      "pricing": "मूल्य देखें",
-      "title": "आज ही अपना मुफ़्त खाता शुरू करें"
+      "pricing": "View pricing",
+      "title": "Start your trial today"
     },
     "hero": {
       "aiSignalBuy": "AI सिग्नल: खरीदें",
       "badge": "AI · 130+ एक्सचेंज · 9 भाषाएँ",
       "coachAlertBody": "आज आप FOMO से बच रहे हैं ✓",
       "coachAlertTitle": "कोच अलर्ट",
-      "ctaPrimary": "मुफ़्त शुरू करें",
+      "ctaPrimary": "Start trial",
       "ctaSecondary": "डेमो देखें",
       "scrollHint": "स्क्रॉल",
       "subtitle": "एआई रिसर्च · व्यवहारिक कोचिंग · 12 एक्सचेंज · 9 भाषाएँ",
@@ -572,51 +572,61 @@
       "searchPlaceholder": "कंपनी खोजें... AAPL, PKN"
     },
     "pricing": {
-      "badge": "अर्ली एडॉप्टर कीमत",
-      "checkoutError": "चेकआउट शुरू नहीं हो सका।",
-      "earlyAdopter": "पहले 500 Pro अकाउंट्स हमेशा के लिए $9/माह पर लॉक",
-      "monthly": "मासिक",
-      "popular": "सबसे लोकप्रिय",
-      "save": "27% बचाएं",
-      "saveProPlus": "34% बचाएं",
+      "badge": "Trial-first",
+      "checkoutError": "Checkout is not available yet.",
+      "monthly": "monthly",
+      "popular": "Most Popular",
+      "save": "Save ~17%",
+      "saveProPlus": "Save ~17%",
       "tiers": {
-        "free": {
-          "body": "निरंतरता बनाने के लिए बुनियादी सुविधाएँ।",
-          "cta": "मुफ़्त शुरू करें",
-          "features": [
-            "कोर डैशबोर्ड",
-            "बुनियादी AI सिग्नल",
-            "कम्युनिटी एक्सेस"
-          ],
-          "name": "Free",
-          "price": "$0/mo"
-        },
         "pro": {
-          "body": "सक्रिय निवेशकों के लिए पूर्ण पहुँच।",
-          "cta": "Get Pro",
+          "body": "Know what is happening.",
+          "cta": "Join beta",
           "features": [
-            "सभी AI मॉड्यूल",
-            "व्यवहार कोचिंग",
-            "ट्रेडर मनोविज्ञान प्रोफ़ाइल"
+            "AI Brief",
+            "Signals",
+            "Basic Premium Analysis",
+            "Watchlist"
           ],
-          "name": "Pro",
-          "price": "$9/mo"
+          "name": "Pro"
         },
         "proPlus": {
-          "body": "पावर यूज़र और ऑटोमेशन वर्कफ़्लो के लिए।",
-          "cta": "Get Pro+",
+          "body": "Know what it means.",
+          "cta": "Join beta",
           "features": [
-            "Pro की सभी सुविधाएँ",
-            "API एक्सेस",
-            "ब्रोकर एकीकरण"
+            "Full Premium Analysis",
+            "Historical Twins",
+            "Behavioral Coach",
+            "Decision Journal"
           ],
-          "name": "Pro+",
-          "price": "$19/mo"
+          "name": "Pro+"
+        },
+        "trial": {
+          "name": "Trial",
+          "body": "7-day Pro+ experience without a credit card.",
+          "cta": "Start trial",
+          "duration": "7 days",
+          "features": [
+            "Limited Pro+ modules",
+            "Limited AI usage",
+            "No card required"
+          ]
+        },
+        "investorOs": {
+          "name": "Investor OS",
+          "body": "Know what it means for you.",
+          "comingSoon": "Coming soon",
+          "features": [
+            "Personal Fit Score",
+            "Portfolio-aware analysis",
+            "Trader Psyche",
+            "Priority AI"
+          ]
         }
       },
-      "title": "सरल मूल्य निर्धारण",
-      "trial": "14 दिन मुफ्त",
-      "yearly": "वार्षिक"
+      "title": "EUR pricing",
+      "yearly": "yearly",
+      "betaNote": "EUR checkout migration in progress. Join the beta waitlist for trial access while Stripe EUR prices are configured."
     },
     "problem": {
       "cards": {
@@ -1458,18 +1468,18 @@
   },
   "pricingPage": {
     "seo": {
-      "title": "मूल्य — StockAI Pro",
-      "description": "Free, Pro $9/माह, Pro+ $19/माह। AI निवेश शोध।"
+      "title": "Pricing - StockAI Pro",
+      "description": "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo. AI investment research for international investors."
     },
     "title": "अपना प्लान चुनें",
-    "subtitle": "अपने चरण के अनुसार प्लान चुनें। कभी भी बदलें या रद्द करें।",
+    "subtitle": "Start with a trial - no classic free plan. Upgrade when you are ready; cancel anytime.",
     "billing": {
       "toggleLabel": "बिलिंग अवधि",
       "monthly": "मासिक",
       "yearly": "वार्षिक",
       "saveBadge": "बचत",
-      "monthlyNote": "खाते से कभी भी प्लान बदलें या रद्द करें।",
-      "yearlyNote": "वार्षिक USD बिलिंग — मासिक की तुलना में बचत।"
+      "monthlyNote": "Switch plans or cancel anytime from your account.",
+      "yearlyNote": "Annual billing in EUR - save ~17% on Pro and Pro+ vs monthly."
     },
     "signInHint": "पहले से खाता है?",
     "signInLink": "साइन इन",
@@ -1479,21 +1489,24 @@
       "getPro": "Get Pro",
       "getProPlus": "Get Pro+",
       "redirecting": "रीडायरेक्ट…",
-      "signIn": "सब्सक्राइब के लिए साइन इन"
+      "signIn": "सब्सक्राइब के लिए साइन इन",
+      "startProTrialSoon": "Start trial soon",
+      "startProPlusTrialSoon": "Start Pro+ trial soon"
     },
     "plans": {
-      "billedMonthly": "मासिक बिलिंग (USD)",
-      "billedYearly": "वार्षिक बिलिंग (USD)",
-      "free": {
-        "tagline": "पेपर ट्रेडिंग और बुनियादी टूल — बिना कार्ड।",
-        "cta": "मुफ्त शुरू करें"
-      },
+      "billedMonthly": "Billed monthly in EUR",
+      "billedYearly": "Billed annually in EUR",
       "pro": {
-        "popular": "सबसे लोकप्रिय",
+        "popular": "Most popular",
         "tagline": "सक्रिय निवेशकों के लिए सर्वोत्तम मूल्य।"
       },
       "proPlus": {
         "tagline": "पूर्ण एनालिटिक्स, API और प्राथमिकता सहायता।"
+      },
+      "trial": {
+        "duration": "7 days - Pro+ experience",
+        "tagline": "Limited Pro+ access - no credit card required to start.",
+        "cta": "Start trial"
       }
     },
     "features": {
@@ -1511,12 +1524,12 @@
         "answer": "हाँ। खाता सेटिंग्स से रद्द करें। अवधि के अंत तक एक्सेस।"
       },
       "trial": {
-        "question": "क्या ट्रायल है?",
-        "answer": "Pro में 14-दिन का पूर्ण फीचर ट्रायल।"
+        "question": "Is there a free trial?",
+        "answer": "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live."
       },
       "payment": {
         "question": "भुगतान के तरीके?",
-        "answer": "Stripe के माध्यम से USD। कार्ड और स्थानीय विधियाँ।"
+        "answer": "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured."
       },
       "security": {
         "question": "क्या डेटा सुरक्षित है?",
@@ -1526,10 +1539,32 @@
         "question": "पेपर ट्रेडिंग क्या है?",
         "answer": "वास्तविक डेटा पर बिना पूंजी जोखिम के अभ्यास।"
       }
+    },
+    "checkoutMigration": {
+      "banner": "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
+      "note": "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
+      "contactLink": "Contact us"
+    },
+    "investorOs": {
+      "comingSoon": "Coming soon",
+      "note": "Checkout not available yet - join the beta waitlist for early access."
     }
   },
   "companies": {
     "filterDividend": "केवल लाभांश वाले शेयर",
     "filterDividendLoading": "लाभांश सूची लोड हो रही है…"
+  },
+  "about": {
+    "valueAccessDesc": "9 languages, 130+ exchanges, and a trial to get started."
+  },
+  "waitlistPage": {
+    "seoDescription": "Join the beta waitlist for StockAI Pro EUR trial access.",
+    "benefit1": "Priority access to the 7-day trial and beta features.",
+    "benefit2": "Priority access to new AI modules.",
+    "benefit3": "Influence the product roadmap and premium features.",
+    "benefit4": "Dedicated onboarding materials for founding users.",
+    "subhead": "Join the waitlist for trial-first EUR access while checkout migration is in progress.",
+    "title": "Join the beta",
+    "ctaJoin": "Join beta"
   }
 }

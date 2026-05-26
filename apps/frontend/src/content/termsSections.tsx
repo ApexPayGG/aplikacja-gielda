@@ -68,25 +68,50 @@ export const termsSections: LegalSection[] = [
   },
   {
     id: "subscriptions",
-    title: "4. Subskrypcje, ceny i płatności Stripe",
+    title: "4. Subskrypcje, okres próbny, ceny i płatności Stripe",
     content: (
       <>
-        <p>Platforma oferuje plan bezpłatny oraz plany płatne rozliczane cyklicznie przez Stripe:</p>
+        <p>
+          StockAI Pro działa w modelu subskrypcyjnym SaaS z dostępem trial-first. Platforma{" "}
+          <strong>nie oferuje</strong> klasycznego, bezterminowego planu Free z pełnym dostępem do produktu.
+          Po rejestracji Użytkownik może rozpocząć okres próbny; po jego zakończeniu konto pozostaje aktywne, lecz
+          dostęp do kluczowych funkcji może zostać ograniczony (Trial Expired Mode), do czasu wykupienia planu
+          płatnego.
+        </p>
+        <p className="mt-3 font-medium text-textPrimary">Okres próbny (trial):</p>
         <BulletList
           items={[
-            "Free — bezterminowy dostęp do funkcji podstawowych",
-            "Pro — 9 USD/miesiąc lub 79 USD/rok: pełny dostęp do modułów AI i analiz premium",
-            "Pro+ — 19 USD/miesiąc lub 149 USD/rok: dostęp API oraz integracje brokerskie",
-            "Płatności: karty płatnicze, BLIK (zgodnie z dostępnością Stripe w regionie)",
-            "Opłata pobierana z góry na początek okresu rozliczeniowego",
-            "Anulowanie w panelu Stripe/ustawieniach konta — dostęp trwa do końca opłaconego okresu",
-            "Prawo odstąpienia od umowy zawartej na odległość: 14 dni od pierwszej opłaty, o ile usługa nie została w pełni wykonana za wyraźną zgodą",
-            "Program Early Adopter: pierwsze 500 kont Pro może zachować stałą cenę 9 USD/miesiąc zgodnie z warunkami promocji",
+            "7 dni — okres próbny bez podania karty płatniczej, z ograniczonym dostępem do funkcji Pro+ i limitami AI",
+            "14 dni — okres próbny z kartą płatniczą (gdy dostępny w Stripe), z dostępem Pro+ w modelu fair-use; po zakończeniu trialu subskrypcja może automatycznie przejść na wybrany plan płatny",
+            "Zakres trialu, limity oraz funkcje wyłączone w trialu określa aktualny cennik na stronie /pricing",
+          ]}
+        />
+        <p className="mt-3 font-medium text-textPrimary">Plany płatne (EUR, rozliczenie cykliczne przez Stripe):</p>
+        <BulletList
+          items={[
+            "Pro — 29 EUR/miesiąc lub 290 EUR/rok: moduły AI, sygnały, analizy premium w zakresie planu Pro",
+            "Pro+ — 59 EUR/miesiąc lub 590 EUR/rok: pełniejszy zakres analiz, coaching behawioralny, integracje w zakresie planu Pro+",
+            "Investor OS — 99 EUR/miesiąc lub 990 EUR/rok: plan rozszerzony (Personal Fit, analiza portfelowa i inne funkcje), gdy udostępniony w produkcie",
+            "Aktualne ceny, zakres funkcji oraz dostępność checkoutu zawsze podane są na stronie /pricing",
+            "Checkout Stripe w EUR może być włączany etapami po migracji cen; do czasu pełnej aktywacji dostęp beta może wymagać ręcznej aktywacji konta",
+          ]}
+        />
+        <p className="mt-3 font-medium text-textPrimary">Płatności, anulowanie i prawa konsumenta:</p>
+        <BulletList
+          items={[
+            "Płatności: karty płatnicze oraz metody obsługiwane przez Stripe w danym regionie (np. BLIK, gdy dostępny)",
+            "Opłata za plan płatny pobierana jest z góry na początek okresu rozliczeniowego (miesięcznego lub rocznego)",
+            "Anulowanie subskrypcji w ustawieniach konta lub panelu Stripe — dostęp do planu płatnego trwa do końca opłaconego okresu",
+            "Po wygaśnięciu trialu bez wykupienia planu Użytkownik zachowuje dostęp do konta, ustawień, rozliczeń i ograniczonego podglądu zgodnie z Trial Expired Mode",
+            "Prawo odstąpienia od umowy zawartej na odległość: 14 dni od pierwszej opłaty za plan płatny, o ile usługa nie została w pełni wykonana za wyraźną zgodą Użytkownika przed upływem terminu odstąpienia",
+            "W okresie trialu bez pobrania opłaty odstąpienie dotyczy ewentualnej umowy o płatną subskrypcję zgodnie z informacją podaną przy aktywacji trialu z kartą",
           ]}
         />
         <p className="mt-3 text-sm">
-          Aktualny cennik i zakres funkcji dostępny jest na stronie /pricing. Operator może aktualizować ceny z
-          zachowaniem praw konsumenta; posiadacze aktywnej subskrypcji zostaną poinformowani z wyprzedzeniem.
+          Operator może aktualizować cennik, modele trialu oraz zakres planów z zachowaniem praw konsumenta.
+          Posiadacze aktywnej subskrypcji zostaną poinformowani o istotnych zmianach z wyprzedzeniem. W razie
+          rozbieżności między Regulaminem a stroną /pricing wiążące są informacje na /pricing w zakresie cen i
+          dostępności planów.
         </p>
       </>
     ),

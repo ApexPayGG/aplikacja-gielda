@@ -9,7 +9,6 @@ import {
 import { Bars3Icon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { createStripeCheckoutSession } from "../services/api";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import { LandingAiBriefPreview } from "../components/landing/LandingAiBriefPreview";
@@ -20,7 +19,11 @@ import { SEOHead } from "../components/SEOHead";
 import { BrandLogo } from "../components/BrandLogo";
 import { CountryFlag } from "../components/CountryFlag";
 import { LANGUAGE_OPTIONS, resolveLanguageCode } from "../constants/languages";
-import { apiErrorMessage } from "../utils/apiErrorMessage";
+import {
+  annualSavingsPercent,
+  formatEurPrice,
+  PRICING_PLANS,
+} from "../config/pricing";
 
 const BRAND = {
   dark: "#a855f7",
@@ -65,11 +68,11 @@ function LandingFeatureIcon({ src, className = "" }: { src: string; className?: 
 
 const pricingTiers = [
   {
-    id: "free",
-    nameKey: "landing.pricing.tiers.free.name",
-    bodyKey: "landing.pricing.tiers.free.body",
-    featuresKey: "landing.pricing.tiers.free.features",
-    ctaKey: "landing.pricing.tiers.free.cta",
+    id: "trial",
+    nameKey: "landing.pricing.tiers.trial.name",
+    bodyKey: "landing.pricing.tiers.trial.body",
+    featuresKey: "landing.pricing.tiers.trial.features",
+    ctaKey: "landing.pricing.tiers.trial.cta",
     highlighted: false,
   },
   {
@@ -88,7 +91,13 @@ const pricingTiers = [
     ctaKey: "landing.pricing.tiers.proPlus.cta",
     highlighted: false,
   },
-];
+] as const;
+
+function landingTierPrice(tierId: (typeof pricingTiers)[number]["id"], billingCycle: BillingCycle): string {
+  if (tierId === "trial") return "€0";
+  if (tierId === "pro") return formatEurPrice("PRO", billingCycle);
+  return formatEurPrice("PRO_PLUS", billingCycle);
+}
 
 const HERO_TICKERS = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META", "JPM", "XOM", "V"] as const;
 
@@ -734,7 +743,6 @@ export function LandingPage() {
   const { t, i18n } = useTranslation("common");
   const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
-  const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<"pro" | "pro_plus" | null>(null);
   const [navScrolled, setNavScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [navSearchQuery, setNavSearchQuery] = useState("");
@@ -852,29 +860,6 @@ export function LandingPage() {
     document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .timeline-line").forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
-
-  const handleChoosePlan = async (plan: "pro" | "pro_plus"): Promise<void> => {
-    const userId =
-      typeof window !== "undefined" ? window.localStorage.getItem("userId")?.trim() ?? "" : "";
-    if (!userId) {
-      window.location.href = "/login";
-      return;
-    }
-    try {
-      setCheckoutLoadingPlan(plan);
-      const { url } = await createStripeCheckoutSession({
-        userId,
-        plan,
-        billing: billingCycle,
-      });
-      window.location.href = url;
-    } catch (error) {
-      console.error("Failed to create Stripe Checkout session", error);
-      window.alert(apiErrorMessage(error) || t("landing.pricing.checkoutError"));
-    } finally {
-      setCheckoutLoadingPlan(null);
-    }
-  };
 
   const marqueeTrack = [...marqueeItems, ...marqueeItems];
   const tickerMarqueeTrack = [...TICKER_BAR_ITEMS, ...TICKER_BAR_ITEMS];
@@ -1421,7 +1406,10 @@ export function LandingPage() {
           </div>
 
           <p className="mt-6 text-center text-sm font-medium text-[#94a3b8]">
-            ⚡ {t("landing.pricing.earlyAdopter")}
+            {t("landing.pricing.betaNote", {
+              defaultValue:
+                "EUR checkout migration in progress. Join the beta waitlist for trial access while Stripe EUR prices are configured.",
+            })}
           </p>
 
           <div className="mx-auto mt-10 max-w-3xl">
@@ -1431,19 +1419,9 @@ export function LandingPage() {
           <div className="mt-10 grid grid-cols-1 items-stretch gap-6 sm:mt-14 sm:gap-8 md:grid-cols-2 lg:grid-cols-3 lg:items-center">
             {pricingTiers.map((tier) => {
               const isPro = tier.id === "pro";
-              const isFree = tier.id === "free";
+              const isTrial = tier.id === "trial";
               const isProPlus = tier.id === "proPlus";
-
-              const priceDisplay =
-                tier.id === "free"
-                  ? "$0/mo"
-                  : tier.id === "pro"
-                    ? billingCycle === "monthly"
-                      ? "$9/mo"
-                      : "$79/yr"
-                    : billingCycle === "monthly"
-                      ? "$19/mo"
-                      : "$149/yr";
+              const priceDisplay = landingTierPrice(tier.id, billingCycle);
 
               if (isPro) {
                 return (
@@ -1466,7 +1444,9 @@ export function LandingPage() {
                     <p className="mt-6 text-5xl font-bold">{priceDisplay}</p>
                     {billingCycle === "yearly" ? (
                       <p className="mt-2 text-sm font-semibold text-emerald-300">
-                        {t("landing.pricing.save", { defaultValue: "Save 27%" })}
+                        {t("landing.pricing.save", {
+                          defaultValue: `Save ~${annualSavingsPercent("PRO")}%`,
+                        })}
                       </p>
                     ) : null}
                     <p className="mt-4 text-sm text-white/80">{t(tier.bodyKey)}</p>
@@ -1478,17 +1458,13 @@ export function LandingPage() {
                         </li>
                       ))}
                     </ul>
-                    <button
-                      type="button"
-                      onClick={() => void handleChoosePlan("pro")}
-                      disabled={checkoutLoadingPlan !== null}
-                      className="mt-8 w-full rounded-full bg-white py-3 text-center text-sm font-bold transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    <Link
+                      to="/waitlist?source=landing"
+                      className="mt-8 inline-flex w-full justify-center rounded-full bg-white py-3 text-center text-sm font-bold transition hover:bg-slate-100"
                       style={{ color: BRAND.dark }}
                     >
-                      {checkoutLoadingPlan === "pro"
-                        ? t("common.loading", { defaultValue: "Loading..." })
-                        : t(tier.ctaKey)}
-                    </button>
+                      {t(tier.ctaKey, { defaultValue: "Join beta" })}
+                    </Link>
                   </article>
                 );
               }
@@ -1499,12 +1475,19 @@ export function LandingPage() {
                   className={`glass-section p-8 ${isProPlus ? "border-2 border-[#9333ea]/60" : ""}`}
                 >
                   <h3 className="text-xl font-bold text-white">{t(tier.nameKey)}</h3>
-                  <p className={`mt-6 font-bold ${isFree ? "text-4xl" : "text-4xl"}`} style={{ color: BRAND.dark }}>
+                  <p className={`mt-6 font-bold ${isTrial ? "text-4xl" : "text-4xl"}`} style={{ color: BRAND.dark }}>
                     {priceDisplay}
                   </p>
+                  {isTrial ? (
+                    <p className="mt-2 text-sm text-[#94a3b8]">
+                      {t("landing.pricing.tiers.trial.duration", { defaultValue: "7 days" })}
+                    </p>
+                  ) : null}
                   {tier.id === "proPlus" && billingCycle === "yearly" ? (
                     <p className="mt-2 text-sm font-semibold text-emerald-600">
-                      {t("landing.pricing.saveProPlus", { defaultValue: "Save 34%" })}
+                      {t("landing.pricing.saveProPlus", {
+                        defaultValue: `Save ~${annualSavingsPercent("PRO_PLUS")}%`,
+                      })}
                     </p>
                   ) : null}
                   <p className="mt-4 text-sm text-[#94a3b8]">{t(tier.bodyKey)}</p>
@@ -1516,30 +1499,41 @@ export function LandingPage() {
                       </li>
                     ))}
                   </ul>
-                  {tier.id === "free" ? (
+                  {isTrial ? (
                     <Link
                       to="/register"
                       className="mt-8 inline-flex w-full justify-center rounded-full border border-white/15 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                     >
-                      {t(tier.ctaKey)}
+                      {t(tier.ctaKey, { defaultValue: "Start trial" })}
                     </Link>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => void handleChoosePlan("pro_plus")}
-                      disabled={checkoutLoadingPlan !== null}
-                      className="mt-8 w-full rounded-full border-2 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    <Link
+                      to="/waitlist?source=landing"
+                      className="mt-8 inline-flex w-full justify-center rounded-full border-2 py-3 text-sm font-bold text-white transition hover:bg-white/10"
                       style={{ borderColor: BRAND.medium, color: BRAND.dark }}
                     >
-                      {checkoutLoadingPlan === "pro_plus"
-                        ? t("common.loading", { defaultValue: "Loading..." })
-                        : t(tier.ctaKey)}
-                    </button>
+                      {t(tier.ctaKey, { defaultValue: "Join beta" })}
+                    </Link>
                   )}
                 </article>
               );
             })}
           </div>
+
+          <article className="glass-section mx-auto mt-10 max-w-2xl p-8 text-center">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#22d3ee]">
+              {t("landing.pricing.tiers.investorOs.comingSoon", { defaultValue: "Coming soon" })}
+            </p>
+            <h3 className="mt-3 text-xl font-bold text-white">
+              {t("landing.pricing.tiers.investorOs.name", { defaultValue: PRICING_PLANS.INVESTOR_OS.displayName })}
+            </h3>
+            <p className="mt-3 text-3xl font-bold" style={{ color: BRAND.dark }}>
+              {formatEurPrice("INVESTOR_OS", billingCycle)}
+            </p>
+            <p className="mt-4 text-sm text-[#94a3b8]">
+              {t("landing.pricing.tiers.investorOs.body", { defaultValue: PRICING_PLANS.INVESTOR_OS.tagline })}
+            </p>
+          </article>
         </div>
       </section>
 

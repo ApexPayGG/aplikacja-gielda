@@ -7,7 +7,7 @@
     },
     "disclosure": {
       "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider.",
-      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and trial access. Our recommendations are based on data and your profile, not partner payouts.",
       "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
       "title": "StockAI Pro transparency"
     },
@@ -525,17 +525,17 @@
       "terms": "服務條款"
     },
     "footerCta": {
-      "button": "建立免費帳戶",
+      "button": "Start trial",
       "disclaimer": "教育用途產品，非財務建議。投資涉及風險。",
-      "pricing": "查看價格",
-      "title": "今天就開始您的免費帳戶"
+      "pricing": "View pricing",
+      "title": "Start your trial today"
     },
     "hero": {
       "aiSignalBuy": "AI 訊號：買進",
       "badge": "AI · 130+ 交易所 · 9 種語言",
       "coachAlertBody": "你今天避開了 FOMO ✓",
       "coachAlertTitle": "教練提醒",
-      "ctaPrimary": "免費開始",
+      "ctaPrimary": "Start trial",
       "ctaSecondary": "查看示範",
       "scrollHint": "捲動",
       "subtitle": "AI 研究 · 行為教練 · 12 個交易所 · 9 種語言",
@@ -572,51 +572,61 @@
       "searchPlaceholder": "搜尋公司... AAPL, PKN"
     },
     "pricing": {
-      "badge": "早鳥價格",
-      "checkoutError": "無法開始結帳。",
-      "earlyAdopter": "前 500 個 Pro 帳戶永久鎖定每月 $9",
-      "monthly": "每月",
-      "popular": "最受歡迎",
-      "save": "省下 27%",
-      "saveProPlus": "省下 34%",
+      "badge": "Trial-first",
+      "checkoutError": "Checkout is not available yet.",
+      "monthly": "monthly",
+      "popular": "Most Popular",
+      "save": "Save ~17%",
+      "saveProPlus": "Save ~17%",
       "tiers": {
-        "free": {
-          "body": "建立穩定交易習慣的基礎功能。",
-          "cta": "免費開始",
-          "features": [
-            "核心儀表板",
-            "基礎 AI 訊號",
-            "社群存取"
-          ],
-          "name": "Free",
-          "price": "$0/mo"
-        },
         "pro": {
-          "body": "活躍投資人的完整存取。",
-          "cta": "Get Pro",
+          "body": "Know what is happening.",
+          "cta": "Join beta",
           "features": [
-            "所有 AI 模組",
-            "行為教練",
-            "交易者心理檔案"
+            "AI Brief",
+            "Signals",
+            "Basic Premium Analysis",
+            "Watchlist"
           ],
-          "name": "Pro",
-          "price": "$9/mo"
+          "name": "Pro"
         },
         "proPlus": {
-          "body": "進階使用者與自動化工作流程。",
-          "cta": "Get Pro+",
+          "body": "Know what it means.",
+          "cta": "Join beta",
           "features": [
-            "Pro 全部功能",
-            "API 存取",
-            "券商整合"
+            "Full Premium Analysis",
+            "Historical Twins",
+            "Behavioral Coach",
+            "Decision Journal"
           ],
-          "name": "Pro+",
-          "price": "$19/mo"
+          "name": "Pro+"
+        },
+        "trial": {
+          "name": "Trial",
+          "body": "7-day Pro+ experience without a credit card.",
+          "cta": "Start trial",
+          "duration": "7 days",
+          "features": [
+            "Limited Pro+ modules",
+            "Limited AI usage",
+            "No card required"
+          ]
+        },
+        "investorOs": {
+          "name": "Investor OS",
+          "body": "Know what it means for you.",
+          "comingSoon": "Coming soon",
+          "features": [
+            "Personal Fit Score",
+            "Portfolio-aware analysis",
+            "Trader Psyche",
+            "Priority AI"
+          ]
         }
       },
-      "title": "簡單定價",
-      "trial": "14 天免費",
-      "yearly": "每年"
+      "title": "EUR pricing",
+      "yearly": "yearly",
+      "betaNote": "EUR checkout migration in progress. Join the beta waitlist for trial access while Stripe EUR prices are configured."
     },
     "problem": {
       "cards": {
@@ -1458,18 +1468,18 @@
   },
   "pricingPage": {
     "seo": {
-      "title": "定價 — StockAI Pro",
-      "description": "Free、Pro $9/月、Pro+ $19/月。AI 投資研究。"
+      "title": "Pricing - StockAI Pro",
+      "description": "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo. AI investment research for international investors."
     },
     "title": "選擇方案",
-    "subtitle": "依階段選擇方案，隨時升級、降級或取消。",
+    "subtitle": "Start with a trial - no classic free plan. Upgrade when you are ready; cancel anytime.",
     "billing": {
       "toggleLabel": "計費週期",
       "monthly": "月付",
       "yearly": "年付",
       "saveBadge": "省",
-      "monthlyNote": "可於帳戶中隨時變更或取消方案。",
-      "yearlyNote": "年付 USD — 比月付×12更划算。"
+      "monthlyNote": "Switch plans or cancel anytime from your account.",
+      "yearlyNote": "Annual billing in EUR - save ~17% on Pro and Pro+ vs monthly."
     },
     "signInHint": "已有帳戶？",
     "signInLink": "登入",
@@ -1479,21 +1489,24 @@
       "getPro": "Get Pro",
       "getProPlus": "Get Pro+",
       "redirecting": "重新導向中…",
-      "signIn": "登入以訂閱"
+      "signIn": "登入以訂閱",
+      "startProTrialSoon": "Start trial soon",
+      "startProPlusTrialSoon": "Start Pro+ trial soon"
     },
     "plans": {
-      "billedMonthly": "每月計費（USD）",
-      "billedYearly": "每年計費（USD）",
-      "free": {
-        "tagline": "模擬交易與基礎工具 — 無需信用卡。",
-        "cta": "免費開始"
-      },
+      "billedMonthly": "Billed monthly in EUR",
+      "billedYearly": "Billed annually in EUR",
       "pro": {
-        "popular": "最受歡迎",
+        "popular": "Most popular",
         "tagline": "活躍投資人的最佳性價比。"
       },
       "proPlus": {
         "tagline": "完整分析、API 存取與優先支援。"
+      },
+      "trial": {
+        "duration": "7 days - Pro+ experience",
+        "tagline": "Limited Pro+ access - no credit card required to start.",
+        "cta": "Start trial"
       }
     },
     "features": {
@@ -1511,12 +1524,12 @@
         "answer": "可以。於帳戶設定取消，使用權至本期結束。"
       },
       "trial": {
-        "question": "有免費試用嗎？",
-        "answer": "Pro 含 14 天完整功能試用。"
+        "question": "Is there a free trial?",
+        "answer": "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live."
       },
       "payment": {
         "question": "支援哪些付款方式？",
-        "answer": "透過 Stripe 以 USD 付款，支援主要卡片與在地方式。"
+        "answer": "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured."
       },
       "security": {
         "question": "資料安全嗎？",
@@ -1526,10 +1539,32 @@
         "question": "什麼是模擬交易？",
         "answer": "以真實行情練習，不動用真實資金。"
       }
+    },
+    "checkoutMigration": {
+      "banner": "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
+      "note": "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
+      "contactLink": "Contact us"
+    },
+    "investorOs": {
+      "comingSoon": "Coming soon",
+      "note": "Checkout not available yet - join the beta waitlist for early access."
     }
   },
   "companies": {
     "filterDividend": "僅限有股息的股票",
     "filterDividendLoading": "正在載入股息名單…"
+  },
+  "about": {
+    "valueAccessDesc": "9 languages, 130+ exchanges, and a trial to get started."
+  },
+  "waitlistPage": {
+    "seoDescription": "Join the beta waitlist for StockAI Pro EUR trial access.",
+    "benefit1": "Priority access to the 7-day trial and beta features.",
+    "benefit2": "Priority access to new AI modules.",
+    "benefit3": "Influence the product roadmap and premium features.",
+    "benefit4": "Dedicated onboarding materials for founding users.",
+    "subhead": "Join the waitlist for trial-first EUR access while checkout migration is in progress.",
+    "title": "Join the beta",
+    "ctaJoin": "Join beta"
   }
 }

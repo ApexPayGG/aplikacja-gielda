@@ -19,7 +19,7 @@ export function WaitlistPage() {
   const benefits = useMemo(
     () => [
       t("waitlistPage.benefit1", {
-        defaultValue: "Permanent Early Adopter price: Pro $9/mo — forever.",
+        defaultValue: "Priority access to the 7-day trial and beta features.",
       }),
       t("waitlistPage.benefit2", {
         defaultValue: "Priority access to new AI modules.",
@@ -82,7 +82,7 @@ export function WaitlistPage() {
       <SEOHead
         title="Waitlist — StockAI Pro Early Access"
         description={t("waitlistPage.seoDescription", {
-          defaultValue: "Join the Early Access list and lock in the Early Adopter price for StockAI Pro.",
+          defaultValue: "Join the beta waitlist for StockAI Pro EUR trial access.",
         })}
       />
 
@@ -92,11 +92,12 @@ export function WaitlistPage() {
       >
         <div className="mx-auto max-w-4xl">
           <h1 className="text-4xl font-bold text-white md:text-5xl">
-            {t("waitlistPage.title", { defaultValue: "Join Early Access" })}
+            {t("waitlistPage.title", { defaultValue: "Join the beta" })}
           </h1>
           <p className="mt-4 max-w-2xl text-base text-white/90 md:text-lg">
             {t("waitlistPage.subhead", {
-              defaultValue: "The first 500 accounts get the Early Adopter price forever: Pro $9/mo",
+              defaultValue:
+                "Join the waitlist for trial-first EUR access while checkout migration is in progress.",
             })}
           </p>
 

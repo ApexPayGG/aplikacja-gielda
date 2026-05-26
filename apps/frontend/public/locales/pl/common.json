@@ -7,7 +7,7 @@
     },
     "disclosure": {
       "cfd_warning": "{{pct}}% rachunków inwestorów detalicznych traci pieniądze podczas handlu CFD u tego dostawcy.",
-      "full": "Gdy otwierasz konto przez polecanego brokera, StockAI Pro może otrzymać prowizję afiliacyjną. To pomaga finansować rozwój produktu i darmowy plan. Nasze rekomendacje opierają się na danych i Twoim profilu, a nie na stawkach partnerów.",
+      "full": "Gdy otworzysz konto u polecanego brokera, StockAI Pro może otrzymać prowizję partnerską. Wspiera to rozwój produktu i dostęp trial. Rekomendacje opieramy na danych i profilu, nie na wypłatach partnerów.",
       "short": "Otrzymujemy prowizję od brokera za nowe konta. Nie wpływa to na nasze rekomendacje.",
       "title": "Transparentność StockAI Pro"
     },
@@ -295,10 +295,22 @@
       "selectLegend": "Wybierz emocję (wymagane)",
       "activeLegend": "Aktywna emocja",
       "requiredHint": "Paper trade i dziennik wymagają świadomego wyboru emocji.",
-      "FEARFUL": { "label": "Strach", "hint": "Wysoka awersja do ryzyka — rozważ mniejszy size." },
-      "NEUTRAL": { "label": "Neutralny", "hint": "Zbalansowany stan — dobry moment na plan A+." },
-      "GREEDY": { "label": "Chciwość", "hint": "Ryzyko overtradingu — zweryfikuj R:R przed wejściem." },
-      "CONFIDENT": { "label": "Pewność", "hint": "Pewność siebie OK, ale unikaj overconfidence po serii wygranych." }
+      "FEARFUL": {
+        "label": "Strach",
+        "hint": "Wysoka awersja do ryzyka — rozważ mniejszy size."
+      },
+      "NEUTRAL": {
+        "label": "Neutralny",
+        "hint": "Zbalansowany stan — dobry moment na plan A+."
+      },
+      "GREEDY": {
+        "label": "Chciwość",
+        "hint": "Ryzyko overtradingu — zweryfikuj R:R przed wejściem."
+      },
+      "CONFIDENT": {
+        "label": "Pewność",
+        "hint": "Pewność siebie OK, ale unikaj overconfidence po serii wygranych."
+      }
     },
     "interventions": {
       "title": "Ostatnie interwencje coacha",
@@ -360,11 +372,26 @@
       "toastCopied": "Skopiowano do schowka! Udostępnij znajomym na Discordzie lub Telegramie.",
       "toastCopyFailed": "Nie udało się skopiować — sprawdź uprawnienia schowka.",
       "channels": {
-        "linkedin": { "label": "LinkedIn", "sublabel": "Profesjonalny post + link" },
-        "twitter": { "label": "X (Twitter)", "sublabel": "Intent tweet z hashtagami" },
-        "facebook": { "label": "Facebook", "sublabel": "Udostępnij + tekst w schowku" },
-        "threads": { "label": "Threads", "sublabel": "Ten sam payload co X" },
-        "copy": { "label": "Kopiuj link", "sublabel": "Discord · Telegram · WhatsApp" }
+        "linkedin": {
+          "label": "LinkedIn",
+          "sublabel": "Profesjonalny post + link"
+        },
+        "twitter": {
+          "label": "X (Twitter)",
+          "sublabel": "Intent tweet z hashtagami"
+        },
+        "facebook": {
+          "label": "Facebook",
+          "sublabel": "Udostępnij + tekst w schowku"
+        },
+        "threads": {
+          "label": "Threads",
+          "sublabel": "Ten sam payload co X"
+        },
+        "copy": {
+          "label": "Kopiuj link",
+          "sublabel": "Discord · Telegram · WhatsApp"
+        }
       }
     },
     "paywall": {
@@ -770,14 +797,14 @@
   },
   "landing": {
     "footerCta": {
-      "button": "Zacznij za darmo",
+      "button": "Rozpocznij trial",
       "disclaimer": "Produkt edukacyjny. To nie jest porada inwestycyjna. Inwestowanie wiąże się z ryzykiem.",
       "pricing": "Zobacz cennik",
-      "title": "Gotowy żeby inwestować mądrzej?"
+      "title": "Rozpocznij trial już dziś"
     },
     "hero": {
       "badge": "AI · 130+ giełd · 9 języków",
-      "ctaPrimary": "Zacznij za darmo",
+      "ctaPrimary": "Rozpocznij trial",
       "ctaSecondary": "Zobacz demo",
       "scrollHint": "Przewiń",
       "subtitle": "Jedna platforma zamiast pięciu kart w przeglądarce. AI analizuje, coach pilnuje Twoich emocji — Ty podejmujesz świadome decyzje.",
@@ -816,7 +843,11 @@
       "symbolLabel": "Przykładowy symbol",
       "symbol": "AAPL",
       "disclaimer": "Podgląd edukacyjny. To nie jest porada inwestycyjna. Bez kupna/sprzedaży, celu cenowego ani rekomendacji.",
-      "highlights": ["Wsparcie decyzji", "Świadomość ryzyka", "Ochrona behawioralna"],
+      "highlights": [
+        "Wsparcie decyzji",
+        "Świadomość ryzyka",
+        "Ochrona behawioralna"
+      ],
       "sections": [
         {
           "heading": "Kontekst rynku",
@@ -852,51 +883,61 @@
       ]
     },
     "pricing": {
-      "badge": "Cena dla pierwszych użytkowników",
-      "earlyAdopter": "Pierwsze 500 kont Pro w cenie $9/mo — na zawsze",
-      "monthly": "miesięcznie",
-      "popular": "Najpopularniejszy",
-      "save": "Oszczędź 27%",
-      "saveProPlus": "Oszczędź 34%",
+      "badge": "Trial-first",
+      "monthly": "monthly",
+      "popular": "Most Popular",
+      "save": "Oszcz. ~17%",
+      "saveProPlus": "Oszcz. ~17%",
       "tiers": {
-        "free": {
-          "body": "Podstawowe funkcje, żeby zacząć budować konsekwencję.",
-          "cta": "Zacznij za darmo",
-          "features": [
-            "Główny dashboard",
-            "Podstawowe sygnały AI",
-            "Dostęp do społeczności"
-          ],
-          "name": "Free",
-          "price": "$0/mo"
-        },
         "pro": {
-          "body": "Pełny dostęp dla aktywnych inwestorów.",
-          "cta": "Get Pro",
+          "body": "Wiedz, co się dzieje.",
+          "cta": "Dołącz do beta",
           "features": [
-            "Wszystkie moduły AI",
-            "Coaching behawioralny",
-            "Profil psychiki tradera"
+            "AI Brief",
+            "Sygnały",
+            "Podstawowa analiza Premium",
+            "Watchlista"
           ],
-          "name": "Pro",
-          "price": "$9/mo"
+          "name": "Pro"
         },
         "proPlus": {
-          "body": "Dla power userów i workflow automatyzacji.",
-          "cta": "Get Pro+",
+          "body": "Wiedz, co to znaczy.",
+          "cta": "Dołącz do beta",
           "features": [
-            "Wszystko z Pro",
-            "Dostęp do API",
-            "Integracja brokerska"
+            "Pełna analiza Premium",
+            "Historical Twins",
+            "Coach behawioralny",
+            "Dziennik decyzji"
           ],
-          "name": "Pro+",
-          "price": "$19/mo"
+          "name": "Pro+"
+        },
+        "trial": {
+          "name": "Trial",
+          "body": "7 dni doświadczenia Pro+ bez karty płatniczej.",
+          "cta": "Rozpocznij trial",
+          "duration": "7 dni",
+          "features": [
+            "Ograniczone moduły Pro+",
+            "Ograniczone AI",
+            "Bez karty"
+          ]
+        },
+        "investorOs": {
+          "name": "Investor OS",
+          "body": "Wiedz, co to znaczy dla Ciebie.",
+          "comingSoon": "Wkrótce",
+          "features": [
+            "Personal Fit Score",
+            "Analiza z portfelem",
+            "Trader Psyche",
+            "Priorytetowe AI"
+          ]
         }
       },
-      "title": "Prosty cennik",
-      "trial": "14 dni za darmo",
-      "yearly": "rocznie",
-      "checkoutError": "Nie udało się rozpocząć płatności."
+      "title": "Cennik EUR",
+      "yearly": "yearly",
+      "checkoutError": "Checkout is not available yet.",
+      "betaNote": "Trwa migracja checkoutu EUR. Dołącz do listy beta, aby uzyskać dostęp trial, dopóki nie skonfigurujemy cen Stripe w EUR."
     },
     "problem": {
       "cards": {
@@ -1894,18 +1935,18 @@
   },
   "pricingPage": {
     "seo": {
-      "title": "Cennik — StockAI Pro",
-      "description": "Free, Pro $9/mies., Pro+ $19/mies. Analiza inwestycyjna AI dla inwestorów detalicznych."
+      "title": "Pricing - StockAI Pro",
+      "description": "Trial-first EUR: Pro €29/mies., Pro+ €59/mies., Investor OS €99/mies. Analiza inwestycyjna AI."
     },
     "title": "Wybierz swój plan",
-    "subtitle": "Dopasuj plan do etapu rozwoju. Zmiana lub rezygnacja w dowolnym momencie — bez długoterminowych zobowiązań.",
+    "subtitle": "Start with a trial - no classic free plan. Upgrade when you are ready; cancel anytime.",
     "billing": {
       "toggleLabel": "Okres rozliczeniowy",
       "monthly": "Miesięcznie",
       "yearly": "Rocznie",
       "saveBadge": "Oszczędność",
-      "monthlyNote": "Zmieniaj plan lub anuluj subskrypcję w ustawieniach konta.",
-      "yearlyNote": "Płatność roczna w USD — taniej niż 12× miesięczna (Pro ~27%, Pro+ ~35%)."
+      "monthlyNote": "Switch plans or cancel anytime from your account.",
+      "yearlyNote": "Annual billing in EUR - save ~17% on Pro and Pro+ vs monthly."
     },
     "signInHint": "Masz już konto?",
     "signInLink": "Zaloguj się",
@@ -1915,21 +1956,24 @@
       "getPro": "Get Pro",
       "getProPlus": "Get Pro+",
       "redirecting": "Przekierowywanie…",
-      "signIn": "Zaloguj się, aby subskrybować"
+      "signIn": "Zaloguj się, aby subskrybować",
+      "startProTrialSoon": "Start trial soon",
+      "startProPlusTrialSoon": "Start Pro+ trial soon"
     },
     "plans": {
-      "billedMonthly": "Rozliczenie miesięczne (USD)",
-      "billedYearly": "Rozliczenie roczne (USD)",
-      "free": {
-        "tagline": "Paper trading i podstawowe narzędzia — bez karty płatniczej.",
-        "cta": "Zacznij za darmo"
-      },
+      "billedMonthly": "Billed monthly in EUR",
+      "billedYearly": "Billed annually in EUR",
       "pro": {
-        "popular": "Najpopularniejszy",
+        "popular": "Most popular",
         "tagline": "Najlepszy stosunek ceny do możliwości dla aktywnych inwestorów."
       },
       "proPlus": {
         "tagline": "Pełny pakiet analityczny, dostęp API i priorytetowe wsparcie."
+      },
+      "trial": {
+        "duration": "7 days - Pro+ experience",
+        "tagline": "Limited Pro+ access - no credit card required to start.",
+        "cta": "Start trial"
       }
     },
     "features": {
@@ -1947,12 +1991,12 @@
         "answer": "Tak. Anuluj w ustawieniach konta. Dostęp pozostaje do końca bieżącego okresu rozliczeniowego."
       },
       "trial": {
-        "question": "Czy jest okres próbny?",
-        "answer": "Plan Pro obejmuje 14-dniowy trial pełnej funkcjonalności."
+        "question": "Is there a free trial?",
+        "answer": "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live."
       },
       "payment": {
         "question": "Jakie metody płatności?",
-        "answer": "Płatności w USD przez Stripe — karty i metody dostępne lokalnie w Stripe."
+        "answer": "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured."
       },
       "security": {
         "question": "Czy dane są bezpieczne?",
@@ -1962,6 +2006,15 @@
         "question": "Co to jest paper trading?",
         "answer": "Symulacja inwestowania na danych rynkowych bez ryzyka kapitału — idealna do nauki."
       }
+    },
+    "checkoutMigration": {
+      "banner": "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
+      "note": "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
+      "contactLink": "Contact us"
+    },
+    "investorOs": {
+      "comingSoon": "Coming soon",
+      "note": "Checkout not available yet - join the beta waitlist for early access."
     }
   },
   "replayModePage": {
@@ -2047,22 +2100,14 @@
     "openMenu": "Otwórz menu"
   },
   "waitlistPage": {
-    "seoDescription": "Dołącz do listy Early Access i odbierz cenę Early Adopter dla StockAI Pro.",
-    "benefit1": "Stała cena Early Adopter: Pro $9/mo na zawsze.",
-    "benefit2": "Priorytetowy dostęp do nowych modułów AI.",
-    "benefit3": "Wpływ na roadmapę produktu i funkcje premium.",
-    "benefit4": "Dedykowane onboardingowe materiały dla pierwszych użytkowników.",
-    "countWaiting": "Już {{count}} osób czeka",
-    "countWaitingUnknown": "osób czeka",
-    "ctaJoin": "Dołącz do waitlisty",
-    "ctaSubmitting": "Wysyłanie...",
-    "benefitsHeading": "Korzyści Early Access",
-    "emailLabel": "Email",
-    "nameLabel": "Imię (opcjonalne)",
-    "namePlaceholder": "Twoje imię",
-    "subhead": "Pierwsze 500 kont otrzyma cenę Early Adopter na zawsze: Pro $9/mo",
-    "successOnList": "Jesteś na liście! Sprawdź swoją skrzynkę.",
-    "title": "Dołącz do Early Access"
+    "seoDescription": "Dołącz do listy beta StockAI Pro - dostęp trial w EUR.",
+    "benefit1": "Priorytetowy dostęp do 7-dniowego trialu i funkcji beta.",
+    "benefit2": "Priority access to new AI modules.",
+    "benefit3": "Influence the product roadmap and premium features.",
+    "benefit4": "Dedicated onboarding materials for founding users.",
+    "subhead": "Dołącz do listy oczekujących na trial-first EUR, dopóki trwa migracja checkoutu.",
+    "title": "Dołącz do beta",
+    "ctaJoin": "Dołącz do beta"
   },
   "contactPage": {
     "title": "Kontakt",
@@ -2252,5 +2297,8 @@
   "companies": {
     "filterDividend": "Tylko spółki z dywidendą",
     "filterDividendLoading": "Ładowanie listy dywidendowych…"
+  },
+  "about": {
+    "valueAccessDesc": "9 języków, 130+ giełd i trial na start."
   }
 }

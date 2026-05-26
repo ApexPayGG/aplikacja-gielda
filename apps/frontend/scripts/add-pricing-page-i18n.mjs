@@ -10,17 +10,17 @@ const PRICING_PAGE = {
   en: {
     seo: {
       title: "Pricing — StockAI Pro",
-      description: "Free, Pro $9/mo, Pro+ $19/mo. AI investment research for retail investors.",
+      description: "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo. AI investment research for international investors.",
     },
     title: "Choose your plan",
-    subtitle: "Pick the plan that fits your stage. Upgrade, downgrade, or cancel anytime — no long-term lock-in.",
+    subtitle: "Start with a trial - no classic free plan. Upgrade when you are ready; cancel anytime.",
     billing: {
       toggleLabel: "Billing period",
       monthly: "Monthly",
       yearly: "Yearly",
       saveBadge: "Save",
       monthlyNote: "Switch plans or cancel anytime from your account.",
-      yearlyNote: "Annual billing in USD — save vs paying monthly (Pro ~27%, Pro+ ~35%).",
+      yearlyNote: "Annual billing in EUR - save ~17% on Pro and Pro+ vs monthly.",
     },
     signInHint: "Already have an account?",
     signInLink: "Sign in",
@@ -33,11 +33,12 @@ const PRICING_PAGE = {
       signIn: "Sign in to subscribe",
     },
     plans: {
-      billedMonthly: "Billed monthly in USD",
-      billedYearly: "Billed annually in USD",
-      free: {
-        tagline: "Start with paper trading and core tools — no credit card.",
-        cta: "Start free",
+      billedMonthly: "Billed monthly in EUR",
+      billedYearly: "Billed annually in EUR",
+      trial: {
+        tagline: "Limited Pro+ access - no credit card required to start.",
+        cta: "Start trial",
+        duration: "7 days - Pro+ experience",
       },
       pro: {
         popular: "Most popular",
@@ -63,11 +64,11 @@ const PRICING_PAGE = {
       },
       trial: {
         question: "Is there a free trial?",
-        answer: "Pro includes a 14-day trial so you can test full features before committing.",
+        answer: "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live.",
       },
       payment: {
         question: "What payment methods do you accept?",
-        answer: "Payments are processed by Stripe in USD. Major cards and local methods supported by Stripe.",
+        answer: "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured.",
       },
       security: {
         question: "Is my data secure?",
@@ -82,7 +83,7 @@ const PRICING_PAGE = {
   pl: {
     seo: {
       title: "Cennik — StockAI Pro",
-      description: "Free, Pro $9/mies., Pro+ $19/mies. Analiza inwestycyjna AI dla inwestorów detalicznych.",
+      description: "Trial-first EUR: Pro €29/mies., Pro+ €59/mies., Investor OS €99/mies. Analiza inwestycyjna AI.",
     },
     title: "Wybierz swój plan",
     subtitle: "Dopasuj plan do etapu rozwoju. Zmiana lub rezygnacja w dowolnym momencie — bez długoterminowych zobowiązań.",
@@ -152,7 +153,7 @@ const PRICING_PAGE = {
     },
   },
   de: {
-    seo: { title: "Preise — StockAI Pro", description: "Free, Pro $9/Mo., Pro+ $19/Mo. KI-Investmentrecherche." },
+    seo: { title: "Preise - StockAI Pro", description: "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo." },
     title: "Wählen Sie Ihren Plan",
     subtitle: "Passen Sie den Plan an Ihre Phase an. Jederzeit wechseln oder kündigen.",
     billing: {
@@ -193,7 +194,7 @@ const PRICING_PAGE = {
     },
   },
   es: {
-    seo: { title: "Precios — StockAI Pro", description: "Free, Pro $9/mes, Pro+ $19/mes. Investigación de inversión con IA." },
+    seo: { title: "Precios - StockAI Pro", description: "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo." },
     title: "Elige tu plan",
     subtitle: "Adapta el plan a tu etapa. Cambia o cancela cuando quieras.",
     billing: {
@@ -234,7 +235,7 @@ const PRICING_PAGE = {
     },
   },
   fr: {
-    seo: { title: "Tarifs — StockAI Pro", description: "Free, Pro 9 $/mois, Pro+ 19 $/mois. Recherche d'investissement IA." },
+    seo: { title: "Tarifs - StockAI Pro", description: "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo." },
     title: "Choisissez votre offre",
     subtitle: "Adaptez l'offre à votre niveau. Changez ou résiliez à tout moment.",
     billing: {
@@ -275,7 +276,7 @@ const PRICING_PAGE = {
     },
   },
   ja: {
-    seo: { title: "料金 — StockAI Pro", description: "Free、Pro $9/月、Pro+ $19/月。AI投資リサーチ。" },
+    seo: { title: "料金 - StockAI Pro", description: "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo." },
     title: "プランを選択",
     subtitle: "段階に合わせてプランを選べます。いつでも変更・解約可能。",
     billing: {
@@ -316,7 +317,7 @@ const PRICING_PAGE = {
     },
   },
   hi: {
-    seo: { title: "मूल्य — StockAI Pro", description: "Free, Pro $9/माह, Pro+ $19/माह। AI निवेश शोध।" },
+    seo: { title: "मूल्य - StockAI Pro", description: "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo." },
     title: "अपना प्लान चुनें",
     subtitle: "अपने चरण के अनुसार प्लान चुनें। कभी भी बदलें या रद्द करें।",
     billing: {
@@ -357,7 +358,7 @@ const PRICING_PAGE = {
     },
   },
   ko: {
-    seo: { title: "요금 — StockAI Pro", description: "Free, Pro $9/월, Pro+ $19/월. AI 투자 리서치." },
+    seo: { title: "요금 - StockAI Pro", description: "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo." },
     title: "플랜 선택",
     subtitle: "단계에 맞는 플랜을 선택하세요. 언제든 변경·해지 가능.",
     billing: {
@@ -398,7 +399,7 @@ const PRICING_PAGE = {
     },
   },
   "zh-TW": {
-    seo: { title: "定價 — StockAI Pro", description: "Free、Pro $9/月、Pro+ $19/月。AI 投資研究。" },
+    seo: { title: "定價 - StockAI Pro", description: "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo." },
     title: "選擇方案",
     subtitle: "依階段選擇方案，隨時升級、降級或取消。",
     billing: {

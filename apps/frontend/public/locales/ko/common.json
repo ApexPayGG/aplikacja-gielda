@@ -7,7 +7,7 @@
     },
     "disclosure": {
       "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider.",
-      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and trial access. Our recommendations are based on data and your profile, not partner payouts.",
       "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
       "title": "StockAI Pro transparency"
     },
@@ -525,17 +525,17 @@
       "terms": "이용약관"
     },
     "footerCta": {
-      "button": "무료 계정 만들기",
+      "button": "Start trial",
       "disclaimer": "교육용 제품입니다. 금융 자문이 아닙니다. 투자에는 위험이 따릅니다.",
-      "pricing": "요금 보기",
-      "title": "오늘 무료 계정을 시작하세요"
+      "pricing": "View pricing",
+      "title": "Start your trial today"
     },
     "hero": {
       "aiSignalBuy": "AI 신호: 매수",
       "badge": "AI · 130개 이상 거래소 · 9개 언어",
       "coachAlertBody": "오늘 FOMO를 피하고 있습니다 ✓",
       "coachAlertTitle": "코치 알림",
-      "ctaPrimary": "무료로 시작",
+      "ctaPrimary": "Start trial",
       "ctaSecondary": "데모 보기",
       "scrollHint": "스크롤",
       "subtitle": "AI 리서치 · 행동 코칭 · 12개 거래소 · 9개 언어",
@@ -572,51 +572,61 @@
       "searchPlaceholder": "기업 검색... AAPL, PKN"
     },
     "pricing": {
-      "badge": "얼리 어답터 가격",
-      "checkoutError": "결제를 시작할 수 없습니다.",
-      "earlyAdopter": "선착순 Pro 500계정은 평생 월 $9 고정",
-      "monthly": "월간",
-      "popular": "가장 인기",
-      "save": "27% 절약",
-      "saveProPlus": "34% 절약",
+      "badge": "Trial-first",
+      "checkoutError": "Checkout is not available yet.",
+      "monthly": "monthly",
+      "popular": "Most Popular",
+      "save": "Save ~17%",
+      "saveProPlus": "Save ~17%",
       "tiers": {
-        "free": {
-          "body": "꾸준한 투자 습관을 위한 기본 기능.",
-          "cta": "무료로 시작",
-          "features": [
-            "코어 대시보드",
-            "기본 AI 신호",
-            "커뮤니티 액세스"
-          ],
-          "name": "Free",
-          "price": "$0/mo"
-        },
         "pro": {
-          "body": "활성 투자자를 위한 전체 액세스.",
-          "cta": "Get Pro",
+          "body": "Know what is happening.",
+          "cta": "Join beta",
           "features": [
-            "모든 AI 모듈",
-            "행동 코칭",
-            "트레이더 심리 프로필"
+            "AI Brief",
+            "Signals",
+            "Basic Premium Analysis",
+            "Watchlist"
           ],
-          "name": "Pro",
-          "price": "$9/mo"
+          "name": "Pro"
         },
         "proPlus": {
-          "body": "파워 유저 및 자동화 워크플로용.",
-          "cta": "Get Pro+",
+          "body": "Know what it means.",
+          "cta": "Join beta",
           "features": [
-            "Pro의 모든 기능",
-            "API 액세스",
-            "브로커 연동"
+            "Full Premium Analysis",
+            "Historical Twins",
+            "Behavioral Coach",
+            "Decision Journal"
           ],
-          "name": "Pro+",
-          "price": "$19/mo"
+          "name": "Pro+"
+        },
+        "trial": {
+          "name": "Trial",
+          "body": "7-day Pro+ experience without a credit card.",
+          "cta": "Start trial",
+          "duration": "7 days",
+          "features": [
+            "Limited Pro+ modules",
+            "Limited AI usage",
+            "No card required"
+          ]
+        },
+        "investorOs": {
+          "name": "Investor OS",
+          "body": "Know what it means for you.",
+          "comingSoon": "Coming soon",
+          "features": [
+            "Personal Fit Score",
+            "Portfolio-aware analysis",
+            "Trader Psyche",
+            "Priority AI"
+          ]
         }
       },
-      "title": "간단한 요금제",
-      "trial": "14일 무료",
-      "yearly": "연간"
+      "title": "EUR pricing",
+      "yearly": "yearly",
+      "betaNote": "EUR checkout migration in progress. Join the beta waitlist for trial access while Stripe EUR prices are configured."
     },
     "problem": {
       "cards": {
@@ -1458,18 +1468,18 @@
   },
   "pricingPage": {
     "seo": {
-      "title": "요금 — StockAI Pro",
-      "description": "Free, Pro $9/월, Pro+ $19/월. AI 투자 리서치."
+      "title": "Pricing - StockAI Pro",
+      "description": "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo. AI investment research for international investors."
     },
     "title": "플랜 선택",
-    "subtitle": "단계에 맞는 플랜을 선택하세요. 언제든 변경·해지 가능.",
+    "subtitle": "Start with a trial - no classic free plan. Upgrade when you are ready; cancel anytime.",
     "billing": {
       "toggleLabel": "결제 주기",
       "monthly": "월간",
       "yearly": "연간",
       "saveBadge": "절약",
-      "monthlyNote": "계정에서 언제든 플랜 변경 또는 해지.",
-      "yearlyNote": "연간 USD 결제 — 월간×12보다 저렴."
+      "monthlyNote": "Switch plans or cancel anytime from your account.",
+      "yearlyNote": "Annual billing in EUR - save ~17% on Pro and Pro+ vs monthly."
     },
     "signInHint": "이미 계정이 있으신가요?",
     "signInLink": "로그인",
@@ -1479,21 +1489,24 @@
       "getPro": "Get Pro",
       "getProPlus": "Get Pro+",
       "redirecting": "이동 중…",
-      "signIn": "구독하려면 로그인"
+      "signIn": "구독하려면 로그인",
+      "startProTrialSoon": "Start trial soon",
+      "startProPlusTrialSoon": "Start Pro+ trial soon"
     },
     "plans": {
-      "billedMonthly": "월간 결제 (USD)",
-      "billedYearly": "연간 결제 (USD)",
-      "free": {
-        "tagline": "페이퍼 트레이딩과 기본 도구 — 카드 불필요.",
-        "cta": "무료로 시작"
-      },
+      "billedMonthly": "Billed monthly in EUR",
+      "billedYearly": "Billed annually in EUR",
       "pro": {
-        "popular": "가장 인기",
+        "popular": "Most popular",
         "tagline": "활동적인 투자자에게 최적의 가성비."
       },
       "proPlus": {
         "tagline": "전체 분석, API 액세스, 우선 지원."
+      },
+      "trial": {
+        "duration": "7 days - Pro+ experience",
+        "tagline": "Limited Pro+ access - no credit card required to start.",
+        "cta": "Start trial"
       }
     },
     "features": {
@@ -1511,12 +1524,12 @@
         "answer": "네. 계정 설정에서 해지. 기간 종료까지 이용 가능."
       },
       "trial": {
-        "question": "무료 체험이 있나요?",
-        "answer": "Pro는 14일 전체 기능 체험 포함."
+        "question": "Is there a free trial?",
+        "answer": "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live."
       },
       "payment": {
         "question": "결제 수단은?",
-        "answer": "Stripe USD 결제. 주요 카드 및 로컬 방식."
+        "answer": "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured."
       },
       "security": {
         "question": "데이터는 안전한가요?",
@@ -1526,10 +1539,32 @@
         "question": "페이퍼 트레이딩이란?",
         "answer": "실제 데이터로 자본 위험 없이 연습."
       }
+    },
+    "checkoutMigration": {
+      "banner": "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
+      "note": "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
+      "contactLink": "Contact us"
+    },
+    "investorOs": {
+      "comingSoon": "Coming soon",
+      "note": "Checkout not available yet - join the beta waitlist for early access."
     }
   },
   "companies": {
     "filterDividend": "배당주만",
     "filterDividendLoading": "배당 종목 불러오는 중…"
+  },
+  "about": {
+    "valueAccessDesc": "9 languages, 130+ exchanges, and a trial to get started."
+  },
+  "waitlistPage": {
+    "seoDescription": "Join the beta waitlist for StockAI Pro EUR trial access.",
+    "benefit1": "Priority access to the 7-day trial and beta features.",
+    "benefit2": "Priority access to new AI modules.",
+    "benefit3": "Influence the product roadmap and premium features.",
+    "benefit4": "Dedicated onboarding materials for founding users.",
+    "subhead": "Join the waitlist for trial-first EUR access while checkout migration is in progress.",
+    "title": "Join the beta",
+    "ctaJoin": "Join beta"
   }
 }

@@ -42,164 +42,164 @@ function sortKeys(value) {
 
 const pricingTiers = {
   ja: {
-    free: {
+    trial: {
       body: "一貫した取引習慣を築くための基本機能。",
       cta: "無料で始める",
       features: ["コアダッシュボード", "基本AIシグナル", "コミュニティアクセス"],
-      name: "Free",
-      price: "$0/mo",
+      name: "Trial",
+      price: "€0",
     },
     pro: {
       body: "アクティブな投資家向けのフルアクセス。",
       cta: "Proを選ぶ",
       features: ["全AIモジュール", "行動コーチング", "トレーダー心理プロファイル"],
       name: "Pro",
-      price: "$9/mo",
+      price: "€29/mo",
     },
     proPlus: {
       body: "パワーユーザーと自動化ワークフロー向け。",
       cta: "Pro+を選ぶ",
       features: ["Proの全機能", "APIアクセス", "ブローカー連携"],
       name: "Pro+",
-      price: "$19/mo",
+      price: "€59/mo",
     },
   },
   es: {
-    free: {
+    trial: {
       body: "Funciones básicas para empezar a construir consistencia.",
       cta: "Empezar gratis",
       features: ["Panel principal", "Señales IA básicas", "Acceso a la comunidad"],
-      name: "Free",
-      price: "$0/mo",
+      name: "Trial",
+      price: "€0",
     },
     pro: {
       body: "Acceso completo para inversores activos.",
       cta: "Elegir Pro",
       features: ["Todos los módulos IA", "Coaching conductual", "Perfil psicológico del trader"],
       name: "Pro",
-      price: "$9/mo",
+      price: "€29/mo",
     },
     proPlus: {
       body: "Para usuarios avanzados y flujos de automatización.",
       cta: "Elegir Pro+",
       features: ["Todo lo de Pro", "Acceso API", "Integración con bróker"],
       name: "Pro+",
-      price: "$19/mo",
+      price: "€59/mo",
     },
   },
   fr: {
-    free: {
+    trial: {
       body: "Fonctions de base pour développer votre régularité.",
       cta: "Commencer gratuitement",
       features: ["Tableau de bord principal", "Signaux IA de base", "Accès communauté"],
-      name: "Free",
-      price: "$0/mo",
+      name: "Trial",
+      price: "€0",
     },
     pro: {
       body: "Accès complet pour investisseurs actifs.",
       cta: "Choisir Pro",
       features: ["Tous les modules IA", "Coaching comportemental", "Profil psychologique trader"],
       name: "Pro",
-      price: "$9/mo",
+      price: "€29/mo",
     },
     proPlus: {
       body: "Pour utilisateurs avancés et workflows automatisés.",
       cta: "Choisir Pro+",
       features: ["Tout Pro inclus", "Accès API", "Intégration courtier"],
       name: "Pro+",
-      price: "$19/mo",
+      price: "€59/mo",
     },
   },
   ko: {
-    free: {
+    trial: {
       body: "꾸준한 투자 습관을 위한 기본 기능.",
       cta: "무료로 시작",
       features: ["코어 대시보드", "기본 AI 신호", "커뮤니티 액세스"],
-      name: "Free",
-      price: "$0/mo",
+      name: "Trial",
+      price: "€0",
     },
     pro: {
       body: "활성 투자자를 위한 전체 액세스.",
       cta: "Pro 선택",
       features: ["모든 AI 모듈", "행동 코칭", "트레이더 심리 프로필"],
       name: "Pro",
-      price: "$9/mo",
+      price: "€29/mo",
     },
     proPlus: {
       body: "파워 유저 및 자동화 워크플로용.",
       cta: "Pro+ 선택",
       features: ["Pro의 모든 기능", "API 액세스", "브로커 연동"],
       name: "Pro+",
-      price: "$19/mo",
+      price: "€59/mo",
     },
   },
   hi: {
-    free: {
+    trial: {
       body: "निरंतरता बनाने के लिए बुनियादी सुविधाएँ।",
       cta: "मुफ़्त शुरू करें",
       features: ["कोर डैशबोर्ड", "बुनियादी AI सिग्नल", "कम्युनिटी एक्सेस"],
-      name: "Free",
-      price: "$0/mo",
+      name: "Trial",
+      price: "€0",
     },
     pro: {
       body: "सक्रिय निवेशकों के लिए पूर्ण पहुँच।",
       cta: "Pro चुनें",
       features: ["सभी AI मॉड्यूल", "व्यवहार कोचिंग", "ट्रेडर मनोविज्ञान प्रोफ़ाइल"],
       name: "Pro",
-      price: "$9/mo",
+      price: "€29/mo",
     },
     proPlus: {
       body: "पावर यूज़र और ऑटोमेशन वर्कफ़्लो के लिए।",
       cta: "Pro+ चुनें",
       features: ["Pro की सभी सुविधाएँ", "API एक्सेस", "ब्रोकर एकीकरण"],
       name: "Pro+",
-      price: "$19/mo",
+      price: "€59/mo",
     },
   },
   de: {
-    free: {
+    trial: {
       body: "Grundfunktionen für mehr Konstanz beim Investieren.",
       cta: "Kostenlos starten",
       features: ["Kern-Dashboard", "Basis-KI-Signale", "Community-Zugang"],
-      name: "Free",
-      price: "$0/mo",
+      name: "Trial",
+      price: "€0",
     },
     pro: {
       body: "Voller Zugriff für aktive Anleger.",
       cta: "Pro wählen",
       features: ["Alle KI-Module", "Verhaltenscoaching", "Trader-Psychologieprofil"],
       name: "Pro",
-      price: "$9/mo",
+      price: "€29/mo",
     },
     proPlus: {
       body: "Für Power-User und Automatisierungs-Workflows.",
       cta: "Pro+ wählen",
       features: ["Alles aus Pro", "API-Zugang", "Broker-Integration"],
       name: "Pro+",
-      price: "$19/mo",
+      price: "€59/mo",
     },
   },
   "zh-TW": {
-    free: {
+    trial: {
       body: "建立穩定交易習慣的基礎功能。",
       cta: "免費開始",
       features: ["核心儀表板", "基礎 AI 訊號", "社群存取"],
-      name: "Free",
-      price: "$0/mo",
+      name: "Trial",
+      price: "€0",
     },
     pro: {
       body: "活躍投資人的完整存取。",
       cta: "選擇 Pro",
       features: ["所有 AI 模組", "行為教練", "交易者心理檔案"],
       name: "Pro",
-      price: "$9/mo",
+      price: "€29/mo",
     },
     proPlus: {
       body: "進階使用者與自動化工作流程。",
       cta: "選擇 Pro+",
       features: ["Pro 全部功能", "API 存取", "券商整合"],
       name: "Pro+",
-      price: "$19/mo",
+      price: "€59/mo",
     },
   },
 };
@@ -348,7 +348,7 @@ const PATCHES = {
       },
       pricing: {
         badge: "Frühbucherpreis",
-        earlyAdopter: "Die ersten 500 Pro-Konten bleiben für immer bei 9 $/Monat",
+        betaNote: "EUR checkout migration in progress. Join the beta waitlist for trial access.",
         monthly: "Monatlich",
         popular: "Am beliebtesten",
         save: "27 % sparen",
@@ -422,7 +422,7 @@ const PATCHES = {
       },
       pricing: {
         badge: "先行ユーザー価格",
-        earlyAdopter: "最初の500件のProアカウントはずっと$9/月",
+        betaNote: "EUR checkout migration in progress. Join the beta waitlist for trial access.",
         monthly: "月額",
         popular: "一番人気",
         save: "27%お得",

@@ -7,7 +7,7 @@
     },
     "disclosure": {
       "cfd_warning": "{{pct}}% of retail investor accounts lose money when trading CFDs with this provider.",
-      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and the free tier. Our recommendations are based on data and your profile, not partner payouts.",
+      "full": "When you open an account through a recommended broker, StockAI Pro may receive an affiliate marketing commission. This helps fund product development and trial access. Our recommendations are based on data and your profile, not partner payouts.",
       "short": "We receive a broker commission for new accounts. This does not affect our recommendations.",
       "title": "StockAI Pro transparency"
     },
@@ -291,7 +291,7 @@
     "valuePsychologyTitle": "Psychology",
     "valuePsychologyDesc": "Behavioral coaching as the foundation of decisions — not an add-on to charts.",
     "valueAccessTitle": "Accessibility",
-    "valueAccessDesc": "9 languages, 130+ exchanges, and a free tier to get started.",
+    "valueAccessDesc": "9 languages, 130+ exchanges, and a trial to get started.",
     "contact": "Questions? Email us at"
   },
   "company": {
@@ -731,14 +731,14 @@
   },
   "landing": {
     "footerCta": {
-      "button": "Create free account",
+      "button": "Start trial",
       "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
-      "pricing": "See pricing",
-      "title": "Start your free account today"
+      "pricing": "View pricing",
+      "title": "Start your trial today"
     },
     "hero": {
       "badge": "AI-powered · 130+ exchanges · 9 languages",
-      "ctaPrimary": "Start for free",
+      "ctaPrimary": "Start trial",
       "ctaSecondary": "See demo",
       "scrollHint": "Scroll",
       "subtitle": "One platform instead of five browser tabs. AI analyzes, your coach guards your emotions — you make informed decisions.",
@@ -777,7 +777,11 @@
       "symbolLabel": "Example symbol",
       "symbol": "AAPL",
       "disclaimer": "Educational preview. Not investment advice. No buy/sell, price target, or recommendation.",
-      "highlights": ["Decision-support", "Risk-aware", "Behavioral guardrails"],
+      "highlights": [
+        "Decision-support",
+        "Risk-aware",
+        "Behavioral guardrails"
+      ],
       "sections": [
         {
           "heading": "Market context",
@@ -869,51 +873,61 @@
       "titleAccent": "You don't have to either."
     },
     "pricing": {
-      "badge": "Early Adopter Price",
-      "earlyAdopter": "First 500 Pro accounts locked at $9/mo forever",
+      "badge": "Trial-first",
       "monthly": "monthly",
       "popular": "Most Popular",
-      "save": "Save 27%",
-      "saveProPlus": "Save 34%",
+      "save": "Save ~17%",
+      "saveProPlus": "Save ~17%",
       "tiers": {
-        "free": {
-          "body": "Basic features to start building consistency.",
-          "cta": "Start free",
-          "features": [
-            "Core dashboard",
-            "Basic AI signals",
-            "Community access"
-          ],
-          "name": "Free",
-          "price": "$0/mo"
-        },
         "pro": {
-          "body": "Full access for active investors.",
-          "cta": "Get Pro",
+          "body": "Know what is happening.",
+          "cta": "Join beta",
           "features": [
-            "All AI modules",
-            "Behavioral coaching",
-            "Trader psyche profile"
+            "AI Brief",
+            "Signals",
+            "Basic Premium Analysis",
+            "Watchlist"
           ],
-          "name": "Pro",
-          "price": "$9/mo"
+          "name": "Pro"
         },
         "proPlus": {
-          "body": "For power users and automation workflows.",
-          "cta": "Get Pro+",
+          "body": "Know what it means.",
+          "cta": "Join beta",
           "features": [
-            "Everything in Pro",
-            "API access",
-            "Broker integration"
+            "Full Premium Analysis",
+            "Historical Twins",
+            "Behavioral Coach",
+            "Decision Journal"
           ],
-          "name": "Pro+",
-          "price": "$19/mo"
+          "name": "Pro+"
+        },
+        "trial": {
+          "name": "Trial",
+          "body": "7-day Pro+ experience without a credit card.",
+          "cta": "Start trial",
+          "duration": "7 days",
+          "features": [
+            "Limited Pro+ modules",
+            "Limited AI usage",
+            "No card required"
+          ]
+        },
+        "investorOs": {
+          "name": "Investor OS",
+          "body": "Know what it means for you.",
+          "comingSoon": "Coming soon",
+          "features": [
+            "Personal Fit Score",
+            "Portfolio-aware analysis",
+            "Trader Psyche",
+            "Priority AI"
+          ]
         }
       },
-      "title": "Simple pricing",
-      "trial": "14 days free",
+      "title": "EUR pricing",
       "yearly": "yearly",
-      "checkoutError": "Could not start checkout."
+      "checkoutError": "Checkout is not available yet.",
+      "betaNote": "EUR checkout migration in progress. Join the beta waitlist for trial access while Stripe EUR prices are configured."
     },
     "problem": {
       "cards": {
@@ -1302,10 +1316,22 @@
       "selectLegend": "Select emotion (required)",
       "activeLegend": "Active emotion",
       "requiredHint": "Paper trades and journal entries require a conscious emotion selection.",
-      "FEARFUL": { "label": "Fearful", "hint": "High risk aversion — consider a smaller position size." },
-      "NEUTRAL": { "label": "Neutral", "hint": "Balanced state — a good moment for your A+ setup." },
-      "GREEDY": { "label": "Greedy", "hint": "Overtrading risk — verify risk/reward before entry." },
-      "CONFIDENT": { "label": "Confident", "hint": "Confidence is fine, but watch overconfidence after a win streak." }
+      "FEARFUL": {
+        "label": "Fearful",
+        "hint": "High risk aversion — consider a smaller position size."
+      },
+      "NEUTRAL": {
+        "label": "Neutral",
+        "hint": "Balanced state — a good moment for your A+ setup."
+      },
+      "GREEDY": {
+        "label": "Greedy",
+        "hint": "Overtrading risk — verify risk/reward before entry."
+      },
+      "CONFIDENT": {
+        "label": "Confident",
+        "hint": "Confidence is fine, but watch overconfidence after a win streak."
+      }
     },
     "interventions": {
       "title": "Recent coach interventions",
@@ -1367,11 +1393,26 @@
       "toastCopied": "Copied to clipboard! Share with friends on Discord or Telegram.",
       "toastCopyFailed": "Copy failed — check your browser clipboard permissions.",
       "channels": {
-        "linkedin": { "label": "LinkedIn", "sublabel": "Professional post + link" },
-        "twitter": { "label": "X (Twitter)", "sublabel": "Tweet intent with hashtags" },
-        "facebook": { "label": "Facebook", "sublabel": "Share + text to clipboard" },
-        "threads": { "label": "Threads", "sublabel": "Same payload as X" },
-        "copy": { "label": "Copy link", "sublabel": "Discord · Telegram · WhatsApp" }
+        "linkedin": {
+          "label": "LinkedIn",
+          "sublabel": "Professional post + link"
+        },
+        "twitter": {
+          "label": "X (Twitter)",
+          "sublabel": "Tweet intent with hashtags"
+        },
+        "facebook": {
+          "label": "Facebook",
+          "sublabel": "Share + text to clipboard"
+        },
+        "threads": {
+          "label": "Threads",
+          "sublabel": "Same payload as X"
+        },
+        "copy": {
+          "label": "Copy link",
+          "sublabel": "Discord · Telegram · WhatsApp"
+        }
       }
     },
     "paywall": {
@@ -1936,22 +1977,14 @@
     "openMenu": "Open menu"
   },
   "waitlistPage": {
-    "seoDescription": "Join the Early Access list and lock in the Early Adopter price for StockAI Pro.",
-    "benefit1": "Permanent Early Adopter price: Pro $9/mo — forever.",
+    "seoDescription": "Join the beta waitlist for StockAI Pro EUR trial access.",
+    "benefit1": "Priority access to the 7-day trial and beta features.",
     "benefit2": "Priority access to new AI modules.",
     "benefit3": "Influence the product roadmap and premium features.",
     "benefit4": "Dedicated onboarding materials for founding users.",
-    "countWaiting": "{{count}} people already waiting",
-    "countWaitingUnknown": "people already waiting",
-    "ctaJoin": "Join the waitlist",
-    "ctaSubmitting": "Submitting…",
-    "benefitsHeading": "Early Access benefits",
-    "emailLabel": "Email",
-    "nameLabel": "Name (optional)",
-    "namePlaceholder": "Your first name",
-    "subhead": "The first 500 accounts get the Early Adopter price forever: Pro $9/mo.",
-    "successOnList": "You are on the list! Check your inbox.",
-    "title": "Join Early Access"
+    "subhead": "Join the waitlist for trial-first EUR access while checkout migration is in progress.",
+    "title": "Join the beta",
+    "ctaJoin": "Join beta"
   },
   "contactPage": {
     "title": "Contact",
@@ -2342,18 +2375,18 @@
   },
   "pricingPage": {
     "seo": {
-      "title": "Pricing — StockAI Pro",
-      "description": "Free, Pro $9/mo, Pro+ $19/mo. AI investment research for retail investors."
+      "title": "Pricing - StockAI Pro",
+      "description": "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo. AI investment research for international investors."
     },
     "title": "Choose your plan",
-    "subtitle": "Pick the plan that fits your stage. Upgrade, downgrade, or cancel anytime — no long-term lock-in.",
+    "subtitle": "Start with a trial - no classic free plan. Upgrade when you are ready; cancel anytime.",
     "billing": {
       "toggleLabel": "Billing period",
       "monthly": "Monthly",
       "yearly": "Yearly",
       "saveBadge": "Save",
       "monthlyNote": "Switch plans or cancel anytime from your account.",
-      "yearlyNote": "Annual billing in USD — save vs paying monthly (Pro ~27%, Pro+ ~35%)."
+      "yearlyNote": "Annual billing in EUR - save ~17% on Pro and Pro+ vs monthly."
     },
     "signInHint": "Already have an account?",
     "signInLink": "Sign in",
@@ -2363,21 +2396,24 @@
       "getPro": "Get Pro",
       "getProPlus": "Get Pro+",
       "redirecting": "Redirecting…",
-      "signIn": "Sign in to subscribe"
+      "signIn": "Sign in to subscribe",
+      "startProTrialSoon": "Start trial soon",
+      "startProPlusTrialSoon": "Start Pro+ trial soon"
     },
     "plans": {
-      "billedMonthly": "Billed monthly in USD",
-      "billedYearly": "Billed annually in USD",
-      "free": {
-        "tagline": "Start with paper trading and core tools — no credit card.",
-        "cta": "Start free"
-      },
+      "billedMonthly": "Billed monthly in EUR",
+      "billedYearly": "Billed annually in EUR",
       "pro": {
         "popular": "Most popular",
         "tagline": "Best balance of price and power for active investors."
       },
       "proPlus": {
         "tagline": "Full analytics stack, API access, and priority support."
+      },
+      "trial": {
+        "duration": "7 days - Pro+ experience",
+        "tagline": "Limited Pro+ access - no credit card required to start.",
+        "cta": "Start trial"
       }
     },
     "features": {
@@ -2396,11 +2432,11 @@
       },
       "trial": {
         "question": "Is there a free trial?",
-        "answer": "Pro includes a 14-day trial so you can test full features before committing."
+        "answer": "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live."
       },
       "payment": {
         "question": "What payment methods do you accept?",
-        "answer": "Payments are processed by Stripe in USD. Major cards and local methods supported by Stripe."
+        "answer": "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured."
       },
       "security": {
         "question": "Is my data secure?",
@@ -2410,11 +2446,23 @@
         "question": "What is paper trading?",
         "answer": "Paper trading simulates investing on real market data without risking capital — ideal for practice."
       }
+    },
+    "checkoutMigration": {
+      "banner": "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
+      "note": "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
+      "contactLink": "Contact us"
+    },
+    "investorOs": {
+      "comingSoon": "Coming soon",
+      "note": "Checkout not available yet - join the beta waitlist for early access."
     }
   },
   "companies": {
     "filterDividend": "Dividend stocks only",
     "filterDividendLoading": "Loading dividend list…",
     "pageSubtitle": "Search and filter companies by market and sector, then open full analysis."
+  },
+  "about": {
+    "valueAccessDesc": "9 languages, 130+ exchanges, and a trial to get started."
   }
 }
