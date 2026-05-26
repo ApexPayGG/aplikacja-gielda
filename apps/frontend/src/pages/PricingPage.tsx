@@ -1,16 +1,17 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
-import { useAuth } from "../context/AuthContext";
-import { createStripeCheckoutSession } from "../services/api";
 import { colors } from "../styles/designSystem";
-import { trackEvent } from "../utils/analytics";
-import { apiErrorMessage } from "../utils/apiErrorMessage";
+import {
+  annualSavingsPercent,
+  formatEurPrice,
+  PRICING_PLANS,
+  TRIAL_RULES,
+} from "../config/pricing";
 
 type BillingCycle = "monthly" | "yearly";
-type PaidPlan = "pro" | "pro_plus";
 
 const FEATURE_KEYS = [
   "paperTrading",
@@ -30,10 +31,9 @@ const PLAN_FEATURE_ACCESS: Record<(typeof FEATURE_KEYS)[number], { free: boolean
   prioritySupport: { free: false, pro: false, proPlus: true },
 };
 
-function formatUsdPrice(plan: "free" | "pro" | "proPlus", billingCycle: BillingCycle): string {
-  if (plan === "free") return "$0/mo";
-  if (plan === "pro") return billingCycle === "monthly" ? "$9/mo" : "$79/yr";
-  return billingCycle === "monthly" ? "$19/mo" : "$149/yr";
+function formatPlanPrice(plan: "pro" | "proPlus", billingCycle: BillingCycle): string {
+  const planId = plan === "pro" ? "PRO" : "PRO_PLUS";
+  return formatEurPrice(planId, billingCycle);
 }
 
 function PlanFeatureList({
@@ -64,20 +64,14 @@ function PlanFeatureList({
 
 export function PricingPage() {
   const { t } = useTranslation("common");
-  const { token } = useAuth();
-  const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
-  const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<PaidPlan | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
-
-  const isLoggedIn = Boolean(token);
 
   const pricingNote = useMemo(
     () =>
       billingCycle === "yearly"
         ? t("pricingPage.billing.yearlyNote", {
-            defaultValue: "Annual billing — save vs paying monthly (Pro ~27%, Pro+ ~35%).",
+            defaultValue: `Annual billing in EUR - save ~${annualSavingsPercent("PRO")}% on Pro, ~${annualSavingsPercent("PRO_PLUS")}% on Pro+.`,
           })
         : t("pricingPage.billing.monthlyNote", {
             defaultValue: "Switch plans or cancel anytime from your account.",
@@ -96,13 +90,13 @@ export function PricingPage() {
       {
         question: t("pricingPage.faq.trial.question", { defaultValue: "Is there a free trial?" }),
         answer: t("pricingPage.faq.trial.answer", {
-          defaultValue: "Pro includes a 14-day trial so you can test full features before committing.",
+          defaultValue: `Start with a ${TRIAL_RULES.without_card.days}-day Pro+ trial (no card) or ${TRIAL_RULES.with_card.days}-day trial with card that converts to your chosen plan.`,
         }),
       },
       {
         question: t("pricingPage.faq.payment.question", { defaultValue: "What payment methods do you accept?" }),
         answer: t("pricingPage.faq.payment.answer", {
-          defaultValue: "Payments are processed by Stripe (USD). Major cards and local methods supported by Stripe.",
+          defaultValue: "Payments are processed by Stripe in EUR. Major cards and local methods supported by Stripe.",
         }),
       },
       {
@@ -115,68 +109,19 @@ export function PricingPage() {
         question: t("pricingPage.faq.paper.question", { defaultValue: "What is paper trading?" }),
         answer: t("pricingPage.faq.paper.answer", {
           defaultValue:
-            "Paper trading simulates investing on real market data without risking capital — ideal for practice.",
+            "Paper trading simulates investing on real market data without risking capital - ideal for practice.",
         }),
       },
     ],
     [t],
   );
 
-  const handleCheckout = async (plan: PaidPlan): Promise<void> => {
-    setCheckoutError(null);
-
-    if (!isLoggedIn) {
-      navigate("/login", { state: { from: "/pricing" } });
-      return;
-    }
-
-    const userId = typeof window !== "undefined" ? window.localStorage.getItem("userId")?.trim() ?? "" : "";
-    if (!userId) {
-      navigate("/login", { state: { from: "/pricing" } });
-      return;
-    }
-
-    try {
-      setCheckoutLoadingPlan(plan);
-      window.localStorage.setItem("checkout_plan", plan);
-      trackEvent("begin_checkout", { plan, billing: billingCycle });
-      const { url } = await createStripeCheckoutSession({
-        userId,
-        plan,
-        billing: billingCycle,
-      });
-      window.location.href = url;
-    } catch (error) {
-      console.error("Failed to start Stripe checkout", error);
-      setCheckoutError(
-        apiErrorMessage(error) ||
-          t("pricingPage.checkoutError", {
-            defaultValue: "Could not start checkout. Please try again in a moment.",
-          }),
-      );
-    } finally {
-      setCheckoutLoadingPlan(null);
-    }
-  };
-
-  const paidCtaLabel = (plan: PaidPlan): string => {
-    if (checkoutLoadingPlan === plan) {
-      return t("pricingPage.cta.redirecting", { defaultValue: "Redirecting…" });
-    }
-    if (!isLoggedIn) {
-      return t("pricingPage.cta.signIn", { defaultValue: "Sign in to subscribe" });
-    }
-    return plan === "pro"
-      ? t("pricingPage.cta.getPro", { defaultValue: "Get Pro" })
-      : t("pricingPage.cta.getProPlus", { defaultValue: "Get Pro+" });
-  };
-
   return (
     <div className="min-h-screen bg-bgSecondary glass-muted">
       <SEOHead
-        title={t("pricingPage.seo.title", { defaultValue: "Pricing — StockAI Pro" })}
+        title={t("pricingPage.seo.title", { defaultValue: "Pricing - StockAI Pro" })}
         description={t("pricingPage.seo.description", {
-          defaultValue: "Free, Pro $9/mo, Pro+ $19/mo. AI investment research for retail investors.",
+          defaultValue: "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo. AI investment research for international investors.",
         })}
       />
       <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
@@ -187,7 +132,7 @@ export function PricingPage() {
           <p className="mx-auto mt-4 max-w-2xl text-base glass-muted md:text-lg">
             {t("pricingPage.subtitle", {
               defaultValue:
-                "Pick the plan that fits your stage. Upgrade, downgrade, or cancel anytime — no long-term lock-in.",
+                "Start with a trial - no classic free plan. Upgrade when you're ready; cancel anytime.",
             })}
           </p>
         </header>
@@ -234,18 +179,12 @@ export function PricingPage() {
             </button>
           </div>
           <p className="text-center text-sm text-white/50">{pricingNote}</p>
-          {!isLoggedIn ? (
-            <p className="text-center glass-muted text-sm">
-              {t("pricingPage.signInHint", {
-                defaultValue: "Already have an account?",
-              })}{" "}
-              <Link to="/login" className="font-semibold text-brandCyan hover:underline">
-                {t("pricingPage.signInLink", { defaultValue: "Sign in" })}
-              </Link>{" "}
-              {t("pricingPage.signInHintSuffix", { defaultValue: "to subscribe with one click." })}
-            </p>
-          ) : null}
-          {checkoutError ? <p className="text-center text-sm text-negative">{checkoutError}</p> : null}
+          <p className="max-w-xl text-center text-sm text-brandCyan">
+            {t("pricingPage.checkoutMigration.banner", {
+              defaultValue:
+                "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
+            })}
+          </p>
         </div>
 
         <section className="mt-10 grid gap-6 md:grid-cols-3">
@@ -253,14 +192,16 @@ export function PricingPage() {
             className="rounded-2xl border p-6 shadow-sm"
             style={{ backgroundColor: colors.bgPrimary, borderColor: colors.border }}
           >
-            <h2 className="text-xl font-bold text-white">Free</h2>
-            <p className="mt-3 glass-page-title text-3xl">{formatUsdPrice("free", billingCycle)}</p>
+            <h2 className="text-xl font-bold text-white">Trial</h2>
+            <p className="mt-3 glass-page-title text-3xl">€0</p>
             <p className="mt-1 text-xs text-white/50">
-              {t("pricingPage.plans.billedMonthly", { defaultValue: "Always free" })}
+              {t("pricingPage.plans.trial.duration", {
+                defaultValue: `${TRIAL_RULES.without_card.days} days / Pro+ experience`,
+              })}
             </p>
             <p className="mt-3 glass-muted text-sm">
-              {t("pricingPage.plans.free.tagline", {
-                defaultValue: "Start with paper trading and core tools — no credit card.",
+              {t("pricingPage.plans.trial.tagline", {
+                defaultValue: "Limited Pro+ access - no credit card required to start.",
               })}
             </p>
             <PlanFeatureList planKey="free" textClassName="glass-muted" />
@@ -268,7 +209,7 @@ export function PricingPage() {
               to="/register"
               className="mt-6 inline-flex w-full justify-center rounded-lg bg-brandDark px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brandMedium"
             >
-              {t("pricingPage.plans.free.cta", { defaultValue: "Start free" })}
+              {t("pricingPage.plans.trial.cta", { defaultValue: "Start trial" })}
             </Link>
             <EtoroCTAButton sourcePage="pricing_page" className="mt-3" />
           </article>
@@ -280,26 +221,20 @@ export function PricingPage() {
                 {t("pricingPage.plans.pro.popular", { defaultValue: "Most popular" })}
               </span>
             </div>
-            <p className="mt-3 text-3xl font-bold text-white">{formatUsdPrice("pro", billingCycle)}</p>
+            <p className="mt-3 text-3xl font-bold text-white">{formatPlanPrice("pro", billingCycle)}</p>
             <p className="mt-1 text-xs text-white/80">
               {billingCycle === "yearly"
-                ? t("pricingPage.plans.billedYearly", { defaultValue: "Billed annually in USD" })
-                : t("pricingPage.plans.billedMonthly", { defaultValue: "Billed monthly in USD" })}
+                ? t("pricingPage.plans.billedYearly", { defaultValue: "Billed annually in EUR" })
+                : t("pricingPage.plans.billedMonthly", { defaultValue: "Billed monthly in EUR" })}
             </p>
-            <p className="mt-3 text-sm text-white/90">
-              {t("pricingPage.plans.pro.tagline", {
-                defaultValue: "Best balance of price and power for active investors.",
-              })}
-            </p>
+            <p className="mt-3 text-sm text-white/90">{PRICING_PLANS.PRO.tagline}</p>
             <PlanFeatureList planKey="pro" textClassName="text-white/90" />
-            <button
-              type="button"
-              onClick={() => void handleCheckout("pro")}
-              disabled={checkoutLoadingPlan !== null}
-              className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
+            <Link
+              to="/waitlist"
+              className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary"
             >
-              {paidCtaLabel("pro")}
-            </button>
+              {t("pricingPage.cta.startProTrialSoon", { defaultValue: "Start trial soon" })}
+            </Link>
           </article>
 
           <article
@@ -310,27 +245,50 @@ export function PricingPage() {
             }}
           >
             <h2 className="text-xl font-bold text-white">Pro+</h2>
-            <p className="mt-3 text-3xl font-bold text-white">{formatUsdPrice("proPlus", billingCycle)}</p>
+            <p className="mt-3 text-3xl font-bold text-white">{formatPlanPrice("proPlus", billingCycle)}</p>
             <p className="mt-1 text-xs text-white/80">
               {billingCycle === "yearly"
-                ? t("pricingPage.plans.billedYearly", { defaultValue: "Billed annually in USD" })
-                : t("pricingPage.plans.billedMonthly", { defaultValue: "Billed monthly in USD" })}
+                ? t("pricingPage.plans.billedYearly", { defaultValue: "Billed annually in EUR" })
+                : t("pricingPage.plans.billedMonthly", { defaultValue: "Billed monthly in EUR" })}
             </p>
-            <p className="mt-3 text-sm text-white/90">
-              {t("pricingPage.plans.proPlus.tagline", {
-                defaultValue: "Full analytics stack, API access, and priority support.",
-              })}
-            </p>
+            <p className="mt-3 text-sm text-white/90">{PRICING_PLANS.PRO_PLUS.tagline}</p>
             <PlanFeatureList planKey="proPlus" textClassName="text-white/90" />
-            <button
-              type="button"
-              onClick={() => void handleCheckout("pro_plus")}
-              disabled={checkoutLoadingPlan !== null}
-              className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
+            <Link
+              to="/waitlist"
+              className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary"
             >
-              {paidCtaLabel("pro_plus")}
-            </button>
+              {t("pricingPage.cta.startProPlusTrialSoon", { defaultValue: "Start Pro+ trial soon" })}
+            </Link>
           </article>
+        </section>
+
+        <p className="mt-6 text-center text-sm text-white/50">
+          {t("pricingPage.checkoutMigration.note", {
+            defaultValue:
+              "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
+          })}{" "}
+          <Link to="/contact" className="font-semibold text-brandCyan hover:underline">
+            {t("pricingPage.checkoutMigration.contactLink", { defaultValue: "Contact us" })}
+          </Link>
+        </p>
+
+        <section
+          className="mt-8 rounded-2xl border p-6 text-center"
+          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
+        >
+          <p className="text-xs font-semibold uppercase tracking-wide text-brandCyan">
+            {t("pricingPage.investorOs.comingSoon", { defaultValue: "Coming soon" })}
+          </p>
+          <h2 className="mt-2 text-2xl font-bold text-white">{PRICING_PLANS.INVESTOR_OS.displayName}</h2>
+          <p className="mt-2 text-sm text-white/80">{PRICING_PLANS.INVESTOR_OS.tagline}</p>
+          <p className="mt-3 text-lg font-semibold text-white">
+            {formatEurPrice("INVESTOR_OS", billingCycle)}
+          </p>
+          <p className="mt-2 text-xs text-white/50">
+            {t("pricingPage.investorOs.note", {
+              defaultValue: "Checkout not available yet - documented in pricing config for PRICING.1.",
+            })}
+          </p>
         </section>
 
         <section className="mt-16 glass-section rounded-2xl p-6 md:p-8">
@@ -348,7 +306,7 @@ export function PricingPage() {
                   >
                     <span className="font-semibold text-white">{item.question}</span>
                     <span style={{ color: colors.brandCyan }} className="text-lg font-semibold">
-                      {isOpen ? "−" : "+"}
+                      {isOpen ? "-" : "+"}
                     </span>
                   </button>
                   {isOpen ? <p className="pr-8 glass-muted text-sm">{item.answer}</p> : null}

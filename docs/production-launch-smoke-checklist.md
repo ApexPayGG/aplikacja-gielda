@@ -12,6 +12,7 @@ Repeatable post-deploy verification for **stock-ai.pro**. Use after every produc
 | Premium institutional evidence (future UI) | [market-signals-premium-integration-spec.md](./market-signals-premium-integration-spec.md) |
 | Affiliate staging QA | [qa/affiliate-staging-checklist.md](./qa/affiliate-staging-checklist.md) |
 | Production env template | [../.env.production.example](../.env.production.example) |
+| EUR pricing model (PRICING.1) | [PRICING_EUR_MIGRATION.md](./PRICING_EUR_MIGRATION.md) |
 
 **Production host:** `https://stock-ai.pro`  
 **VPS deploy dir (typical):** `/root/aplikacja-gielda`  
@@ -100,6 +101,8 @@ curl -fsS https://stock-ai.pro/api/health
 
 **Pass criteria:** `/health` returns 200; frontend HTML contains `<div id="root">` or app shell; no crash loop in API logs.
 
+**Pricing (PRICING.1):** Until EUR Stripe is live, checkout may still use legacy USD Price IDs while `/pricing` displays EUR from `apps/frontend/src/config/pricing.ts`. Trial Expired Mode enforcement is not yet in middleware - verify manually after PRICING.2+.
+
 **Polygon live quotes (`fetch-quotes` repeat job):** On API restart, the BullMQ repeat job is registered **only** when `POLYGON_LIVE_QUOTES_ENABLED=true` **and** `POLYGON_API_KEY` is set. With the default `POLYGON_LIVE_QUOTES_ENABLED=false`, logs should show:
 
 `[scheduler] Polygon live quotes: disabled (POLYGON_LIVE_QUOTES_ENABLED is not true)`
@@ -109,7 +112,7 @@ Do **not** enable until Polygon entitlement is confirmed (e.g. provider-check). 
 ```bash
 grep POLYGON_LIVE_QUOTES_ENABLED /root/aplikacja-gielda/.env.production
 docker logs stockai-api-prod --tail=200 2>&1 | grep -i 'polygon live quotes'
-# Optional: inspect BullMQ repeat jobs in Redis (fetch-quotes queue) — should be empty when disabled
+# Optional: inspect BullMQ repeat jobs in Redis (fetch-quotes queue) - should be empty when disabled
 ```
 
 Manual one-shot ingest (`npm run job:fetch-quotes` / GitHub polygon-live-ingest workflow) remains available when `POLYGON_API_KEY` is set; it does not require `POLYGON_LIVE_QUOTES_ENABLED`.
@@ -282,7 +285,7 @@ docker exec stockai-api-prod curl -sS \
 grep MARKET_SIGNALS_SCHEDULER_ENABLED /root/aplikacja-gielda/.env.production
 # Expected: false or unset
 
-# Polygon live quotes repeat job (fetch-quotes) — separate flag; keep false unless entitlement confirmed
+# Polygon live quotes repeat job (fetch-quotes) - separate flag; keep false unless entitlement confirmed
 grep POLYGON_LIVE_QUOTES_ENABLED /root/aplikacja-gielda/.env.production
 # Expected: false or unset (see §3 Core health)
 
