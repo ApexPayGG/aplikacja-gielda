@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { after, describe, it } from "node:test";
+import { disconnectTestPrisma } from "../../testHelpers/httpServer";
 import {
   buildStripeTrialSyncFields,
   buildSubscriptionAccessPatch,
@@ -135,4 +136,8 @@ describe("SUBSCRIPTION_TRIALING daysRemaining uses synced trialEndsAt", () => {
     assert.ok(patch.trialStartedAt instanceof Date);
     assert.equal(patch.accessState, "SUBSCRIPTION_TRIALING");
   });
+});
+
+after(async () => {
+  await disconnectTestPrisma();
 });

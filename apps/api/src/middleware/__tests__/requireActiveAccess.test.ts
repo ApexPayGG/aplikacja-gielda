@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, describe, it } from "node:test";
+import { after, afterEach, beforeEach, describe, it } from "node:test";
 import type { Request, Response } from "express";
 import express from "express";
 import type { AuthenticatedRequest } from "../../modules/auth/authMiddleware";
 import { optionalAuth } from "../../modules/auth/authMiddleware";
 import { signAuthToken } from "../../modules/auth/authJwt";
+import { closeTestServer, disconnectTestPrisma, startTestServer } from "../../testHelpers/httpServer";
 import { createRequireActiveAccess, TRIAL_EXPIRED_RESPONSE } from "../requireActiveAccess";
 
 const mockDb = {
@@ -141,12 +142,9 @@ describe("optionalAuth before requireActiveAccessIfAuthenticated", () => {
       res.json({ ok: true });
     });
 
-    await new Promise<void>((resolve) => {
-      server = app.listen(0, () => resolve());
-    });
-    const addr = server!.address();
-    if (!addr || typeof addr === "string") throw new Error("no port");
-    baseUrl = `http://127.0.0.1:${addr.port}`;
+    const started = await startTestServer(app);
+    server = started.server;
+    baseUrl = started.baseUrl;
   });
 
   afterEach(async () => {
@@ -155,11 +153,13 @@ describe("optionalAuth before requireActiveAccessIfAuthenticated", () => {
     } else {
       process.env.JWT_SECRET = oldJwtSecret;
     }
-    await new Promise<void>((resolve, reject) => {
-      if (!server) return resolve();
-      server.close((err) => (err ? reject(err) : resolve()));
-      server = null;
-    });
+    await closeTestServer(server);
+    server = null;
+    baseUrl = "";
+  });
+
+  after(async () => {
+    await disconnectTestPrisma();
   });
 
   it("allows anonymous optional route access", async () => {

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { after, describe, it } from "node:test";
+import { disconnectTestPrisma } from "../../testHelpers/httpServer";
 import {
   buildRegistrationTrialWindow,
   getUserAccessState,
@@ -116,4 +117,8 @@ describe("userAccessState", () => {
     assert.equal(access.canUseProduct, true);
     assert.equal(access.upgradeRequired, false);
   });
+});
+
+after(async () => {
+  await disconnectTestPrisma();
 });

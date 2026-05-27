@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, describe, it } from "node:test";
+import { after, afterEach, beforeEach, describe, it } from "node:test";
 import express, { type Request } from "express";
 import { signAuthToken } from "../../modules/auth/authJwt";
 import type { AuthenticatedRequest } from "../../modules/auth/authMiddleware";
 import { EurCheckoutNotConfiguredError } from "../../config/stripeEurPricing";
+import { closeTestServer, disconnectTestPrisma, startTestServer } from "../../testHelpers/httpServer";
 import { createStripeRouter } from "../stripe";
 
 describe("stripe routes", () => {
@@ -82,12 +83,9 @@ describe("stripe routes", () => {
       }),
     );
 
-    await new Promise<void>((resolve) => {
-      server = app.listen(0, () => resolve());
-    });
-    const addr = server!.address();
-    if (!addr || typeof addr === "string") throw new Error("no port");
-    baseUrl = `http://127.0.0.1:${addr.port}`;
+    const started = await startTestServer(app);
+    server = started.server;
+    baseUrl = started.baseUrl;
   });
 
   afterEach(async () => {
@@ -96,11 +94,13 @@ describe("stripe routes", () => {
     } else {
       process.env.JWT_SECRET = oldJwtSecret;
     }
-    await new Promise<void>((resolve, reject) => {
-      if (!server) return resolve();
-      server.close((err) => (err ? reject(err) : resolve()));
-      server = null;
-    });
+    await closeTestServer(server);
+    server = null;
+    baseUrl = "";
+  });
+
+  after(async () => {
+    await disconnectTestPrisma();
   });
 
   it("POST /api/stripe/create-checkout-session returns URL for authenticated user", async () => {
@@ -119,6 +119,9 @@ describe("stripe routes", () => {
   });
 
   it("POST /api/stripe/create-checkout-session returns EUR_CHECKOUT_NOT_CONFIGURED", async () => {
+    await closeTestServer(server);
+    server = null;
+
     const app = express();
     app.use(express.json());
     app.use(
@@ -147,12 +150,9 @@ describe("stripe routes", () => {
       }),
     );
 
-    await new Promise<void>((resolve) => {
-      server = app.listen(0, () => resolve());
-    });
-    const addr = server!.address();
-    if (!addr || typeof addr === "string") throw new Error("no port");
-    const eurBaseUrl = `http://127.0.0.1:${addr.port}`;
+    const started = await startTestServer(app);
+    server = started.server;
+    const eurBaseUrl = started.baseUrl;
 
     const res = await fetch(`${eurBaseUrl}/api/stripe/create-checkout-session`, {
       method: "POST",
@@ -182,6 +182,9 @@ describe("stripe routes", () => {
   });
 
   it("POST /api/stripe/create-checkout-session rejects unauthenticated request", async () => {
+    await closeTestServer(server);
+    server = null;
+
     const unauthApp = express();
     unauthApp.use(express.json());
     unauthApp.use(
@@ -204,12 +207,9 @@ describe("stripe routes", () => {
       }),
     );
 
-    await new Promise<void>((resolve) => {
-      server = unauthApp.listen(0, () => resolve());
-    });
-    const addr = server!.address();
-    if (!addr || typeof addr === "string") throw new Error("no port");
-    const unauthBaseUrl = `http://127.0.0.1:${addr.port}`;
+    const started = await startTestServer(unauthApp);
+    server = started.server;
+    const unauthBaseUrl = started.baseUrl;
 
     const res = await fetch(`${unauthBaseUrl}/api/stripe/create-checkout-session`, {
       method: "POST",
@@ -244,6 +244,9 @@ describe("stripe routes", () => {
   });
 
   it("POST /api/stripe/webhook handles customer.subscription.updated", async () => {
+    await closeTestServer(server);
+    server = null;
+
     const app = express();
     app.use((req, _res, next) => {
       (req as express.Request & { rawBody?: Buffer }).rawBody = Buffer.from("{}");
@@ -273,12 +276,9 @@ describe("stripe routes", () => {
       }),
     );
 
-    await new Promise<void>((resolve) => {
-      server = app.listen(0, () => resolve());
-    });
-    const addr = server!.address();
-    if (!addr || typeof addr === "string") throw new Error("no port");
-    const webhookBaseUrl = `http://127.0.0.1:${addr.port}`;
+    const started = await startTestServer(app);
+    server = started.server;
+    const webhookBaseUrl = started.baseUrl;
 
     const res = await fetch(`${webhookBaseUrl}/api/stripe/webhook`, {
       method: "POST",
@@ -290,6 +290,9 @@ describe("stripe routes", () => {
   });
 
   it("POST /api/stripe/webhook handles invoice.payment_failed", async () => {
+    await closeTestServer(server);
+    server = null;
+
     const app = express();
     app.use((req, _res, next) => {
       (req as express.Request & { rawBody?: Buffer }).rawBody = Buffer.from("{}");
@@ -319,12 +322,9 @@ describe("stripe routes", () => {
       }),
     );
 
-    await new Promise<void>((resolve) => {
-      server = app.listen(0, () => resolve());
-    });
-    const addr = server!.address();
-    if (!addr || typeof addr === "string") throw new Error("no port");
-    const webhookBaseUrl = `http://127.0.0.1:${addr.port}`;
+    const started = await startTestServer(app);
+    server = started.server;
+    const webhookBaseUrl = started.baseUrl;
 
     const res = await fetch(`${webhookBaseUrl}/api/stripe/webhook`, {
       method: "POST",
@@ -336,6 +336,9 @@ describe("stripe routes", () => {
   });
 
   it("POST /api/stripe/webhook returns 400 for invalid signature at API layer", async () => {
+    await closeTestServer(server);
+    server = null;
+
     const app = express();
     app.use((req, _res, next) => {
       (req as express.Request & { rawBody?: Buffer }).rawBody = Buffer.from("{}");
@@ -361,12 +364,9 @@ describe("stripe routes", () => {
       }),
     );
 
-    await new Promise<void>((resolve) => {
-      server = app.listen(0, () => resolve());
-    });
-    const addr = server!.address();
-    if (!addr || typeof addr === "string") throw new Error("no port");
-    const webhookBaseUrl = `http://127.0.0.1:${addr.port}`;
+    const started = await startTestServer(app);
+    server = started.server;
+    const webhookBaseUrl = started.baseUrl;
 
     const res = await fetch(`${webhookBaseUrl}/api/stripe/webhook`, {
       method: "POST",
@@ -393,6 +393,9 @@ describe("stripe routes", () => {
   });
 
   it("GET /api/stripe/subscription/:userId rejects unauthenticated request", async () => {
+    await closeTestServer(server);
+    server = null;
+
     const unauthApp = express();
     unauthApp.use(
       createStripeRouter({
@@ -414,12 +417,9 @@ describe("stripe routes", () => {
       }),
     );
 
-    await new Promise<void>((resolve) => {
-      server = unauthApp.listen(0, () => resolve());
-    });
-    const addr = server!.address();
-    if (!addr || typeof addr === "string") throw new Error("no port");
-    const unauthBaseUrl = `http://127.0.0.1:${addr.port}`;
+    const started = await startTestServer(unauthApp);
+    server = started.server;
+    const unauthBaseUrl = started.baseUrl;
 
     const res = await fetch(`${unauthBaseUrl}/api/stripe/subscription/u-1`);
     assert.equal(res.status, 401);
