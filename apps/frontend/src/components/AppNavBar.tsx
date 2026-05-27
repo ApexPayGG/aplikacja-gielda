@@ -15,7 +15,6 @@ import { BrandLogo } from "./BrandLogo";
 import { GlobalSearchBar } from "./GlobalSearchBar";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { NotificationsCenter } from "./NotificationsCenter";
-import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "../context/AuthContext";
 
 type DropdownId = "markets" | "portfolio" | "tools";
@@ -450,7 +449,6 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
         <div className="hidden shrink-0 items-center gap-1.5 md:flex lg:gap-2">
           <GlobalSearchBar variant="desktop" glass={glass} />
           <NotificationsCenter />
-          <ThemeToggle />
           {user ? (
             <div ref={accountMenuRef} className="relative">
               <button

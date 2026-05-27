@@ -17,6 +17,8 @@ import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { initializeGA4, trackPageView } from "./utils/analytics";
 import { getCookieConsent, type CookieConsentType } from "./utils/cookieConsent";
 import { GlassAmbient } from "./components/behavioral-coach/GlassAmbient";
+import { TerminalAppShell } from "./components/terminal";
+import { isPublicShellRoute } from "./config/navConfig";
 import { hasCompletedOnboarding } from "./utils/onboarding";
 
 function lazyNamed<TModule extends Record<string, unknown>, TKey extends keyof TModule>(
@@ -152,8 +154,11 @@ export default function App() {
   const inOnboarding = location.pathname.startsWith("/onboarding");
   /** Dark glass theme on every route (landing, auth, onboarding, app). */
   const glassApp = true;
-  const showTopNavigation = token && !inOnboarding;
-  const showFloatingEmotionalWidget = token && !location.pathname.startsWith("/dashboard") && !inOnboarding;
+  const showTerminalShell =
+    Boolean(token) && !inOnboarding && onboardingCompleted && !isPublicShellRoute(location.pathname);
+  const showAppTopNav = Boolean(token) && !inOnboarding && !showTerminalShell;
+  const showFloatingEmotionalWidget =
+    token && !location.pathname.startsWith("/dashboard") && !inOnboarding && showTerminalShell;
   useKeyboardShortcuts();
 
   useEffect(() => {
@@ -167,123 +172,131 @@ export default function App() {
     trackPageView(`${location.pathname}${location.search}`, document.title);
   }, [cookieConsent, location.pathname, location.search]);
 
+  const appRoutes = (
+    <Routes>
+      <Route path="/login" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LoginPage />} />
+      <Route path="/register" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/verify" element={<VerifyEmailPage />} />
+      <Route path="/payment-success" element={<PaymentSuccessPage />} />
+      <Route path="/payment-cancel" element={<PaymentCancelPage />} />
+      <Route
+        path="/onboarding"
+        element={token && onboardingCompleted ? <Navigate to="/dashboard" replace /> : <OnboardingPage />}
+      />
+      <Route path="/404" element={<NotFoundPage />} />
+      <Route path="/error" element={<ErrorPage />} />
+
+      <Route path="/" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LandingPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/waitlist" element={<WaitlistPage />} />
+      <Route path="/changelog" element={<ChangelogPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/help" element={<HelpPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/api-docs" element={<ApiDocsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/companies" element={<Home />} />
+      <Route path="/company/:symbol" element={<CompanyDetail />} />
+      <Route path="/signals" element={<SignalsPage />} />
+      <Route path="/glossary" element={<GlossaryPage />} />
+      <Route path="/track-record/public/:hash" element={<TrackRecordPage />} />
+
+      <Route
+        path="/dashboard"
+        element={<ProtectedProductRoute page="Dashboard"><Dashboard /></ProtectedProductRoute>}
+      />
+      <Route
+        path="/paper-trading"
+        element={<ProtectedProductRoute page="PaperTradingPage"><PaperTradingPage /></ProtectedProductRoute>}
+      />
+      <Route
+        path="/behavioral-coach"
+        element={<ProtectedProductRoute page="BehavioralCoachPage"><BehavioralCoachPage /></ProtectedProductRoute>}
+      />
+      <Route path="/loss-streak" element={<ProtectedProductRoute><LossStreakPage /></ProtectedProductRoute>} />
+      <Route path="/coach" element={<Navigate to="/behavioral-coach" replace />} />
+      <Route path="/psyche-profile" element={<ProtectedProductRoute><PsycheProfilePage /></ProtectedProductRoute>} />
+      <Route path="/weekly-review" element={<ProtectedProductRoute><WeeklyReviewPage /></ProtectedProductRoute>} />
+      <Route path="/alpaca" element={<ProtectedProductRoute><AlpacaPage /></ProtectedProductRoute>} />
+      <Route path="/autopilot" element={<ProtectedProductRoute><AutopilotSettings /></ProtectedProductRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+      <Route path="/mistake-library" element={<ProtectedProductRoute><MistakeLibraryPage /></ProtectedProductRoute>} />
+      <Route path="/skill-tree" element={<ProtectedProductRoute><SkillTreePage /></ProtectedProductRoute>} />
+      <Route path="/mirror-trading" element={<ProtectedProductRoute><MirrorTradingPage /></ProtectedProductRoute>} />
+      <Route path="/digest" element={<ProtectedProductRoute><DigestPage /></ProtectedProductRoute>} />
+      <Route path="/position-size" element={<ProtectedProductRoute><PositionSizePage /></ProtectedProductRoute>} />
+      <Route path="/stress-test" element={<ProtectedProductRoute><StressTestPage /></ProtectedProductRoute>} />
+      <Route path="/concentration" element={<ProtectedProductRoute><ConcentrationPage /></ProtectedProductRoute>} />
+      <Route path="/tax-optimizer" element={<ProtectedProductRoute><TaxOptimizerPage /></ProtectedProductRoute>} />
+      <Route path="/premortem" element={<ProtectedProductRoute><PreMortemPage /></ProtectedProductRoute>} />
+      <Route path="/strategy-dna" element={<ProtectedProductRoute><StrategyDnaPage /></ProtectedProductRoute>} />
+      <Route path="/track-record" element={<ProtectedProductRoute><TrackRecordPage /></ProtectedProductRoute>} />
+      <Route path="/replay" element={<ProtectedProductRoute><ReplayModePage /></ProtectedProductRoute>} />
+      <Route path="/backtest" element={<ProtectedProductRoute><BacktestPage /></ProtectedProductRoute>} />
+      <Route path="/earnings-predictor" element={<ProtectedProductRoute><EarningsPredictorPage /></ProtectedProductRoute>} />
+      <Route path="/insider-mirror" element={<ProtectedProductRoute><InsiderMirrorPage /></ProtectedProductRoute>} />
+      <Route path="/reverse-screener" element={<ProtectedProductRoute><ReverseScreenerPage /></ProtectedProductRoute>} />
+      <Route path="/correlation" element={<ProtectedProductRoute><CorrelationPage /></ProtectedProductRoute>} />
+      <Route path="/volatility" element={<ProtectedProductRoute><VolatilityPage /></ProtectedProductRoute>} />
+      <Route path="/news-halflife" element={<ProtectedProductRoute><NewsHalfLifePage /></ProtectedProductRoute>} />
+      <Route path="/crowd-wisdom" element={<ProtectedProductRoute><CrowdWisdomPage /></ProtectedProductRoute>} />
+      <Route path="/dividend-compound" element={<ProtectedProductRoute><DividendCompoundPage /></ProtectedProductRoute>} />
+      <Route path="/alpha-calendar" element={<ProtectedProductRoute><AlphaCalendarPage /></ProtectedProductRoute>} />
+      <Route path="/alpha" element={<Navigate to="/alpha-calendar" replace />} />
+
+      <Route path="/dividend" element={<DividendPage />} />
+      <Route path="/dividend-screener" element={<DividendPage />} />
+      <Route path="/dividend/intelligence" element={<ProtectedProductRoute><DividendIntelligencePage /></ProtectedProductRoute>} />
+      <Route path="/admin" element={<ProtectedRoute><AdminOnlyRoute><AdminPage /></AdminOnlyRoute></ProtectedRoute>} />
+      <Route
+        path="/admin/affiliate"
+        element={
+          <ProtectedRoute>
+            <AdminOnlyRoute>
+              <AdminAffiliatePage />
+            </AdminOnlyRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
+      <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
+      <Route
+        path="/company/:symbol/premium"
+        element={
+          <ProtectedProductRoute page="PremiumCompanyAnalysis">
+            <PremiumCompanyAnalysis />
+          </ProtectedProductRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/404" replace />} />
+    </Routes>
+  );
+
   return (
     <div className={`app-shell min-h-screen ${glassApp ? "glass-app" : ""}`}>
       {glassApp ? <GlassAmbient /> : null}
-      {showTopNavigation ? <AppNavBar glass /> : null}
-      {showTopNavigation ? <AccessBanner /> : null}
+      {showAppTopNav ? <AppNavBar glass /> : null}
+      {showAppTopNav ? <AccessBanner /> : null}
       {showFloatingEmotionalWidget ? <EmotionalStateWidget /> : null}
 
-      <main className={`relative z-10 ${token ? "pb-16 md:pb-0" : ""}`}>
+      <main className={`relative z-10 ${token && !showTerminalShell ? "pb-16 md:pb-0" : ""}`}>
         <ErrorBoundary>
           <Suspense fallback={<LoadingScreen />}>
-            <Routes>
-              <Route path="/login" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LoginPage />} />
-              <Route path="/register" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <RegisterPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
-              <Route path="/verify" element={<VerifyEmailPage />} />
-              <Route path="/payment-success" element={<PaymentSuccessPage />} />
-              <Route path="/payment-cancel" element={<PaymentCancelPage />} />
-              <Route
-                path="/onboarding"
-                element={token && onboardingCompleted ? <Navigate to="/dashboard" replace /> : <OnboardingPage />}
-              />
-              <Route path="/404" element={<NotFoundPage />} />
-              <Route path="/error" element={<ErrorPage />} />
-
-              <Route path="/" element={token ? <Navigate to={defaultAuthenticatedRoute} replace /> : <LandingPage />} />
-              <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/waitlist" element={<WaitlistPage />} />
-              <Route path="/changelog" element={<ChangelogPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/help" element={<HelpPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/api-docs" element={<ApiDocsPage />} />
-              <Route path="/privacy" element={<PrivacyPage />} />
-              <Route path="/terms" element={<TermsPage />} />
-              <Route path="/companies" element={<Home />} />
-              <Route path="/company/:symbol" element={<CompanyDetail />} />
-              <Route path="/signals" element={<SignalsPage />} />
-              <Route path="/glossary" element={<GlossaryPage />} />
-              <Route path="/track-record/public/:hash" element={<TrackRecordPage />} />
-
-              <Route
-                path="/dashboard"
-                element={<ProtectedProductRoute page="Dashboard"><Dashboard /></ProtectedProductRoute>}
-              />
-              <Route
-                path="/paper-trading"
-                element={<ProtectedProductRoute page="PaperTradingPage"><PaperTradingPage /></ProtectedProductRoute>}
-              />
-              <Route
-                path="/behavioral-coach"
-                element={<ProtectedProductRoute page="BehavioralCoachPage"><BehavioralCoachPage /></ProtectedProductRoute>}
-              />
-              <Route path="/loss-streak" element={<ProtectedProductRoute><LossStreakPage /></ProtectedProductRoute>} />
-              <Route path="/coach" element={<Navigate to="/behavioral-coach" replace />} />
-              <Route path="/psyche-profile" element={<ProtectedProductRoute><PsycheProfilePage /></ProtectedProductRoute>} />
-              <Route path="/weekly-review" element={<ProtectedProductRoute><WeeklyReviewPage /></ProtectedProductRoute>} />
-              <Route path="/alpaca" element={<ProtectedProductRoute><AlpacaPage /></ProtectedProductRoute>} />
-              <Route path="/autopilot" element={<ProtectedProductRoute><AutopilotSettings /></ProtectedProductRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-              <Route path="/mistake-library" element={<ProtectedProductRoute><MistakeLibraryPage /></ProtectedProductRoute>} />
-              <Route path="/skill-tree" element={<ProtectedProductRoute><SkillTreePage /></ProtectedProductRoute>} />
-              <Route path="/mirror-trading" element={<ProtectedProductRoute><MirrorTradingPage /></ProtectedProductRoute>} />
-              <Route path="/digest" element={<ProtectedProductRoute><DigestPage /></ProtectedProductRoute>} />
-              <Route path="/position-size" element={<ProtectedProductRoute><PositionSizePage /></ProtectedProductRoute>} />
-              <Route path="/stress-test" element={<ProtectedProductRoute><StressTestPage /></ProtectedProductRoute>} />
-              <Route path="/concentration" element={<ProtectedProductRoute><ConcentrationPage /></ProtectedProductRoute>} />
-              <Route path="/tax-optimizer" element={<ProtectedProductRoute><TaxOptimizerPage /></ProtectedProductRoute>} />
-              <Route path="/premortem" element={<ProtectedProductRoute><PreMortemPage /></ProtectedProductRoute>} />
-              <Route path="/strategy-dna" element={<ProtectedProductRoute><StrategyDnaPage /></ProtectedProductRoute>} />
-              <Route path="/track-record" element={<ProtectedProductRoute><TrackRecordPage /></ProtectedProductRoute>} />
-              <Route path="/replay" element={<ProtectedProductRoute><ReplayModePage /></ProtectedProductRoute>} />
-              <Route path="/backtest" element={<ProtectedProductRoute><BacktestPage /></ProtectedProductRoute>} />
-              <Route path="/earnings-predictor" element={<ProtectedProductRoute><EarningsPredictorPage /></ProtectedProductRoute>} />
-              <Route path="/insider-mirror" element={<ProtectedProductRoute><InsiderMirrorPage /></ProtectedProductRoute>} />
-              <Route path="/reverse-screener" element={<ProtectedProductRoute><ReverseScreenerPage /></ProtectedProductRoute>} />
-              <Route path="/correlation" element={<ProtectedProductRoute><CorrelationPage /></ProtectedProductRoute>} />
-              <Route path="/volatility" element={<ProtectedProductRoute><VolatilityPage /></ProtectedProductRoute>} />
-              <Route path="/news-halflife" element={<ProtectedProductRoute><NewsHalfLifePage /></ProtectedProductRoute>} />
-              <Route path="/crowd-wisdom" element={<ProtectedProductRoute><CrowdWisdomPage /></ProtectedProductRoute>} />
-              <Route path="/dividend-compound" element={<ProtectedProductRoute><DividendCompoundPage /></ProtectedProductRoute>} />
-              <Route path="/alpha-calendar" element={<ProtectedProductRoute><AlphaCalendarPage /></ProtectedProductRoute>} />
-              <Route path="/alpha" element={<Navigate to="/alpha-calendar" replace />} />
-
-              <Route path="/dividend" element={<DividendPage />} />
-              <Route path="/dividend-screener" element={<DividendPage />} />
-              <Route path="/dividend/intelligence" element={<ProtectedProductRoute><DividendIntelligencePage /></ProtectedProductRoute>} />
-              <Route path="/admin" element={<ProtectedRoute><AdminOnlyRoute><AdminPage /></AdminOnlyRoute></ProtectedRoute>} />
-              <Route
-                path="/admin/affiliate"
-                element={
-                  <ProtectedRoute>
-                    <AdminOnlyRoute>
-                      <AdminAffiliatePage />
-                    </AdminOnlyRoute>
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/dividends" element={<Navigate to="/dividend" replace />} />
-              <Route path="/intelligence/dividends" element={<Navigate to="/dividend/intelligence" replace />} />
-              <Route
-                path="/company/:symbol/premium"
-                element={
-                  <ProtectedProductRoute page="PremiumCompanyAnalysis">
-                    <PremiumCompanyAnalysis />
-                  </ProtectedProductRoute>
-                }
-              />
-              <Route path="*" element={<Navigate to="/404" replace />} />
-            </Routes>
+            {showTerminalShell ? (
+              <TerminalAppShell banner={<AccessBanner />}>{appRoutes}</TerminalAppShell>
+            ) : (
+              appRoutes
+            )}
           </Suspense>
         </ErrorBoundary>
       </main>
       {token ? <AppLegalFooter /> : null}
       {cookieConsent === null ? <CookieConsent onConsent={setCookieConsent} /> : null}
-      {token ? <MobileBottomNav /> : null}
+      {token && !inOnboarding && !showTerminalShell ? <MobileBottomNav /> : null}
       <KeyboardShortcutsHelp />
     </div>
   );

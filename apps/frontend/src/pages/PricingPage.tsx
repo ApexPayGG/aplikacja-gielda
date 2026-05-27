@@ -3,10 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
+import {
+  TerminalBadge,
+  TerminalButton,
+  TerminalCard,
+  TerminalPage,
+  TerminalSection,
+} from "../components/terminal";
 import { useAuth } from "../context/AuthContext";
 import { createStripeCheckoutSession } from "../services/api";
 import { EUR_CHECKOUT_ENABLED } from "../config/checkout";
-import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import {
@@ -42,23 +48,19 @@ function formatPlanPrice(plan: "pro" | "proPlus", billingCycle: BillingCycle): s
   return formatEurPrice(planId, billingCycle);
 }
 
-function PlanFeatureList({
-  planKey,
-  textClassName,
-}: {
-  planKey: "free" | "pro" | "proPlus";
-  textClassName: string;
-}) {
+function PlanFeatureList({ planKey }: { planKey: "free" | "pro" | "proPlus" }) {
   const { t } = useTranslation("common");
 
   return (
-    <ul className={`mt-5 space-y-3 ${textClassName}`}>
+    <ul className="mt-4 space-y-2">
       {FEATURE_KEYS.map((featureKey) => {
         const included = PLAN_FEATURE_ACCESS[featureKey][planKey];
         return (
-          <li key={featureKey} className="flex items-start gap-3 text-sm">
-            <span style={{ color: included ? colors.positive : colors.textMuted }} className="mt-0.5 font-semibold">
-              {included ? "✓" : "✕"}
+          <li key={featureKey} className="flex items-start gap-2.5 text-xs leading-relaxed text-terminal-textSecondary">
+            <span
+              className={`mt-0.5 font-semibold ${included ? "text-terminal-positive" : "text-terminal-textMuted"}`}
+            >
+              {included ? "✓" : "–"}
             </span>
             <span>{t(`pricingPage.features.${featureKey}`, { defaultValue: featureKey })}</span>
           </li>
@@ -158,234 +160,231 @@ export function PricingPage() {
     } catch (error) {
       console.error("Failed to start Stripe checkout", error);
       const message = apiErrorMessage(error);
-      if (message.includes("EUR_CHECKOUT_NOT_CONFIGURED")) {
-        setCheckoutError(
-          t("pricingPage.checkoutMigration.notConfigured", {
-            defaultValue: "EUR checkout is not configured yet. Join the beta waitlist or contact us.",
+      setCheckoutError(
+        message ||
+          t("pricingPage.checkoutError", {
+            defaultValue: "Could not start checkout. Please try again in a moment.",
           }),
-        );
-      } else {
-        setCheckoutError(
-          message ||
-            t("pricingPage.checkoutError", {
-              defaultValue: "Could not start checkout. Please try again in a moment.",
-            }),
-        );
-      }
+      );
     } finally {
       setCheckoutLoadingPlan(null);
     }
   };
 
+  const billingToggle = (
+    <div className="flex flex-col items-center gap-2 sm:items-end">
+      <div
+        className="inline-flex rounded-lg border border-terminal-border p-1"
+        role="group"
+        aria-label={t("pricingPage.billing.toggleLabel", { defaultValue: "Billing period" })}
+      >
+        <button
+          type="button"
+          onClick={() => setBillingCycle("monthly")}
+          className={`rounded-md px-4 py-1.5 text-xs font-semibold transition ${
+            billingCycle === "monthly"
+              ? "bg-terminal-cyan text-terminal-buttonText"
+              : "text-terminal-textSecondary hover:text-terminal-text"
+          }`}
+          aria-pressed={billingCycle === "monthly"}
+        >
+          {t("pricingPage.billing.monthly", { defaultValue: "Monthly" })}
+        </button>
+        <button
+          type="button"
+          onClick={() => setBillingCycle("yearly")}
+          className={`relative rounded-md px-4 py-1.5 text-xs font-semibold transition ${
+            billingCycle === "yearly"
+              ? "bg-terminal-cyan text-terminal-buttonText"
+              : "text-terminal-textSecondary hover:text-terminal-text"
+          }`}
+          aria-pressed={billingCycle === "yearly"}
+        >
+          {t("pricingPage.billing.yearly", { defaultValue: "Yearly" })}
+          <TerminalBadge variant="positive" className="ml-1.5 align-middle">
+            {t("pricingPage.billing.saveBadge", { defaultValue: "Save" })}
+          </TerminalBadge>
+        </button>
+      </div>
+      <p className="max-w-xs text-center text-[11px] text-terminal-textMuted sm:text-right">{pricingNote}</p>
+    </div>
+  );
+
+  const renderPlanCta = (plan: PaidPlan, label: string) => {
+    if (checkoutEnabled) {
+      return (
+        <TerminalButton
+          type="button"
+          variant="primary"
+          className="mt-6 w-full"
+          disabled={checkoutLoadingPlan !== null}
+          onClick={() => void handleCheckout(plan)}
+        >
+          {checkoutLoadingPlan === plan
+            ? t("pricingPage.cta.redirecting", { defaultValue: "Redirecting..." })
+            : label}
+        </TerminalButton>
+      );
+    }
+
+    return (
+      <Link to={isLoggedIn ? "/contact" : "/login"} state={isLoggedIn ? undefined : { from: "/pricing" }}>
+        <TerminalButton type="button" variant="outline" className="mt-6 w-full">
+          {t("pricingPage.cta.signIn", { defaultValue: "Sign in to subscribe" })}
+        </TerminalButton>
+      </Link>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-bgSecondary glass-muted">
+    <div className="min-h-screen bg-gradient-to-b from-terminal-bg via-[#070B16] to-terminal-bg text-terminal-text">
       <SEOHead
         title={t("pricingPage.seo.title", { defaultValue: "Pricing - StockAI Pro" })}
         description={t("pricingPage.seo.description", {
           defaultValue: "Trial-first EUR pricing: Pro €29/mo, Pro+ €59/mo, Investor OS €99/mo. AI investment research for international investors.",
         })}
       />
-      <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
-        <header className="text-center">
-          <h1 className="text-4xl font-bold text-white md:text-5xl">
-            {t("pricingPage.title", { defaultValue: "Choose your plan" })}
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base glass-muted md:text-lg">
-            {t("pricingPage.subtitle", {
-              defaultValue:
-                "Start with a trial - no classic free plan. Upgrade when you're ready; cancel anytime.",
-            })}
-          </p>
-        </header>
 
-        <div className="mt-8 flex flex-col items-center gap-3">
-          <div
-            className="inline-flex rounded-xl border p-1"
-            style={{ borderColor: colors.brandCyan }}
-            role="group"
-            aria-label={t("pricingPage.billing.toggleLabel", { defaultValue: "Billing period" })}
-          >
-            <button
-              type="button"
-              onClick={() => setBillingCycle("monthly")}
-              className="rounded-lg px-5 py-2 text-sm font-semibold transition"
-              style={{
-                backgroundColor: billingCycle === "monthly" ? colors.brandCyan : "transparent",
-                color: billingCycle === "monthly" ? colors.brandDark : colors.textSecondary,
-              }}
-              aria-pressed={billingCycle === "monthly"}
-            >
-              {t("pricingPage.billing.monthly", { defaultValue: "Monthly" })}
-            </button>
-            <button
-              type="button"
-              onClick={() => setBillingCycle("yearly")}
-              className="relative rounded-lg px-5 py-2 text-sm font-semibold transition"
-              style={{
-                backgroundColor: billingCycle === "yearly" ? colors.brandCyan : "transparent",
-                color: billingCycle === "yearly" ? colors.brandDark : colors.textSecondary,
-              }}
-              aria-pressed={billingCycle === "yearly"}
-            >
-              {t("pricingPage.billing.yearly", { defaultValue: "Yearly" })}
-              <span
-                className="ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase"
-                style={{
-                  backgroundColor: billingCycle === "yearly" ? colors.brandDark : colors.positive,
-                  color: billingCycle === "yearly" ? colors.brandCyan : "#fff",
-                }}
-              >
-                {t("pricingPage.billing.saveBadge", { defaultValue: "Save" })}
-              </span>
-            </button>
-          </div>
-          <p className="text-center text-sm text-white/50">{pricingNote}</p>
-          {!checkoutEnabled ? (
-            <p className="max-w-xl text-center text-sm text-brandCyan">
-              {t("pricingPage.checkoutMigration.banner", {
-                defaultValue:
-                  "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
-              })}
-            </p>
-          ) : null}
-          {checkoutError ? <p className="text-center text-sm text-negative">{checkoutError}</p> : null}
-        </div>
-
-        <section className="mt-10 grid gap-6 md:grid-cols-3">
-          <article
-            className="rounded-2xl border p-6 shadow-sm"
-            style={{ backgroundColor: colors.bgPrimary, borderColor: colors.border }}
-          >
-            <h2 className="text-xl font-bold text-white">Trial</h2>
-            <p className="mt-3 glass-page-title text-3xl">€0</p>
-            <p className="mt-1 text-xs text-white/50">
-              {t("pricingPage.plans.trial.duration", {
-                defaultValue: `${TRIAL_RULES.without_card.days} days / Pro+ experience`,
-              })}
-            </p>
-            <p className="mt-3 glass-muted text-sm">
-              {t("pricingPage.plans.trial.tagline", {
-                defaultValue: "Limited Pro+ access - no credit card required to start.",
-              })}
-            </p>
-            <PlanFeatureList planKey="free" textClassName="glass-muted" />
-            <Link
-              to="/register"
-              className="mt-6 inline-flex w-full justify-center rounded-lg bg-brandDark px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brandMedium"
-            >
-              {t("pricingPage.plans.trial.cta", { defaultValue: "Start trial" })}
-            </Link>
-            <EtoroCTAButton sourcePage="pricing_page" className="mt-3" />
-          </article>
-
-          <article className="rounded-2xl border p-6 shadow-lg" style={{ backgroundColor: colors.brandDark, borderColor: colors.brandDark }}>
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-xl font-bold text-white">Pro</h2>
-              <span className="rounded-full px-3 py-1 text-xs font-semibold text-white" style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
-                {t("pricingPage.plans.pro.popular", { defaultValue: "Most popular" })}
-              </span>
-            </div>
-            <p className="mt-3 text-3xl font-bold text-white">{formatPlanPrice("pro", billingCycle)}</p>
-            <p className="mt-1 text-xs text-white/80">
-              {billingCycle === "yearly"
-                ? t("pricingPage.plans.billedYearly", { defaultValue: "Billed annually in EUR" })
-                : t("pricingPage.plans.billedMonthly", { defaultValue: "Billed monthly in EUR" })}
-            </p>
-            <p className="mt-3 text-sm text-white/90">{PRICING_PLANS.PRO.tagline}</p>
-            <PlanFeatureList planKey="pro" textClassName="text-white/90" />
-            {checkoutEnabled ? (
-              <button
-                type="button"
-                onClick={() => void handleCheckout("pro")}
-                disabled={checkoutLoadingPlan !== null}
-                className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {checkoutLoadingPlan === "pro"
-                  ? t("pricingPage.cta.redirecting", { defaultValue: "Redirecting..." })
-                  : t("pricingPage.cta.startProTrial", { defaultValue: "Start Pro trial" })}
-              </button>
-            ) : (
-              <Link
-                to="/waitlist?source=pricing"
-                className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary"
-              >
-                {t("pricingPage.cta.startProTrialSoon", { defaultValue: "Start trial soon" })}
-              </Link>
-            )}
-          </article>
-
-          <article
-            className="rounded-2xl border p-6 shadow-lg"
-            style={{
-              backgroundImage: `linear-gradient(135deg, ${colors.brandDark} 0%, ${colors.brandMedium} 100%)`,
-              borderColor: colors.brandMedium,
-            }}
-          >
-            <h2 className="text-xl font-bold text-white">Pro+</h2>
-            <p className="mt-3 text-3xl font-bold text-white">{formatPlanPrice("proPlus", billingCycle)}</p>
-            <p className="mt-1 text-xs text-white/80">
-              {billingCycle === "yearly"
-                ? t("pricingPage.plans.billedYearly", { defaultValue: "Billed annually in EUR" })
-                : t("pricingPage.plans.billedMonthly", { defaultValue: "Billed monthly in EUR" })}
-            </p>
-            <p className="mt-3 text-sm text-white/90">{PRICING_PLANS.PRO_PLUS.tagline}</p>
-            <PlanFeatureList planKey="proPlus" textClassName="text-white/90" />
-            {checkoutEnabled ? (
-              <button
-                type="button"
-                onClick={() => void handleCheckout("pro_plus")}
-                disabled={checkoutLoadingPlan !== null}
-                className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {checkoutLoadingPlan === "pro_plus"
-                  ? t("pricingPage.cta.redirecting", { defaultValue: "Redirecting..." })
-                  : t("pricingPage.cta.startProPlusTrial", { defaultValue: "Start Pro+ trial" })}
-              </button>
-            ) : (
-              <Link
-                to="/waitlist?source=pricing"
-                className="mt-6 inline-flex w-full justify-center rounded-lg bg-[#a855f7] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-bgSecondary"
-              >
-                {t("pricingPage.cta.startProPlusTrialSoon", { defaultValue: "Start Pro+ trial soon" })}
-              </Link>
-            )}
-          </article>
-        </section>
-
-        {!checkoutEnabled ? (
-          <p className="mt-6 text-center text-sm text-white/50">
-            {t("pricingPage.checkoutMigration.note", {
-              defaultValue:
-                "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
-            })}{" "}
-            <Link to="/contact" className="font-semibold text-brandCyan hover:underline">
-              {t("pricingPage.checkoutMigration.contactLink", { defaultValue: "Contact us" })}
-            </Link>
+      <TerminalPage
+        eyebrow="PRICING"
+        title="Institutional-grade market intelligence. Retail price."
+        subtitle="Start with a trial. Upgrade when ready. Cancel anytime."
+        actions={billingToggle}
+        contentClassName="space-y-8 pb-16"
+      >
+        {checkoutError ? (
+          <p className="rounded-lg border border-terminal-negative/30 bg-terminal-negative/10 px-4 py-3 text-sm text-terminal-negative">
+            {checkoutError}
           </p>
         ) : null}
 
-        <section
-          className="mt-8 rounded-2xl border p-6 text-center"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-        >
-          <p className="text-xs font-semibold uppercase tracking-wide text-brandCyan">
-            {t("pricingPage.investorOs.comingSoon", { defaultValue: "Coming soon" })}
+        {!isLoggedIn ? (
+          <p className="text-sm text-terminal-textSecondary">
+            {t("pricingPage.signInHint", { defaultValue: "Already have an account?" })}{" "}
+            <Link to="/login" state={{ from: "/pricing" }} className="font-semibold text-terminal-cyan hover:underline">
+              {t("pricingPage.signInLink", { defaultValue: "Sign in" })}
+            </Link>{" "}
+            {t("pricingPage.signInHintSuffix", { defaultValue: "to subscribe with one click." })}
           </p>
-          <h2 className="mt-2 text-2xl font-bold text-white">{PRICING_PLANS.INVESTOR_OS.displayName}</h2>
-          <p className="mt-2 text-sm text-white/80">{PRICING_PLANS.INVESTOR_OS.tagline}</p>
-          <p className="mt-3 text-lg font-semibold text-white">
-            {formatEurPrice("INVESTOR_OS", billingCycle)}
-          </p>
-          <p className="mt-2 text-xs text-white/50">
-            {t("pricingPage.investorOs.note", {
-              defaultValue: "Checkout not available yet - documented in pricing config for PRICING.1.",
-            })}
-          </p>
+        ) : null}
+
+        <section className="grid gap-5 lg:grid-cols-2">
+          <TerminalCard variant="default" className="flex flex-col p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-terminal-textMuted">Pro</p>
+                <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-terminal-text">
+                  {formatPlanPrice("pro", billingCycle)}
+                </p>
+                <p className="mt-1 text-[11px] text-terminal-textMuted">
+                  {billingCycle === "yearly"
+                    ? t("pricingPage.plans.billedYearly", { defaultValue: "Billed annually in EUR" })
+                    : t("pricingPage.plans.billedMonthly", { defaultValue: "Billed monthly in EUR" })}
+                </p>
+              </div>
+            </div>
+            <p className="mt-4 text-sm text-terminal-textSecondary">{PRICING_PLANS.PRO.tagline}</p>
+            <PlanFeatureList planKey="pro" />
+            {renderPlanCta("pro", t("pricingPage.cta.startProTrial", { defaultValue: "Start Pro trial" }))}
+          </TerminalCard>
+
+          <TerminalCard variant="cyan" className="flex flex-col p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-terminal-cyan">Pro+</p>
+                <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-terminal-text">
+                  {formatPlanPrice("proPlus", billingCycle)}
+                </p>
+                <p className="mt-1 text-[11px] text-terminal-textMuted">
+                  {billingCycle === "yearly"
+                    ? t("pricingPage.plans.billedYearly", { defaultValue: "Billed annually in EUR" })
+                    : t("pricingPage.plans.billedMonthly", { defaultValue: "Billed monthly in EUR" })}
+                </p>
+              </div>
+              <TerminalBadge variant="ai">
+                {t("pricingPage.plans.proPlus.popular", { defaultValue: "Most popular" })}
+              </TerminalBadge>
+            </div>
+            <p className="mt-4 text-sm text-terminal-textSecondary">{PRICING_PLANS.PRO_PLUS.tagline}</p>
+            <PlanFeatureList planKey="proPlus" />
+            {renderPlanCta("pro_plus", t("pricingPage.cta.startProPlusTrial", { defaultValue: "Start Pro+ trial" }))}
+          </TerminalCard>
         </section>
 
-        <section className="mt-16 glass-section rounded-2xl p-6 md:p-8">
-          <h2 className="text-2xl font-bold text-white">{t("pricingPage.faq.title", { defaultValue: "FAQ" })}</h2>
-          <div className="mt-6 divide-y divide-border">
+        <TerminalSection
+          eyebrow="TRIAL"
+          title={t("pricingPage.plans.trial.title", { defaultValue: "Two ways to start" })}
+          subtitle={t("pricingPage.plans.trial.subtitle", {
+            defaultValue: "Try the platform before committing to a paid plan.",
+          })}
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            <TerminalCard variant="elevated" className="p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
+                {t("pricingPage.plans.trial.noCardLabel", { defaultValue: "After registration" })}
+              </p>
+              <p className="mt-2 text-sm font-semibold text-terminal-text">
+                {TRIAL_RULES.without_card.days}-day no-card trial
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-terminal-textSecondary">
+                {t("pricingPage.plans.trial.noCardBody", {
+                  defaultValue:
+                    "Create an account and explore Pro+ features for 7 days. No payment method required.",
+                })}
+              </p>
+            </TerminalCard>
+            <TerminalCard variant="elevated" className="p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
+                {t("pricingPage.plans.trial.cardLabel", { defaultValue: "Paid plan checkout" })}
+              </p>
+              <p className="mt-2 text-sm font-semibold text-terminal-text">
+                {TRIAL_RULES.with_card.days}-day card trial
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-terminal-textSecondary">
+                {t("pricingPage.plans.trial.cardBody", {
+                  defaultValue:
+                    "Start Pro or Pro+ via Stripe to unlock a 14-day trial, then billing begins unless you cancel.",
+                })}
+              </p>
+            </TerminalCard>
+          </div>
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+            <Link to="/register">
+              <TerminalButton variant="secondary">
+                {t("pricingPage.plans.trial.cta", { defaultValue: "Start trial" })}
+              </TerminalButton>
+            </Link>
+            <EtoroCTAButton sourcePage="pricing_page" />
+          </div>
+        </TerminalSection>
+
+        <TerminalCard variant="default" className="p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <TerminalBadge variant="soon">
+                {t("pricingPage.investorOs.comingSoon", { defaultValue: "Coming soon" })}
+              </TerminalBadge>
+              <h2 className="mt-3 text-xl font-bold text-terminal-text">{PRICING_PLANS.INVESTOR_OS.displayName}</h2>
+              <p className="mt-2 max-w-2xl text-sm text-terminal-textSecondary">
+                {PRICING_PLANS.INVESTOR_OS.tagline}
+              </p>
+            </div>
+            <p className="font-mono text-lg font-semibold tabular-nums text-terminal-textMuted">
+              {formatEurPrice("INVESTOR_OS", billingCycle)}
+            </p>
+          </div>
+          <p className="mt-4 text-xs text-terminal-textMuted">
+            {t("pricingPage.investorOs.note", {
+              defaultValue: "Investor OS checkout is not available yet. Join the waitlist or contact us for early access.",
+            })}
+          </p>
+          <TerminalButton variant="outline" className="mt-4" disabled>
+            {t("pricingPage.investorOs.cta", { defaultValue: "Notify me" })}
+          </TerminalButton>
+        </TerminalCard>
+
+        <TerminalSection title={t("pricingPage.faq.title", { defaultValue: "FAQ" })}>
+          <div className="divide-y divide-terminal-borderMuted">
             {faqItems.map((item, index) => {
               const isOpen = openFaqIndex === index;
               return (
@@ -393,21 +392,21 @@ export function PricingPage() {
                   <button
                     type="button"
                     onClick={() => setOpenFaqIndex((prev) => (prev === index ? null : index))}
-                    className="flex w-full items-center justify-between gap-4 py-2 text-left"
+                    className="flex w-full items-center justify-between gap-4 py-1 text-left"
                     aria-expanded={isOpen}
                   >
-                    <span className="font-semibold text-white">{item.question}</span>
-                    <span style={{ color: colors.brandCyan }} className="text-lg font-semibold">
-                      {isOpen ? "-" : "+"}
-                    </span>
+                    <span className="text-sm font-semibold text-terminal-text">{item.question}</span>
+                    <span className="text-lg font-semibold text-terminal-cyan">{isOpen ? "−" : "+"}</span>
                   </button>
-                  {isOpen ? <p className="pr-8 glass-muted text-sm">{item.answer}</p> : null}
+                  {isOpen ? (
+                    <p className="pr-8 pt-2 text-xs leading-relaxed text-terminal-textSecondary">{item.answer}</p>
+                  ) : null}
                 </div>
               );
             })}
           </div>
-        </section>
-      </div>
+        </TerminalSection>
+      </TerminalPage>
     </div>
   );
 }
