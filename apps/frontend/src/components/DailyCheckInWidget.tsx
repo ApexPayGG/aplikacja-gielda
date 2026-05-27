@@ -141,7 +141,7 @@ export function DailyCheckInWidget({
   }
 
   const shellClass = isTerminal
-    ? `rounded-lg border border-terminal-border bg-terminal-panel p-4 shadow-terminal-panel${compact ? "" : " mb-6"}`
+    ? `rounded-lg border border-terminal-border bg-terminal-panel shadow-terminal-panel${compact ? " p-3" : " p-4 mb-6"}`
     : isGlass
       ? `${GLASS_WIDGET_SHELL}${compact ? "" : " mb-6"}`
       : compact

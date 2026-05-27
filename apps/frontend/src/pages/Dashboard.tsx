@@ -12,7 +12,6 @@ import {
   TerminalButton,
   TerminalCard,
   TerminalMetricCard,
-  TerminalPage,
   TerminalSection,
   TerminalTable,
   TerminalTableBody,
@@ -219,124 +218,173 @@ export function Dashboard() {
   const watchlistSymbols = useMemo(() => watchlistRows.map((row) => row.symbol), [watchlistRows]);
 
   const compactHero = (
-    <TerminalCard variant="default" className="border-terminal-cyan/20 bg-terminal-panelSecondary/40 p-4 sm:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <TerminalCard variant="default" className="border-terminal-border bg-terminal-panelSecondary/30 p-3">
+      <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-terminal-cyan">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
             {t("dashboard.hero.eyebrow", { defaultValue: "Your StockAI hub" })}
           </p>
-          <h2 className="mt-1 text-base font-bold text-terminal-text sm:text-lg">
+          <h2 className="mt-0.5 text-sm font-bold text-terminal-text">
             {t("dashboard.hero.title", { defaultValue: "Build your market watchlist" })}
           </h2>
-          <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-terminal-textSecondary sm:text-sm">
+          <p className="mt-1 line-clamp-2 max-w-3xl text-[11px] leading-snug text-terminal-textSecondary">
             {t("dashboard.hero.subtitle", {
               defaultValue:
                 "Add a few tickers to unlock live quotes, movement alerts, and AI context tailored to what you actually trade.",
             })}
           </p>
         </div>
-      </div>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Link to="/companies">
-          <TerminalButton variant="primary" size="sm">
-            {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
-          </TerminalButton>
-        </Link>
-        <Link to="/signals">
-          <TerminalButton variant="secondary" size="sm">
-            {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
-          </TerminalButton>
-        </Link>
-        <Link to="/behavioral-coach">
-          <TerminalButton variant="ghost" size="sm">
-            {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
-          </TerminalButton>
-        </Link>
-      </div>
-      <div className="mt-4 border-t border-terminal-borderMuted pt-3">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-textMuted">
-          {t("dashboard.hero.popularLabel", { defaultValue: "Popular to start" })}
-        </p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {SUGGESTED_TICKERS.map((symbol) => (
-            <Link key={symbol} to={`/company/${encodeURIComponent(symbol)}`}>
-              <TerminalBadge variant="ai" className="cursor-pointer transition hover:border-terminal-cyan/60">
-                {symbol}
-              </TerminalBadge>
-            </Link>
-          ))}
+        <div className="flex flex-wrap gap-1.5">
+          <Link to="/companies">
+            <TerminalButton variant="primary" size="sm">
+              {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
+            </TerminalButton>
+          </Link>
+          <Link to="/signals">
+            <TerminalButton variant="secondary" size="sm">
+              {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
+            </TerminalButton>
+          </Link>
+          <Link to="/behavioral-coach">
+            <TerminalButton variant="ghost" size="sm">
+              {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
+            </TerminalButton>
+          </Link>
         </div>
       </div>
+      <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-terminal-borderMuted pt-2">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-terminal-textMuted">
+          {t("dashboard.hero.popularLabel", { defaultValue: "Popular to start" })}
+        </p>
+        {SUGGESTED_TICKERS.map((symbol) => (
+          <Link key={symbol} to={`/company/${encodeURIComponent(symbol)}`}>
+            <TerminalBadge variant="ai" className="cursor-pointer transition hover:border-terminal-cyan/60">
+              {symbol}
+            </TerminalBadge>
+          </Link>
+        ))}
+      </div>
+    </TerminalCard>
+  );
+
+  const kpiRow = (
+    <div className="grid grid-cols-2 gap-2 xl:grid-cols-4">
+      <TerminalMetricCard
+        className="p-2.5 sm:p-3"
+        label={t("dashboard.statWatchlist", { defaultValue: "Watchlist companies" })}
+        value={hasWatchlistMetrics ? String(quickStats.watchlistCount) : noDataLabel}
+        hint={
+          hasWatchlistMetrics
+            ? t("dashboard.kpi.watchlistHint", { defaultValue: "Symbols tracked today" })
+            : t("dashboard.kpi.watchlistEmpty", { defaultValue: "Add your first ticker" })
+        }
+      />
+      <TerminalMetricCard
+        className="p-2.5 sm:p-3"
+        label={t("dashboard.statSignals", { defaultValue: "Active signals" })}
+        value={hasWatchlistMetrics ? String(quickStats.signalCount) : noDataLabel}
+        hint={t("dashboard.kpi.signalsHint", {
+          defaultValue: "Watchlist moves at or above ±2%",
+        })}
+      />
+      <TerminalMetricCard
+        className="p-2.5 sm:p-3"
+        label={t("dashboard.kpi.eventRisk", { defaultValue: "Event risk" })}
+        value={eventRiskKpi.value}
+        hint={eventRiskKpi.hint}
+      />
+      <TerminalMetricCard
+        className="p-2.5 sm:p-3"
+        label={t("dashboard.kpi.psyche", { defaultValue: "Psyche / risk state" })}
+        value={psycheKpi.value}
+        hint={psycheKpi.hint}
+      />
+    </div>
+  );
+
+  const riskStateCard = (
+    <TerminalCard variant="default" className="p-3">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-textMuted">
+        {t("dashboard.rail.riskState", { defaultValue: "Today's risk state" })}
+      </p>
+      {checkInState.hasCheckedIn && checkInState.riskLevel ? (
+        <div className="mt-2 space-y-1.5">
+          <TerminalBadge
+            variant={
+              checkInState.riskLevel === "HIGH"
+                ? "negative"
+                : checkInState.riskLevel === "LOW"
+                  ? "positive"
+                  : "warning"
+            }
+          >
+            {t(`checkin.risk.${checkInState.riskLevel}`, { defaultValue: checkInState.riskLevel })}
+          </TerminalBadge>
+          {checkInState.mood != null ? (
+            <p className="text-[11px] text-terminal-textSecondary">
+              {t("dashboard.rail.moodLogged", {
+                mood: checkInState.mood,
+                defaultValue: "Mood score: {{mood}}/5",
+              })}
+            </p>
+          ) : null}
+        </div>
+      ) : (
+        <p className="mt-1.5 text-[11px] leading-snug text-terminal-textSecondary">
+          {t("dashboard.rail.riskPending", {
+            defaultValue: "Complete your daily check-in to log today's risk mindset.",
+          })}
+        </p>
+      )}
     </TerminalCard>
   );
 
   return (
     <div className="min-h-full bg-gradient-to-b from-terminal-bg via-[#070B16] to-terminal-bg">
-      <TerminalPage className="w-full max-w-[1500px] px-3 py-4 sm:px-5 sm:py-5 lg:px-6" contentClassName="space-y-4">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_300px]">
-          <header className="min-w-0 border-b border-terminal-borderMuted pb-4 lg:col-start-1 lg:row-start-1">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-terminal-textMuted">
-                  {t("dashboard.eyebrow", { defaultValue: "Command center" })}
-                </p>
-                <h1 className="mt-1 text-xl font-bold tracking-tight text-terminal-text sm:text-2xl">
-                  {firstName
-                    ? t("dashboard.greeting", { name: firstName, defaultValue: "Good morning, {{name}}" })
-                    : t("dashboard.greetingGeneric", { defaultValue: "Welcome back" })}
-                </h1>
-                <p className="mt-1 text-xs text-terminal-textSecondary sm:text-sm">{todayLabel}</p>
-                <div className="mt-3">
-                  <StatusPill variant={marketState.variant}>{marketState.label}</StatusPill>
+      <div className="mx-0 w-full max-w-none px-2 py-2 text-terminal-text sm:px-3 sm:py-3 lg:px-4 lg:py-3">
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="min-w-0 space-y-2.5">
+            <header className="border-b border-terminal-borderMuted pb-2.5">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-textMuted">
+                    {t("dashboard.eyebrow", { defaultValue: "Command center" })}
+                  </p>
+                  <h1 className="text-lg font-bold tracking-tight text-terminal-text sm:text-xl">
+                    {firstName
+                      ? t("dashboard.greeting", { name: firstName, defaultValue: "Good morning, {{name}}" })
+                      : t("dashboard.greetingGeneric", { defaultValue: "Welcome back" })}
+                  </h1>
+                  <p className="mt-0.5 text-[11px] text-terminal-textSecondary sm:text-xs">{todayLabel}</p>
+                  <div className="mt-2">
+                    <StatusPill variant={marketState.variant}>{marketState.label}</StatusPill>
+                  </div>
                 </div>
+                {!isEmptyDashboard ? (
+                  <Link to="/companies" className="hidden sm:block">
+                    <TerminalButton variant="outline" size="sm">
+                      {t("dashboard.companiesTitle", { defaultValue: "Companies" })}
+                    </TerminalButton>
+                  </Link>
+                ) : null}
               </div>
-              {!isEmptyDashboard ? (
-                <Link to="/companies" className="hidden sm:block">
-                  <TerminalButton variant="outline" size="sm">
-                    {t("dashboard.companiesTitle", { defaultValue: "Companies" })}
-                  </TerminalButton>
-                </Link>
-              ) : null}
-            </div>
-          </header>
+            </header>
 
-          <div className="lg:col-start-2 lg:row-start-1">
-            <DailyCheckInWidget compact appearance="terminal" onStateChange={setCheckInState} />
+            {kpiRow}
           </div>
 
-          <div className="min-w-0 space-y-4 lg:col-start-1 lg:row-start-2">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <TerminalMetricCard
-                label={t("dashboard.statWatchlist", { defaultValue: "Watchlist companies" })}
-                value={hasWatchlistMetrics ? String(quickStats.watchlistCount) : noDataLabel}
-                hint={
-                  hasWatchlistMetrics
-                    ? t("dashboard.kpi.watchlistHint", { defaultValue: "Symbols tracked today" })
-                    : t("dashboard.kpi.watchlistEmpty", { defaultValue: "Add your first ticker" })
-                }
-              />
-              <TerminalMetricCard
-                label={t("dashboard.statSignals", { defaultValue: "Active signals" })}
-                value={hasWatchlistMetrics ? String(quickStats.signalCount) : noDataLabel}
-                hint={t("dashboard.kpi.signalsHint", {
-                  defaultValue: "Watchlist moves at or above ±2%",
-                })}
-              />
-              <TerminalMetricCard
-                label={t("dashboard.kpi.eventRisk", { defaultValue: "Event risk" })}
-                value={eventRiskKpi.value}
-                hint={eventRiskKpi.hint}
-              />
-              <TerminalMetricCard
-                label={t("dashboard.kpi.psyche", { defaultValue: "Psyche / risk state" })}
-                value={psycheKpi.value}
-                hint={psycheKpi.hint}
-              />
-            </div>
+          <aside className="space-y-2.5 lg:sticky lg:top-16 lg:self-start">
+            <DailyCheckInWidget compact appearance="terminal" onStateChange={setCheckInState} />
+            {riskStateCard}
+          </aside>
+        </div>
 
+        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="min-w-0 space-y-3">
             {isEmptyDashboard ? compactHero : null}
 
             <TerminalSection
+              className="p-3 sm:p-4"
               title={t("dashboard.watchlistTitle", { defaultValue: "Watchlist" })}
               actions={
                 <TerminalBadge variant="default">
@@ -428,6 +476,7 @@ export function Dashboard() {
             <EventRiskRadarWidget watchlistSymbols={watchlistSymbols} />
 
             <TerminalSection
+              className="p-3 sm:p-4"
               title={t("dashboard.signalsTitle", { defaultValue: "Recent signals" })}
               subtitle={t("dashboard.emptySignalsHint", {
                 defaultValue: "Signals appear when your watchlist moves ±2% intraday.",
@@ -519,60 +568,27 @@ export function Dashboard() {
             </TerminalSection>
           </div>
 
-          <aside className="space-y-4 lg:sticky lg:top-20 lg:col-start-2 lg:row-start-2 lg:self-start">
+          <aside className="space-y-2.5 lg:sticky lg:top-16 lg:self-start">
             {checkInState.aiMessage ? (
-              <TerminalCard variant="default" className="p-4">
+              <TerminalCard variant="default" className="p-3">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
                   {t("dashboard.rail.aiBrief", { defaultValue: "AI market brief" })}
                 </p>
-                <p className="mt-2 text-xs leading-relaxed text-terminal-textSecondary">{checkInState.aiMessage}</p>
-                <Link to="/behavioral-coach" className="mt-3 inline-block">
+                <p className="mt-1.5 text-[11px] leading-relaxed text-terminal-textSecondary">
+                  {checkInState.aiMessage}
+                </p>
+                <Link to="/behavioral-coach" className="mt-2 inline-block">
                   <TerminalButton variant="ghost" size="sm">
                     {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
                   </TerminalButton>
                 </Link>
               </TerminalCard>
             ) : null}
-
-            <TerminalCard variant="default" className="p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-textMuted">
-                {t("dashboard.rail.riskState", { defaultValue: "Today's risk state" })}
-              </p>
-              {checkInState.hasCheckedIn && checkInState.riskLevel ? (
-                <div className="mt-3 space-y-2">
-                  <TerminalBadge
-                    variant={
-                      checkInState.riskLevel === "HIGH"
-                        ? "negative"
-                        : checkInState.riskLevel === "LOW"
-                          ? "positive"
-                          : "warning"
-                    }
-                  >
-                    {t(`checkin.risk.${checkInState.riskLevel}`, { defaultValue: checkInState.riskLevel })}
-                  </TerminalBadge>
-                  {checkInState.mood != null ? (
-                    <p className="text-xs text-terminal-textSecondary">
-                      {t("dashboard.rail.moodLogged", {
-                        mood: checkInState.mood,
-                        defaultValue: "Mood score: {{mood}}/5",
-                      })}
-                    </p>
-                  ) : null}
-                </div>
-              ) : (
-                <p className="mt-2 text-xs text-terminal-textSecondary">
-                  {t("dashboard.rail.riskPending", {
-                    defaultValue: "Complete your daily check-in to log today's risk mindset.",
-                  })}
-                </p>
-              )}
-            </TerminalCard>
           </aside>
         </div>
 
-        <InvestmentDisclaimer variant="drawer" className="mt-6" collapsible />
-      </TerminalPage>
+        <InvestmentDisclaimer variant="drawer" className="mt-4" collapsible />
+      </div>
     </div>
   );
 }
