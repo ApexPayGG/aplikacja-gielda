@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { DisclosureNote } from "../components/affiliate/DisclosureNote";
 import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
 import {
@@ -33,6 +34,8 @@ const FEATURE_KEYS = [
   "stressTests",
   "prioritySupport",
 ] as const;
+
+const ETORO_BROKER = { slug: "etoro" } as const;
 
 const PLAN_FEATURE_ACCESS: Record<(typeof FEATURE_KEYS)[number], { free: boolean; pro: boolean; proPlus: boolean }> = {
   paperTrading: { free: true, pro: true, proPlus: true },
@@ -250,6 +253,7 @@ export function PricingPage() {
         title="Institutional-grade market intelligence. Retail price."
         subtitle="Start with a trial. Upgrade when ready. Cancel anytime."
         actions={billingToggle}
+        className="pt-16 sm:pt-20 md:pt-24"
         contentClassName="space-y-8 pb-16"
       >
         {checkoutError ? (
@@ -348,13 +352,21 @@ export function PricingPage() {
               </p>
             </TerminalCard>
           </div>
-          <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
-            <Link to="/register">
-              <TerminalButton variant="secondary">
-                {t("pricingPage.plans.trial.cta", { defaultValue: "Start trial" })}
-              </TerminalButton>
-            </Link>
-            <EtoroCTAButton sourcePage="pricing_page" />
+          <div className="mt-2 space-y-4 border-t border-terminal-borderMuted pt-6">
+            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 sm:max-w-2xl">
+              <Link to="/register" className="block">
+                <TerminalButton variant="primary" className="h-11 w-full">
+                  {t("pricingPage.plans.trial.cta", { defaultValue: "Start trial" })}
+                </TerminalButton>
+              </Link>
+              <EtoroCTAButton
+                sourcePage="pricing_page"
+                className="[&>div:first-child]:hidden [&_button]:min-h-[44px] [&_button]:w-full"
+              />
+            </div>
+            <div className="rounded-lg border border-terminal-borderMuted/70 bg-terminal-panelSecondary/40 p-3 text-[11px] leading-relaxed text-terminal-textMuted [&_.bg-surface-elevated]:bg-transparent [&_.border-surface-border]:border-0 [&_.font-semibold]:text-xs [&_.font-semibold]:text-terminal-textSecondary [&_.text-red-300]:text-terminal-negative/90 [&_.text-slate-300]:text-terminal-textMuted [&_.text-white]:text-terminal-textSecondary">
+              <DisclosureNote broker={ETORO_BROKER} variant="full" />
+            </div>
           </div>
         </TerminalSection>
 
