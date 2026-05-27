@@ -1,35 +1,31 @@
-import {
-  ArrowTrendingDownIcon,
-  ArrowTrendingUpIcon,
-  FireIcon,
-  MinusSmallIcon,
-} from "@heroicons/react/24/outline";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import {
-  GLASS_BTN_GHOST,
-  GLASS_BTN_PRIMARY,
-  GLASS_BTN_SECONDARY,
-  GLASS_HERO,
-  GLASS_INNER_PANEL,
-  GLASS_LINK_ACCENT,
-  GLASS_SECTION,
-  GLASS_SECTION_TITLE,
-  GLASS_STAT_CARD,
-  GLASS_TEXT_NEGATIVE,
-  GLASS_TEXT_POSITIVE,
-  GLASS_WATCHLIST_CARD,
-} from "../components/behavioral-coach/glassStyles";
 import { CompanyLogo } from "../components/CompanyLogo";
-import { DailyCheckInWidget } from "../components/DailyCheckInWidget";
+import { DailyCheckInWidget, type DailyCheckInWidgetState } from "../components/DailyCheckInWidget";
 import { EventRiskRadarWidget } from "../components/EventRiskRadarWidget";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
+import {
+  MarketDelta,
+  StatusPill,
+  TerminalBadge,
+  TerminalButton,
+  TerminalCard,
+  TerminalMetricCard,
+  TerminalPage,
+  TerminalSection,
+  TerminalTable,
+  TerminalTableBody,
+  TerminalTableCell,
+  TerminalTableHead,
+  TerminalTableHeaderCell,
+  TerminalTableRow,
+} from "../components/terminal";
 import { useAuth } from "../context/AuthContext";
 import { getCompanyDetail, getLatestQuoteBySymbol, getWatchlist } from "../services/api";
 import { enrichItemsWithCompanyLogos } from "../utils/companyLogoEnrichment";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
-import { formatCurrency, formatNumber, formatPercent } from "../utils/formatters";
+import { formatCurrency } from "../utils/formatters";
 
 type WatchedCompany = {
   symbol: string;
@@ -40,14 +36,7 @@ type WatchedCompany = {
   changePct: number | null;
 };
 
-type TrendTone = "up" | "down" | "flat";
-
 const SUGGESTED_TICKERS = ["AAPL.US", "MSFT.US", "NVDA.US"] as const;
-
-function formatChange(value: number | null): string {
-  if (value == null) return "—";
-  return formatPercent(value);
-}
 
 export function Dashboard() {
   const { t, i18n } = useTranslation();
@@ -55,6 +44,12 @@ export function Dashboard() {
   const [watchlistRows, setWatchlistRows] = useState<WatchedCompany[]>([]);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
   const [watchlistError, setWatchlistError] = useState<string | null>(null);
+  const [checkInState, setCheckInState] = useState<DailyCheckInWidgetState>({
+    hasCheckedIn: false,
+    riskLevel: null,
+    aiMessage: null,
+    mood: null,
+  });
 
   useEffect(() => {
     if (!user?.id) {
@@ -132,15 +127,9 @@ export function Dashboard() {
 
   const quickStats = useMemo(() => {
     const signalCount = watchlistRows.filter((row) => row.changePct !== null && Math.abs(row.changePct) >= 2).length;
-    const positiveMoves = watchlistRows.filter((row) => row.changePct !== null && row.changePct > 0).length;
-    const validMoves = watchlistRows.filter((row) => row.changePct !== null).length;
-    const winRate = validMoves > 0 ? (positiveMoves / validMoves) * 100 : 0;
-    const streak = positiveMoves;
     return {
       signalCount,
       watchlistCount: watchlistRows.length,
-      winRate,
-      streak,
     };
   }, [watchlistRows]);
 
@@ -156,33 +145,67 @@ export function Dashboard() {
 
   const todayLabel = useMemo(() => {
     const locale = i18n.resolvedLanguage || i18n.language || "en";
-    return new Intl.DateTimeFormat(locale, { weekday: "long", year: "numeric", month: "long", day: "numeric" }).format(
-      new Date(),
-    );
+    return new Intl.DateTimeFormat(locale, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(new Date());
   }, [i18n.language, i18n.resolvedLanguage]);
 
-  const statCards: Array<{ label: string; value: string; trend: TrendTone }> = [
-    {
-      label: t("dashboard.statSignals", { defaultValue: "Active signals" }),
-      value: hasWatchlistMetrics ? String(quickStats.signalCount) : noDataLabel,
-      trend: hasWatchlistMetrics && quickStats.signalCount > 0 ? "up" : "flat",
-    },
-    {
-      label: t("dashboard.statWatchlist", { defaultValue: "On watchlist" }),
-      value: hasWatchlistMetrics ? String(quickStats.watchlistCount) : noDataLabel,
-      trend: hasWatchlistMetrics && quickStats.watchlistCount > 0 ? "up" : "flat",
-    },
-    {
-      label: t("dashboard.statWinRate", { defaultValue: "Win rate" }),
-      value: hasWatchlistMetrics ? `${formatNumber(quickStats.winRate, 1)}%` : noDataLabel,
-      trend: !hasWatchlistMetrics ? "flat" : quickStats.winRate >= 50 ? "up" : "down",
-    },
-    {
-      label: t("dashboard.statStreak", { defaultValue: "Positive streak" }),
-      value: hasWatchlistMetrics ? String(quickStats.streak) : noDataLabel,
-      trend: !hasWatchlistMetrics ? "flat" : quickStats.streak > 0 ? "up" : "flat",
-    },
-  ];
+  const marketState = useMemo(() => {
+    if (watchlistLoading) {
+      return {
+        label: t("dashboard.marketState.loading", { defaultValue: "Syncing quotes" }),
+        variant: "soon" as const,
+      };
+    }
+    if (watchlistRows.length === 0) {
+      return {
+        label: t("dashboard.marketState.setup", { defaultValue: "Watchlist not configured" }),
+        variant: "inactive" as const,
+      };
+    }
+    const withQuotes = watchlistRows.filter((row) => row.changePct != null);
+    if (withQuotes.length === 0) {
+      return {
+        label: t("dashboard.marketState.awaiting", { defaultValue: "Awaiting session data" }),
+        variant: "soon" as const,
+      };
+    }
+    const positiveMoves = withQuotes.filter((row) => (row.changePct ?? 0) > 0).length;
+    return {
+      label: t("dashboard.marketState.summary", {
+        positive: positiveMoves,
+        total: withQuotes.length,
+        defaultValue: "{{positive}}/{{total}} tickers green today",
+      }),
+      variant: positiveMoves >= withQuotes.length / 2 ? ("live" as const) : ("closed" as const),
+    };
+  }, [t, watchlistLoading, watchlistRows]);
+
+  const psycheKpi = useMemo(() => {
+    if (!checkInState.hasCheckedIn || !checkInState.riskLevel) {
+      return { value: noDataLabel, hint: t("dashboard.kpi.psychePending", { defaultValue: "Complete daily check-in" }) };
+    }
+    return {
+      value: t(`checkin.risk.${checkInState.riskLevel}`, { defaultValue: checkInState.riskLevel }),
+      hint: t("dashboard.kpi.psycheDone", { defaultValue: "Risk mindset logged today" }),
+    };
+  }, [checkInState.hasCheckedIn, checkInState.riskLevel, noDataLabel, t]);
+
+  const eventRiskKpi = useMemo(() => {
+    if (!hasWatchlistMetrics) {
+      return {
+        value: noDataLabel,
+        hint: t("dashboard.kpi.eventRiskEmpty", { defaultValue: "Add symbols to scan events" }),
+      };
+    }
+    return {
+      value: t("dashboard.kpi.eventRiskActive", { defaultValue: "Active" }),
+      hint: t("dashboard.kpi.eventRiskHint", { defaultValue: "See Event Risk Radar below" }),
+    };
+  }, [hasWatchlistMetrics, noDataLabel, t]);
 
   const latestSignals = useMemo(
     () =>
@@ -195,271 +218,361 @@ export function Dashboard() {
 
   const watchlistSymbols = useMemo(() => watchlistRows.map((row) => row.symbol), [watchlistRows]);
 
-  function trendIcon(tone: TrendTone) {
-    if (tone === "up") {
-      return <ArrowTrendingUpIcon className={`h-4 w-4 ${GLASS_TEXT_POSITIVE}`} />;
-    }
-    if (tone === "down") {
-      return <ArrowTrendingDownIcon className={`h-4 w-4 ${GLASS_TEXT_NEGATIVE}`} />;
-    }
-    return <MinusSmallIcon className="h-4 w-4 text-white/40" />;
-  }
-
-  const changeBadge = (changePct: number | null) => {
-    if (changePct == null) return "bg-white/10 text-white/50";
-    return changePct >= 0
-      ? `bg-[#4ade80]/15 ${GLASS_TEXT_POSITIVE}`
-      : `bg-[#f87171]/15 ${GLASS_TEXT_NEGATIVE}`;
-  };
+  const compactHero = (
+    <TerminalCard variant="default" className="border-terminal-cyan/20 bg-terminal-panelSecondary/40 p-4 sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-terminal-cyan">
+            {t("dashboard.hero.eyebrow", { defaultValue: "Your StockAI hub" })}
+          </p>
+          <h2 className="mt-1 text-base font-bold text-terminal-text sm:text-lg">
+            {t("dashboard.hero.title", { defaultValue: "Build your market watchlist" })}
+          </h2>
+          <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-terminal-textSecondary sm:text-sm">
+            {t("dashboard.hero.subtitle", {
+              defaultValue:
+                "Add a few tickers to unlock live quotes, movement alerts, and AI context tailored to what you actually trade.",
+            })}
+          </p>
+        </div>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link to="/companies">
+          <TerminalButton variant="primary" size="sm">
+            {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
+          </TerminalButton>
+        </Link>
+        <Link to="/signals">
+          <TerminalButton variant="secondary" size="sm">
+            {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
+          </TerminalButton>
+        </Link>
+        <Link to="/behavioral-coach">
+          <TerminalButton variant="ghost" size="sm">
+            {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
+          </TerminalButton>
+        </Link>
+      </div>
+      <div className="mt-4 border-t border-terminal-borderMuted pt-3">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-textMuted">
+          {t("dashboard.hero.popularLabel", { defaultValue: "Popular to start" })}
+        </p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {SUGGESTED_TICKERS.map((symbol) => (
+            <Link key={symbol} to={`/company/${encodeURIComponent(symbol)}`}>
+              <TerminalBadge variant="ai" className="cursor-pointer transition hover:border-terminal-cyan/60">
+                {symbol}
+              </TerminalBadge>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </TerminalCard>
+  );
 
   return (
-    <div>
-
-      <div className="relative z-10 mx-auto max-w-[1400px] px-4 py-6 md:px-6">
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="space-y-4">
-            <section className={GLASS_SECTION}>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">
-                    {firstName
-                      ? t("dashboard.greeting", { name: firstName, defaultValue: "Good morning, {{name}}" })
-                      : t("dashboard.greetingGeneric", { defaultValue: "Welcome back" })}
-                  </h1>
-                  <p className="mt-1 text-sm text-white/60">{todayLabel}</p>
+    <div className="min-h-full bg-gradient-to-b from-terminal-bg via-[#070B16] to-terminal-bg">
+      <TerminalPage className="w-full max-w-[1500px] px-3 py-4 sm:px-5 sm:py-5 lg:px-6" contentClassName="space-y-4">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_300px]">
+          <header className="min-w-0 border-b border-terminal-borderMuted pb-4 lg:col-start-1 lg:row-start-1">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-terminal-textMuted">
+                  {t("dashboard.eyebrow", { defaultValue: "Command center" })}
+                </p>
+                <h1 className="mt-1 text-xl font-bold tracking-tight text-terminal-text sm:text-2xl">
+                  {firstName
+                    ? t("dashboard.greeting", { name: firstName, defaultValue: "Good morning, {{name}}" })
+                    : t("dashboard.greetingGeneric", { defaultValue: "Welcome back" })}
+                </h1>
+                <p className="mt-1 text-xs text-terminal-textSecondary sm:text-sm">{todayLabel}</p>
+                <div className="mt-3">
+                  <StatusPill variant={marketState.variant}>{marketState.label}</StatusPill>
                 </div>
-                {!isEmptyDashboard ? (
-                  <Link
-                    to="/companies"
-                    className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white/70 backdrop-blur-sm transition hover:border-[#22d3ee]/40 hover:text-[#22d3ee]"
-                  >
+              </div>
+              {!isEmptyDashboard ? (
+                <Link to="/companies" className="hidden sm:block">
+                  <TerminalButton variant="outline" size="sm">
                     {t("dashboard.companiesTitle", { defaultValue: "Companies" })}
-                  </Link>
-                ) : null}
-              </div>
+                  </TerminalButton>
+                </Link>
+              ) : null}
+            </div>
+          </header>
 
-              {isEmptyDashboard ? (
-                <div className={GLASS_HERO}>
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-[#22d3ee]">
-                    {t("dashboard.hero.eyebrow", { defaultValue: "Your StockAI hub" })}
-                  </p>
-                  <h2 className="mt-2 text-xl font-bold tracking-tight text-white md:text-2xl">
-                    {t("dashboard.hero.title", { defaultValue: "Build your market watchlist" })}
-                  </h2>
-                  <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/70 md:text-base">
-                    {t("dashboard.hero.subtitle", {
-                      defaultValue:
-                        "Add a few tickers to unlock live quotes, movement alerts, and AI context tailored to what you actually trade.",
-                    })}
-                  </p>
-                  <ol className="mt-6 grid gap-3 sm:grid-cols-3">
-                    {(
-                      [
-                        t("dashboard.hero.step1", { defaultValue: "Pick companies you follow" }),
-                        t("dashboard.hero.step2", { defaultValue: "Read AI briefs and signals" }),
-                        t("dashboard.hero.step3", { defaultValue: "Track mindset with the coach" }),
-                      ] as const
-                    ).map((step, index) => (
-                      <li
-                        key={step}
-                        className="flex gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-white/90 backdrop-blur-sm"
-                      >
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#a855f7] to-[#9333ea] text-xs font-bold text-white">
-                          {index + 1}
-                        </span>
-                        <span className="leading-snug">{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                  <div className="mt-6 flex flex-wrap gap-3">
-                    <Link to="/companies" className={GLASS_BTN_PRIMARY}>
-                      {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
-                    </Link>
-                    <Link to="/signals" className={GLASS_BTN_SECONDARY}>
-                      {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
-                    </Link>
-                    <Link to="/behavioral-coach" className={GLASS_BTN_GHOST}>
-                      {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
-                    </Link>
-                  </div>
-                  <div className="mt-6">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-white/50">
-                      {t("dashboard.hero.popularLabel", { defaultValue: "Popular to start" })}
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {SUGGESTED_TICKERS.map((symbol) => (
-                        <Link
-                          key={symbol}
-                          to={`/company/${encodeURIComponent(symbol)}`}
-                          className="inline-flex rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-mono text-xs font-semibold text-[#22d3ee] transition hover:border-[#22d3ee]/50 hover:bg-[#22d3ee]/10"
-                        >
-                          {symbol}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  {statCards.map((card) => (
-                    <article key={card.label} className={GLASS_STAT_CARD}>
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{card.label}</p>
-                        {trendIcon(card.trend)}
-                      </div>
-                      <p className="mt-2 font-mono text-3xl font-bold leading-none text-white">{card.value}</p>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </section>
+          <div className="lg:col-start-2 lg:row-start-1">
+            <DailyCheckInWidget compact appearance="terminal" onStateChange={setCheckInState} />
+          </div>
 
-            <section className={GLASS_SECTION}>
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className={GLASS_SECTION_TITLE}>
-                  {t("dashboard.watchlistTitle", { defaultValue: "Watchlist" })}
-                </h2>
-                <span className="text-xs font-medium text-white/50">
-                  {t("dashboard.watchlistCount", { count: quickStats.watchlistCount, defaultValue: "{{count}} companies" })}
-                </span>
-              </div>
+          <div className="min-w-0 space-y-4 lg:col-start-1 lg:row-start-2">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <TerminalMetricCard
+                label={t("dashboard.statWatchlist", { defaultValue: "Watchlist companies" })}
+                value={hasWatchlistMetrics ? String(quickStats.watchlistCount) : noDataLabel}
+                hint={
+                  hasWatchlistMetrics
+                    ? t("dashboard.kpi.watchlistHint", { defaultValue: "Symbols tracked today" })
+                    : t("dashboard.kpi.watchlistEmpty", { defaultValue: "Add your first ticker" })
+                }
+              />
+              <TerminalMetricCard
+                label={t("dashboard.statSignals", { defaultValue: "Active signals" })}
+                value={hasWatchlistMetrics ? String(quickStats.signalCount) : noDataLabel}
+                hint={t("dashboard.kpi.signalsHint", {
+                  defaultValue: "Watchlist moves at or above ±2%",
+                })}
+              />
+              <TerminalMetricCard
+                label={t("dashboard.kpi.eventRisk", { defaultValue: "Event risk" })}
+                value={eventRiskKpi.value}
+                hint={eventRiskKpi.hint}
+              />
+              <TerminalMetricCard
+                label={t("dashboard.kpi.psyche", { defaultValue: "Psyche / risk state" })}
+                value={psycheKpi.value}
+                hint={psycheKpi.hint}
+              />
+            </div>
 
-              {watchlistLoading && (
-                <p className={`${GLASS_INNER_PANEL} px-4 py-3 text-sm text-white/60`}>
+            {isEmptyDashboard ? compactHero : null}
+
+            <TerminalSection
+              title={t("dashboard.watchlistTitle", { defaultValue: "Watchlist" })}
+              actions={
+                <TerminalBadge variant="default">
+                  {t("dashboard.watchlistCount", {
+                    count: quickStats.watchlistCount,
+                    defaultValue: "{{count}} companies",
+                  })}
+                </TerminalBadge>
+              }
+              contentClassName="space-y-0"
+            >
+              {watchlistLoading ? (
+                <p className="rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/50 px-4 py-3 text-sm text-terminal-textSecondary">
                   {t("common.loading", { defaultValue: "Loading..." })}
                 </p>
-              )}
+              ) : null}
 
-              {watchlistError && (
-                <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 backdrop-blur-md">
+              {watchlistError ? (
+                <p className="rounded-lg border border-terminal-negative/30 bg-terminal-negative/10 px-4 py-3 text-sm text-terminal-negative">
                   {watchlistError}
                 </p>
-              )}
+              ) : null}
 
-              {!watchlistLoading && !watchlistError && watchlistRows.length === 0 && (
-                <p className={`${GLASS_INNER_PANEL} border-dashed px-4 py-3 text-sm text-white/60`}>
-                  {t("watchlist.empty", { defaultValue: "You are not observing any companies yet." })}{" "}
-                  <Link to="/companies" className={GLASS_LINK_ACCENT}>
-                    {t("dashboard.emptyWatchlistCta", { defaultValue: "Browse companies" })}
+              {!watchlistLoading && !watchlistError && watchlistRows.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-terminal-borderMuted bg-terminal-panelSecondary/30 px-4 py-5 text-sm">
+                  <p className="text-terminal-textSecondary">
+                    {t("watchlist.empty", { defaultValue: "You are not observing any companies yet." })}
+                  </p>
+                  <Link to="/companies" className="mt-3 inline-block">
+                    <TerminalButton variant="primary" size="sm">
+                      {t("dashboard.emptyWatchlistCta", { defaultValue: "Browse companies" })}
+                    </TerminalButton>
                   </Link>
-                </p>
-              )}
-
-              {!watchlistLoading && !watchlistError && watchlistRows.length > 0 && (
-                <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2">
-                  {watchlistRows.map((row) => {
-                    return (
-                      <Link
-                        key={row.symbol}
-                        to={`/company/${encodeURIComponent(row.symbol)}`}
-                        className={GLASS_WATCHLIST_CARD}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-center gap-3">
-                            <CompanyLogo symbol={row.symbol} logoUrl={row.logoUrl} size="sm" shape="rounded" />
-                            <div>
-                              <p className="font-semibold leading-none text-white">{row.symbol}</p>
-                              <p className="mt-1 line-clamp-1 text-xs text-white/50">{row.name}</p>
-                            </div>
-                          </div>
-                          <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${changeBadge(row.changePct)}`}>
-                            {formatChange(row.changePct)}
-                          </span>
-                        </div>
-
-                        <p className="mt-4 font-mono text-2xl font-bold text-white">
-                          {row.close != null ? formatCurrency(row.close, "USD") : t("common.notAvailable", { defaultValue: "n/a" })}
-                        </p>
-                      </Link>
-                    );
-                  })}
                 </div>
-              )}
-            </section>
+              ) : null}
+
+              {!watchlistLoading && !watchlistError && watchlistRows.length > 0 ? (
+                <TerminalTable>
+                  <TerminalTableHead>
+                    <tr>
+                      <TerminalTableHeaderCell>
+                        {t("dashboard.table.symbol", { defaultValue: "Symbol" })}
+                      </TerminalTableHeaderCell>
+                      <TerminalTableHeaderCell className="hidden sm:table-cell">
+                        {t("dashboard.table.company", { defaultValue: "Company" })}
+                      </TerminalTableHeaderCell>
+                      <TerminalTableHeaderCell className="text-right">
+                        {t("dashboard.table.price", { defaultValue: "Last" })}
+                      </TerminalTableHeaderCell>
+                      <TerminalTableHeaderCell className="text-right">
+                        {t("dashboard.table.change", { defaultValue: "Change" })}
+                      </TerminalTableHeaderCell>
+                    </tr>
+                  </TerminalTableHead>
+                  <TerminalTableBody>
+                    {watchlistRows.map((row) => (
+                      <TerminalTableRow key={row.symbol}>
+                        <TerminalTableCell>
+                          <Link
+                            to={`/company/${encodeURIComponent(row.symbol)}`}
+                            className="flex items-center gap-2.5 font-semibold text-terminal-text transition hover:text-terminal-cyan"
+                          >
+                            <CompanyLogo symbol={row.symbol} logoUrl={row.logoUrl} size="sm" shape="rounded" />
+                            <span className="font-mono text-xs">{row.symbol}</span>
+                          </Link>
+                        </TerminalTableCell>
+                        <TerminalTableCell className="hidden max-w-[220px] truncate sm:table-cell">
+                          {row.name}
+                        </TerminalTableCell>
+                        <TerminalTableCell mono className="text-right">
+                          {row.close != null
+                            ? formatCurrency(row.close, "USD")
+                            : t("common.notAvailable", { defaultValue: "n/a" })}
+                        </TerminalTableCell>
+                        <TerminalTableCell className="text-right">
+                          {row.changePct != null ? (
+                            <MarketDelta value={row.changePct} />
+                          ) : (
+                            <span className="text-terminal-textMuted">—</span>
+                          )}
+                        </TerminalTableCell>
+                      </TerminalTableRow>
+                    ))}
+                  </TerminalTableBody>
+                </TerminalTable>
+              ) : null}
+            </TerminalSection>
 
             <EventRiskRadarWidget watchlistSymbols={watchlistSymbols} />
 
-            <section className={GLASS_SECTION}>
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className={GLASS_SECTION_TITLE}>
-                  {t("dashboard.signalsTitle", { defaultValue: "Recent signals" })}
-                </h2>
-                <FireIcon className="h-5 w-5 text-amber-400" />
-              </div>
-
-              {watchlistLoading && (
-                <p className={`${GLASS_INNER_PANEL} px-4 py-3 text-sm text-white/60`}>
+            <TerminalSection
+              title={t("dashboard.signalsTitle", { defaultValue: "Recent signals" })}
+              subtitle={t("dashboard.emptySignalsHint", {
+                defaultValue: "Signals appear when your watchlist moves ±2% intraday.",
+              })}
+              contentClassName="space-y-0"
+            >
+              {watchlistLoading ? (
+                <p className="rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/50 px-4 py-3 text-sm text-terminal-textSecondary">
                   {t("common.loading", { defaultValue: "Loading..." })}
                 </p>
-              )}
+              ) : null}
 
-              {!watchlistLoading && !watchlistError && latestSignals.length === 0 && (
-                <div className={`${GLASS_INNER_PANEL} px-4 py-4 text-sm`}>
-                  <p className="font-medium text-white">
-                    {t("dashboard.signalsWaiting", { defaultValue: "No signals — the market is waiting for a setup" })}
-                  </p>
-                  <p className="mt-2 text-white/60">
-                    {t("dashboard.emptySignalsHint", {
-                      defaultValue: "Signals appear when your watchlist moves ±2% intraday.",
+              {!watchlistLoading && !watchlistError && latestSignals.length === 0 ? (
+                <div className="rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/30 px-4 py-4 text-sm">
+                  <p className="font-medium text-terminal-text">
+                    {t("dashboard.signalsWaiting", {
+                      defaultValue: "No signals — the market is waiting for a setup",
                     })}
                   </p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <Link to="/signals" className={`${GLASS_BTN_PRIMARY} px-4 py-2 text-xs`}>
-                      {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Link to="/signals">
+                      <TerminalButton variant="primary" size="sm">
+                        {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
+                      </TerminalButton>
                     </Link>
-                    <Link to="/companies" className={`${GLASS_BTN_SECONDARY} px-4 py-2 text-xs`}>
-                      {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
+                    <Link to="/companies">
+                      <TerminalButton variant="secondary" size="sm">
+                        {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
+                      </TerminalButton>
                     </Link>
                   </div>
                 </div>
-              )}
+              ) : null}
 
-              {!watchlistLoading && !watchlistError && latestSignals.length > 0 && (
-                <ul className={`${GLASS_INNER_PANEL} divide-y divide-white/10`}>
-                  {latestSignals.map((row) => {
-                    const isPositive = (row.changePct ?? 0) >= 0;
-                    return (
-                      <li key={`signal-${row.symbol}`} className="flex items-center justify-between gap-3 px-4 py-3">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <CompanyLogo symbol={row.symbol} logoUrl={row.logoUrl} size="sm" shape="rounded" />
-                          <div className="min-w-0">
-                            <p className="font-semibold text-white">{row.symbol}</p>
-                            <p className="line-clamp-1 text-xs text-white/50">{row.name}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                              isPositive
-                                ? `bg-[#4ade80]/15 ${GLASS_TEXT_POSITIVE}`
-                                : `bg-[#f87171]/15 ${GLASS_TEXT_NEGATIVE}`
-                            }`}
-                          >
-                            {isPositive
-                              ? t("dashboard.signalLong", { defaultValue: "LONG" })
-                              : t("dashboard.signalShort", { defaultValue: "SHORT" })}
-                          </span>
-                          <span
-                            className={`text-sm font-semibold ${isPositive ? GLASS_TEXT_POSITIVE : GLASS_TEXT_NEGATIVE}`}
-                          >
-                            {formatChange(row.changePct)}
-                          </span>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </section>
+              {!watchlistLoading && !watchlistError && latestSignals.length > 0 ? (
+                <TerminalTable>
+                  <TerminalTableHead>
+                    <tr>
+                      <TerminalTableHeaderCell>
+                        {t("dashboard.table.symbol", { defaultValue: "Symbol" })}
+                      </TerminalTableHeaderCell>
+                      <TerminalTableHeaderCell>
+                        {t("dashboard.table.side", { defaultValue: "Side" })}
+                      </TerminalTableHeaderCell>
+                      <TerminalTableHeaderCell className="text-right">
+                        {t("dashboard.table.move", { defaultValue: "Move" })}
+                      </TerminalTableHeaderCell>
+                    </tr>
+                  </TerminalTableHead>
+                  <TerminalTableBody>
+                    {latestSignals.map((row) => {
+                      const isPositive = (row.changePct ?? 0) >= 0;
+                      return (
+                        <TerminalTableRow key={`signal-${row.symbol}`}>
+                          <TerminalTableCell>
+                            <Link
+                              to={`/company/${encodeURIComponent(row.symbol)}`}
+                              className="flex items-center gap-2.5 transition hover:text-terminal-cyan"
+                            >
+                              <CompanyLogo symbol={row.symbol} logoUrl={row.logoUrl} size="sm" shape="rounded" />
+                              <div className="min-w-0">
+                                <p className="font-mono text-xs font-semibold text-terminal-text">{row.symbol}</p>
+                                <p className="hidden truncate text-[11px] text-terminal-textMuted sm:block">
+                                  {row.name}
+                                </p>
+                              </div>
+                            </Link>
+                          </TerminalTableCell>
+                          <TerminalTableCell>
+                            <TerminalBadge variant={isPositive ? "positive" : "negative"}>
+                              {isPositive
+                                ? t("dashboard.signalLong", { defaultValue: "LONG" })
+                                : t("dashboard.signalShort", { defaultValue: "SHORT" })}
+                            </TerminalBadge>
+                          </TerminalTableCell>
+                          <TerminalTableCell className="text-right">
+                            {row.changePct != null ? (
+                              <MarketDelta value={row.changePct} />
+                            ) : (
+                              <span className="text-terminal-textMuted">—</span>
+                            )}
+                          </TerminalTableCell>
+                        </TerminalTableRow>
+                      );
+                    })}
+                  </TerminalTableBody>
+                </TerminalTable>
+              ) : null}
+            </TerminalSection>
           </div>
 
-          <aside className="space-y-4 xl:sticky xl:top-20 xl:self-start">
-            <DailyCheckInWidget compact appearance="glass" />
+          <aside className="space-y-4 lg:sticky lg:top-20 lg:col-start-2 lg:row-start-2 lg:self-start">
+            {checkInState.aiMessage ? (
+              <TerminalCard variant="default" className="p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
+                  {t("dashboard.rail.aiBrief", { defaultValue: "AI market brief" })}
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-terminal-textSecondary">{checkInState.aiMessage}</p>
+                <Link to="/behavioral-coach" className="mt-3 inline-block">
+                  <TerminalButton variant="ghost" size="sm">
+                    {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
+                  </TerminalButton>
+                </Link>
+              </TerminalCard>
+            ) : null}
+
+            <TerminalCard variant="default" className="p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-textMuted">
+                {t("dashboard.rail.riskState", { defaultValue: "Today's risk state" })}
+              </p>
+              {checkInState.hasCheckedIn && checkInState.riskLevel ? (
+                <div className="mt-3 space-y-2">
+                  <TerminalBadge
+                    variant={
+                      checkInState.riskLevel === "HIGH"
+                        ? "negative"
+                        : checkInState.riskLevel === "LOW"
+                          ? "positive"
+                          : "warning"
+                    }
+                  >
+                    {t(`checkin.risk.${checkInState.riskLevel}`, { defaultValue: checkInState.riskLevel })}
+                  </TerminalBadge>
+                  {checkInState.mood != null ? (
+                    <p className="text-xs text-terminal-textSecondary">
+                      {t("dashboard.rail.moodLogged", {
+                        mood: checkInState.mood,
+                        defaultValue: "Mood score: {{mood}}/5",
+                      })}
+                    </p>
+                  ) : null}
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-terminal-textSecondary">
+                  {t("dashboard.rail.riskPending", {
+                    defaultValue: "Complete your daily check-in to log today's risk mindset.",
+                  })}
+                </p>
+              )}
+            </TerminalCard>
           </aside>
         </div>
 
-        <InvestmentDisclaimer variant="drawer" className="mt-10" collapsible />
-      </div>
+        <InvestmentDisclaimer variant="drawer" className="mt-6" collapsible />
+      </TerminalPage>
     </div>
   );
 }
