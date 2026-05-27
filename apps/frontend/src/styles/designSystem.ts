@@ -1,15 +1,16 @@
+/** Shared color tokens — terminal dark palette (legacy export shape preserved). */
 export const colors = {
   // Backgrounds
-  bgPrimary: "#FFFFFF",
-  bgSecondary: "#F4F6FA",
-  bgTertiary: "#ECEEF5",
+  bgPrimary: "#0B1220",
+  bgSecondary: "#101827",
+  bgTertiary: "#1a2332",
 
-  // Brand (AMC Energy)
-  brandDark: "#a855f7",
-  brandMedium: "#9333ea",
+  // Brand / accent (cyan-first; brandDark = text on cyan CTAs)
+  brandDark: "#020617",
+  brandMedium: "#0891b2",
   brandCyan: "#22d3ee",
-  brandIndigo: "#1e1b4b",
-  brandGold: "#FFAE33",
+  brandIndigo: "#101827",
+  brandGold: "#fbbf24",
 
   // Semantic
   positive: "#4ade80",
@@ -17,11 +18,11 @@ export const colors = {
   neutral: "#94a3b8",
 
   // Text
-  textPrimary: "#0a0b14",
-  textSecondary: "#5A5A7A",
-  textMuted: "#9B9BB5",
+  textPrimary: "#f8fafc",
+  textSecondary: "#94a3b8",
+  textMuted: "#64748b",
 
   // Borders
-  border: "#E2E6F0",
-  borderStrong: "#C8CCE0",
+  border: "rgba(148, 163, 184, 0.14)",
+  borderStrong: "rgba(56, 189, 248, 0.16)",
 } as const;

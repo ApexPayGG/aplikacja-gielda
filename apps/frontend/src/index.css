@@ -12,21 +12,21 @@
 
 :root {
   color-scheme: dark;
-  --bg-primary: #0a0b14;
-  --bg-secondary: rgb(255 255 255 / 0.05);
-  --bg-tertiary: rgb(255 255 255 / 0.08);
-  --brand-dark: #a855f7;
-  --brand-medium: #9333ea;
+  --bg-primary: #050914;
+  --bg-secondary: #0b1220;
+  --bg-tertiary: #101827;
+  --brand-dark: #22d3ee;
+  --brand-medium: #0891b2;
   --brand-cyan: #22d3ee;
-  --brand-indigo: #1e1b4b;
-  --brand-gold: #ffae33;
+  --brand-indigo: #101827;
+  --brand-gold: #fbbf24;
   --positive: #4ade80;
   --negative: #f87171;
-  --text-primary: #ffffff;
-  --text-secondary: rgb(255 255 255 / 0.88);
-  --text-muted: #94a3b8;
-  --border: rgb(255 255 255 / 0.08);
-  --border-strong: rgb(255 255 255 / 0.16);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: rgb(148 163 184 / 0.14);
+  --border-strong: rgb(56 189 248 / 0.16);
 }
 
 html,
@@ -90,25 +90,25 @@ a {
 
 .app-shell {
   min-height: 100vh;
-  background: linear-gradient(165deg, #0a0b14 0%, #10131f 38%, #1e1b4b 72%, #0a0b14 100%);
+  background: linear-gradient(165deg, #050914 0%, #070b16 38%, #101827 72%, #050914 100%);
 }
 
 /* Logged-in app: dark glass theme (all authenticated + browsed routes) */
 .glass-app {
   color-scheme: dark;
-  --brand-dark: #a855f7;
-  --brand-medium: #9333ea;
+  --brand-dark: #22d3ee;
+  --brand-medium: #0891b2;
   --brand-cyan: #22d3ee;
-  --bg-primary: rgb(168 85 247 / 0.12);
-  --bg-secondary: rgb(255 255 255 / 0.05);
-  --bg-tertiary: rgb(255 255 255 / 0.08);
-  --text-primary: #ffffff;
-  --text-secondary: rgb(255 255 255 / 0.88);
-  --text-muted: #94a3b8;
-  --border: rgb(255 255 255 / 0.08);
-  --border-strong: rgb(255 255 255 / 0.16);
-  background: linear-gradient(165deg, #0a0b14 0%, #10131f 38%, #1e1b4b 72%, #0a0b14 100%);
-  color: rgb(255 255 255 / 0.92);
+  --bg-primary: #0b1220;
+  --bg-secondary: #101827;
+  --bg-tertiary: rgb(255 255 255 / 0.06);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: rgb(148 163 184 / 0.14);
+  --border-strong: rgb(56 189 248 / 0.16);
+  background: linear-gradient(165deg, #050914 0%, #070b16 38%, #101827 72%, #050914 100%);
+  color: #f8fafc;
 }
 
 .glass-app h1,
@@ -117,13 +117,13 @@ a {
 .glass-app h4,
 .glass-app h5,
 .glass-app h6 {
-  color: #ffffff;
+  color: #f8fafc;
 }
 
 .glass-app .glass-page-title {
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #ffffff;
+  color: #f8fafc;
 }
 
 .glass-app .glass-muted {
@@ -133,9 +133,9 @@ a {
 /* Alias for GLASS_SECTION — same card model everywhere in .glass-app */
 .glass-app .glass-section {
   border-radius: 1rem;
-  border: 1px solid rgb(255 255 255 / 0.08);
-  background: linear-gradient(135deg, rgb(15 17 28 / 0.92), rgb(30 27 75 / 0.55));
-  box-shadow: 0 8px 40px rgb(168 85 247 / 0.12);
+  border: 1px solid rgb(56 189 248 / 0.16);
+  background: linear-gradient(135deg, rgb(11 18 32 / 0.95), rgb(16 24 39 / 0.85));
+  box-shadow: 0 8px 40px rgb(34 211 238 / 0.1);
   backdrop-filter: blur(24px);
 }
 
@@ -148,8 +148,8 @@ a {
 
 
 .glass-app .glass-stat {
-  border: 1px solid rgb(255 255 255 / 0.08);
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.06), rgb(30 27 75 / 0.5));
+  border: 1px solid rgb(148 163 184 / 0.14);
+  background: linear-gradient(135deg, rgb(16 24 39 / 0.9), rgb(11 18 32 / 0.75));
   backdrop-filter: blur(12px);
 }
 
@@ -167,14 +167,14 @@ a {
 }
 
 .glass-app option {
-  background: #0f111c;
-  color: #ffffff;
+  background: #0b1220;
+  color: #f8fafc;
 }
 
 .glass-nav-bar {
-  border-bottom: 1px solid rgb(255 255 255 / 0.08);
-  background: rgb(10 11 20 / 0.9);
-  box-shadow: 0 4px 32px rgb(168 85 247 / 0.15);
+  border-bottom: 1px solid rgb(56 189 248 / 0.12);
+  background: rgb(5 9 20 / 0.92);
+  box-shadow: 0 4px 32px rgb(34 211 238 / 0.08);
   backdrop-filter: blur(20px);
 }
 
@@ -208,7 +208,7 @@ a {
 .neo-panel {
   border: 1px solid var(--border);
   background: var(--bg-primary);
-  box-shadow: 0 8px 24px rgb(45 10 107 / 0.08);
+  box-shadow: 0 8px 24px rgb(2 6 23 / 0.35);
 }
 
 .neo-panel-accent {
@@ -222,7 +222,7 @@ a {
   inset: -1px;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(120deg, rgb(34 211 238 / 0.35), rgb(147 51 234 / 0.35), rgb(168 85 247 / 0.25));
+  background: linear-gradient(120deg, rgb(34 211 238 / 0.35), rgb(56 189 248 / 0.28), rgb(8 145 178 / 0.22));
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -247,7 +247,7 @@ a {
 
 .interactive-tilt:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgb(168 85 247 / 0.14);
+  box-shadow: 0 12px 32px rgb(34 211 238 / 0.12);
 }
 
 .interactive-tilt:active {
@@ -281,7 +281,7 @@ a {
   padding: 0.65rem 0.8rem;
   border: 1px solid var(--border);
   background: var(--bg-primary);
-  box-shadow: 0 10px 22px rgb(45 10 107 / 0.14);
+  box-shadow: 0 10px 22px rgb(2 6 23 / 0.4);
   animation: toastIn 0.24s ease;
 }
 
@@ -306,7 +306,7 @@ a {
 }
 
 .confidence-halo {
-  box-shadow: 0 0 0 1px rgb(122 15 158 / 0.25), 0 0 16px rgb(122 15 158 / 0.2);
+  box-shadow: 0 0 0 1px rgb(34 211 238 / 0.25), 0 0 16px rgb(34 211 238 / 0.18);
 }
 
 .risk-beam {
@@ -732,7 +732,7 @@ a {
   position: absolute;
   inset: -2px;
   border-radius: 18px;
-  background: linear-gradient(90deg, #2d0a6b, #00c9d4, #7a0f9e, #ffae33, #2d0a6b);
+  background: linear-gradient(90deg, #050914, #22d3ee, #0891b2, #fbbf24, #050914);
   background-size: 300% 100%;
   animation: border-rotate 4s linear infinite;
   z-index: 0;
