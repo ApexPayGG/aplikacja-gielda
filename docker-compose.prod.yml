@@ -64,6 +64,9 @@ services:
     build:
       context: ./apps/frontend
       dockerfile: Dockerfile.prod
+      args:
+        VITE_API_BASE: /api
+        VITE_EUR_CHECKOUT_ENABLED: ${VITE_EUR_CHECKOUT_ENABLED:-false}
     image: stockai-frontend:latest
     container_name: stockai-frontend-prod
     expose:
