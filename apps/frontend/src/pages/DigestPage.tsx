@@ -5,7 +5,23 @@ import {
   sendDailyDigest,
   type DailyDigestResponse,
 } from "../services/api";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_BUTTON_SECONDARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_FILTER_CHIP,
+  TERMINAL_FILTER_CHIP_ACTIVE,
+  TERMINAL_INFO_BANNER,
+  TERMINAL_INSIGHT_CARD,
+  TERMINAL_INTELLIGENCE_CARD,
+  TERMINAL_INTELLIGENCE_PAGE,
+  TERMINAL_INTELLIGENCE_PAGE_INNER,
+  TERMINAL_INTELLIGENCE_PANEL,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_TOGGLE_THUMB,
+  TERMINAL_TOGGLE_TRACK,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
@@ -73,62 +89,34 @@ export function DigestPage() {
   const previousDigests = history.slice(digest ? 1 : 0);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
-      <div className="mx-auto max-w-5xl space-y-6 px-4 py-10">
+    <div className={TERMINAL_INTELLIGENCE_PAGE}>
+      <div className={TERMINAL_INTELLIGENCE_PAGE_INNER}>
         <header className="space-y-2">
-          <h1 className="text-4xl font-bold" style={{ color: colors.brandDark }}>
-            Daily Digest
-          </h1>
-          <p className="text-sm md:text-base" style={{ color: colors.textSecondary }}>
+          <h1 className={TERMINAL_PAGE_TITLE}>Daily Digest</h1>
+          <p className={TERMINAL_PAGE_SUBTITLE}>
             Codzienny skrot najwazniejszych informacji inwestycyjnych i sygnalow rynku.
           </p>
         </header>
 
-        {error ? (
-          <div
-            className="rounded-xl border p-3 text-sm"
-            style={{ borderColor: colors.negative, backgroundColor: colors.bgPrimary, color: colors.negative }}
-          >
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
 
-        {sentInfo ? (
-          <div
-            className="rounded-xl border p-3 text-sm"
-            style={{ borderColor: colors.brandCyan, backgroundColor: colors.bgPrimary, color: colors.brandDark }}
-          >
-            {sentInfo}
-          </div>
-        ) : null}
+        {sentInfo ? <div className={TERMINAL_INFO_BANNER}>{sentInfo}</div> : null}
 
-        <section
-          className="rounded-2xl border p-5 shadow-sm"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-        >
+        <section className={TERMINAL_INTELLIGENCE_PANEL}>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <span className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
-                Subscribe
-              </span>
+              <span className="text-sm font-semibold text-terminal-textSecondary">Subscribe</span>
               <button
                 type="button"
                 role="switch"
                 aria-checked={subscribed}
                 onClick={() => setSubscribed((prev) => !prev)}
-                className="relative h-7 w-14 rounded-full border transition-colors"
-                style={{
-                  backgroundColor: subscribed ? colors.brandCyan : colors.bgTertiary,
-                  borderColor: subscribed ? colors.brandCyan : colors.borderStrong,
-                }}
+                className={`${TERMINAL_TOGGLE_TRACK} ${
+                  subscribed ? "border-terminal-cyan/50 bg-terminal-cyan/20" : "border-terminal-borderMuted bg-terminal-panelSecondary"
+                }`}
               >
                 <span
-                  className="absolute top-0.5 rounded-full bg-white transition-transform"
-                  style={{
-                    width: "22px",
-                    height: "22px",
-                    transform: subscribed ? "translateX(30px)" : "translateX(2px)",
-                  }}
+                  className={`${TERMINAL_TOGGLE_THUMB} ${subscribed ? "translate-x-[2.125rem]" : "translate-x-1"}`}
                 />
               </button>
             </div>
@@ -141,12 +129,7 @@ export function DigestPage() {
                     key={option}
                     type="button"
                     onClick={() => setFrequency(option)}
-                    className="rounded-full px-4 py-1.5 text-sm font-semibold capitalize transition-colors"
-                    style={{
-                      backgroundColor: active ? colors.brandDark : colors.bgTertiary,
-                      color: active ? colors.bgPrimary : colors.textSecondary,
-                      border: `1px solid ${active ? colors.brandDark : colors.borderStrong}`,
-                    }}
+                    className={active ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP}
                   >
                     {option === "daily" ? "Daily" : "Weekly"}
                   </button>
@@ -156,13 +139,7 @@ export function DigestPage() {
           </div>
 
           <div className="mt-4 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={onPreview}
-              disabled={loadingPreview}
-              className="rounded-xl px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-              style={{ backgroundColor: colors.brandDark }}
-            >
+            <button type="button" onClick={onPreview} disabled={loadingPreview} className={TERMINAL_BUTTON_PRIMARY}>
               {loadingPreview ? t("common.loading") : t("digest.sendNow", { defaultValue: "Send now" })}
             </button>
 
@@ -170,11 +147,7 @@ export function DigestPage() {
               type="button"
               onClick={onSendTest}
               disabled={sending || !subscribed}
-              className="rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-60"
-              style={{
-                backgroundColor: colors.brandGold,
-                color: colors.brandDark,
-              }}
+              className={TERMINAL_BUTTON_SECONDARY}
             >
               {sending ? t("common.loading") : `${t("digest.sendButton")} (${frequency === "daily" ? "Daily" : "Weekly"})`}
             </button>
@@ -182,56 +155,30 @@ export function DigestPage() {
         </section>
 
         {digest ? (
-          <section
-            className="rounded-2xl border p-6 shadow-sm"
-            style={{
-              borderColor: colors.border,
-              borderLeft: `6px solid ${colors.brandDark}`,
-              backgroundColor: colors.bgPrimary,
-            }}
-          >
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-              {t("digest.todayLabel")}
-            </p>
-            <p className="mt-1 text-sm" style={{ color: colors.textMuted }}>
-              {digest.date}
-            </p>
-            <p className="mt-4 text-lg leading-relaxed" style={{ color: colors.textPrimary }}>
-              {digest.digest}
-            </p>
+          <section className={TERMINAL_INSIGHT_CARD}>
+            <p className="text-xs uppercase tracking-wide text-terminal-textMuted">{t("digest.todayLabel")}</p>
+            <p className="mt-1 text-sm text-terminal-textSecondary">{digest.date}</p>
+            <p className="mt-4 text-lg leading-relaxed text-terminal-text">{digest.digest}</p>
           </section>
         ) : (
-          <section
-            className="rounded-2xl border p-6 text-sm"
-            style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary, color: colors.textSecondary }}
-          >
+          <section className="rounded-lg border border-dashed border-terminal-borderMuted bg-terminal-panelSecondary/60 p-8 text-center text-sm text-terminal-textMuted">
             {t("digest.emptyState")}
           </section>
         )}
 
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-terminal-textSecondary">
             {t("digest.previousSectionTitle")}
           </h2>
           {previousDigests.length > 0 ? (
             previousDigests.map((entry) => (
-              <article
-                key={`${entry.date}-${entry.digest.slice(0, 16)}`}
-                className="rounded-xl border p-4"
-                style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
-              >
-                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.brandDark }}>
-                  {entry.date}
-                </p>
-                <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
-                  {digestPreview(entry.digest)}
-                </p>
+              <article key={`${entry.date}-${entry.digest.slice(0, 16)}`} className={TERMINAL_INTELLIGENCE_CARD}>
+                <p className="text-xs font-semibold uppercase tracking-wide text-terminal-cyan">{entry.date}</p>
+                <p className="mt-2 text-sm text-terminal-textSecondary">{digestPreview(entry.digest)}</p>
               </article>
             ))
           ) : (
-            <p className="text-sm" style={{ color: colors.textMuted }}>
-              {t("digest.noPreviousDigests")}
-            </p>
+            <p className="text-sm text-terminal-textMuted">{t("digest.noPreviousDigests")}</p>
           )}
         </section>
       </div>

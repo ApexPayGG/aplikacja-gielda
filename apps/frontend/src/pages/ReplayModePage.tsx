@@ -8,7 +8,19 @@ import {
   type ReplaySnapshotResponse,
   searchCompanies,
 } from "../services/api";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_INFO_BANNER,
+  TERMINAL_INPUT,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_REPLAY_PANEL,
+  TERMINAL_INTELLIGENCE_CARD,
+  TERMINAL_INTELLIGENCE_PAGE,
+  TERMINAL_INTELLIGENCE_PAGE_INNER,
+  TERMINAL_INTELLIGENCE_PANEL,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const SYMBOL_OPTIONS = ["PKN", "KGH", "PKO", "PZU", "PEO", "LPP", "CDR"];
@@ -147,30 +159,23 @@ export function ReplayModePage() {
   }
 
   return (
-    <div className="min-h-screen bg-bgSecondary">
-      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 text-white">
-        <header
-          className="glass-section rounded-3xl p-6 shadow-[0_18px_45px_rgba(168,85,247,0.1)]"
-          style={{ background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
-        >
-          <h1 className="glass-page-title text-3xl">Replay Mode</h1>
-          <p className="mt-2 glass-muted text-sm">
+    <div className={TERMINAL_INTELLIGENCE_PAGE}>
+      <div className={`${TERMINAL_INTELLIGENCE_PAGE_INNER} max-w-6xl`}>
+        <header className={TERMINAL_INTELLIGENCE_PANEL}>
+          <h1 className={TERMINAL_PAGE_TITLE}>Replay Mode</h1>
+          <p className={`mt-2 ${TERMINAL_PAGE_SUBTITLE}`}>
             {t("replayModePage.subtitle", {
-              defaultValue: "Step back in time and play \"what would I do\"",
+              defaultValue: 'Step back in time and play "what would I do"',
             })}
           </p>
         </header>
 
-        {error ? (
-          <div className="rounded-xl border border-negative/30 bg-negative/10 px-4 py-3 text-sm font-medium text-negative">
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
 
-        <section className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
+        <section className={TERMINAL_REPLAY_PANEL}>
           <form onSubmit={onLoadSnapshot} className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium glass-muted">
+              <span className="font-medium text-terminal-textMuted">
                 {t("replayModePage.symbolSearchHint", { defaultValue: "Symbol search" })}
               </span>
               <input
@@ -179,7 +184,7 @@ export function ReplayModePage() {
                 value={symbolInput}
                 onChange={(e) => setSymbolInput(e.target.value.toUpperCase())}
                 placeholder={t("replayModePage.companySearchPlaceholder", { defaultValue: "Search for a company…" })}
-                className="rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5 text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
+                className={TERMINAL_INPUT}
                 required
               />
               <datalist id="replay-symbols">
@@ -189,7 +194,7 @@ export function ReplayModePage() {
                   </option>
                 ))}
               </datalist>
-              <span className="text-xs text-white/50">
+              <span className="text-xs text-terminal-textMuted">
                 {loadingSymbols
                   ? t("replayModePage.searchingSymbols", { defaultValue: "Searching symbols…" })
                   : t("replayModePage.symbolTickerOrNameHint", { defaultValue: "Enter a ticker or name" })}
@@ -197,7 +202,7 @@ export function ReplayModePage() {
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium glass-muted">
+              <span className="font-medium text-terminal-textMuted">
                 {t("replayModePage.datePickerHint", { defaultValue: "Date picker" })}
               </span>
               <input
@@ -205,18 +210,13 @@ export function ReplayModePage() {
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 max={maxReplayDate}
-                className="rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5 text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
+                className={TERMINAL_INPUT}
                 required
               />
             </label>
 
             <div className="flex items-end">
-              <button
-                type="submit"
-                disabled={loadingSnapshot}
-                className="w-full rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
-                style={{ backgroundColor: colors.brandDark }}
-              >
+              <button type="submit" disabled={loadingSnapshot} className={`w-full ${TERMINAL_BUTTON_PRIMARY}`}>
                 {loadingSnapshot
                   ? t("replayModePage.loading", { defaultValue: "Loading..." })
                   : t("replayModePage.historyLoad", { defaultValue: "Load history" })}
@@ -227,29 +227,26 @@ export function ReplayModePage() {
 
         {snapshot ? (
           <section className="grid gap-5 md:grid-cols-[1.45fr_1fr]">
-            <article
-              className="flex min-h-[360px] items-center justify-center rounded-2xl border border-white/10 p-6 text-center shadow-[0_14px_34px_rgba(168,85,247,0.08)]"
-              style={{ backgroundColor: colors.bgSecondary }}
-            >
+            <article className={`flex min-h-[360px] items-center justify-center ${TERMINAL_INTELLIGENCE_CARD} text-center`}>
               <div>
-                <p className="text-sm font-medium text-white/50">
+                <p className="text-sm font-medium text-terminal-textMuted">
                   {t("replayModePage.chartHistorical", { defaultValue: "Historical chart" })}
                 </p>
-                <p className="mt-2 text-xs text-white/50">
+                <p className="mt-2 text-xs text-terminal-textMuted">
                   {snapshot.symbol} • {snapshot.date}
                 </p>
               </div>
             </article>
 
-            <aside className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-              <p className="text-sm font-semibold glass-muted">
+            <aside className={TERMINAL_REPLAY_PANEL}>
+              <p className="text-sm font-semibold text-terminal-cyan">
                 {t("replayModePage.decisionPanel", { defaultValue: "Decision panel" })}
               </p>
-              <div className="mt-4 rounded-xl glass-panel border border-white/10 bg-white/5 p-3">
-                <p className="text-xs uppercase tracking-wide text-white/50">
+              <div className={`mt-4 ${TERMINAL_INTELLIGENCE_CARD}`}>
+                <p className="text-xs uppercase tracking-wide text-terminal-textMuted">
                   {t("replayModePage.priceDayLabel", { defaultValue: "Price on selected day" })}
                 </p>
-                <p className="mt-1 font-mono text-2xl font-bold text-white">{formatPrice(snapshot.close)}</p>
+                <p className="mt-1 font-mono text-2xl font-bold text-terminal-text">{formatPrice(snapshot.close)}</p>
               </div>
 
               <div className="mt-4 grid grid-cols-3 gap-2">
@@ -257,8 +254,7 @@ export function ReplayModePage() {
                   type="button"
                   onClick={() => void onDecide("BUY")}
                   disabled={loadingEvaluation}
-                  className="rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
-                  style={{ backgroundColor: colors.positive }}
+                  className="rounded-lg bg-terminal-positive px-3 py-2 text-sm font-semibold text-terminal-buttonText transition hover:brightness-110 disabled:opacity-60"
                 >
                   {t("replayModePage.buy", { defaultValue: "Buy" })}
                 </button>
@@ -266,8 +262,7 @@ export function ReplayModePage() {
                   type="button"
                   onClick={() => void onDecide("SELL")}
                   disabled={loadingEvaluation}
-                  className="rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
-                  style={{ backgroundColor: colors.negative }}
+                  className="rounded-lg bg-terminal-negative px-3 py-2 text-sm font-semibold text-terminal-buttonText transition hover:brightness-110 disabled:opacity-60"
                 >
                   {t("replayModePage.sell", { defaultValue: "Sell" })}
                 </button>
@@ -275,15 +270,14 @@ export function ReplayModePage() {
                   type="button"
                   onClick={() => void onDecide("SKIP")}
                   disabled={loadingEvaluation}
-                  className="rounded-lg border border-white/10 px-3 py-2 text-sm font-semibold transition hover:bg-bgSecondary disabled:opacity-60"
-                  style={{ color: colors.textMuted }}
+                  className="rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary px-3 py-2 text-sm font-semibold text-terminal-textMuted transition hover:border-terminal-cyan/35 disabled:opacity-60"
                 >
                   {t("replayModePage.skip", { defaultValue: "Skip" })}
                 </button>
               </div>
 
               <label className="mt-4 block text-sm">
-                <span className="font-medium glass-muted">
+                <span className="font-medium text-terminal-textMuted">
                   {t("replayModePage.whyLabel", { defaultValue: "Why?" })}
                 </span>
                 <textarea
@@ -293,40 +287,38 @@ export function ReplayModePage() {
                   placeholder={t("replayModePage.thinkingPlaceholder", {
                     defaultValue: "Describe your thought process…",
                   })}
-                  className="mt-1 w-full rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/20"
+                  className={`mt-1 min-h-[88px] ${TERMINAL_INPUT}`}
                 />
               </label>
 
               {loadingEvaluation ? (
-                <p className="mt-3 text-xs text-white/50">{t("replayModePage.aiAnalyzing", { defaultValue: "Analyzing decision..." })}</p>
+                <p className="mt-3 text-xs text-terminal-textMuted">{t("replayModePage.aiAnalyzing", { defaultValue: "Analyzing decision..." })}</p>
               ) : null}
             </aside>
           </section>
         ) : null}
 
         {evaluation ? (
-          <section
-            className="rounded-2xl p-5 text-white shadow-[0_18px_45px_rgba(168,85,247,0.35)]"
-            style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
-          >
-            <h2 className="text-lg font-semibold text-white">AI Feedback</h2>
+          <section className={TERMINAL_INFO_BANNER}>
+            <h2 className="text-lg font-semibold text-terminal-cyan">AI Feedback</h2>
             <div className="mt-3 grid gap-3 text-sm md:grid-cols-3">
               <p>
-                <span className="text-white/70">{t("replayModePage.decisionLabel", { defaultValue: "Decision:" })} </span>
-                <span className="font-semibold">{decisionVerb(selectedDecision)}</span>
+                <span className="text-terminal-textMuted">{t("replayModePage.decisionLabel", { defaultValue: "Decision:" })} </span>
+                <span className="font-semibold text-terminal-text">{decisionVerb(selectedDecision)}</span>
               </p>
               <p>
-                <span className="text-white/70">Score:</span> <span className="font-semibold">{evaluation.score}/10</span>
+                <span className="text-terminal-textMuted">Score:</span>{" "}
+                <span className="font-semibold text-terminal-text">{evaluation.score}/10</span>
               </p>
               <p>
-                <span className="text-white/70">{t("replayModePage.actualOutcomeLabel", { defaultValue: "Realized outcome:" })}{" "}</span>
-                <span className="font-semibold">
+                <span className="text-terminal-textMuted">{t("replayModePage.actualOutcomeLabel", { defaultValue: "Realized outcome:" })}{" "}</span>
+                <span className="font-semibold text-terminal-text">
                   {evaluation.actualOutcome >= 0 ? "+" : ""}
                   {evaluation.actualOutcome.toFixed(2)}%
                 </span>
               </p>
             </div>
-            <p className="mt-2 text-sm text-white/90">{evaluation.explanation}</p>
+            <p className="mt-2 text-sm text-terminal-textSecondary">{evaluation.explanation}</p>
           </section>
         ) : null}
       </div>

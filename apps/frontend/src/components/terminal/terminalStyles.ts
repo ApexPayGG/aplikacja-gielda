@@ -256,3 +256,34 @@ export const TERMINAL_TOOL_EMPTY =
 export const TERMINAL_CALCULATOR_PANEL = TERMINAL_ORDER_PANEL;
 
 export const TERMINAL_ANALYTICS_CARD = TERMINAL_METRIC_TILE;
+
+/** Advanced intelligence / market analytics modules */
+export const TERMINAL_INTELLIGENCE_PAGE = TERMINAL_APP_BG;
+
+export const TERMINAL_INTELLIGENCE_PAGE_INNER = TERMINAL_TOOL_PAGE_INNER;
+
+export const TERMINAL_INTELLIGENCE_PANEL = TERMINAL_TOOL_PANEL;
+
+export const TERMINAL_INTELLIGENCE_CARD = TERMINAL_TOOL_CARD;
+
+export const TERMINAL_INTELLIGENCE_GRID = TERMINAL_TOOL_GRID;
+
+export const TERMINAL_INSIGHT_CARD = `${TERMINAL_PANEL_MUTED} border-l-4 border-l-terminal-cyan p-4 sm:p-5`;
+
+export const TERMINAL_SIGNAL_TIMELINE =
+  "relative border-l border-terminal-cyan/30 pl-5 before:absolute before:left-0 before:top-2 before:h-2 before:w-2 before:-translate-x-[3px] before:rounded-full before:bg-terminal-cyan";
+
+export const TERMINAL_REPLAY_PANEL = `${TERMINAL_PANEL} border-terminal-cyan/25 p-4 sm:p-5`;
+
+export const TERMINAL_BACKTEST_PANEL = TERMINAL_INTELLIGENCE_PANEL;
+
+export const TERMINAL_PREDICTOR_PANEL = TERMINAL_INTELLIGENCE_PANEL;
+
+export const TERMINAL_CALENDAR_EVENT =
+  "rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/70 p-3 transition hover:border-terminal-cyan/35";
+
+export const TERMINAL_SCORE_TILE = TERMINAL_TOOL_RESULT_CARD;
+
+export const TERMINAL_DATA_TABLE = TERMINAL_TOOL_TABLE;
+
+export const TERMINAL_EMPTY_STATE = TERMINAL_TOOL_EMPTY;

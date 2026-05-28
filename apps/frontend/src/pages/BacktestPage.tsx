@@ -1,7 +1,24 @@
 import { FormEvent, useMemo, useState } from "react";
 import { runWalkForwardBacktestApi, type WalkForwardBacktestResponse, type WalkForwardStrategy } from "../services/api";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_BACKTEST_PANEL,
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_INPUT,
+  TERMINAL_INTELLIGENCE_CARD,
+  TERMINAL_INTELLIGENCE_GRID,
+  TERMINAL_INTELLIGENCE_PAGE,
+  TERMINAL_INTELLIGENCE_PAGE_INNER,
+  TERMINAL_INTELLIGENCE_PANEL,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_SCORE_TILE,
+  TERMINAL_TABLE_HEAD,
+  TERMINAL_TABLE_ROW,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+
+const CHART_CYAN = "#22d3ee";
 
 const PERIOD_OPTIONS = [3, 6, 12] as const;
 const STRATEGY_OPTIONS: Array<{ value: WalkForwardStrategy; label: string }> = [
@@ -84,178 +101,132 @@ export function BacktestPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 py-10" style={{ color: colors.textPrimary }}>
-      <header className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight" style={{ color: colors.brandDark }}>
-          Walking Forward Backtest
-        </h1>
-        <p className="text-sm" style={{ color: colors.textSecondary }}>
-          Evaluate strategy robustness across rolling windows and inspect trade-level outcomes in one AMC-style dashboard.
-        </p>
-      </header>
+    <div className={TERMINAL_INTELLIGENCE_PAGE}>
+      <div className={`${TERMINAL_INTELLIGENCE_PAGE_INNER} max-w-7xl`}>
+        <header className="space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">Strategy lab</p>
+          <h1 className={TERMINAL_PAGE_TITLE}>Walking Forward Backtest</h1>
+          <p className="text-sm text-terminal-textMuted">
+            Evaluate strategy robustness across rolling windows and inspect trade-level outcomes in one dashboard.
+          </p>
+        </header>
 
-      <section className="rounded-2xl border p-5 glass-section">
-        <form className="grid gap-4 md:grid-cols-4" onSubmit={onSubmit}>
-          <label className="text-sm md:col-span-1">
-            <span className="mb-1.5 block font-medium" style={{ color: colors.textSecondary }}>
-              Strategia
-            </span>
-            <select
-              value={strategy}
-              onChange={(event) => setStrategy(event.target.value as WalkForwardStrategy)}
-              className="w-full rounded-xl border px-3 py-2 outline-none"
-              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary }}
-            >
-              {STRATEGY_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm md:col-span-1">
-            <span className="mb-1.5 block font-medium" style={{ color: colors.textSecondary }}>
-              Okres
-            </span>
-            <select
-              value={period}
-              onChange={(event) => setPeriod(Number(event.target.value) as (typeof PERIOD_OPTIONS)[number])}
-              className="w-full rounded-xl border px-3 py-2 outline-none"
-              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary }}
-            >
-              {PERIOD_OPTIONS.map((months) => (
-                <option key={months} value={months}>
-                  {months} months
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm md:col-span-1">
-            <span className="mb-1.5 block font-medium" style={{ color: colors.textSecondary }}>
-              Symbol
-            </span>
-            <input
-              value={symbol}
-              onChange={(event) => setSymbol(event.target.value.toUpperCase())}
-              className="w-full rounded-xl border px-3 py-2 outline-none"
-              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary }}
-              maxLength={12}
-            />
-          </label>
-          <div className="flex items-end md:col-span-1">
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
-              style={{ backgroundColor: colors.brandDark }}
-            >
-              {loading ? "Running..." : "Run backtest"}
-            </button>
-          </div>
-        </form>
-      </section>
+        <section className={TERMINAL_BACKTEST_PANEL}>
+          <form className="grid gap-4 md:grid-cols-4" onSubmit={onSubmit}>
+            <label className="text-sm md:col-span-1">
+              <span className={`mb-1.5 block ${TERMINAL_FORM_LABEL}`}>Strategia</span>
+              <select
+                value={strategy}
+                onChange={(event) => setStrategy(event.target.value as WalkForwardStrategy)}
+                className={TERMINAL_INPUT}
+              >
+                {STRATEGY_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm md:col-span-1">
+              <span className={`mb-1.5 block ${TERMINAL_FORM_LABEL}`}>Okres</span>
+              <select
+                value={period}
+                onChange={(event) => setPeriod(Number(event.target.value) as (typeof PERIOD_OPTIONS)[number])}
+                className={TERMINAL_INPUT}
+              >
+                {PERIOD_OPTIONS.map((months) => (
+                  <option key={months} value={months}>
+                    {months} months
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm md:col-span-1">
+              <span className={`mb-1.5 block ${TERMINAL_FORM_LABEL}`}>Symbol</span>
+              <input
+                value={symbol}
+                onChange={(event) => setSymbol(event.target.value.toUpperCase())}
+                className={TERMINAL_INPUT}
+                maxLength={12}
+              />
+            </label>
+            <div className="flex items-end md:col-span-1">
+              <button type="submit" disabled={loading} className={`w-full ${TERMINAL_BUTTON_PRIMARY}`}>
+                {loading ? "Running..." : "Run backtest"}
+              </button>
+            </div>
+          </form>
+        </section>
 
-      {error ? (
-        <div
-          className="rounded-xl border px-4 py-3 text-sm"
-          style={{ borderColor: `${colors.negative}55`, backgroundColor: `${colors.negative}10`, color: colors.negative }}
-        >
-          {error}
-        </div>
-      ) : null}
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
 
-      <section className="rounded-2xl border p-5 glass-section">
-        <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
-          Equity curve (placeholder)
-        </h2>
-        <div className="rounded-xl border p-4 glass-panel">
-          <svg viewBox="0 0 100 42" className="h-48 w-full" preserveAspectRatio="none" role="img" aria-label="equity curve">
-            <path d={`M0,42 L${linePath} L100,42`} fill={`${colors.brandCyan}18`} />
-            <polyline points={linePath} fill="none" stroke={colors.brandCyan} strokeWidth="2.2" strokeLinecap="round" />
-          </svg>
-        </div>
-      </section>
+        <section className={TERMINAL_INTELLIGENCE_PANEL}>
+          <h2 className="mb-3 text-base font-semibold text-terminal-cyan">Equity curve (placeholder)</h2>
+          <div className={TERMINAL_INTELLIGENCE_CARD}>
+            <svg viewBox="0 0 100 42" className="h-48 w-full" preserveAspectRatio="none" role="img" aria-label="equity curve">
+              <path d={`M0,42 L${linePath} L100,42`} fill={`${CHART_CYAN}18`} />
+              <polyline points={linePath} fill="none" stroke={CHART_CYAN} strokeWidth="2.2" strokeLinecap="round" />
+            </svg>
+          </div>
+        </section>
 
-      <section className="grid gap-4 md:grid-cols-4">
-        <article className="rounded-xl border p-4 glass-section">
-          <div className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-            Win rate
-          </div>
-          <div className="mt-2 text-2xl font-semibold" style={{ color: colors.brandDark }}>
-            {result ? `${result.winRate.toFixed(1)}%` : "62.5%"}
-          </div>
-        </article>
-        <article className="rounded-xl border p-4 glass-section">
-          <div className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-            Sharpe
-          </div>
-          <div className="mt-2 text-2xl font-semibold" style={{ color: colors.brandDark }}>
-            {result ? result.sharpeRatio.toFixed(2) : "1.34"}
-          </div>
-        </article>
-        <article className="rounded-xl border p-4 glass-section">
-          <div className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-            Max DD
-          </div>
-          <div className="mt-2 text-2xl font-semibold" style={{ color: colors.negative }}>
-            {result ? `${result.maxDrawdown.toFixed(2)}%` : "-8.10%"}
-          </div>
-        </article>
-        <article className="rounded-xl border p-4 glass-section">
-          <div className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-            Total return
-          </div>
-          <div className="mt-2 text-2xl font-semibold" style={{ color: totalReturn >= 0 ? colors.positive : colors.negative }}>
-            {totalReturn >= 0 ? "+" : ""}
-            {totalReturn.toFixed(2)}%
-          </div>
-        </article>
-      </section>
+        <section className={TERMINAL_INTELLIGENCE_GRID}>
+          <article className={TERMINAL_SCORE_TILE}>
+            <div className="text-xs uppercase tracking-wide text-terminal-textMuted">Win rate</div>
+            <div className="mt-2 text-2xl font-semibold text-terminal-text">
+              {result ? `${result.winRate.toFixed(1)}%` : "62.5%"}
+            </div>
+          </article>
+          <article className={TERMINAL_SCORE_TILE}>
+            <div className="text-xs uppercase tracking-wide text-terminal-textMuted">Sharpe</div>
+            <div className="mt-2 text-2xl font-semibold text-terminal-cyan">
+              {result ? result.sharpeRatio.toFixed(2) : "1.34"}
+            </div>
+          </article>
+          <article className={TERMINAL_SCORE_TILE}>
+            <div className="text-xs uppercase tracking-wide text-terminal-textMuted">Max DD</div>
+            <div className="mt-2 text-2xl font-semibold text-terminal-negative">
+              {result ? `${result.maxDrawdown.toFixed(2)}%` : "-8.10%"}
+            </div>
+          </article>
+          <article className={TERMINAL_SCORE_TILE}>
+            <div className="text-xs uppercase tracking-wide text-terminal-textMuted">Total return</div>
+            <div className={`mt-2 text-2xl font-semibold ${totalReturn >= 0 ? "text-terminal-positive" : "text-terminal-negative"}`}>
+              {totalReturn >= 0 ? "+" : ""}
+              {totalReturn.toFixed(2)}%
+            </div>
+          </article>
+        </section>
 
-      <section className="rounded-2xl border p-5 glass-section">
-        <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
-          Trade list
-        </h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead>
-              <tr className="border-b" style={{ borderColor: colors.border }}>
-                <th className="py-2 pr-4 text-xs uppercase" style={{ color: colors.textMuted }}>
-                  Date
-                </th>
-                <th className="py-2 pr-4 text-xs uppercase" style={{ color: colors.textMuted }}>
-                  Action
-                </th>
-                <th className="py-2 pr-4 text-xs uppercase" style={{ color: colors.textMuted }}>
-                  Price
-                </th>
-                <th className="py-2 text-xs uppercase" style={{ color: colors.textMuted }}>
-                  P&amp;L
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {trades.map((trade, index) => (
-                <tr key={`${trade.date}-${index}`} className="border-b last:border-b-0" style={{ borderColor: colors.border }}>
-                  <td className="py-3 pr-4 font-mono" style={{ color: colors.textSecondary }}>
-                    {trade.date}
-                  </td>
-                  <td className="py-3 pr-4 font-medium" style={{ color: colors.brandDark }}>
-                    {trade.action}
-                  </td>
-                  <td className="py-3 pr-4 font-mono" style={{ color: colors.textSecondary }}>
-                    {trade.price.toFixed(2)}
-                  </td>
-                  <td className="py-3 font-mono font-semibold" style={{ color: trade.outcome >= 0 ? colors.positive : colors.negative }}>
-                    {trade.outcome >= 0 ? "+" : ""}
-                    {trade.outcome.toFixed(2)}%
-                  </td>
+        <section className={TERMINAL_INTELLIGENCE_PANEL}>
+          <h2 className="mb-3 text-base font-semibold text-terminal-cyan">Trade list</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead>
+                <tr className={TERMINAL_TABLE_HEAD}>
+                  <th className="py-2 pr-4">Date</th>
+                  <th className="py-2 pr-4">Action</th>
+                  <th className="py-2 pr-4">Price</th>
+                  <th className="py-2">P&amp;L</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+              </thead>
+              <tbody>
+                {trades.map((trade, index) => (
+                  <tr key={`${trade.date}-${index}`} className={TERMINAL_TABLE_ROW}>
+                    <td className="py-3 pr-4 font-mono text-terminal-textMuted">{trade.date}</td>
+                    <td className="py-3 pr-4 font-medium text-terminal-cyan">{trade.action}</td>
+                    <td className="py-3 pr-4 font-mono text-terminal-textSecondary">{trade.price.toFixed(2)}</td>
+                    <td className={`py-3 font-mono font-semibold ${trade.outcome >= 0 ? "text-terminal-positive" : "text-terminal-negative"}`}>
+                      {trade.outcome >= 0 ? "+" : ""}
+                      {trade.outcome.toFixed(2)}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

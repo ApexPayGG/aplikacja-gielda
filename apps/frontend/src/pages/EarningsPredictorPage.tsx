@@ -5,17 +5,31 @@ import {
   type EarningsPredictionLabel,
   type EarningsPredictionResponse,
 } from "../services/api";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_DATA_TABLE,
+  TERMINAL_INPUT,
+  TERMINAL_INTELLIGENCE_CARD,
+  TERMINAL_INTELLIGENCE_PAGE,
+  TERMINAL_INTELLIGENCE_PAGE_INNER,
+  TERMINAL_INTELLIGENCE_PANEL,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_PREDICTOR_PANEL,
+  TERMINAL_TABLE_HEAD,
+  TERMINAL_TABLE_ROW,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
-function predictionBadgeStyle(prediction: EarningsPredictionLabel): { backgroundColor: string; color: string; borderColor: string } {
+function predictionBadgeClass(prediction: EarningsPredictionLabel): string {
   if (prediction === "BEAT") {
-    return { backgroundColor: `${colors.positive}1F`, color: colors.positive, borderColor: `${colors.positive}66` };
+    return "rounded-full border border-terminal-positive/40 bg-terminal-positive/10 px-4 py-1.5 text-sm font-bold tracking-wide text-terminal-positive";
   }
   if (prediction === "MISS") {
-    return { backgroundColor: `${colors.negative}1F`, color: colors.negative, borderColor: `${colors.negative}66` };
+    return "rounded-full border border-terminal-negative/40 bg-terminal-negative/10 px-4 py-1.5 text-sm font-bold tracking-wide text-terminal-negative";
   }
-  return { backgroundColor: colors.bgSecondary, color: colors.textSecondary, borderColor: colors.borderStrong };
+  return "rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary px-4 py-1.5 text-sm font-bold tracking-wide text-terminal-textSecondary";
 }
 
 function predictionLabel(prediction: EarningsPredictionLabel): string {
@@ -108,138 +122,110 @@ export function EarningsPredictorPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-10" style={{ color: colors.textPrimary }}>
-      <header
-        className="rounded-3xl border p-6 shadow-[0_18px_44px_rgba(168,85,247,0.1)]"
-        style={{ borderColor: colors.border, background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
-      >
-        <h1 className="text-3xl font-bold" style={{ color: colors.brandDark }}>
-          Earnings Surprise Predictor
-        </h1>
-        <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
-          {t("earnings.pageLead", {
-            defaultValue:
-              "The model predicts the surprise direction and surfaces impact factors for the next report.",
-          })}
-        </p>
-      </header>
+    <div className={TERMINAL_INTELLIGENCE_PAGE}>
+      <div className={TERMINAL_INTELLIGENCE_PAGE_INNER}>
+        <header className="space-y-2">
+          <h1 className={TERMINAL_PAGE_TITLE}>Earnings Surprise Predictor</h1>
+          <p className={TERMINAL_PAGE_SUBTITLE}>
+            {t("earnings.pageLead", {
+              defaultValue:
+                "The model predicts the surprise direction and surfaces impact factors for the next report.",
+            })}
+          </p>
+        </header>
 
-      <section className="rounded-2xl border p-6 shadow-[0_12px_30px_rgba(168,85,247,0.08)] glass-section">
-        <form onSubmit={onSubmit} className="flex flex-col gap-3 md:flex-row">
-          <input
-            value={symbolInput}
-            onChange={(event) => setSymbolInput(event.target.value)}
-            placeholder={t("earnings.searchPlaceholderMixed", { defaultValue: "Search company (e.g. MSFT)" })}
-            className="w-full rounded-xl border px-4 py-2 outline-none"
-            style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
-            maxLength={16}
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-xl px-5 py-2 font-semibold text-white disabled:opacity-60"
-            style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
-          >
-            {loading ? t("common.loading", { defaultValue: "Loading..." }) : t("earnings.predictButton", { defaultValue: "Predict" })}
-          </button>
-        </form>
-      </section>
-
-      {error ? (
-        <div className="rounded-lg border p-3 text-sm" style={{ borderColor: `${colors.negative}66`, color: colors.negative, backgroundColor: `${colors.negative}12` }}>
-          {error}
-        </div>
-      ) : null}
-
-      {!loading && !error && result ? (
-        <section className="space-y-6 rounded-2xl border p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)] glass-section">
-          <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-            <article className="flex flex-col items-center justify-center rounded-2xl border p-5 glass-panel">
-              <div
-                className="flex h-44 w-44 flex-col items-center justify-center rounded-full text-center text-white shadow-[0_14px_28px_rgba(168,85,247,0.35)]"
-                style={{ backgroundColor: colors.brandDark }}
-              >
-                <p className="text-xs uppercase tracking-wide text-white/80">Prediction score</p>
-                <p className="mt-1 text-5xl font-bold">{Math.round(result.confidence)}</p>
-                <p className="text-sm font-semibold">/100</p>
-              </div>
-              <p className="mt-3 text-sm font-medium" style={{ color: colors.textSecondary }}>
-                {result.symbol} • {result.nextEarningsDate ?? "Data TBA"}
-              </p>
-              <span
-                className="mt-3 rounded-full border px-4 py-1.5 text-sm font-bold tracking-wide"
-                style={predictionBadgeStyle(result.prediction)}
-              >
-                {predictionLabel(result.prediction)}
-              </span>
-            </article>
-
-            <article className="rounded-2xl border p-5 glass-section">
-              <h2 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-                Factors impact
-              </h2>
-              <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
-                {t("earnings.factorsSubtitle", {
-                  defaultValue: "Simulated factors derived from the confidence score.",
-                })}
-              </p>
-              <ul className="mt-4 space-y-3">
-                {factors.map((factor) => (
-                  <li key={factor.name}>
-                    <div className="mb-1 flex items-center justify-between text-sm">
-                      <span style={{ color: colors.textPrimary }}>{factor.name}</span>
-                      <span className="font-semibold" style={{ color: colors.brandDark }}>
-                        {factor.impact}%
-                      </span>
-                    </div>
-                    <div className="h-2.5 overflow-hidden rounded-full" style={{ backgroundColor: colors.bgTertiary }}>
-                      <div className="h-full rounded-full" style={{ width: `${factor.impact}%`, backgroundColor: colors.brandCyan }} />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          </div>
-
-          <article className="rounded-2xl border p-5 glass-panel">
-            <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-              {t("earnings.historyTitle", { defaultValue: "Prediction history" })}
-            </h3>
-            <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
-              {t("earnings.historyAccuracyNote", { defaultValue: "Simulated model accuracy history." })}
-            </p>
-            <div className="mt-3 overflow-x-auto rounded-xl border" style={{ borderColor: colors.border }}>
-              <table className="w-full min-w-[420px] text-left text-sm">
-                <thead style={{ backgroundColor: colors.bgPrimary, color: colors.textSecondary }}>
-                  <tr>
-                    <th className="px-4 py-2.5 font-semibold">{t("earnings.quarterColumn", { defaultValue: "Period" })}</th>
-                    <th className="px-4 py-2.5 font-semibold">Prediction</th>
-                    <th className="px-4 py-2.5 font-semibold">Accuracy %</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {historyRows.map((row) => (
-                    <tr key={row.quarter} className="border-t" style={{ borderColor: colors.border }}>
-                      <td className="px-4 py-2.5 font-semibold" style={{ color: colors.textPrimary }}>
-                        {row.quarter}
-                      </td>
-                      <td className="px-4 py-2.5" style={{ color: colors.textSecondary }}>
-                        {row.prediction}
-                      </td>
-                      <td className="px-4 py-2.5 font-mono font-semibold" style={{ color: colors.brandDark }}>
-                        {row.accuracy}%
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
-              {result.reasoning}
-            </p>
-          </article>
+        <section className={TERMINAL_PREDICTOR_PANEL}>
+          <form onSubmit={onSubmit} className="flex flex-col gap-3 md:flex-row">
+            <input
+              value={symbolInput}
+              onChange={(event) => setSymbolInput(event.target.value)}
+              placeholder={t("earnings.searchPlaceholderMixed", { defaultValue: "Search company (e.g. MSFT)" })}
+              className={TERMINAL_INPUT}
+              maxLength={16}
+            />
+            <button type="submit" disabled={loading} className={TERMINAL_BUTTON_PRIMARY}>
+              {loading ? t("common.loading", { defaultValue: "Loading..." }) : t("earnings.predictButton", { defaultValue: "Predict" })}
+            </button>
+          </form>
         </section>
-      ) : null}
+
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
+
+        {!loading && !error && result ? (
+          <section className={`space-y-6 ${TERMINAL_INTELLIGENCE_PANEL}`}>
+            <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+              <article className={`flex flex-col items-center justify-center ${TERMINAL_INTELLIGENCE_CARD}`}>
+                <div className="flex h-44 w-44 flex-col items-center justify-center rounded-full border border-terminal-cyan/40 bg-terminal-cyan/10 text-center shadow-terminal-glow">
+                  <p className="text-xs uppercase tracking-wide text-terminal-textMuted">Prediction score</p>
+                  <p className="mt-1 text-5xl font-bold text-terminal-cyan">{Math.round(result.confidence)}</p>
+                  <p className="text-sm font-semibold text-terminal-textSecondary">/100</p>
+                </div>
+                <p className="mt-3 text-sm font-medium text-terminal-textSecondary">
+                  {result.symbol} • {result.nextEarningsDate ?? "Data TBA"}
+                </p>
+                <span className={`mt-3 ${predictionBadgeClass(result.prediction)}`}>
+                  {predictionLabel(result.prediction)}
+                </span>
+              </article>
+
+              <article className={TERMINAL_INTELLIGENCE_CARD}>
+                <h2 className="text-lg font-semibold text-terminal-cyan">Factors impact</h2>
+                <p className="mt-1 text-xs text-terminal-textMuted">
+                  {t("earnings.factorsSubtitle", {
+                    defaultValue: "Simulated factors derived from the confidence score.",
+                  })}
+                </p>
+                <ul className="mt-4 space-y-3">
+                  {factors.map((factor) => (
+                    <li key={factor.name}>
+                      <div className="mb-1 flex items-center justify-between text-sm">
+                        <span className="text-terminal-text">{factor.name}</span>
+                        <span className="font-semibold text-terminal-cyan">{factor.impact}%</span>
+                      </div>
+                      <div className="h-2.5 overflow-hidden rounded-full bg-terminal-panelSecondary">
+                        <div
+                          className="h-full rounded-full bg-terminal-cyan"
+                          style={{ width: `${factor.impact}%` }}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            </div>
+
+            <article className={TERMINAL_INTELLIGENCE_CARD}>
+              <h3 className="text-lg font-semibold text-terminal-cyan">
+                {t("earnings.historyTitle", { defaultValue: "Prediction history" })}
+              </h3>
+              <p className="mt-1 text-xs text-terminal-textMuted">
+                {t("earnings.historyAccuracyNote", { defaultValue: "Simulated model accuracy history." })}
+              </p>
+              <div className={`mt-3 overflow-x-auto ${TERMINAL_DATA_TABLE}`}>
+                <table className="w-full min-w-[420px] text-left text-sm">
+                  <thead>
+                    <tr className={TERMINAL_TABLE_HEAD}>
+                      <th className="px-4 py-2.5 font-semibold">{t("earnings.quarterColumn", { defaultValue: "Period" })}</th>
+                      <th className="px-4 py-2.5 font-semibold">Prediction</th>
+                      <th className="px-4 py-2.5 font-semibold">Accuracy %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {historyRows.map((row) => (
+                      <tr key={row.quarter} className={TERMINAL_TABLE_ROW}>
+                        <td className="px-4 py-2.5 font-semibold text-terminal-text">{row.quarter}</td>
+                        <td className="px-4 py-2.5 text-terminal-textSecondary">{row.prediction}</td>
+                        <td className="px-4 py-2.5 font-mono font-semibold text-terminal-cyan">{row.accuracy}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-3 text-sm text-terminal-textSecondary">{result.reasoning}</p>
+            </article>
+          </section>
+        ) : null}
+      </div>
     </div>
   );
 }

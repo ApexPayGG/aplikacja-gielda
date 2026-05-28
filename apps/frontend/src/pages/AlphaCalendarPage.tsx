@@ -3,11 +3,20 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import {
-  GLASS_INNER_PANEL,
-  GLASS_PAGE_SUBTITLE,
-  GLASS_PAGE_TITLE,
-  GLASS_SECTION,
-} from "../components/behavioral-coach/glassStyles";
+  TERMINAL_BADGE,
+  TERMINAL_CALENDAR_EVENT,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_EMPTY_STATE,
+  TERMINAL_FILTER_CHIP,
+  TERMINAL_FILTER_CHIP_ACTIVE,
+  TERMINAL_INTELLIGENCE_PAGE,
+  TERMINAL_INTELLIGENCE_PAGE_INNER,
+  TERMINAL_INTELLIGENCE_PANEL,
+  TERMINAL_MODE_SWITCH,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_SKELETON,
+} from "../components/terminal/terminalStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import {
@@ -233,21 +242,21 @@ export function AlphaCalendarPage() {
   const selectedDateLabel = formatLocaleLongDate(selectedDate, i18n.language);
   const weekdayLabels = useMemo(() => buildWeekdayShortLabels(i18n.language), [i18n.language]);
   return (
-    <div className="min-h-screen text-white">
-      <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
+    <div className={TERMINAL_INTELLIGENCE_PAGE}>
+      <div className={`${TERMINAL_INTELLIGENCE_PAGE_INNER} max-w-7xl`}>
         <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="space-y-2">
-            <h1 className={GLASS_PAGE_TITLE}>{t("alphaCalendar.title", { defaultValue: "Alpha Calendar" })}</h1>
-            <p className={GLASS_PAGE_SUBTITLE}>
+            <h1 className={TERMINAL_PAGE_TITLE}>{t("alphaCalendar.title", { defaultValue: "Alpha Calendar" })}</h1>
+            <p className={TERMINAL_PAGE_SUBTITLE}>
               {t("alphaCalendar.subtitle", {
                 defaultValue: "Probabilistic window map for the current market cycle.",
               })}
             </p>
-            <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-[#94a3b8]">
+            <div className={TERMINAL_BADGE}>
               {usingMock ? t("common.apiMockBadge") : t("common.apiLiveBadge")}
             </div>
           </div>
-          <div className="inline-flex items-center rounded-2xl border border-white/10 bg-white/[0.04] p-1.5 backdrop-blur-xl">
+          <div className={TERMINAL_MODE_SWITCH}>
             {(["MONTH", "WEEK"] as const).map((view) => {
               const active = mode === view;
               return (
@@ -255,9 +264,7 @@ export function AlphaCalendarPage() {
                   key={view}
                   type="button"
                   onClick={() => setMode(view)}
-                  className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                    active ? "bg-[#a855f7] text-white shadow-[0_4px_20px_rgba(168,85,247,0.35)]" : "text-[#94a3b8] hover:text-white"
-                  }`}
+                  className={active ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP}
                 >
                   {view === "MONTH"
                     ? t("alphaCalendar.month", { defaultValue: "Month" })
@@ -268,33 +275,29 @@ export function AlphaCalendarPage() {
           </div>
         </header>
 
-        {error ? (
-          <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 backdrop-blur-md">
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
 
         {calendarLoading ? (
           <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(280px,1fr)]">
-            <div className={`space-y-4 ${GLASS_SECTION}`}>
-              <div className="h-7 w-1/3 animate-pulse rounded bg-white/10" />
+            <div className={`space-y-4 ${TERMINAL_INTELLIGENCE_PANEL}`}>
+              <div className={`h-7 w-1/3 ${TERMINAL_SKELETON}`} />
               <div className="grid grid-cols-7 gap-3">
                 {Array.from({ length: 14 }).map((_, idx) => (
-                  <div key={`day-skeleton-${idx}`} className="h-24 animate-pulse rounded-xl bg-white/10" />
+                  <div key={`day-skeleton-${idx}`} className={`h-24 ${TERMINAL_SKELETON}`} />
                 ))}
               </div>
             </div>
-            <div className={GLASS_SECTION}>
-              <div className="mb-4 h-6 w-1/2 animate-pulse rounded bg-white/10" />
-              <div className="h-44 animate-pulse rounded-xl bg-white/10" />
+            <div className={TERMINAL_INTELLIGENCE_PANEL}>
+              <div className={`mb-4 h-6 w-1/2 ${TERMINAL_SKELETON}`} />
+              <div className={`h-44 ${TERMINAL_SKELETON}`} />
             </div>
           </div>
         ) : (
           <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(300px,1fr)]">
-            <section className={`space-y-4 ${GLASS_SECTION}`}>
+            <section className={`space-y-4 ${TERMINAL_INTELLIGENCE_PANEL}`}>
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-lg font-semibold capitalize text-white">{monthLabel}</h2>
-                <span className="text-xs text-[#94a3b8]">
+                <h2 className="text-lg font-semibold capitalize text-terminal-text">{monthLabel}</h2>
+                <span className="text-xs text-terminal-textMuted">
                   {mode === "MONTH"
                     ? t("alphaCalendar.monthlyOverview", { defaultValue: "Monthly overview" })
                     : t("alphaCalendar.weekSnapshot", { defaultValue: "Week snapshot" })}
@@ -303,7 +306,7 @@ export function AlphaCalendarPage() {
 
               <div className="grid grid-cols-7 gap-2">
                 {weekdayLabels.map((day) => (
-                  <div key={day} className="text-center text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">
+                  <div key={day} className="text-center text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">
                     {day}
                   </div>
                 ))}
@@ -322,24 +325,24 @@ export function AlphaCalendarPage() {
                       key={dayKey}
                       type="button"
                       onClick={() => setSelectedDayKey(dayKey)}
-                      className={`min-h-[120px] rounded-xl border p-3 text-left transition ${
+                      className={`min-h-[120px] p-3 text-left transition ${
                         isActive
-                          ? "border-[#22d3ee]/50 bg-[#22d3ee]/10 shadow-[0_0_0_1px_rgba(34,211,238,0.25)]"
-                          : "border-white/10 bg-white/[0.04] hover:border-white/20"
+                          ? "rounded-lg border border-terminal-cyan/50 bg-terminal-cyan/10 shadow-[0_0_0_1px_rgba(34,211,238,0.25)]"
+                          : TERMINAL_CALENDAR_EVENT
                       } ${isWeekend(day) ? "opacity-80" : ""}`}
                       style={{ opacity: mutedText ? 0.65 : undefined }}
                     >
                       <div className="flex items-center justify-between">
-                        <span className={`text-sm font-semibold ${mutedText ? "text-[#94a3b8]" : "text-white"}`}>
+                        <span className={`text-sm font-semibold ${mutedText ? "text-terminal-textMuted" : "text-terminal-text"}`}>
                           {day.getDate()}
                         </span>
                         {entries.length > 0 ? (
-                          <span className="text-[11px] font-semibold text-[#22d3ee]">{entries.length}</span>
+                          <span className="text-[11px] font-semibold text-terminal-cyan">{entries.length}</span>
                         ) : null}
                       </div>
                       <div className="mt-3 space-y-1.5">
                         {dayTypes.length === 0 ? (
-                          <p className="text-[11px] text-[#94a3b8]">
+                          <p className="text-[11px] text-terminal-textMuted">
                             {t("alphaCalendar.noWindows", { defaultValue: "No windows" })}
                           </p>
                         ) : (
@@ -348,13 +351,13 @@ export function AlphaCalendarPage() {
                             return (
                               <div key={`${dayKey}-${dayType}`} className="flex items-center gap-1.5">
                                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: meta.color }} />
-                                <span className="text-[10px] font-semibold tracking-wide text-white/70">{meta.label}</span>
+                                <span className="text-[10px] font-semibold tracking-wide text-terminal-textSecondary">{meta.label}</span>
                               </div>
                             );
                           })
                         )}
                         {dayTypes.length > 3 ? (
-                          <p className="text-[10px] font-semibold text-[#94a3b8]">+{dayTypes.length - 3} more</p>
+                          <p className="text-[10px] font-semibold text-terminal-textMuted">+{dayTypes.length - 3} more</p>
                         ) : null}
                       </div>
                     </button>
@@ -363,16 +366,16 @@ export function AlphaCalendarPage() {
               </div>
             </section>
 
-            <aside className={`space-y-4 ${GLASS_SECTION}`}>
+            <aside className={`space-y-4 ${TERMINAL_INTELLIGENCE_PANEL}`}>
               <div>
-                <h2 className="text-lg font-semibold text-white">
+                <h2 className="text-lg font-semibold text-terminal-text">
                   {t("alphaCalendar.selectedDay", { defaultValue: "Selected day" })}
                 </h2>
-                <p className="mt-1 text-sm capitalize text-[#94a3b8]">{selectedDateLabel}</p>
+                <p className="mt-1 text-sm capitalize text-terminal-textMuted">{selectedDateLabel}</p>
               </div>
 
               {selectedDayWindows.length === 0 ? (
-                <div className={`${GLASS_INNER_PANEL} border-dashed px-4 py-8 text-center text-sm text-[#94a3b8]`}>
+                <div className={TERMINAL_EMPTY_STATE}>
                   {t("alphaCalendar.noWindowsDay", {
                     defaultValue: "No probabilistic windows for this day.",
                   })}
@@ -384,9 +387,9 @@ export function AlphaCalendarPage() {
                     const typedMeta = probabilityWindowTypeMeta[typedWindow];
                     const probability = normalizeProbability(windowItem.probabilityScore);
                     return (
-                      <article key={`${windowItem.ticker}-${windowItem.type}-${idx}`} className={`${GLASS_INNER_PANEL} p-3`}>
+                      <article key={`${windowItem.ticker}-${windowItem.type}-${idx}`} className={TERMINAL_CALENDAR_EVENT}>
                         <div className="flex items-center justify-between gap-2">
-                          <h3 className="text-sm font-bold text-white">{windowItem.ticker}</h3>
+                          <h3 className="text-sm font-bold text-terminal-text">{windowItem.ticker}</h3>
                           <span
                             className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
                             style={{ color: typedMeta.color, backgroundColor: `${typedMeta.color}1A` }}
@@ -394,20 +397,20 @@ export function AlphaCalendarPage() {
                             {typedMeta.label}
                           </span>
                         </div>
-                        <p className="mt-2 text-[11px] text-[#94a3b8]">
+                        <p className="mt-2 text-[11px] text-terminal-textMuted">
                           {formatLocaleDateTime(windowItem.windowStart, i18n.language)} –{" "}
                           {formatLocaleDateTime(windowItem.windowEnd, i18n.language)}
                         </p>
                         <div className="mt-3 space-y-1.5">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-[#94a3b8]">
+                            <span className="text-terminal-textMuted">
                               {t("alphaCalendar.probability", { defaultValue: "Probability" })}
                             </span>
-                            <span className="font-semibold text-[#22d3ee]">{probability}%</span>
+                            <span className="font-semibold text-terminal-cyan">{probability}%</span>
                           </div>
-                          <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                          <div className="h-2 overflow-hidden rounded-full bg-terminal-panelSecondary">
                             <div
-                              className="h-full rounded-full bg-[#22d3ee]"
+                              className="h-full rounded-full bg-terminal-cyan"
                               style={{ width: `${probability}%` }}
                             />
                           </div>
@@ -421,15 +424,15 @@ export function AlphaCalendarPage() {
           </div>
         )}
 
-        <section className={GLASS_SECTION}>
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+        <section className={TERMINAL_INTELLIGENCE_PANEL}>
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-terminal-textMuted">
             {t("alphaCalendar.legend", { defaultValue: "Legend" })}
           </h2>
           <div className="mt-3 flex flex-wrap gap-4">
             {(Object.keys(probabilityWindowTypeMeta) as ProbabilityWindowType[]).map((legendType) => {
               const legend = probabilityWindowTypeMeta[legendType];
               return (
-                <div key={legendType} className="inline-flex items-center gap-2 text-sm font-semibold text-white/85">
+                <div key={legendType} className="inline-flex items-center gap-2 text-sm font-semibold text-terminal-textSecondary">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: legend.color }} />
                   {legend.label}
                 </div>

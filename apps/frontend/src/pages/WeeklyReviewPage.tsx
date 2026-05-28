@@ -1,11 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createWeeklyReview, getCurrentWeeklyReview, getWeeklyReviewHistory, type WeeklyReview } from "../services/api";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_BADGE,
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_INPUT,
+  TERMINAL_INSIGHT_CARD,
+  TERMINAL_INTELLIGENCE_CARD,
+  TERMINAL_INTELLIGENCE_PAGE,
+  TERMINAL_INTELLIGENCE_PAGE_INNER,
+  TERMINAL_INTELLIGENCE_PANEL,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatLocaleDate, formatLocaleDateRange } from "../utils/formatters";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
+const SLIDER_CYAN = "#22d3ee";
+const SLIDER_TRACK = "rgba(148, 163, 184, 0.25)";
 
 type FormState = {
   q1: number;
@@ -129,187 +143,163 @@ export function WeeklyReviewPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-10 text-white">
-      <header
-        className="glass-section rounded-3xl p-6 shadow-[0_16px_40px_rgba(168,85,247,0.08)]"
-        style={{ background: `linear-gradient(120deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
-      >
-        <h1 className="glass-page-title text-3xl">Weekly Review</h1>
-        <p className="mt-2 glass-muted text-sm">{t("weekly.subtitle")}</p>
-        <div className="mt-4 inline-flex items-center rounded-full px-4 py-1.5 text-xs font-semibold text-white" style={{ backgroundColor: colors.brandDark }}>
-          {t("weekly.weekOf")}: {weekRangeLabel}
-        </div>
-      </header>
+    <div className={TERMINAL_INTELLIGENCE_PAGE}>
+      <div className={TERMINAL_INTELLIGENCE_PAGE_INNER}>
+        <header className="space-y-2">
+          <h1 className={TERMINAL_PAGE_TITLE}>Weekly Review</h1>
+          <p className={TERMINAL_PAGE_SUBTITLE}>{t("weekly.subtitle")}</p>
+          <div className={TERMINAL_BADGE}>
+            {t("weekly.weekOf")}: {weekRangeLabel}
+          </div>
+        </header>
 
-      {error ? (
-        <div className="rounded-xl border border-negative/25 bg-negative/10 px-4 py-3 text-sm font-medium text-negative">{error}</div>
-      ) : null}
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
 
-      <section className="space-y-4">
-        <div className="glass-section rounded-2xl p-5 shadow-[0_14px_32px_rgba(168,85,247,0.08)]">
-          <h2 className="text-lg font-semibold text-white">{t("weekly.title")}</h2>
-          <p className="mt-1 glass-muted text-sm">{t("weekly.subtitle")}</p>
-        </div>
+        <section className="space-y-4">
+          <div className={TERMINAL_INTELLIGENCE_PANEL}>
+            <h2 className="text-lg font-semibold text-terminal-cyan">{t("weekly.title")}</h2>
+            <p className="mt-1 text-sm text-terminal-textMuted">{t("weekly.subtitle")}</p>
+          </div>
 
-        {SCORE_QUESTIONS.map(({ key, index }) => {
-          const sliderPercentage = ((form[key] - 1) / 4) * 100;
-          return (
-            <article key={key} className="glass-section rounded-2xl p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]">
+          {SCORE_QUESTIONS.map(({ key, index }) => {
+            const sliderPercentage = ((form[key] - 1) / 4) * 100;
+            return (
+              <article key={key} className={TERMINAL_INTELLIGENCE_PANEL}>
+                <div className="mb-4 flex items-start gap-3">
+                  <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-terminal-cyan/15 text-sm font-semibold text-terminal-cyan">
+                    {index}
+                  </span>
+                  <label className="pt-1 text-sm font-semibold text-terminal-text">{t(`weekly.questions.q${index}`)}</label>
+                </div>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="range"
+                    min={1}
+                    max={5}
+                    step={1}
+                    value={form[key]}
+                    onChange={(e) => setForm((prev) => ({ ...prev, [key]: Number(e.target.value) }))}
+                    className="weekly-review-slider h-2 w-full cursor-pointer appearance-none rounded-full"
+                    style={{ background: `linear-gradient(90deg, ${SLIDER_CYAN} ${sliderPercentage}%, ${SLIDER_TRACK} ${sliderPercentage}%)` }}
+                  />
+                  <div className="w-12 rounded-lg border border-terminal-cyan/35 bg-terminal-cyan/10 py-1 text-center text-sm font-semibold text-terminal-cyan">
+                    {form[key]}
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-xs text-terminal-textMuted">
+                  <span>1</span>
+                  <span>5</span>
+                </div>
+              </article>
+            );
+          })}
+
+          {REFLECTION_QUESTIONS.map(({ key, index }) => (
+            <article key={key} className={TERMINAL_INTELLIGENCE_PANEL}>
               <div className="mb-4 flex items-start gap-3">
-                <span
-                  className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
-                  style={{ backgroundColor: colors.brandDark }}
-                >
+                <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-terminal-cyan/15 text-sm font-semibold text-terminal-cyan">
                   {index}
                 </span>
-                <label className="pt-1 text-sm font-semibold text-white">{t(`weekly.questions.q${index}`)}</label>
+                <label className="pt-1 text-sm font-semibold text-terminal-text">{t(`weekly.questions.q${index}`)}</label>
               </div>
-              <div className="flex items-center gap-4">
-                <input
-                  type="range"
-                  min={1}
-                  max={5}
-                  step={1}
-                  value={form[key]}
-                  onChange={(e) => setForm((prev) => ({ ...prev, [key]: Number(e.target.value) }))}
-                  className="weekly-review-slider h-2 w-full cursor-pointer appearance-none rounded-full"
-                  style={{ background: `linear-gradient(90deg, ${colors.brandCyan} ${sliderPercentage}%, ${colors.bgTertiary} ${sliderPercentage}%)` }}
-                />
-                <div
-                  className="w-12 rounded-lg border py-1 text-center text-sm font-semibold"
-                  style={{ borderColor: `${colors.brandDark}33`, color: colors.brandDark, backgroundColor: `${colors.brandDark}12` }}
-                >
-                  {form[key]}
-                </div>
-              </div>
-              <div className="mt-2 flex items-center justify-between text-xs text-white/50">
-                <span>1</span>
-                <span>5</span>
-              </div>
+              <textarea
+                rows={4}
+                value={form[key]}
+                onChange={(e) => setForm((prev) => ({ ...prev, [key]: e.target.value }))}
+                placeholder={t(`weekly.placeholders.q${index}`)}
+                className={`min-h-[120px] ${TERMINAL_INPUT}`}
+              />
             </article>
-          );
-        })}
+          ))}
 
-        {REFLECTION_QUESTIONS.map(({ key, index }) => (
-          <article key={key} className="glass-section rounded-2xl p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]">
-            <div className="mb-4 flex items-start gap-3">
-              <span
-                className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
-                style={{ backgroundColor: colors.brandDark }}
-              >
-                {index}
-              </span>
-              <label className="pt-1 text-sm font-semibold text-white">{t(`weekly.questions.q${index}`)}</label>
-            </div>
-            <textarea
-              rows={4}
-              value={form[key]}
-              onChange={(e) => setForm((prev) => ({ ...prev, [key]: e.target.value }))}
-              placeholder={t(`weekly.placeholders.q${index}`)}
-              className="min-h-[120px] w-full rounded-xl glass-panel border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-brandCyan focus:ring-2 focus:ring-brandCyan/25"
-            />
-          </article>
-        ))}
-
-        <button
-          type="button"
-          onClick={() => void onSubmit()}
-          disabled={!canSubmit}
-          className="w-full rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(168,85,247,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
-          style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
-        >
-          {submitting ? t("weekly.submitting") : t("weekly.submit")}
-        </button>
-      </section>
-
-      {(showReveal || current?.aiLetter || submitting) && (
-        <section
-          className="rounded-2xl border border-brandDark/20 p-6 text-white shadow-[0_22px_50px_rgba(168,85,247,0.4)]"
-          style={{
-            background: `linear-gradient(130deg, ${colors.brandDark}, ${colors.brandMedium})`,
-            animation: "weeklyReviewFadeIn 0.45s ease-out",
-          }}
-        >
-          <h2 className="text-lg font-semibold text-white">{t("weekly.aiLetterTitle")}</h2>
-          {submitting ? (
-            <div className="mt-4 flex items-center gap-2 text-white/80">
-              <span className="h-2 w-2 animate-bounce rounded-full bg-[#22d3ee]/90 [animation-delay:-0.2s]" />
-              <span className="h-2 w-2 animate-bounce rounded-full bg-[#22d3ee]/90 [animation-delay:-0.1s]" />
-              <span className="h-2 w-2 animate-bounce rounded-full bg-[#22d3ee]/90" />
-              <span className="ml-1 text-sm">{t("weekly.generating")}</span>
-            </div>
-          ) : (
-            <p className="mt-4 whitespace-pre-wrap text-2xl leading-relaxed text-white md:text-3xl">
-              "{current?.aiLetter ?? t("weekly.aiLetterEmpty")}"
-            </p>
-          )}
-          {current?.growthScore != null ? (
-            <div className="mt-5 inline-flex items-center rounded-full border border-white/40 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
-              {t("weekly.growthScore")}: {current.growthScore}/100
-            </div>
-          ) : null}
+          <button type="button" onClick={() => void onSubmit()} disabled={!canSubmit} className={`w-full ${TERMINAL_BUTTON_PRIMARY}`}>
+            {submitting ? t("weekly.submitting") : t("weekly.submit")}
+          </button>
         </section>
-      )}
 
-      <section className="glass-section rounded-2xl p-6 shadow-[0_16px_36px_rgba(168,85,247,0.08)]">
-        <h2 className="mb-4 text-lg font-semibold text-white">{t("weekly.historyTitle")}</h2>
-        {loading ? (
-          <p className="text-sm text-white/50">{t("common.loading")}</p>
-        ) : history.length === 0 ? (
-          <p className="text-sm text-white/50">{t("weekly.emptyHistory")}</p>
-        ) : (
-          <div className="space-y-3">
-            {history.map((row) => (
-              <article key={row.id} className="glass-panel rounded-xl p-4 shadow-[0_10px_22px_rgba(168,85,247,0.08)]">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-sm font-semibold text-white">
-                    {t("weekly.weekOf", { defaultValue: "Week of" })}: {formatLocaleDate(row.weekStart, i18n.language)}
-                  </p>
-                  <span
-                    className="rounded-full px-3 py-1 text-xs font-semibold"
-                    style={{ backgroundColor: `${colors.brandDark}16`, color: colors.brandDark }}
-                  >
-                    Avg {scoreAverage(row)}/5
-                  </span>
-                </div>
-                <p className="mt-2 text-xs text-white/50">{formatLocaleDate(row.createdAt, i18n.language)}</p>
-                {row.aiLetter ? <p className="mt-3 text-sm leading-6 glass-muted">{row.aiLetter}</p> : null}
-              </article>
-            ))}
-          </div>
+        {(showReveal || current?.aiLetter || submitting) && (
+          <section
+            className={TERMINAL_INSIGHT_CARD}
+            style={{ animation: "weeklyReviewFadeIn 0.45s ease-out" }}
+          >
+            <h2 className="text-lg font-semibold text-terminal-cyan">{t("weekly.aiLetterTitle")}</h2>
+            {submitting ? (
+              <div className="mt-4 flex items-center gap-2 text-terminal-textSecondary">
+                <span className="h-2 w-2 animate-bounce rounded-full bg-terminal-cyan/90 [animation-delay:-0.2s]" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-terminal-cyan/90 [animation-delay:-0.1s]" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-terminal-cyan/90" />
+                <span className="ml-1 text-sm">{t("weekly.generating")}</span>
+              </div>
+            ) : (
+              <p className="mt-4 whitespace-pre-wrap text-2xl leading-relaxed text-terminal-text md:text-3xl">
+                "{current?.aiLetter ?? t("weekly.aiLetterEmpty")}"
+              </p>
+            )}
+            {current?.growthScore != null ? (
+              <div className={`mt-5 ${TERMINAL_BADGE}`}>
+                {t("weekly.growthScore")}: {current.growthScore}/100
+              </div>
+            ) : null}
+          </section>
         )}
-      </section>
 
-      <style>{`
-        @keyframes weeklyReviewFadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
+        <section className={TERMINAL_INTELLIGENCE_PANEL}>
+          <h2 className="mb-4 text-lg font-semibold text-terminal-cyan">{t("weekly.historyTitle")}</h2>
+          {loading ? (
+            <p className="text-sm text-terminal-textMuted">{t("common.loading")}</p>
+          ) : history.length === 0 ? (
+            <p className="text-sm text-terminal-textMuted">{t("weekly.emptyHistory")}</p>
+          ) : (
+            <div className="space-y-3">
+              {history.map((row) => (
+                <article key={row.id} className={TERMINAL_INTELLIGENCE_CARD}>
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-terminal-text">
+                      {t("weekly.weekOf", { defaultValue: "Week of" })}: {formatLocaleDate(row.weekStart, i18n.language)}
+                    </p>
+                    <span className="rounded-full border border-terminal-cyan/35 bg-terminal-cyan/10 px-3 py-1 text-xs font-semibold text-terminal-cyan">
+                      Avg {scoreAverage(row)}/5
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-terminal-textMuted">{formatLocaleDate(row.createdAt, i18n.language)}</p>
+                  {row.aiLetter ? <p className="mt-3 text-sm leading-6 text-terminal-textSecondary">{row.aiLetter}</p> : null}
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <style>{`
+          @keyframes weeklyReviewFadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(8px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
+          .weekly-review-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 9999px;
+            border: 3px solid rgb(15 23 42);
+            background: ${SLIDER_CYAN};
+            box-shadow: 0 4px 10px rgba(34, 211, 238, 0.25);
           }
-        }
-        .weekly-review-slider::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 18px;
-          height: 18px;
-          border-radius: 9999px;
-          border: 3px solid ${colors.bgPrimary};
-          background: ${colors.brandDark};
-          box-shadow: 0 4px 10px rgba(168,85,247, 0.25);
-        }
-        .weekly-review-slider::-moz-range-thumb {
-          width: 18px;
-          height: 18px;
-          border-radius: 9999px;
-          border: 3px solid ${colors.bgPrimary};
-          background: ${colors.brandDark};
-          box-shadow: 0 4px 10px rgba(168,85,247, 0.25);
-        }
-      `}</style>
+          .weekly-review-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 9999px;
+            border: 3px solid rgb(15 23 42);
+            background: ${SLIDER_CYAN};
+            box-shadow: 0 4px 10px rgba(34, 211, 238, 0.25);
+          }
+        `}</style>
+      </div>
     </div>
   );
 }

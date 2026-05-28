@@ -1,7 +1,24 @@
 import { FormEvent, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getInsiderMirror, type InsiderMirrorResponse, type InsiderTransaction } from "../services/api";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_DATA_TABLE,
+  TERMINAL_FILTER_CHIP,
+  TERMINAL_FILTER_CHIP_ACTIVE,
+  TERMINAL_INPUT,
+  TERMINAL_INTELLIGENCE_CARD,
+  TERMINAL_INTELLIGENCE_GRID,
+  TERMINAL_INTELLIGENCE_PAGE,
+  TERMINAL_INTELLIGENCE_PAGE_INNER,
+  TERMINAL_INTELLIGENCE_PANEL,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_PREDICTOR_PANEL,
+  TERMINAL_TABLE_HEAD,
+  TERMINAL_TABLE_ROW,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 type TransactionFilter = "ALL" | "PURCHASES" | "SALES" | "LAST_7_DAYS" | "LAST_30_DAYS";
@@ -60,6 +77,16 @@ function matchesFilter(transaction: InsiderTransaction, filter: TransactionFilte
   if (filter === "SALES") return transaction.action === "SELL";
   if (filter === "LAST_7_DAYS") return isWithinDays(transaction.date, 7);
   return isWithinDays(transaction.date, 30);
+}
+
+function sentimentBadgeClass(sentiment: InsiderMirrorResponse["netSentiment"] | undefined): string {
+  if (sentiment === "BUY") {
+    return "inline-flex rounded-full border border-terminal-positive/40 bg-terminal-positive/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-terminal-positive";
+  }
+  if (sentiment === "SELL") {
+    return "inline-flex rounded-full border border-terminal-negative/40 bg-terminal-negative/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-terminal-negative";
+  }
+  return "inline-flex rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-terminal-textSecondary";
 }
 
 export function InsiderMirrorPage() {
@@ -141,43 +168,29 @@ export function InsiderMirrorPage() {
         ? t("insider.sentimentSell", { defaultValue: "Net selling" })
         : t("insider.sentimentNeutral", { defaultValue: "Neutral" })
     : "";
-  const sentimentColor =
-    result?.netSentiment === "BUY"
-      ? colors.positive
-      : result?.netSentiment === "SELL"
-        ? colors.negative
-        : colors.textSecondary;
 
   return (
-    <div className="min-h-screen py-8" style={{ backgroundColor: colors.bgSecondary }}>
-      <div className="mx-auto max-w-6xl px-4">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold" style={{ color: colors.brandDark }}>
-            {t("insider.redesignTitle", { defaultValue: "Insider Mirror" })}
-          </h1>
-          <p className="mt-2 text-sm md:text-base" style={{ color: colors.textSecondary }}>
+    <div className={TERMINAL_INTELLIGENCE_PAGE}>
+      <div className={TERMINAL_INTELLIGENCE_PAGE_INNER}>
+        <header className="space-y-2">
+          <h1 className={TERMINAL_PAGE_TITLE}>{t("insider.redesignTitle", { defaultValue: "Insider Mirror" })}</h1>
+          <p className={TERMINAL_PAGE_SUBTITLE}>
             {t("insider.redesignSubtitle", {
               defaultValue: "Track recent insider transactions and assess their directional bias.",
             })}
           </p>
         </header>
 
-        <section className="rounded-2xl border p-5 glass-section">
+        <section className={TERMINAL_PREDICTOR_PANEL}>
           <form onSubmit={onSubmit} className="flex flex-col gap-3 md:flex-row">
             <input
               value={symbolInput}
               onChange={(event) => setSymbolInput(event.target.value.toUpperCase())}
               placeholder={t("insider.searchPlaceholder", { defaultValue: "AAPL / MSFT / TSLA" })}
-              className="w-full rounded-xl border px-4 py-2.5 outline-none"
-              style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgSecondary, color: colors.textPrimary }}
+              className={TERMINAL_INPUT}
               maxLength={16}
             />
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded-xl px-5 py-2.5 font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-              style={{ backgroundColor: colors.brandDark }}
-            >
+            <button type="submit" disabled={loading} className={TERMINAL_BUTTON_PRIMARY}>
               {loading
                 ? t("common.loading", { defaultValue: "Loading..." })
                 : t("insider.fetchTransactions", { defaultValue: "Fetch transactions" })}
@@ -185,36 +198,16 @@ export function InsiderMirrorPage() {
           </form>
         </section>
 
-        {error ? (
-          <div
-            className="mt-4 rounded-xl border px-4 py-3 text-sm"
-            style={{
-              borderColor: `${colors.negative}66`,
-              color: colors.negative,
-              backgroundColor: `${colors.negative}12`,
-            }}
-          >
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
 
         {!loading && !error && result ? (
-          <section className="mt-6 space-y-6">
-            <div className="rounded-2xl border p-5 glass-section">
+          <section className="space-y-6">
+            <div className={TERMINAL_INTELLIGENCE_PANEL}>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-2xl font-semibold" style={{ color: colors.brandDark }}>
-                  {result.symbol}
-                </h2>
-                <p className="text-sm" style={{ color: colors.textSecondary }}>
-                  {result.insight}
-                </p>
+                <h2 className="text-2xl font-semibold text-terminal-cyan">{result.symbol}</h2>
+                <p className="text-sm text-terminal-textSecondary">{result.insight}</p>
               </div>
-              <span
-                className="mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
-                style={{ backgroundColor: `${sentimentColor}1A`, color: sentimentColor }}
-              >
-                {sentimentLabel}
-              </span>
+              <span className={`mt-3 ${sentimentBadgeClass(result.netSentiment)}`}>{sentimentLabel}</span>
 
               <div className="mt-4 flex flex-wrap gap-2">
                 {filterOptions.map((filter) => {
@@ -224,12 +217,7 @@ export function InsiderMirrorPage() {
                       key={filter.value}
                       type="button"
                       onClick={() => setActiveFilter(filter.value)}
-                      className="rounded-full px-3 py-1.5 text-xs font-semibold transition-colors"
-                      style={{
-                        backgroundColor: active ? colors.brandDark : colors.bgSecondary,
-                        color: active ? colors.bgPrimary : colors.textSecondary,
-                        border: `1px solid ${active ? colors.brandDark : colors.border}`,
-                      }}
+                      className={active ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP}
                     >
                       {filter.label}
                     </button>
@@ -238,20 +226,20 @@ export function InsiderMirrorPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border p-5 glass-section">
-              <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
+            <div className={TERMINAL_INTELLIGENCE_PANEL}>
+              <h3 className="text-lg font-semibold text-terminal-cyan">
                 {t("insider.transactionsTitle", { defaultValue: "Transactions (last 30 days, > $50k)" })}
               </h3>
 
               {filteredTransactions.length === 0 ? (
-                <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
+                <p className="mt-3 text-sm text-terminal-textSecondary">
                   {t("insider.emptyTransactions", { defaultValue: "No transactions for the selected filter." })}
                 </p>
               ) : (
-                <div className="mt-3 overflow-x-auto rounded-xl border" style={{ borderColor: colors.border }}>
+                <div className={`mt-3 overflow-x-auto ${TERMINAL_DATA_TABLE}`}>
                   <table className="min-w-full text-left text-sm">
-                    <thead style={{ backgroundColor: colors.bgSecondary, color: colors.textSecondary }}>
-                      <tr>
+                    <thead>
+                      <tr className={TERMINAL_TABLE_HEAD}>
                         <th className="px-4 py-3 font-semibold">{t("insider.colLogoSymbol", { defaultValue: "Logo & symbol" })}</th>
                         <th className="px-4 py-3 font-semibold">{t("insider.colName", { defaultValue: "Name" })}</th>
                         <th className="px-4 py-3 font-semibold">{t("insider.colType", { defaultValue: "Side (buy/sell)" })}</th>
@@ -263,47 +251,34 @@ export function InsiderMirrorPage() {
                       {filteredTransactions.map((transaction, index) => {
                         const isPurchase = transaction.action === "BUY";
                         return (
-                          <tr key={`${transaction.name}-${transaction.date}-${index}`} className="border-t" style={{ borderColor: colors.border }}>
+                          <tr key={`${transaction.name}-${transaction.date}-${index}`} className={TERMINAL_TABLE_ROW}>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-2">
-                                <span
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
-                                  style={{ backgroundColor: colors.brandDark, color: colors.bgPrimary }}
-                                >
+                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-terminal-cyan/15 text-xs font-bold text-terminal-cyan">
                                   {result.symbol.slice(0, 2)}
                                 </span>
-                                <span className="font-semibold" style={{ color: colors.brandDark }}>
-                                  {result.symbol}
-                                </span>
+                                <span className="font-semibold text-terminal-cyan">{result.symbol}</span>
                               </div>
                             </td>
                             <td className="px-4 py-3">
-                              <p className="font-semibold" style={{ color: colors.textPrimary }}>
-                                {transaction.name}
-                              </p>
-                              <p className="text-xs" style={{ color: colors.textSecondary }}>
-                                {transaction.role}
-                              </p>
+                              <p className="font-semibold text-terminal-text">{transaction.name}</p>
+                              <p className="text-xs text-terminal-textSecondary">{transaction.role}</p>
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase"
-                                style={{
-                                  backgroundColor: isPurchase ? `${colors.positive}1A` : `${colors.negative}1A`,
-                                  color: isPurchase ? colors.positive : colors.negative,
-                                }}
+                                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase ${
+                                  isPurchase
+                                    ? "border border-terminal-positive/40 bg-terminal-positive/10 text-terminal-positive"
+                                    : "border border-terminal-negative/40 bg-terminal-negative/10 text-terminal-negative"
+                                }`}
                               >
                                 {isPurchase
                                   ? t("insider.insiderBuyShort", { defaultValue: "Buy" })
                                   : t("insider.insiderSellShort", { defaultValue: "Sell" })}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-right font-mono" style={{ color: colors.textPrimary }}>
-                              {formatUsd(transaction.value)}
-                            </td>
-                            <td className="px-4 py-3" style={{ color: colors.textSecondary }}>
-                              {transaction.date}
-                            </td>
+                            <td className="px-4 py-3 text-right font-mono text-terminal-text">{formatUsd(transaction.value)}</td>
+                            <td className="px-4 py-3 text-terminal-textSecondary">{transaction.date}</td>
                           </tr>
                         );
                       })}
@@ -313,41 +288,34 @@ export function InsiderMirrorPage() {
               )}
             </div>
 
-            <div className="rounded-2xl border p-5 glass-section">
-              <h3 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
+            <div className={TERMINAL_INTELLIGENCE_PANEL}>
+              <h3 className="text-lg font-semibold text-terminal-cyan">
                 {t("insider.topInsiders", { defaultValue: "Top insiders" })}
               </h3>
               {topInsiders.length === 0 ? (
-                <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
+                <p className="mt-3 text-sm text-terminal-textSecondary">
                   {t("insider.emptyTopInsiders", { defaultValue: "No data available for Top insiders." })}
                 </p>
               ) : (
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                <div className={`mt-4 ${TERMINAL_INTELLIGENCE_GRID}`}>
                   {topInsiders.map((insider) => (
-                    <article key={insider.name} className="rounded-xl border p-4 glass-panel">
+                    <article key={insider.name} className={TERMINAL_INTELLIGENCE_CARD}>
                       <div className="flex items-center gap-3">
-                        <span
-                          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"
-                          style={{ backgroundColor: colors.brandDark, color: colors.bgPrimary }}
-                        >
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-terminal-cyan/15 text-sm font-bold text-terminal-cyan">
                           {initialsFromName(insider.name)}
                         </span>
                         <div>
-                          <p className="font-semibold" style={{ color: colors.textPrimary }}>
-                            {insider.name}
-                          </p>
-                          <p className="text-xs" style={{ color: colors.textSecondary }}>
-                            {insider.role}
-                          </p>
+                          <p className="font-semibold text-terminal-text">{insider.name}</p>
+                          <p className="text-xs text-terminal-textSecondary">{insider.role}</p>
                         </div>
                       </div>
-                      <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
+                      <p className="mt-3 text-sm text-terminal-textSecondary">
                         {t("insider.totalValueLabel", {
                           defaultValue: "Total value: {{value}}",
                           value: formatUsd(insider.totalValue),
                         })}
                       </p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textSecondary }}>
+                      <p className="mt-1 text-xs text-terminal-textSecondary">
                         {t("insider.countsBuySell", {
                           defaultValue: "Buys: {{buys}} · Sells: {{sells}}",
                           buys: insider.purchases,

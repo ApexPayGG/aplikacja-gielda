@@ -1,7 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { colors } from "../styles/designSystem";
 import { api } from "../services/api";
+import {
+  TERMINAL_BADGE,
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_BUTTON_SECONDARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_EMPTY_STATE,
+  TERMINAL_INTELLIGENCE_CARD,
+  TERMINAL_INTELLIGENCE_GRID,
+  TERMINAL_INTELLIGENCE_PAGE,
+  TERMINAL_INTELLIGENCE_PAGE_INNER,
+  TERMINAL_INTELLIGENCE_PANEL,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 function readUserId(): string {
@@ -114,56 +127,48 @@ export function MirrorTradingPage() {
   const activeFollowing = useMemo(() => following.filter((r) => r.active), [following]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0b14] via-[#1e1b4b]/90 to-[#0a0b14] px-4 py-10 text-white">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <header className="glass-section rounded-3xl border border-white/10 p-6 shadow-[0_18px_40px_rgba(168,85,247,0.1)]">
-          <h1 className="glass-page-title text-3xl">Mirror Trading</h1>
-          <p className="mt-2 glass-muted text-sm">{t("mirror.subtitle")}</p>
+    <div className={TERMINAL_INTELLIGENCE_PAGE}>
+      <div className={TERMINAL_INTELLIGENCE_PAGE_INNER}>
+        <header className="space-y-2">
+          <h1 className={TERMINAL_PAGE_TITLE}>Mirror Trading</h1>
+          <p className={TERMINAL_PAGE_SUBTITLE}>{t("mirror.subtitle")}</p>
         </header>
 
-        {error ? (
-          <div className="rounded-xl border border-negative/25 bg-negative/10 px-4 py-3 text-sm text-negative">
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
 
-        <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-          <h2 className="mb-4 text-xl font-semibold text-white">{t("mirror.activeMirrors", { defaultValue: "Your active mirrors" })}</h2>
+        <section className={TERMINAL_INTELLIGENCE_PANEL}>
+          <h2 className="mb-4 text-xl font-semibold text-terminal-cyan">
+            {t("mirror.activeMirrors", { defaultValue: "Your active mirrors" })}
+          </h2>
           {loading ? (
-            <p className="glass-muted text-sm">{t("common.loading")}</p>
+            <p className="text-sm text-terminal-textMuted">{t("common.loading")}</p>
           ) : activeFollowing.length === 0 ? (
-            <p className="text-sm text-white/50">{t("common.noData")}</p>
+            <p className={TERMINAL_EMPTY_STATE}>{t("common.noData")}</p>
           ) : (
-            <ul className="grid gap-4 md:grid-cols-2">
+            <ul className={`${TERMINAL_INTELLIGENCE_GRID} md:grid-cols-2`}>
               {activeFollowing.map((row) => (
-                <li
-                  key={row.traderId}
-                  className="glass-section rounded-2xl p-4 shadow-[0_12px_26px_rgba(168,85,247,0.07)]"
-                >
+                <li key={row.traderId} className={TERMINAL_INTELLIGENCE_CARD}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div
-                        className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold text-white"
-                        style={{ backgroundColor: colors.brandDark }}
-                      >
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-terminal-cyan/15 text-sm font-semibold text-terminal-cyan">
                         {traderInitials(row.traderId)}
                       </div>
                       <div>
-                        <p className="font-mono text-sm font-semibold text-white">{row.traderId}</p>
-                        <p className="mt-1 text-xs glass-muted">
+                        <p className="font-mono text-sm font-semibold text-terminal-text">{row.traderId}</p>
+                        <p className="mt-1 text-xs text-terminal-textMuted">
                           {t("mirror.winRate")}: {row.winRate.toFixed(1)}% · {t("mirror.totalTrades")}:{" "}
                           {row.totalTrades}
                         </p>
                       </div>
                     </div>
-                    <span className="rounded-full border border-positive/35 bg-positive/10 px-2.5 py-1 text-xs font-semibold text-positive">
+                    <span className="rounded-full border border-terminal-positive/35 bg-terminal-positive/10 px-2.5 py-1 text-xs font-semibold text-terminal-positive">
                       Active
                     </span>
                   </div>
                   <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-terminal-text">
                       Returns:{" "}
-                      <span className={readReturnsPct(row) >= 0 ? "text-positive" : "text-negative"}>
+                      <span className={readReturnsPct(row) >= 0 ? "text-terminal-positive" : "text-terminal-negative"}>
                         {formatSignedPct(readReturnsPct(row))}
                       </span>
                     </p>
@@ -171,7 +176,7 @@ export function MirrorTradingPage() {
                       type="button"
                       disabled={actionTrader === row.traderId}
                       onClick={() => void onUnfollow(row.traderId)}
-                      className="rounded-lg border border-negative/40 bg-negative/10 px-3 py-1.5 text-sm font-semibold text-negative transition hover:bg-negative/20 disabled:opacity-50"
+                      className="rounded-lg border border-terminal-negative/40 bg-terminal-negative/10 px-3 py-1.5 text-sm font-semibold text-terminal-negative transition hover:bg-terminal-negative/20 disabled:opacity-50"
                     >
                       {actionTrader === row.traderId ? t("common.loading") : "Stop mirror"}
                     </button>
@@ -182,60 +187,54 @@ export function MirrorTradingPage() {
           )}
         </section>
 
-        <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-          <h2 className="mb-4 text-xl font-semibold text-white">{t("mirror.topTraders", { defaultValue: "Top traders" })}</h2>
+        <section className={TERMINAL_INTELLIGENCE_PANEL}>
+          <h2 className="mb-4 text-xl font-semibold text-terminal-cyan">
+            {t("mirror.topTraders", { defaultValue: "Top traders" })}
+          </h2>
           {loading ? (
-            <p className="glass-muted text-sm">{t("common.loading")}</p>
+            <p className="text-sm text-terminal-textMuted">{t("common.loading")}</p>
           ) : topTraders.length === 0 ? (
-            <p className="text-sm text-white/50">{t("mirror.noTopTraders")}</p>
+            <p className={TERMINAL_EMPTY_STATE}>{t("mirror.noTopTraders")}</p>
           ) : (
-            <ul className="grid gap-4 md:grid-cols-2">
+            <ul className={`${TERMINAL_INTELLIGENCE_GRID} md:grid-cols-2`}>
               {topTraders.map((tr) => {
                 const isSelf = tr.userId === userId;
                 const isFollowing = activeTraderIds.has(tr.userId);
                 const busy = actionTrader === tr.userId;
                 const returnsPct = readReturnsPct(tr);
                 return (
-                  <li
-                    key={tr.userId}
-                    className="glass-section rounded-2xl p-5 shadow-[0_12px_26px_rgba(168,85,247,0.07)]"
-                  >
+                  <li key={tr.userId} className={TERMINAL_INTELLIGENCE_CARD}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <div
-                          className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold text-white"
-                          style={{ backgroundColor: colors.brandDark }}
-                        >
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-terminal-cyan/15 text-sm font-semibold text-terminal-cyan">
                           {traderInitials(tr.userId)}
                         </div>
                         <div>
-                          <p className="font-mono text-sm font-semibold text-white">{tr.userId}</p>
-                          <p className="mt-1 text-xs glass-muted">
+                          <p className="font-mono text-sm font-semibold text-terminal-text">{tr.userId}</p>
+                          <p className="mt-1 text-xs text-terminal-textMuted">
                             {t("mirror.totalTrades")}: {tr.totalTrades} · {t("mirror.followers")}: {tr.followers}
                           </p>
                         </div>
                       </div>
-                      <span className="rounded-full border border-brandDark/15 bg-brandDark/10 px-2.5 py-1 text-xs font-semibold text-white">
+                      <span className={TERMINAL_BADGE}>
                         {t("mirror.winRate")}: {tr.winRate.toFixed(1)}%
                       </span>
                     </div>
                     <div className="mt-4 flex items-center justify-between gap-3">
-                      <p className="text-sm font-semibold text-white">
+                      <p className="text-sm font-semibold text-terminal-text">
                         Returns:{" "}
-                        <span className={returnsPct >= 0 ? "text-positive" : "text-negative"}>
+                        <span className={returnsPct >= 0 ? "text-terminal-positive" : "text-terminal-negative"}>
                           {formatSignedPct(returnsPct)}
                         </span>
                       </p>
                       {isSelf ? (
-                        <span className="rounded-full glass-panel border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold glass-muted">
-                          {t("mirror.itsYou")}
-                        </span>
+                        <span className={TERMINAL_BADGE}>{t("mirror.itsYou")}</span>
                       ) : isFollowing ? (
                         <button
                           type="button"
                           disabled={busy}
                           onClick={() => void onUnfollow(tr.userId)}
-                          className="rounded-lg border border-brandDark/20 bg-bgSecondary px-3 py-1.5 text-sm font-semibold text-white transition hover:border-brandDark/35 disabled:opacity-50"
+                          className={TERMINAL_BUTTON_SECONDARY}
                         >
                           {busy ? t("common.loading") : "Mirroring"}
                         </button>
@@ -244,8 +243,7 @@ export function MirrorTradingPage() {
                           type="button"
                           disabled={busy}
                           onClick={() => void onFollow(tr.userId)}
-                          className="rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(168,85,247,0.35)] transition hover:brightness-110 disabled:opacity-55"
-                          style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
+                          className={TERMINAL_BUTTON_PRIMARY}
                         >
                           {busy ? t("common.loading") : "Mirror"}
                         </button>

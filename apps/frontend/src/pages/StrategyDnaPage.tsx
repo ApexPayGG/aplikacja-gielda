@@ -4,7 +4,18 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { ShareButton } from "../components/ShareButton";
 import { getStrategyDna, type StrategyDnaResponse } from "../services/api";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_INSIGHT_CARD,
+  TERMINAL_INTELLIGENCE_CARD,
+  TERMINAL_INTELLIGENCE_GRID,
+  TERMINAL_INTELLIGENCE_PAGE,
+  TERMINAL_INTELLIGENCE_PAGE_INNER,
+  TERMINAL_INTELLIGENCE_PANEL,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_SCORE_TILE,
+  TERMINAL_WARNING_PANEL,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
@@ -120,13 +131,11 @@ export function StrategyDnaPage() {
     : undefined;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-10 text-white">
-      <header
-        className="glass-section rounded-3xl p-6 shadow-[0_18px_45px_rgba(168,85,247,0.1)]"
-        style={{ background: `linear-gradient(130deg, ${colors.bgPrimary}, ${colors.bgSecondary})` }}
-      >
-        <h1 className="glass-page-title text-3xl">{t("strategyDnaPage.title", { defaultValue: "Strategy DNA" })}</h1>
-        <p className="mt-2 glass-muted text-sm">
+    <div className={TERMINAL_INTELLIGENCE_PAGE}>
+      <div className={`${TERMINAL_INTELLIGENCE_PAGE_INNER} max-w-6xl`}>
+      <header className={TERMINAL_INTELLIGENCE_PANEL}>
+        <h1 className={TERMINAL_PAGE_TITLE}>{t("strategyDnaPage.title", { defaultValue: "Strategy DNA" })}</h1>
+        <p className={`mt-2 ${TERMINAL_PAGE_SUBTITLE}`}>
           {t("strategyDnaPage.subtitle", {
             defaultValue: "Discover your decision patterns and dominant investing profile.",
           })}
@@ -143,11 +152,11 @@ export function StrategyDnaPage() {
       </header>
 
       {fromMistakes && highlightSymbols.length > 0 ? (
-        <div className="rounded-xl border border-brandGold/45 bg-brandGold/10 px-4 py-3 text-sm text-white">
-          <p className="font-semibold text-white">
+        <div className={TERMINAL_WARNING_PANEL}>
+          <p className="font-semibold text-terminal-text">
             {t("strategyDnaPage.fromMistakesTitle", { defaultValue: "Context from mistake library" })}
           </p>
-          <p className="mt-1 glass-muted">
+          <p className="mt-1 text-terminal-textMuted">
             {t("strategyDnaPage.fromMistakesSymbols", {
               symbols: highlightSymbols.join(", "),
               defaultValue: "Symbols from mistakes: {{symbols}}.",
@@ -157,7 +166,7 @@ export function StrategyDnaPage() {
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-white/50">{t("common.loading", { defaultValue: "Loading..." })}</p>
+        <p className="text-sm text-terminal-textMuted">{t("common.loading", { defaultValue: "Loading..." })}</p>
       ) : null}
       {error && (
         <p className="rounded-xl border border-negative/30 bg-negative/10 px-4 py-3 text-sm font-medium text-negative">{error}</p>
@@ -166,17 +175,14 @@ export function StrategyDnaPage() {
       {!loading && !error && data ? (
         <>
           {data.hasEnoughData ? (
-            <section className="glass-section rounded-2xl p-6 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-              <h2 className="text-lg font-semibold text-white">
+            <section className={TERMINAL_INTELLIGENCE_PANEL}>
+              <h2 className="text-lg font-semibold text-terminal-cyan">
                 {t("strategyDnaPage.yourStyleHeading", { defaultValue: "Your investing style" })}
               </h2>
               <div className="mt-5 grid gap-6 md:grid-cols-[260px_1fr]">
-                <div className="flex flex-col items-center justify-center rounded-2xl glass-panel border border-white/10 bg-white/5 p-5">
-                  <div
-                    className="flex h-44 w-44 flex-col items-center justify-center rounded-full text-center text-white shadow-[0_12px_30px_rgba(168,85,247,0.35)]"
-                    style={{ backgroundColor: colors.brandDark }}
-                  >
-                    <p className="text-xs uppercase tracking-wide text-white/75">Dominant style</p>
+                <div className={`flex flex-col items-center justify-center ${TERMINAL_INTELLIGENCE_CARD}`}>
+                  <div className="flex h-44 w-44 flex-col items-center justify-center rounded-full border border-terminal-cyan/40 bg-terminal-cyan/15 text-center text-terminal-text shadow-terminal-glow">
+                    <p className="text-xs uppercase tracking-wide text-terminal-textMuted">Dominant style</p>
                     <p className="mt-1 text-xl font-bold">{legendLabel(data.primary.name)}</p>
                     <p className="text-sm font-semibold">{pct(data.primary.pct)}</p>
                   </div>
@@ -190,29 +196,26 @@ export function StrategyDnaPage() {
               </div>
             </section>
           ) : (
-            <section className="rounded-2xl border border-brandGold/40 bg-brandGold/10 p-6 text-center">
-              <p className="text-lg font-semibold text-white">
+            <section className={`${TERMINAL_WARNING_PANEL} text-center`}>
+              <p className="text-lg font-semibold text-terminal-text">
                 {t("strategyDnaPage.notEnoughTrades", { defaultValue: "You need at least 20 closed trades." })}
               </p>
             </section>
           )}
 
           <section className="grid gap-6 md:grid-cols-2">
-            <div className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-              <h3 className="text-lg font-semibold text-white">
+            <div className={TERMINAL_INTELLIGENCE_PANEL}>
+              <h3 className="text-lg font-semibold text-terminal-cyan">
                 {t("strategyDnaPage.setupsHeading", { defaultValue: "Your setups" })}
               </h3>
               <ul className="mt-4 space-y-3">
                 {buildSetups(data, t).map((setup) => (
                   <li
                     key={setup.name}
-                    className="flex items-center justify-between gap-3 rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2.5"
+                    className={`flex items-center justify-between gap-3 ${TERMINAL_INTELLIGENCE_CARD}`}
                   >
-                    <span className="text-sm font-medium text-white">{setup.name}</span>
-                    <span
-                      className="rounded-full px-2.5 py-1 text-xs font-semibold"
-                      style={{ backgroundColor: `${colors.brandDark}16`, color: colors.brandDark }}
-                    >
+                    <span className="text-sm font-medium text-terminal-text">{setup.name}</span>
+                    <span className="rounded-full border border-terminal-cyan/30 bg-terminal-cyan/10 px-2.5 py-1 text-xs font-semibold text-terminal-cyan">
                       {setup.frequency}%
                     </span>
                   </li>
@@ -220,9 +223,9 @@ export function StrategyDnaPage() {
               </ul>
             </div>
 
-            <div className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-              <h3 className="text-lg font-semibold text-white">AI insight</h3>
-              <p className="mt-3 text-sm leading-6 glass-muted">{data.insight}</p>
+            <div className={TERMINAL_INTELLIGENCE_PANEL}>
+              <h3 className="text-lg font-semibold text-terminal-cyan">AI insight</h3>
+              <p className="mt-3 text-sm leading-6 text-terminal-textSecondary">{data.insight}</p>
 
               <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
                 <StatTile label="Win rate" value={pct(data.stats.winRate)} />
@@ -245,11 +248,11 @@ export function StrategyDnaPage() {
             </div>
           </section>
 
-          <section className="glass-section rounded-2xl p-5 shadow-[0_14px_34px_rgba(168,85,247,0.08)]">
-            <h3 className="text-lg font-semibold text-white">
+          <section className={TERMINAL_INTELLIGENCE_PANEL}>
+            <h3 className="text-lg font-semibold text-terminal-cyan">
               {t("strategyDnaPage.recommendationsHeading", { defaultValue: "Recommendations" })}
             </h3>
-            <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className={`mt-4 ${TERMINAL_INTELLIGENCE_GRID} md:grid-cols-3`}>
               <RecommendationCard
                 title={t("strategyDnaPage.recPlayStyle.title", {
                   defaultValue: "Trade your dominant style",
@@ -281,6 +284,7 @@ export function StrategyDnaPage() {
           </section>
         </>
       ) : null}
+      </div>
     </div>
   );
 }
@@ -291,11 +295,11 @@ function MatchBar(props: { label: string; value: number }) {
   return (
     <div>
       <div className="mb-1 flex items-center justify-between text-sm">
-        <span className="font-medium text-white">{props.label}</span>
-        <span className="font-semibold text-white">{width}%</span>
+        <span className="font-medium text-terminal-text">{props.label}</span>
+        <span className="font-semibold text-terminal-cyan">{width}%</span>
       </div>
-      <div className="h-2.5 overflow-hidden rounded-full bg-white/10">
-        <div className="h-full rounded-full" style={{ width: `${width}%`, backgroundColor: colors.brandCyan }} />
+      <div className="h-2.5 overflow-hidden rounded-full bg-terminal-panelSecondary">
+        <div className="h-full rounded-full bg-terminal-cyan" style={{ width: `${width}%` }} />
       </div>
     </div>
   );
@@ -303,18 +307,18 @@ function MatchBar(props: { label: string; value: number }) {
 
 function StatTile(props: { label: string; value: string }) {
   return (
-    <div className="rounded-xl glass-panel border border-white/10 bg-white/5 p-3">
-      <p className="text-xs text-white/50">{props.label}</p>
-      <p className="mt-1 font-semibold text-white">{props.value}</p>
+    <div className={TERMINAL_SCORE_TILE}>
+      <p className="text-xs text-terminal-textMuted">{props.label}</p>
+      <p className="mt-1 font-semibold text-terminal-text">{props.value}</p>
     </div>
   );
 }
 
 function RecommendationCard(props: { title: string; body: string }) {
   return (
-    <article className="glass-panel rounded-xl p-4 shadow-[0_10px_24px_rgba(168,85,247,0.08)]" style={{ borderLeft: `4px solid ${colors.brandCyan}` }}>
-      <h4 className="text-sm font-semibold text-white">{props.title}</h4>
-      <p className="mt-2 text-sm leading-6 glass-muted">{props.body}</p>
+    <article className={TERMINAL_INSIGHT_CARD}>
+      <h4 className="text-sm font-semibold text-terminal-text">{props.title}</h4>
+      <p className="mt-2 text-sm leading-6 text-terminal-textSecondary">{props.body}</p>
     </article>
   );
 }
