@@ -32,6 +32,8 @@ import {
   TERMINAL_LANDING_CTA_PRIMARY,
   TERMINAL_LANDING_CTA_SECONDARY,
   TERMINAL_LANDING_EYEBROW,
+  TERMINAL_LANDING_HERO,
+  TERMINAL_LANDING_NAV_INNER,
   TERMINAL_NAV_SHELL,
   TERMINAL_PRICING_PREVIEW_CARD,
   TERMINAL_PROOF_CARD,
@@ -645,7 +647,7 @@ function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProp
   const { t } = useTranslation("common");
 
   return (
-    <div className="landing-hero-dashboard relative min-h-[280px] w-full sm:min-h-[360px] md:min-h-[480px] lg:min-h-[520px]">
+    <div className="landing-hero-dashboard relative min-h-[240px] w-full sm:min-h-[300px] md:min-h-[360px] lg:min-h-[400px]">
       <GlobalConnectionsSVG />
 
       <div className="absolute inset-0 z-[1] flex items-end justify-center opacity-20">
@@ -654,9 +656,9 @@ function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProp
 
       <div className="hero-card-glow absolute inset-x-2 top-4 z-10 rounded-2xl sm:inset-x-4 sm:top-6 md:inset-x-8 md:top-8">
         <div className={`hero-card-glow-inner ${TERMINAL_HERO_PANEL} relative overflow-hidden rounded-[14px]`}>
-          <div className="p-6">
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-lg font-bold text-white">{t("landing.hero.widgetTitle")}</h2>
+          <div className="p-4 sm:p-5">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-base font-bold text-white sm:text-lg">{t("landing.hero.widgetTitle")}</h2>
               <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
                 <span className="pulse-dot inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />
                 {t("landing.hero.widgetLive")}
@@ -766,10 +768,9 @@ export function LandingPage() {
 
   const marqueeItems = useMemo(
     () => [
-      t("landing.socialProof.stats.exchanges"),
-      t("landing.socialProof.stats.modules"),
-      t("landing.socialProof.stats.languages"),
-      t("landing.socialProof.stats.adFree"),
+      t("landing.socialProof.marquee.trial"),
+      t("landing.socialProof.marquee.educational"),
+      t("landing.socialProof.marquee.decisionSupport"),
       t("landing.socialProof.marqueeMarkets"),
     ],
     [t, i18n.language],
@@ -875,22 +876,32 @@ export function LandingPage() {
 
       {/* ═══ TICKER BAR (demo quotes) ═══ */}
       <div
-        className="h-10 overflow-hidden bg-[#0A0A0F]"
+        className="relative h-10 overflow-hidden border-b border-terminal-border bg-terminal-bg"
         aria-label={t("landingAria.demoTickerTape", { defaultValue: "Sample market listings — demo data" })}
       >
-        <div className="animate-marquee-ticker flex h-10 w-max items-center whitespace-nowrap">
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-terminal-bg to-transparent sm:w-10"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-terminal-bg to-transparent sm:w-10"
+          aria-hidden
+        />
+        <div className="animate-marquee-ticker flex h-10 w-max items-center whitespace-nowrap pl-6 pr-6">
           {tickerMarqueeTrack.map((row, i) => (
             <span key={`${row.symbol}-${i}`} className="inline-flex shrink-0 items-center">
-              <span className="inline-flex items-center gap-2 px-4">
-                <span className="text-xs text-white/60">{row.symbol}</span>
-                <span className="font-mono text-xs text-white">{row.price}</span>
+              <span className="inline-flex min-w-[7.5rem] items-center gap-2 px-5 sm:min-w-[8.5rem]">
+                <span className="min-w-[3.25rem] font-mono text-xs font-semibold text-terminal-textSecondary">
+                  {row.symbol}
+                </span>
+                <span className="font-mono text-xs text-terminal-text">{row.price}</span>
                 <span
-                  className={`text-xs font-medium ${row.positive ? "text-emerald-400" : "text-red-400"}`}
+                  className={`text-xs font-medium tabular-nums ${row.positive ? "text-emerald-400" : "text-red-400"}`}
                 >
                   {row.change}
                 </span>
               </span>
-              <span className="select-none text-white/20" aria-hidden>
+              <span className="select-none px-1 text-terminal-textMuted/40" aria-hidden>
                 |
               </span>
             </span>
@@ -902,12 +913,16 @@ export function LandingPage() {
       <header
         className={`${TERMINAL_NAV_SHELL} relative transition-shadow duration-300 ${navScrolled ? "shadow-terminal-glow" : ""}`}
       >
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-6 md:py-5">
-          <Link to="/" className="flex min-w-0 shrink-0 items-center py-1" aria-label={t("landingAria.homeLogo", { defaultValue: "Stock-AI.Pro — home" })}>
+        <div className={TERMINAL_LANDING_NAV_INNER}>
+          <Link
+            to="/"
+            className="flex h-10 min-w-0 shrink-0 items-center sm:h-11"
+            aria-label={t("landingAria.homeLogo", { defaultValue: "Stock-AI.Pro — home" })}
+          >
             <BrandLogo size="nav" />
           </Link>
 
-          <nav className="hidden flex-1 items-center justify-center gap-10 text-sm font-semibold text-terminal-textSecondary md:flex">
+          <nav className="hidden flex-1 items-center justify-center gap-8 text-sm font-semibold text-terminal-textSecondary lg:flex lg:gap-10">
             <a href="#how-it-works" className="transition hover:text-terminal-cyan">
               {t("landing.nav.howItWorks")}
             </a>
@@ -922,9 +937,9 @@ export function LandingPage() {
             </Link>
           </nav>
 
-          <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-3">
+          <div className="ml-auto flex h-10 shrink-0 items-center gap-2 sm:h-11 md:gap-3">
             <form
-              className="relative hidden md:block"
+              className="relative hidden lg:block"
               onSubmit={(e) => {
                 e.preventDefault();
                 goToCompaniesSearch();
@@ -942,16 +957,21 @@ export function LandingPage() {
                 onClick={() => goToCompaniesSearch()}
                 placeholder={t("landing.nav.searchPlaceholder")}
                 aria-label={t("landing.nav.searchPlaceholder")}
-                className={`${TERMINAL_INPUT} w-48 rounded-full py-1.5 pl-9 pr-4 transition-all duration-300 focus:w-64`}
+                className={`${TERMINAL_INPUT} h-10 w-44 rounded-full py-0 pl-9 pr-4 text-sm transition-all duration-300 focus:w-56 lg:w-48 lg:focus:w-64`}
               />
             </form>
-            <LanguageSwitcher variant="landing" />
-            <Link to="/login" className={`hidden min-h-11 sm:inline-flex ${TERMINAL_LANDING_CTA_SECONDARY} px-4 py-2 text-sm`}>
+            <div className="flex h-10 items-center sm:h-11">
+              <LanguageSwitcher variant="landing" />
+            </div>
+            <Link
+              to="/login"
+              className={`hidden h-10 items-center sm:inline-flex ${TERMINAL_LANDING_CTA_SECONDARY} px-4 py-0 text-sm`}
+            >
               {t("auth.loginButton")}
             </Link>
             <Link
               to="/register"
-              className={`hidden min-h-11 sm:inline-flex md:px-6 ${TERMINAL_LANDING_CTA_PRIMARY} px-4 py-2.5 text-sm`}
+              className={`hidden h-10 items-center sm:inline-flex ${TERMINAL_LANDING_CTA_PRIMARY} px-4 py-0 text-sm md:px-6`}
             >
               {t("landing.hero.ctaPrimary")}
             </Link>
@@ -1057,7 +1077,7 @@ export function LandingPage() {
       </header>
 
       {/* ═══ HERO ═══ */}
-      <section className="hero-gradient-bg relative isolate flex min-h-[min(100dvh,920px)] items-start overflow-x-hidden pt-20 pb-12 md:min-h-screen">
+      <section className={TERMINAL_LANDING_HERO}>
         <div
           className="pointer-events-none absolute left-4 top-8 z-0 h-40 w-40 rounded-full opacity-20 blur-3xl sm:left-10 sm:top-10 sm:h-56 sm:w-56 md:h-72 md:w-72"
           style={{ background: "radial-gradient(circle, #0891b2, transparent)" }}
@@ -1071,21 +1091,21 @@ export function LandingPage() {
         <SignalWave offset={320} opacity={0.14} />
         <SignalWave offset={460} opacity={0.09} color="#0891b2" />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 px-4 lg:grid-cols-[3fr_2fr] lg:gap-12">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl items-start gap-8 px-4 lg:grid-cols-[3fr_2fr] lg:items-center lg:gap-10">
           {/* Left column */}
           <div className="flex flex-col justify-center">
-            <span className={`landing-hero-badge mb-6 ${TERMINAL_LANDING_EYEBROW}`}>{t("landing.hero.badge")}</span>
+            <span className={`landing-hero-badge mb-4 sm:mb-5 ${TERMINAL_LANDING_EYEBROW}`}>{t("landing.hero.badge")}</span>
 
             <h1 className="hero-h1 text-terminal-text">
               <span className="landing-hero-h1-line1 block">{t("landing.hero.titleLine1")}</span>
               <span className="landing-hero-h1-line2 mt-1 block text-terminal-cyan">{t("landing.hero.titleLine2")}</span>
             </h1>
 
-            <p className="landing-hero-sub landing-body mt-6 max-w-lg text-terminal-textSecondary">
+            <p className="landing-hero-sub landing-body mt-4 max-w-lg text-terminal-textSecondary sm:mt-5">
               {t("landing.hero.subtitle")}
             </p>
 
-            <div className="landing-hero-cta mt-8 flex w-full flex-col gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+            <div className="landing-hero-cta mt-6 flex w-full flex-col gap-3 sm:mt-7 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Link to="/register" className={TERMINAL_LANDING_CTA_PRIMARY}>
                 {t("landing.hero.ctaPrimary")} →
               </Link>
@@ -1094,18 +1114,18 @@ export function LandingPage() {
               </a>
             </div>
 
-            <p className="landing-hero-trust mt-8 max-w-lg text-sm font-medium leading-relaxed text-terminal-textMuted sm:mt-10">
+            <p className="landing-hero-trust mt-5 max-w-lg text-sm font-medium leading-relaxed text-terminal-textMuted sm:mt-6">
               {t("landing.heroSocialProof")}
             </p>
           </div>
 
           {/* Right column — Hero visual */}
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center lg:max-w-xl lg:justify-self-end">
             <HeroVisual heroPrices={heroPrices} heroPctByTicker={heroPctByTicker} flashTicker={flashTicker} />
           </div>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 animate-bounce">
+        <div className="absolute bottom-4 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 animate-bounce md:flex">
           <span className="text-xs text-gray-400">{t("landing.hero.scrollHint")}</span>
           <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -1114,7 +1134,7 @@ export function LandingPage() {
       </section>
 
       {/* ═══ SOCIAL PROOF MARQUEE (flush under hero, zero vertical gap) ═══ */}
-      <section className="mt-0 overflow-hidden border-y border-terminal-border bg-terminal-panel py-4">
+      <section className="mt-0 overflow-hidden border-y border-terminal-border bg-terminal-panel py-3">
         <div className="animate-marquee flex w-max gap-8 whitespace-nowrap px-4 text-sm font-semibold text-terminal-text md:text-base">
           {marqueeTrack.map((item, i) => (
             <span key={`${item}-${i}`} className="inline-flex items-center gap-8">
@@ -1129,7 +1149,7 @@ export function LandingPage() {
 
       {/* ═══ STATS COUNTERS ═══ */}
       <section
-        className="relative overflow-hidden border-y border-white/10 py-14 md:py-20"
+        className="relative overflow-hidden border-y border-terminal-border py-10 md:py-14"
         style={{
           background: "linear-gradient(135deg, #0b1220 0%, #050914 50%, #0a1628 100%)",
         }}
@@ -1148,8 +1168,10 @@ export function LandingPage() {
             <div className="text-5xl font-black tabular-nums text-white md:text-6xl">{langsCounter.count}</div>
             <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">{t("landing.stats.languages")}</p>
           </div>
-          <div className="flex flex-col items-center px-4 py-8 text-center md:py-10">
-            <div className="text-3xl font-black text-white md:text-4xl">{t("landing.stats.investors")}</div>
+          <div className="flex flex-col items-center justify-center px-4 py-8 text-center md:py-10">
+            <div className="text-2xl font-black leading-tight text-terminal-cyan md:text-3xl lg:text-4xl">
+              {t("landing.stats.markets")}
+            </div>
           </div>
         </div>
       </section>
@@ -1157,7 +1179,7 @@ export function LandingPage() {
       {/* ═══ PROBLEM ═══ */}
       <section
         id="problem"
-        className="relative scroll-mt-24 overflow-hidden px-4 py-20"
+        className="relative scroll-mt-24 overflow-hidden px-4 py-12 sm:py-16"
         style={{ background: "linear-gradient(180deg, transparent 0%, rgb(34 211 238 / 0.04) 100%)" }}
       >
         <SignalWave offset={-40} opacity={0.12} />
@@ -1174,10 +1196,10 @@ export function LandingPage() {
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <h2 className="section-h2 text-white">{t("landing.problem.title")}</h2>
-          <p className="landing-body mt-4 text-[#94a3b8]">{t("landing.problem.subtitle")}</p>
+          <p className="landing-body mt-3 text-terminal-textSecondary">{t("landing.problem.subtitle")}</p>
         </div>
 
-        <div className="relative z-10 mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-3">
+        <div className="relative z-10 mx-auto mt-10 grid max-w-6xl gap-6 md:mt-12 md:grid-cols-3 md:gap-8">
           {PROBLEM_CARD_KEYS.map((cardKey, index) => {
             const staggerClass = index === 0 ? "stagger-1" : index === 1 ? "stagger-2" : "stagger-3";
             const title = t(`landing.problem.cards.${cardKey}.title`);
@@ -1242,7 +1264,7 @@ export function LandingPage() {
       <LandingCompanySearchTeaser />
 
       {/* ═══ HOW IT WORKS ═══ */}
-      <section id="how-it-works" className="relative scroll-mt-24 overflow-hidden px-4 py-20">
+      <section id="how-it-works" className="relative scroll-mt-24 overflow-hidden px-4 py-12 sm:py-16">
         <SignalWave offset={-24} opacity={0.1} />
         <h2 className="section-h2 relative z-10 text-center text-white">{t("landing.howItWorks.title")}</h2>
 
@@ -1339,7 +1361,7 @@ export function LandingPage() {
       </section>
 
       {/* ═══ PRICING ═══ */}
-      <section id="pricing" className="relative scroll-mt-24 overflow-hidden px-4 py-20">
+      <section id="pricing" className="relative scroll-mt-24 overflow-hidden px-4 py-12 sm:py-16">
         <SignalWave offset={-20} opacity={0.09} />
         <div className="relative z-10 mx-auto max-w-6xl">
           <h2 className="section-h2 text-center text-white">{t("landing.pricing.title")}</h2>
@@ -1371,10 +1393,9 @@ export function LandingPage() {
             </div>
           </div>
 
-          <p className="mt-6 text-center text-sm font-medium text-[#94a3b8]">
+          <p className="mt-6 text-center text-sm font-medium text-terminal-cyan/90">
             {t("landing.pricing.betaNote", {
-              defaultValue:
-                "EUR checkout migration in progress. Join the beta waitlist for trial access while Stripe EUR prices are configured.",
+              defaultValue: "7-day trial. No card required. Upgrade when you are ready.",
             })}
           </p>
 
@@ -1426,7 +1447,7 @@ export function LandingPage() {
                       to="/waitlist?source=landing"
                       className="mt-8 inline-flex w-full justify-center rounded-full bg-terminal-cyan py-3 text-center text-sm font-bold text-terminal-buttonText transition hover:bg-terminal-cyanStrong"
                     >
-                      {t(tier.ctaKey, { defaultValue: "Join beta" })}
+                      {t(tier.ctaKey, { defaultValue: "Start 7-day trial" })}
                     </Link>
                   </article>
                 );
@@ -1467,14 +1488,14 @@ export function LandingPage() {
                       to="/register"
                       className="mt-8 inline-flex w-full justify-center rounded-full border border-white/15 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                     >
-                      {t(tier.ctaKey, { defaultValue: "Start trial" })}
+                      {t(tier.ctaKey, { defaultValue: "Start 7-day trial" })}
                     </Link>
                   ) : (
                     <Link
                       to="/waitlist?source=landing"
                       className={`mt-8 inline-flex w-full justify-center rounded-full border-2 border-terminal-cyan py-3 text-sm font-bold text-terminal-cyan transition hover:bg-terminal-cyan/10`}
                     >
-                      {t(tier.ctaKey, { defaultValue: "Join beta" })}
+                      {t(tier.ctaKey, { defaultValue: "Start 7-day trial" })}
                     </Link>
                   )}
                 </article>
@@ -1533,6 +1554,9 @@ export function LandingPage() {
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-terminal-textMuted">
               {t("landing.footer.tagline")}
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-terminal-textMuted/80">
+              {t("landing.footer.operatorNote")}
             </p>
           </div>
           <div>

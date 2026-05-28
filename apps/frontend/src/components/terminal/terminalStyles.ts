@@ -120,7 +120,13 @@ export const TERMINAL_LANDING_BG =
   "min-h-screen bg-terminal-bg text-terminal-text antialiased";
 
 export const TERMINAL_LANDING_SECTION =
-  "relative scroll-mt-24 overflow-hidden px-4 py-16 sm:py-20";
+  "relative scroll-mt-24 overflow-hidden px-4 py-12 sm:py-16";
+
+export const TERMINAL_LANDING_HERO =
+  "hero-gradient-bg relative isolate overflow-x-hidden pt-16 pb-10 sm:pt-20 sm:pb-12 lg:pt-24 lg:pb-14";
+
+export const TERMINAL_LANDING_NAV_INNER =
+  "mx-auto flex h-14 max-w-7xl items-center gap-2 px-4 sm:h-[3.75rem] sm:gap-4";
 
 export const TERMINAL_LANDING_EYEBROW =
   "inline-flex items-center rounded-full border border-terminal-cyan/30 bg-terminal-cyan/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-terminal-cyan";

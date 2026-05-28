@@ -809,14 +809,14 @@
   },
   "landing": {
     "footerCta": {
-      "button": "Rozpocznij trial",
+      "button": "Rozpocznij 7-dniowy trial",
       "disclaimer": "Produkt edukacyjny. To nie jest porada inwestycyjna. Inwestowanie wiąże się z ryzykiem.",
       "pricing": "Zobacz cennik",
-      "title": "Rozpocznij trial już dziś"
+      "title": "Rozpocznij 7-dniowy trial już dziś"
     },
     "hero": {
-      "badge": "AI · 130+ giełd · 9 języków",
-      "ctaPrimary": "Rozpocznij trial",
+      "badge": "Kokpit AI · Edukacyjny · Bez porady inwestycyjnej",
+      "ctaPrimary": "Rozpocznij 7-dniowy trial",
       "ctaSecondary": "Zobacz cennik",
       "scrollHint": "Przewiń",
       "subtitle": "Jeden kokpit dla sygnałów, kontekstu ryzyka i guardrails behawioralnych — dla zdyscyplinowanych inwestorów detalicznych, nie dla hype’u.",
@@ -903,7 +903,7 @@
       "tiers": {
         "pro": {
           "body": "Wiedz, co się dzieje.",
-          "cta": "Dołącz do beta",
+          "cta": "Rozpocznij 7-dniowy trial",
           "features": [
             "AI Brief",
             "Sygnały",
@@ -914,7 +914,7 @@
         },
         "proPlus": {
           "body": "Wiedz, co to znaczy.",
-          "cta": "Dołącz do beta",
+          "cta": "Rozpocznij 7-dniowy trial",
           "features": [
             "Pełna analiza Premium",
             "Historical Twins",
@@ -926,7 +926,7 @@
         "trial": {
           "name": "Trial",
           "body": "7 dni doświadczenia Pro+ bez karty płatniczej.",
-          "cta": "Rozpocznij trial",
+          "cta": "Rozpocznij 7-dniowy trial",
           "duration": "7 dni",
           "features": [
             "Ograniczone moduły Pro+",
@@ -949,7 +949,7 @@
       "title": "Cennik EUR",
       "yearly": "yearly",
       "checkoutError": "Checkout is not available yet.",
-      "betaNote": "Trwa migracja checkoutu EUR. Dołącz do listy beta, aby uzyskać dostęp trial, dopóki nie skonfigurujemy cen Stripe w EUR."
+      "betaNote": "7-dniowy trial. Bez karty. Ulepsz plan, gdy będziesz gotowy."
     },
     "problem": {
       "cards": {
@@ -962,16 +962,17 @@
           "title": "Sygnał bez kontekstu."
         },
         "emotions": {
-          "body": "Strach, chciwość, FOMO. Badania potwierdzają — 80% strat to błędy psychologiczne, nie analityczne.",
-          "title": "Emocje niszczą portfel."
+          "body": "Strach, chciwość i FOMO często pojawiają się przy fragmentarycznym kontekście — nie przy braku analizy.",
+          "title": "Emocja może przebić Twój plan."
         }
       },
-      "subtitle": "Każdy retail inwestor zmaga się z tym samym — i nikt mu nie pomaga.",
-      "title": "Tracisz pieniądze. Wiesz dlaczego."
+      "subtitle": "Większość błędów retail wynika z rozproszonego kontekstu, emocji i timingu.",
+      "title": "Inwestorzy detaliczni rzadko brakują danych."
     },
     "footer": {
       "company": "Firma",
-      "copyright": "© 2026 StockAI Pro · Wszelkie prawa zastrzeżone",
+      "copyright": "© 2026 StockAI Pro · Operatorem jest AMC Energy Sp. z o.o.",
+      "operatorNote": "StockAI Pro jest prowadzony przez AMC Energy Sp. z o.o. (podmiot prawny).",
       "languagesAria": "Wybierz język",
       "legal": "Informacje prawne",
       "legalEtoro": "Handel z eToro (partner)",
@@ -988,16 +989,16 @@
       "title": "Jak to działa?",
       "steps": [
         {
-          "title": "Zarejestruj się",
-          "desc": "30 sekund. Bez karty kredytowej."
+          "title": "Sprawdź sygnał",
+          "desc": "Przeglądaj setupy przez sygnały, AI Brief i kluczowe flagi ryzyka."
         },
         {
-          "title": "Wybierz rynek",
-          "desc": "GPW, US, DAX — lub wszystkie naraz."
+          "title": "Zrozum kontekst",
+          "desc": "Zobacz ramę rynku, sektora i timingu zanim określisz rozmiar pozycji."
         },
         {
-          "title": "Inwestuj mądrzej",
-          "desc": "AI analizuje, coach uczy, Ty decydujesz."
+          "title": "Kontroluj zachowanie",
+          "desc": "Guardrails coacha pokazują wzorce emocjonalne, żebyś zwolnił przed działaniem."
         }
       ]
     },
@@ -1021,18 +1022,17 @@
     },
     "stats": {
       "exchanges": "giełd",
-      "investors": "Early Access",
       "languages": "języków",
+      "markets": "GPW · NYSE · DAX",
       "modules": "modułów AI"
     },
     "socialProof": {
-      "marqueeMarkets": "GPW + NYSE + DAX",
-      "stats": {
-        "adFree": "100% bez reklam",
-        "exchanges": "130+ giełd",
-        "languages": "9 języków",
-        "modules": "27 modułów AI"
+      "marquee": {
+        "trial": "7-dniowy trial · Bez karty",
+        "educational": "Edukacyjny · Bez porady inwestycyjnej",
+        "decisionSupport": "Wsparcie decyzji · Ty decydujesz"
       },
+      "marqueeMarkets": "GPW + NYSE + DAX",
       "title": "Early access — platforma edukacyjna"
     },
     "solution": {

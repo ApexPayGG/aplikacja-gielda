@@ -743,14 +743,14 @@
   },
   "landing": {
     "footerCta": {
-      "button": "Start trial",
+      "button": "Start 7-day trial",
       "disclaimer": "Educational product. Not financial advice. Investing involves risk.",
       "pricing": "View pricing",
-      "title": "Start your trial today"
+      "title": "Start your 7-day trial today"
     },
     "hero": {
-      "badge": "AI-powered · 130+ exchanges · 9 languages",
-      "ctaPrimary": "Start trial",
+      "badge": "AI market cockpit · Educational · Not financial advice",
+      "ctaPrimary": "Start 7-day trial",
       "ctaSecondary": "View pricing",
       "scrollHint": "Scroll",
       "subtitle": "One cockpit for signals, risk context, and behavioral guardrails — built for disciplined retail investors, not hype.",
@@ -837,7 +837,8 @@
     },
     "footer": {
       "company": "Company",
-      "copyright": "© 2026 StockAI Pro · All rights reserved",
+      "copyright": "© 2026 StockAI Pro · Operated by AMC Energy Sp. z o.o.",
+      "operatorNote": "StockAI Pro is operated by AMC Energy Sp. z o.o. (legal entity).",
       "languagesAria": "Choose language",
       "legal": "Legal",
       "legalEtoro": "Trade with eToro (partner)",
@@ -854,16 +855,16 @@
       "title": "How it works?",
       "steps": [
         {
-          "title": "Sign up",
-          "desc": "30 seconds. No credit card."
+          "title": "Check signal",
+          "desc": "Screen setups with signals, AI Brief, and key risk flags."
         },
         {
-          "title": "Pick your market",
-          "desc": "GPW, US, DAX — or all at once."
+          "title": "Understand context",
+          "desc": "See market, sector, and timing framing before you size a position."
         },
         {
-          "title": "Invest smarter",
-          "desc": "AI analyzes, coach teaches, you decide."
+          "title": "Control behavior",
+          "desc": "Coach guardrails surface emotional patterns so you pause before acting."
         }
       ]
     },
@@ -873,8 +874,8 @@
     },
     "stats": {
       "exchanges": "exchanges",
-      "investors": "Early Access",
       "languages": "languages",
+      "markets": "GPW · NYSE · DAX",
       "modules": "AI modules"
     },
     "worldClocks": {
@@ -893,7 +894,7 @@
       "tiers": {
         "pro": {
           "body": "Know what is happening.",
-          "cta": "Join beta",
+          "cta": "Start 7-day trial",
           "features": [
             "AI Brief",
             "Signals",
@@ -904,7 +905,7 @@
         },
         "proPlus": {
           "body": "Know what it means.",
-          "cta": "Join beta",
+          "cta": "Start 7-day trial",
           "features": [
             "Full Premium Analysis",
             "Historical Twins",
@@ -916,7 +917,7 @@
         "trial": {
           "name": "Trial",
           "body": "7-day Pro+ experience without a credit card.",
-          "cta": "Start trial",
+          "cta": "Start 7-day trial",
           "duration": "7 days",
           "features": [
             "Limited Pro+ modules",
@@ -939,7 +940,7 @@
       "title": "EUR pricing",
       "yearly": "yearly",
       "checkoutError": "Checkout is not available yet.",
-      "betaNote": "EUR checkout migration in progress. Join the beta waitlist for trial access while Stripe EUR prices are configured."
+      "betaNote": "7-day trial. No card required. Upgrade when you are ready."
     },
     "problem": {
       "cards": {
@@ -952,21 +953,20 @@
           "title": "Signal without context."
         },
         "emotions": {
-          "body": "Fear, greed, FOMO. Research shows — 80% of losses are psychological mistakes, not analytical ones.",
-          "title": "Emotions destroy your portfolio."
+          "body": "Fear, greed, and FOMO often show up when context is fragmented — not when analysis is missing.",
+          "title": "Emotion can override your plan."
         }
       },
-      "subtitle": "Every retail investor struggles with the same things — and nobody helps.",
-      "title": "You're losing money. You know why."
+      "subtitle": "Most retail mistakes come from fragmented context, emotion, and timing.",
+      "title": "Retail investors rarely lack data."
     },
     "socialProof": {
-      "marqueeMarkets": "GPW + NYSE + DAX",
-      "stats": {
-        "adFree": "100% ad-free",
-        "exchanges": "130+ exchanges",
-        "languages": "9 languages",
-        "modules": "27 AI modules"
+      "marquee": {
+        "trial": "7-day trial · No card required",
+        "educational": "Educational · Not financial advice",
+        "decisionSupport": "Decision-support · You stay in control"
       },
+      "marqueeMarkets": "GPW + NYSE + DAX",
       "title": "Early access — educational platform"
     },
     "solution": {
