@@ -12,8 +12,16 @@ import {
 } from "../services/api";
 
 const USER_ID_FALLBACK = "";
-const MOOD_EMOJIS = ["😞", "😕", "😐", "🙂", "😄"] as const;
+const MOOD_VALUES = [1, 2, 3, 4, 5] as const;
 const RISK_LEVELS: DailyCheckInRiskLevel[] = ["LOW", "MEDIUM", "HIGH"];
+
+const MOOD_LABEL_DEFAULTS: Record<(typeof MOOD_VALUES)[number], { full: string; compact: string }> = {
+  1: { full: "Stressed", compact: "Stress" },
+  2: { full: "Cautious", compact: "Caution" },
+  3: { full: "Neutral", compact: "Neutral" },
+  4: { full: "Focused", compact: "Focus" },
+  5: { full: "Confident", compact: "Confident" },
+};
 
 export type DailyCheckInWidgetState = {
   hasCheckedIn: boolean;
@@ -34,8 +42,22 @@ function readUserId(): string {
   return value || USER_ID_FALLBACK;
 }
 
-function moodEmoji(mood: number): string {
-  return MOOD_EMOJIS[Math.min(MOOD_EMOJIS.length, Math.max(1, mood)) - 1] ?? MOOD_EMOJIS[2];
+function clampMood(value: number): (typeof MOOD_VALUES)[number] {
+  const clamped = Math.min(5, Math.max(1, Math.round(value)));
+  return clamped as (typeof MOOD_VALUES)[number];
+}
+
+function moodLabel(
+  t: (key: string, opts?: { defaultValue?: string }) => string,
+  value: number,
+  compact: boolean,
+): string {
+  const mood = clampMood(value);
+  const defaults = MOOD_LABEL_DEFAULTS[mood];
+  const labelKey = compact ? "compact" : "full";
+  return t(`checkin.mindset.${mood}.${labelKey}`, {
+    defaultValue: defaults[labelKey],
+  });
 }
 
 function publishState(
@@ -161,10 +183,43 @@ export function DailyCheckInWidget({
       : "mt-1 text-sm text-textSecondary";
 
   const panelClass = isTerminal
-    ? "flex items-center gap-3 rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/60 px-3 py-2.5"
+    ? "rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/60 px-3 py-2.5"
     : isGlass
-      ? "flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 backdrop-blur-sm"
-      : "flex items-center gap-3 rounded-xl border border-border/80 bg-bgSecondary/50 px-3 py-2.5";
+      ? "rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 backdrop-blur-sm"
+      : "rounded-xl border border-border/80 bg-bgSecondary/50 px-3 py-2.5";
+
+  const mindsetLabelClass = isTerminal
+    ? "text-[10px] font-semibold uppercase tracking-[0.12em] text-terminal-textMuted"
+    : isGlass
+      ? "text-[10px] font-semibold uppercase tracking-[0.12em] text-white/50"
+      : "text-[10px] font-semibold uppercase tracking-[0.12em] text-textMuted";
+
+  const mindsetBtnClass = (selected: boolean) => {
+    const base =
+      "flex min-w-0 flex-1 flex-col items-center gap-1 rounded-md border px-1 py-1.5 font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terminal-cyan/40";
+    const size = compact ? "text-[9px] leading-tight sm:text-[10px]" : "text-[10px] leading-tight sm:text-[11px]";
+    if (isTerminal || isGlass) {
+      return `${base} ${size} ${
+        selected
+          ? "border-terminal-cyan bg-terminal-cyan/15 text-terminal-cyan"
+          : "border-terminal-borderMuted bg-terminal-panelSecondary/60 text-terminal-textSecondary hover:border-terminal-cyan/30"
+      }`;
+    }
+    return `${base} ${size} ${
+      selected
+        ? "border-brandDark bg-brandDark/10 text-brandDark"
+        : "border-border bg-bgSecondary text-textSecondary hover:border-borderStrong"
+    }`;
+  };
+
+  const mindsetIndicatorClass = (selected: boolean, level: number) => {
+    if (!selected) {
+      return isTerminal || isGlass ? "bg-terminal-borderMuted/80" : "bg-border";
+    }
+    const intensity =
+      level <= 2 ? "bg-terminal-warning" : level === 3 ? "bg-terminal-textMuted" : "bg-terminal-cyan";
+    return intensity;
+  };
 
   const skeletonClass = isTerminal ? "bg-terminal-panelSecondary" : isGlass ? "bg-white/10" : "bg-bgSecondary";
 
@@ -203,22 +258,47 @@ export function DailyCheckInWidget({
           </div>
 
           <div className={panelClass}>
-            <span className="text-2xl" aria-hidden>
-              {moodEmoji(displayMood)}
-            </span>
-            <div className="min-w-0">
+            <div className="min-w-0 space-y-1.5">
               <p
-                className={`text-xs font-medium ${
-                  isTerminal ? "text-terminal-textMuted" : isGlass ? "text-white/50" : "text-textMuted"
+                className={`text-[11px] ${
+                  isTerminal ? "text-terminal-textSecondary" : isGlass ? "text-white/70" : "text-textSecondary"
                 }`}
               >
+                <span
+                  className={`font-semibold uppercase tracking-wide ${
+                    isTerminal ? "text-terminal-textMuted" : isGlass ? "text-white/50" : "text-textMuted"
+                  }`}
+                >
+                  {t("checkin.mindset.label", { defaultValue: "Mindset" })}:{" "}
+                </span>
+                {moodLabel(t, displayMood, compact)}
+              </p>
+              <p
+                className={`text-[11px] ${
+                  isTerminal ? "text-terminal-textSecondary" : isGlass ? "text-white/70" : "text-textSecondary"
+                }`}
+              >
+                <span
+                  className={`font-semibold uppercase tracking-wide ${
+                    isTerminal ? "text-terminal-textMuted" : isGlass ? "text-white/50" : "text-textMuted"
+                  }`}
+                >
+                  {t("checkin.risk.label", { defaultValue: "Risk" })}:{" "}
+                </span>
                 {t(`checkin.risk.${displayRisk}`, { defaultValue: displayRisk })}
               </p>
               <p
-                className={`mt-0.5 text-sm ${
+                className={`text-sm leading-snug ${
                   isTerminal ? "text-terminal-text" : isGlass ? "text-white/90" : "text-textPrimary"
                 }`}
               >
+                <span
+                  className={`font-semibold uppercase tracking-wide ${
+                    isTerminal ? "text-terminal-textMuted" : isGlass ? "text-white/50" : "text-textMuted"
+                  }`}
+                >
+                  {t("checkin.plan.label", { defaultValue: "Plan" })}:{" "}
+                </span>
                 {savedPlan || t("checkin.done.noPlan", { defaultValue: "No plan saved — add one tomorrow morning." })}
               </p>
             </div>
@@ -283,15 +363,6 @@ export function DailyCheckInWidget({
     );
   }
 
-  const moodBtn = (selected: boolean) =>
-    isTerminal || isGlass
-      ? selected
-        ? "border-terminal-cyan bg-terminal-cyan/15"
-        : "border-terminal-borderMuted bg-terminal-panelSecondary/60 hover:border-terminal-cyan/30"
-      : selected
-        ? "border-brandDark bg-brandDark/10"
-        : "border-border bg-bgSecondary hover:border-borderStrong";
-
   const riskBtn = (selected: boolean) =>
     isTerminal
       ? selected
@@ -329,22 +400,33 @@ export function DailyCheckInWidget({
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {MOOD_EMOJIS.map((emoji, idx) => {
-            const value = idx + 1;
-            const selected = mood === value;
-            return (
-              <button
-                key={emoji}
-                type="button"
-                onClick={() => setMood(value)}
-                className={`rounded-lg border ${compact ? "px-2 py-1.5 text-lg" : "px-3 py-2 text-xl"} transition ${moodBtn(selected)}`}
-                aria-label={`${t("checkin.moodLabel", { defaultValue: "Mood" })} ${value}`}
-              >
-                {emoji}
-              </button>
-            );
-          })}
+        <div>
+          <p className={mindsetLabelClass}>{t("checkin.mindset.label", { defaultValue: "Mindset" })}</p>
+          <div
+            className="mt-1.5 grid grid-cols-5 gap-1"
+            role="group"
+            aria-label={t("checkin.mindset.label", { defaultValue: "Mindset" })}
+          >
+            {MOOD_VALUES.map((value) => {
+              const selected = mood === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setMood(value)}
+                  className={mindsetBtnClass(selected)}
+                  aria-pressed={selected}
+                  aria-label={moodLabel(t, value, false)}
+                >
+                  <span
+                    className={`h-0.5 w-full max-w-[2rem] rounded-full ${mindsetIndicatorClass(selected, value)}`}
+                    aria-hidden
+                  />
+                  <span className="truncate px-0.5">{moodLabel(t, value, compact)}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div>

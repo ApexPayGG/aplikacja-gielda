@@ -140,7 +140,19 @@
     "moodLabel": "Mood",
     "planLabel": "What is your plan today?",
     "planPlaceholder": "Optional...",
+    "mindset": {
+      "label": "Mindset",
+      "1": { "full": "Stressed", "compact": "Stress" },
+      "2": { "full": "Cautious", "compact": "Caution" },
+      "3": { "full": "Neutral", "compact": "Neutral" },
+      "4": { "full": "Focused", "compact": "Focus" },
+      "5": { "full": "Confident", "compact": "Confident" }
+    },
+    "plan": {
+      "label": "Plan"
+    },
     "risk": {
+      "label": "Risk",
       "HIGH": "High",
       "LOW": "Low",
       "MEDIUM": "Medium"

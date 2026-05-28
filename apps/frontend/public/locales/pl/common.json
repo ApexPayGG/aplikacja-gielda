@@ -233,7 +233,19 @@
     "moodLabel": "Nastrój",
     "planLabel": "Jaki jest Twój plan na dziś?",
     "planPlaceholder": "Opcjonalnie…",
+    "mindset": {
+      "label": "Nastawienie",
+      "1": { "full": "Zestresowany", "compact": "Stres" },
+      "2": { "full": "Ostrożny", "compact": "Ostrożnie" },
+      "3": { "full": "Neutralny", "compact": "Neutralny" },
+      "4": { "full": "Skupiony", "compact": "Skupienie" },
+      "5": { "full": "Pewny siebie", "compact": "Pewność" }
+    },
+    "plan": {
+      "label": "Plan"
+    },
     "risk": {
+      "label": "Ryzyko",
       "HIGH": "Wysoki",
       "LOW": "Niski",
       "MEDIUM": "Średni"
