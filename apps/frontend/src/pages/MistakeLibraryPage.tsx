@@ -8,15 +8,19 @@ import {
   type MistakeType,
 } from "../services/api";
 import {
-  GLASS_BTN_PRIMARY,
-  GLASS_HERO,
-  GLASS_PAGE_BG,
-  GLASS_PAGE_SUBTITLE,
-  GLASS_PAGE_TITLE,
-  GLASS_SECTION,
-  GLASS_STAT_CARD,
-} from "../components/behavioral-coach/glassStyles";
-import { colors } from "../styles/designSystem";
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_FILTER_CHIP,
+  TERMINAL_FILTER_CHIP_ACTIVE,
+  TERMINAL_LINK_ACCENT,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_TOOL_HERO,
+  TERMINAL_TOOL_PAGE,
+  TERMINAL_TOOL_PAGE_INNER,
+  TERMINAL_TOOL_PANEL,
+  TERMINAL_TOOL_RESULT_CARD,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
@@ -38,18 +42,18 @@ const typeMeta: Record<
 > = {
   EMOTIONAL: {
     label: "Emotions",
-    badgeColor: colors.negative,
-    badgeBg: "rgba(229, 57, 53, 0.12)",
+    badgeColor: "#ef4444",
+    badgeBg: "rgba(239, 68, 68, 0.12)",
   },
   STRATEGY: {
     label: "Strategy",
-    badgeColor: colors.brandGold,
-    badgeBg: "rgba(255, 174, 51, 0.16)",
+    badgeColor: "#f59e0b",
+    badgeBg: "rgba(245, 158, 11, 0.16)",
   },
   TIMING: {
     label: "Timing",
-    badgeColor: colors.brandMedium,
-    badgeBg: "rgba(122, 15, 158, 0.12)",
+    badgeColor: "#22d3ee",
+    badgeBg: "rgba(34, 211, 238, 0.12)",
   },
 };
 
@@ -133,12 +137,12 @@ export function MistakeLibraryPage() {
   }
 
   return (
-    <div className={`${GLASS_PAGE_BG} px-4 py-10`}>
-      <div className="mx-auto max-w-6xl">
-        <header className={`${GLASS_HERO} mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between`}>
+    <div className={TERMINAL_TOOL_PAGE}>
+      <div className={TERMINAL_TOOL_PAGE_INNER}>
+        <header className={`${TERMINAL_TOOL_HERO} mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between`}>
           <div>
-            <h1 className={GLASS_PAGE_TITLE}>{t("mistakes.title", { defaultValue: "Mistake Library" })}</h1>
-            <p className={`${GLASS_PAGE_SUBTITLE} mt-2`}>
+            <h1 className={TERMINAL_PAGE_TITLE}>{t("mistakes.title", { defaultValue: "Mistake Library" })}</h1>
+            <p className={`${TERMINAL_PAGE_SUBTITLE} mt-2`}>
               {t("mistakes.subtitle", {
                 defaultValue: "Most common investing mistake patterns and their cost.",
               })}
@@ -148,7 +152,7 @@ export function MistakeLibraryPage() {
             {mistakeSymbols.length > 0 ? (
               <Link
                 to={`/strategy-dna?from=mistakes&symbols=${encodeURIComponent(mistakeSymbols.join(","))}`}
-                className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-[#22d3ee] hover:bg-white/10"
+                className={`${TERMINAL_LINK_ACCENT} rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary px-3 py-2 text-sm no-underline`}
               >
                 {t("mistakes.dnaContextLink")}
               </Link>
@@ -157,34 +161,32 @@ export function MistakeLibraryPage() {
               type="button"
               onClick={() => void onAnalyzeClick()}
               disabled={analyzing}
-              className={`${GLASS_BTN_PRIMARY} disabled:cursor-not-allowed disabled:opacity-60`}
+              className={`${TERMINAL_BUTTON_PRIMARY} disabled:cursor-not-allowed disabled:opacity-60`}
             >
               {analyzing ? t("mistakes.analyzing") : t("mistakes.analyzeButton")}
             </button>
           </div>
         </header>
 
-        {error ? (
-          <p className="mb-4 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>
-        ) : null}
+        {error ? <div className={`mb-4 ${TERMINAL_DANGER_PANEL}`}>{error}</div> : null}
 
         <section className="mb-6 grid gap-3 md:grid-cols-3">
-          <article className={GLASS_STAT_CARD}>
-            <p className="text-xs uppercase tracking-wide text-white/50">{t("mistakes.totalErrors", { defaultValue: "Total mistakes" })}</p>
-            <p className="mt-2 text-3xl font-bold text-white">{summary.total}</p>
+          <article className={TERMINAL_TOOL_RESULT_CARD}>
+            <p className="text-xs uppercase tracking-wide text-terminal-textMuted">{t("mistakes.totalErrors", { defaultValue: "Total mistakes" })}</p>
+            <p className="mt-2 text-3xl font-bold text-terminal-text">{summary.total}</p>
           </article>
-          <article className={GLASS_STAT_CARD}>
-            <p className="text-xs uppercase tracking-wide text-white/50">{t("mistakes.mostCommonType", { defaultValue: "Most common type" })}</p>
-            <p className="mt-2 text-2xl font-bold text-[#22d3ee]">{mostCommonType}</p>
+          <article className={TERMINAL_TOOL_RESULT_CARD}>
+            <p className="text-xs uppercase tracking-wide text-terminal-textMuted">{t("mistakes.mostCommonType", { defaultValue: "Most common type" })}</p>
+            <p className="mt-2 text-2xl font-bold text-terminal-cyan">{mostCommonType}</p>
           </article>
-          <article className={GLASS_STAT_CARD}>
-            <p className="text-xs uppercase tracking-wide text-white/50">{t("mistakes.costPct", { defaultValue: "Mistake cost %" })}</p>
-            <p className={`mt-2 text-2xl font-bold ${totalCostPct < 0 ? "text-red-400" : "text-emerald-400"}`}>{formatSignedPct(totalCostPct)}</p>
+          <article className={TERMINAL_TOOL_RESULT_CARD}>
+            <p className="text-xs uppercase tracking-wide text-terminal-textMuted">{t("mistakes.costPct", { defaultValue: "Mistake cost %" })}</p>
+            <p className={`mt-2 text-2xl font-bold ${totalCostPct < 0 ? "text-terminal-negative" : "text-terminal-positive"}`}>{formatSignedPct(totalCostPct)}</p>
           </article>
         </section>
 
-        <section className={`${GLASS_SECTION} mb-4`}>
-          <p className="mb-3 text-sm font-semibold text-white/70">{t("mistakes.filterByType", { defaultValue: "Filter by type" })}</p>
+        <section className={`${TERMINAL_TOOL_PANEL} mb-4`}>
+          <p className="mb-3 text-sm font-semibold text-terminal-textSecondary">{t("mistakes.filterByType", { defaultValue: "Filter by type" })}</p>
           <div className="flex flex-wrap gap-2">
             {(["ALL", "EMOTIONAL", "STRATEGY", "TIMING"] as MistakeFilter[]).map((type) => {
               const active = filter === type;
@@ -194,11 +196,7 @@ export function MistakeLibraryPage() {
                   key={type}
                   type="button"
                   onClick={() => setFilter(type)}
-                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
-                    active
-                      ? "border-[#a855f7]/50 bg-[#a855f7]/15 text-[#22d3ee]"
-                      : "border-white/15 bg-white/5 text-white/60 hover:border-white/25"
-                  }`}
+                  className={active ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP}
                 >
                   {label}
                 </button>
@@ -208,9 +206,9 @@ export function MistakeLibraryPage() {
         </section>
 
         {loading ? (
-          <div className={`${GLASS_SECTION} text-sm text-white/60`}>{t("common.loading")}</div>
+          <div className={`${TERMINAL_TOOL_PANEL} text-sm text-terminal-textMuted`}>{t("common.loading")}</div>
         ) : filteredItems.length === 0 ? (
-          <div className={`${GLASS_SECTION} text-sm text-white/60`}>
+          <div className={`${TERMINAL_TOOL_PANEL} text-sm text-terminal-textMuted`}>
             {t("mistakes.emptyFilter", { defaultValue: "No mistakes for the selected filter." })}
           </div>
         ) : (
@@ -218,7 +216,7 @@ export function MistakeLibraryPage() {
             {filteredItems.map((item) => {
               const meta = typeMeta[item.type];
               return (
-                <li key={item.id} className={GLASS_SECTION}>
+                <li key={item.id} className={TERMINAL_TOOL_PANEL}>
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
@@ -226,21 +224,21 @@ export function MistakeLibraryPage() {
                     >
                       {meta.label}
                     </span>
-                    <span className="text-xs font-medium text-white/50">
+                    <span className="text-xs font-medium text-terminal-textMuted">
                       {new Date(item.createdAt).toLocaleDateString("en-US")}
                     </span>
-                    <span className={`text-xs font-semibold ${item.pnl < 0 ? "text-red-400" : "text-emerald-400"}`}>
+                    <span className={`text-xs font-semibold ${item.pnl < 0 ? "text-terminal-negative" : "text-terminal-positive"}`}>
                       {t("mistakes.costLabel", { defaultValue: "Cost:" })} {formatSignedPct(item.pnl)}
                     </span>
                     <Link
                       to={`/strategy-dna?from=mistakes&symbol=${encodeURIComponent(item.symbol)}`}
-                      className="ml-auto text-xs font-semibold text-[#22d3ee] hover:underline"
+                      className={`${TERMINAL_LINK_ACCENT} ml-auto text-xs`}
                     >
                       {t("mistakes.dnaRowLink")}
                     </Link>
                   </div>
-                  <p className="mt-2 text-sm font-semibold text-white">{item.symbol}</p>
-                  <p className="mt-1 text-sm text-white/65">{item.explanation}</p>
+                  <p className="mt-2 text-sm font-semibold text-terminal-cyan">{item.symbol}</p>
+                  <p className="mt-1 text-sm text-terminal-textSecondary">{item.explanation}</p>
                 </li>
               );
             })}

@@ -2,7 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { getBehavioralCooldown, type BehavioralCooldownResponse } from "../services/api";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_TOOL_CARD,
+  TERMINAL_TOOL_GRID,
+  TERMINAL_TOOL_PAGE,
+  TERMINAL_TOOL_PAGE_INNER,
+  TERMINAL_TOOL_PANEL,
+  TERMINAL_WARNING_PANEL,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const FALLBACK_USER_ID = "mock-user";
@@ -23,14 +31,10 @@ function getStatus(cooldown: BehavioralCooldownResponse | null): "NORMAL" | "WAR
   return "NORMAL";
 }
 
-function statusStyle(status: "NORMAL" | "WARNING" | "COOLDOWN"): { bg: string; color: string } {
-  if (status === "COOLDOWN") {
-    return { bg: "rgba(229, 57, 53, 0.12)", color: colors.negative };
-  }
-  if (status === "WARNING") {
-    return { bg: "rgba(255, 174, 51, 0.16)", color: colors.brandGold };
-  }
-  return { bg: "rgba(0, 168, 107, 0.12)", color: colors.positive };
+function statusBadgeClass(status: "NORMAL" | "WARNING" | "COOLDOWN"): string {
+  if (status === "COOLDOWN") return "border-terminal-negative/35 bg-terminal-negative/10 text-terminal-negative";
+  if (status === "WARNING") return "border-amber-400/35 bg-amber-500/10 text-amber-200";
+  return "border-terminal-positive/35 bg-terminal-positive/10 text-terminal-positive";
 }
 
 export function LossStreakPage() {
@@ -92,19 +96,20 @@ export function LossStreakPage() {
   const status = getStatus(cooldown);
   const currentStreak = cooldown?.lossStreak ?? 0;
   const countdown = cooldown?.active && cooldown.unlocksAt ? formatCountdown(cooldown.unlocksAt, nowTs) : null;
-  const statusBadge = statusStyle(status);
-
   const streakHistory = useMemo(() => {
     const seed = [1, 0, 2, 1, 3];
     return [...seed, currentStreak];
   }, [currentStreak]);
 
   return (
-    <div className="min-h-screen px-4 py-10" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
-      <div className="mx-auto max-w-5xl space-y-6">
+    <div className={TERMINAL_TOOL_PAGE}>
+      <div className={`${TERMINAL_TOOL_PAGE_INNER} max-w-5xl`}>
         <header className="space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight">Loss Streak Monitor</h1>
-          <p className="text-sm md:text-base" style={{ color: colors.textSecondary }}>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
+            {t("lossStreakPage.eyebrow", { defaultValue: "Discipline monitor" })}
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-terminal-text md:text-4xl">Loss Streak Monitor</h1>
+          <p className="text-sm text-terminal-textSecondary md:text-base">
             {t("lossStreakPage.subtitle", {
               defaultValue:
                 "Manage loss streaks and automatic cooldown so you do not escalate risk after emotional trades.",
@@ -112,83 +117,70 @@ export function LossStreakPage() {
           </p>
         </header>
 
-        {error ? (
-          <p className="rounded-xl border px-4 py-3 text-sm" style={{ borderColor: colors.negative, color: colors.negative }}>
-            {error}
-          </p>
-        ) : null}
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
 
-        <section className="grid gap-4 md:grid-cols-3">
-          <article className="rounded-2xl glass-section p-5 shadow-sm md:col-span-2" style={{ borderColor: colors.border }}>
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+        <section className={TERMINAL_TOOL_GRID}>
+          <article className={`${TERMINAL_TOOL_CARD} md:col-span-2`}>
+            <p className="text-xs uppercase tracking-wide text-terminal-textMuted">
               {t("lossStreakPage.currentStreak", { defaultValue: "Current streak" })}
             </p>
             <p
-              className="mt-3 text-6xl font-bold leading-none"
-              style={{ color: currentStreak > 2 ? colors.negative : colors.brandDark }}
+              className={`mt-3 text-6xl font-bold leading-none ${
+                currentStreak > 2 ? "text-terminal-negative" : "text-terminal-cyan"
+              }`}
             >
               {loading ? "…" : currentStreak}
             </p>
           </article>
 
-          <article className="rounded-2xl glass-section p-5 shadow-sm" style={{ borderColor: colors.border }}>
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Status
-            </p>
-            <span
-              className="mt-3 inline-flex rounded-full px-3 py-1.5 text-sm font-semibold"
-              style={{ backgroundColor: statusBadge.bg, color: statusBadge.color }}
-            >
+          <article className={TERMINAL_TOOL_CARD}>
+            <p className="text-xs uppercase tracking-wide text-terminal-textMuted">Status</p>
+            <span className={`mt-3 inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold ${statusBadgeClass(status)}`}>
               {status}
             </span>
             {countdown ? (
-              <p className="mt-3 text-sm" style={{ color: colors.textSecondary }}>
+              <p className="mt-3 text-sm text-terminal-textSecondary">
                 {t("lossStreakPage.cooldownIntro", { defaultValue: "Cooldown timer:" })}
-                <span className="ml-2 font-mono text-lg font-bold" style={{ color: colors.brandDark }}>
-                  {countdown}
-                </span>
+                <span className="ml-2 font-mono text-lg font-bold text-terminal-cyan">{countdown}</span>
               </p>
             ) : null}
           </article>
         </section>
 
-        <section className="rounded-2xl glass-section p-5 shadow-sm" style={{ borderColor: colors.border }}>
-          <h2 className="text-base font-semibold">{t("lossStreakPage.streakHistory", { defaultValue: "Streak history" })}</h2>
-          <p className="mt-1 text-xs" style={{ color: colors.textSecondary }}>
-            Mini chart placeholder
-          </p>
-          <div className="mt-4 grid grid-cols-6 items-end gap-2 rounded-xl border p-4" style={{ borderColor: colors.border }}>
+        <section className={TERMINAL_TOOL_PANEL}>
+          <h2 className="text-base font-semibold text-terminal-text">{t("lossStreakPage.streakHistory", { defaultValue: "Streak history" })}</h2>
+          <p className="mt-1 text-xs text-terminal-textMuted">Mini chart placeholder</p>
+          <div className="mt-4 grid grid-cols-6 items-end gap-2 rounded-lg border border-terminal-borderMuted p-4">
             {streakHistory.map((value, idx) => (
               <div key={`streak-${idx}`} className="flex flex-col items-center gap-2">
                 <div
-                  className="w-full rounded-md"
-                  style={{
-                    height: `${Math.max(12, value * 14)}px`,
-                    backgroundColor: value > 2 ? colors.negative : "rgba(122, 15, 158, 0.35)",
-                  }}
+                  className={`w-full rounded-md ${value > 2 ? "bg-terminal-negative/70" : "bg-terminal-cyan/40"}`}
+                  style={{ height: `${Math.max(12, value * 14)}px` }}
                 />
-                <span className="text-[10px]" style={{ color: colors.textMuted }}>
-                  D{idx + 1}
-                </span>
+                <span className="text-[10px] text-terminal-textMuted">D{idx + 1}</span>
               </div>
             ))}
           </div>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-semibold">
+          <h2 className="text-base font-semibold text-terminal-text">
             {t("lossStreakPage.cooldownHeading", { defaultValue: "Cool-down principles" })}
           </h2>
           <div className="grid gap-3 md:grid-cols-3">
             {cooldownRules.map((rule) => (
-              <article key={rule} className="rounded-xl glass-section p-4 shadow-sm" style={{ borderColor: colors.border }}>
-                <p className="text-sm" style={{ color: colors.textSecondary }}>
-                  {rule}
-                </p>
+              <article key={rule} className={TERMINAL_TOOL_CARD}>
+                <p className="text-sm text-terminal-textSecondary">{rule}</p>
               </article>
             ))}
           </div>
         </section>
+
+        {status === "COOLDOWN" ? (
+          <div className={TERMINAL_WARNING_PANEL}>
+            {t("lossStreakPage.cooldownActive", { defaultValue: "Cooldown active — avoid opening new positions until the timer ends." })}
+          </div>
+        ) : null}
       </div>
     </div>
   );

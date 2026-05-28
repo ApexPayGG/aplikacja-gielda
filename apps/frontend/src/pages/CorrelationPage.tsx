@@ -2,15 +2,18 @@ import { FormEvent, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { analyzeCorrelation, type CorrelationAnalyzeResponse } from "../services/api";
 import {
-  GLASS_BTN_PRIMARY,
-  GLASS_HERO,
-  GLASS_INPUT,
-  GLASS_PAGE_BG,
-  GLASS_PAGE_SUBTITLE,
-  GLASS_PAGE_TITLE,
-  GLASS_SECTION,
-} from "../components/behavioral-coach/glassStyles";
-import { colors } from "../styles/designSystem";
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_INPUT,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_TOOL_HERO,
+  TERMINAL_TOOL_PAGE,
+  TERMINAL_TOOL_PAGE_INNER,
+  TERMINAL_TOOL_PANEL,
+  TERMINAL_WARNING_PANEL,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const MARKET_UNIVERSE = [
@@ -46,10 +49,10 @@ function matrixColor(value: number): string {
   return "rgba(90, 90, 122, 0.12)";
 }
 
-function correlationTextColor(value: number): string {
-  if (value > 0.2) return colors.positive;
-  if (value < -0.2) return colors.negative;
-  return colors.neutral;
+function correlationTextClass(value: number): string {
+  if (value > 0.2) return "text-terminal-positive";
+  if (value < -0.2) return "text-terminal-negative";
+  return "text-terminal-textMuted";
 }
 
 export function CorrelationPage() {
@@ -152,56 +155,49 @@ export function CorrelationPage() {
   }
 
   return (
-    <div className={`${GLASS_PAGE_BG} px-4 py-10`}>
-      <div className="mx-auto max-w-6xl space-y-6">
-      <header className={GLASS_HERO}>
-        <h1 className={GLASS_PAGE_TITLE}>{t("correlation.title", { defaultValue: "Correlation Scanner" })}</h1>
-        <p className={`${GLASS_PAGE_SUBTITLE} mt-2`}>
+    <div className={TERMINAL_TOOL_PAGE}>
+      <div className={TERMINAL_TOOL_PAGE_INNER}>
+      <header className={TERMINAL_TOOL_HERO}>
+        <h1 className={TERMINAL_PAGE_TITLE}>{t("correlation.title", { defaultValue: "Correlation Scanner" })}</h1>
+        <p className={`${TERMINAL_PAGE_SUBTITLE} mt-2`}>
           {t("correlation.subtitle", {
             defaultValue: "Check Pearson correlation between your main ticker and portfolio symbols.",
           })}
         </p>
       </header>
 
-      <form onSubmit={onSubmit} className={`${GLASS_SECTION} flex flex-col gap-3 sm:flex-row sm:items-end`}>
+      <form onSubmit={onSubmit} className={`${TERMINAL_TOOL_PANEL} flex flex-col gap-3 sm:flex-row sm:items-end`}>
         <label className="w-full text-sm sm:max-w-sm">
-          <span className="mb-1.5 block font-medium" style={{ color: colors.textSecondary }}>
+          <span className={`mb-1.5 block ${TERMINAL_FORM_LABEL}`}>
             Search base company
           </span>
           <input
             value={symbolInput}
             onChange={(e) => setSymbolInput(e.target.value.toUpperCase())}
             placeholder="AAPL"
-            className={GLASS_INPUT}
+            className={TERMINAL_INPUT}
           />
         </label>
-        <button type="submit" disabled={loading} className={`${GLASS_BTN_PRIMARY} disabled:opacity-60`}>
+        <button type="submit" disabled={loading} className={`${TERMINAL_BUTTON_PRIMARY} disabled:opacity-60`}>
           {loading ? t("common.loading") : t("correlation.analyze", { defaultValue: "Analyze correlation" })}
         </button>
       </form>
 
-      {error ? (
-        <div
-          className="rounded-xl border px-4 py-3 text-sm"
-          style={{ borderColor: `${colors.negative}55`, backgroundColor: `${colors.negative}10`, color: colors.negative }}
-        >
-          {error}
-        </div>
-      ) : null}
+      {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
 
-      <section className="rounded-2xl border p-5 glass-section">
-        <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
+      <section className={TERMINAL_TOOL_PANEL}>
+        <h2 className="mb-3 text-base font-semibold text-terminal-cyan">
           Correlation matrix (placeholder)
         </h2>
         <div className="overflow-x-auto">
           <table className="min-w-[560px] border-separate border-spacing-2 text-sm">
             <thead>
               <tr>
-                <th className="px-2 py-1 text-left text-xs uppercase" style={{ color: colors.textMuted }}>
+                <th className="px-2 py-1 text-left text-xs uppercase text-terminal-textMuted">
                   Ticker
                 </th>
                 {matrixTickers.map((ticker) => (
-                  <th key={`head-${ticker}`} className="px-2 py-1 text-center text-xs uppercase" style={{ color: colors.textMuted }}>
+                  <th key={`head-${ticker}`} className="px-2 py-1 text-center text-xs uppercase text-terminal-textMuted">
                     {ticker}
                   </th>
                 ))}
@@ -210,17 +206,15 @@ export function CorrelationPage() {
             <tbody>
               {MATRIX_PLACEHOLDER.map((row, rowIndex) => (
                 <tr key={`row-${matrixTickers[rowIndex]}`}>
-                  <th className="px-2 py-1 text-left text-xs uppercase" style={{ color: colors.textMuted }}>
+                  <th className="px-2 py-1 text-left text-xs uppercase text-terminal-textMuted">
                     {matrixTickers[rowIndex]}
                   </th>
                   {row.map((value, colIndex) => (
                     <td
                       key={`${rowIndex}-${colIndex}`}
-                      className="rounded-lg border px-3 py-2 text-center font-mono text-xs"
+                      className={`rounded-lg border border-terminal-borderMuted px-3 py-2 text-center font-mono text-xs ${correlationTextClass(value)}`}
                       style={{
-                        borderColor: colors.border,
                         backgroundColor: matrixColor(value),
-                        color: correlationTextColor(value),
                       }}
                     >
                       {(value * 100).toFixed(0)}%
@@ -233,48 +227,47 @@ export function CorrelationPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border p-5 glass-section">
-        <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
+      <section className={TERMINAL_TOOL_PANEL}>
+        <h2 className="mb-3 text-base font-semibold text-terminal-cyan">
           Correlated companies
         </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
             <thead>
-              <tr className="border-b" style={{ borderColor: colors.border }}>
-                <th className="py-2 pr-4 text-xs uppercase" style={{ color: colors.textMuted }}>
+              <tr className="border-b border-terminal-border">
+                <th className="py-2 pr-4 text-xs uppercase text-terminal-textMuted">
                   Ticker
                 </th>
-                <th className="py-2 pr-4 text-xs uppercase" style={{ color: colors.textMuted }}>
+                <th className="py-2 pr-4 text-xs uppercase text-terminal-textMuted">
                   {t("correlation.colCorrelationPct", { defaultValue: "Correlation %" })}
                 </th>
-                <th className="py-2 pr-4 text-xs uppercase" style={{ color: colors.textMuted }}>
+                <th className="py-2 pr-4 text-xs uppercase text-terminal-textMuted">
                   {t("correlation.colSector", { defaultValue: "Sector" })}
                 </th>
-                <th className="py-2 text-xs uppercase" style={{ color: colors.textMuted }}>
+                <th className="py-2 text-xs uppercase text-terminal-textMuted">
                   {t("correlation.colWarning", { defaultValue: "Warning" })}
                 </th>
               </tr>
             </thead>
             <tbody>
               {correlatedRows.map((row) => (
-                <tr key={row.ticker} className="border-b last:border-b-0" style={{ borderColor: colors.border }}>
-                  <td className="py-3 pr-4 font-semibold" style={{ color: colors.brandDark }}>
+                <tr key={row.ticker} className="border-b border-terminal-borderMuted last:border-b-0">
+                  <td className="py-3 pr-4 font-semibold text-terminal-cyan">
                     {row.ticker}
                   </td>
-                  <td className="py-3 pr-4 font-mono" style={{ color: correlationTextColor(row.correlation) }}>
+                  <td className={`py-3 pr-4 font-mono ${correlationTextClass(row.correlation)}`}>
                     {(row.correlation * 100).toFixed(1)}%
                   </td>
-                  <td className="py-3 pr-4" style={{ color: colors.textSecondary }}>
+                  <td className="py-3 pr-4 text-terminal-textSecondary">
                     {row.sector}
                   </td>
                   <td className="py-3">
                     <span
-                      className="rounded-full border px-2 py-1 text-xs font-medium"
-                      style={{
-                        borderColor: row.highRisk ? `${colors.negative}66` : `${colors.neutral}66`,
-                        color: row.highRisk ? colors.negative : colors.neutral,
-                        backgroundColor: row.highRisk ? `${colors.negative}12` : `${colors.neutral}12`,
-                      }}
+                      className={`rounded-full border px-2 py-1 text-xs font-medium ${
+                        row.highRisk
+                          ? "border-terminal-negative/40 bg-terminal-negative/10 text-terminal-negative"
+                          : "border-terminal-borderMuted bg-terminal-panelSecondary text-terminal-textMuted"
+                      }`}
                     >
                       {row.warning}
                     </span>
@@ -286,24 +279,21 @@ export function CorrelationPage() {
         </div>
       </section>
 
-      <section
-        className="rounded-2xl border p-5"
-        style={{ borderColor: colors.brandGold, backgroundColor: `${colors.brandGold}12` }}
-      >
-        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide" style={{ color: colors.brandDark }}>
+      <section className={TERMINAL_WARNING_PANEL}>
+        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-terminal-cyan">
           {t("correlation.concentrationTitle", { defaultValue: "Concentration warning" })}
         </h3>
-        <p className="text-sm leading-6" style={{ color: colors.textSecondary }}>
+        <p className="text-sm leading-6 text-terminal-textSecondary">
           {concentrationWarning}
         </p>
       </section>
 
       {data?.insight ? (
-        <section className="rounded-2xl border p-5 glass-section">
-          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide" style={{ color: colors.brandDark }}>
+        <section className={TERMINAL_TOOL_PANEL}>
+          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-terminal-cyan">
             Insight
           </h3>
-          <p className="text-sm leading-6" style={{ color: colors.textSecondary }}>
+          <p className="text-sm leading-6 text-terminal-textSecondary">
             {data.insight}
           </p>
         </section>

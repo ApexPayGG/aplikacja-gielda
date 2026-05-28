@@ -3,15 +3,18 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 import {
-  GLASS_BTN_PRIMARY,
-  GLASS_HERO,
-  GLASS_INPUT,
-  GLASS_LABEL,
-  GLASS_PAGE_SUBTITLE,
-  GLASS_PAGE_TITLE,
-  GLASS_SECTION,
-  GLASS_STAT_CARD,
-} from "../components/behavioral-coach/glassStyles";
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_INPUT,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_TOOL_HERO,
+  TERMINAL_TOOL_PAGE,
+  TERMINAL_TOOL_PAGE_INNER,
+  TERMINAL_CALCULATOR_PANEL,
+  TERMINAL_TOOL_RESULT_CARD,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 type Conviction = "LOW" | "MEDIUM" | "HIGH";
@@ -100,23 +103,24 @@ export function PositionSizePage() {
   };
 
   return (
-    <div>
-      <header className={GLASS_HERO}>
-        <h1 className={GLASS_PAGE_TITLE}>{t("positionSize.title", { defaultValue: "Position Size Calculator" })}</h1>
-        <p className={GLASS_PAGE_SUBTITLE}>
+    <div className={TERMINAL_TOOL_PAGE}>
+      <div className={TERMINAL_TOOL_PAGE_INNER}>
+      <header className={TERMINAL_TOOL_HERO}>
+        <h1 className={TERMINAL_PAGE_TITLE}>{t("positionSize.title", { defaultValue: "Position Size Calculator" })}</h1>
+        <p className={TERMINAL_PAGE_SUBTITLE}>
           {t("positionSize.subtitle", {
             defaultValue: "Size your position and cap max trade risk using sound capital management.",
           })}
         </p>
       </header>
 
-      <section className={GLASS_SECTION}>
+      <section className={TERMINAL_CALCULATOR_PANEL}>
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-lg font-semibold text-white">{t("positionSize.positionParams", { defaultValue: "Position parameters" })}</h2>
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm">
-            <span className="text-white/60">{t("positionSize.currencyLabel", { defaultValue: "Currency:" })}</span>
+          <h2 className="text-lg font-semibold text-terminal-text">{t("positionSize.positionParams", { defaultValue: "Position parameters" })}</h2>
+          <div className="inline-flex items-center gap-2 rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary px-3 py-1.5 text-sm">
+            <span className="text-terminal-textMuted">{t("positionSize.currencyLabel", { defaultValue: "Currency:" })}</span>
             <select
-              className="rounded-md border border-white/15 bg-[#0f111c] px-2 py-1 text-sm text-white outline-none"
+              className="rounded-md border border-terminal-borderMuted bg-terminal-bg px-2 py-1 text-sm text-terminal-text outline-none"
               value={currency}
               onChange={(e) => setCurrency(e.target.value as Currency)}
             >
@@ -128,57 +132,57 @@ export function PositionSizePage() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className={GLASS_LABEL}>Capital</span>
+            <span className={TERMINAL_FORM_LABEL}>Capital</span>
             <input
               type="number"
               min="0"
               step="0.01"
               value={capital}
               onChange={(e) => setCapital(e.target.value)}
-              className={GLASS_INPUT}
+              className={TERMINAL_INPUT}
             />
           </label>
 
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className={GLASS_LABEL}>Risk %</span>
+            <span className={TERMINAL_FORM_LABEL}>Risk %</span>
             <input
               type="number"
               min="0"
               step="0.1"
               value={riskPercent}
               onChange={(e) => setRiskPercent(e.target.value)}
-              className={GLASS_INPUT}
+              className={TERMINAL_INPUT}
             />
           </label>
 
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className={GLASS_LABEL}>Entry</span>
+            <span className={TERMINAL_FORM_LABEL}>Entry</span>
             <input
               type="number"
               min="0"
               step="0.01"
               value={entryPrice}
               onChange={(e) => setEntryPrice(e.target.value)}
-              className={GLASS_INPUT}
+              className={TERMINAL_INPUT}
             />
           </label>
 
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className={GLASS_LABEL}>Stop Loss</span>
+            <span className={TERMINAL_FORM_LABEL}>Stop Loss</span>
             <input
               type="number"
               min="0"
               step="0.01"
               value={stopLossPrice}
               onChange={(e) => setStopLossPrice(e.target.value)}
-              className={GLASS_INPUT}
+              className={TERMINAL_INPUT}
             />
           </label>
 
           <div className="md:col-span-2">
             <div className="mb-2 flex items-center justify-between">
-              <span className={GLASS_LABEL}>Conviction</span>
-              <span className="text-sm font-semibold text-[#22d3ee]">
+              <span className={TERMINAL_FORM_LABEL}>Conviction</span>
+              <span className="text-sm font-semibold text-terminal-cyan">
                 {convictionLevel === 1 ? "LOW" : convictionLevel === 2 ? "MED" : "HIGH"}
               </span>
             </div>
@@ -194,7 +198,7 @@ export function PositionSizePage() {
                 background: `linear-gradient(90deg, #22d3ee ${convictionFillPercent}%, rgba(255,255,255,0.12) ${convictionFillPercent}%)`,
               }}
             />
-            <div className="mt-2 flex justify-between text-xs font-semibold text-white/50">
+            <div className="mt-2 flex justify-between text-xs font-semibold text-terminal-textMuted">
               <span>LOW</span>
               <span>MED</span>
               <span>HIGH</span>
@@ -202,15 +206,13 @@ export function PositionSizePage() {
           </div>
         </div>
 
-        {error ? (
-          <div className="mt-4 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-300">{error}</div>
-        ) : null}
+        {error ? <div className={`mt-4 ${TERMINAL_DANGER_PANEL}`}>{error}</div> : null}
 
         <button
           type="button"
           disabled={loading}
           onClick={() => void onCalculate()}
-          className={`mt-5 ${GLASS_BTN_PRIMARY} disabled:cursor-not-allowed disabled:opacity-70`}
+          className={`mt-5 ${TERMINAL_BUTTON_PRIMARY} disabled:cursor-not-allowed disabled:opacity-70`}
         >
           {loading
             ? t("positionSize.calculating", { defaultValue: "Calculating..." })
@@ -221,31 +223,31 @@ export function PositionSizePage() {
       {result ? (
         <>
           <section className="grid gap-4 md:grid-cols-3">
-            <article className={GLASS_STAT_CARD}>
-              <div className="text-xs font-semibold uppercase tracking-wide text-white/50">{t("positionSize.shares", { defaultValue: "Shares to buy" })}</div>
-              <div className="mt-2 font-mono text-4xl font-bold text-white">{result.shares}</div>
+            <article className={TERMINAL_TOOL_RESULT_CARD}>
+              <div className="text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">{t("positionSize.shares", { defaultValue: "Shares to buy" })}</div>
+              <div className="mt-2 font-mono text-4xl font-bold text-terminal-text">{result.shares}</div>
             </article>
-            <article className={GLASS_STAT_CARD}>
-              <div className="text-xs font-semibold uppercase tracking-wide text-white/50">{t("positionSize.positionValue", { defaultValue: "Position value" })}</div>
-              <div className="mt-2 font-mono text-4xl font-bold text-white">{formatMoney(result.positionValue, currency)}</div>
+            <article className={TERMINAL_TOOL_RESULT_CARD}>
+              <div className="text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">{t("positionSize.positionValue", { defaultValue: "Position value" })}</div>
+              <div className="mt-2 font-mono text-4xl font-bold text-terminal-text">{formatMoney(result.positionValue, currency)}</div>
             </article>
-            <article className={GLASS_STAT_CARD}>
-              <div className="text-xs font-semibold uppercase tracking-wide text-white/50">{t("positionSize.maxLoss", { defaultValue: "Max loss at stop" })}</div>
-              <div className="mt-2 font-mono text-4xl font-bold text-white">{formatMoney(result.maxLoss, currency)}</div>
+            <article className={TERMINAL_TOOL_RESULT_CARD}>
+              <div className="text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">{t("positionSize.maxLoss", { defaultValue: "Max loss at stop" })}</div>
+              <div className="mt-2 font-mono text-4xl font-bold text-terminal-negative">{formatMoney(result.maxLoss, currency)}</div>
             </article>
           </section>
 
           <section className="space-y-3">
-            <h3 className="text-lg font-semibold text-white">{t("positionSize.takeProfitLevels", { defaultValue: "Take profit levels" })}</h3>
+            <h3 className="text-lg font-semibold text-terminal-text">{t("positionSize.takeProfitLevels", { defaultValue: "Take profit levels" })}</h3>
             <div className="grid gap-4 md:grid-cols-3">
               {[
                 { label: "1R", value: result.takeProfit1R },
                 { label: "2R", value: result.takeProfit2R },
                 { label: "3R", value: result.takeProfit3R },
               ].map((tp) => (
-                <article key={tp.label} className={GLASS_STAT_CARD}>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-white/50">{tp.label}</div>
-                  <div className="mt-2 font-mono text-3xl font-bold text-white">{tp.value.toFixed(4)}</div>
+                <article key={tp.label} className={TERMINAL_TOOL_RESULT_CARD}>
+                  <div className="text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">{tp.label}</div>
+                  <div className="mt-2 font-mono text-3xl font-bold text-terminal-positive">{tp.value.toFixed(4)}</div>
                 </article>
               ))}
             </div>
@@ -261,18 +263,19 @@ export function PositionSizePage() {
           height: 18px;
           border-radius: 9999px;
           border: 3px solid #0a0b14;
-          background: #9333ea;
-          box-shadow: 0 4px 10px rgba(168,85,247, 0.25);
+          background: #22d3ee;
+          box-shadow: 0 4px 10px rgba(34, 211, 238, 0.25);
         }
         .amc-conviction-slider::-moz-range-thumb {
           width: 18px;
           height: 18px;
           border-radius: 9999px;
           border: 3px solid #0a0b14;
-          background: #9333ea;
-          box-shadow: 0 4px 10px rgba(168,85,247, 0.25);
+          background: #22d3ee;
+          box-shadow: 0 4px 10px rgba(34, 211, 238, 0.25);
         }
       `}</style>
+      </div>
     </div>
   );
 }

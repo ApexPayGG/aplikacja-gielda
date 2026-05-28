@@ -228,3 +228,31 @@ export const TERMINAL_TABLE_ROW = "border-b border-terminal-borderMuted";
 
 export const TERMINAL_SKELETON =
   "animate-pulse rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary";
+
+/** Risk / analysis tool pages (calculators, scanners, simulators) */
+export const TERMINAL_TOOL_PAGE = TERMINAL_APP_BG;
+
+export const TERMINAL_TOOL_PAGE_INNER = `${TERMINAL_PAGE_SHELL} mx-auto max-w-6xl space-y-6 py-6 sm:max-w-7xl sm:py-8`;
+
+export const TERMINAL_TOOL_HERO = `${TERMINAL_PANEL} border-terminal-cyan/25 p-5 sm:p-6`;
+
+export const TERMINAL_TOOL_PANEL = `${TERMINAL_PANEL} p-4 sm:p-5`;
+
+export const TERMINAL_TOOL_CARD = `${TERMINAL_PANEL_MUTED} p-4 sm:p-5`;
+
+export const TERMINAL_TOOL_GRID = "grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+
+export const TERMINAL_TOOL_INPUT = TERMINAL_INPUT;
+
+export const TERMINAL_TOOL_RESULT_CARD = TERMINAL_STATUS_CARD;
+
+export const TERMINAL_TOOL_WARNING = TERMINAL_DANGER_PANEL;
+
+export const TERMINAL_TOOL_TABLE = TERMINAL_TABLE_SHELL;
+
+export const TERMINAL_TOOL_EMPTY =
+  "rounded-lg border border-dashed border-terminal-borderMuted bg-terminal-panelSecondary/60 p-8 text-center text-sm text-terminal-textMuted";
+
+export const TERMINAL_CALCULATOR_PANEL = TERMINAL_ORDER_PANEL;
+
+export const TERMINAL_ANALYTICS_CARD = TERMINAL_METRIC_TILE;

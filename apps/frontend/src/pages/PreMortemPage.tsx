@@ -3,16 +3,17 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { runPreMortem, type PreMortemResponse } from "../services/api";
 import {
-  GLASS_BTN_PRIMARY,
-  GLASS_HERO,
-  GLASS_INPUT,
-  GLASS_LABEL,
-  GLASS_PAGE_BG,
-  GLASS_PAGE_SUBTITLE,
-  GLASS_PAGE_TITLE,
-  GLASS_SECTION,
-  GLASS_STAT_CARD,
-} from "../components/behavioral-coach/glassStyles";
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_INPUT,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_TOOL_HERO,
+  TERMINAL_TOOL_PAGE,
+  TERMINAL_TOOL_PAGE_INNER,
+  TERMINAL_TOOL_PANEL,
+  TERMINAL_TOOL_RESULT_CARD,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 const USER_ID = window.localStorage.getItem("userId")?.trim() || "";
@@ -122,11 +123,11 @@ export function PreMortemPage() {
   }
 
   return (
-    <div className={`${GLASS_PAGE_BG} px-4 py-10`}>
-      <div className="mx-auto max-w-5xl space-y-6">
-        <header className={GLASS_HERO}>
-          <h1 className={GLASS_PAGE_TITLE}>{t("premortem.title", { defaultValue: "Pre-Mortem AI" })}</h1>
-          <p className={`${GLASS_PAGE_SUBTITLE} mt-2`}>
+    <div className={TERMINAL_TOOL_PAGE}>
+      <div className={`${TERMINAL_TOOL_PAGE_INNER} max-w-5xl`}>
+        <header className={TERMINAL_TOOL_HERO}>
+          <h1 className={TERMINAL_PAGE_TITLE}>{t("premortem.title", { defaultValue: "Pre-Mortem AI" })}</h1>
+          <p className={`${TERMINAL_PAGE_SUBTITLE} mt-2`}>
             {t("premortem.pageSubtitle", {
               defaultValue: "Before entering a position, stress-test downside and upside scenarios.",
             })}
@@ -134,50 +135,50 @@ export function PreMortemPage() {
         </header>
 
         {prefillNote ? (
-          <div className={`${GLASS_SECTION} text-sm text-white/65`}>{prefillNote}</div>
+          <div className={`${TERMINAL_TOOL_PANEL} text-sm text-terminal-textMuted`}>{prefillNote}</div>
         ) : null}
 
-        <form onSubmit={onSubmit} className={GLASS_SECTION}>
+        <form onSubmit={onSubmit} className={TERMINAL_TOOL_PANEL}>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="flex flex-col gap-1.5 text-sm">
-              <span className={GLASS_LABEL}>{t("premortem.symbol", { defaultValue: "Ticker" })}</span>
+              <span className={TERMINAL_FORM_LABEL}>{t("premortem.symbol", { defaultValue: "Ticker" })}</span>
               <input
                 value={form.ticker}
                 onChange={(event) => setForm((prev) => ({ ...prev, ticker: event.target.value.toUpperCase() }))}
                 placeholder="AAPL"
-                className={GLASS_INPUT}
+                className={TERMINAL_INPUT}
               />
             </label>
 
             <label className="flex flex-col gap-1.5 text-sm">
-              <span className={GLASS_LABEL}>{t("premortem.entry", { defaultValue: "Entry price" })}</span>
+              <span className={TERMINAL_FORM_LABEL}>{t("premortem.entry", { defaultValue: "Entry price" })}</span>
               <input
                 type="number"
                 step="0.01"
                 value={form.entryPrice}
                 onChange={(event) => setForm((prev) => ({ ...prev, entryPrice: event.target.value }))}
-                className={GLASS_INPUT}
+                className={TERMINAL_INPUT}
               />
             </label>
 
             <label className="flex flex-col gap-1.5 text-sm">
-              <span className={GLASS_LABEL}>{t("premortem.quantity", { defaultValue: "Quantity" })}</span>
+              <span className={TERMINAL_FORM_LABEL}>{t("premortem.quantity", { defaultValue: "Quantity" })}</span>
               <input
                 type="number"
                 step="1"
                 min="1"
                 value={form.quantity}
                 onChange={(event) => setForm((prev) => ({ ...prev, quantity: event.target.value }))}
-                className={GLASS_INPUT}
+                className={TERMINAL_INPUT}
               />
             </label>
 
             <label className="flex flex-col gap-1.5 text-sm">
-              <span className={GLASS_LABEL}>{t("premortem.timeHorizon", { defaultValue: "Time horizon" })}</span>
+              <span className={TERMINAL_FORM_LABEL}>{t("premortem.timeHorizon", { defaultValue: "Time horizon" })}</span>
               <select
                 value={form.horizonMonths}
                 onChange={(event) => setForm((prev) => ({ ...prev, horizonMonths: Number(event.target.value) }))}
-                className={GLASS_INPUT}
+                className={TERMINAL_INPUT}
               >
                 {HORIZON_OPTIONS.map((option) => (
                   <option key={option.months} value={option.months}>
@@ -188,34 +189,34 @@ export function PreMortemPage() {
             </label>
           </div>
 
-          <button type="submit" disabled={loading} className={`${GLASS_BTN_PRIMARY} mt-5 disabled:opacity-60`}>
+          <button type="submit" disabled={loading} className={`${TERMINAL_BUTTON_PRIMARY} mt-5 disabled:opacity-60`}>
             {loading
               ? t("premortem.analyzing", { defaultValue: "Analyzing..." })
               : t("premortem.analyzeRisk", { defaultValue: "Analyze risk" })}
           </button>
         </form>
 
-        {error ? <p className="text-sm text-red-400">{error}</p> : null}
+        {error ? <p className="text-sm text-terminal-negative">{error}</p> : null}
 
         {result ? (
           <>
             <section className="grid gap-4 md:grid-cols-3">
-              <article className={GLASS_STAT_CARD}>
-                <p className="text-xs uppercase tracking-wide text-white/50">{t("premortem.lossScenario", { defaultValue: "Most likely loss scenario" })}</p>
-                <p className="mt-2 text-2xl font-bold text-red-400">{formatCurrency(result.maxLoss)}</p>
+              <article className={TERMINAL_TOOL_RESULT_CARD}>
+                <p className="text-xs uppercase tracking-wide text-terminal-textMuted">{t("premortem.lossScenario", { defaultValue: "Most likely loss scenario" })}</p>
+                <p className="mt-2 text-2xl font-bold text-terminal-negative">{formatCurrency(result.maxLoss)}</p>
               </article>
-              <article className={GLASS_STAT_CARD}>
-                <p className="text-xs uppercase tracking-wide text-white/50">{t("premortem.marketRegime", { defaultValue: "Market Regime" })}</p>
-                <p className="mt-2 text-2xl font-bold text-[#22d3ee]">{result.marketRegime}</p>
+              <article className={TERMINAL_TOOL_RESULT_CARD}>
+                <p className="text-xs uppercase tracking-wide text-terminal-textMuted">{t("premortem.marketRegime", { defaultValue: "Market Regime" })}</p>
+                <p className="mt-2 text-2xl font-bold text-terminal-cyan">{result.marketRegime}</p>
               </article>
-              <article className={GLASS_STAT_CARD}>
-                <p className="text-xs uppercase tracking-wide text-white/50">Upside (model)</p>
-                <p className="mt-2 text-2xl font-bold text-emerald-400">{formatCurrency(projectedGain)}</p>
+              <article className={TERMINAL_TOOL_RESULT_CARD}>
+                <p className="text-xs uppercase tracking-wide text-terminal-textMuted">Upside (model)</p>
+                <p className="mt-2 text-2xl font-bold text-terminal-positive">{formatCurrency(projectedGain)}</p>
               </article>
             </section>
             {aiNarrative ? (
-              <section className={GLASS_SECTION}>
-                <p className="text-sm leading-relaxed text-white/75">{aiNarrative}</p>
+              <section className={TERMINAL_TOOL_PANEL}>
+                <p className="text-sm leading-relaxed text-terminal-textSecondary">{aiNarrative}</p>
               </section>
             ) : null}
           </>

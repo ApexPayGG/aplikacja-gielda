@@ -1,5 +1,11 @@
 import { useMemo, useState } from "react";
 import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_TOOL_CARD,
+  TERMINAL_TOOL_PAGE,
+  TERMINAL_TOOL_PAGE_INNER,
+  TERMINAL_TOOL_PANEL,
+} from "../components/terminal/terminalStyles";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
 const SECTORS = ["Energy", "Technology", "Financials", "Healthcare", "Industrials", "Utilities"] as const;
@@ -47,30 +53,30 @@ export function VolatilityPage() {
   const selectedCellColor = blendHex(colors.bgSecondary, colors.negative, selectedValue);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 py-10" style={{ color: colors.textPrimary }}>
+    <div className={TERMINAL_TOOL_PAGE}>
+      <div className={`${TERMINAL_TOOL_PAGE_INNER} max-w-7xl`}>
       <header className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight" style={{ color: colors.brandDark }}>
-          Volatility Heat Map
-        </h1>
-        <p className="text-sm" style={{ color: colors.textSecondary }}>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">Risk analytics</p>
+        <h1 className="text-3xl font-bold tracking-tight text-terminal-text">Volatility Heat Map</h1>
+        <p className="text-sm text-terminal-textMuted">
           Explore monthly volatility by sector and quickly spot concentration of risk through a visual calendar map.
         </p>
       </header>
 
       <section className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
-        <article className="rounded-2xl border p-5 glass-section">
-          <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
+        <article className={TERMINAL_TOOL_PANEL}>
+          <h2 className="mb-3 text-base font-semibold text-terminal-cyan">
             Calendar heat map (12 months x sectors)
           </h2>
           <div className="overflow-x-auto">
             <table className="min-w-[920px] border-separate border-spacing-1.5">
               <thead>
                 <tr>
-                  <th className="px-2 py-1 text-left text-xs uppercase" style={{ color: colors.textMuted }}>
+                  <th className="px-2 py-1 text-left text-xs uppercase text-terminal-textMuted">
                     Sector
                   </th>
                   {MONTHS.map((month) => (
-                    <th key={month} className="px-2 py-1 text-center text-xs uppercase" style={{ color: colors.textMuted }}>
+                    <th key={month} className="px-2 py-1 text-center text-xs uppercase text-terminal-textMuted">
                       {month}
                     </th>
                   ))}
@@ -79,7 +85,7 @@ export function VolatilityPage() {
               <tbody>
                 {SECTORS.map((sector, sectorIndex) => (
                   <tr key={sector}>
-                    <th className="px-2 py-1 text-left text-xs" style={{ color: colors.textSecondary }}>
+                    <th className="px-2 py-1 text-left text-xs text-terminal-textSecondary">
                       {sector}
                     </th>
                     {MONTHS.map((month, monthIndex) => {
@@ -112,7 +118,7 @@ export function VolatilityPage() {
           </div>
 
           <div className="mt-5 space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.textMuted }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">
               Legenda (5 poziomow)
             </h3>
             <div className="grid grid-cols-5 gap-2">
@@ -130,7 +136,7 @@ export function VolatilityPage() {
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-5 gap-2 text-center text-[11px]" style={{ color: colors.textMuted }}>
+            <div className="grid grid-cols-5 gap-2 text-center text-[11px] text-terminal-textMuted">
               <span>Very low</span>
               <span>Low</span>
               <span>Medium</span>
@@ -140,36 +146,36 @@ export function VolatilityPage() {
           </div>
         </article>
 
-        <aside className="rounded-2xl border p-5 glass-section">
-          <h2 className="mb-3 text-base font-semibold" style={{ color: colors.brandDark }}>
+        <aside className={TERMINAL_TOOL_PANEL}>
+          <h2 className="mb-3 text-base font-semibold text-terminal-cyan">
             Selected month + sector details
           </h2>
-          <div className="rounded-xl border p-4 glass-panel">
-            <div className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+          <div className={TERMINAL_TOOL_CARD}>
+            <div className="text-xs uppercase tracking-wide text-terminal-textMuted">
               Month
             </div>
-            <div className="mt-1 text-lg font-semibold" style={{ color: colors.brandDark }}>
+            <div className="mt-1 text-lg font-semibold text-terminal-text">
               {MONTHS[selectedMonthIndex]}
             </div>
-            <div className="mt-3 text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+            <div className="mt-3 text-xs uppercase tracking-wide text-terminal-textMuted">
               Sector
             </div>
-            <div className="mt-1 text-lg font-semibold" style={{ color: colors.brandDark }}>
+            <div className="mt-1 text-lg font-semibold text-terminal-text">
               {SECTORS[selectedSectorIndex]}
             </div>
-            <div className="mt-3 text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+            <div className="mt-3 text-xs uppercase tracking-wide text-terminal-textMuted">
               Volatility
             </div>
-            <div className="mt-1 text-lg font-mono font-semibold" style={{ color: colors.negative }}>
+            <div className="mt-1 text-lg font-mono font-semibold text-terminal-negative">
               {(selectedValue * 100).toFixed(1)}%
             </div>
-            <div className="mt-3 text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+            <div className="mt-3 text-xs uppercase tracking-wide text-terminal-textMuted">
               Level
             </div>
-            <div className="mt-1 text-sm font-medium" style={{ color: colors.textSecondary }}>
+            <div className="mt-1 text-sm font-medium text-terminal-textSecondary">
               {levelLabel(selectedValue)}
             </div>
-            <div className="mt-4 h-2 rounded-full" style={{ backgroundColor: colors.bgTertiary }}>
+            <div className="mt-4 h-2 rounded-full bg-terminal-panelSecondary">
               <div
                 className="h-2 rounded-full"
                 style={{
@@ -181,6 +187,7 @@ export function VolatilityPage() {
           </div>
         </aside>
       </section>
+      </div>
     </div>
   );
 }

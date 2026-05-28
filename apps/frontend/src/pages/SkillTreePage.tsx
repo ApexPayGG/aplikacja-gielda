@@ -7,7 +7,16 @@ import {
   type SkillTreeResponse,
   type SkillTreeSkillId,
 } from "../services/api";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_INFO_BANNER,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_TOOL_GRID,
+  TERMINAL_TOOL_PAGE,
+  TERMINAL_TOOL_PAGE_INNER,
+  TERMINAL_TOOL_PANEL,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { resolveIntlLocale } from "../utils/formatters";
 
@@ -79,60 +88,50 @@ export function SkillTreePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0b14] via-[#1e1b4b]/90 to-[#0a0b14]">
-      <div className="mx-auto max-w-6xl px-4 py-10">
-        <header className="mb-8 glass-section rounded-3xl border border-white/10 p-6 shadow-[0_16px_36px_rgba(168,85,247,0.08)]">
-          <h1 className="glass-page-title text-3xl">Skill Tree</h1>
-          <p className="mt-1 glass-muted text-sm">{t("skilltree.subtitle")}</p>
+    <div className={TERMINAL_TOOL_PAGE}>
+      <div className={TERMINAL_TOOL_PAGE_INNER}>
+        <header className={`mb-8 ${TERMINAL_TOOL_PANEL}`}>
+          <h1 className={TERMINAL_PAGE_TITLE}>Skill Tree</h1>
+          <p className="mt-1 text-sm text-terminal-textMuted">{t("skilltree.subtitle")}</p>
         </header>
 
-        {error ? (
-          <div className="mb-6 rounded-xl border border-negative/25 bg-negative/10 p-3 text-sm text-negative">
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className={`mb-6 ${TERMINAL_DANGER_PANEL}`}>{error}</div> : null}
 
         {loading ? (
-          <p className="glass-muted">{t("common.loading")}</p>
+          <p className="text-terminal-textMuted">{t("common.loading")}</p>
         ) : data ? (
           <>
-            <section className="mb-6 glass-section rounded-2xl p-5 shadow-[0_14px_30px_rgba(168,85,247,0.08)]">
+            <section className={`mb-6 ${TERMINAL_TOOL_PANEL}`}>
               <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-white">XP Progress</p>
-                  <p className="text-xs glass-muted">
+                  <p className="text-sm font-semibold text-terminal-text">XP Progress</p>
+                  <p className="text-xs text-terminal-textMuted">
                     {t("skilltree.progressLabel", {
                       unlocked: data.totalUnlocked,
                       total: data.totalSkills || TOTAL_SKILLS,
                     })}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={onCheckProgress}
-                  disabled={checking}
-                  className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
-                  style={{ background: `linear-gradient(120deg, ${colors.brandDark}, ${colors.brandMedium})` }}
-                >
+                <button type="button" onClick={onCheckProgress} disabled={checking} className={TERMINAL_BUTTON_PRIMARY}>
                   {checking ? t("common.loading") : t("skilltree.checkProgress")}
                 </button>
               </div>
-              <div className="h-3 overflow-hidden rounded-full bg-white/10">
+              <div className="h-3 overflow-hidden rounded-full bg-terminal-panelSecondary">
                 <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${progressPct}%`, backgroundColor: colors.brandCyan }}
+                  className="h-full rounded-full bg-terminal-cyan transition-all duration-500"
+                  style={{ width: `${progressPct}%` }}
                 />
               </div>
             </section>
 
             {newlyUnlocked.length > 0 ? (
-              <section className="mb-6 rounded-2xl border border-brandCyan/35 bg-brandCyan/10 p-5">
-                <div className="mb-2 flex items-center gap-2 text-white">
-                  <SparklesIcon className="h-5 w-5" aria-hidden />
+              <section className={`mb-6 ${TERMINAL_INFO_BANNER}`}>
+                <div className="mb-2 flex items-center gap-2 text-terminal-text">
+                  <SparklesIcon className="h-5 w-5 text-terminal-cyan" aria-hidden />
                   <p className="font-semibold">{t("skilltree.celebrationTitle")}</p>
                 </div>
-                <p className="mb-2 glass-muted text-sm">{t("skilltree.newlyUnlockedLabel")}</p>
-                <ul className="space-y-1 text-sm text-white">
+                <p className="mb-2 text-sm text-terminal-textMuted">{t("skilltree.newlyUnlockedLabel")}</p>
+                <ul className="space-y-1 text-sm text-terminal-textSecondary">
                   {newlyUnlocked.map((skillId) => (
                     <li key={skillId}>• {t(`skilltree.skills.${skillId}.name`)}</li>
                   ))}
@@ -140,25 +139,25 @@ export function SkillTreePage() {
               </section>
             ) : null}
 
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <section className={TERMINAL_TOOL_GRID}>
               {data.skills.map((skill, index) => {
                 const unlocked = skill.unlocked;
                 const inProgress = !unlocked && index === firstLockedIndex;
                 const cardClass = unlocked
-                  ? "border-white/10 bg-white/[0.04]"
+                  ? "border-terminal-borderMuted bg-terminal-panelSecondary/80"
                   : inProgress
-                    ? "border-2 border-brandCyan bg-white/[0.06]"
-                    : "border-white/10 bg-white/[0.03]";
+                    ? "border-2 border-terminal-cyan bg-terminal-cyan/5"
+                    : "border-terminal-borderMuted bg-terminal-panelSecondary/40 opacity-80";
                 const iconClass = unlocked
-                  ? "bg-brandCyan/15 text-white"
+                  ? "bg-terminal-cyan/15 text-terminal-cyan"
                   : inProgress
-                    ? "border border-brandCyan bg-brandCyan/10 text-brandCyan"
-                    : "bg-white/10 text-white/50";
+                    ? "border border-terminal-cyan bg-terminal-cyan/10 text-terminal-cyan"
+                    : "bg-terminal-panelSecondary text-terminal-textMuted";
 
                 return (
                   <article
                     key={skill.id}
-                    className={`rounded-2xl border p-5 shadow-[0_10px_24px_rgba(168,85,247,0.07)] ${cardClass}`}
+                    className={`rounded-lg border p-5 shadow-terminal-panel ${cardClass}`}
                   >
                     <div className="mb-3 flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
@@ -166,27 +165,27 @@ export function SkillTreePage() {
                           {skill.name.slice(0, 1).toUpperCase()}
                         </div>
                         <div>
-                          <h2 className={`text-base font-semibold ${unlocked ? "text-white" : "text-white"}`}>
+                          <h2 className="text-base font-semibold text-terminal-text">
                             {t(`skilltree.skills.${skill.id}.name`, { defaultValue: skill.name })}
                           </h2>
                           {unlocked ? (
-                            <span className="text-xs font-semibold text-positive">Unlocked</span>
+                            <span className="text-xs font-semibold text-terminal-positive">Unlocked</span>
                           ) : inProgress ? (
-                            <span className="text-xs font-semibold text-brandCyan">In progress</span>
+                            <span className="text-xs font-semibold text-terminal-cyan">In progress</span>
                           ) : (
-                            <span className="text-xs font-semibold text-white/50">Locked</span>
+                            <span className="text-xs font-semibold text-terminal-textMuted">Locked</span>
                           )}
                         </div>
                       </div>
 
                       {unlocked ? (
-                        <CheckBadgeIcon className="h-6 w-6 shrink-0 text-brandCyan" aria-hidden />
+                        <CheckBadgeIcon className="h-6 w-6 shrink-0 text-terminal-cyan" aria-hidden />
                       ) : (
-                        <LockClosedIcon className="h-6 w-6 shrink-0 text-white/50" aria-hidden />
+                        <LockClosedIcon className="h-6 w-6 shrink-0 text-terminal-textMuted" aria-hidden />
                       )}
                     </div>
 
-                    <p className={`text-sm ${unlocked ? "glass-muted" : "text-white/50"}`}>
+                    <p className={`text-sm ${unlocked ? "text-terminal-textMuted" : "text-terminal-textMuted/80"}`}>
                       {t(`skilltree.skills.${skill.id}.description`, {
                         defaultValue: skill.description,
                       })}
@@ -194,13 +193,13 @@ export function SkillTreePage() {
 
                     <div className="mt-4 text-xs">
                       {unlocked ? (
-                        <p className="text-positive">
+                        <p className="text-terminal-positive">
                           {t("skilltree.unlockedAt", {
                             date: formatDate(skill.unlockedAt, i18n.language || "en"),
                           })}
                         </p>
                       ) : (
-                        <p className="glass-muted">
+                        <p className="text-terminal-textMuted">
                           {t(`skilltree.skills.${skill.id}.condition`, {
                             defaultValue: skill.unlockCondition,
                           })}
@@ -210,16 +209,15 @@ export function SkillTreePage() {
 
                     {inProgress ? (
                       <div className="mt-4">
-                        <div className="mb-1 flex items-center justify-between text-xs text-brandCyan">
+                        <div className="mb-1 flex items-center justify-between text-xs text-terminal-cyan">
                           <span>Progress</span>
                           <span>{progressPct}%</span>
                         </div>
-                        <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                        <div className="h-2 overflow-hidden rounded-full bg-terminal-panelSecondary">
                           <div
-                            className="h-full rounded-full"
+                            className="h-full rounded-full bg-terminal-cyan"
                             style={{
                               width: `${Math.max(12, Math.min(92, progressPct))}%`,
-                              backgroundColor: colors.brandCyan,
                             }}
                           />
                         </div>
