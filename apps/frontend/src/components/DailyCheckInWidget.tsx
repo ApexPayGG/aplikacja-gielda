@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { GLASS_BTN_PRIMARY, GLASS_BTN_SECONDARY, GLASS_WIDGET_SHELL } from "./behavioral-coach/glassStyles";
 import { TerminalButton } from "./terminal";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -69,14 +68,14 @@ function publishState(
 
 export function DailyCheckInWidget({
   compact = false,
-  appearance = "light",
+  appearance = "terminal",
   onStateChange,
 }: DailyCheckInWidgetProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const userId = useMemo(() => user?.id ?? readUserId(), [user?.id]);
-  const isGlass = appearance === "glass";
-  const isTerminal = appearance === "terminal";
+  /** Terminal cockpit; `glass` is a deprecated alias. */
+  const isTerminal = appearance === "terminal" || appearance === "glass";
 
   const [loading, setLoading] = useState(true);
   const [todayCheckIn, setTodayCheckIn] = useState<DailyCheckIn | null>(null);
@@ -164,41 +163,31 @@ export function DailyCheckInWidget({
 
   const shellClass = isTerminal
     ? `rounded-lg border border-terminal-border bg-terminal-panel shadow-terminal-panel${compact ? " p-3" : " p-4 mb-6"}`
-    : isGlass
-      ? `${GLASS_WIDGET_SHELL}${compact ? "" : " mb-6"}`
-      : compact
+    : compact
         ? "rounded-2xl border border-border/80 bg-gradient-to-b from-bgPrimary to-bgSecondary/30 p-4 shadow-sm"
         : "mb-6 rounded-2xl border border-border bg-bgPrimary p-4 shadow-sm";
 
   const titleClass = isTerminal
     ? `${compact ? "text-sm" : "text-base"} font-semibold text-terminal-text`
-    : isGlass
-      ? `${compact ? "text-sm" : "text-base"} font-semibold text-white`
-      : `${compact ? "text-sm" : "text-base"} font-semibold text-textPrimary`;
+    : `${compact ? "text-sm" : "text-base"} font-semibold text-textPrimary`;
 
   const subtitleClass = isTerminal
     ? "mt-1 text-xs text-terminal-textSecondary"
-    : isGlass
-      ? "mt-1 text-sm text-white/60"
-      : "mt-1 text-sm text-textSecondary";
+    : "mt-1 text-sm text-textSecondary";
 
   const panelClass = isTerminal
     ? "rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/60 px-3 py-2.5"
-    : isGlass
-      ? "rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 backdrop-blur-sm"
-      : "rounded-xl border border-border/80 bg-bgSecondary/50 px-3 py-2.5";
+    : "rounded-xl border border-border/80 bg-bgSecondary/50 px-3 py-2.5";
 
   const mindsetLabelClass = isTerminal
     ? "text-[10px] font-semibold uppercase tracking-[0.12em] text-terminal-textMuted"
-    : isGlass
-      ? "text-[10px] font-semibold uppercase tracking-[0.12em] text-white/50"
-      : "text-[10px] font-semibold uppercase tracking-[0.12em] text-textMuted";
+    : "text-[10px] font-semibold uppercase tracking-[0.12em] text-textMuted";
 
   const mindsetBtnClass = (selected: boolean) => {
     const base =
       "flex min-w-0 flex-1 flex-col items-center gap-1 rounded-md border px-1 py-1.5 font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terminal-cyan/40";
     const size = compact ? "text-[9px] leading-tight sm:text-[10px]" : "text-[10px] leading-tight sm:text-[11px]";
-    if (isTerminal || isGlass) {
+    if (isTerminal) {
       return `${base} ${size} ${
         selected
           ? "border-terminal-cyan bg-terminal-cyan/15 text-terminal-cyan"
@@ -214,14 +203,14 @@ export function DailyCheckInWidget({
 
   const mindsetIndicatorClass = (selected: boolean, level: number) => {
     if (!selected) {
-      return isTerminal || isGlass ? "bg-terminal-borderMuted/80" : "bg-border";
+      return isTerminal ? "bg-terminal-borderMuted/80" : "bg-border";
     }
     const intensity =
       level <= 2 ? "bg-terminal-warning" : level === 3 ? "bg-terminal-textMuted" : "bg-terminal-cyan";
     return intensity;
   };
 
-  const skeletonClass = isTerminal ? "bg-terminal-panelSecondary" : isGlass ? "bg-white/10" : "bg-bgSecondary";
+  const skeletonClass = isTerminal ? "bg-terminal-panelSecondary" : "bg-bgSecondary";
 
   if (loading) {
     return (
@@ -247,7 +236,7 @@ export function DailyCheckInWidget({
           <div>
             <p
               className={`text-[11px] font-semibold uppercase tracking-widest ${
-                isTerminal || isGlass ? "text-terminal-cyan" : "text-brandCyan"
+                isTerminal ? "text-terminal-cyan" : "text-brandCyan"
               }`}
             >
               {t("checkin.done.eyebrow", { defaultValue: "Today" })}
@@ -261,12 +250,12 @@ export function DailyCheckInWidget({
             <div className="min-w-0 space-y-1.5">
               <p
                 className={`text-[11px] ${
-                  isTerminal ? "text-terminal-textSecondary" : isGlass ? "text-white/70" : "text-textSecondary"
+                  isTerminal ? "text-terminal-textSecondary" : "text-textSecondary"
                 }`}
               >
                 <span
                   className={`font-semibold uppercase tracking-wide ${
-                    isTerminal ? "text-terminal-textMuted" : isGlass ? "text-white/50" : "text-textMuted"
+                    isTerminal ? "text-terminal-textMuted" : "text-textMuted"
                   }`}
                 >
                   {t("checkin.mindset.label", { defaultValue: "Mindset" })}:{" "}
@@ -275,12 +264,12 @@ export function DailyCheckInWidget({
               </p>
               <p
                 className={`text-[11px] ${
-                  isTerminal ? "text-terminal-textSecondary" : isGlass ? "text-white/70" : "text-textSecondary"
+                  isTerminal ? "text-terminal-textSecondary" : "text-textSecondary"
                 }`}
               >
                 <span
                   className={`font-semibold uppercase tracking-wide ${
-                    isTerminal ? "text-terminal-textMuted" : isGlass ? "text-white/50" : "text-textMuted"
+                    isTerminal ? "text-terminal-textMuted" : "text-textMuted"
                   }`}
                 >
                   {t("checkin.risk.label", { defaultValue: "Risk" })}:{" "}
@@ -289,12 +278,12 @@ export function DailyCheckInWidget({
               </p>
               <p
                 className={`text-sm leading-snug ${
-                  isTerminal ? "text-terminal-text" : isGlass ? "text-white/90" : "text-textPrimary"
+                  isTerminal ? "text-terminal-text" : "text-textPrimary"
                 }`}
               >
                 <span
                   className={`font-semibold uppercase tracking-wide ${
-                    isTerminal ? "text-terminal-textMuted" : isGlass ? "text-white/50" : "text-textMuted"
+                    isTerminal ? "text-terminal-textMuted" : "text-textMuted"
                   }`}
                 >
                   {t("checkin.plan.label", { defaultValue: "Plan" })}:{" "}
@@ -307,12 +296,12 @@ export function DailyCheckInWidget({
           {coachNote ? (
             <p
               className={`rounded-xl border px-3 py-2.5 text-sm leading-relaxed ${
-                isTerminal || isGlass
+                isTerminal
                   ? "border-terminal-cyan/25 bg-terminal-cyan/10 text-terminal-text"
                   : "border-brandCyan/20 bg-brandCyan/5 text-textPrimary"
               }`}
             >
-              <span className={`font-semibold ${isTerminal || isGlass ? "text-terminal-cyan" : "text-brandDark"}`}>
+              <span className={`font-semibold ${isTerminal ? "text-terminal-cyan" : "text-brandDark"}`}>
                 {t("checkin.done.aiLabel", { defaultValue: "Coach note" })}:{" "}
               </span>
               {coachNote}
@@ -337,21 +326,13 @@ export function DailyCheckInWidget({
               <>
                 <Link
                   to="/behavioral-coach"
-                  className={
-                    isGlass
-                      ? GLASS_BTN_PRIMARY
-                      : "inline-flex items-center justify-center rounded-xl bg-brandDark px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
-                  }
+                  className="inline-flex items-center justify-center rounded-xl bg-brandDark px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
                 >
                   {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
                 </Link>
                 <Link
                   to="/paper-trading"
-                  className={
-                    isGlass
-                      ? GLASS_BTN_SECONDARY
-                      : "inline-flex items-center justify-center rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-brandDark transition hover:border-brandDark/40 hover:bg-bgSecondary/80"
-                  }
+                  className="inline-flex items-center justify-center rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-brandDark transition hover:border-brandDark/40 hover:bg-bgSecondary/80"
                 >
                   {t("checkin.done.paperCta", { defaultValue: "Paper trading" })}
                 </Link>
@@ -368,25 +349,17 @@ export function DailyCheckInWidget({
       ? selected
         ? "border-terminal-cyan bg-terminal-cyan/15 text-terminal-cyan"
         : "border-terminal-borderMuted bg-terminal-panelSecondary/60 text-terminal-textSecondary hover:border-terminal-cyan/30"
-      : isGlass
-        ? selected
-          ? "border-[#22d3ee] bg-[#22d3ee]/15 text-white"
-          : "border-white/15 bg-white/5 text-white/70 hover:border-white/25"
-        : selected
-          ? "border-brandDark bg-brandDark text-white"
-          : "border-border bg-bgSecondary text-textSecondary hover:border-borderStrong";
+      : selected
+        ? "border-brandDark bg-brandDark text-white"
+        : "border-border bg-bgSecondary text-textSecondary hover:border-borderStrong";
 
   const inputClass = isTerminal
     ? `w-full rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/60 px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-terminal-text placeholder:text-terminal-textMuted outline-none ring-terminal-cyan/40 transition focus:ring`
-    : isGlass
-      ? `w-full rounded-lg border border-white/15 bg-white/5 px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-white placeholder:text-white/40 outline-none ring-[#22d3ee]/40 transition focus:ring`
-      : `w-full rounded-lg border border-border bg-bgSecondary px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-textPrimary outline-none ring-brandCyan/40 transition focus:ring`;
+    : `w-full rounded-lg border border-border bg-bgSecondary px-3 ${compact ? "py-1.5 text-xs" : "py-2 text-sm"} text-textPrimary outline-none ring-brandCyan/40 transition focus:ring`;
 
   const submitBtnClass = isTerminal
     ? ""
-    : isGlass
-      ? `w-full ${GLASS_BTN_PRIMARY} ${compact ? "px-3 py-2 text-xs" : ""} disabled:cursor-not-allowed disabled:opacity-60`
-      : `w-full rounded-xl bg-brandDark ${compact ? "px-3 py-2 text-xs" : "px-4 py-2.5 text-sm"} font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60`;
+    : `w-full rounded-xl bg-brandDark ${compact ? "px-3 py-2 text-xs" : "px-4 py-2.5 text-sm"} font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60`;
 
   return (
     <section className={shellClass}>
@@ -432,7 +405,7 @@ export function DailyCheckInWidget({
         <div>
           <label
             className={`mb-1 block ${compact ? "text-xs" : "text-sm"} ${
-              isTerminal ? "text-terminal-textSecondary" : isGlass ? "text-white/60" : "text-textSecondary"
+              isTerminal ? "text-terminal-textSecondary" : "text-textSecondary"
             }`}
           >
             {t("dashboard.checkIn.planPlaceholder", { defaultValue: "What is your plan today?" })}
@@ -494,7 +467,7 @@ export function DailyCheckInWidget({
             </button>
           )}
           {error ? (
-            <p className={`text-sm ${isTerminal || isGlass ? "text-terminal-negative" : "text-negative"}`}>{error}</p>
+            <p className={`text-sm ${isTerminal ? "text-terminal-negative" : "text-negative"}`}>{error}</p>
           ) : null}
         </div>
       </div>

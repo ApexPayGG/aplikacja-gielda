@@ -23,6 +23,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { getCompanyDetail, getLatestQuoteBySymbol, getWatchlist } from "../services/api";
 import { enrichItemsWithCompanyLogos } from "../utils/companyLogoEnrichment";
+import { TERMINAL_APP_BG, TERMINAL_PAGE_SHELL } from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatCurrency } from "../utils/formatters";
 
@@ -340,8 +341,8 @@ export function Dashboard() {
   );
 
   return (
-    <div className="min-h-full bg-gradient-to-b from-terminal-bg via-[#070B16] to-terminal-bg">
-      <div className="mx-0 w-full max-w-none px-2 py-2 text-terminal-text sm:px-3 sm:py-3 lg:px-4 lg:py-3">
+    <div className={`min-h-full ${TERMINAL_APP_BG}`}>
+      <div className={`${TERMINAL_PAGE_SHELL} max-w-none py-2 text-terminal-text sm:py-3 lg:py-3`}>
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
           <div className="min-w-0 space-y-2.5">
             <header className="border-b border-terminal-borderMuted pb-2.5">

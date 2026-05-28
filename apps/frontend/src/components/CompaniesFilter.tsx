@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  GLASS_FILTER_PANEL,
-  GLASS_INPUT,
-  GLASS_LABEL,
-  GLASS_LINK_ACCENT,
-  GLASS_SELECT,
-} from "./behavioral-coach/glassStyles";
+  TERMINAL_DROPDOWN_PANEL,
+  TERMINAL_FILTER_PANEL,
+  TERMINAL_INPUT,
+  TERMINAL_LINK_ACCENT,
+  TERMINAL_PANEL_MUTED,
+  TERMINAL_SECTION_TITLE,
+} from "./terminal/terminalStyles";
 import {
   COMPANY_FILTER_SECTORS,
   PE_RATIO_MAX,
@@ -69,36 +70,36 @@ export function CompaniesFilter({
 
   const peMinPercent = ((filters.peMin - PE_RATIO_MIN) / (PE_RATIO_MAX - PE_RATIO_MIN)) * 100;
   const peMaxPercent = ((filters.peMax - PE_RATIO_MIN) / (PE_RATIO_MAX - PE_RATIO_MIN)) * 100;
-  const peFill = `linear-gradient(90deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.12) ${peMinPercent}%, #22d3ee ${peMinPercent}%, #22d3ee ${peMaxPercent}%, rgba(255,255,255,0.12) ${peMaxPercent}%, rgba(255,255,255,0.12) 100%)`;
+  const peFill = `linear-gradient(90deg, rgba(148,163,184,0.2) 0%, rgba(148,163,184,0.2) ${peMinPercent}%, #22d3ee ${peMinPercent}%, #22d3ee ${peMaxPercent}%, rgba(148,163,184,0.2) ${peMaxPercent}%, rgba(148,163,184,0.2) 100%)`;
 
   const selectedSectorLabel = filters.selectedSectors.length === 0 ? "All sectors" : `${filters.selectedSectors.length} selected`;
 
   return (
-    <section className={GLASS_FILTER_PANEL}>
+    <section className={TERMINAL_FILTER_PANEL}>
       <header className="flex items-center justify-between gap-2">
-        <h2 className={GLASS_LABEL}>{t("common.filters", { defaultValue: "Filters" })}</h2>
-        <button type="button" onClick={onReset} className={`text-sm ${GLASS_LINK_ACCENT}`}>
+        <h2 className={TERMINAL_SECTION_TITLE}>{t("common.filters", { defaultValue: "Filters" })}</h2>
+        <button type="button" onClick={onReset} className={`text-sm ${TERMINAL_LINK_ACCENT}`}>
           {t("common.resetFilters", { defaultValue: "Reset filters" })}
         </button>
       </header>
 
       <div className="space-y-2">
-        <p className={GLASS_LABEL}>Sector</p>
+        <p className={TERMINAL_SECTION_TITLE}>Sector</p>
         <div className="relative" ref={panelRef}>
-          <button type="button" onClick={() => setIsSectorOpen((prev) => !prev)} className={`${GLASS_INPUT} text-left`}>
+          <button type="button" onClick={() => setIsSectorOpen((prev) => !prev)} className={`${TERMINAL_INPUT} text-left`}>
             {selectedSectorLabel}
           </button>
           {isSectorOpen ? (
-            <div className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-white/15 bg-[#0f111c]/95 p-2 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-md">
+            <div className={`absolute z-20 mt-2 max-h-64 w-full overflow-auto p-2 ${TERMINAL_DROPDOWN_PANEL}`}>
               {COMPANY_FILTER_SECTORS.map((sector) => {
                 const selected = filters.selectedSectors.includes(sector);
                 return (
                   <label
                     key={sector}
-                    className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-white/10"
+                    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 hover:bg-terminal-panelSecondary"
                   >
-                    <input type="checkbox" checked={selected} onChange={() => onToggleSector(sector)} className="accent-[#22d3ee]" />
-                    <span className="text-sm text-white/90">{sector}</span>
+                    <input type="checkbox" checked={selected} onChange={() => onToggleSector(sector)} className="accent-terminal-cyan" />
+                    <span className="text-sm text-terminal-text">{sector}</span>
                   </label>
                 );
               })}
@@ -108,17 +109,17 @@ export function CompaniesFilter({
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="market-cap-filter" className={GLASS_LABEL}>
+        <label htmlFor="market-cap-filter" className={TERMINAL_SECTION_TITLE}>
           Market cap
         </label>
         <select
           id="market-cap-filter"
           value={filters.marketCap}
           onChange={(event) => onMarketCapChange(event.target.value as CompanyMarketCapFilter)}
-          className={GLASS_SELECT}
+          className={TERMINAL_INPUT}
         >
           {marketCapOptions.map((option) => (
-            <option key={option.value} value={option.value} className="bg-[#0f111c] text-white">
+            <option key={option.value} value={option.value} className="bg-terminal-panel text-terminal-text">
               {option.label}
             </option>
           ))}
@@ -127,8 +128,8 @@ export function CompaniesFilter({
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <p className={GLASS_LABEL}>P/E ratio</p>
-          <span className="text-xs font-semibold text-[#22d3ee]">
+          <p className={TERMINAL_SECTION_TITLE}>P/E ratio</p>
+          <span className="text-xs font-semibold text-terminal-cyan">
             {filters.peMin} - {filters.peMax}
           </span>
         </div>
@@ -157,40 +158,40 @@ export function CompaniesFilter({
         />
       </div>
 
-      <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-        <span className="text-sm font-medium text-white/90">
+      <div className={`flex items-center justify-between rounded-lg border border-terminal-borderMuted px-3 py-2 ${TERMINAL_PANEL_MUTED}`}>
+        <span className="text-sm font-medium text-terminal-text">
           {t("companies.filterDividend", { defaultValue: "Dividend stocks only" })}
-          {dividendFilterLoading ? <span className="ml-1 text-xs font-normal text-white/50">…</span> : null}
+          {dividendFilterLoading ? <span className="ml-1 text-xs font-normal text-terminal-textMuted">…</span> : null}
         </span>
         <button
           type="button"
           onClick={() => onDividendToggle(!filters.onlyDividendStocks)}
           disabled={dividendFilterLoading}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition disabled:opacity-60 ${
-            filters.onlyDividendStocks ? "bg-[#22d3ee]" : "bg-white/20"
+            filters.onlyDividendStocks ? "bg-terminal-cyan" : "bg-terminal-borderMuted"
           }`}
           aria-pressed={filters.onlyDividendStocks}
           aria-label={t("companies.filterDividend", { defaultValue: "Dividend stocks only" })}
         >
           <span
-            className="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
+            className="inline-block h-5 w-5 transform rounded-full bg-terminal-text shadow transition"
             style={{ transform: filters.onlyDividendStocks ? "translateX(22px)" : "translateX(2px)" }}
           />
         </button>
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="companies-sort-filter" className={GLASS_LABEL}>
+        <label htmlFor="companies-sort-filter" className={TERMINAL_SECTION_TITLE}>
           Sort
         </label>
         <select
           id="companies-sort-filter"
           value={filters.sortBy}
           onChange={(event) => onSortChange(event.target.value as CompanySortOption)}
-          className={GLASS_SELECT}
+          className={TERMINAL_INPUT}
         >
           {sortOptions.map((option) => (
-            <option key={option.value} value={option.value} className="bg-[#0f111c] text-white">
+            <option key={option.value} value={option.value} className="bg-terminal-panel text-terminal-text">
               {option.label}
             </option>
           ))}

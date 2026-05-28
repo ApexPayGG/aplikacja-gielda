@@ -69,3 +69,18 @@ export const TERMINAL_SEARCH_DROPDOWN =
 
 export const TERMINAL_ICON_BUTTON =
   "inline-flex items-center justify-center rounded-md border border-terminal-borderMuted bg-terminal-panelSecondary/70 text-terminal-textSecondary transition hover:border-terminal-cyan/35 hover:text-terminal-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terminal-cyan/40";
+
+export const TERMINAL_FILTER_PANEL = `${TERMINAL_PANEL} space-y-5 p-4 sm:p-5`;
+
+export const TERMINAL_COMPANY_CARD =
+  "group relative flex flex-col overflow-hidden rounded-lg border border-terminal-border bg-terminal-panel shadow-terminal-panel transition hover:-translate-y-0.5 hover:border-terminal-cyan/35 hover:shadow-terminal-glow";
+
+export const TERMINAL_LINK_ACCENT =
+  "font-semibold text-terminal-cyan underline decoration-terminal-cyan/40 underline-offset-2 transition hover:decoration-terminal-cyan";
+
+export const TERMINAL_PAGE_TITLE = "text-2xl font-bold tracking-tight text-terminal-text md:text-3xl";
+
+export const TERMINAL_PAGE_SUBTITLE = "mt-2 max-w-3xl text-sm text-terminal-textSecondary";
+
+export const TERMINAL_DRAWER_PANEL =
+  "relative flex max-h-[min(92dvh,100%)] w-full flex-col overflow-hidden rounded-t-2xl border border-b-0 border-terminal-border bg-terminal-panel shadow-terminal-panel md:h-dvh md:max-h-none md:max-w-lg md:rounded-none md:rounded-l-2xl md:border-b md:border-l md:shadow-[-12px_0_40px_rgba(2,6,23,0.55)]";
