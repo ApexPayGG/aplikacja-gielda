@@ -678,9 +678,7 @@ a {
 }
 
 .hero-gradient-bg {
-  background: linear-gradient(-45deg, #ffffff, #f3e8ff, #e8f4fd, #fdf4ff, #f0fdf4);
-  background-size: 400% 400%;
-  animation: gradient-shift 10s ease infinite;
+  background: linear-gradient(180deg, #050914 0%, #0b1220 42%, #0a1628 100%);
 }
 
 @keyframes price-flash {

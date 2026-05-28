@@ -114,3 +114,31 @@ export const TERMINAL_LIVE_STATUS =
 
 export const TERMINAL_MOBILE_FILTER_SHEET =
   "absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-2xl border border-terminal-border bg-terminal-panel p-4 shadow-terminal-panel backdrop-blur-xl";
+
+/** Public marketing landing (`/`) — dark institutional fintech, aligned with cockpit brand */
+export const TERMINAL_LANDING_BG =
+  "min-h-screen bg-terminal-bg text-terminal-text antialiased";
+
+export const TERMINAL_LANDING_SECTION =
+  "relative scroll-mt-24 overflow-hidden px-4 py-16 sm:py-20";
+
+export const TERMINAL_LANDING_EYEBROW =
+  "inline-flex items-center rounded-full border border-terminal-cyan/30 bg-terminal-cyan/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-terminal-cyan";
+
+export const TERMINAL_HERO_PANEL =
+  "rounded-xl border border-terminal-border bg-terminal-panel shadow-terminal-panel";
+
+export const TERMINAL_HERO_GRID =
+  "rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/70 p-3 transition hover:border-terminal-cyan/25 hover:bg-terminal-panelSecondary";
+
+export const TERMINAL_PROOF_CARD =
+  "rounded-xl border border-terminal-border bg-terminal-panel shadow-terminal-panel transition duration-300 hover:border-terminal-cyan/30 hover:shadow-terminal-glow";
+
+export const TERMINAL_PRICING_PREVIEW_CARD =
+  "rounded-xl border border-terminal-border bg-terminal-panel p-6 shadow-terminal-panel sm:p-8";
+
+export const TERMINAL_LANDING_CTA_PRIMARY =
+  "inline-flex w-full items-center justify-center gap-2 rounded-full bg-terminal-cyan px-6 py-3.5 text-base font-semibold text-terminal-buttonText shadow-[0_4px_24px_rgba(34,211,238,0.35)] transition hover:bg-terminal-cyanStrong sm:w-auto sm:px-8 sm:py-4 sm:text-lg";
+
+export const TERMINAL_LANDING_CTA_SECONDARY =
+  "inline-flex w-full items-center justify-center gap-2 rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary/60 px-6 py-3.5 text-base font-semibold text-terminal-cyan transition hover:border-terminal-cyan/40 hover:bg-terminal-panel sm:w-auto sm:px-8 sm:py-4 sm:text-lg";

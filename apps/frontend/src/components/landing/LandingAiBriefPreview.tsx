@@ -1,5 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import {
+  TERMINAL_LANDING_CTA_PRIMARY,
+  TERMINAL_LANDING_EYEBROW,
+  TERMINAL_LANDING_SECTION,
+  TERMINAL_PROOF_CARD,
+} from "../terminal/terminalStyles";
 
 type BriefSection = { heading: string; body: string };
 
@@ -27,26 +33,24 @@ export function LandingAiBriefPreview() {
   return (
     <section
       id="ai-brief-demo"
-      className="relative scroll-mt-24 overflow-hidden px-4 py-20"
+      className={`${TERMINAL_LANDING_SECTION}`}
       aria-labelledby="landing-brief-demo-title"
     >
       <div className="relative z-10 mx-auto max-w-3xl text-center">
-        <span className="inline-flex rounded-full border border-[#22d3ee]/30 bg-[#22d3ee]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#22d3ee]">
-          {t("landing.aiBriefDemo.badge")}
-        </span>
-        <h2 id="landing-brief-demo-title" className="section-h2 mt-4 text-white">
+        <span className={TERMINAL_LANDING_EYEBROW}>{t("landing.aiBriefDemo.badge")}</span>
+        <h2 id="landing-brief-demo-title" className="section-h2 mt-4 text-terminal-text">
           {t("landing.aiBriefDemo.title")}
         </h2>
-        <p className="landing-body mt-3 text-[#94a3b8]">{t("landing.aiBriefDemo.subtitle")}</p>
+        <p className="landing-body mt-3 text-terminal-textSecondary">{t("landing.aiBriefDemo.subtitle")}</p>
       </div>
 
-      <article className="glass-section relative z-10 mx-auto mt-10 max-w-3xl p-6 sm:p-8">
-        <header className="border-b border-white/10 pb-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+      <article className={`${TERMINAL_PROOF_CARD} relative z-10 mx-auto mt-10 max-w-3xl p-6 sm:p-8`}>
+        <header className="border-b border-terminal-border pb-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-terminal-textMuted">
             {t("landing.aiBriefDemo.symbolLabel")}
           </p>
-          <p className="mt-1 font-mono text-2xl font-bold text-white">{t("landing.aiBriefDemo.symbol")}</p>
-          <p className="mt-2 text-sm text-[#94a3b8]">{t("landing.aiBriefDemo.disclaimer")}</p>
+          <p className="mt-1 font-mono text-2xl font-bold text-terminal-text">{t("landing.aiBriefDemo.symbol")}</p>
+          <p className="mt-2 text-sm text-terminal-textSecondary">{t("landing.aiBriefDemo.disclaimer")}</p>
         </header>
 
         {highlightList.length > 0 ? (
@@ -54,7 +58,7 @@ export function LandingAiBriefPreview() {
             {highlightList.map((tag) => (
               <li
                 key={tag}
-                className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80"
+                className="rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary px-3 py-1 text-xs font-medium text-terminal-textSecondary"
               >
                 {tag}
               </li>
@@ -65,17 +69,13 @@ export function LandingAiBriefPreview() {
         <div className="mt-6 space-y-5">
           {sectionList.map((section) => (
             <div key={section.heading}>
-              <h3 className="text-sm font-bold uppercase tracking-wide text-[#22d3ee]">{section.heading}</h3>
-              <p className="landing-body mt-2 text-[#94a3b8]">{section.body}</p>
+              <h3 className="text-sm font-bold uppercase tracking-wide text-terminal-cyan">{section.heading}</h3>
+              <p className="landing-body mt-2 text-terminal-textSecondary">{section.body}</p>
             </div>
           ))}
         </div>
 
-        <Link
-          to="/register"
-          className="mt-8 inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-semibold text-white transition hover:opacity-95 sm:w-auto"
-          style={{ backgroundColor: "#a855f7" }}
-        >
+        <Link to="/register" className={`mt-8 ${TERMINAL_LANDING_CTA_PRIMARY}`}>
           {t("landing.aiBriefDemo.cta")} →
         </Link>
       </article>

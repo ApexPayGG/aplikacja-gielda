@@ -24,13 +24,20 @@ import {
   formatEurPrice,
   PRICING_PLANS,
 } from "../config/pricing";
+import {
+  TERMINAL_HERO_GRID,
+  TERMINAL_HERO_PANEL,
+  TERMINAL_INPUT,
+  TERMINAL_LANDING_BG,
+  TERMINAL_LANDING_CTA_PRIMARY,
+  TERMINAL_LANDING_CTA_SECONDARY,
+  TERMINAL_LANDING_EYEBROW,
+  TERMINAL_NAV_SHELL,
+  TERMINAL_PRICING_PREVIEW_CARD,
+  TERMINAL_PROOF_CARD,
+} from "../components/terminal/terminalStyles";
 
-const BRAND = {
-  dark: "#a855f7",
-  medium: "#9333ea",
-  cyan: "#22d3ee",
-  gold: "#FFAE33",
-} as const;
+const ACCENT_CYAN = "#22d3ee";
 
 const ETORO_AFFILIATE_URL =
   "https://med.etoro.com/B9219_A129734_TClick_Sstockaipro-main.aspx";
@@ -121,7 +128,7 @@ type BillingCycle = "monthly" | "yearly";
 function SignalWave({
   offset = 0,
   opacity = 0.08,
-  color = BRAND.cyan,
+  color = ACCENT_CYAN,
 }: {
   offset?: number;
   opacity?: number;
@@ -212,14 +219,14 @@ function HowItWorksStepBadge({ stepIndex }: { stepIndex: number }) {
 
   const accentRing = [
     "shadow-[0_0_0_1px_rgba(6,182,212,0.35)]",
-    "shadow-[0_0_0_1px_rgba(167,139,250,0.35)]",
-    "shadow-[0_0_0_1px_rgba(34,211,238,0.4)]",
+    "shadow-[0_0_0_1px_rgba(34,211,238,0.35)]",
+    "shadow-[0_0_0_1px_rgba(34,211,238,0.45)]",
   ][stepIndex] ?? "shadow-[0_0_0_1px_rgba(255,255,255,0.12)]";
 
   const shell = [
     "landing-how-float relative flex h-[92px] w-[92px] shrink-0 items-center justify-center overflow-visible rounded-2xl",
-    "border border-white/15 bg-gradient-to-br from-[#a855f7]/55 via-[#3b0764]/40 to-[#0f172a]/50 backdrop-blur-md",
-    "shadow-[0_14px_44px_rgba(168,85,247,0.42),inset_0_1px_0_rgba(255,255,255,0.14)]",
+    "border border-terminal-border bg-gradient-to-br from-terminal-panel to-terminal-panelSecondary",
+    "shadow-terminal-panel",
     accentRing,
   ].join(" ");
 
@@ -252,7 +259,7 @@ function PricingFeatureCheck({ accent }: { accent: "gold" | "cyan" }) {
             </>
           ) : (
             <>
-              <stop offset="0%" stopColor="#a855f7" />
+              <stop offset="0%" stopColor="#0891b2" />
               <stop offset="100%" stopColor="#22d3ee" />
             </>
           )}
@@ -316,8 +323,7 @@ function CandlestickChart() {
 
 function FloatingCards() {
   const { t } = useTranslation("common");
-  const cardShell =
-    "glass-section rounded-2xl px-3 py-2 shadow-[0_8px_32px_rgba(168,85,247,0.15)] md:px-4 md:py-3";
+  const cardShell = `${TERMINAL_PROOF_CARD} rounded-2xl px-3 py-2 md:px-4 md:py-3`;
 
   return (
     <>
@@ -332,10 +338,10 @@ function FloatingCards() {
             className="pulse-dot h-2 w-2 rounded-full bg-[#00A86B]"
             style={{ boxShadow: "0 0 8px #00A86B" }}
           />
-          <span className="text-[11px] font-bold text-[#a855f7]">AAPL</span>
-          <span className="text-[11px] font-semibold text-[#94a3b8]">{t("landing.hero.contextNoteTitle")}</span>
+          <span className="text-[11px] font-bold text-terminal-cyan">AAPL</span>
+          <span className="text-[11px] font-semibold text-terminal-textSecondary">{t("landing.hero.contextNoteTitle")}</span>
         </div>
-        <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.contextNoteBody")}</div>
+        <div className="mt-0.5 text-[10px] text-terminal-textMuted">{t("landing.hero.contextNoteBody")}</div>
       </div>
 
       <div
@@ -344,8 +350,8 @@ function FloatingCards() {
           animationDelay: "1.5s",
         }}
       >
-        <div className="text-[11px] font-bold text-[#a855f7]">🧠 {t("landing.hero.coachAlertTitle")}</div>
-        <div className="mt-0.5 text-[10px] text-[#9B9BB5]">{t("landing.hero.coachAlertBody")}</div>
+        <div className="text-[11px] font-bold text-terminal-cyan">🧠 {t("landing.hero.coachAlertTitle")}</div>
+        <div className="mt-0.5 text-[10px] text-terminal-textMuted">{t("landing.hero.coachAlertBody")}</div>
       </div>
     </>
   );
@@ -382,12 +388,12 @@ function GlobalConnectionsSVG() {
       {nodes.map((node, i) => (
         <g key={i}>
           <title>{node.label}</title>
-          <circle cx={node.x} cy={node.y} r={4} fill="#a855f7" />
-          <circle cx={node.x} cy={node.y} r={8} fill="none" stroke="#a855f7" strokeWidth={1} opacity={0.5} />
+          <circle cx={node.x} cy={node.y} r={4} fill="#22d3ee" />
+          <circle cx={node.x} cy={node.y} r={8} fill="none" stroke="#22d3ee" strokeWidth={1} opacity={0.5} />
         </g>
       ))}
       {edges.map(([x1, y1, x2, y2], i) => (
-        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#a855f7" strokeWidth={0.5} opacity={0.6} />
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#22d3ee" strokeWidth={0.5} opacity={0.6} />
       ))}
       <circle r={3} fill="#22d3ee" opacity={0.8}>
         <animateMotion dur="3s" repeatCount="indefinite" path="M80,200 L200,80 L380,150 L420,320 L150,380 L80,200" />
@@ -555,7 +561,7 @@ function WorldClocks() {
     <section
       className="world-clocks-section reveal relative overflow-hidden py-16"
       style={{
-        background: "linear-gradient(135deg, #0f0f1a 0%, #1a0533 50%, #0a1628 100%)",
+        background: "linear-gradient(135deg, #050914 0%, #0b1220 50%, #0a1628 100%)",
       }}
     >
       <div className="pointer-events-none absolute inset-0 opacity-10" aria-hidden>
@@ -566,7 +572,7 @@ function WorldClocks() {
         <div className="mb-8 text-center sm:mb-12">
           <h2 className="section-h2 mb-3 text-white">
             {t("landing.worldClocks.title")}
-            <span style={{ color: BRAND.cyan }}> {t("landing.worldClocks.titleAccent")}</span>
+            <span className="text-terminal-cyan"> {t("landing.worldClocks.titleAccent")}</span>
           </h2>
           <p className="text-base text-white/60 sm:text-lg">{t("landing.worldClocks.subtitle")}</p>
         </div>
@@ -647,13 +653,7 @@ function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProp
       </div>
 
       <div className="hero-card-glow absolute inset-x-2 top-4 z-10 rounded-2xl sm:inset-x-4 sm:top-6 md:inset-x-8 md:top-8">
-        <div
-          className="hero-card-glow-inner relative overflow-hidden rounded-[14px] shadow-[0_25px_50px_rgba(168,85,247,0.4),0_0_100px_rgba(34,211,238,0.05)]"
-          style={{
-            background: "linear-gradient(135deg, #0f0f1a 0%, #1a0533 50%, #0a1628 100%)",
-            border: "1px solid rgba(255,255,255,0.1)",
-          }}
-        >
+        <div className={`hero-card-glow-inner ${TERMINAL_HERO_PANEL} relative overflow-hidden rounded-[14px]`}>
           <div className="p-6">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-lg font-bold text-white">{t("landing.hero.widgetTitle")}</h2>
@@ -672,7 +672,7 @@ function HeroVisual({ heroPrices, heroPctByTicker, flashTicker }: HeroVisualProp
                 return (
                   <div
                     key={ticker}
-                    className={`rounded-lg p-3 transition-all duration-500 hover:bg-white/5 ${
+                    className={`${TERMINAL_HERO_GRID} transition-all duration-500 ${
                       flashTicker === ticker ? "price-updated" : ""
                     }`}
                   >
@@ -870,7 +870,7 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen text-white antialiased">
+    <div className={TERMINAL_LANDING_BG}>
       <SEOHead title={t("landing.seo.title")} description={t("landing.seo.description")} ogType="website" />
 
       {/* ═══ TICKER BAR (demo quotes) ═══ */}
@@ -900,26 +900,24 @@ export function LandingPage() {
 
       {/* ═══ NAVBAR ═══ */}
       <header
-        className={`relative sticky top-0 z-50 border-b border-white/10 bg-[#0a0b14]/90 backdrop-blur-xl transition-shadow duration-300 ${
-          navScrolled ? "shadow-md" : "shadow-none"
-        }`}
+        className={`${TERMINAL_NAV_SHELL} relative transition-shadow duration-300 ${navScrolled ? "shadow-terminal-glow" : ""}`}
       >
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-6 md:py-5">
           <Link to="/" className="flex min-w-0 shrink-0 items-center py-1" aria-label={t("landingAria.homeLogo", { defaultValue: "Stock-AI.Pro — home" })}>
             <BrandLogo size="nav" />
           </Link>
 
-          <nav className="hidden flex-1 items-center justify-center gap-10 text-sm font-semibold text-[#a855f7]/90 md:flex">
-            <a href="#how-it-works" className="transition hover:text-[#22d3ee]">
+          <nav className="hidden flex-1 items-center justify-center gap-10 text-sm font-semibold text-terminal-textSecondary md:flex">
+            <a href="#how-it-works" className="transition hover:text-terminal-cyan">
               {t("landing.nav.howItWorks")}
             </a>
-            <a href="#solution" className="transition hover:text-[#22d3ee]">
+            <a href="#solution" className="transition hover:text-terminal-cyan">
               {t("landing.nav.features")}
             </a>
-            <a href="#pricing" className="transition hover:text-[#22d3ee]">
+            <a href="#pricing" className="transition hover:text-terminal-cyan">
               {t("landing.nav.pricing")}
             </a>
-            <Link to="/companies" className="transition hover:text-[#22d3ee]">
+            <Link to="/companies" className="transition hover:text-terminal-cyan">
               {t("landing.nav.markets")}
             </Link>
           </nav>
@@ -933,7 +931,7 @@ export function LandingPage() {
               }}
             >
               <MagnifyingGlassIcon
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#a855f7]/50"
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-terminal-cyan/50"
                 aria-hidden
               />
               <input
@@ -944,26 +942,22 @@ export function LandingPage() {
                 onClick={() => goToCompaniesSearch()}
                 placeholder={t("landing.nav.searchPlaceholder")}
                 aria-label={t("landing.nav.searchPlaceholder")}
-                className="w-48 rounded-full border border-white/15 bg-white/[0.05] py-1.5 pl-9 pr-4 text-sm text-white outline-none transition-all duration-300 placeholder:text-[#94a3b8] focus:w-64 focus:border-[#22d3ee]/40"
+                className={`${TERMINAL_INPUT} w-48 rounded-full py-1.5 pl-9 pr-4 transition-all duration-300 focus:w-64`}
               />
             </form>
             <LanguageSwitcher variant="landing" />
-            <Link
-              to="/login"
-              className="hidden min-h-11 items-center rounded-full border border-[#a855f7]/25 px-4 py-2 text-sm font-semibold text-[#a855f7] transition hover:bg-[#1e1b4b]/5 sm:inline-flex"
-            >
+            <Link to="/login" className={`hidden min-h-11 sm:inline-flex ${TERMINAL_LANDING_CTA_SECONDARY} px-4 py-2 text-sm`}>
               {t("auth.loginButton")}
             </Link>
             <Link
               to="/register"
-              className="hidden min-h-11 items-center rounded-full px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 sm:inline-flex md:px-6"
-              style={{ backgroundColor: BRAND.dark }}
+              className={`hidden min-h-11 sm:inline-flex md:px-6 ${TERMINAL_LANDING_CTA_PRIMARY} px-4 py-2.5 text-sm`}
             >
               {t("landing.hero.ctaPrimary")}
             </Link>
             <button
               type="button"
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#a855f7]/20 text-[#a855f7] transition hover:bg-[#1e1b4b]/5 md:hidden"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-terminal-borderMuted text-terminal-cyan transition hover:border-terminal-cyan/40 hover:bg-terminal-panelSecondary md:hidden"
               aria-expanded={mobileNavOpen}
               aria-controls="landing-mobile-nav"
               aria-label={
@@ -980,7 +974,7 @@ export function LandingPage() {
         {mobileNavOpen ? (
           <nav
             id="landing-mobile-nav"
-            className="border-t border-white/10 bg-[#0f111c]/95 px-4 py-4 backdrop-blur-xl md:hidden"
+            className="border-t border-terminal-border bg-terminal-panel px-4 py-4 md:hidden"
           >
             <div className="flex flex-col gap-1">
               {(
@@ -995,7 +989,7 @@ export function LandingPage() {
                   <Link
                     key={item.href}
                     to={item.href}
-                    className="min-h-12 rounded-xl px-3 py-3 text-base font-semibold text-[#a855f7] transition hover:bg-[#1e1b4b]/5"
+                    className="min-h-12 rounded-xl px-3 py-3 text-base font-semibold text-terminal-cyan transition hover:bg-terminal-panelSecondary"
                     onClick={() => setMobileNavOpen(false)}
                   >
                     {item.label}
@@ -1004,7 +998,7 @@ export function LandingPage() {
                   <a
                     key={item.href}
                     href={item.href}
-                    className="min-h-12 rounded-xl px-3 py-3 text-base font-semibold text-[#a855f7] transition hover:bg-[#1e1b4b]/5"
+                    className="min-h-12 rounded-xl px-3 py-3 text-base font-semibold text-terminal-cyan transition hover:bg-terminal-panelSecondary"
                     onClick={() => setMobileNavOpen(false)}
                   >
                     {item.label}
@@ -1021,7 +1015,7 @@ export function LandingPage() {
               }}
             >
               <MagnifyingGlassIcon
-                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#a855f7]/50"
+                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-terminal-cyan/50"
                 aria-hidden
               />
               <input
@@ -1030,21 +1024,20 @@ export function LandingPage() {
                 onChange={(e) => setNavSearchQuery(e.target.value)}
                 placeholder={t("landing.nav.searchPlaceholder")}
                 aria-label={t("landing.nav.searchPlaceholder")}
-                className="w-full rounded-xl border border-white/15 bg-white/[0.05] py-3 pl-10 pr-4 text-base text-white outline-none placeholder:text-[#94a3b8] focus:border-[#22d3ee]/40"
+                className={`${TERMINAL_INPUT} w-full rounded-xl py-3 pl-10 pr-4 text-base`}
               />
             </form>
             <div className="mt-4 grid grid-cols-2 gap-2">
               <Link
                 to="/login"
-                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#a855f7]/25 px-4 text-sm font-semibold text-[#a855f7]"
+                className={`min-h-12 ${TERMINAL_LANDING_CTA_SECONDARY} text-sm`}
                 onClick={() => setMobileNavOpen(false)}
               >
                 {t("auth.loginButton")}
               </Link>
               <Link
                 to="/register"
-                className="inline-flex min-h-12 items-center justify-center rounded-xl px-4 text-sm font-semibold text-white"
-                style={{ backgroundColor: BRAND.dark }}
+                className={`min-h-12 ${TERMINAL_LANDING_CTA_PRIMARY} text-sm`}
                 onClick={() => setMobileNavOpen(false)}
               >
                 {t("landing.hero.ctaPrimary")}
@@ -1056,7 +1049,7 @@ export function LandingPage() {
           <div
             className="pointer-events-none absolute bottom-0 left-0 right-0 h-px"
             style={{
-              background: "linear-gradient(90deg, transparent, #22d3ee 30%, #9333ea 70%, transparent)",
+              background: "linear-gradient(90deg, transparent, #22d3ee 30%, #0891b2 70%, transparent)",
             }}
             aria-hidden
           />
@@ -1064,65 +1057,44 @@ export function LandingPage() {
       </header>
 
       {/* ═══ HERO ═══ */}
-      <section className="hero-gradient-bg relative isolate flex min-h-screen items-start overflow-x-hidden pt-20 pb-12">
+      <section className="hero-gradient-bg relative isolate flex min-h-[min(100dvh,920px)] items-start overflow-x-hidden pt-20 pb-12 md:min-h-screen">
         <div
-          className="animate-float pointer-events-none absolute left-4 top-8 z-0 h-48 w-48 rounded-full opacity-20 blur-3xl sm:left-10 sm:top-10 sm:h-72 sm:w-72 md:h-[500px] md:w-[500px]"
-          style={{ background: "radial-gradient(circle, #9333ea, transparent)" }}
+          className="pointer-events-none absolute left-4 top-8 z-0 h-40 w-40 rounded-full opacity-20 blur-3xl sm:left-10 sm:top-10 sm:h-56 sm:w-56 md:h-72 md:w-72"
+          style={{ background: "radial-gradient(circle, #0891b2, transparent)" }}
           aria-hidden
         />
         <div
-          className="animate-float pointer-events-none absolute right-0 top-1/2 z-0 h-56 w-56 -translate-y-1/2 rounded-full opacity-15 blur-3xl sm:h-80 sm:w-80 md:h-[400px] md:w-[400px] [animation-delay:2s]"
+          className="pointer-events-none absolute right-0 top-1/2 z-0 h-48 w-48 -translate-y-1/2 rounded-full opacity-15 blur-3xl sm:h-64 sm:w-64 md:h-80 md:w-80"
           style={{ background: "radial-gradient(circle, #22d3ee, transparent)" }}
           aria-hidden
         />
-        <div
-          className="animate-float pointer-events-none absolute bottom-0 left-1/3 z-0 h-40 w-40 rounded-full opacity-10 blur-3xl sm:h-64 sm:w-64 md:h-[300px] md:w-[300px] [animation-delay:4s]"
-          style={{ background: "radial-gradient(circle, #FFAE33, transparent)" }}
-          aria-hidden
-        />
         <SignalWave offset={320} opacity={0.14} />
-        <SignalWave offset={460} opacity={0.09} color="#a78bfa" />
+        <SignalWave offset={460} opacity={0.09} color="#0891b2" />
 
         <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 px-4 lg:grid-cols-[3fr_2fr] lg:gap-12">
           {/* Left column */}
           <div className="flex flex-col justify-center">
-            <span
-              className="landing-hero-badge mb-6 inline-flex w-fit items-center rounded-full border px-4 py-1.5 text-xs font-semibold tracking-wide"
-              style={{
-                backgroundColor: `${BRAND.dark}14`,
-                borderColor: `${BRAND.dark}33`,
-                color: BRAND.dark,
-              }}
-            >
-              {t("landing.hero.badge")}
-            </span>
+            <span className={`landing-hero-badge mb-6 ${TERMINAL_LANDING_EYEBROW}`}>{t("landing.hero.badge")}</span>
 
-            <h1 className="hero-h1 text-[#1e1b4b]">
+            <h1 className="hero-h1 text-terminal-text">
               <span className="landing-hero-h1-line1 block">{t("landing.hero.titleLine1")}</span>
-              <span className="landing-hero-h1-line2 mt-1 block" style={{ color: BRAND.cyan }}>
-                {t("landing.hero.titleLine2")}
-              </span>
+              <span className="landing-hero-h1-line2 mt-1 block text-terminal-cyan">{t("landing.hero.titleLine2")}</span>
             </h1>
 
-            <p className="landing-hero-sub landing-body mt-6 max-w-lg text-[#94a3b8]">{t("landing.hero.subtitle")}</p>
+            <p className="landing-hero-sub landing-body mt-6 max-w-lg text-terminal-textSecondary">
+              {t("landing.hero.subtitle")}
+            </p>
 
             <div className="landing-hero-cta mt-8 flex w-full flex-col gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-              <Link
-                to="/register"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:opacity-95 sm:w-auto sm:text-lg"
-                style={{ backgroundColor: BRAND.dark }}
-              >
+              <Link to="/register" className={TERMINAL_LANDING_CTA_PRIMARY}>
                 {t("landing.hero.ctaPrimary")} →
               </Link>
-              <a
-                href="#how-it-works"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#a855f7]/20 px-6 py-4 text-base font-semibold text-[#a855f7] transition hover:bg-[#1e1b4b]/5 sm:w-auto sm:text-lg"
-              >
+              <a href="#pricing" className={TERMINAL_LANDING_CTA_SECONDARY}>
                 {t("landing.hero.ctaSecondary")}
               </a>
             </div>
 
-            <p className="landing-hero-trust mt-10 max-w-lg text-sm font-medium leading-relaxed text-[#94a3b8]">
+            <p className="landing-hero-trust mt-8 max-w-lg text-sm font-medium leading-relaxed text-terminal-textMuted sm:mt-10">
               {t("landing.heroSocialProof")}
             </p>
           </div>
@@ -1142,12 +1114,12 @@ export function LandingPage() {
       </section>
 
       {/* ═══ SOCIAL PROOF MARQUEE (flush under hero, zero vertical gap) ═══ */}
-      <section className="mt-0 overflow-hidden py-4" style={{ backgroundColor: BRAND.dark }}>
-        <div className="animate-marquee flex w-max gap-8 whitespace-nowrap px-4 text-sm font-semibold text-white md:text-base">
+      <section className="mt-0 overflow-hidden border-y border-terminal-border bg-terminal-panel py-4">
+        <div className="animate-marquee flex w-max gap-8 whitespace-nowrap px-4 text-sm font-semibold text-terminal-text md:text-base">
           {marqueeTrack.map((item, i) => (
             <span key={`${item}-${i}`} className="inline-flex items-center gap-8">
               <span>{item}</span>
-              <span style={{ color: BRAND.cyan }} aria-hidden>
+              <span className="text-terminal-cyan" aria-hidden>
                 ·
               </span>
             </span>
@@ -1159,7 +1131,7 @@ export function LandingPage() {
       <section
         className="relative overflow-hidden border-y border-white/10 py-14 md:py-20"
         style={{
-          background: "linear-gradient(135deg, #a855f7 0%, #1a0533 50%, #0a1628 100%)",
+          background: "linear-gradient(135deg, #0b1220 0%, #050914 50%, #0a1628 100%)",
         }}
       >
         <SignalWave offset={-36} opacity={0.1} color="#67e8f9" />
@@ -1186,7 +1158,7 @@ export function LandingPage() {
       <section
         id="problem"
         className="relative scroll-mt-24 overflow-hidden px-4 py-20"
-        style={{ background: "linear-gradient(180deg, transparent 0%, rgb(30 27 75 / 0.25) 100%)" }}
+        style={{ background: "linear-gradient(180deg, transparent 0%, rgb(34 211 238 / 0.04) 100%)" }}
       >
         <SignalWave offset={-40} opacity={0.12} />
         <div className="pointer-events-none absolute inset-0">
@@ -1195,7 +1167,7 @@ export function LandingPage() {
             style={{
               width: "800px",
               height: "400px",
-              background: "radial-gradient(ellipse, rgba(122,15,158,0.04) 0%, transparent 70%)",
+              background: "radial-gradient(ellipse, rgba(34,211,238,0.06) 0%, transparent 70%)",
             }}
           />
         </div>
@@ -1213,7 +1185,7 @@ export function LandingPage() {
             return (
               <article
                 key={cardKey}
-                className={`glass-section reveal group relative overflow-hidden border-l-4 border-l-[#a855f7] py-8 pl-6 pr-8 transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-[0_12px_48px_rgba(168,85,247,0.2)] ${staggerClass}`}
+                className={`${TERMINAL_PROOF_CARD} reveal group relative overflow-hidden border-l-4 border-l-terminal-cyan py-8 pl-6 pr-8 transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 ${staggerClass}`}
               >
                 <h3 className="text-xl font-bold text-white">{title}</h3>
                 <p className="landing-body mt-3 text-[#94a3b8]">{body}</p>
@@ -1234,7 +1206,7 @@ export function LandingPage() {
           <h2 className="section-h2 text-white">
             {t("landing.solution.title")}
             <br />
-            <span style={{ color: BRAND.cyan }}>{t("landing.solution.titleAccent")}</span>
+            <span className="text-terminal-cyan">{t("landing.solution.titleAccent")}</span>
           </h2>
           <p className="landing-body mt-4 text-[#94a3b8]">{t("landing.solution.subtitle")}</p>
         </div>
@@ -1249,11 +1221,10 @@ export function LandingPage() {
             return (
               <article
                 key={card.title}
-                className={`glass-section ${revealKind} group relative overflow-hidden border-t-[3px] p-6 pt-12 transition-all duration-300 hover:-translate-y-1 hover:border-[#22d3ee]/50 hover:shadow-[0_12px_48px_rgba(34,211,238,0.15)] ${staggerClass}`}
-                style={{ borderTopColor: BRAND.cyan }}
+                className={`${TERMINAL_PROOF_CARD} ${revealKind} group relative overflow-hidden border-t-[3px] border-t-terminal-cyan p-6 pt-12 transition-all duration-300 hover:-translate-y-1 ${staggerClass}`}
               >
                 <LandingFeatureIcon src={iconSrc} className="absolute left-4 top-4 z-[2]" />
-                <span className="pointer-events-none absolute right-4 top-4 text-6xl font-black leading-none text-[#a855f7]/[0.12]">
+                <span className="pointer-events-none absolute right-4 top-4 text-6xl font-black leading-none text-terminal-cyan/[0.12]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <h3 className="relative z-[1] text-lg font-bold text-white">{card.title}</h3>
@@ -1306,8 +1277,8 @@ export function LandingPage() {
                       style={{
                         background:
                           index === 0
-                            ? "linear-gradient(90deg, #a855f7, #22d3ee)"
-                            : "linear-gradient(90deg, #22d3ee, #a855f7)",
+                            ? "linear-gradient(90deg, #0891b2, #22d3ee)"
+                            : "linear-gradient(90deg, #22d3ee, #0891b2)",
                       }}
                     />
                   </div>
@@ -1338,7 +1309,7 @@ export function LandingPage() {
 
       {/* ═══ ETORO PARTNER ═══ */}
       <section className="border-y border-white/10 px-4 py-20">
-        <div className="glass-section mx-auto max-w-xl p-8">
+        <div className={`${TERMINAL_PROOF_CARD} mx-auto max-w-xl p-8`}>
           <p className="text-center text-sm font-semibold text-white/90">{t("etoro.subtitle")}</p>
           <EtoroCTAButton sourcePage="landing_page" className="mx-auto mt-4 max-w-sm" />
         </div>
@@ -1357,8 +1328,7 @@ export function LandingPage() {
             return (
               <article
                 key={`${item.title}-${index}`}
-                className={`glass-section reveal border-t-[3px] p-8 ${staggerClass}`}
-                style={{ borderTopColor: BRAND.cyan }}
+                className={`${TERMINAL_PROOF_CARD} reveal border-t-[3px] border-t-terminal-cyan p-8 ${staggerClass}`}
               >
                 <h3 className="text-lg font-bold text-white">{item.title}</h3>
                 <p className="landing-body mt-3 text-[#94a3b8]">{item.body}</p>
@@ -1375,18 +1345,15 @@ export function LandingPage() {
           <h2 className="section-h2 text-center text-white">{t("landing.pricing.title")}</h2>
 
           <div className="mt-10 flex justify-center">
-            <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-xl">
+            <div className="inline-flex rounded-full border border-terminal-border bg-terminal-panelSecondary p-1">
               <button
                 type="button"
                 onClick={() => setBillingCycle("monthly")}
                 className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
-                  billingCycle === "monthly" ? "text-white shadow-md" : "text-[#94a3b8] hover:text-white"
-                }`}
-                style={
                   billingCycle === "monthly"
-                    ? { backgroundColor: BRAND.dark }
-                    : { backgroundColor: "transparent" }
-                }
+                    ? "bg-terminal-cyan text-terminal-buttonText shadow-md"
+                    : "text-terminal-textMuted hover:text-terminal-text"
+                }`}
               >
                 {t("landing.pricing.monthly")}
               </button>
@@ -1394,11 +1361,10 @@ export function LandingPage() {
                 type="button"
                 onClick={() => setBillingCycle("yearly")}
                 className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
-                  billingCycle === "yearly" ? "text-white shadow-md" : "text-[#94a3b8] hover:text-white"
+                  billingCycle === "yearly"
+                    ? "bg-terminal-cyan text-terminal-buttonText shadow-md"
+                    : "text-terminal-textMuted hover:text-terminal-text"
                 }`}
-                style={
-                  billingCycle === "yearly" ? { backgroundColor: BRAND.dark } : { backgroundColor: "transparent" }
-                }
               >
                 {t("landing.pricing.yearly")}
               </button>
@@ -1427,11 +1393,9 @@ export function LandingPage() {
                 return (
                   <article
                     key={tier.id}
-                    className="relative z-10 order-first rounded-2xl p-6 text-white sm:p-8 lg:order-none lg:scale-105"
+                    className="relative z-10 order-first rounded-2xl border border-terminal-cyan/40 p-6 text-terminal-text shadow-terminal-glow sm:p-8 lg:order-none lg:scale-105"
                     style={{
-                      background: "linear-gradient(135deg, #a855f7 0%, #9333ea 100%)",
-                      boxShadow:
-                        "0 0 60px rgba(122,15,158,0.4), 0 20px 40px rgba(168,85,247,0.3)",
+                      background: "linear-gradient(135deg, #0891b2 0%, #0e7490 55%, #0b1220 100%)",
                     }}
                   >
                     <span
@@ -1460,8 +1424,7 @@ export function LandingPage() {
                     </ul>
                     <Link
                       to="/waitlist?source=landing"
-                      className="mt-8 inline-flex w-full justify-center rounded-full bg-white py-3 text-center text-sm font-bold transition hover:bg-slate-100"
-                      style={{ color: BRAND.dark }}
+                      className="mt-8 inline-flex w-full justify-center rounded-full bg-terminal-cyan py-3 text-center text-sm font-bold text-terminal-buttonText transition hover:bg-terminal-cyanStrong"
                     >
                       {t(tier.ctaKey, { defaultValue: "Join beta" })}
                     </Link>
@@ -1472,10 +1435,10 @@ export function LandingPage() {
               return (
                 <article
                   key={tier.id}
-                  className={`glass-section p-8 ${isProPlus ? "border-2 border-[#9333ea]/60" : ""}`}
+                  className={`${TERMINAL_PRICING_PREVIEW_CARD} p-8 ${isProPlus ? "border-2 border-terminal-cyan/50" : ""}`}
                 >
-                  <h3 className="text-xl font-bold text-white">{t(tier.nameKey)}</h3>
-                  <p className={`mt-6 font-bold ${isTrial ? "text-4xl" : "text-4xl"}`} style={{ color: BRAND.dark }}>
+                  <h3 className="text-xl font-bold text-terminal-text">{t(tier.nameKey)}</h3>
+                  <p className={`mt-6 font-bold text-terminal-cyan ${isTrial ? "text-4xl" : "text-4xl"}`}>
                     {priceDisplay}
                   </p>
                   {isTrial ? (
@@ -1509,8 +1472,7 @@ export function LandingPage() {
                   ) : (
                     <Link
                       to="/waitlist?source=landing"
-                      className="mt-8 inline-flex w-full justify-center rounded-full border-2 py-3 text-sm font-bold text-white transition hover:bg-white/10"
-                      style={{ borderColor: BRAND.medium, color: BRAND.dark }}
+                      className={`mt-8 inline-flex w-full justify-center rounded-full border-2 border-terminal-cyan py-3 text-sm font-bold text-terminal-cyan transition hover:bg-terminal-cyan/10`}
                     >
                       {t(tier.ctaKey, { defaultValue: "Join beta" })}
                     </Link>
@@ -1520,14 +1482,14 @@ export function LandingPage() {
             })}
           </div>
 
-          <article className="glass-section mx-auto mt-10 max-w-2xl p-8 text-center">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#22d3ee]">
+          <article className={`${TERMINAL_PRICING_PREVIEW_CARD} mx-auto mt-10 max-w-2xl text-center`}>
+            <p className="text-xs font-semibold uppercase tracking-wide text-terminal-cyan">
               {t("landing.pricing.tiers.investorOs.comingSoon", { defaultValue: "Coming soon" })}
             </p>
             <h3 className="mt-3 text-xl font-bold text-white">
               {t("landing.pricing.tiers.investorOs.name", { defaultValue: PRICING_PLANS.INVESTOR_OS.displayName })}
             </h3>
-            <p className="mt-3 text-3xl font-bold" style={{ color: BRAND.dark }}>
+            <p className="mt-3 text-3xl font-bold text-terminal-cyan">
               {formatEurPrice("INVESTOR_OS", billingCycle)}
             </p>
             <p className="mt-4 text-sm text-[#94a3b8]">
@@ -1539,75 +1501,65 @@ export function LandingPage() {
 
       {/* ═══ FINAL CTA ═══ */}
       <section
-        className="relative overflow-hidden px-4 py-20 text-center text-white"
-        style={{
-          background: `linear-gradient(135deg, ${BRAND.dark} 0%, ${BRAND.medium} 100%)`,
-        }}
+        className="relative overflow-hidden border-y border-terminal-border bg-gradient-to-br from-terminal-panel via-[#0b1220] to-terminal-bg px-4 py-20 text-center text-terminal-text"
       >
         <ParticleDots />
         <div className="relative z-10 mx-auto max-w-3xl">
-          <h2 className="section-h2 text-white">{t("landing.footerCta.title")}</h2>
-          <p className="landing-body mt-4 text-white/90">{t("landing.footerCta.disclaimer")}</p>
+          <h2 className="section-h2 text-terminal-text">{t("landing.footerCta.title")}</h2>
+          <p className="landing-body mt-4 text-terminal-textSecondary">{t("landing.footerCta.disclaimer")}</p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link
-              to="/register"
-              className="inline-flex rounded-full bg-white px-8 py-4 text-lg font-semibold shadow-xl transition hover:bg-slate-100"
-              style={{ color: BRAND.dark }}
-            >
+            <Link to="/register" className={TERMINAL_LANDING_CTA_PRIMARY}>
               {t("landing.footerCta.button")} →
             </Link>
-            <a
-              href="#pricing"
-              className="inline-flex rounded-full border-2 border-white/40 px-8 py-4 text-lg font-semibold text-white transition hover:bg-white/10"
-            >
+            <a href="#pricing" className={TERMINAL_LANDING_CTA_SECONDARY}>
               {t("landing.footerCta.pricing")}
             </a>
           </div>
         </div>
       </section>
 
-      <section className="px-4 py-10" style={{ backgroundColor: BRAND.dark }}>
+      <section className="border-t border-terminal-border bg-terminal-panel px-4 py-10">
         <div className="mx-auto max-w-4xl">
           <InvestmentDisclaimer variant="landing" />
         </div>
       </section>
 
       {/* ═══ FOOTER ═══ */}
-      <footer className="text-white" style={{ backgroundColor: BRAND.dark }}>
+      <footer className="border-t border-terminal-border bg-terminal-bg text-terminal-text">
         <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 md:grid-cols-4">
           <div>
             <Link to="/" className="inline-flex" aria-label={t("landingAria.homeLogo", { defaultValue: "Stock-AI.Pro — home" })}>
               <BrandLogo size="footer" />
             </Link>
-            <p className="mt-4 text-sm leading-relaxed text-white/60">
+            <p className="mt-4 text-sm leading-relaxed text-terminal-textMuted">
               {t("landing.footer.tagline")}
             </p>
           </div>
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wide text-white">{t("landing.footer.product")}</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wide text-terminal-text">{t("landing.footer.product")}</h4>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <Link to="/companies" className="text-white/60 transition hover:text-white">
+                <Link to="/companies" className="text-terminal-textMuted transition hover:text-terminal-text">
                   {t("landing.footer.productMarkets")}
                 </Link>
               </li>
               <li>
-                <Link to="/signals" className="text-white/60 transition hover:text-white">
+                <Link to="/signals" className="text-terminal-textMuted transition hover:text-terminal-text">
                   {t("landing.footer.productSignals")}
                 </Link>
               </li>
               <li>
-                <a href="#pricing" className="text-white/60 transition hover:text-white">
+                <a href="#pricing" className="text-terminal-textMuted transition hover:text-terminal-text">
                   {t("landing.footer.productPricing")}
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wide text-white">{t("landing.footer.company")}</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wide text-terminal-text">{t("landing.footer.company")}</h4>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <a href="#solution" className="text-white/60 transition hover:text-white">
+                <a href="#solution" className="text-terminal-textMuted transition hover:text-terminal-text">
                   {t("landing.footer.solutionLink")}
                 </a>
               </li>
@@ -1616,7 +1568,7 @@ export function LandingPage() {
                   href={ETORO_AFFILIATE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white/60 transition hover:text-white"
+                  className="text-terminal-textMuted transition hover:text-terminal-text"
                 >
                   {t("landing.footer.legalEtoro")}
                 </a>
@@ -1624,23 +1576,23 @@ export function LandingPage() {
             </ul>
           </div>
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wide text-white">{t("landing.footer.legal")}</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wide text-terminal-text">{t("landing.footer.legal")}</h4>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <Link to="/terms" className="text-white/60 transition hover:text-white">
+                <Link to="/terms" className="text-terminal-textMuted transition hover:text-terminal-text">
                   {t("landing.footer.terms")}
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-white/60 transition hover:text-white">
+                <Link to="/privacy" className="text-terminal-textMuted transition hover:text-terminal-text">
                   {t("landing.footer.privacy")}
                 </Link>
               </li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-white/10">
-          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 text-xs text-white/50 md:flex-row">
+        <div className="border-t border-terminal-border">
+          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 text-xs text-terminal-textMuted md:flex-row">
             <p>{t("landing.footer.copyright")}</p>
             <LandingFooterLanguages />
           </div>
