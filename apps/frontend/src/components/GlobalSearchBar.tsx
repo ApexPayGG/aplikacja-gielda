@@ -2,13 +2,15 @@ import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CompanySearchAutocomplete } from "./CompanySearchAutocomplete";
+import { TERMINAL_ICON_BUTTON, TERMINAL_NAV_SHELL } from "./terminal/terminalStyles";
 
 type GlobalSearchBarProps = {
   variant?: "desktop" | "mobile";
+  /** @deprecated Ignored — shell search always uses terminal styling. */
   glass?: boolean;
 };
 
-export function GlobalSearchBar({ variant = "desktop", glass = false }: GlobalSearchBarProps) {
+export function GlobalSearchBar({ variant = "desktop" }: GlobalSearchBarProps) {
   const { t } = useTranslation();
   const [mobileExpanded, setMobileExpanded] = useState(false);
   const placeholder = t("nav.searchPlaceholder", { defaultValue: "Search company..." });
@@ -27,11 +29,7 @@ export function GlobalSearchBar({ variant = "desktop", glass = false }: GlobalSe
       return (
         <button
           type="button"
-          className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border transition hover:border-[#22d3ee]/40 hover:shadow-[0_0_0_3px_rgba(34,211,238,0.1)] ${
-            glass
-              ? "border-white/15 bg-white/5 text-[#22d3ee]"
-              : "border-border/80 bg-bgSecondary/50 text-brandDark"
-          }`}
+          className={`${TERMINAL_ICON_BUTTON} h-10 w-10 text-terminal-cyan`}
           aria-label={placeholder}
           onClick={() => setMobileExpanded(true)}
         >
@@ -41,20 +39,14 @@ export function GlobalSearchBar({ variant = "desktop", glass = false }: GlobalSe
     }
 
     return (
-      <div
-        className={`absolute inset-x-0 top-full z-50 border-b p-3 shadow-md backdrop-blur-md ${
-          glass ? "border-white/10 bg-[#0f111c]/95" : "border-border bg-bgPrimary"
-        }`}
-      >
+      <div className={`absolute inset-x-0 top-full z-50 border-b p-3 shadow-terminal-panel backdrop-blur-xl ${TERMINAL_NAV_SHELL}`}>
         <div className="flex items-center gap-2">
           <div className="min-w-0 flex-1">
-            <CompanySearchAutocomplete placeholder={placeholder} compact variant={glass ? "glass" : "light"} />
+            <CompanySearchAutocomplete placeholder={placeholder} compact variant="terminal" />
           </div>
           <button
             type="button"
-            className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${
-              glass ? "border-white/15 text-white/60" : "border-border text-textSecondary"
-            }`}
+            className={`${TERMINAL_ICON_BUTTON} h-10 w-10 shrink-0`}
             aria-label={t("common.close", { defaultValue: "Close" })}
             onClick={() => setMobileExpanded(false)}
           >
@@ -67,7 +59,7 @@ export function GlobalSearchBar({ variant = "desktop", glass = false }: GlobalSe
 
   return (
     <div className="hidden h-10 w-[240px] max-w-[240px] shrink-0 grow-0 basis-[240px] md:block">
-      <CompanySearchAutocomplete placeholder={placeholder} compact variant={glass ? "glass" : "light"} />
+      <CompanySearchAutocomplete placeholder={placeholder} compact variant="terminal" />
     </div>
   );
 }

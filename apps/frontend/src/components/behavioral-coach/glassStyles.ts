@@ -1,4 +1,8 @@
-/** Shared glass + terminal surface tokens (STOCKAI institutional palette). */
+/**
+ * @deprecated Legacy glass / marketing surfaces (landing, transitional pages).
+ * Do not use for new authenticated app shell UI — use `terminal/terminalStyles` instead.
+ * Shared glass + terminal surface tokens (STOCKAI institutional palette).
+ */
 
 export const GLASS_PAGE_BG =
   "min-h-screen bg-gradient-to-b from-[#050914] via-[#070B16] to-[#050914] text-[#f8fafc]";

@@ -16,6 +16,16 @@ import { GlobalSearchBar } from "./GlobalSearchBar";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { NotificationsCenter } from "./NotificationsCenter";
 import { useAuth } from "../context/AuthContext";
+import {
+  TERMINAL_DROPDOWN_PANEL,
+  TERMINAL_ICON_BUTTON,
+  TERMINAL_MOBILE_DRAWER,
+  TERMINAL_NAV_LINK_ACTIVE,
+  TERMINAL_NAV_LINK_BASE,
+  TERMINAL_NAV_LINK_IDLE,
+  TERMINAL_NAV_SHELL,
+  TERMINAL_SHELL_OVERLAY,
+} from "./terminal/terminalStyles";
 
 type DropdownId = "markets" | "portfolio" | "tools";
 type NavDropdownItem = {
@@ -152,34 +162,12 @@ function getUserInitials(name: string | null, email: string): string {
   return fallback.slice(0, 2).toUpperCase();
 }
 
-function navLinkClass(isActive: boolean, glass: boolean): string {
-  if (glass) {
-    return `whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
-      isActive
-        ? "bg-[#22d3ee]/15 text-[#22d3ee] shadow-[inset_0_0_0_1px_rgba(34,211,238,0.25)]"
-        : "text-white/65 hover:bg-white/10 hover:text-white"
-    }`;
-  }
-  return `whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
-    isActive
-      ? "bg-brandDark/[0.08] text-brandDark shadow-[inset_0_0_0_1px_rgba(168,85,247,0.12)]"
-      : "text-textSecondary hover:bg-bgSecondary/80 hover:text-brandDark"
-  }`;
+function navLinkClass(isActive: boolean): string {
+  return `${TERMINAL_NAV_LINK_BASE} ${isActive ? TERMINAL_NAV_LINK_ACTIVE : TERMINAL_NAV_LINK_IDLE}`;
 }
 
-function triggerClass(active: boolean, glass: boolean): string {
-  if (glass) {
-    return `inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
-      active
-        ? "bg-[#22d3ee]/15 text-[#22d3ee] shadow-[inset_0_0_0_1px_rgba(34,211,238,0.25)]"
-        : "text-white/65 hover:bg-white/10 hover:text-white"
-    }`;
-  }
-  return `inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-all duration-200 lg:px-2.5 lg:text-sm ${
-    active
-      ? "bg-brandDark/[0.08] text-brandDark shadow-[inset_0_0_0_1px_rgba(168,85,247,0.12)]"
-      : "text-textSecondary hover:bg-bgSecondary/80 hover:text-brandDark"
-  }`;
+function triggerClass(active: boolean): string {
+  return `inline-flex shrink-0 items-center gap-0.5 ${TERMINAL_NAV_LINK_BASE} ${active ? TERMINAL_NAV_LINK_ACTIVE : TERMINAL_NAV_LINK_IDLE}`;
 }
 
 type DesktopDropdownProps = {
@@ -189,10 +177,9 @@ type DesktopDropdownProps = {
   groupActive: boolean;
   openDropdown: DropdownId | null;
   setOpenDropdown: (v: DropdownId | null) => void;
-  glass: boolean;
 };
 
-function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOpenDropdown, glass }: DesktopDropdownProps) {
+function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOpenDropdown }: DesktopDropdownProps) {
   const { t } = useTranslation();
   const open = openDropdown === id;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -224,7 +211,7 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
     >
       <button
         type="button"
-        className={triggerClass(groupActive, glass)}
+        className={triggerClass(groupActive)}
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpenDropdown(open ? null : id)}
@@ -234,18 +221,14 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
       </button>
       {open ? (
         <div className="absolute left-0 top-full z-50 -mt-0.5 min-w-[13.5rem] pt-2">
-          <div
-            className={`rounded-xl border py-1 shadow-lg backdrop-blur-md ${
-              glass ? "border-white/15 bg-[#0f111c]/95" : "border-border bg-bgPrimary"
-            }`}
-          >
+          <div className={TERMINAL_DROPDOWN_PANEL}>
             {items.map((item) => {
               const Icon = item.icon;
               return (
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  className={({ isActive }) => `${navLinkClass(isActive, glass)} flex items-center gap-2 px-3`}
+                  className={({ isActive }) => `${navLinkClass(isActive)} flex items-center gap-2 px-3`}
                   onClick={() => setOpenDropdown(null)}
                 >
                   {Icon ? <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden /> : null}
@@ -260,7 +243,8 @@ function DesktopDropdown({ id, labelKey, items, groupActive, openDropdown, setOp
   );
 }
 
-export function AppNavBar({ glass = false }: { glass?: boolean }) {
+/** Authenticated app top navigation — institutional terminal shell. */
+export function AppNavBar({ glass: _glass = false }: { /** @deprecated Ignored */ glass?: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -358,31 +342,25 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
   };
 
   return (
-    <nav
-      className={
-        glass
-          ? "glass-nav-bar sticky top-0 z-20"
-          : "sticky top-0 z-20 border-b border-border/70 bg-bgPrimary/90 shadow-[0_4px_24px_-12px_rgba(168,85,247,0.25)] backdrop-blur-lg dark:border-gray-700/80 dark:bg-gray-900/90"
-      }
-    >
+    <nav className={TERMINAL_NAV_SHELL}>
       <div className="mx-auto flex h-[3.75rem] max-w-[90rem] items-center gap-2 px-3 sm:gap-3 sm:px-4 lg:gap-4">
         <Link to="/" className="shrink-0 transition-opacity hover:opacity-90">
           <BrandLogo size="appNav" />
         </Link>
 
         <div className="hidden min-w-0 flex-1 flex-nowrap items-center justify-start gap-0.5 overflow-visible md:flex lg:gap-1">
-          <NavLink to="/" end className={({ isActive }) => navLinkClass(isActive, glass)}>
+          <NavLink to="/" end className={({ isActive }) => navLinkClass(isActive)}>
             {t("nav.home")}
           </NavLink>
-          <NavLink to="/about" className={({ isActive }) => navLinkClass(isActive, glass)}>
+          <NavLink to="/about" className={({ isActive }) => navLinkClass(isActive)}>
             {t("nav.about", { defaultValue: "About" })}
           </NavLink>
-          <NavLink to="/dashboard" className={({ isActive }) => navLinkClass(isActive, glass)}>
+          <NavLink to="/dashboard" className={({ isActive }) => navLinkClass(isActive)}>
             {t("nav.dashboard")}
           </NavLink>
           <NavLink
             to="/companies"
-            className={({ isActive }) => `${navLinkClass(isActive, glass)} hidden lg:inline-block`}
+            className={({ isActive }) => `${navLinkClass(isActive)} hidden lg:inline-block`}
           >
             {t("nav.companies", { defaultValue: "Companies" })}
           </NavLink>
@@ -393,7 +371,6 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
             groupActive={marketsActive}
             openDropdown={openDropdown}
             setOpenDropdown={setOpenDropdown}
-            glass={glass}
           />
           <DesktopDropdown
             id="portfolio"
@@ -402,7 +379,6 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
             groupActive={portfolioActive}
             openDropdown={openDropdown}
             setOpenDropdown={setOpenDropdown}
-            glass={glass}
           />
           <DesktopDropdown
             id="tools"
@@ -411,34 +387,33 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
             groupActive={toolsActive}
             openDropdown={openDropdown}
             setOpenDropdown={setOpenDropdown}
-            glass={glass}
           />
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-2 md:ml-0 md:hidden">
-          <GlobalSearchBar variant="mobile" glass={glass} />
+          <GlobalSearchBar variant="mobile" />
           <button
             type="button"
-            className="inline-flex h-10 w-10 flex-col items-center justify-center rounded-xl border border-border/80 bg-bgSecondary/50 transition hover:border-brandDark/30 hover:bg-bgSecondary"
+            className={`${TERMINAL_ICON_BUTTON} h-10 w-10 flex-col gap-0 rounded-md`}
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav-panel"
             onClick={() => setMobileOpen((v) => !v)}
           >
             <span
               aria-hidden
-              className={`block h-0.5 w-5 bg-brandDark transition-transform duration-300 ${
+              className={`block h-0.5 w-5 bg-terminal-cyan transition-transform duration-300 ${
                 mobileOpen ? "translate-y-[6px] rotate-45" : ""
               }`}
             />
             <span
               aria-hidden
-              className={`my-1 block h-0.5 w-5 bg-brandDark transition-opacity duration-200 ${
+              className={`my-1 block h-0.5 w-5 bg-terminal-cyan transition-opacity duration-200 ${
                 mobileOpen ? "opacity-0" : "opacity-100"
               }`}
             />
             <span
               aria-hidden
-              className={`block h-0.5 w-5 bg-brandDark transition-transform duration-300 ${
+              className={`block h-0.5 w-5 bg-terminal-cyan transition-transform duration-300 ${
                 mobileOpen ? "-translate-y-[6px] -rotate-45" : ""
               }`}
             />
@@ -447,45 +422,45 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
         </div>
 
         <div className="hidden shrink-0 items-center gap-1.5 md:flex lg:gap-2">
-          <GlobalSearchBar variant="desktop" glass={glass} />
+          <GlobalSearchBar variant="desktop" />
           <NotificationsCenter />
           {user ? (
             <div ref={accountMenuRef} className="relative">
               <button
                 type="button"
                 onClick={() => setAccountOpen((open) => !open)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-bgSecondary/40 px-1.5 py-1 transition-all hover:border-brandCyan/40 hover:shadow-[0_0_0_3px_rgba(34,211,238,0.12)]"
+                className="inline-flex items-center gap-1.5 rounded-md border border-terminal-borderMuted bg-terminal-panelSecondary/70 px-1.5 py-1 transition hover:border-terminal-cyan/35"
                 aria-expanded={accountOpen}
                 aria-haspopup="true"
                 title={userEmail}
               >
                 <span
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brandDark to-brandMedium text-xs font-bold text-white shadow-sm"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-terminal-cyanDark to-terminal-cyan text-xs font-bold text-terminal-buttonText"
                   aria-hidden
                 >
                   {userInitials}
                 </span>
                 <ChevronDownIcon
-                  className={`h-4 w-4 shrink-0 text-brandDark transition-transform duration-200 ${accountOpen ? "rotate-180" : ""}`}
+                  className={`h-4 w-4 shrink-0 text-terminal-textSecondary transition-transform duration-200 ${accountOpen ? "rotate-180" : ""}`}
                   aria-hidden
                 />
               </button>
               {accountOpen ? (
-                <div className="absolute right-0 top-full z-50 mt-2 min-w-[12rem] overflow-hidden rounded-xl border border-border bg-bgPrimary py-1 shadow-lg ring-1 ring-black/5">
-                  <div className="border-b border-border px-3 py-2.5">
-                    {userName ? <p className="truncate text-sm font-semibold text-brandDark">{userName}</p> : null}
-                    <p className="truncate text-xs text-textMuted">{userEmail}</p>
+                <div className={`absolute right-0 top-full z-50 mt-2 min-w-[12rem] overflow-hidden ${TERMINAL_DROPDOWN_PANEL}`}>
+                  <div className="border-b border-terminal-border px-3 py-2.5">
+                    {userName ? <p className="truncate text-sm font-semibold text-terminal-text">{userName}</p> : null}
+                    <p className="truncate text-xs text-terminal-textMuted">{userEmail}</p>
                   </div>
                   <NavLink
                     to="/profile"
-                    className={({ isActive }) => `${navLinkClass(isActive, glass)} rounded-none px-3`}
+                    className={({ isActive }) => `${navLinkClass(isActive)} rounded-none px-3`}
                     onClick={() => setAccountOpen(false)}
                   >
                     {profileLabel}
                   </NavLink>
                   <NavLink
                     to="/settings"
-                    className={({ isActive }) => `${navLinkClass(isActive, glass)} rounded-none px-3`}
+                    className={({ isActive }) => `${navLinkClass(isActive)} rounded-none px-3`}
                     onClick={() => setAccountOpen(false)}
                   >
                     {settingsLabel}
@@ -496,7 +471,7 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
                       setAccountOpen(false);
                       handleLogout();
                     }}
-                    className="block w-full px-3 py-2 text-left text-sm font-medium text-negative transition hover:bg-bgSecondary"
+                    className="block w-full px-3 py-2 text-left text-sm font-medium text-terminal-negative transition hover:bg-terminal-panelSecondary"
                   >
                     {logoutLabel}
                   </button>
@@ -509,7 +484,7 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
       </div>
 
       <div
-        className={`fixed inset-0 z-30 bg-textPrimary/30 transition-opacity duration-300 md:hidden ${
+        className={`${TERMINAL_SHELL_OVERLAY} ${
           mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
         aria-hidden={!mobileOpen}
@@ -517,21 +492,21 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
       />
       <aside
         id="mobile-nav-panel"
-        className={`fixed right-0 top-0 z-40 flex h-dvh w-[min(88vw,22rem)] flex-col bg-bgPrimary shadow-[-12px_0_28px_rgba(13,13,26,0.14)] transition-transform duration-300 md:hidden ${
+        className={`${TERMINAL_MOBILE_DRAWER} ${
           mobileOpen ? "visible translate-x-0" : "invisible translate-x-full"
         }`}
         role="dialog"
         aria-modal="true"
         aria-hidden={!mobileOpen}
       >
-        <div className="border-b border-border px-6 py-5">
+        <div className="border-b border-terminal-border px-6 py-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brandDark text-sm font-semibold text-white">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-terminal-cyanDark to-terminal-cyan text-sm font-semibold text-terminal-buttonText">
               {userInitials}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wide text-textMuted">{accountLabel}</p>
-              <p className="truncate text-sm font-medium text-brandDark">{userEmail || userName || "—"}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">{accountLabel}</p>
+              <p className="truncate text-sm font-medium text-terminal-text">{userEmail || userName || "—"}</p>
             </div>
           </div>
         </div>
@@ -544,10 +519,10 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
               <NavLink
                 key={item.to}
                 to={item.to}
-                className={`flex items-center gap-3 border-b border-border px-6 py-4 text-base font-semibold transition-colors ${
+                className={`flex items-center gap-3 border-b border-terminal-border px-6 py-4 text-base font-semibold transition-colors ${
                   isActive
-                    ? "border-l-4 border-l-brandCyan bg-bgSecondary/40 pl-5 text-brandDark"
-                    : "border-l-4 border-l-transparent text-textSecondary hover:text-brandDark"
+                    ? "border-l-4 border-l-terminal-cyan bg-terminal-panelSecondary/60 pl-5 text-terminal-cyan"
+                    : "border-l-4 border-l-transparent text-terminal-textSecondary hover:text-terminal-text"
                 }`}
                 tabIndex={mobileOpen ? 0 : -1}
                 onClick={() => setMobileOpen(false)}
@@ -559,12 +534,12 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
           })}
         </nav>
 
-        <div className="border-t border-border px-6 py-4">
+        <div className="border-t border-terminal-border px-6 py-4">
           <LanguageSwitcher />
         </div>
 
         {user ? (
-          <div className="border-t border-border px-6 py-5">
+          <div className="border-t border-terminal-border px-6 py-5">
             <button
               type="button"
               tabIndex={mobileOpen ? 0 : -1}
@@ -572,7 +547,7 @@ export function AppNavBar({ glass = false }: { glass?: boolean }) {
                 setMobileOpen(false);
                 handleLogout();
               }}
-              className="text-sm font-semibold text-negative transition-colors hover:opacity-80"
+              className="text-sm font-semibold text-terminal-negative transition-colors hover:opacity-80"
             >
               {logoutLabel}
             </button>

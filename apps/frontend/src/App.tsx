@@ -279,7 +279,7 @@ export default function App() {
   return (
     <div className={`app-shell min-h-screen ${glassApp ? "glass-app" : ""}`}>
       {glassApp ? <GlassAmbient /> : null}
-      {showAppTopNav ? <AppNavBar glass /> : null}
+      {showAppTopNav ? <AppNavBar /> : null}
       {showAppTopNav ? <AccessBanner /> : null}
       {showFloatingEmotionalWidget ? <EmotionalStateWidget /> : null}
 

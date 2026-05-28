@@ -5,6 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { importCompanyFromSearch, searchCompaniesAutocomplete, type CompanySearchSuggestion } from "../services/api";
 import { CompanyLogo } from "./CompanyLogo";
 import { GLASS_INPUT } from "./behavioral-coach/glassStyles";
+import {
+  TERMINAL_BADGE,
+  TERMINAL_INPUT,
+  TERMINAL_SEARCH_DROPDOWN,
+  TERMINAL_TEXT_MUTED,
+} from "./terminal/terminalStyles";
 import { colors } from "../styles/designSystem";
 
 type CompanySearchAutocompleteProps = {
@@ -13,7 +19,8 @@ type CompanySearchAutocompleteProps = {
   limit?: number;
   navigateOnSelect?: boolean;
   compact?: boolean;
-  variant?: "light" | "glass";
+  /** `terminal` for authenticated shell; `glass` is a legacy alias for terminal. */
+  variant?: "light" | "glass" | "terminal";
   onQueryChange?: (query: string) => void;
   onSelectCompany?: (company: CompanySearchSuggestion) => void;
 };
@@ -21,13 +28,17 @@ type CompanySearchAutocompleteProps = {
 const DEFAULT_LIMIT = 8;
 const DEBOUNCE_MS = 300;
 
+function isTerminalVariant(variant: CompanySearchAutocompleteProps["variant"]): boolean {
+  return variant === "terminal" || variant === "glass";
+}
+
 export function CompanySearchAutocomplete({
   placeholder,
   initialValue = "",
   limit = DEFAULT_LIMIT,
   navigateOnSelect = true,
   compact = false,
-  variant = "light",
+  variant = "terminal",
   onQueryChange,
   onSelectCompany,
 }: CompanySearchAutocompleteProps) {
@@ -42,6 +53,7 @@ export function CompanySearchAutocomplete({
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const terminal = isTerminalVariant(variant);
 
   useEffect(() => {
     setQuery(initialValue);
@@ -140,12 +152,15 @@ export function CompanySearchAutocomplete({
     }
   }
 
+  const inputSizeClass = compact ? "h-10 pl-10 pr-3" : "h-12 pl-12 pr-4";
+  const iconPositionClass = compact ? "left-3 h-4 w-4" : "left-4 h-5 w-5";
+
   return (
     <div ref={rootRef} className="relative w-full">
       <div className="relative">
         <MagnifyingGlassIcon
-          className={`pointer-events-none absolute top-1/2 -translate-y-1/2 ${compact ? "left-3 h-4 w-4" : "left-4 h-5 w-5"}`}
-          style={{ color: colors.brandDark }}
+          className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-terminal-cyan ${iconPositionClass}`}
+          aria-hidden
         />
         <input
           type="search"
@@ -160,14 +175,16 @@ export function CompanySearchAutocomplete({
           onKeyDown={onKeyDown}
           placeholder={resolvedPlaceholder}
           className={
-            variant === "glass"
-              ? `${GLASS_INPUT} shadow-sm ${compact ? "h-10 pl-10 pr-3" : "h-12 pl-12 pr-4"}`
-              : `w-full border shadow-sm outline-none transition ${
-                  compact ? "h-10 rounded-xl pl-10 pr-3 text-sm" : "h-12 rounded-2xl pl-12 pr-4 text-sm"
-                }`
+            terminal
+              ? `${TERMINAL_INPUT} shadow-sm ${inputSizeClass}`
+              : variant === "glass"
+                ? `${GLASS_INPUT} shadow-sm ${inputSizeClass}`
+                : `w-full border shadow-sm outline-none transition ${
+                    compact ? "h-10 rounded-xl pl-10 pr-3 text-sm" : "h-12 rounded-2xl pl-12 pr-4 text-sm"
+                  }`
           }
           style={
-            variant === "glass"
+            terminal || variant === "glass"
               ? undefined
               : {
                   borderColor: colors.border,
@@ -178,59 +195,57 @@ export function CompanySearchAutocomplete({
         />
       </div>
 
-      {showDropdown && (
-        <div
-          className={`absolute z-30 mt-2 w-full rounded-2xl border shadow-lg backdrop-blur-md ${
-            variant === "glass"
-              ? "border-white/15 bg-[#0f111c]/95"
-              : "border-border bg-white"
-          }`}
-          style={variant === "glass" ? undefined : { borderColor: colors.border }}
-          role="listbox"
-        >
+      {showDropdown ? (
+        <div className={terminal || variant === "glass" ? TERMINAL_SEARCH_DROPDOWN : "absolute z-30 mt-2 w-full rounded-2xl border border-border bg-bgSecondary shadow-lg backdrop-blur-md"} role="listbox">
           {loading ? (
             <div className="space-y-2 p-2">
               {Array.from({ length: 4 }).map((_, index) => (
-                <div key={`company-search-skeleton-${index}`} className="animate-pulse rounded-xl p-3">
-                  <div className="h-3 w-20 rounded" style={{ backgroundColor: colors.bgTertiary }} />
-                  <div className="mt-2 h-3 w-40 rounded" style={{ backgroundColor: colors.bgTertiary }} />
+                <div key={`company-search-skeleton-${index}`} className="animate-pulse rounded-lg bg-terminal-panelSecondary p-3">
+                  <div className="h-3 w-20 rounded bg-terminal-borderMuted" />
+                  <div className="mt-2 h-3 w-40 rounded bg-terminal-borderMuted" />
                 </div>
               ))}
             </div>
           ) : itemsToRender.length === 0 ? (
-            <p className="px-4 py-3 text-sm" style={{ color: colors.textSecondary }}>
+            <p className={`px-4 py-3 ${TERMINAL_TEXT_MUTED}`}>
               {t("companySearch.notFound", { defaultValue: "Company not found" })}
             </p>
           ) : (
-            <ul className="max-h-80 overflow-auto py-2">
+            <ul className="max-h-80 overflow-auto py-1">
               {itemsToRender.map((company, index) => {
                 const active = index === highlightedIndex;
                 return (
                   <li key={`${company.symbol}-${company.exchange ?? "na"}-${index}`}>
                     <button
                       type="button"
-                      className="flex w-full items-center justify-between gap-3 px-4 py-2 text-left transition"
-                      style={{ backgroundColor: active ? colors.bgSecondary : colors.bgPrimary }}
+                      className={`flex w-full items-center justify-between gap-3 px-4 py-2 text-left transition ${
+                        terminal
+                          ? active
+                            ? "bg-terminal-panelSecondary"
+                            : "bg-terminal-panel hover:bg-terminal-panelSecondary/80"
+                          : active
+                            ? "bg-bgSecondary"
+                            : "bg-bgPrimary hover:bg-bgSecondary/80"
+                      }`}
                       onMouseEnter={() => setHighlightedIndex(index)}
                       onClick={() => void selectCompany(company)}
                     >
                       <CompanyLogo symbol={company.symbol} logoUrl={company.logoUrl} size="sm" shape="rounded" />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-bold" style={{ color: colors.brandDark }}>
+                        <p
+                          className={`truncate text-sm font-bold ${terminal ? "text-terminal-cyan" : ""}`}
+                          style={terminal ? undefined : { color: colors.brandDark }}
+                        >
                           {company.symbol}
                         </p>
-                        <p className="truncate text-sm" style={{ color: colors.textSecondary }}>
+                        <p
+                          className={`truncate text-sm ${terminal ? "text-terminal-textSecondary" : ""}`}
+                          style={terminal ? undefined : { color: colors.textSecondary }}
+                        >
                           {company.name}
                         </p>
                       </div>
-                      <span
-                        className="shrink-0 rounded-full border px-2 py-0.5 text-xs font-semibold"
-                        style={{
-                          borderColor: colors.borderStrong,
-                          color: colors.textSecondary,
-                          backgroundColor: colors.bgSecondary,
-                        }}
-                      >
+                      <span className={terminal ? TERMINAL_BADGE : "shrink-0 rounded-full border px-2 py-0.5 text-xs font-semibold"} style={terminal ? undefined : { borderColor: colors.borderStrong, color: colors.textSecondary, backgroundColor: colors.bgSecondary }}>
                         {company.exchange ?? "N/A"}
                       </span>
                     </button>
@@ -240,7 +255,7 @@ export function CompanySearchAutocomplete({
             </ul>
           )}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

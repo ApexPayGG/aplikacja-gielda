@@ -1,4 +1,5 @@
 export { cn } from "./cn";
+export * from "./terminalStyles";
 
 export { TerminalCard, type TerminalCardVariant } from "./TerminalCard";
 export { TerminalPage } from "./TerminalPage";

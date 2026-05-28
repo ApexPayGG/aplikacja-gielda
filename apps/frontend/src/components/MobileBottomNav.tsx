@@ -1,8 +1,7 @@
 import { BriefcaseIcon, ChartBarSquareIcon, HomeIcon, WrenchScrewdriverIcon } from "@heroicons/react/24/outline";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../context/AuthContext";
-import { hasCompletedOnboarding } from "../utils/onboarding";
+import { TERMINAL_MOBILE_BOTTOM_NAV } from "./terminal/terminalStyles";
 
 type BottomNavItem = {
   to: string;
@@ -53,9 +52,7 @@ function isToolsPath(pathname: string): boolean {
 
 export function MobileBottomNav() {
   const { t } = useTranslation();
-  const { token } = useAuth();
   const { pathname } = useLocation();
-  const glass = Boolean(token) && hasCompletedOnboarding();
 
   const items: BottomNavItem[] = [
     { to: "/dashboard", labelKey: "nav.dashboard", icon: HomeIcon, isActive: (path) => path.startsWith("/dashboard") },
@@ -65,13 +62,7 @@ export function MobileBottomNav() {
   ];
 
   return (
-    <nav
-      className={`fixed bottom-0 left-0 right-0 z-20 border-t md:hidden ${
-        glass
-          ? "border-white/10 bg-[#0a0b14]/92 backdrop-blur-lg"
-          : "border-border bg-bgPrimary"
-      }`}
-    >
+    <nav className={TERMINAL_MOBILE_BOTTOM_NAV}>
       <ul className="grid grid-cols-4">
         {items.map((item) => {
           const Icon = item.icon;
@@ -80,11 +71,11 @@ export function MobileBottomNav() {
             <li key={item.to}>
               <NavLink to={item.to} className="flex flex-col items-center justify-center gap-1 px-2 py-2.5">
                 <Icon
-                  className={`h-5 w-5 ${isActive ? (glass ? "text-[#22d3ee]" : "text-brandDark") : glass ? "text-white/50" : "text-textMuted"}`}
+                  className={`h-5 w-5 ${isActive ? "text-terminal-cyan" : "text-terminal-textMuted"}`}
                   aria-hidden
                 />
                 <span
-                  className={`text-[11px] font-semibold ${isActive ? (glass ? "text-[#22d3ee]" : "text-brandDark") : glass ? "text-white/50" : "text-textMuted"}`}
+                  className={`text-[11px] font-semibold ${isActive ? "text-terminal-cyan" : "text-terminal-textMuted"}`}
                 >
                   {t(item.labelKey)}
                 </span>

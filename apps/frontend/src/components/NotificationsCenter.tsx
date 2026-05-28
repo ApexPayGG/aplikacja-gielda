@@ -17,7 +17,7 @@ import {
   type NotificationItem,
   type NotificationType,
 } from "../services/api";
-import { colors } from "../styles/designSystem";
+import { TERMINAL_DROPDOWN_PANEL, TERMINAL_ICON_BUTTON, TERMINAL_TEXT_MUTED } from "./terminal/terminalStyles";
 
 type IconProps = ComponentProps<"svg">;
 type NotificationIcon = ComponentType<IconProps>;
@@ -36,11 +36,11 @@ function formatRelativeTime(value: string, t: TFunction): string {
   return t("notifications.daysAgo", { defaultValue: "{{count}} d ago", count: diffDays });
 }
 
-function typeColor(type: NotificationType): string {
-  if (type === "SIGNAL") return colors.brandCyan;
-  if (type === "DIVIDEND") return colors.brandGold;
-  if (type === "COACH") return colors.brandMedium;
-  return colors.textMuted;
+function typeIconClass(type: NotificationType): string {
+  if (type === "SIGNAL") return "text-terminal-cyan";
+  if (type === "DIVIDEND") return "text-terminal-warning";
+  if (type === "COACH") return "text-terminal-cyanStrong";
+  return "text-terminal-textMuted";
 }
 
 function typeIcon(type: NotificationType): NotificationIcon {
@@ -156,33 +156,29 @@ export function NotificationsCenter() {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border transition hover:border-brandDark/35"
+        className={`relative h-10 w-10 ${TERMINAL_ICON_BUTTON}`}
         aria-label={t("notifications.aria", { defaultValue: "Notifications" })}
         aria-expanded={open}
       >
-        <BellIcon className="h-5 w-5" style={{ color: colors.brandDark }} aria-hidden />
+        <BellIcon className="h-5 w-5 text-terminal-cyan" aria-hidden />
         {hasUnread ? (
-          <span
-            className="absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none"
-            style={{ backgroundColor: colors.negative, color: colors.bgPrimary }}
-          >
+          <span className="absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-terminal-negative px-1 text-[10px] font-semibold leading-none text-terminal-buttonText">
             {displayCount}
           </span>
         ) : null}
       </button>
 
       {open ? (
-        <div className="absolute right-0 top-full z-50 mt-2 w-[24rem] max-w-[90vw] rounded-xl border border-border bg-white shadow-lg">
-          <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <h3 className="text-sm font-semibold" style={{ color: colors.brandDark }}>
+        <div className={`absolute right-0 top-full z-50 mt-2 w-[24rem] max-w-[90vw] ${TERMINAL_DROPDOWN_PANEL}`}>
+          <div className="flex items-center justify-between border-b border-terminal-border px-4 py-3">
+            <h3 className="text-sm font-semibold text-terminal-text">
               {t("notifications.title", { defaultValue: "Notifications" })}
             </h3>
             <button
               type="button"
               onClick={() => void handleMarkAllRead()}
               disabled={!hasUnread || isLoading}
-              className="text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ color: colors.brandMedium }}
+              className={`text-xs font-semibold text-terminal-cyan transition disabled:cursor-not-allowed disabled:opacity-50`}
             >
               {t("notifications.markAllRead", { defaultValue: "Mark all as read" })}
             </button>
@@ -190,37 +186,34 @@ export function NotificationsCenter() {
 
           <div className="max-h-96 overflow-y-auto">
             {items.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm" style={{ color: colors.textMuted }}>
+              <div className={`px-4 py-8 text-center ${TERMINAL_TEXT_MUTED}`}>
                 {t("notifications.empty", { defaultValue: "No notifications" })}
               </div>
             ) : (
               items.map((notification) => {
                 const Icon = typeIcon(notification.type);
-                const iconColor = typeColor(notification.type);
+                const iconClass = typeIconClass(notification.type);
                 return (
                   <button
                     key={notification.id}
                     type="button"
                     onClick={() => void handleOpenNotification(notification)}
-                    className="w-full border-b border-border px-4 py-3 text-left transition last:border-b-0 hover:bg-bgSecondary/70"
-                    style={{ backgroundColor: notification.read ? colors.bgPrimary : colors.bgSecondary }}
+                    className={`w-full border-b border-terminal-border px-4 py-3 text-left transition last:border-b-0 hover:bg-terminal-panelSecondary/80 ${
+                      notification.read ? "bg-terminal-panel" : "bg-terminal-panelSecondary/60"
+                    }`}
                   >
                     <div className="flex items-start gap-3">
-                      <Icon className="mt-0.5 h-5 w-5 shrink-0" style={{ color: iconColor }} aria-hidden />
+                      <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${iconClass}`} aria-hidden />
                       <div className="min-w-0 flex-1">
                         <p
-                          className="truncate text-sm"
-                          style={{
-                            color: colors.textPrimary,
-                            fontWeight: notification.read ? 500 : 700,
-                          }}
+                          className={`truncate text-sm text-terminal-text ${
+                            notification.read ? "font-medium" : "font-semibold"
+                          }`}
                         >
                           {notification.title}
                         </p>
-                        <p className="mt-1 text-xs" style={{ color: colors.textSecondary }}>
-                          {notification.message}
-                        </p>
-                        <p className="mt-1 text-[11px]" style={{ color: colors.textMuted }}>
+                        <p className="mt-1 text-xs text-terminal-textSecondary">{notification.message}</p>
+                        <p className={`mt-1 text-[11px] ${TERMINAL_TEXT_MUTED}`}>
                           {formatRelativeTime(notification.createdAt, t)}
                         </p>
                       </div>

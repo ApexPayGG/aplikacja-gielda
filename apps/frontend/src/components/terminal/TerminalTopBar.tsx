@@ -66,7 +66,7 @@ export function TerminalTopBar({ onOpenSidebar, className }: TerminalTopBarProps
       </Link>
 
       <div className="min-w-0 flex-1">
-        <GlobalSearchBar variant="desktop" glass />
+        <GlobalSearchBar variant="desktop" />
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
