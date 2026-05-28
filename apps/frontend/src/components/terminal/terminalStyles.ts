@@ -142,3 +142,55 @@ export const TERMINAL_LANDING_CTA_PRIMARY =
 
 export const TERMINAL_LANDING_CTA_SECONDARY =
   "inline-flex w-full items-center justify-center gap-2 rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary/60 px-6 py-3.5 text-base font-semibold text-terminal-cyan transition hover:border-terminal-cyan/40 hover:bg-terminal-panel sm:w-auto sm:px-8 sm:py-4 sm:text-lg";
+
+/** Settings / profile / autopilot configuration console */
+export const TERMINAL_SETTINGS_PANEL = `${TERMINAL_PANEL} p-5 sm:p-6`;
+
+export const TERMINAL_SETTINGS_CARD = `${TERMINAL_PANEL} p-5 sm:p-6`;
+
+export const TERMINAL_SETTINGS_ROW =
+  "rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/70 p-4";
+
+export const TERMINAL_FORM_GROUP = "flex flex-col gap-1.5 text-sm";
+
+export const TERMINAL_FORM_LABEL =
+  "text-xs font-semibold uppercase tracking-wide text-terminal-textMuted";
+
+export const TERMINAL_HELP_TEXT = "text-xs leading-relaxed text-terminal-textMuted";
+
+export const TERMINAL_STATUS_CARD = `${TERMINAL_PANEL_MUTED} p-4 sm:p-5`;
+
+export const TERMINAL_SECRET_FIELD = `${TERMINAL_INPUT} pr-11 font-mono`;
+
+export const TERMINAL_DANGER_PANEL =
+  "rounded-lg border border-terminal-negative/35 bg-terminal-negative/10 px-4 py-3 text-sm text-terminal-negative";
+
+export const TERMINAL_WARNING_PANEL =
+  "rounded-lg border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200";
+
+export const TERMINAL_TOGGLE_TRACK =
+  "relative h-9 w-[4.5rem] shrink-0 rounded-full border transition-all duration-300";
+
+export const TERMINAL_TOGGLE_THUMB =
+  "absolute top-1 h-7 w-7 rounded-full bg-terminal-text shadow-md transition-transform duration-300";
+
+export const TERMINAL_CODE_BLOCK =
+  "rounded-md border border-terminal-borderMuted bg-terminal-bgAlt px-3 py-2 font-mono text-xs text-terminal-textSecondary";
+
+export const TERMINAL_SETTINGS_NAV_ITEM =
+  "w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium transition";
+
+export const TERMINAL_SETTINGS_NAV_ACTIVE =
+  "bg-terminal-cyan/15 text-terminal-cyan shadow-[inset_0_0_0_1px_rgba(34,211,238,0.25)]";
+
+export const TERMINAL_SETTINGS_NAV_IDLE =
+  "text-terminal-textSecondary hover:bg-terminal-panelSecondary hover:text-terminal-text";
+
+export const TERMINAL_MODE_SWITCH =
+  "inline-flex rounded-lg border border-terminal-border bg-terminal-panelSecondary p-1";
+
+export const TERMINAL_CHECKBOX_ROW =
+  "flex items-center justify-between rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/70 px-3 py-2.5 text-sm";
+
+export const TERMINAL_INFO_BANNER =
+  "rounded-lg border border-terminal-cyan/35 bg-terminal-cyan/10 p-4 text-sm text-terminal-text";

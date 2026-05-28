@@ -12,19 +12,28 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { useTranslation } from "react-i18next";
 import { FeedbackToastStack, type FeedbackToast } from "../components/FeedbackToastStack";
 import {
-  GLASS_BTN_PRIMARY,
-  GLASS_BTN_SECONDARY,
-  GLASS_HERO,
-  GLASS_INNER_PANEL,
-  GLASS_INPUT,
-  GLASS_LABEL,
-  GLASS_PAGE_BG,
-  GLASS_PAGE_SUBTITLE,
-  GLASS_PAGE_TITLE,
-  GLASS_SECTION,
-  GLASS_SECTION_TITLE,
-  GLASS_STAT_CARD,
-} from "../components/behavioral-coach/glassStyles";
+  TERMINAL_APP_BG,
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_BUTTON_SECONDARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_FILTER_CHIP,
+  TERMINAL_FILTER_CHIP_ACTIVE,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_ICON_BUTTON,
+  TERMINAL_MODE_SWITCH,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_SECRET_FIELD,
+  TERMINAL_SECTION_TITLE,
+  TERMINAL_SETTINGS_CARD,
+  TERMINAL_SETTINGS_PANEL,
+  TERMINAL_SETTINGS_ROW,
+  TERMINAL_STATUS_CARD,
+  TERMINAL_TEXT_MUTED,
+  TERMINAL_TOGGLE_THUMB,
+  TERMINAL_TOGGLE_TRACK,
+  TERMINAL_WARNING_PANEL,
+} from "../components/terminal/terminalStyles";
 import {
   getAutopilotSettings,
   saveAutopilotKeys,
@@ -34,7 +43,6 @@ import {
   type AutopilotSettingsPayload,
   type AutopilotStatsPayload,
 } from "../services/api";
-import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatDate } from "../utils/formatters";
 
@@ -58,15 +66,15 @@ function formatPercentLabel(value: number): string {
 function AutopilotSettingsSkeleton() {
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-4 py-10">
-      <div className={`${GLASS_HERO} animate-pulse`}>
-        <div className="h-10 w-2/3 rounded-xl bg-white/10" />
-        <div className="mt-3 h-4 w-full max-w-xl rounded bg-white/10" />
+      <div className={`${TERMINAL_SETTINGS_PANEL} animate-pulse`}>
+        <div className="h-10 w-2/3 rounded-lg bg-terminal-panelSecondary" />
+        <div className="mt-3 h-4 w-full max-w-xl rounded bg-terminal-panelSecondary" />
       </div>
       {[1, 2, 3, 4].map((section) => (
-        <div key={section} className={`${GLASS_SECTION} animate-pulse space-y-4`}>
-          <div className="h-4 w-40 rounded bg-white/10" />
-          <div className="h-12 rounded-xl bg-white/10" />
-          <div className="h-24 rounded-xl bg-white/10" />
+        <div key={section} className={`${TERMINAL_SETTINGS_CARD} animate-pulse space-y-4`}>
+          <div className="h-4 w-40 rounded bg-terminal-panelSecondary" />
+          <div className="h-12 rounded-lg bg-terminal-panelSecondary" />
+          <div className="h-24 rounded-lg bg-terminal-panelSecondary" />
         </div>
       ))}
     </div>
@@ -287,27 +295,27 @@ export function AutopilotSettings() {
 
   if (isLoading) {
     return (
-      <div className={GLASS_PAGE_BG}>
+      <div className={TERMINAL_APP_BG}>
         <AutopilotSettingsSkeleton />
       </div>
     );
   }
 
   return (
-    <div className={`${GLASS_PAGE_BG} pb-16`}>
+    <div className={`${TERMINAL_APP_BG} pb-16`}>
       <FeedbackToastStack toasts={toasts} />
 
       <div className="mx-auto max-w-4xl space-y-6 px-4 py-10">
-        <header className={GLASS_HERO}>
+        <header className={TERMINAL_SETTINGS_PANEL}>
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#22d3ee]/30 bg-[#22d3ee]/10">
-              <BoltIcon className="h-6 w-6 text-[#22d3ee]" aria-hidden />
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-terminal-cyan/30 bg-terminal-cyan/10">
+              <BoltIcon className="h-6 w-6 text-terminal-cyan" aria-hidden />
             </div>
             <div>
-              <h1 className={GLASS_PAGE_TITLE}>
+              <h1 className={TERMINAL_PAGE_TITLE}>
                 {t("autopilot.title", { defaultValue: "Autopilot AI Agent" })}
               </h1>
-              <p className={GLASS_PAGE_SUBTITLE}>
+              <p className={TERMINAL_PAGE_SUBTITLE}>
                 {t("autopilot.subtitle", {
                   defaultValue:
                     "Skonfiguruj autonomicznego agenta AI z szyfrowanymi kluczami Alpaca i twardymi limitami Safe Guard.",
@@ -318,19 +326,19 @@ export function AutopilotSettings() {
         </header>
 
         {/* Section 1: Status toggle */}
-        <section className={`${GLASS_SECTION} space-y-4`}>
-          <p className={GLASS_SECTION_TITLE}>
+        <section className={`${TERMINAL_SETTINGS_CARD} space-y-4`}>
+          <p className={TERMINAL_SECTION_TITLE}>
             {t("autopilot.statusSection", { defaultValue: "Status Autopilota" })}
           </p>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
-              <p className="text-lg font-semibold text-white">
+              <p className="text-lg font-semibold text-terminal-text">
                 {isAutopilotEnabled
                   ? t("autopilot.statusActive", { defaultValue: "Autopilot aktywny" })
                   : t("autopilot.statusInactive", { defaultValue: "Autopilot nieaktywny" })}
               </p>
-              <p className="text-sm text-[#94a3b8]">
+              <p className={TERMINAL_TEXT_MUTED}>
                 {t("autopilot.statusHint", {
                   defaultValue: "Agent może wykonywać zlecenia zgodnie z limitami Safe Guard.",
                 })}
@@ -344,20 +352,15 @@ export function AutopilotSettings() {
               aria-label={t("autopilot.toggleLabel", { defaultValue: "Przełącz Autopilot" })}
               disabled={toggleDisabled}
               onClick={() => void handleToggle(!isAutopilotEnabled)}
-              className={`relative h-9 w-[4.5rem] shrink-0 rounded-full border transition-all duration-300 ${
-                toggleDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-              }`}
-              style={{
-                backgroundColor: isAutopilotEnabled ? colors.brandCyan : colors.bgTertiary,
-                borderColor: isAutopilotEnabled ? colors.brandCyan : colors.borderStrong,
-                boxShadow: isAutopilotEnabled ? "0 0 24px rgba(34,211,238,0.35)" : "none",
-              }}
+              className={`${TERMINAL_TOGGLE_TRACK} ${
+                isAutopilotEnabled
+                  ? "cursor-pointer border-terminal-cyan/50 bg-terminal-cyan/20 shadow-terminal-glow"
+                  : "cursor-pointer border-terminal-borderMuted bg-terminal-panelSecondary"
+              } ${toggleDisabled ? "cursor-not-allowed opacity-50" : ""}`}
             >
               <span
-                className="absolute top-1 rounded-full bg-white shadow-md transition-transform duration-300"
+                className={TERMINAL_TOGGLE_THUMB}
                 style={{
-                  width: "28px",
-                  height: "28px",
                   transform: isAutopilotEnabled ? "translateX(38px)" : "translateX(4px)",
                 }}
               />
@@ -365,30 +368,30 @@ export function AutopilotSettings() {
           </div>
 
           {!hasKeys ? (
-            <p className="rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm font-medium text-amber-300">
+            <p className={TERMINAL_WARNING_PANEL}>
               {t("autopilot.keysRequiredWarning", {
                 defaultValue: "Wprowadź klucze API Alpaca przed aktywacją Autopilota",
               })}
             </p>
           ) : null}
 
-          {fieldErrors.toggle ? <p className="text-sm text-[#f87171]">{fieldErrors.toggle}</p> : null}
+          {fieldErrors.toggle ? <p className="text-sm text-terminal-negative">{fieldErrors.toggle}</p> : null}
           {toggleSaving ? (
-            <p className="text-sm text-[#94a3b8]">{t("common.loading", { defaultValue: "Ładowanie…" })}</p>
+            <p className={TERMINAL_TEXT_MUTED}>{t("common.loading", { defaultValue: "Ładowanie…" })}</p>
           ) : null}
         </section>
 
         {/* Section 2: API keys */}
-        <section className={`${GLASS_SECTION} space-y-4`}>
+        <section className={`${TERMINAL_SETTINGS_CARD} space-y-4`}>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <KeyIcon className="h-5 w-5 text-[#22d3ee]" aria-hidden />
-              <p className={GLASS_SECTION_TITLE}>
+              <KeyIcon className="h-5 w-5 text-terminal-cyan" aria-hidden />
+              <p className={TERMINAL_SECTION_TITLE}>
                 {t("autopilot.keysSection", { defaultValue: "Klucze API Alpaca (BYOK)" })}
               </p>
             </div>
             {hasKeys ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#4ade80]/40 bg-[#4ade80]/10 px-3 py-1 text-xs font-semibold text-[#4ade80]">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-terminal-positive/40 bg-terminal-positive/10 px-3 py-1 text-xs font-semibold text-terminal-positive">
                 <CheckBadgeIcon className="h-4 w-4" aria-hidden />
                 {t("autopilot.keysConfiguredBadge", {
                   defaultValue: "Klucze API skonfigurowane bezpiecznie (AES-256-GCM)",
@@ -397,7 +400,7 @@ export function AutopilotSettings() {
             ) : null}
           </div>
 
-          <p className="text-sm text-[#94a3b8]">
+          <p className={TERMINAL_TEXT_MUTED}>
             {t("autopilot.keysHint", {
               defaultValue:
                 "Klucze są szyfrowane po stronie serwera i nigdy nie są zwracane do przeglądarki. Możesz je nadpisać w dowolnym momencie.",
@@ -406,20 +409,20 @@ export function AutopilotSettings() {
 
           <form onSubmit={(event) => void handleSaveKeys(event)} className="space-y-4">
             <label className="block space-y-2">
-              <span className={GLASS_LABEL}>{t("alpaca.apiKey", { defaultValue: "API Key" })}</span>
+              <span className={TERMINAL_FORM_LABEL}>{t("alpaca.apiKey", { defaultValue: "API Key" })}</span>
               <div className="relative">
                 <input
                   type={showApiKey ? "text" : "password"}
                   value={alpacaApiKey}
                   onChange={(event) => setAlpacaApiKey(event.target.value)}
                   autoComplete="off"
-                  className={`${GLASS_INPUT} pr-11`}
+                  className={TERMINAL_SECRET_FIELD}
                   placeholder={hasKeys ? "••••••••••••••••" : "PK..."}
                 />
                 <button
                   type="button"
                   onClick={() => setShowApiKey((prev) => !prev)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-[#94a3b8] transition hover:bg-white/10 hover:text-white"
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 ${TERMINAL_ICON_BUTTON} p-1.5`}
                   aria-label={
                     showApiKey
                       ? t("autopilot.hideKey", { defaultValue: "Ukryj klucz" })
@@ -430,25 +433,25 @@ export function AutopilotSettings() {
                 </button>
               </div>
               {fieldErrors.alpacaApiKey ? (
-                <p className="text-sm text-[#f87171]">{fieldErrors.alpacaApiKey}</p>
+                <p className="text-sm text-terminal-negative">{fieldErrors.alpacaApiKey}</p>
               ) : null}
             </label>
 
             <label className="block space-y-2">
-              <span className={GLASS_LABEL}>{t("alpaca.apiSecret", { defaultValue: "API Secret" })}</span>
+              <span className={TERMINAL_FORM_LABEL}>{t("alpaca.apiSecret", { defaultValue: "API Secret" })}</span>
               <div className="relative">
                 <input
                   type={showApiSecret ? "text" : "password"}
                   value={alpacaApiSecret}
                   onChange={(event) => setAlpacaApiSecret(event.target.value)}
                   autoComplete="off"
-                  className={`${GLASS_INPUT} pr-11`}
+                  className={TERMINAL_SECRET_FIELD}
                   placeholder={hasKeys ? "••••••••••••••••" : ""}
                 />
                 <button
                   type="button"
                   onClick={() => setShowApiSecret((prev) => !prev)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-[#94a3b8] transition hover:bg-white/10 hover:text-white"
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 ${TERMINAL_ICON_BUTTON} p-1.5`}
                   aria-label={
                     showApiSecret
                       ? t("autopilot.hideSecret", { defaultValue: "Ukryj sekret" })
@@ -459,11 +462,11 @@ export function AutopilotSettings() {
                 </button>
               </div>
               {fieldErrors.alpacaApiSecret ? (
-                <p className="text-sm text-[#f87171]">{fieldErrors.alpacaApiSecret}</p>
+                <p className="text-sm text-terminal-negative">{fieldErrors.alpacaApiSecret}</p>
               ) : null}
             </label>
 
-            <button type="submit" disabled={keysSaving} className={GLASS_BTN_PRIMARY}>
+            <button type="submit" disabled={keysSaving} className={TERMINAL_BUTTON_PRIMARY}>
               {keysSaving
                 ? t("common.loading", { defaultValue: "Ładowanie…" })
                 : t("autopilot.saveKeys", { defaultValue: "Zapisz klucze API" })}
@@ -472,20 +475,20 @@ export function AutopilotSettings() {
         </section>
 
         {/* Section 3: Safe Guard */}
-        <section className={`${GLASS_SECTION} space-y-5`}>
+        <section className={`${TERMINAL_SETTINGS_CARD} space-y-5`}>
           <div className="flex items-center gap-2">
-            <ShieldCheckIcon className="h-5 w-5 text-[#a855f7]" aria-hidden />
-            <p className={GLASS_SECTION_TITLE}>
+            <ShieldCheckIcon className="h-5 w-5 text-terminal-cyan" aria-hidden />
+            <p className={TERMINAL_SECTION_TITLE}>
               {t("autopilot.safeGuardSection", { defaultValue: "Safe Guard — limity ryzyka" })}
             </p>
           </div>
 
-          <div className={`${GLASS_INNER_PANEL} space-y-3 p-4`}>
+          <div className={`${TERMINAL_SETTINGS_ROW} space-y-3 p-4`}>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[#94a3b8]">
+              <span className="text-terminal-textMuted">
                 {t("autopilot.maxCapitalPerTrade", { defaultValue: "Maks. kapitał na transakcję" })}
               </span>
-              <span className="font-mono text-lg font-semibold text-[#22d3ee]">
+              <span className="font-mono text-lg font-semibold text-terminal-cyan">
                 {formatPercentLabel(capitalPct)}
               </span>
             </div>
@@ -497,24 +500,24 @@ export function AutopilotSettings() {
               value={capitalPct}
               disabled={riskSaving}
               onChange={(event) => setCapitalPct(Number(event.target.value))}
-              className="w-full accent-[#a855f7]"
+              className="w-full accent-terminal-cyan"
             />
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-terminal-textMuted">
               {t("autopilot.maxCapitalHint", {
                 defaultValue: "Zakres: 0.5% – 10.0%. Agent nie przekroczy tego limitu na pojedyncze zlecenie BUY.",
               })}
             </p>
             {fieldErrors.maxCapitalPerTradePct ? (
-              <p className="text-sm text-[#f87171]">{fieldErrors.maxCapitalPerTradePct}</p>
+              <p className="text-sm text-terminal-negative">{fieldErrors.maxCapitalPerTradePct}</p>
             ) : null}
           </div>
 
-          <div className={`${GLASS_INNER_PANEL} space-y-3 p-4`}>
+          <div className={`${TERMINAL_SETTINGS_ROW} space-y-3 p-4`}>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[#94a3b8]">
+              <span className="text-terminal-textMuted">
                 {t("autopilot.maxDailyDrawdown", { defaultValue: "Maks. dzienny drawdown" })}
               </span>
-              <span className="font-mono text-lg font-semibold text-[#22d3ee]">
+              <span className="font-mono text-lg font-semibold text-terminal-cyan">
                 {formatPercentLabel(drawdownPct)}
               </span>
             </div>
@@ -526,21 +529,21 @@ export function AutopilotSettings() {
               value={drawdownPct}
               disabled={riskSaving}
               onChange={(event) => setDrawdownPct(Number(event.target.value))}
-              className="w-full accent-[#a855f7]"
+              className="w-full accent-terminal-cyan"
             />
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-terminal-textMuted">
               {t("autopilot.maxDrawdownHint", {
                 defaultValue: "Zakres: 1% – 50%. Przekroczenie blokuje nowe zlecenia do końca doby.",
               })}
             </p>
             {fieldErrors.maxDailyDrawdownPct ? (
-              <p className="text-sm text-[#f87171]">{fieldErrors.maxDailyDrawdownPct}</p>
+              <p className="text-sm text-terminal-negative">{fieldErrors.maxDailyDrawdownPct}</p>
             ) : null}
           </div>
 
           <div className="space-y-3">
-            <span className={GLASS_LABEL}>{t("autopilot.modeLabel", { defaultValue: "Tryb Alpaca" })}</span>
-            <div className="inline-flex rounded-xl border border-white/10 bg-[#0f111c]/80 p-1 backdrop-blur-sm">
+            <span className={TERMINAL_FORM_LABEL}>{t("autopilot.modeLabel", { defaultValue: "Tryb Alpaca" })}</span>
+            <div className={TERMINAL_MODE_SWITCH}>
               {(["PAPER", "LIVE"] as const).map((mode) => {
                 const active = alpacaMode === mode;
                 return (
@@ -549,16 +552,13 @@ export function AutopilotSettings() {
                     type="button"
                     disabled={riskSaving}
                     onClick={() => void handleModeChange(mode)}
-                    className="rounded-lg px-5 py-2.5 text-sm font-semibold transition-all duration-200"
-                    style={{
-                      color: active ? "#fff" : colors.textSecondary,
-                      backgroundColor: active
+                    className={`rounded-lg px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                      active
                         ? mode === "LIVE"
-                          ? colors.negative
-                          : colors.brandDark
-                        : "transparent",
-                      boxShadow: active ? "0 4px 20px rgba(168,85,247,0.35)" : "none",
-                    }}
+                          ? "bg-terminal-negative/20 text-terminal-negative"
+                          : TERMINAL_FILTER_CHIP_ACTIVE
+                        : TERMINAL_FILTER_CHIP
+                    }`}
                   >
                     {mode === "PAPER"
                       ? t("alpaca.modePaper", { defaultValue: "PAPER" })
@@ -568,23 +568,23 @@ export function AutopilotSettings() {
               })}
             </div>
             {alpacaMode === "LIVE" ? (
-              <p className="animate-pulse rounded-xl border border-[#f87171]/50 bg-[#f87171]/10 px-4 py-3 text-sm font-semibold text-[#f87171]">
+              <p className={`${TERMINAL_DANGER_PANEL} font-semibold`}>
                 {t("autopilot.liveWarning", {
                   defaultValue:
                     "UWAGA: Tryb LIVE handluje realnym kapitałem. Upewnij się, że limity Safe Guard są poprawnie skonfigurowane.",
                 })}
               </p>
             ) : null}
-            {fieldErrors.alpacaMode ? <p className="text-sm text-[#f87171]">{fieldErrors.alpacaMode}</p> : null}
+            {fieldErrors.alpacaMode ? <p className="text-sm text-terminal-negative">{fieldErrors.alpacaMode}</p> : null}
           </div>
 
-          {fieldErrors.risk ? <p className="text-sm text-[#f87171]">{fieldErrors.risk}</p> : null}
+          {fieldErrors.risk ? <p className="text-sm text-terminal-negative">{fieldErrors.risk}</p> : null}
 
           <button
             type="button"
             disabled={riskSaving}
             onClick={() => void handleSaveRiskSettings()}
-            className={GLASS_BTN_SECONDARY}
+            className={TERMINAL_BUTTON_SECONDARY}
           >
             {riskSaving
               ? t("common.loading", { defaultValue: "Ładowanie…" })
@@ -593,32 +593,32 @@ export function AutopilotSettings() {
         </section>
 
         {/* Section 4: Stats */}
-        <section className={`${GLASS_SECTION} space-y-4`}>
+        <section className={`${TERMINAL_SETTINGS_CARD} space-y-4`}>
           <div className="flex items-center gap-2">
-            <ChartBarSquareIcon className="h-5 w-5 text-[#22d3ee]" aria-hidden />
-            <p className={GLASS_SECTION_TITLE}>
+            <ChartBarSquareIcon className="h-5 w-5 text-terminal-cyan" aria-hidden />
+            <p className={TERMINAL_SECTION_TITLE}>
               {t("autopilot.statsSection", { defaultValue: "Statystyki wykonania" })}
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <article className={`${GLASS_STAT_CARD} p-5`}>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+            <article className={`${TERMINAL_STATUS_CARD} p-5`}>
+              <p className="text-xs font-semibold uppercase tracking-widest text-terminal-textMuted">
                 {t("autopilot.totalTrades", { defaultValue: "Wykonane transakcje" })}
               </p>
-              <p className="mt-3 font-mono text-4xl font-bold text-white">
+              <p className="mt-3 font-mono text-4xl font-bold text-terminal-text">
                 {stats?.totalTradesExecuted ?? 0}
               </p>
             </article>
 
-            <article className={`${GLASS_STAT_CARD} p-5`}>
+            <article className={`${TERMINAL_STATUS_CARD} p-5`}>
               <div className="flex items-center gap-2">
-                <ClockIcon className="h-4 w-4 text-[#94a3b8]" aria-hidden />
-                <p className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+                <ClockIcon className="h-4 w-4 text-terminal-textMuted" aria-hidden />
+                <p className="text-xs font-semibold uppercase tracking-widest text-terminal-textMuted">
                   {t("autopilot.lastExecuted", { defaultValue: "Ostatnie wykonanie" })}
                 </p>
               </div>
-              <p className="mt-3 text-lg font-semibold text-white">
+              <p className="mt-3 text-lg font-semibold text-terminal-text">
                 {stats?.lastExecutedAt
                   ? formatDate(stats.lastExecutedAt, locale)
                   : t("autopilot.neverExecuted", { defaultValue: "Brak wykonań" })}

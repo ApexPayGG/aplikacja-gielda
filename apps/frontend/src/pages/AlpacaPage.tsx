@@ -11,7 +11,24 @@ import {
   type AlpacaOrderSide,
   type AlpacaOrderType,
 } from "../services/api";
-import { colors } from "../styles/designSystem";
+import { StatusPill } from "../components/terminal/StatusPill";
+import { TerminalButton } from "../components/terminal/TerminalButton";
+import {
+  TERMINAL_APP_BG,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_FILTER_CHIP,
+  TERMINAL_FILTER_CHIP_ACTIVE,
+  TERMINAL_FORM_GROUP,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_INFO_BANNER,
+  TERMINAL_INPUT,
+  TERMINAL_MODE_SWITCH,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_SETTINGS_CARD,
+  TERMINAL_SETTINGS_PANEL,
+  TERMINAL_STATUS_CARD,
+  TERMINAL_TEXT_MUTED,
+} from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatCurrency, formatPercent } from "../utils/formatters";
 
@@ -45,12 +62,12 @@ function asNumber(value: unknown): number {
   return Number.isFinite(number) ? number : 0;
 }
 
-function statusStyle(status: string): { backgroundColor: string; color: string; borderColor: string } {
-  if (status === "filled") return { backgroundColor: `${colors.positive}14`, color: colors.positive, borderColor: `${colors.positive}55` };
+function statusBadgeClass(status: string): string {
+  if (status === "filled") return "border-terminal-positive/40 bg-terminal-positive/10 text-terminal-positive";
   if (status === "canceled" || status === "rejected") {
-    return { backgroundColor: `${colors.negative}14`, color: colors.negative, borderColor: `${colors.negative}55` };
+    return "border-terminal-negative/40 bg-terminal-negative/10 text-terminal-negative";
   }
-  return { backgroundColor: `${colors.brandGold}18`, color: colors.brandDark, borderColor: `${colors.brandGold}77` };
+  return "border-terminal-warning/40 bg-terminal-warning/10 text-terminal-warning";
 }
 
 export function AlpacaPage() {
@@ -182,28 +199,21 @@ export function AlpacaPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 py-10" style={{ color: colors.textPrimary }}>
-      <section className="glass-section rounded-3xl border border-white/10 p-6 shadow-[0_16px_36px_rgba(168,85,247,0.08)]">
+    <div className={`${TERMINAL_APP_BG} mx-auto max-w-7xl space-y-6 px-4 py-10`}>
+      <section className={TERMINAL_SETTINGS_PANEL}>
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">{t("alpaca.title", { defaultValue: "Alpaca Trading" })}</h1>
-            <p className="mt-1 text-sm font-medium text-white/65">
+            <h1 className={TERMINAL_PAGE_TITLE}>{t("alpaca.title", { defaultValue: "Alpaca Trading" })}</h1>
+            <p className={`mt-1 ${TERMINAL_TEXT_MUTED}`}>
               {t("alpaca.subtitleUs", { defaultValue: "Live and paper trading on US markets." })}
             </p>
           </div>
-          <span
-            className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold"
-            style={{
-              borderColor: isConnected ? `${colors.positive}66` : `${colors.negative}66`,
-              color: isConnected ? colors.positive : colors.negative,
-              backgroundColor: isConnected ? `${colors.positive}14` : `${colors.negative}14`,
-            }}
-          >
+          <StatusPill variant={isConnected ? "live" : "inactive"} showDot>
             {isConnected ? "CONNECTED" : "DISCONNECTED"}
-          </span>
+          </StatusPill>
         </div>
 
-        <div className="mt-5 inline-flex rounded-xl border border-white/10 bg-[#0f111c]/80 p-1 backdrop-blur-sm">
+        <div className={`mt-5 ${TERMINAL_MODE_SWITCH}`}>
           {(["paper", "live"] as const).map((value) => {
             const active = mode === value;
             return (
@@ -211,11 +221,7 @@ export function AlpacaPage() {
                 key={value}
                 type="button"
                 onClick={() => setMode(value)}
-                className="rounded-lg px-4 py-2 text-sm font-semibold transition"
-                style={{
-                  color: active ? "#fff" : colors.textSecondary,
-                  backgroundColor: active ? colors.brandDark : "transparent",
-                }}
+                className={active ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP}
               >
                 {value === "paper" ? "Paper" : "Live"}
               </button>
@@ -224,33 +230,26 @@ export function AlpacaPage() {
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <article className="rounded-2xl border p-4 glass-section">
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Portfolio value
-            </p>
-            <p className="mt-2 font-mono text-2xl font-bold" style={{ color: colors.brandDark }}>
+          <article className={TERMINAL_STATUS_CARD}>
+            <p className="text-xs uppercase tracking-wide text-terminal-textMuted">Portfolio value</p>
+            <p className="mt-2 font-mono text-2xl font-bold text-terminal-cyan">
               {loading ? "..." : formatCurrency(portfolioValue, "USD")}
             </p>
           </article>
-          <article className="rounded-2xl border p-4 glass-section">
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Buying power
-            </p>
-            <p className="mt-2 font-mono text-2xl font-semibold" style={{ color: colors.textPrimary }}>
+          <article className={TERMINAL_STATUS_CARD}>
+            <p className="text-xs uppercase tracking-wide text-terminal-textMuted">Buying power</p>
+            <p className="mt-2 font-mono text-2xl font-semibold text-terminal-text">
               {loading ? "..." : formatCurrency(buyingPower, "USD")}
             </p>
           </article>
-          <article className="rounded-2xl border p-4 glass-section">
-            <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-              Day P&L
-            </p>
+          <article className={TERMINAL_STATUS_CARD}>
+            <p className="text-xs uppercase tracking-wide text-terminal-textMuted">Day P&L</p>
             <span
-              className="mt-2 inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold"
-              style={{
-                borderColor: dayPnlPct >= 0 ? `${colors.positive}66` : `${colors.negative}66`,
-                color: dayPnlPct >= 0 ? colors.positive : colors.negative,
-                backgroundColor: dayPnlPct >= 0 ? `${colors.positive}14` : `${colors.negative}14`,
-              }}
+              className={`mt-2 inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold ${
+                dayPnlPct >= 0
+                  ? "border-terminal-positive/40 bg-terminal-positive/10 text-terminal-positive"
+                  : "border-terminal-negative/40 bg-terminal-negative/10 text-terminal-negative"
+              }`}
             >
               {loading ? "..." : formatPercent(dayPnlPct)}
             </span>
@@ -258,13 +257,9 @@ export function AlpacaPage() {
         </div>
       </section>
 
-      {error ? (
-        <div className="rounded-xl border px-4 py-3 text-sm font-medium" style={{ borderColor: `${colors.negative}66`, color: colors.negative, backgroundColor: `${colors.negative}14` }}>
-          {error}
-        </div>
-      ) : null}
+      {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
       {notConfigured ? (
-        <div className="rounded-2xl border p-4" style={{ borderColor: `${colors.brandGold}66`, color: colors.brandDark, backgroundColor: `${colors.brandGold}14` }}>
+        <div className={TERMINAL_INFO_BANNER}>
           <p className="text-sm font-medium">{t("alpaca.connectBanner", { defaultValue: "Connect your Alpaca account in Settings" })}</p>
           <BrokerCTAButton
             sourcePage="alpaca_dashboard"
@@ -280,14 +275,14 @@ export function AlpacaPage() {
 
       <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
         <div className="space-y-6">
-          <article className="glass-section rounded-2xl border border-white/10 p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]">
-            <h2 className="mb-4 text-lg font-semibold" style={{ color: colors.brandDark }}>
+          <article className={TERMINAL_SETTINGS_CARD}>
+            <h2 className="mb-4 text-lg font-semibold text-terminal-cyan">
               {t("alpaca.positions", { defaultValue: "Positions" })}
             </h2>
             <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead style={{ color: colors.textMuted }}>
-                  <tr className="border-b" style={{ borderColor: colors.border }}>
+              <table className="min-w-full text-left text-sm text-terminal-text">
+                <thead className="text-terminal-textMuted">
+                  <tr className="border-b border-terminal-border">
                     <th className="px-2 py-2">Symbol</th>
                     <th className="px-2 py-2">Qty</th>
                     <th className="px-2 py-2">Avg Price</th>
@@ -299,29 +294,28 @@ export function AlpacaPage() {
                 <tbody>
                   {normalizedPositions.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-2 py-4" style={{ color: colors.textSecondary }}>
+                      <td colSpan={6} className="px-2 py-4 text-terminal-textSecondary">
                         {loading ? t("common.loading") : t("alpaca.noPositions", { defaultValue: "No open positions" })}
                       </td>
                     </tr>
                   ) : (
                     normalizedPositions.map((position) => (
-                      <tr key={position.symbol} className="border-b" style={{ borderColor: colors.border }}>
-                        <td className="px-2 py-2 font-semibold" style={{ color: colors.brandDark }}>
-                          {position.symbol}
-                        </td>
+                      <tr key={position.symbol} className="border-b border-terminal-borderMuted">
+                        <td className="px-2 py-2 font-semibold text-terminal-cyan">{position.symbol}</td>
                         <td className="px-2 py-2">{position.qty}</td>
                         <td className="px-2 py-2">{formatCurrency(position.avgPrice, "USD")}</td>
                         <td className="px-2 py-2">{formatCurrency(position.currentPrice, "USD")}</td>
                         <td className="px-2 py-2">
-                          <span className="font-semibold" style={{ color: position.pnlPct >= 0 ? colors.positive : colors.negative }}>
+                          <span
+                            className={`font-semibold ${position.pnlPct >= 0 ? "text-terminal-positive" : "text-terminal-negative"}`}
+                          >
                             {formatPercent(position.pnlPct)}
                           </span>
                         </td>
                         <td className="px-2 py-2">
                           <button
                             type="button"
-                            className="rounded-lg px-3 py-1 text-xs font-semibold transition"
-                            style={{ backgroundColor: `${colors.negative}14`, color: colors.negative }}
+                            className="rounded-lg border border-terminal-negative/40 bg-terminal-negative/10 px-3 py-1 text-xs font-semibold text-terminal-negative transition hover:bg-terminal-negative/20"
                             onClick={() => {
                               setSymbol(position.symbol);
                               setQty(Math.max(1, Math.trunc(position.qty)));
@@ -339,14 +333,12 @@ export function AlpacaPage() {
             </div>
           </article>
 
-          <article className="glass-section rounded-2xl border border-white/10 p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)]">
-            <h2 className="mb-4 text-lg font-semibold" style={{ color: colors.brandDark }}>
-              Recent orders
-            </h2>
+          <article className={TERMINAL_SETTINGS_CARD}>
+            <h2 className="mb-4 text-lg font-semibold text-terminal-cyan">Recent orders</h2>
             <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead style={{ color: colors.textMuted }}>
-                  <tr className="border-b" style={{ borderColor: colors.border }}>
+              <table className="min-w-full text-left text-sm text-terminal-text">
+                <thead className="text-terminal-textMuted">
+                  <tr className="border-b border-terminal-border">
                     <th className="px-2 py-2">Symbol</th>
                     <th className="px-2 py-2">Qty</th>
                     <th className="px-2 py-2">Side</th>
@@ -358,7 +350,7 @@ export function AlpacaPage() {
                 <tbody>
                   {normalizedOrders.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-2 py-4" style={{ color: colors.textSecondary }}>
+                      <td colSpan={6} className="px-2 py-4 text-terminal-textSecondary">
                         {loading ? t("common.loading") : t("alpaca.noOrders", { defaultValue: "No recent orders" })}
                       </td>
                     </tr>
@@ -366,15 +358,15 @@ export function AlpacaPage() {
                     normalizedOrders.map((order) => {
                       const canCancel = order.status !== "filled" && order.status !== "canceled";
                       return (
-                        <tr key={order.id} className="border-b" style={{ borderColor: colors.border }}>
-                          <td className="px-2 py-2 font-semibold" style={{ color: colors.brandDark }}>
-                            {order.symbol}
-                          </td>
+                        <tr key={order.id} className="border-b border-terminal-borderMuted">
+                          <td className="px-2 py-2 font-semibold text-terminal-cyan">{order.symbol}</td>
                           <td className="px-2 py-2">{order.qty}</td>
                           <td className="px-2 py-2 uppercase">{order.side}</td>
                           <td className="px-2 py-2 uppercase">{order.type}</td>
                           <td className="px-2 py-2">
-                            <span className="rounded-full border px-2 py-0.5 text-xs font-semibold uppercase" style={statusStyle(order.status)}>
+                            <span
+                              className={`rounded-full border px-2 py-0.5 text-xs font-semibold uppercase ${statusBadgeClass(order.status)}`}
+                            >
                               {order.status}
                             </span>
                           </td>
@@ -382,16 +374,13 @@ export function AlpacaPage() {
                             {canCancel ? (
                               <button
                                 type="button"
-                                className="text-xs font-semibold transition hover:opacity-80"
-                                style={{ color: colors.negative }}
+                                className="text-xs font-semibold text-terminal-negative transition hover:opacity-80"
                                 onClick={() => void handleCancelOrder(order.id)}
                               >
                                 Cancel
                               </button>
                             ) : (
-                              <span className="text-xs" style={{ color: colors.textMuted }}>
-                                -
-                              </span>
+                              <span className="text-xs text-terminal-textMuted">-</span>
                             )}
                           </td>
                         </tr>
@@ -404,15 +393,11 @@ export function AlpacaPage() {
           </article>
         </div>
 
-        <aside className="glass-section rounded-2xl border border-white/10 p-5 shadow-[0_12px_28px_rgba(168,85,247,0.08)] lg:sticky lg:top-20 lg:h-fit">
-          <h2 className="text-lg font-semibold" style={{ color: colors.brandDark }}>
-            Order form
-          </h2>
+        <aside className={`${TERMINAL_SETTINGS_CARD} lg:sticky lg:top-20 lg:h-fit`}>
+          <h2 className="text-lg font-semibold text-terminal-cyan">Order form</h2>
           <div className="mt-4 space-y-4">
             <div>
-              <p className="mb-1 text-sm font-medium" style={{ color: colors.textSecondary }}>
-                Symbol search
-              </p>
+              <p className={`mb-1 ${TERMINAL_FORM_LABEL}`}>Symbol search</p>
               <CompanySearchAutocomplete
                 initialValue={symbol}
                 limit={8}
@@ -424,28 +409,26 @@ export function AlpacaPage() {
             </div>
 
             <div>
-              <p className="mb-1 text-sm font-medium" style={{ color: colors.textSecondary }}>
-                Side
-              </p>
-              <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/10 bg-[#0f111c]/80 p-1 backdrop-blur-sm">
+              <p className={TERMINAL_FORM_LABEL}>Side</p>
+              <div className={`mt-1 grid grid-cols-2 gap-2 ${TERMINAL_MODE_SWITCH}`}>
                 <button
                   type="button"
-                  className="rounded-lg px-3 py-2 text-sm font-semibold transition"
-                  style={{
-                    backgroundColor: side === "buy" ? `${colors.positive}22` : "transparent",
-                    color: side === "buy" ? colors.positive : colors.textSecondary,
-                  }}
+                  className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                    side === "buy"
+                      ? "bg-terminal-positive/15 text-terminal-positive"
+                      : TERMINAL_FILTER_CHIP
+                  }`}
                   onClick={() => setSide("buy")}
                 >
                   Buy
                 </button>
                 <button
                   type="button"
-                  className="rounded-lg px-3 py-2 text-sm font-semibold transition"
-                  style={{
-                    backgroundColor: side === "sell" ? `${colors.negative}22` : "transparent",
-                    color: side === "sell" ? colors.negative : colors.textSecondary,
-                  }}
+                  className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                    side === "sell"
+                      ? "bg-terminal-negative/15 text-terminal-negative"
+                      : TERMINAL_FILTER_CHIP
+                  }`}
                   onClick={() => setSide("sell")}
                 >
                   Sell
@@ -453,21 +436,21 @@ export function AlpacaPage() {
               </div>
             </div>
 
-            <label className="block text-sm font-medium" style={{ color: colors.textSecondary }}>
-              Qty
+            <label className={TERMINAL_FORM_GROUP}>
+              <span className={TERMINAL_FORM_LABEL}>Qty</span>
               <input
                 type="number"
                 min={1}
-                className="mt-1 w-full rounded-xl border border-white/10 bg-[#1e1b4b]/30 px-3 py-2 text-sm text-white outline-none backdrop-blur-sm transition focus:border-[#22d3ee]/40"
+                className={TERMINAL_INPUT}
                 value={qty}
                 onChange={(event) => setQty(Math.max(1, Math.trunc(Number(event.target.value) || 1)))}
               />
             </label>
 
-            <label className="block text-sm font-medium" style={{ color: colors.textSecondary }}>
-              Order type
+            <label className={TERMINAL_FORM_GROUP}>
+              <span className={TERMINAL_FORM_LABEL}>Order type</span>
               <select
-                className="mt-1 w-full rounded-xl border border-white/10 bg-[#1e1b4b]/30 px-3 py-2 text-sm text-white outline-none backdrop-blur-sm transition focus:border-[#22d3ee]/40"
+                className={TERMINAL_INPUT}
                 value={orderType}
                 onChange={(event) => setOrderType(event.target.value as AlpacaOrderType)}
               >
@@ -477,28 +460,22 @@ export function AlpacaPage() {
             </label>
 
             {orderType === "limit" ? (
-              <label className="block text-sm font-medium" style={{ color: colors.textSecondary }}>
-                Limit price
+              <label className={TERMINAL_FORM_GROUP}>
+                <span className={TERMINAL_FORM_LABEL}>Limit price</span>
                 <input
                   type="number"
                   min={0.01}
                   step={0.01}
-                  className="mt-1 w-full rounded-xl border border-white/10 bg-[#1e1b4b]/30 px-3 py-2 text-sm text-white outline-none backdrop-blur-sm transition focus:border-[#22d3ee]/40"
+                  className={TERMINAL_INPUT}
                   value={Number.isFinite(limitPrice) ? limitPrice : 0}
                   onChange={(event) => setLimitPrice(Math.max(0, Number(event.target.value) || 0))}
                 />
               </label>
             ) : null}
 
-            <button
-              type="button"
-              className="w-full rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-65"
-              style={{ backgroundColor: colors.brandDark }}
-              disabled={placing}
-              onClick={() => void handlePlaceOrder()}
-            >
+            <TerminalButton type="button" className="w-full" disabled={placing} onClick={() => void handlePlaceOrder()}>
               {placing ? t("common.loading") : t("alpaca.placeOrder", { defaultValue: "Place order" })}
-            </button>
+            </TerminalButton>
           </div>
         </aside>
       </section>

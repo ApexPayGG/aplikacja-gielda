@@ -16,7 +16,28 @@ import {
   type NotificationPreferences,
   type TaxSystemItem,
 } from "../services/api";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_APP_BG,
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_BUTTON_SECONDARY,
+  TERMINAL_CHECKBOX_ROW,
+  TERMINAL_FILTER_CHIP,
+  TERMINAL_FILTER_CHIP_ACTIVE,
+  TERMINAL_FORM_GROUP,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_HELP_TEXT,
+  TERMINAL_INFO_BANNER,
+  TERMINAL_INPUT,
+  TERMINAL_LINK_ACCENT,
+  TERMINAL_PAGE_SHELL,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_SETTINGS_CARD,
+  TERMINAL_SETTINGS_NAV_ACTIVE,
+  TERMINAL_SETTINGS_NAV_IDLE,
+  TERMINAL_SETTINGS_NAV_ITEM,
+  TERMINAL_SETTINGS_ROW,
+  TERMINAL_TEXT_MUTED,
+} from "../components/terminal/terminalStyles";
 
 type MentorStyle = "supportive" | "strict";
 type SettingsSectionId = "profile" | "subscription" | "brokers" | "notifications" | "language";
@@ -331,19 +352,17 @@ export function SettingsPage() {
     { id: "notifications", label: "Notifications" },
     { id: "language", label: "Language" },
   ];
-  const cardClass = "glass-section p-6";
-  const nestedCardClass = "glass-panel p-4";
-  const fieldClass =
-    "w-full rounded-xl border border-white/12 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#94a3b8] focus:border-[#22d3ee]/50 focus:ring-2 focus:ring-[#22d3ee]/20";
-  const secondaryButtonClass =
-    "rounded-xl border border-white/20 bg-bgPrimary px-4 py-2 text-sm font-medium text-white transition hover:border-brandDark/40 disabled:opacity-60";
+  const cardClass = TERMINAL_SETTINGS_CARD;
+  const nestedCardClass = TERMINAL_SETTINGS_ROW;
+  const fieldClass = TERMINAL_INPUT;
+  const secondaryButtonClass = TERMINAL_BUTTON_SECONDARY;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0b14] via-[#1e1b4b]/40 to-[#0a0b14] px-4 py-8 text-white">
-      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[230px_1fr]">
+    <div className={`${TERMINAL_APP_BG} px-4 py-8`}>
+      <div className={`${TERMINAL_PAGE_SHELL} grid max-w-7xl gap-6 lg:grid-cols-[230px_1fr]`}>
         <aside className={`${cardClass} h-fit lg:sticky lg:top-24`}>
-          <h1 className="text-xl font-bold text-white">{t("mentor.settingsTitle", { defaultValue: "Settings" })}</h1>
-          <p className="mt-1 glass-muted text-sm">
+          <h1 className={TERMINAL_PAGE_TITLE}>{t("mentor.settingsTitle", { defaultValue: "Settings" })}</h1>
+          <p className={`mt-1 ${TERMINAL_TEXT_MUTED}`}>
             {t("mentor.settingsSubtitle", { defaultValue: "Manage your StockAI account preferences." })}
           </p>
           <nav className="mt-6 space-y-2">
@@ -355,22 +374,20 @@ export function SettingsPage() {
                   setActiveSection(item.id);
                   document.getElementById(`settings-${item.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
-                className={`w-full rounded-xl px-3 py-2 text-left text-sm font-medium transition ${
-                  activeSection === item.id
-                    ? "bg-brandDark text-white"
-                    : "bg-bgSecondary glass-muted hover:bg-white/10 hover:text-white"
+                className={`${TERMINAL_SETTINGS_NAV_ITEM} ${
+                  activeSection === item.id ? TERMINAL_SETTINGS_NAV_ACTIVE : TERMINAL_SETTINGS_NAV_IDLE
                 }`}
               >
                 {item.label}
               </button>
             ))}
           </nav>
-          <div className="mt-6 rounded-xl glass-panel border border-white/10 bg-white/5 p-3">
-            <p className="text-xs uppercase tracking-wide text-white/50">Product</p>
-            <Link to="/changelog" className="mt-2 inline-flex text-sm font-semibold text-white transition hover:text-brandMedium">
+          <div className={`mt-6 ${TERMINAL_SETTINGS_ROW} p-3`}>
+            <p className={TERMINAL_FORM_LABEL}>Product</p>
+            <Link to="/changelog" className={`mt-2 inline-flex text-sm ${TERMINAL_LINK_ACCENT}`}>
               {t("settingsPageSections.changelogLink", { defaultValue: "What's new (Changelog)" })}
             </Link>
-            <Link to="/help" className="mt-1 inline-flex text-sm font-semibold text-white transition hover:text-brandMedium">
+            <Link to="/help" className={`mt-1 inline-flex text-sm ${TERMINAL_LINK_ACCENT}`}>
               {t("settingsPageSections.helpCenterLink", { defaultValue: "Help center" })}
             </Link>
           </div>
@@ -378,36 +395,36 @@ export function SettingsPage() {
 
         <div className="space-y-6">
           <section id="settings-profile" className={cardClass}>
-            <h2 className="text-lg font-semibold text-white">Profile</h2>
-            <p className="mt-1 glass-muted text-sm">
+            <h2 className="text-lg font-semibold text-terminal-text">Profile</h2>
+            <p className={`mt-1 ${TERMINAL_TEXT_MUTED}`}>
               {t("settingsPageSections.profileSubtitle", { defaultValue: "Your account details and mentor settings." })}
             </p>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div className={nestedCardClass}>
-                <p className="text-xs uppercase tracking-wide text-white/50">{t("auth.email")}</p>
-                <p className="mt-1 font-medium text-white">{user?.email ?? "—"}</p>
+                <p className={TERMINAL_FORM_LABEL}>{t("auth.email")}</p>
+                <p className="mt-1 font-medium text-terminal-text">{user?.email ?? "—"}</p>
               </div>
               <div className={nestedCardClass}>
-                <p className="text-xs uppercase tracking-wide text-white/50">User ID</p>
-                <p className="mt-1 break-all font-medium text-white">{userId || "—"}</p>
+                <p className={TERMINAL_FORM_LABEL}>User ID</p>
+                <p className="mt-1 break-all font-medium text-terminal-text">{userId || "—"}</p>
               </div>
             </div>
 
-            <div className="mt-4 rounded-xl glass-panel border border-white/10 bg-white/5 p-4">
+            <div className={`mt-4 ${TERMINAL_SETTINGS_ROW}`}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-semibold text-white">{t("mentor.toggleLabel")}</h3>
-                  <p className="glass-muted text-sm">
+                  <h3 className="font-semibold text-terminal-text">{t("mentor.toggleLabel")}</h3>
+                  <p className={TERMINAL_TEXT_MUTED}>
                     {t("mentor.currentStatus")}: {statusLabel}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => updateMentorEnabled(!mentorEnabled)}
-                  className={`rounded-xl border px-4 py-2 text-sm font-medium transition ${
+                  className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
                     mentorEnabled
-                      ? "border-positive/60 bg-positive/10 text-positive"
-                      : "border-white/20 bg-bgPrimary text-white hover:border-brandDark/40"
+                      ? "border-terminal-positive/50 bg-terminal-positive/10 text-terminal-positive"
+                      : `${TERMINAL_BUTTON_SECONDARY}`
                   }`}
                 >
                   {mentorEnabled ? t("mentor.disableAction") : t("mentor.enableAction")}
@@ -415,27 +432,21 @@ export function SettingsPage() {
               </div>
 
               <div className="mt-4">
-                <h4 className="mb-2 text-sm font-semibold glass-muted">{t("mentor.styleLabel")}</h4>
+                <h4 className={`mb-2 text-sm font-semibold ${TERMINAL_TEXT_MUTED}`}>{t("mentor.styleLabel")}</h4>
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => updateMentorStyle("supportive")}
-                    className={`rounded-xl border px-3 py-1.5 text-sm transition ${
-                      mentorStyle === "supportive"
-                        ? "border-brandCyan/70 bg-brandCyan/10 text-white"
-                        : "border-white/20 bg-bgPrimary glass-muted hover:border-brandDark/40"
-                    }`}
+                    className={
+                      mentorStyle === "supportive" ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP
+                    }
                   >
                     {t("mentor.styleSupportive")}
                   </button>
                   <button
                     type="button"
                     onClick={() => updateMentorStyle("strict")}
-                    className={`rounded-xl border px-3 py-1.5 text-sm transition ${
-                      mentorStyle === "strict"
-                        ? "border-brandCyan/70 bg-brandCyan/10 text-white"
-                        : "border-white/20 bg-bgPrimary glass-muted hover:border-brandDark/40"
-                    }`}
+                    className={mentorStyle === "strict" ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP}
                   >
                     {t("mentor.styleStrict")}
                   </button>
@@ -445,29 +456,25 @@ export function SettingsPage() {
           </section>
 
           <section id="settings-subscription" className={cardClass}>
-            <h2 className="text-lg font-semibold text-white">Subscription</h2>
-            <p className="mt-1 glass-muted text-sm">
+            <h2 className="text-lg font-semibold text-terminal-text">Subscription</h2>
+            <p className={`mt-1 ${TERMINAL_TEXT_MUTED}`}>
               {t("settingsPageSections.subscriptionSubtitle", {
                 defaultValue: "Manage your plan and unlock more platform capabilities.",
               })}
             </p>
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-xl glass-panel border border-white/10 bg-white/5 p-4">
+            <div className={`mt-4 flex flex-wrap items-center justify-between gap-4 ${TERMINAL_SETTINGS_ROW}`}>
               <div>
-                <p className="text-xs uppercase tracking-wide text-white/50">Current plan</p>
-                <span className="mt-2 inline-flex rounded-full bg-brandDark px-3 py-1 text-xs font-semibold text-white">
+                <p className={TERMINAL_FORM_LABEL}>Current plan</p>
+                <span className="mt-2 inline-flex rounded-full border border-terminal-cyan/40 bg-terminal-cyan/15 px-3 py-1 text-xs font-semibold text-terminal-cyan">
                   {currentPlan}
                 </span>
               </div>
               {currentPlan === "FREE" ? (
-                <Link
-                  to="/pricing"
-                  className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:brightness-110"
-                  style={{ background: `linear-gradient(130deg, ${colors.brandDark}, ${colors.brandMedium})` }}
-                >
+                <Link to="/pricing" className={TERMINAL_BUTTON_PRIMARY}>
                   Upgrade plan
                 </Link>
               ) : (
-                <p className="text-sm text-white/80">
+                <p className="text-sm text-terminal-textSecondary">
                   {t("settingsPageSections.planActive", {
                     plan: currentPlan,
                     defaultValue: "Your {{plan}} plan is active.",
@@ -475,37 +482,37 @@ export function SettingsPage() {
                 </p>
               )}
             </div>
-            <div className="mt-4 rounded-xl border border-brandCyan/40 bg-brandCyan/10 p-4">
-              <p className="text-sm text-white">
+            <div className={`mt-4 ${TERMINAL_INFO_BANNER}`}>
+              <p className="text-sm text-terminal-text">
                 {t("settingsPageSections.apiProBanner", {
                   plan: "Pro+",
                   defaultValue: "REST API is included on the {{plan}} plan.",
                 })}
               </p>
-              <Link to="/api-docs" className="mt-2 inline-flex text-sm font-semibold text-white transition hover:text-brandMedium">
+              <Link to="/api-docs" className={`mt-2 inline-flex text-sm ${TERMINAL_LINK_ACCENT}`}>
                 Zobacz API Documentation
               </Link>
             </div>
           </section>
 
           <section id="settings-brokers" className={cardClass}>
-            <h2 className="text-lg font-semibold text-white">Brokers</h2>
-            <p className="mt-1 glass-muted text-sm">Integracje brokerskie, podatki i mirror trading w jednym miejscu.</p>
+            <h2 className="text-lg font-semibold text-terminal-text">Brokers</h2>
+            <p className="mt-1 text-terminal-textMuted text-sm">Integracje brokerskie, podatki i mirror trading w jednym miejscu.</p>
 
             <div className="mt-4 grid gap-4 xl:grid-cols-2">
               <div className={`${nestedCardClass} space-y-3`}>
-                <h3 className="font-semibold text-white">{t("alpaca.settingsTitle", { defaultValue: "Alpaca" })}</h3>
-                <p className="glass-muted text-sm">
+                <h3 className="font-semibold text-terminal-text">{t("alpaca.settingsTitle", { defaultValue: "Alpaca" })}</h3>
+                <p className="text-terminal-textMuted text-sm">
                   {t("alpaca.settingsSubtitle", {
                     defaultValue: "Connect Alpaca API keys and choose account mode.",
                   })}
                 </p>
-                <label className="flex flex-col gap-1 text-sm">
-                  <span className="glass-muted">{t("alpaca.apiKey", { defaultValue: "API Key" })}</span>
+                <label className={TERMINAL_FORM_GROUP}>
+                  <span className={TERMINAL_FORM_LABEL}>{t("alpaca.apiKey", { defaultValue: "API Key" })}</span>
                   <input value={alpacaApiKey} onChange={(e) => setAlpacaApiKey(e.target.value)} className={fieldClass} />
                 </label>
-                <label className="flex flex-col gap-1 text-sm">
-                  <span className="glass-muted">{t("alpaca.apiSecret", { defaultValue: "API Secret" })}</span>
+                <label className={TERMINAL_FORM_GROUP}>
+                  <span className={TERMINAL_FORM_LABEL}>{t("alpaca.apiSecret", { defaultValue: "API Secret" })}</span>
                   <input
                     value={alpacaApiSecret}
                     onChange={(e) => setAlpacaApiSecret(e.target.value)}
@@ -514,22 +521,18 @@ export function SettingsPage() {
                   />
                 </label>
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="glass-muted">{t("alpaca.mode", { defaultValue: "Mode" })}</span>
+                  <span className="text-terminal-textMuted">{t("alpaca.mode", { defaultValue: "Mode" })}</span>
                   <button
                     type="button"
                     onClick={() => setAlpacaMode("paper")}
-                    className={`rounded-lg px-3 py-1 ${
-                      alpacaMode === "paper" ? "bg-brandDark text-white" : "bg-bgPrimary glass-muted"
-                    }`}
+                    className={alpacaMode === "paper" ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP}
                   >
                     {t("alpaca.modePaper", { defaultValue: "PAPER" })}
                   </button>
                   <button
                     type="button"
                     onClick={() => setAlpacaMode("live")}
-                    className={`rounded-lg px-3 py-1 ${
-                      alpacaMode === "live" ? "bg-brandDark text-white" : "bg-bgPrimary glass-muted"
-                    }`}
+                    className={alpacaMode === "live" ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP}
                   >
                     {t("alpaca.modeLive", { defaultValue: "LIVE" })}
                   </button>
@@ -547,15 +550,15 @@ export function SettingsPage() {
                     {alpacaTesting ? t("common.loading") : t("alpaca.testConnection", { defaultValue: "Test connection" })}
                   </button>
                 </div>
-                {alpacaStatus ? <p className="text-sm text-positive">{alpacaStatus}</p> : null}
-                {alpacaError ? <p className="text-sm text-negative">{alpacaError}</p> : null}
+                {alpacaStatus ? <p className="text-sm text-terminal-positive">{alpacaStatus}</p> : null}
+                {alpacaError ? <p className="text-sm text-terminal-negative">{alpacaError}</p> : null}
               </div>
 
               <div className={`${nestedCardClass} space-y-3`}>
-                <h3 className="font-semibold text-white">Tax Residency</h3>
-                <p className="glass-muted text-sm">{t("tax.selectCountry")}</p>
-                <label className="flex flex-col gap-1 text-sm">
-                  <span className="glass-muted">{t("tax.selectCountry")}</span>
+                <h3 className="font-semibold text-terminal-text">Tax Residency</h3>
+                <p className="text-terminal-textMuted text-sm">{t("tax.selectCountry")}</p>
+                <label className={TERMINAL_FORM_GROUP}>
+                  <span className={TERMINAL_FORM_LABEL}>{t("tax.selectCountry")}</span>
                   <select
                     value={taxCountry}
                     onChange={(e) => setTaxCountry(String(e.target.value).toUpperCase())}
@@ -577,18 +580,18 @@ export function SettingsPage() {
             <div className="mt-4 grid gap-4 xl:grid-cols-2">
               <div className={`${nestedCardClass} space-y-3`}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="font-semibold text-white">{t("mirror.settingsTitle")}</h3>
-                  <span className="rounded-full bg-brandDark px-3 py-1 text-xs font-semibold text-white">
+                  <h3 className="font-semibold text-terminal-text">{t("mirror.settingsTitle")}</h3>
+                  <span className="rounded-full border border-terminal-cyan/40 bg-terminal-cyan/15 px-3 py-1 text-xs font-semibold text-terminal-cyan">
                     {mirrorEnabled ? t("mentor.enabled") : t("mentor.disabled")}
                   </span>
                 </div>
-                <p className="glass-muted text-sm">{t("mirror.settingsSubtitle")}</p>
+                <p className="text-terminal-textMuted text-sm">{t("mirror.settingsSubtitle")}</p>
                 {mirrorLoading ? (
-                  <p className="glass-muted text-sm">{t("common.loading")}</p>
+                  <p className="text-terminal-textMuted text-sm">{t("common.loading")}</p>
                 ) : (
                   <>
                     <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="glass-muted text-sm">{t("mirror.toggleLabel")}</p>
+                      <p className="text-terminal-textMuted text-sm">{t("mirror.toggleLabel")}</p>
                       <button
                         type="button"
                         disabled={mirrorSaving}
@@ -600,8 +603,8 @@ export function SettingsPage() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="glass-muted">{t("mirror.revenueShare")}</span>
-                        <span className="font-mono text-white">{mirrorRevenue}%</span>
+                        <span className="text-terminal-textMuted">{t("mirror.revenueShare")}</span>
+                        <span className="font-mono text-terminal-cyan">{mirrorRevenue}%</span>
                       </div>
                       <input
                         type="range"
@@ -615,27 +618,27 @@ export function SettingsPage() {
                           const v = Number((e.target as HTMLInputElement).value);
                           void persistMirror(mirrorEnabled, v);
                         }}
-                        className="w-full accent-brandDark"
+                        className="w-full accent-terminal-cyan"
                       />
-                      <p className="text-xs text-white/50">{t("mirror.revenueShareHint")}</p>
+                      <p className={TERMINAL_HELP_TEXT}>{t("mirror.revenueShareHint")}</p>
                     </div>
                   </>
                 )}
-                {mirrorNotice ? <p className="text-sm text-positive">{mirrorNotice}</p> : null}
-                {mirrorError ? <p className="text-sm text-negative">{mirrorError}</p> : null}
+                {mirrorNotice ? <p className="text-sm text-terminal-positive">{mirrorNotice}</p> : null}
+                {mirrorError ? <p className="text-sm text-terminal-negative">{mirrorError}</p> : null}
               </div>
 
               <div className={`${nestedCardClass} space-y-3`}>
-                <h3 className="font-semibold text-white">
+                <h3 className="font-semibold text-terminal-text">
                   {t("affiliate.impact.title", { defaultValue: "My impact" })}
                 </h3>
-                <p className="glass-muted text-sm">
+                <p className="text-terminal-textMuted text-sm">
                   {t("affiliate.impact.subtitle", {
                     defaultValue: "Your trust supports StockAI development.",
                   })}
                 </p>
                 {affiliateImpact ? (
-                  <div className="grid gap-2 text-sm text-white">
+                  <div className="grid gap-2 text-sm text-terminal-text">
                     <p>
                       {t("affiliate.impact.clicks", {
                         defaultValue: "Broker clicks (30d): {{count}}",
@@ -656,31 +659,31 @@ export function SettingsPage() {
                     </p>
                   </div>
                 ) : (
-                  <p className="glass-muted text-sm">{t("common.loading")}</p>
+                  <p className="text-terminal-textMuted text-sm">{t("common.loading")}</p>
                 )}
-                {affiliateImpactError ? <p className="text-sm text-negative">{affiliateImpactError}</p> : null}
+                {affiliateImpactError ? <p className="text-sm text-terminal-negative">{affiliateImpactError}</p> : null}
               </div>
             </div>
 
             <div className={`${nestedCardClass} mt-4 space-y-4`}>
               <div>
-                <h3 className="font-semibold text-white">
+                <h3 className="font-semibold text-terminal-text">
                   {t("etoro.settings.sectionTitle", { defaultValue: "Recommended Brokers" })}
                 </h3>
-                <p className="glass-muted text-sm">
+                <p className="text-terminal-textMuted text-sm">
                   {t("etoro.settings.sectionSubtitle", {
                     defaultValue: "Explore trusted brokers integrated with StockAI affiliate tracking.",
                   })}
                 </p>
               </div>
-              <div className="rounded-xl border border-brandCyan/35 bg-brandCyan/10 p-4">
+              <div className={TERMINAL_INFO_BANNER}>
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-bgPrimary px-2 text-xs font-bold text-[#00c853]">
+                  <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary px-2 text-xs font-bold text-terminal-positive">
                     eToro
                   </span>
                   <div>
-                    <p className="font-semibold text-white">{t("etoro.settings.cardTitle", { defaultValue: "eToro" })}</p>
-                    <p className="glass-muted text-sm">
+                    <p className="font-semibold text-terminal-text">{t("etoro.settings.cardTitle", { defaultValue: "eToro" })}</p>
+                    <p className="text-terminal-textMuted text-sm">
                       {t("etoro.settings.cardDescription", {
                         defaultValue: "Multi-asset broker with a simple account opening flow and stock access.",
                       })}
@@ -703,24 +706,24 @@ export function SettingsPage() {
           <section id="settings-notifications" className={cardClass}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-white">
+                <h2 className="text-lg font-semibold text-terminal-text">
                   {t("settingsPageSections.notificationsTitle", { defaultValue: "Notifications" })}
                 </h2>
-                <p className="glass-muted text-sm">
+                <p className="text-terminal-textMuted text-sm">
                   {t("settingsPageSections.notificationsSubtitle", {
                     defaultValue: "Configure Discord/Telegram channels and signal delivery thresholds.",
                   })}
                 </p>
               </div>
-              <span className="rounded-full bg-brandDark px-3 py-1 text-xs font-semibold text-white">
+              <span className="rounded-full border border-terminal-cyan/40 bg-terminal-cyan/15 px-3 py-1 text-xs font-semibold text-terminal-cyan">
                 {notifications.discordWebhook || notifications.telegramChatId
                   ? t("settingsPageSections.notificationsBadgeActive", { defaultValue: "Active" })
                   : t("settingsPageSections.notificationsBadgeInactive", { defaultValue: "Inactive" })}
               </span>
             </div>
 
-            <label className="mt-4 flex flex-col gap-1 text-sm">
-              <span className="glass-muted">Discord webhook</span>
+            <label className={`mt-4 ${TERMINAL_FORM_GROUP}`}>
+              <span className={TERMINAL_FORM_LABEL}>Discord webhook</span>
               <input
                 value={notifications.discordWebhook ?? ""}
                 onChange={(e) =>
@@ -731,8 +734,8 @@ export function SettingsPage() {
               />
             </label>
 
-            <label className="mt-4 flex flex-col gap-1 text-sm">
-              <span className="glass-muted">Telegram chat ID</span>
+            <label className={`mt-4 ${TERMINAL_FORM_GROUP}`}>
+              <span className={TERMINAL_FORM_LABEL}>Telegram chat ID</span>
               <input
                 value={notifications.telegramChatId ?? ""}
                 onChange={(e) =>
@@ -744,36 +747,36 @@ export function SettingsPage() {
             </label>
 
             <div className="mt-4 grid gap-3 md:grid-cols-2">
-              <label className="flex items-center justify-between rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2 text-sm">
-                <span className="glass-muted">
+              <label className={TERMINAL_CHECKBOX_ROW}>
+                <span className="text-terminal-textMuted">
                   {t("settingsPageSections.signalsToggle", { defaultValue: "Signals" })}
                 </span>
                 <input
                   type="checkbox"
                   checked={notifications.notifySignals}
                   onChange={(e) => setNotifications((prev) => ({ ...prev, notifySignals: e.target.checked }))}
-                  className="h-4 w-4 accent-brandDark"
+                  className="h-4 w-4 accent-terminal-cyan"
                 />
               </label>
-              <label className="flex items-center justify-between rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-2 text-sm">
-                <span className="glass-muted">
+              <label className={TERMINAL_CHECKBOX_ROW}>
+                <span className="text-terminal-textMuted">
                   {t("settingsPageSections.dividendsToggle", { defaultValue: "Dividends" })}
                 </span>
                 <input
                   type="checkbox"
                   checked={notifications.notifyDividends}
                   onChange={(e) => setNotifications((prev) => ({ ...prev, notifyDividends: e.target.checked }))}
-                  className="h-4 w-4 accent-brandDark"
+                  className="h-4 w-4 accent-terminal-cyan"
                 />
               </label>
             </div>
 
-            <div className="mt-4 space-y-2 rounded-xl glass-panel border border-white/10 bg-white/5 px-3 py-3">
+            <div className={`mt-4 space-y-2 ${TERMINAL_SETTINGS_ROW} px-3 py-3`}>
               <div className="flex items-center justify-between text-sm">
-                <span className="glass-muted">
+                <span className="text-terminal-textMuted">
                   {t("settingsPageSections.minSignalScore", { defaultValue: "Minimum signal score" })}
                 </span>
-                <span className="font-mono text-white">{normalizeSignalScore(notifications.minSignalScore)}</span>
+                <span className="font-mono text-terminal-cyan">{normalizeSignalScore(notifications.minSignalScore)}</span>
               </div>
               <input
                 type="range"
@@ -787,7 +790,7 @@ export function SettingsPage() {
                     minSignalScore: normalizeSignalScore(Number(e.target.value)),
                   }))
                 }
-                className="w-full accent-brandDark"
+                className="w-full accent-terminal-cyan"
               />
             </div>
 
@@ -811,14 +814,14 @@ export function SettingsPage() {
             </div>
 
             <div className="mt-3 space-y-1">
-              {notificationsNotice ? <p className="text-sm text-positive">{notificationsNotice}</p> : null}
-              {notificationsError ? <p className="text-sm text-negative">{notificationsError}</p> : null}
+              {notificationsNotice ? <p className="text-sm text-terminal-positive">{notificationsNotice}</p> : null}
+              {notificationsError ? <p className="text-sm text-terminal-negative">{notificationsError}</p> : null}
             </div>
           </section>
 
           <section id="settings-language" className={cardClass}>
-            <h2 className="text-lg font-semibold text-white">Language</h2>
-            <p className="mt-1 glass-muted text-sm">
+            <h2 className="text-lg font-semibold text-terminal-text">Language</h2>
+            <p className="mt-1 text-terminal-textMuted text-sm">
               {t("settingsPageSections.languageSubtitle", {
                 defaultValue: "Choose the app interface language.",
               })}
@@ -836,7 +839,7 @@ export function SettingsPage() {
                 ))}
               </select>
             </div>
-            {languageNotice ? <p className="mt-3 text-sm text-positive">{languageNotice}</p> : null}
+            {languageNotice ? <p className="mt-3 text-sm text-terminal-positive">{languageNotice}</p> : null}
           </section>
         </div>
       </div>

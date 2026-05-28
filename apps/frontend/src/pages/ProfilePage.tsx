@@ -1,9 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { TerminalPage } from "../components/terminal/TerminalPage";
+import { TerminalButton } from "../components/terminal/TerminalButton";
+import {
+  TERMINAL_APP_BG,
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_DANGER_TEXT,
+  TERMINAL_FORM_GROUP,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_INPUT,
+  TERMINAL_SETTINGS_CARD,
+  TERMINAL_SETTINGS_ROW,
+  TERMINAL_SUCCESS_TEXT,
+} from "../components/terminal/terminalStyles";
 import { useAuth } from "../context/AuthContext";
 import { getUserProfile, updateUserProfile, type UserProfile } from "../services/api";
-import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 type LanguageOption = {
@@ -94,9 +106,6 @@ export function ProfilePage() {
   const avatarUrl = profile?.avatarUrl;
   const avatarLabel = useMemo(() => getInitials(name || profile?.name || "", emailValue), [emailValue, name, profile?.name]);
 
-  const fieldClass =
-    "w-full rounded-xl border border-white/12 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none transition focus:border-[#22d3ee]/50 focus:ring-2 focus:ring-[#22d3ee]/20";
-
   const handleSave = async () => {
     if (!userId) return;
     setSaving(true);
@@ -119,34 +128,31 @@ export function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen px-4 py-8" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
-        <div className="mx-auto max-w-4xl rounded-2xl border p-6 glass-section">
-          {t("profilePage.loadingProfile", { defaultValue: "Loading profile…" })}
-        </div>
+      <div className={TERMINAL_APP_BG}>
+        <TerminalPage title={t("profilePage.title", { defaultValue: "My profile" })}>
+          <div className={`${TERMINAL_SETTINGS_CARD} animate-pulse text-terminal-textMuted`}>
+            {t("profilePage.loadingProfile", { defaultValue: "Loading profile…" })}
+          </div>
+        </TerminalPage>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen px-4 py-8" style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary }}>
-      <div className="mx-auto max-w-4xl space-y-6">
-        <header>
-          <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>
-            {t("profilePage.title", { defaultValue: "My profile" })}
-          </h1>
-        </header>
-
-        <section
-          className="rounded-2xl border p-6 shadow-[0_12px_24px_rgba(168,85,247,0.08)]"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-        >
+    <div className={TERMINAL_APP_BG}>
+      <TerminalPage
+        title={t("profilePage.title", { defaultValue: "My profile" })}
+        contentClassName="max-w-4xl space-y-6"
+      >
+        <section className={TERMINAL_SETTINGS_CARD}>
           <div className="flex flex-wrap items-center gap-4">
-            <div
-              className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full text-lg font-semibold text-white"
-              style={{ backgroundColor: colors.brandDark }}
-            >
+            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-terminal-cyan/30 bg-terminal-cyan/15 text-lg font-semibold text-terminal-cyan">
               {avatarUrl ? (
-                <img src={avatarUrl} alt={t("profilePage.avatarAlt", { defaultValue: "User avatar" })} className="h-full w-full object-cover" />
+                <img
+                  src={avatarUrl}
+                  alt={t("profilePage.avatarAlt", { defaultValue: "User avatar" })}
+                  className="h-full w-full object-cover"
+                />
               ) : (
                 avatarLabel
               )}
@@ -155,8 +161,7 @@ export function ProfilePage() {
               <button
                 type="button"
                 disabled
-                className="rounded-xl border px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
-                style={{ borderColor: colors.borderStrong, color: colors.textSecondary }}
+                className="rounded-lg border border-terminal-borderMuted px-4 py-2 text-sm font-medium text-terminal-textMuted disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {t("profilePage.changeAvatar", { defaultValue: "Change avatar" })}
               </button>
@@ -164,47 +169,21 @@ export function ProfilePage() {
           </div>
         </section>
 
-        <section
-          className="rounded-2xl border p-6 shadow-[0_12px_24px_rgba(168,85,247,0.08)]"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-        >
+        <section className={TERMINAL_SETTINGS_CARD}>
           <div className="grid gap-4 md:grid-cols-2">
-            <label className="space-y-1.5">
-              <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>
-                {t("profilePage.fullName", { defaultValue: "Full name" })}
-              </span>
-              <input
-                type="text"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                className={fieldClass}
-                style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-              />
+            <label className={TERMINAL_FORM_GROUP}>
+              <span className={TERMINAL_FORM_LABEL}>{t("profilePage.fullName", { defaultValue: "Full name" })}</span>
+              <input type="text" value={name} onChange={(event) => setName(event.target.value)} className={TERMINAL_INPUT} />
             </label>
 
-            <label className="space-y-1.5">
-              <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>
-                {t("auth.email")}
-              </span>
-              <input
-                type="email"
-                value={emailValue}
-                readOnly
-                className={fieldClass}
-                style={{ borderColor: colors.border, color: colors.textMuted, backgroundColor: colors.bgSecondary }}
-              />
+            <label className={TERMINAL_FORM_GROUP}>
+              <span className={TERMINAL_FORM_LABEL}>{t("auth.email")}</span>
+              <input type="email" value={emailValue} readOnly className={`${TERMINAL_INPUT} opacity-80`} />
             </label>
 
-            <label className="space-y-1.5">
-              <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>
-                {t("profilePage.language", { defaultValue: "Language" })}
-              </span>
-              <select
-                value={language}
-                onChange={(event) => setLanguage(event.target.value)}
-                className={fieldClass}
-                style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-              >
+            <label className={TERMINAL_FORM_GROUP}>
+              <span className={TERMINAL_FORM_LABEL}>{t("profilePage.language", { defaultValue: "Language" })}</span>
+              <select value={language} onChange={(event) => setLanguage(event.target.value)} className={TERMINAL_INPUT}>
                 {LANGUAGE_OPTIONS.map((option) => (
                   <option key={option.code} value={option.code}>
                     {option.flag} {option.label}
@@ -213,16 +192,9 @@ export function ProfilePage() {
               </select>
             </label>
 
-            <label className="space-y-1.5">
-              <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>
-                {t("profilePage.timezone", { defaultValue: "Time zone" })}
-              </span>
-              <select
-                value={timezone}
-                onChange={(event) => setTimezone(event.target.value)}
-                className={fieldClass}
-                style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-              >
+            <label className={TERMINAL_FORM_GROUP}>
+              <span className={TERMINAL_FORM_LABEL}>{t("profilePage.timezone", { defaultValue: "Time zone" })}</span>
+              <select value={timezone} onChange={(event) => setTimezone(event.target.value)} className={TERMINAL_INPUT}>
                 {TIMEZONE_OPTIONS.map((zone) => (
                   <option key={zone} value={zone}>
                     {zone}
@@ -233,55 +205,33 @@ export function ProfilePage() {
           </div>
         </section>
 
-        <section
-          className="rounded-2xl border p-6 shadow-[0_12px_24px_rgba(168,85,247,0.08)]"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary }}
-        >
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        <section className={TERMINAL_SETTINGS_CARD}>
+          <div className={`flex flex-wrap items-center justify-between gap-4 ${TERMINAL_SETTINGS_ROW}`}>
             <div>
-              <p className="text-sm" style={{ color: colors.textSecondary }}>
-                {t("profilePage.currentPlan", { defaultValue: "Current plan" })}
-              </p>
-              <span
-                className="mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold text-white"
-                style={{ backgroundColor: colors.brandDark }}
-              >
+              <p className={TERMINAL_FORM_LABEL}>{t("profilePage.currentPlan", { defaultValue: "Current plan" })}</p>
+              <span className="mt-2 inline-flex rounded-full border border-terminal-cyan/40 bg-terminal-cyan/15 px-3 py-1 text-xs font-semibold text-terminal-cyan">
                 {currentPlan}
               </span>
             </div>
-            <Link
-              to="/pricing"
-              className="rounded-xl px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
-              style={{ backgroundColor: colors.brandMedium }}
-            >
+            <Link to="/pricing" className={TERMINAL_BUTTON_PRIMARY}>
               {t("profilePage.upgrade", { defaultValue: "Upgrade" })}
             </Link>
           </div>
         </section>
 
-        {statusMessage ? <p className="text-sm" style={{ color: colors.positive }}>{statusMessage}</p> : null}
-        {errorMessage ? <p className="text-sm" style={{ color: colors.negative }}>{errorMessage}</p> : null}
+        {statusMessage ? <p className={`text-sm ${TERMINAL_SUCCESS_TEXT}`}>{statusMessage}</p> : null}
+        {errorMessage ? <p className={`text-sm ${TERMINAL_DANGER_TEXT}`}>{errorMessage}</p> : null}
 
         <div className="flex flex-col items-start gap-4">
-          <button
-            type="button"
-            onClick={() => void handleSave()}
-            disabled={saving}
-            className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-            style={{ backgroundColor: colors.brandDark }}
-          >
+          <TerminalButton type="button" onClick={() => void handleSave()} disabled={saving}>
             {saving ? t("profilePage.saving", { defaultValue: "Saving…" }) : t("profilePage.saveChanges", { defaultValue: "Save changes" })}
-          </button>
+          </TerminalButton>
 
-          <button
-            type="button"
-            className="text-sm underline transition hover:opacity-80"
-            style={{ color: colors.negative }}
-          >
+          <button type="button" className={`text-sm underline transition hover:opacity-80 ${TERMINAL_DANGER_TEXT}`}>
             {t("profilePage.deleteAccount", { defaultValue: "Delete account" })}
           </button>
         </div>
-      </div>
+      </TerminalPage>
     </div>
   );
 }
