@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getMarketSignals } from "../../services/api";
 import { apiErrorMessage } from "../../utils/apiErrorMessage";
-import { GLASS_SECTION } from "../behavioral-coach/glassStyles";
+import { TERMINAL_SIGNAL_PANEL } from "../terminal/terminalStyles";
 import { MarketSignalCard } from "./MarketSignalCard";
 import { MarketSignalsEmptyState } from "./MarketSignalsEmptyState";
 import { MarketSignalsSkeleton } from "./MarketSignalsSkeleton";
@@ -60,10 +60,10 @@ export function MarketSignalsPanel({ ticker, lookbackDays = 30, compact = false 
 
   if (error) {
     return (
-      <div className={GLASS_SECTION}>
-        <div className="rounded-xl border border-[#f87171]/30 bg-[#f87171]/10 px-4 py-3">
-          <p className="text-sm font-medium text-[#fecaca]">Unable to load market signals</p>
-          <p className="mt-1 text-xs text-[#fca5a5]">{error}</p>
+      <div className={TERMINAL_SIGNAL_PANEL}>
+        <div className="rounded-lg border border-terminal-negative/30 bg-terminal-negative/10 px-4 py-3">
+          <p className="text-sm font-medium text-terminal-negative">Unable to load market signals</p>
+          <p className="mt-1 text-xs text-terminal-textSecondary">{error}</p>
         </div>
       </div>
     );
@@ -76,13 +76,13 @@ export function MarketSignalsPanel({ ticker, lookbackDays = 30, compact = false 
   const visibleSignals = compact ? data.signals.slice(0, 3) : data.signals;
 
   return (
-    <div className={GLASS_SECTION}>
+    <div className={TERMINAL_SIGNAL_PANEL}>
       <header className={compact ? "mb-3" : "mb-4"}>
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <h3 className="text-base font-semibold text-white">Institutional signals</h3>
+            <h3 className="text-base font-semibold text-terminal-text">Institutional signals</h3>
             {!compact ? (
-              <p className="mt-1 text-xs text-[#94a3b8]">
+              <p className="mt-1 text-xs text-terminal-textSecondary">
                 Read-only flow intelligence for {normalizedTicker} · last {data.lookbackDays} days
               </p>
             ) : null}
@@ -99,7 +99,7 @@ export function MarketSignalsPanel({ ticker, lookbackDays = 30, compact = false 
       </div>
 
       {compact && data.signals.length > visibleSignals.length ? (
-        <p className="mt-3 text-xs font-medium text-[#94a3b8]">
+        <p className="mt-3 text-xs font-medium text-terminal-textMuted">
           +{data.signals.length - visibleSignals.length} more signals
         </p>
       ) : null}

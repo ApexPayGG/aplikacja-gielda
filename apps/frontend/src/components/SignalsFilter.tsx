@@ -1,10 +1,12 @@
 import { useTranslation } from "react-i18next";
 import {
-  GLASS_FILTER_PANEL,
-  GLASS_LABEL,
-  GLASS_LINK_ACCENT,
-  GLASS_SELECT,
-} from "./behavioral-coach/glassStyles";
+  TERMINAL_FILTER_CHIP,
+  TERMINAL_FILTER_CHIP_ACTIVE,
+  TERMINAL_FILTER_PANEL,
+  TERMINAL_INPUT,
+  TERMINAL_LINK_ACCENT,
+  TERMINAL_SECTION_TITLE,
+} from "./terminal/terminalStyles";
 import {
   SIGNAL_EXCHANGES,
   SIGNAL_SETUP_TYPES,
@@ -40,9 +42,7 @@ const sortOptions: Array<{ value: SignalSortOption; label: string }> = [
 ];
 
 function pillClass(active: boolean): string {
-  return active
-    ? "rounded-full border border-[#22d3ee]/50 bg-[#22d3ee]/20 px-3 py-1.5 text-xs font-semibold text-[#22d3ee]"
-    : "rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70 transition hover:border-white/25";
+  return active ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP;
 }
 
 export function SignalsFilter({
@@ -55,19 +55,19 @@ export function SignalsFilter({
   onReset,
 }: Props) {
   const { t } = useTranslation();
-  const riskFill = `linear-gradient(90deg, #22d3ee 0%, #22d3ee ${filters.riskScoreMin}%, rgba(255,255,255,0.12) ${filters.riskScoreMin}%, rgba(255,255,255,0.12) 100%)`;
+  const riskFill = `linear-gradient(90deg, #22d3ee 0%, #22d3ee ${filters.riskScoreMin}%, rgba(148,163,184,0.2) ${filters.riskScoreMin}%, rgba(148,163,184,0.2) 100%)`;
 
   return (
-    <section className={GLASS_FILTER_PANEL}>
+    <section className={TERMINAL_FILTER_PANEL}>
       <header className="flex items-center justify-between gap-2">
-        <h2 className={GLASS_LABEL}>{t("common.filters", { defaultValue: "Filters" })}</h2>
-        <button type="button" onClick={onReset} className={`text-sm ${GLASS_LINK_ACCENT}`}>
+        <h2 className={TERMINAL_SECTION_TITLE}>{t("common.filters", { defaultValue: "Filters" })}</h2>
+        <button type="button" onClick={onReset} className={`text-sm ${TERMINAL_LINK_ACCENT}`}>
           {t("common.resetFilters", { defaultValue: "Reset filters" })}
         </button>
       </header>
 
       <div className="space-y-2">
-        <p className={GLASS_LABEL}>Setup type</p>
+        <p className={TERMINAL_SECTION_TITLE}>Setup type</p>
         <div className="flex flex-wrap gap-2">
           {SIGNAL_SETUP_TYPES.map((setupType) => {
             const active = filters.selectedSetupTypes.includes(setupType);
@@ -82,8 +82,8 @@ export function SignalsFilter({
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <p className={GLASS_LABEL}>Risk score</p>
-          <span className="text-xs font-semibold text-[#22d3ee]">{filters.riskScoreMin} - 100</span>
+          <p className={TERMINAL_SECTION_TITLE}>Risk score</p>
+          <span className="text-xs font-semibold text-terminal-cyan">{filters.riskScoreMin} - 100</span>
         </div>
         <input
           type="range"
@@ -99,7 +99,7 @@ export function SignalsFilter({
       </div>
 
       <div className="space-y-2">
-        <p className={GLASS_LABEL}>Exchange</p>
+        <p className={TERMINAL_SECTION_TITLE}>Exchange</p>
         <div className="flex flex-wrap gap-2">
           {SIGNAL_EXCHANGES.map((exchange) => {
             const active = filters.selectedExchanges.includes(exchange);
@@ -113,7 +113,7 @@ export function SignalsFilter({
       </div>
 
       <div className="space-y-2">
-        <p className={GLASS_LABEL}>Timeframe</p>
+        <p className={TERMINAL_SECTION_TITLE}>Timeframe</p>
         <div className="grid grid-cols-2 gap-2">
           {timeframeOptions.map((option) => {
             const active = filters.timeframe === option.value;
@@ -122,10 +122,10 @@ export function SignalsFilter({
                 key={option.value}
                 type="button"
                 onClick={() => onTimeframeChange(option.value)}
-                className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
+                className={`rounded-md border px-3 py-2 text-xs font-semibold transition ${
                   active
-                    ? "border-[#22d3ee]/40 bg-[#22d3ee]/15 text-[#22d3ee]"
-                    : "border-white/15 bg-white/5 text-white/70 hover:border-white/25"
+                    ? "border-terminal-cyan/40 bg-terminal-cyan/15 text-terminal-cyan"
+                    : "border-terminal-borderMuted bg-terminal-panelSecondary/60 text-terminal-textSecondary hover:border-terminal-cyan/30"
                 }`}
               >
                 {option.label}
@@ -136,17 +136,17 @@ export function SignalsFilter({
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="signals-sort-select" className={GLASS_LABEL}>
+        <label htmlFor="signals-sort-select" className={TERMINAL_SECTION_TITLE}>
           Sort by
         </label>
         <select
           id="signals-sort-select"
           value={filters.sortBy}
           onChange={(event) => onSortByChange(event.target.value as SignalSortOption)}
-          className={GLASS_SELECT}
+          className={TERMINAL_INPUT}
         >
           {sortOptions.map((option) => (
-            <option key={option.value} value={option.value} className="bg-[#0f111c] text-white">
+            <option key={option.value} value={option.value} className="bg-terminal-panel text-terminal-text">
               {option.label}
             </option>
           ))}

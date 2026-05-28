@@ -15,12 +15,19 @@ import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { enrichItemsWithCompanyLogos } from "../utils/companyLogoEnrichment";
 import { CompanyLogo } from "../components/CompanyLogo";
 import {
-  GLASS_BTN_PRIMARY,
-  GLASS_INNER_PANEL,
-  GLASS_PAGE_SUBTITLE,
-  GLASS_PAGE_TITLE,
-  GLASS_SIGNAL_CARD,
-} from "../components/behavioral-coach/glassStyles";
+  TERMINAL_APP_BG,
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_MOBILE_FILTER_SHEET,
+  TERMINAL_PAGE_SHELL,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_PANEL_MUTED,
+  TERMINAL_SECTION_TITLE,
+  TERMINAL_SHELL_OVERLAY,
+  TERMINAL_SIGNAL_CARD,
+  TERMINAL_SIGNAL_CARD_HOVER,
+  TERMINAL_SIGNAL_INNER,
+} from "../components/terminal/terminalStyles";
 
 type SignalListItem = {
   id: string;
@@ -238,7 +245,7 @@ export function SignalsPage() {
     return (
       <article
         key={signal.id}
-        className={`h-full ${GLASS_SIGNAL_CARD} ${isHovered ? "border-[#22d3ee]/40 shadow-[0_12px_32px_rgba(34,211,238,0.15)]" : ""}`}
+        className={`h-full ${TERMINAL_SIGNAL_CARD} ${isHovered ? TERMINAL_SIGNAL_CARD_HOVER : "hover:border-terminal-cyan/25"}`}
         onMouseEnter={() => setHoveredSignalId(signal.id)}
         onMouseLeave={() => setHoveredSignalId(null)}
       >
@@ -246,23 +253,25 @@ export function SignalsPage() {
           <div className="flex items-center gap-3">
             <CompanyLogo symbol={signal.ticker} logoUrl={signal.logoUrl} size="md" shape="rounded" />
             <div>
-              <p className="text-lg font-bold text-white">{signal.ticker}</p>
-              <p className="text-sm text-white/60">{signal.companyName}</p>
+              <p className="font-mono text-lg font-bold text-terminal-cyan">{signal.ticker}</p>
+              <p className="text-sm text-terminal-textSecondary">{signal.companyName}</p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <span className="inline-flex rounded-full bg-[#22d3ee]/20 px-3 py-1 text-xs font-semibold text-[#22d3ee]">
+            <span className="inline-flex rounded-full border border-terminal-cyan/30 bg-terminal-cyan/15 px-3 py-1 text-xs font-semibold text-terminal-cyan">
               {signal.setupType}
             </span>
-            <p className="text-4xl font-bold leading-none text-white">{Math.round(signal.riskScore)}</p>
+            <p className="font-mono text-4xl font-bold leading-none text-terminal-text">{Math.round(signal.riskScore)}</p>
           </div>
 
           <div className="text-left md:text-right">
-            <p className="text-2xl font-semibold text-white">${formatPrice(signal.price)}</p>
+            <p className="font-mono text-2xl font-semibold text-terminal-text">${formatPrice(signal.price)}</p>
             <span
               className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                isPositive ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"
+                isPositive
+                  ? "border border-terminal-positive/30 bg-terminal-positive/10 text-terminal-positive"
+                  : "border border-terminal-negative/30 bg-terminal-negative/10 text-terminal-negative"
               }`}
             >
               {signal.changePct >= 0 ? "+" : ""}
@@ -287,21 +296,21 @@ export function SignalsPage() {
           </div>
         </div>
 
-        <div className={`${GLASS_INNER_PANEL} relative mt-5 overflow-hidden`}>
+        <div className={`${TERMINAL_SIGNAL_INNER} relative mt-5 overflow-hidden`}>
           <div className={`space-y-2 p-4 blur-[2px] ${isLoggedIn ? "opacity-100" : "opacity-70"}`}>
-            <div className="mb-2 h-2.5 w-3/4 rounded bg-white/15" />
-            <div className="mb-2 h-2.5 w-11/12 rounded bg-white/15" />
-            <div className="h-2.5 w-2/3 rounded bg-white/15" />
+            <div className="mb-2 h-2.5 w-3/4 rounded bg-terminal-borderMuted" />
+            <div className="mb-2 h-2.5 w-11/12 rounded bg-terminal-borderMuted" />
+            <div className="h-2.5 w-2/3 rounded bg-terminal-borderMuted" />
           </div>
           {!isLoggedIn ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#0a0b14]/70 px-4 text-center backdrop-blur-sm">
-              <p className="text-sm font-semibold text-white">{t("signals.loginForAi", { defaultValue: "Sign in to view AI analysis" })}</p>
-              <Link to="/register" className={`${GLASS_BTN_PRIMARY} px-3 py-1.5 text-xs`}>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-terminal-bg/80 px-4 text-center backdrop-blur-sm">
+              <p className="text-sm font-semibold text-terminal-text">{t("signals.loginForAi", { defaultValue: "Sign in to view AI analysis" })}</p>
+              <Link to="/register" className={`${TERMINAL_BUTTON_PRIMARY} px-3 py-1.5 text-xs`}>
                 {t("signals.signIn", { defaultValue: "Sign in" })}
               </Link>
             </div>
           ) : (
-            <div className="absolute inset-0 flex items-center px-4 text-xs text-white/60">
+            <div className="absolute inset-0 flex items-center px-4 text-xs text-terminal-textMuted">
               {t("signals.aiPreview", { defaultValue: "AI analysis preview is available for this signal." })}
             </div>
           )}
@@ -311,17 +320,21 @@ export function SignalsPage() {
   };
 
   return (
-    <div>
-        <header className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+    <div className={TERMINAL_APP_BG}>
+      <div className={`${TERMINAL_PAGE_SHELL} py-4 sm:py-6`}>
+        <header className="mb-6 flex flex-col gap-5 border-b border-terminal-borderMuted pb-6 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
-            <h1 className={GLASS_PAGE_TITLE}>{t("signals.title", { defaultValue: "Signals" })}</h1>
-            <p className={GLASS_PAGE_SUBTITLE}>
+            <p className={TERMINAL_SECTION_TITLE}>
+              {t("signals.eyebrow", { defaultValue: "Signal scanner" })}
+            </p>
+            <h1 className={TERMINAL_PAGE_TITLE}>{t("signals.title", { defaultValue: "Signals" })}</h1>
+            <p className={TERMINAL_PAGE_SUBTITLE}>
               {t("signals.pageSubtitle", {
                 defaultValue: "Browse active setups and AI-supported risk assessments.",
               })}
             </p>
             <InvestmentDisclaimer variant="drawer" className="max-w-2xl text-left" showTermsLink />
-            <p className="text-xs font-semibold uppercase tracking-wide text-white/50">
+            <p className={TERMINAL_SECTION_TITLE}>
               {t("signals.resultsCount", { defaultValue: "Results" })}: {filteredSignals.length}
             </p>
             <EtoroCTAButton sourcePage="signals" className="max-w-xs" />
@@ -353,22 +366,24 @@ export function SignalsPage() {
             {loadingList ? (
               <div className="space-y-4">
                 {Array.from({ length: 6 }).map((_, idx) => (
-                  <div key={`skeleton-${idx}`} className={`${GLASS_INNER_PANEL} animate-pulse p-5`}>
-                    <div className="mb-4 h-5 w-1/3 rounded bg-white/10" />
-                    <div className="mb-2 h-4 w-4/5 rounded bg-white/10" />
-                    <div className="h-4 w-2/5 rounded bg-white/10" />
+                  <div key={`skeleton-${idx}`} className={`${TERMINAL_PANEL_MUTED} animate-pulse p-5`}>
+                    <div className="mb-4 h-5 w-1/3 rounded bg-terminal-panelSecondary" />
+                    <div className="mb-2 h-4 w-4/5 rounded bg-terminal-panelSecondary" />
+                    <div className="h-4 w-2/5 rounded bg-terminal-panelSecondary" />
                   </div>
                 ))}
               </div>
             ) : null}
 
             {!loadingList && listError ? (
-              <div className="rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{listError}</div>
+              <div className="rounded-lg border border-terminal-negative/30 bg-terminal-negative/10 px-4 py-3 text-sm text-terminal-negative">
+                {listError}
+              </div>
             ) : null}
 
             {!loadingList && !listError && feedSource === "demo" ? (
               <div
-                className="rounded-2xl border border-amber-400/35 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-200"
+                className="rounded-lg border border-terminal-warning/35 bg-terminal-warning/10 px-4 py-3 text-sm font-medium text-terminal-warning"
                 role="status"
               >
                 {t("signals.demoBanner", {
@@ -378,7 +393,7 @@ export function SignalsPage() {
             ) : null}
 
             {!loadingList && !listError && signals.length === 0 ? (
-              <div className={`${GLASS_INNER_PANEL} px-4 py-6 text-center text-sm text-white/60`}>
+              <div className={`${TERMINAL_PANEL_MUTED} px-4 py-6 text-center text-sm text-terminal-textSecondary`}>
                 <p>
                   {t("signals.emptyFeed", {
                     defaultValue: "No active signals right now. New setups will appear when the scanner finds matches.",
@@ -388,7 +403,7 @@ export function SignalsPage() {
             ) : null}
 
             {!loadingList && !listError && signals.length > 0 && filteredSignals.length === 0 ? (
-              <div className={`${GLASS_INNER_PANEL} px-4 py-6 text-center text-sm text-white/60`}>
+              <div className={`${TERMINAL_PANEL_MUTED} px-4 py-6 text-center text-sm text-terminal-textSecondary`}>
                 {t("signals.emptyFiltered", { defaultValue: "No signals for the selected filter." })}
               </div>
             ) : null}
@@ -408,29 +423,29 @@ export function SignalsPage() {
           </div>
         </div>
 
-      <button
-        type="button"
-        className={`fixed bottom-20 right-4 z-30 rounded-full px-5 py-3 text-sm font-semibold shadow-lg lg:hidden md:bottom-4 ${GLASS_BTN_PRIMARY}`}
-        onClick={() => setIsMobileFiltersOpen(true)}
-      >
-        {t("signals.mobileFilters", { defaultValue: "Filters" })} {hasActiveFilters ? "•" : ""}
-      </button>
+        <button
+          type="button"
+          className={`fixed bottom-20 right-4 z-30 rounded-full px-5 py-3 text-sm font-semibold shadow-terminal-glow lg:hidden md:bottom-4 ${TERMINAL_BUTTON_PRIMARY}`}
+          onClick={() => setIsMobileFiltersOpen(true)}
+        >
+          {t("signals.mobileFilters", { defaultValue: "Filters" })} {hasActiveFilters ? "•" : ""}
+        </button>
 
-      {isMobileFiltersOpen ? (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/45"
-            onClick={() => setIsMobileFiltersOpen(false)}
-            aria-label={t("signals.closeFiltersPanel", { defaultValue: "Close filter panel" })}
-          />
-          <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-3xl border border-white/15 bg-[#0f111c]/95 p-4 backdrop-blur-md">
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-base font-bold text-white">{t("signals.filtersTitle", { defaultValue: "Signal filters" })}</p>
-              <button type="button" className="text-sm font-semibold text-[#22d3ee]" onClick={() => setIsMobileFiltersOpen(false)}>
-                {t("common.close", { defaultValue: "Close" })}
-              </button>
-            </div>
+        {isMobileFiltersOpen ? (
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <button
+              type="button"
+              className={`absolute inset-0 ${TERMINAL_SHELL_OVERLAY} opacity-100`}
+              onClick={() => setIsMobileFiltersOpen(false)}
+              aria-label={t("signals.closeFiltersPanel", { defaultValue: "Close filter panel" })}
+            />
+            <div className={TERMINAL_MOBILE_FILTER_SHEET}>
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-base font-bold text-terminal-text">{t("signals.filtersTitle", { defaultValue: "Signal filters" })}</p>
+                <button type="button" className="text-sm font-semibold text-terminal-cyan" onClick={() => setIsMobileFiltersOpen(false)}>
+                  {t("common.close", { defaultValue: "Close" })}
+                </button>
+              </div>
             <SignalsFilter
               filters={filters}
               onToggleSetupType={toggleSetupType}
@@ -440,9 +455,10 @@ export function SignalsPage() {
               onSortByChange={setSortBy}
               onReset={resetFilters}
             />
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   );
 }

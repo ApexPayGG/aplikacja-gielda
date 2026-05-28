@@ -84,3 +84,33 @@ export const TERMINAL_PAGE_SUBTITLE = "mt-2 max-w-3xl text-sm text-terminal-text
 
 export const TERMINAL_DRAWER_PANEL =
   "relative flex max-h-[min(92dvh,100%)] w-full flex-col overflow-hidden rounded-t-2xl border border-b-0 border-terminal-border bg-terminal-panel shadow-terminal-panel md:h-dvh md:max-h-none md:max-w-lg md:rounded-none md:rounded-l-2xl md:border-b md:border-l md:shadow-[-12px_0_40px_rgba(2,6,23,0.55)]";
+
+/** Signals / market intelligence cockpit */
+export const TERMINAL_SIGNAL_PANEL = `${TERMINAL_PANEL} p-4 sm:p-5`;
+
+export const TERMINAL_SIGNAL_CARD =
+  "rounded-lg border border-terminal-border bg-terminal-panel p-4 shadow-terminal-panel transition sm:p-5";
+
+export const TERMINAL_SIGNAL_CARD_HOVER = "border-terminal-cyan/40 shadow-terminal-glow";
+
+export const TERMINAL_SIGNAL_ROW =
+  "rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/50";
+
+export const TERMINAL_SIGNAL_INNER = "rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/60";
+
+export const TERMINAL_SIGNAL_BADGE =
+  "inline-flex shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold tracking-wide";
+
+export const TERMINAL_METRIC_TILE = `${TERMINAL_PANEL_MUTED} p-3 sm:p-4`;
+
+export const TERMINAL_FILTER_CHIP =
+  "rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary/60 px-3 py-1.5 text-xs font-semibold text-terminal-textSecondary transition hover:border-terminal-cyan/30 hover:text-terminal-text";
+
+export const TERMINAL_FILTER_CHIP_ACTIVE =
+  "rounded-full border border-terminal-cyan/50 bg-terminal-cyan/15 px-3 py-1.5 text-xs font-semibold text-terminal-cyan";
+
+export const TERMINAL_LIVE_STATUS =
+  "inline-flex items-center gap-1.5 rounded-full border border-terminal-cyan/30 bg-terminal-cyan/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-terminal-cyan";
+
+export const TERMINAL_MOBILE_FILTER_SHEET =
+  "absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-2xl border border-terminal-border bg-terminal-panel p-4 shadow-terminal-panel backdrop-blur-xl";
