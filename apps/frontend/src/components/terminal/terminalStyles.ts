@@ -287,3 +287,40 @@ export const TERMINAL_SCORE_TILE = TERMINAL_TOOL_RESULT_CARD;
 export const TERMINAL_DATA_TABLE = TERMINAL_TOOL_TABLE;
 
 export const TERMINAL_EMPTY_STATE = TERMINAL_TOOL_EMPTY;
+
+/** Dividend / income intelligence cockpit */
+export const TERMINAL_DIVIDEND_PAGE = TERMINAL_APP_BG;
+
+export const TERMINAL_DIVIDEND_PAGE_INNER = TERMINAL_TOOL_PAGE_INNER;
+
+export const TERMINAL_DIVIDEND_PANEL = TERMINAL_FILTER_PANEL;
+
+export const TERMINAL_DIVIDEND_CARD = TERMINAL_TOOL_CARD;
+
+export const TERMINAL_DIVIDEND_GRID = TERMINAL_TOOL_GRID;
+
+export const TERMINAL_DIVIDEND_METRIC = TERMINAL_METRIC_TILE;
+
+export const TERMINAL_DIVIDEND_TABLE = TERMINAL_TABLE_SHELL;
+
+export const TERMINAL_DIVIDEND_TABLE_HEAD =
+  "border-b border-terminal-border bg-terminal-panelSecondary/80 text-terminal-textMuted";
+
+export const TERMINAL_DIVIDEND_ROW =
+  "border-t border-terminal-borderMuted transition-colors hover:bg-terminal-panelSecondary/70";
+
+export const TERMINAL_DIVIDEND_BADGE =
+  "inline-flex rounded-full border border-terminal-cyan/40 bg-terminal-cyan/15 px-2.5 py-1 text-xs font-semibold text-terminal-cyan";
+
+export const TERMINAL_DIVIDEND_CHART_PANEL =
+  "flex h-56 items-end gap-2 rounded-lg border border-dashed border-terminal-borderMuted bg-terminal-panelSecondary/60 px-4 pb-4 pt-6";
+
+export const TERMINAL_DIVIDEND_ALERT = `${TERMINAL_PANEL_MUTED} px-3 py-2`;
+
+export const TERMINAL_COMPOUNDING_PANEL = TERMINAL_CALCULATOR_PANEL;
+
+export const TERMINAL_SUSTAINABILITY_CARD = `${TERMINAL_PANEL} border-terminal-cyan/25 p-4 sm:p-6`;
+
+export const TERMINAL_DIVIDEND_INNER = TERMINAL_SIGNAL_INNER;
+
+export const TERMINAL_DIVIDEND_AI_PANEL = `${TERMINAL_PANEL} border-terminal-cyan/25 p-5 sm:p-6`;

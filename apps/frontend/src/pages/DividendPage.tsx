@@ -5,13 +5,20 @@ import { useAuth } from "../context/AuthContext";
 import { getDividendGrowthScreener, type DividendGrowthRow } from "../services/api";
 import { CompanyLogo } from "../components/CompanyLogo";
 import {
-  GLASS_INPUT,
-  GLASS_PAGE_SUBTITLE,
-  GLASS_PAGE_TITLE,
-  GLASS_SECTION,
-  GLASS_TEXT_NEGATIVE,
-  GLASS_TEXT_POSITIVE,
-} from "../components/behavioral-coach/glassStyles";
+  TERMINAL_DANGER_TEXT,
+  TERMINAL_DIVIDEND_BADGE,
+  TERMINAL_DIVIDEND_PAGE,
+  TERMINAL_DIVIDEND_PAGE_INNER,
+  TERMINAL_DIVIDEND_PANEL,
+  TERMINAL_DIVIDEND_ROW,
+  TERMINAL_DIVIDEND_TABLE,
+  TERMINAL_DIVIDEND_TABLE_HEAD,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_INPUT,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_SUCCESS_TEXT,
+} from "../components/terminal/terminalStyles";
 import { colors } from "../styles/designSystem";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatDividendPerShareAmount, inferCurrencyFromSymbol } from "../utils/dividendFormat";
@@ -191,12 +198,12 @@ export function DividendPage() {
   }
 
   return (
-    <div className="min-h-screen text-white">
-      <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
+    <div className={TERMINAL_DIVIDEND_PAGE}>
+      <div className={TERMINAL_DIVIDEND_PAGE_INNER}>
         <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
-            <h1 className={GLASS_PAGE_TITLE}>{t("dividend.pageTitle", { defaultValue: "Dividends" })}</h1>
-            <p className={`text-sm md:text-base ${GLASS_PAGE_SUBTITLE}`}>
+            <h1 className={TERMINAL_PAGE_TITLE}>{t("dividend.pageTitle", { defaultValue: "Dividends" })}</h1>
+            <p className={TERMINAL_PAGE_SUBTITLE}>
               {t("dividend.pageSubtitle", {
                 defaultValue: "Screen dividend-paying companies with yield, safety score and ex-dates.",
               })}
@@ -209,10 +216,10 @@ export function DividendPage() {
           />
         </header>
 
-        <section className={GLASS_SECTION}>
+        <section className={TERMINAL_DIVIDEND_PANEL}>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <label className="text-sm">
-              <span className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+              <span className={TERMINAL_FORM_LABEL}>
                 {t("dividend.searchLabel", { defaultValue: "Search" })}
               </span>
               <input
@@ -220,12 +227,12 @@ export function DividendPage() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder={t("dividend.searchPlaceholder", { defaultValue: "Symbol or company name" })}
-                className={`${GLASS_INPUT} mt-1`}
+                className={`${TERMINAL_INPUT} mt-1`}
               />
             </label>
 
             <label className="text-sm">
-              <span className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+              <span className={TERMINAL_FORM_LABEL}>
                 {t("dividend.yieldMin", { defaultValue: "Min yield %" })}
               </span>
               <input
@@ -234,12 +241,12 @@ export function DividendPage() {
                 onChange={(event) => setYieldMin(event.target.value)}
                 min={0}
                 step={0.1}
-                className={`${GLASS_INPUT} mt-1`}
+                className={`${TERMINAL_INPUT} mt-1`}
               />
             </label>
 
             <label className="text-sm">
-              <span className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+              <span className={TERMINAL_FORM_LABEL}>
                 {t("dividend.yieldMax", { defaultValue: "Max yield %" })}
               </span>
               <input
@@ -248,15 +255,15 @@ export function DividendPage() {
                 onChange={(event) => setYieldMax(event.target.value)}
                 min={0}
                 step={0.1}
-                className={`${GLASS_INPUT} mt-1`}
+                className={`${TERMINAL_INPUT} mt-1`}
               />
             </label>
 
             <label className="text-sm">
-              <span className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+              <span className={TERMINAL_FORM_LABEL}>
                 {t("dividend.sector", { defaultValue: "Sector" })}
               </span>
-              <select value={sector} onChange={(event) => setSector(event.target.value)} className={`${GLASS_INPUT} mt-1`}>
+              <select value={sector} onChange={(event) => setSector(event.target.value)} className={`${TERMINAL_INPUT} mt-1`}>
                 <option value="all">{t("dividend.sectorAll", { defaultValue: "All" })}</option>
                 {sectors.map((sectorName) => (
                   <option key={sectorName} value={sectorName}>
@@ -268,37 +275,37 @@ export function DividendPage() {
           </div>
         </section>
 
-        <section className={GLASS_SECTION}>
+        <section className={TERMINAL_DIVIDEND_TABLE}>
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
-              <thead className="border-b border-white/10 bg-white/[0.04] text-[#94a3b8]">
+              <thead className={TERMINAL_DIVIDEND_TABLE_HEAD}>
                 <tr>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("symbol")}>
+                    <button type="button" className="font-semibold text-terminal-textMuted transition hover:text-terminal-text" onClick={() => onSort("symbol")}>
                       {t("dividend.columnSymbol", { defaultValue: "Ticker" })}
                       {sortIndicator("symbol")}
                     </button>
                   </th>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("name")}>
+                    <button type="button" className="font-semibold text-terminal-textMuted transition hover:text-terminal-text" onClick={() => onSort("name")}>
                       {t("dividend.columnName", { defaultValue: "Name" })}
                       {sortIndicator("name")}
                     </button>
                   </th>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("yieldPct")}>
+                    <button type="button" className="font-semibold text-terminal-textMuted transition hover:text-terminal-text" onClick={() => onSort("yieldPct")}>
                       {t("dividend.columnYield", { defaultValue: "Yield %" })}
                       {sortIndicator("yieldPct")}
                     </button>
                   </th>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("healthScore")}>
+                    <button type="button" className="font-semibold text-terminal-textMuted transition hover:text-terminal-text" onClick={() => onSort("healthScore")}>
                       {t("dividend.columnHealth", { defaultValue: "Health Score" })}
                       {sortIndicator("healthScore")}
                     </button>
                   </th>
                   <th className="px-4 py-3">
-                    <button type="button" className="font-semibold text-[#94a3b8] hover:text-white" onClick={() => onSort("exDate")}>
+                    <button type="button" className="font-semibold text-terminal-textMuted transition hover:text-terminal-text" onClick={() => onSort("exDate")}>
                       {t("dividend.columnExDate", { defaultValue: "Ex-Date" })}
                       {sortIndicator("exDate")}
                     </button>
@@ -306,7 +313,7 @@ export function DividendPage() {
                   <th className="px-4 py-3">
                     <button
                       type="button"
-                      className="font-semibold text-[#94a3b8] hover:text-white"
+                      className="font-semibold text-terminal-textMuted transition hover:text-terminal-text"
                       onClick={() => onSort("dividendPerShare")}
                     >
                       {t("dividend.columnDividendPerShare", { defaultValue: "Dividend / share" })}
@@ -318,21 +325,21 @@ export function DividendPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td className="px-4 py-6 text-sm text-[#94a3b8]" colSpan={6}>
+                    <td className="px-4 py-6 text-sm text-terminal-textMuted" colSpan={6}>
                       {t("common.loading", { defaultValue: "Loading..." })}
                     </td>
                   </tr>
                 ) : null}
                 {error ? (
                   <tr>
-                    <td className={`px-4 py-6 text-sm ${GLASS_TEXT_NEGATIVE}`} colSpan={6}>
+                    <td className={`px-4 py-6 text-sm ${TERMINAL_DANGER_TEXT}`} colSpan={6}>
                       {error}
                     </td>
                   </tr>
                 ) : null}
                 {!loading && !error && filteredAndSorted.length === 0 ? (
                   <tr>
-                    <td className="px-4 py-6 text-sm text-[#94a3b8]" colSpan={6}>
+                    <td className="px-4 py-6 text-sm text-terminal-textMuted" colSpan={6}>
                       {t("dividend.noResults", { defaultValue: "No results for the selected filters." })}
                     </td>
                   </tr>
@@ -344,8 +351,8 @@ export function DividendPage() {
                       return (
                         <tr
                           key={company.symbol}
-                          className={`border-t border-white/10 transition-colors ${
-                            isHovered ? "bg-white/[0.06]" : "bg-transparent"
+                          className={`${TERMINAL_DIVIDEND_ROW} ${
+                            isHovered ? "bg-terminal-panelSecondary/70" : ""
                           }`}
                           onMouseEnter={() => setHoveredSymbol(company.symbol)}
                           onMouseLeave={() => setHoveredSymbol(null)}
@@ -353,23 +360,23 @@ export function DividendPage() {
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3">
                               <CompanyLogo symbol={company.symbol} logoUrl={company.logoUrl} size="xs" shape="rounded" />
-                              <span className="font-semibold text-white">{company.symbol}</span>
+                              <span className="font-semibold text-terminal-text">{company.symbol}</span>
                             </div>
                           </td>
                           <td className="px-4 py-3">
                             <div>
-                              <p className="font-semibold text-white">{company.name}</p>
-                              <p className="text-xs text-[#94a3b8]">{company.sector}</p>
+                              <p className="font-semibold text-terminal-text">{company.name}</p>
+                              <p className="text-xs text-terminal-textMuted">{company.sector}</p>
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <span className="inline-flex rounded-full border border-[#22d3ee]/40 bg-[#22d3ee]/15 px-2.5 py-1 text-xs font-semibold text-[#22d3ee]">
+                            <span className={TERMINAL_DIVIDEND_BADGE}>
                               {formatPercent(company.yieldPct)}
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             <div className="space-y-1.5">
-                              <div className="h-2.5 w-full rounded-full bg-white/10">
+                              <div className="h-2.5 w-full rounded-full bg-terminal-panelSecondary">
                                 <div
                                   className="h-2.5 rounded-full transition-all"
                                   style={{
@@ -381,9 +388,9 @@ export function DividendPage() {
                               <p
                                 className={`text-xs font-semibold ${
                                   company.healthScore > 70
-                                    ? GLASS_TEXT_POSITIVE
+                                    ? TERMINAL_SUCCESS_TEXT
                                     : company.healthScore < 40
-                                      ? GLASS_TEXT_NEGATIVE
+                                      ? TERMINAL_DANGER_TEXT
                                       : "text-amber-300"
                                 }`}
                               >
@@ -391,8 +398,8 @@ export function DividendPage() {
                               </p>
                             </div>
                           </td>
-                          <td className="px-4 py-3 font-mono text-xs text-white/80">{company.exDate}</td>
-                          <td className="px-4 py-3 text-white/90">
+                          <td className="px-4 py-3 font-mono text-xs text-terminal-textSecondary">{company.exDate}</td>
+                          <td className="px-4 py-3 text-terminal-textSecondary">
                             {formatDividendPerShareAmount(company.dividendPerShare, company.symbol, {
                               currency: company.currency,
                             })}

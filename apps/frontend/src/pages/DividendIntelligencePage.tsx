@@ -4,12 +4,21 @@ import { useTranslation } from "react-i18next";
 import { getCompanyDetail, getDividendAlerts, getDividendIntelligence, type Company } from "../services/api";
 import { CompanyLogo } from "../components/CompanyLogo";
 import {
-  GLASS_INNER_PANEL,
-  GLASS_INPUT,
-  GLASS_PAGE_SUBTITLE,
-  GLASS_PAGE_TITLE,
-  GLASS_SECTION,
-} from "../components/behavioral-coach/glassStyles";
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_DIVIDEND_AI_PANEL,
+  TERMINAL_DIVIDEND_ALERT,
+  TERMINAL_DIVIDEND_CHART_PANEL,
+  TERMINAL_DIVIDEND_PAGE,
+  TERMINAL_DIVIDEND_PAGE_INNER,
+  TERMINAL_DIVIDEND_PANEL,
+  TERMINAL_EMPTY_STATE,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_INPUT,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_SECTION_TITLE,
+  TERMINAL_SUSTAINABILITY_CARD,
+} from "../components/terminal/terminalStyles";
 import { colors } from "../styles/designSystem";
 import type { DividendAlert, DividendIntelligence } from "../types/dividend";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -165,13 +174,13 @@ export function DividendIntelligencePage() {
   const progress = safeScore != null ? (safeScore / 100) * circumference : 0;
 
   return (
-    <div className="min-h-screen text-white">
-      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
+    <div className={TERMINAL_DIVIDEND_PAGE}>
+      <div className={TERMINAL_DIVIDEND_PAGE_INNER}>
         <header>
-          <h1 className={GLASS_PAGE_TITLE}>
+          <h1 className={TERMINAL_PAGE_TITLE}>
             {t("dividendIntelligence.title", { defaultValue: "Dividend Intelligence" })}
           </h1>
-          <p className={`mt-2 ${GLASS_PAGE_SUBTITLE}`}>
+          <p className={TERMINAL_PAGE_SUBTITLE}>
             {t("dividendIntelligence.subtitle", {
               defaultValue: "Safety score, trend, sector and latest alerts. Enter a ticker — data refreshes automatically.",
             })}
@@ -179,19 +188,19 @@ export function DividendIntelligencePage() {
         </header>
 
         {error ? (
-          <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 backdrop-blur-md">
+          <div className={TERMINAL_DANGER_PANEL}>
             {error}
           </div>
         ) : null}
 
         {notFound && !loading && !error ? (
-          <div className={`${GLASS_INNER_PANEL} border-dashed px-4 py-5 text-sm`}>
-            <p className="font-medium text-white">
+          <div className={`${TERMINAL_EMPTY_STATE} text-left`}>
+            <p className="font-medium text-terminal-text">
               {t("dividendIntelligence.emptyTitle", {
                 defaultValue: "No dividend intelligence available for this symbol yet.",
               })}
             </p>
-            <p className="mt-2 text-[#94a3b8]">
+            <p className="mt-2 text-terminal-textSecondary">
               {t("dividendIntelligence.emptyBody", {
                 defaultValue:
                   "Try another ticker or check back after dividend data is synced for this company.",
@@ -200,11 +209,11 @@ export function DividendIntelligencePage() {
           </div>
         ) : null}
 
-        <section className={`${GLASS_SECTION} md:p-6`}>
+        <section className={TERMINAL_DIVIDEND_PANEL}>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-4">
               <label className="block text-sm">
-                <span className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+                <span className={TERMINAL_FORM_LABEL}>
                   {t("dividendIntelligence.symbol", { defaultValue: "Ticker" })}
                 </span>
                 <input
@@ -212,34 +221,34 @@ export function DividendIntelligencePage() {
                   onChange={(event) => setInput(event.target.value.toUpperCase())}
                   placeholder={t("dividendIntelligence.symbolPlaceholder", { defaultValue: "Enter ticker…" })}
                   autoComplete="off"
-                  className={`${GLASS_INPUT} mt-1 block w-full max-w-xs font-mono uppercase`}
+                  className={`${TERMINAL_INPUT} mt-1 block w-full max-w-xs font-mono uppercase`}
                 />
               </label>
 
               <div className="flex items-center gap-3">
                 <CompanyLogo symbol={symbol} logoUrl={company?.logoUrl} size="md" shape="rounded" />
                 <div>
-                  <p className="text-xl font-semibold text-white">{company?.name ?? symbol}</p>
-                  <p className="text-xs text-[#94a3b8]">
+                  <p className="text-xl font-semibold text-terminal-text">{company?.name ?? symbol}</p>
+                  <p className="text-xs text-terminal-textMuted">
                     {company?.sector ?? t("dividendIntelligence.unknownSector", { defaultValue: "Unknown sector" })}
                   </p>
                 </div>
               </div>
 
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">
+                <p className={TERMINAL_SECTION_TITLE}>
                   {t("dividendIntelligence.aiBriefLabel", { defaultValue: "AI Brief" })}
                 </p>
-                <p className="mt-2 text-sm leading-6 text-white/85">{aiBrief}</p>
+                <p className="mt-2 text-sm leading-6 text-terminal-textSecondary">{aiBrief}</p>
               </div>
             </div>
 
             <div
-              className="flex flex-col items-center rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-4 backdrop-blur-xl"
+              className={`${TERMINAL_SUSTAINABILITY_CARD} flex flex-col items-center px-6 py-4`}
               style={safeScore != null ? { backgroundColor: withAlpha(ringColor, 0.08) } : undefined}
             >
               <svg width="180" height="180" viewBox="0 0 180 180" className="overflow-visible">
-                <circle cx="90" cy="90" r={radius} stroke="rgb(255 255 255 / 0.1)" strokeWidth="14" fill="none" />
+                <circle cx="90" cy="90" r={radius} stroke="rgb(148 163 184 / 0.2)" strokeWidth="14" fill="none" />
                 {safeScore != null ? (
                   <circle
                     cx="90"
@@ -253,30 +262,32 @@ export function DividendIntelligencePage() {
                     transform="rotate(-90 90 90)"
                   />
                 ) : null}
-                <text x="90" y="94" textAnchor="middle" fontSize="34" fontWeight="700" fill="#ffffff">
+                <text x="90" y="94" textAnchor="middle" fontSize="34" fontWeight="700" fill="currentColor" className="text-terminal-text">
                   {safeScore ?? "—"}
                 </text>
               </svg>
-              <p className="mt-2 text-sm font-semibold" style={{ color: safeScore != null ? ringColor : "#94a3b8" }}>
-                {safeScore != null
-                  ? t("dividendIntelligence.healthScore", { defaultValue: "Safety score" })
-                  : t("dividendIntelligence.healthUnavailable", { defaultValue: "Unavailable" })}
+              <p className="mt-2 text-sm font-semibold" style={{ color: safeScore != null ? ringColor : undefined }}>
+                <span className={safeScore == null ? "text-terminal-textMuted" : undefined}>
+                  {safeScore != null
+                    ? t("dividendIntelligence.healthScore", { defaultValue: "Safety score" })
+                    : t("dividendIntelligence.healthUnavailable", { defaultValue: "Unavailable" })}
+                </span>
               </p>
             </div>
           </div>
         </section>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className={GLASS_SECTION}>
+          <section className={TERMINAL_DIVIDEND_PANEL}>
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+              <h2 className={TERMINAL_SECTION_TITLE}>
                 {t("dividendIntelligence.dividendHistory", { defaultValue: "Dividend history" })}
               </h2>
-              <span className="text-xs font-semibold text-white/40">
+              <span className="text-xs font-semibold text-terminal-textMuted">
                 {t("dividendIntelligence.chartPlaceholder", { defaultValue: "Chart placeholder" })}
               </span>
             </div>
-            <div className="mt-4 flex h-56 items-end gap-2 rounded-xl border border-dashed border-white/15 bg-white/[0.03] px-4 pb-4 pt-6">
+            <div className={`${TERMINAL_DIVIDEND_CHART_PANEL} mt-4`}>
               {[20, 34, 42, 36, 54, 62, 58, 70].map((height, idx) => (
                 <div
                   key={`${height}-${idx}`}
@@ -284,27 +295,27 @@ export function DividendIntelligencePage() {
                   style={{
                     height: `${height}%`,
                     backgroundColor:
-                      idx % 2 === 0 ? "rgb(34 211 238 / 0.45)" : "rgb(168 85 247 / 0.55)",
+                      idx % 2 === 0 ? "rgb(34 211 238 / 0.45)" : "rgb(56 189 248 / 0.4)",
                   }}
                 />
               ))}
             </div>
           </section>
 
-          <section className={GLASS_SECTION}>
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+          <section className={TERMINAL_DIVIDEND_PANEL}>
+            <h2 className={TERMINAL_SECTION_TITLE}>
               {t("dividendIntelligence.latestSignals", { defaultValue: "Latest dividend signals" })}
             </h2>
             {alerts.length === 0 ? (
-              <p className="mt-4 text-sm text-[#94a3b8]">
+              <p className="mt-4 text-sm text-terminal-textMuted">
                 {t("dividendIntelligence.noAlerts", { defaultValue: "No new alerts." })}
               </p>
             ) : (
               <ul className="mt-4 space-y-3">
                 {alerts.slice(0, 4).map((alert) => (
-                  <li key={`${alert.createdAt}-${alert.alertType}`} className={`${GLASS_INNER_PANEL} px-3 py-2`}>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">{alert.alertType}</p>
-                    <p className="mt-1 text-sm text-white/85">{alert.message}</p>
+                  <li key={`${alert.createdAt}-${alert.alertType}`} className={TERMINAL_DIVIDEND_ALERT}>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">{alert.alertType}</p>
+                    <p className="mt-1 text-sm text-terminal-textSecondary">{alert.message}</p>
                   </li>
                 ))}
               </ul>
@@ -312,16 +323,11 @@ export function DividendIntelligencePage() {
           </section>
         </div>
 
-        <section
-          className="rounded-2xl border border-[#a855f7]/30 p-5 shadow-[0_12px_48px_rgba(168,85,247,0.2)] backdrop-blur-xl md:p-6"
-          style={{
-            background: `linear-gradient(135deg, ${colors.brandDark}, ${colors.brandMedium})`,
-          }}
-        >
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/75">
+        <section className={TERMINAL_DIVIDEND_AI_PANEL}>
+          <p className={TERMINAL_SECTION_TITLE}>
             {t("dividendIntelligence.aiAnalysisLabel", { defaultValue: "AI Analysis" })}
           </p>
-          <p className="mt-3 text-base leading-7 text-white md:text-lg">{aiAnalysis}</p>
+          <p className="mt-3 text-base leading-7 text-terminal-text md:text-lg">{aiAnalysis}</p>
         </section>
       </div>
     </div>

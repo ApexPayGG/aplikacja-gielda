@@ -6,6 +6,21 @@ import type { DividendGrowthRow, DividendHistoryItem } from "../services/api";
 import { formatDividendPerShareAmount } from "../utils/dividendFormat";
 import { getDividendHistory, getDividendGrowthScreener } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
+import {
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_BUTTON_SECONDARY,
+  TERMINAL_DANGER_TEXT,
+  TERMINAL_DIVIDEND_PAGE,
+  TERMINAL_DIVIDEND_PAGE_INNER,
+  TERMINAL_DIVIDEND_PANEL,
+  TERMINAL_DIVIDEND_ROW,
+  TERMINAL_DIVIDEND_TABLE,
+  TERMINAL_DIVIDEND_TABLE_HEAD,
+  TERMINAL_FORM_LABEL,
+  TERMINAL_INPUT,
+  TERMINAL_PAGE_TITLE,
+  TERMINAL_TEXT_MUTED,
+} from "../components/terminal/terminalStyles";
 
 export function Dividends() {
   const { t } = useTranslation();
@@ -54,121 +69,125 @@ export function Dividends() {
   }, [loadGrowth]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <header className="mb-10">
-        <h1 className="text-3xl font-bold tracking-tight text-white">
-          {t("dividend.title", { defaultValue: "Dividend screening" })}
-        </h1>
-      </header>
+    <div className={TERMINAL_DIVIDEND_PAGE}>
+      <div className={TERMINAL_DIVIDEND_PAGE_INNER}>
+        <header className="mb-10">
+          <h1 className={TERMINAL_PAGE_TITLE}>
+            {t("dividend.title", { defaultValue: "Dividend screening" })}
+          </h1>
+        </header>
 
-      <section className="mb-12">
-        <h2 className="text-xl font-semibold text-white">
-          {t("dividend.history", { defaultValue: "Dividend history" })}
-        </h2>
-        <div className="mt-4 flex flex-wrap items-end gap-4">
-          <label className="text-sm">
-            <span className="text-slate-400">{t("dividend.symbol", { defaultValue: "Ticker" })}</span>
-            <input
-              className="mt-1 block rounded-md border border-surface-border bg-surface px-3 py-2 font-mono text-white"
-              value={symbol}
-              onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-            />
-          </label>
-          <label className="text-sm">
-            <span className="text-slate-400">{t("dividend.yearsBack", { defaultValue: "Years back" })}</span>
-            <input
-              type="number"
-              min={1}
-              max={30}
-              className="mt-1 block w-24 rounded-md border border-surface-border bg-surface px-3 py-2 text-white"
-              value={years}
-              onChange={(e) => setYears(parseInt(e.target.value, 10) || 5)}
-            />
-          </label>
-          <button
-            type="button"
-            onClick={() => void loadHistory()}
-            className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90"
-          >
-            {t("dividend.fetch", { defaultValue: "Fetch" })}
-          </button>
-        </div>
-        {histLoading && <p className="mt-4 text-sm text-slate-400">{t("common.loading")}</p>}
-        {histError && <p className="mt-4 text-sm text-red-400">{histError}</p>}
-        {!histLoading && !histError && history.length > 0 && (
-          <div className="mt-4 overflow-x-auto rounded-lg border border-surface-border">
-            <table className="min-w-full text-left text-sm text-slate-300">
-              <thead className="bg-surface-elevated text-xs uppercase text-slate-400">
-                <tr>
-                  <th className="px-4 py-3">{t("dividendsPage.exDate", { defaultValue: "Ex-date" })}</th>
-                  <th className="px-4 py-3">{t("dividendsPage.payDate", { defaultValue: "Pay date" })}</th>
-                  <th className="px-4 py-3">{t("dividendsPage.amount", { defaultValue: "Amount" })}</th>
-                  <th className="px-4 py-3">{t("dividendsPage.yield", { defaultValue: "Yield %" })}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {history.map((r, i) => (
-                  <tr key={`${r.exDate}-${i}`} className="border-t border-surface-border">
-                    <td className="px-4 py-3 font-mono text-xs">{r.exDate}</td>
-                    <td className="px-4 py-3 font-mono text-xs">{r.payDate}</td>
-                    <td className="px-4 py-3">{formatDividendPerShareAmount(r.amount, symbol)}</td>
-                    <td className="px-4 py-3">{r.yield != null ? r.yield : "—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <section className={`${TERMINAL_DIVIDEND_PANEL} mb-12`}>
+          <h2 className="text-xl font-semibold text-terminal-text">
+            {t("dividend.history", { defaultValue: "Dividend history" })}
+          </h2>
+          <div className="mt-4 flex flex-wrap items-end gap-4">
+            <label className="text-sm">
+              <span className={TERMINAL_FORM_LABEL}>{t("dividend.symbol", { defaultValue: "Ticker" })}</span>
+              <input
+                className={`${TERMINAL_INPUT} mt-1 font-mono`}
+                value={symbol}
+                onChange={(e) => setSymbol(e.target.value.toUpperCase())}
+              />
+            </label>
+            <label className="text-sm">
+              <span className={TERMINAL_FORM_LABEL}>{t("dividend.yearsBack", { defaultValue: "Years back" })}</span>
+              <input
+                type="number"
+                min={1}
+                max={30}
+                className={`${TERMINAL_INPUT} mt-1 w-24`}
+                value={years}
+                onChange={(e) => setYears(parseInt(e.target.value, 10) || 5)}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => void loadHistory()}
+              className={TERMINAL_BUTTON_PRIMARY}
+            >
+              {t("dividend.fetch", { defaultValue: "Fetch" })}
+            </button>
           </div>
-        )}
-        {!histLoading && !histError && history.length === 0 && (
-          <p className="mt-4 text-sm text-slate-500">{t("dividend.noData", { defaultValue: "No data" })}</p>
-        )}
-      </section>
+          {histLoading && <p className={`mt-4 ${TERMINAL_TEXT_MUTED}`}>{t("common.loading")}</p>}
+          {histError && <p className={`mt-4 text-sm ${TERMINAL_DANGER_TEXT}`}>{histError}</p>}
+          {!histLoading && !histError && history.length > 0 && (
+            <div className={`${TERMINAL_DIVIDEND_TABLE} mt-4`}>
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-left text-sm">
+                  <thead className={TERMINAL_DIVIDEND_TABLE_HEAD}>
+                    <tr>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide">{t("dividendsPage.exDate", { defaultValue: "Ex-date" })}</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide">{t("dividendsPage.payDate", { defaultValue: "Pay date" })}</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide">{t("dividendsPage.amount", { defaultValue: "Amount" })}</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide">{t("dividendsPage.yield", { defaultValue: "Yield %" })}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {history.map((r, i) => (
+                      <tr key={`${r.exDate}-${i}`} className={TERMINAL_DIVIDEND_ROW}>
+                        <td className="px-4 py-3 font-mono text-xs text-terminal-textSecondary">{r.exDate}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-terminal-textSecondary">{r.payDate}</td>
+                        <td className="px-4 py-3 text-terminal-textSecondary">{formatDividendPerShareAmount(r.amount, symbol)}</td>
+                        <td className="px-4 py-3 text-terminal-textSecondary">{r.yield != null ? r.yield : "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          {!histLoading && !histError && history.length === 0 && (
+            <p className={`mt-4 ${TERMINAL_TEXT_MUTED}`}>{t("dividend.noData", { defaultValue: "No data" })}</p>
+          )}
+        </section>
 
-      <section className="mb-12">
-        <h2 className="text-xl font-semibold text-white">
-          {t("dividend.screener", { defaultValue: "Screener: dividend growth (CAGR)" })}
-        </h2>
-        <div className="mt-4 flex flex-wrap items-end gap-4">
-          <label className="text-sm">
-            <span className="text-slate-400">
-              {t("dividend.minYears", { defaultValue: "Min. years of history" })}
-            </span>
-            <input
-              type="number"
-              min={1}
-              max={30}
-              className="mt-1 block w-24 rounded-md border border-surface-border bg-surface px-3 py-2 text-white"
-              value={minYears}
-              onChange={(e) => setMinYears(parseInt(e.target.value, 10) || 5)}
-            />
-          </label>
-          <label className="text-sm">
-            <span className="text-slate-400">{t("dividend.minYield", { defaultValue: "Min. yield %" })}</span>
-            <input
-              type="number"
-              min={0}
-              step="0.1"
-              className="mt-1 block w-24 rounded-md border border-surface-border bg-surface px-3 py-2 text-white"
-              value={minYield}
-              onChange={(e) => setMinYield(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-          <button
-            type="button"
-            onClick={() => void loadGrowth()}
-            className="rounded-md border border-surface-border px-4 py-2 text-sm text-slate-200 hover:bg-white/5"
-          >
-            {t("dividend.refresh", { defaultValue: "Refresh" })}
-          </button>
-        </div>
-        <div className="mt-4">
-          <DividendGrowthTable rows={growthRows} loading={growthLoading} error={growthError} />
-        </div>
-      </section>
+        <section className={`${TERMINAL_DIVIDEND_PANEL} mb-12`}>
+          <h2 className="text-xl font-semibold text-terminal-text">
+            {t("dividend.screener", { defaultValue: "Screener: dividend growth (CAGR)" })}
+          </h2>
+          <div className="mt-4 flex flex-wrap items-end gap-4">
+            <label className="text-sm">
+              <span className={TERMINAL_FORM_LABEL}>
+                {t("dividend.minYears", { defaultValue: "Min. years of history" })}
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={30}
+                className={`${TERMINAL_INPUT} mt-1 w-24`}
+                value={minYears}
+                onChange={(e) => setMinYears(parseInt(e.target.value, 10) || 5)}
+              />
+            </label>
+            <label className="text-sm">
+              <span className={TERMINAL_FORM_LABEL}>{t("dividend.minYield", { defaultValue: "Min. yield %" })}</span>
+              <input
+                type="number"
+                min={0}
+                step="0.1"
+                className={`${TERMINAL_INPUT} mt-1 w-24`}
+                value={minYield}
+                onChange={(e) => setMinYield(parseFloat(e.target.value) || 0)}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => void loadGrowth()}
+              className={TERMINAL_BUTTON_SECONDARY}
+            >
+              {t("dividend.refresh", { defaultValue: "Refresh" })}
+            </button>
+          </div>
+          <div className="mt-4">
+            <DividendGrowthTable rows={growthRows} loading={growthLoading} error={growthError} />
+          </div>
+        </section>
 
-      <section>
-        <TaxCalculatorPL />
-      </section>
+        <section className={TERMINAL_DIVIDEND_PANEL}>
+          <TaxCalculatorPL />
+        </section>
+      </div>
     </div>
   );
 }
