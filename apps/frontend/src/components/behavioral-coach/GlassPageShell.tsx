@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
-import { GlassAmbient } from "./GlassAmbient";
-import { GLASS_PAGE_BG } from "./glassStyles";
+import { TERMINAL_APP_BG, TERMINAL_PAGE_SHELL } from "../terminal/terminalStyles";
 
 type GlassPageShellProps = {
   children: ReactNode;
@@ -14,9 +13,10 @@ export function GlassPageShell({
   maxWidth = "max-w-7xl",
 }: GlassPageShellProps) {
   return (
-    <div className={`${GLASS_PAGE_BG} relative overflow-x-hidden`}>
-      <GlassAmbient />
-      <div className={`relative z-10 mx-auto ${maxWidth} px-4 py-8 sm:px-6 lg:py-10 ${className}`}>{children}</div>
+    <div className={`${TERMINAL_APP_BG} relative overflow-x-hidden`}>
+      <div className={`${TERMINAL_PAGE_SHELL} ${maxWidth} space-y-6 py-8 sm:py-10 ${className}`}>
+        {children}
+      </div>
     </div>
   );
 }

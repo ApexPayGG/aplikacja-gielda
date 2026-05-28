@@ -19,7 +19,23 @@ import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatQuoteAge } from "../utils/formatQuoteAge";
 import { formatCurrency, formatDate, formatNumber, formatPercent, resolveIntlLocale } from "../utils/formatters";
 import { printPortfolioReport } from "../utils/printReport";
-import { colors } from "../styles/designSystem";
+import {
+  TERMINAL_APP_BG,
+  TERMINAL_BUTTON_PRIMARY,
+  TERMINAL_BUTTON_SECONDARY,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_INFO_BANNER,
+  TERMINAL_INPUT,
+  TERMINAL_ORDER_PANEL,
+  TERMINAL_PAGE_SHELL,
+  TERMINAL_PAPER_TRADING_PANEL,
+  TERMINAL_PANEL,
+  TERMINAL_SKELETON,
+  TERMINAL_STATUS_CARD,
+  TERMINAL_TABLE_HEAD,
+  TERMINAL_TABLE_ROW,
+  TERMINAL_TABLE_SHELL,
+} from "../components/terminal/terminalStyles";
 
 type Direction = "LONG" | "SHORT";
 type ExitAction = "HOLD" | "TIGHTEN_SL" | "SCALE_OUT" | "EXIT_NOW";
@@ -894,27 +910,27 @@ export function PaperTradingPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-[#0a0b14] via-[#0f111c]/90 to-[#0a0b14] text-white">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
-        <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-[#1e1b4b]/40 blur-3xl" />
-        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-[#22d3ee]/12 blur-3xl" />
-      </div>
-      <div className="relative z-10 mx-auto max-w-7xl space-y-4 px-4 py-6">
-        <section className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#a855f7]/30 to-[#22d3ee]/10 px-4 py-4 shadow-[0_8px_32px_rgba(168,85,247,0.15)] backdrop-blur-md md:px-5">
+    <div className={TERMINAL_APP_BG}>
+      <div className={`${TERMINAL_PAGE_SHELL} max-w-7xl space-y-4 py-4 sm:py-6`}>
+        <section className={TERMINAL_PAPER_TRADING_PANEL}>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.14em] text-[#22d3ee]">Paper Trading</p>
-              <h1 className="text-2xl font-semibold text-white md:text-3xl">Paper Trading</h1>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
+                {t("paperTrading.eyebrow", { defaultValue: "Execution simulator" })}
+              </p>
+              <h1 className="text-2xl font-semibold text-terminal-text md:text-3xl">
+                {t("paperTrading.title", { defaultValue: "Paper Trading" })}
+              </h1>
               <div className="mt-2 flex flex-wrap items-center gap-3">
-                <span className="font-mono text-3xl text-white md:text-4xl">
+                <span className="font-mono text-3xl text-terminal-text md:text-4xl">
                   {formatCurrency(portfolioBalance, "USD")}
                 </span>
                 <span
-                  className="rounded-full px-3 py-1 text-xs font-semibold"
-                  style={{
-                    backgroundColor: portfolioBalance >= 0 ? `${colors.positive}20` : `${colors.negative}20`,
-                    color: portfolioBalance >= 0 ? colors.positive : colors.negative,
-                  }}
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+                    portfolioBalance >= 0
+                      ? "border-terminal-positive/30 bg-terminal-positive/10 text-terminal-positive"
+                      : "border-terminal-negative/30 bg-terminal-negative/10 text-terminal-negative"
+                  }`}
                 >
                   P&amp;L {formatPercent(portfolioBalance)}
                 </span>
@@ -930,8 +946,7 @@ export function PaperTradingPage() {
                 <button
                   type="button"
                   onClick={onPrintReport}
-                  className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition hover:brightness-95"
-                  style={{ borderColor: colors.brandDark, color: colors.brandDark, backgroundColor: colors.bgPrimary }}
+                  className={`inline-flex items-center gap-2 ${TERMINAL_BUTTON_SECONDARY}`}
                 >
                   <PrinterIcon className="h-4 w-4" />
                   {t("paperTrading.printReport", { defaultValue: "Print report" })}
@@ -939,23 +954,21 @@ export function PaperTradingPage() {
                 <button
                   type="button"
                   onClick={() => setOpenTradePanelVisible((prev) => !prev)}
-                  className="rounded-xl px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
-                  style={{ background: `linear-gradient(135deg, ${colors.brandDark}, ${colors.brandMedium})` }}
+                  className={TERMINAL_BUTTON_PRIMARY}
                 >
                   {t("paperTrading.openPosition", { defaultValue: "Open position" })}
                 </button>
               </div>
               <span
-                className="rounded-full border px-2 py-0.5 text-[11px]"
-                style={{
-                  borderColor: usingMock ? `${colors.brandGold}66` : colors.borderStrong,
-                  backgroundColor: usingMock ? `${colors.brandGold}1A` : colors.bgPrimary,
-                  color: usingMock ? colors.brandMedium : colors.textSecondary,
-                }}
+                className={`rounded-full border px-2 py-0.5 text-[11px] ${
+                  usingMock
+                    ? "border-amber-400/35 bg-amber-500/10 text-amber-200"
+                    : "border-terminal-borderMuted bg-terminal-panelSecondary text-terminal-textMuted"
+                }`}
               >
                 {usingMock ? "Mock fallback active" : "Live API"}
               </span>
-              <span className="text-[11px]" style={{ color: colors.textMuted }}>
+              <span className="text-[11px] text-terminal-textMuted">
                 Decision receipts: {receipts.length}
               </span>
             </div>
@@ -976,119 +989,102 @@ export function PaperTradingPage() {
           />
         </section>
 
-        {error ? (
-          <div
-            className="rounded-xl border px-3 py-2 text-sm"
-            style={{ borderColor: `${colors.negative}55`, backgroundColor: `${colors.negative}12`, color: colors.negative }}
-          >
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
         <FeedbackToastStack toasts={toasts} />
         {reflectionInsight ? (
-          <div
-            className="rounded-xl border px-3 py-2 text-sm"
-            style={{ borderColor: `${colors.brandCyan}66`, backgroundColor: `${colors.brandCyan}14`, color: colors.brandDark }}
-          >
-            <p className="font-semibold">{t("reflection.aiTitle")}</p>
-            <p className="mt-1">{reflectionInsight}</p>
+          <div className={TERMINAL_INFO_BANNER}>
+            <p className="font-semibold text-terminal-cyan">{t("reflection.aiTitle")}</p>
+            <p className="mt-1 text-terminal-textSecondary">{reflectionInsight}</p>
           </div>
         ) : null}
 
         {openTradePanelVisible ? (
-          <section
-            className="glass-section rounded-2xl p-4 shadow-sm"
-          >
+          <section className={TERMINAL_ORDER_PANEL}>
             <form onSubmit={onOpenTrade} className="grid gap-3 md:grid-cols-6">
-              <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+              <label className="flex flex-col gap-1 text-xs font-medium text-terminal-textMuted">
                 <span>Ticker</span>
                 <input
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white text-sm outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                   value={form.ticker}
                   onChange={(e) => setForm((prev) => ({ ...prev, ticker: e.target.value.toUpperCase() }))}
                   placeholder="AAPL"
                 />
               </label>
 
-              <div className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+              <div className="flex flex-col gap-1 text-xs font-medium text-terminal-textMuted">
                 <span>{t("paperTrading.direction")}</span>
-                <div className="flex overflow-hidden rounded-lg border" style={{ borderColor: colors.borderStrong }}>
+                <div className="flex overflow-hidden rounded-lg border border-terminal-borderMuted">
                   <button
                     type="button"
                     onClick={() => setForm((prev) => ({ ...prev, direction: "LONG" }))}
-                    className="flex-1 px-3 py-2 text-xs font-semibold"
-                    style={{
-                      backgroundColor: form.direction === "LONG" ? `${colors.positive}18` : colors.bgPrimary,
-                      color: form.direction === "LONG" ? colors.positive : colors.textSecondary,
-                    }}
+                    className={`flex-1 px-3 py-2 text-xs font-semibold ${
+                      form.direction === "LONG"
+                        ? "bg-terminal-positive/15 text-terminal-positive"
+                        : "bg-terminal-panelSecondary text-terminal-textMuted"
+                    }`}
                   >
                     {t("paperTrading.long")}
                   </button>
                   <button
                     type="button"
                     onClick={() => setForm((prev) => ({ ...prev, direction: "SHORT" }))}
-                    className="flex-1 px-3 py-2 text-xs font-semibold"
-                    style={{
-                      backgroundColor: form.direction === "SHORT" ? `${colors.negative}18` : colors.bgPrimary,
-                      color: form.direction === "SHORT" ? colors.negative : colors.textSecondary,
-                    }}
+                    className={`flex-1 px-3 py-2 text-xs font-semibold ${
+                      form.direction === "SHORT"
+                        ? "bg-terminal-negative/15 text-terminal-negative"
+                        : "bg-terminal-panelSecondary text-terminal-textMuted"
+                    }`}
                   >
                     {t("paperTrading.short")}
                   </button>
                 </div>
               </div>
 
-              <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+              <label className="flex flex-col gap-1 text-xs font-medium text-terminal-textMuted">
                 <span>{t("paperTrading.entryPrice")}</span>
                 <input
                   type="number"
                   min="0"
                   step="0.01"
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white text-sm outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                   value={form.entryPrice}
                   onChange={(e) => setForm((prev) => ({ ...prev, entryPrice: e.target.value }))}
                   placeholder="100.00"
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+              <label className="flex flex-col gap-1 text-xs font-medium text-terminal-textMuted">
                 <span>{t("premortem.stopLoss")}</span>
                 <input
                   type="number"
                   min="0"
                   step="0.01"
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white text-sm outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                   value={form.stopLoss}
                   onChange={(e) => setForm((prev) => ({ ...prev, stopLoss: e.target.value }))}
                   placeholder="95.00"
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+              <label className="flex flex-col gap-1 text-xs font-medium text-terminal-textMuted">
                 <span>{t("premortem.takeProfit")}</span>
                 <input
                   type="number"
                   min="0"
                   step="0.01"
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white text-sm outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                   value={form.takeProfit}
                   onChange={(e) => setForm((prev) => ({ ...prev, takeProfit: e.target.value }))}
                   placeholder="115.00"
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-xs font-medium" style={{ color: colors.textSecondary }}>
+              <label className="flex flex-col gap-1 text-xs font-medium text-terminal-textMuted">
                 <span>{t("paperTrading.quantity")}</span>
                 <input
                   type="number"
                   min="0"
                   step="0.01"
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white text-sm outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                   value={form.quantity}
                   onChange={(e) => setForm((prev) => ({ ...prev, quantity: e.target.value }))}
                   placeholder="1"
@@ -1096,12 +1092,7 @@ export function PaperTradingPage() {
               </label>
 
               <div className="md:col-span-6">
-                <button
-                  type="submit"
-                  disabled={submittingOpen}
-                  className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
-                  style={{ backgroundColor: colors.brandDark }}
-                >
+                <button type="submit" disabled={submittingOpen} className={TERMINAL_BUTTON_PRIMARY}>
                   {submittingOpen ? t("common.loading") : t("paperTrading.openPosition")}
                 </button>
               </div>
@@ -1109,12 +1100,12 @@ export function PaperTradingPage() {
           </section>
         ) : null}
 
-        <section className="glass-section rounded-2xl p-4 shadow-sm sm:p-5">
-          <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#22d3ee]">
+        <section className={TERMINAL_TABLE_SHELL}>
+          <div className={`flex items-center justify-between px-4 py-3 ${TERMINAL_TABLE_HEAD}`}>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-terminal-cyan">
               {t("paperTrading.openPositionsTitle", { defaultValue: "Open positions" })}
             </h2>
-            <span className="text-xs font-medium text-white/60">
+            <span className="text-xs font-medium text-terminal-textMuted">
               {t("paperTrading.unrealized", { defaultValue: "Unrealized" })} {formatCurrency(totalUnrealized, "USD")}
             </span>
           </div>
@@ -1136,8 +1127,8 @@ export function PaperTradingPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
-                <thead className="text-left text-xs uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-                  <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
+                <thead className={`text-left ${TERMINAL_TABLE_HEAD}`}>
+                  <tr className={TERMINAL_TABLE_ROW}>
                     <th className="px-3 py-2">#</th>
                     <th className="px-3 py-2">{t("paperTrading.colLogoTicker", { defaultValue: "Logo + Ticker" })}</th>
                     <th className="px-3 py-2">Entry price</th>
@@ -1150,7 +1141,7 @@ export function PaperTradingPage() {
                 <tbody>
                   {positionRows.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-3 py-6 text-center text-sm" style={{ color: colors.textMuted }}>
+                      <td colSpan={7} className="px-3 py-6 text-center text-sm text-terminal-textMuted">
                         {t("paperTrading.noOpenPositions", { defaultValue: "No open positions" })}
                       </td>
                     </tr>
@@ -1160,7 +1151,7 @@ export function PaperTradingPage() {
                       const freshnessTone = quoteFreshnessTone(row.quoteUpdatedAt, nowMs);
                       const isSelected = selectedTradeIds.includes(row.id);
                       return (
-                        <tr key={row.id} style={{ borderBottom: `1px solid ${colors.border}` }}>
+                        <tr key={row.id} className={TERMINAL_TABLE_ROW}>
                           <td className="px-3 py-2">
                             <BulkRowCheckbox
                               checked={isSelected}
@@ -1171,15 +1162,10 @@ export function PaperTradingPage() {
                           </td>
                           <td className="px-3 py-2">
                             <div className="flex items-center gap-2">
-                              <span
-                                className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-semibold"
-                                style={{ backgroundColor: colors.bgTertiary, color: colors.brandDark }}
-                              >
+                              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary text-[11px] font-semibold text-terminal-cyan">
                                 {row.ticker.slice(0, 2)}
                               </span>
-                              <span className="font-semibold" style={{ color: colors.brandDark }}>
-                                {row.ticker}
-                              </span>
+                              <span className="font-semibold text-terminal-cyan">{row.ticker}</span>
                             </div>
                           </td>
                           <td className="px-3 py-2 font-mono">{formatCurrency(row.entryPrice, "USD")}</td>
@@ -1195,12 +1181,13 @@ export function PaperTradingPage() {
                             ) : null}
                           </td>
                           <td
-                            className="px-3 py-2 font-mono font-semibold"
-                            style={{ color: row.pnlPct >= 0 ? colors.positive : colors.negative }}
+                            className={`px-3 py-2 font-mono font-semibold ${
+                              row.pnlPct >= 0 ? "text-terminal-positive" : "text-terminal-negative"
+                            }`}
                           >
                             {formatPercent(row.pnlPct)}
                           </td>
-                          <td className="px-3 py-2 text-xs" style={{ color: colors.textSecondary }} title={formatDate(row.entryAt, dateLocale)}>
+                          <td className="px-3 py-2 text-xs text-terminal-textMuted" title={formatDate(row.entryAt, dateLocale)}>
                             {durationText(row.entryAt, new Date(nowMs).toISOString())}
                           </td>
                           <td className="px-3 py-2">
@@ -1209,8 +1196,7 @@ export function PaperTradingPage() {
                                 type="button"
                                 disabled={bulkClosing || closingTradeId === row.id}
                                 onClick={() => openReflectionModal(row)}
-                                className="rounded-md px-3 py-1 text-xs font-semibold text-white disabled:opacity-60"
-                                style={{ backgroundColor: colors.brandDark }}
+                                className={`${TERMINAL_BUTTON_PRIMARY} !px-3 !py-1 text-xs disabled:opacity-60`}
                               >
                                 {closingTradeId === row.id || bulkClosing
                                   ? t("common.loading")
@@ -1231,12 +1217,12 @@ export function PaperTradingPage() {
           )}
         </section>
 
-        <section className="glass-section rounded-2xl p-4 shadow-sm sm:p-5">
-          <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-[#22d3ee]">
+        <section className={TERMINAL_TABLE_SHELL}>
+          <div className={`flex items-center justify-between px-4 py-3 ${TERMINAL_TABLE_HEAD}`}>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-terminal-cyan">
               {t("paperTrading.closedPositionsTitle", { defaultValue: "Closed positions" })}
             </h2>
-            <span className="text-xs text-white/60">
+            <span className="text-xs text-terminal-textMuted">
               {t("paperTrading.recentCount", { count: Math.min(history.length, 10), defaultValue: `Latest ${Math.min(history.length, 10)}` })}
             </span>
           </div>
@@ -1247,8 +1233,8 @@ export function PaperTradingPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-xs">
-                <thead className="text-left uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-                  <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
+                <thead className={`text-left ${TERMINAL_TABLE_HEAD}`}>
+                  <tr className={TERMINAL_TABLE_ROW}>
                     <th className="px-3 py-2">{t("paperTrading.colLogoTicker", { defaultValue: "Logo + Ticker" })}</th>
                     <th className="px-3 py-2">Entry price</th>
                     <th className="px-3 py-2">Exit price</th>
@@ -1259,7 +1245,7 @@ export function PaperTradingPage() {
                 <tbody>
                   {history.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-3 py-5 text-center" style={{ color: colors.textMuted }}>
+                      <td colSpan={5} className="px-3 py-5 text-center text-terminal-textMuted">
                         {t("paperTrading.noTradeHistory", { defaultValue: "No trade history" })}
                       </td>
                     </tr>
@@ -1267,26 +1253,25 @@ export function PaperTradingPage() {
                     history.slice(0, 10).map((row) => {
                       const pnlPct = Number(row.pnlPct ?? 0);
                       return (
-                        <tr key={row.id} style={{ borderBottom: `1px solid ${colors.border}` }}>
+                        <tr key={row.id} className={TERMINAL_TABLE_ROW}>
                           <td className="px-3 py-1.5">
                             <div className="flex items-center gap-2">
-                              <span
-                                className="inline-flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold"
-                                style={{ backgroundColor: colors.bgTertiary, color: colors.brandDark }}
-                              >
+                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary text-[10px] font-semibold text-terminal-cyan">
                                 {row.ticker.slice(0, 2)}
                               </span>
-                              <span className="font-semibold" style={{ color: colors.brandDark }}>
-                                {row.ticker}
-                              </span>
+                              <span className="font-semibold text-terminal-cyan">{row.ticker}</span>
                             </div>
                           </td>
                           <td className="px-3 py-1.5 font-mono">{formatCurrency(row.entryPrice, "USD")}</td>
                           <td className="px-3 py-1.5 font-mono">{formatCurrency(Number(row.exitPrice ?? row.entryPrice), "USD")}</td>
-                          <td className="px-3 py-1.5 font-mono font-semibold" style={{ color: pnlPct >= 0 ? colors.positive : colors.negative }}>
+                          <td
+                            className={`px-3 py-1.5 font-mono font-semibold ${
+                              pnlPct >= 0 ? "text-terminal-positive" : "text-terminal-negative"
+                            }`}
+                          >
                             {formatPercent(pnlPct)}
                           </td>
-                          <td className="px-3 py-1.5" style={{ color: colors.textSecondary }}>
+                          <td className="px-3 py-1.5 text-terminal-textMuted">
                             {durationText(row.entryAt, row.exitAt)}
                           </td>
                         </tr>
@@ -1301,48 +1286,41 @@ export function PaperTradingPage() {
       </div>
 
       {reflectionTrade ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(13,13,26,0.45)" }}>
-          <div
-            className="w-full max-w-lg rounded-2xl border p-5 shadow-[0_28px_72px_rgba(168,85,247,0.28)]"
-            style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
-          >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4">
+          <div className={`w-full max-w-lg p-5 shadow-terminal-panel ${TERMINAL_PANEL}`}>
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold" style={{ color: colors.brandDark }}>
-                {t("reflection.title")}
-              </h3>
-              <span className="rounded-full px-2 py-1 text-xs font-semibold" style={{ backgroundColor: colors.bgTertiary, color: colors.textSecondary }}>
+              <h3 className="text-lg font-bold text-terminal-cyan">{t("reflection.title")}</h3>
+              <span className="rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary px-2 py-1 text-xs font-semibold text-terminal-textMuted">
                 {t("reflection.timer", { seconds: reflectionTimerSec })}
               </span>
             </div>
-            <p className="mb-4 text-sm" style={{ color: colors.textSecondary }}>
+            <p className="mb-4 text-sm text-terminal-textSecondary">
               {t("reflection.subtitle", { symbol: reflectionTrade.ticker })}
             </p>
 
             <div className="space-y-3">
               <div>
-                <p className="mb-2 text-sm" style={{ color: colors.textSecondary }}>
-                  {t("reflection.followedPlan")}
-                </p>
-                <div className="flex overflow-hidden rounded-lg border" style={{ borderColor: colors.borderStrong }}>
+                <p className="mb-2 text-sm text-terminal-textMuted">{t("reflection.followedPlan")}</p>
+                <div className="flex overflow-hidden rounded-lg border border-terminal-borderMuted">
                   <button
                     type="button"
                     onClick={() => setReflectionFollowedPlan(true)}
-                    className="flex-1 px-3 py-2 text-sm font-semibold"
-                    style={{
-                      backgroundColor: reflectionFollowedPlan ? `${colors.positive}20` : colors.bgPrimary,
-                      color: reflectionFollowedPlan ? colors.positive : colors.textSecondary,
-                    }}
+                    className={`flex-1 px-3 py-2 text-sm font-semibold ${
+                      reflectionFollowedPlan
+                        ? "bg-terminal-positive/15 text-terminal-positive"
+                        : "bg-terminal-panelSecondary text-terminal-textMuted"
+                    }`}
                   >
                     {t("reflection.yes")}
                   </button>
                   <button
                     type="button"
                     onClick={() => setReflectionFollowedPlan(false)}
-                    className="flex-1 px-3 py-2 text-sm font-semibold"
-                    style={{
-                      backgroundColor: !reflectionFollowedPlan ? `${colors.negative}20` : colors.bgPrimary,
-                      color: !reflectionFollowedPlan ? colors.negative : colors.textSecondary,
-                    }}
+                    className={`flex-1 px-3 py-2 text-sm font-semibold ${
+                      !reflectionFollowedPlan
+                        ? "bg-terminal-negative/15 text-terminal-negative"
+                        : "bg-terminal-panelSecondary text-terminal-textMuted"
+                    }`}
                   >
                     {t("reflection.no")}
                   </button>
@@ -1350,12 +1328,11 @@ export function PaperTradingPage() {
               </div>
 
               <label className="flex flex-col gap-1 text-sm">
-                <span style={{ color: colors.textSecondary }}>{t("reflection.emotion")}</span>
+                <span className="text-terminal-textMuted">{t("reflection.emotion")}</span>
                 <select
                   value={reflectionEmotion}
                   onChange={(e) => setReflectionEmotion(e.target.value as ReflectionEmotion)}
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                 >
                   <option value="FRUSTRATION">{emotionLabel(t, "FRUSTRATION")}</option>
                   <option value="FEAR">{emotionLabel(t, "FEAR")}</option>
@@ -1366,28 +1343,24 @@ export function PaperTradingPage() {
               </label>
 
               <label className="flex flex-col gap-1 text-sm">
-                <span style={{ color: colors.textSecondary }}>{t("reflection.lesson")}</span>
+                <span className="text-terminal-textMuted">{t("reflection.lesson")}</span>
                 <textarea
                   value={reflectionLesson}
                   maxLength={100}
                   onChange={(e) => setReflectionLesson(e.target.value.slice(0, 100))}
                   placeholder={t("reflection.lessonPlaceholder")}
-                  className="min-h-[88px] rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={`min-h-[88px] ${TERMINAL_INPUT}`}
                 />
-                <span className="text-xs" style={{ color: colors.textMuted }}>
-                  {reflectionLesson.length}/100
-                </span>
+                <span className="text-xs text-terminal-textMuted">{reflectionLesson.length}/100</span>
               </label>
             </div>
 
-            <div className="mt-5 flex gap-2">
+            <div className="mt-5 flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => void closeTradeWithReflection()}
                 disabled={reflectionSubmitting}
-                className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
-                style={{ backgroundColor: colors.brandDark }}
+                className={TERMINAL_BUTTON_PRIMARY}
               >
                 {reflectionSubmitting ? t("common.loading") : t("reflection.saveAndClose")}
               </button>
@@ -1395,8 +1368,7 @@ export function PaperTradingPage() {
                 type="button"
                 onClick={() => void closeTradeWithoutReflection()}
                 disabled={reflectionSubmitting}
-                className="rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-60"
-                style={{ borderColor: colors.borderStrong, color: colors.textSecondary }}
+                className={TERMINAL_BUTTON_SECONDARY}
               >
                 {t("reflection.skip")}
               </button>
@@ -1406,60 +1378,50 @@ export function PaperTradingPage() {
       ) : null}
 
       {preMortemOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(13,13,26,0.45)" }}>
-          <div
-            className="w-full max-w-2xl rounded-2xl border p-5 shadow-[0_28px_72px_rgba(168,85,247,0.24)]"
-            style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
-          >
-            <h3 className="mb-4 text-lg font-bold" style={{ color: colors.brandDark }}>
-              🎯 PRE-MORTEM ANALYSIS
-            </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4">
+          <div className={`w-full max-w-2xl p-5 shadow-terminal-panel ${TERMINAL_PANEL}`}>
+            <h3 className="mb-4 text-lg font-bold text-terminal-cyan">🎯 PRE-MORTEM ANALYSIS</h3>
             <div className="grid gap-3 md:grid-cols-2">
               <label className="flex flex-col gap-1 text-sm">
-                <span style={{ color: colors.textSecondary }}>{t("premortem.symbol")}</span>
+                <span className="text-terminal-textMuted">{t("premortem.symbol")}</span>
                 <input
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                   value={preMortemForm.symbol}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, symbol: e.target.value.toUpperCase() }))}
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm">
-                <span style={{ color: colors.textSecondary }}>{t("premortem.quantity")}</span>
+                <span className="text-terminal-textMuted">{t("premortem.quantity")}</span>
                 <input
                   type="number"
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                   value={preMortemForm.quantity}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, quantity: e.target.value }))}
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm">
-                <span style={{ color: colors.textSecondary }}>{t("premortem.entry")}</span>
+                <span className="text-terminal-textMuted">{t("premortem.entry")}</span>
                 <input
                   type="number"
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                   value={preMortemForm.entry}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, entry: e.target.value }))}
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm">
-                <span style={{ color: colors.textSecondary }}>{t("premortem.stopLoss")}</span>
+                <span className="text-terminal-textMuted">{t("premortem.stopLoss")}</span>
                 <input
                   type="number"
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                   value={preMortemForm.stopLoss}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, stopLoss: e.target.value }))}
                 />
               </label>
               <label className="md:col-span-2 flex flex-col gap-1 text-sm">
-                <span style={{ color: colors.textSecondary }}>{t("premortem.takeProfit")}</span>
+                <span className="text-terminal-textMuted">{t("premortem.takeProfit")}</span>
                 <input
                   type="number"
-                  className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-white outline-none"
-                  style={{ borderColor: colors.borderStrong, color: colors.textPrimary }}
+                  className={TERMINAL_INPUT}
                   value={preMortemForm.takeProfit}
                   onChange={(e) => setPreMortemForm((prev) => ({ ...prev, takeProfit: e.target.value }))}
                 />
@@ -1467,55 +1429,39 @@ export function PaperTradingPage() {
             </div>
 
             <div className="mt-4">
-              <button
-                type="button"
-                onClick={() => void onRunPreMortem()}
-                disabled={runningPreMortem}
-                className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
-                style={{ backgroundColor: colors.brandDark }}
-              >
+              <button type="button" onClick={() => void onRunPreMortem()} disabled={runningPreMortem} className={TERMINAL_BUTTON_PRIMARY}>
                 {runningPreMortem ? t("common.loading") : t("premortem.runButton")}
               </button>
             </div>
 
             {preMortemResult ? (
-              <div className="mt-4 rounded-lg border p-4" style={{ borderColor: `${colors.negative}4D`, backgroundColor: `${colors.negative}12` }}>
-                <p className="text-sm font-semibold" style={{ color: colors.negative }}>
-                  {t("premortem.lossScenario")}
-                </p>
-                <p className="mt-1 text-sm" style={{ color: colors.textPrimary }}>
-                  {preMortemResult.scenario}
-                </p>
+              <div className={`mt-4 ${TERMINAL_DANGER_PANEL}`}>
+                <p className="text-sm font-semibold text-terminal-negative">{t("premortem.lossScenario")}</p>
+                <p className="mt-1 text-sm text-terminal-text">{preMortemResult.scenario}</p>
                 <div className="mt-3 flex flex-wrap gap-2 text-sm">
-                  <span className="rounded px-2 py-1 font-semibold" style={{ backgroundColor: `${colors.brandGold}24`, color: colors.brandMedium }}>
+                  <span className="rounded border border-amber-400/30 bg-amber-500/10 px-2 py-1 font-semibold text-amber-200">
                     {preMortemResult.probability}% chance
                   </span>
-                  <span className="rounded px-2 py-1" style={{ backgroundColor: colors.bgTertiary, color: colors.textPrimary }}>
+                  <span className="rounded border border-terminal-borderMuted bg-terminal-panelSecondary px-2 py-1 text-terminal-text">
                     {Math.abs(preMortemResult.maxLoss).toFixed(2)} PLN (~{(Math.abs(preMortemResult.maxLoss) / PLN_PER_USD).toFixed(2)} USD)
                   </span>
-                  <span className="rounded px-2 py-1" style={{ backgroundColor: colors.bgTertiary, color: colors.textSecondary }}>
+                  <span className="rounded border border-terminal-borderMuted bg-terminal-panelSecondary px-2 py-1 text-terminal-textMuted">
                     {t("premortem.marketRegime")}: {preMortemResult.marketRegime}
                   </span>
                 </div>
               </div>
             ) : null}
 
-            <div className="mt-5 flex gap-2">
+            <div className="mt-5 flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => void onProceedAnyway()}
                 disabled={!preMortemResult || submittingOpen}
-                className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
-                style={{ backgroundColor: colors.positive }}
+                className="rounded-lg bg-terminal-positive px-4 py-2 text-sm font-semibold text-terminal-buttonText transition hover:brightness-110 disabled:opacity-50"
               >
                 {t("premortem.proceed")}
               </button>
-              <button
-                type="button"
-                onClick={() => setPreMortemOpen(false)}
-                className="rounded-lg border px-4 py-2 text-sm font-semibold"
-                style={{ borderColor: colors.borderStrong, color: colors.textSecondary }}
-              >
+              <button type="button" onClick={() => setPreMortemOpen(false)} className={TERMINAL_BUTTON_SECONDARY}>
                 {t("premortem.cancel")}
               </button>
             </div>
@@ -1529,10 +1475,14 @@ export function PaperTradingPage() {
 function StatTile(props: { label: string; value: string; tone?: "default" | "positive" | "negative" }) {
   const tone = props.tone ?? "default";
   const valueColor =
-    tone === "positive" ? "text-emerald-400" : tone === "negative" ? "text-red-400" : "text-white";
+    tone === "positive"
+      ? "text-terminal-positive"
+      : tone === "negative"
+        ? "text-terminal-negative"
+        : "text-terminal-text";
   return (
-    <div className="rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-[#9333ea]/25 px-3 py-2 shadow-[0_8px_24px_rgba(168,85,247,0.12)] backdrop-blur-md">
-      <div className="text-[11px] uppercase tracking-[0.1em] text-white/50">{props.label}</div>
+    <div className={TERMINAL_STATUS_CARD}>
+      <div className="text-[11px] uppercase tracking-[0.1em] text-terminal-textMuted">{props.label}</div>
       <div className={`mt-1 font-mono text-xl font-semibold ${valueColor}`}>{props.value}</div>
     </div>
   );
@@ -1542,13 +1492,9 @@ function TableSkeleton(props: { rows: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: props.rows }).map((_, idx) => (
-        <div
-          key={`sk-${idx}`}
-          className="animate-pulse rounded border p-3"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-        >
-          <div className="h-4 w-1/4 rounded" style={{ backgroundColor: colors.borderStrong }} />
-          <div className="mt-2 h-4 w-full rounded" style={{ backgroundColor: colors.border }} />
+        <div key={`sk-${idx}`} className={`${TERMINAL_SKELETON} p-3`}>
+          <div className="h-4 w-1/4 rounded bg-terminal-borderMuted" />
+          <div className="mt-2 h-4 w-full rounded bg-terminal-border" />
         </div>
       ))}
     </div>

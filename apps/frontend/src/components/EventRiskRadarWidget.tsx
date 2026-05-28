@@ -43,17 +43,17 @@ function importanceLabel(
 }
 
 function importanceBadgeClass(importance: EventImportance): string {
-  if (importance === "critical") return "border-red-400/40 bg-red-500/15 text-red-200";
+  if (importance === "critical") return "border-terminal-negative/40 bg-terminal-negative/15 text-terminal-negative";
   if (importance === "high") return "border-amber-400/40 bg-amber-500/15 text-amber-100";
-  if (importance === "medium") return "border-[#22d3ee]/35 bg-[#22d3ee]/10 text-[#22d3ee]";
-  return "border-white/15 bg-white/5 text-white/60";
+  if (importance === "medium") return "border-terminal-cyan/35 bg-terminal-cyan/10 text-terminal-cyan";
+  return "border-terminal-borderMuted bg-terminal-panelSecondary text-terminal-textMuted";
 }
 
 function eventTypeBadgeClass(type: MarketEventType): string {
-  if (type === "earnings") return "border-[#a855f7]/40 bg-[#a855f7]/15 text-[#e9d5ff]";
-  if (type === "dividend") return "border-[#22d3ee]/35 bg-[#22d3ee]/10 text-[#22d3ee]";
-  if (type === "macro") return "border-indigo-400/35 bg-indigo-500/10 text-indigo-200";
-  return "border-white/15 bg-white/5 text-white/70";
+  if (type === "earnings") return "border-terminal-cyan/35 bg-terminal-cyan/10 text-terminal-cyan";
+  if (type === "dividend") return "border-terminal-cyan/30 bg-terminal-panelSecondary text-terminal-cyan";
+  if (type === "macro") return "border-terminal-borderMuted bg-terminal-panelSecondary text-terminal-textSecondary";
+  return "border-terminal-borderMuted bg-terminal-panelSecondary text-terminal-textMuted";
 }
 
 function formatDaysToEvent(
@@ -130,12 +130,12 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <CalendarDaysIcon className="h-5 w-5 text-[#22d3ee]" aria-hidden />
+            <CalendarDaysIcon className="h-5 w-5 text-terminal-cyan" aria-hidden />
             <h2 className={GLASS_SECTION_TITLE}>
               {t("marketEvents.radar.title", { defaultValue: "Event Risk Radar" })}
             </h2>
           </div>
-          <p className="mt-2 max-w-xl text-sm text-white/60">
+          <p className="mt-2 max-w-xl text-sm text-terminal-textMuted">
             {t("marketEvents.radar.subtitle", {
               defaultValue: "Upcoming events that may affect your decisions.",
             })}
@@ -150,25 +150,25 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
       </div>
 
       {loading ? (
-        <p className={`${GLASS_INNER_PANEL} px-4 py-3 text-sm text-white/60`}>
+        <p className={`${GLASS_INNER_PANEL} px-4 py-3 text-sm text-terminal-textMuted`}>
           {t("common.loading", { defaultValue: "Loading..." })}
         </p>
       ) : null}
 
       {error ? (
-        <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 backdrop-blur-md">
+        <p className="rounded-lg border border-terminal-negative/35 bg-terminal-negative/10 px-4 py-3 text-sm text-terminal-negative">
           {error}
         </p>
       ) : null}
 
       {!loading && !error && scope === "empty-watchlist" ? (
         <div className={`${GLASS_INNER_PANEL} border-dashed px-4 py-5 text-sm`}>
-          <p className="font-medium text-white">
+          <p className="font-medium text-terminal-text">
             {t("marketEvents.radar.emptyWatchlistTitle", {
               defaultValue: "Add companies to unlock your Event Risk Radar",
             })}
           </p>
-          <p className="mt-2 text-white/60">
+          <p className="mt-2 text-terminal-textMuted">
             {t("marketEvents.radar.emptyWatchlistBody", {
               defaultValue:
                 "We will track earnings, dividends and key market events for the stocks you actually follow.",
@@ -182,10 +182,10 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
 
       {!loading && !error && hasWatchlist && topEvents.length === 0 ? (
         <div className={`${GLASS_INNER_PANEL} border-dashed px-4 py-4 text-sm`}>
-          <p className="font-medium text-white">
+          <p className="font-medium text-terminal-text">
             {t("marketEvents.radar.emptyTitle", { defaultValue: "No upcoming events in this horizon" })}
           </p>
-          <p className="mt-2 text-white/60">
+          <p className="mt-2 text-terminal-textMuted">
             {t("marketEvents.radar.emptyHint", {
               defaultValue: "Check back soon or open the calendar for the full schedule.",
             })}
@@ -199,7 +199,7 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
       {!loading && !error && topEvents.length > 0 ? (
         <>
           {scope === "global" ? (
-            <p className="mb-3 text-xs text-white/50">
+            <p className="mb-3 text-xs text-terminal-textMuted">
               {t("marketEvents.radar.globalFallback", {
                 defaultValue: "No watchlist events found — showing nearest global events.",
               })}
@@ -216,7 +216,7 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
                 <li key={event.id} className={`${GLASS_INNER_PANEL} p-4`}>
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono text-sm font-bold text-white">
+                      <span className="font-mono text-sm font-bold text-terminal-text">
                         {symbol ?? t("marketEvents.macroSymbol", { defaultValue: "MACRO" })}
                       </span>
                       <span
@@ -225,7 +225,7 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
                         {eventTypeLabel(event.eventType, t)}
                       </span>
                       {onWatchlist ? (
-                        <span className="rounded-full border border-[#a855f7]/35 bg-[#a855f7]/10 px-2 py-0.5 text-[10px] font-semibold text-[#e9d5ff]">
+                        <span className="rounded-full border border-terminal-cyan/35 bg-terminal-cyan/10 px-2 py-0.5 text-[10px] font-semibold text-terminal-cyan">
                           {t("marketEvents.radar.onWatchlist", { defaultValue: "Watchlist" })}
                         </span>
                       ) : null}
@@ -237,14 +237,14 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
                     </span>
                   </div>
 
-                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/55">
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-terminal-textMuted">
                     <span>{formatEventDate(event.eventDate, locale)}</span>
-                    <span className="font-semibold text-[#22d3ee]">{formatDaysToEvent(event.daysToEvent, t)}</span>
+                    <span className="font-semibold text-terminal-cyan">{formatDaysToEvent(event.daysToEvent, t)}</span>
                     {event.eventType === "dividend" && symbol ? (() => {
                       const dividend = readDividendPayload(event.payload);
                       if (dividend?.dividendPerShare == null) return null;
                       return (
-                        <span className="font-mono text-white/75">
+                        <span className="font-mono text-terminal-textSecondary">
                           {formatDividendPerShareAmount(dividend.dividendPerShare, symbol, {
                             currency: dividend.currency,
                           })}
@@ -254,9 +254,9 @@ export function EventRiskRadarWidget({ watchlistSymbols }: EventRiskRadarWidgetP
                   </div>
 
                   {event.summary?.trim() ? (
-                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-white/75">{event.summary}</p>
+                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-terminal-textSecondary">{event.summary}</p>
                   ) : (
-                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-white/55">{event.title}</p>
+                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-terminal-textMuted">{event.title}</p>
                   )}
 
                   <div className="mt-3 flex flex-wrap items-center gap-3">

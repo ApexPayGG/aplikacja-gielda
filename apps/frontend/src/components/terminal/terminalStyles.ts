@@ -194,3 +194,37 @@ export const TERMINAL_CHECKBOX_ROW =
 
 export const TERMINAL_INFO_BANNER =
   "rounded-lg border border-terminal-cyan/35 bg-terminal-cyan/10 p-4 text-sm text-terminal-text";
+
+/** Behavioral coach / discipline cockpit */
+export const TERMINAL_COACH_PANEL = `${TERMINAL_PANEL} p-5 sm:p-6`;
+
+export const TERMINAL_COACH_CARD =
+  "rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/70 p-4";
+
+export const TERMINAL_COACH_METRIC = `${TERMINAL_METRIC_TILE}`;
+
+export const TERMINAL_JOURNAL_ENTRY =
+  "flex flex-wrap items-center justify-between gap-2 rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/60 px-3 py-2 text-sm";
+
+export const TERMINAL_INTERVENTION_CARD =
+  "relative border-l border-terminal-cyan/30 pl-6";
+
+export const TERMINAL_PSYCHE_PANEL = TERMINAL_COACH_PANEL;
+
+export const TERMINAL_PAPER_TRADING_PANEL = `${TERMINAL_PANEL} p-4 sm:p-5`;
+
+export const TERMINAL_TRADE_CARD = TERMINAL_COACH_CARD;
+
+export const TERMINAL_ORDER_PANEL = `${TERMINAL_FILTER_PANEL}`;
+
+export const TERMINAL_BROKER_PANEL = `${TERMINAL_INFO_BANNER}`;
+
+export const TERMINAL_TABLE_SHELL = `${TERMINAL_PAPER_TRADING_PANEL} overflow-hidden`;
+
+export const TERMINAL_TABLE_HEAD =
+  "border-b border-terminal-border text-left text-xs uppercase tracking-wide text-terminal-textMuted";
+
+export const TERMINAL_TABLE_ROW = "border-b border-terminal-borderMuted";
+
+export const TERMINAL_SKELETON =
+  "animate-pulse rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary";

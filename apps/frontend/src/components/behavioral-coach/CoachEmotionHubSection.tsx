@@ -17,7 +17,7 @@ export function CoachEmotionHubSection({ emotion, emotionAcknowledged, onSelectE
       <h2 className={GLASS_SECTION_TITLE}>
         {t("coach.emotionHub.title", { defaultValue: "Emotion center & paper trading" })}
       </h2>
-      <p className="mt-1 text-sm text-white/55">
+      <p className="mt-1 text-sm text-terminal-textMuted">
         {t("coach.emotionHub.subtitle", {
           defaultValue: "Emotion selection is required — you cannot place a simulated order or journal entry without it.",
         })}

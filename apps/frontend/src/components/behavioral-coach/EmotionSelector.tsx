@@ -29,7 +29,7 @@ export function EmotionSelector({ emotion, acknowledged, onSelect, compact }: Pr
 
   return (
     <fieldset>
-      <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/60">
+      <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">
         {acknowledged
           ? t("coach.emotion.activeLegend", { defaultValue: "Active emotion" })
           : t("coach.emotion.selectLegend", { defaultValue: "Select emotion (required)" })}
@@ -42,10 +42,10 @@ export function EmotionSelector({ emotion, acknowledged, onSelect, compact }: Pr
               key={key}
               type="button"
               onClick={() => onSelect(key)}
-              className={`min-h-12 rounded-xl border px-3 py-3.5 text-left text-sm transition ${
+              className={`min-h-12 rounded-lg border px-3 py-3.5 text-left text-sm transition ${
                 selected
-                  ? "border-[#22d3ee]/50 bg-[#22d3ee]/15 text-white shadow-[0_0_20px_rgba(34,211,238,0.15)]"
-                  : "border-white/10 bg-[#1e1b4b]/20 text-white/75 hover:border-white/20"
+                  ? "border-terminal-cyan/50 bg-terminal-cyan/15 text-terminal-text shadow-terminal-glow"
+                  : "border-terminal-borderMuted bg-terminal-panelSecondary text-terminal-textSecondary hover:border-terminal-cyan/30"
               }`}
             >
               <span className="block font-semibold">
@@ -56,7 +56,7 @@ export function EmotionSelector({ emotion, acknowledged, onSelect, compact }: Pr
         })}
       </div>
       {emotion && acknowledged ? (
-        <p className="mt-2 text-xs text-[#22d3ee]/80">
+        <p className="mt-2 text-xs text-terminal-cyan/80">
           {t(`coach.emotion.${emotion}.hint`, { defaultValue: EMOTION_HINT_DEFAULTS[emotion] })}
         </p>
       ) : (

@@ -53,7 +53,7 @@ export function CoachInterventionsSection({ interventions, loading }: Props) {
       <h2 className={GLASS_SECTION_TITLE}>
         {t("coach.interventions.title", { defaultValue: "Recent coach interventions" })}
       </h2>
-      <p className="mt-1 text-sm text-white/55">
+      <p className="mt-1 text-sm text-terminal-textMuted">
         {t("coach.interventions.subtitle", {
           defaultValue: "AI alert timeline protecting capital from common behavioral mistakes.",
         })}
@@ -62,30 +62,30 @@ export function CoachInterventionsSection({ interventions, loading }: Props) {
       {loading ? (
         <ul className="mt-5 space-y-3" aria-hidden>
           {Array.from({ length: 4 }).map((_, idx) => (
-            <li key={`sk-int-${idx}`} className="h-20 animate-pulse rounded-xl bg-white/5" />
+            <li key={`sk-int-${idx}`} className="h-20 animate-pulse rounded-lg bg-terminal-panelSecondary" />
           ))}
         </ul>
       ) : (
-        <ol className="relative mt-6 space-y-0 border-l border-[#22d3ee]/30 pl-6">
+        <ol className="relative mt-6 space-y-0 border-l border-terminal-cyan/30 pl-6">
           {interventions.map((item, index) => {
             const Icon = interventionIcon(item.type);
             const isLast = index === interventions.length - 1;
             return (
               <li key={item.id} className={`relative ${isLast ? "" : "pb-8"}`}>
                 <span
-                  className="absolute -left-[1.9rem] top-1 flex h-8 w-8 items-center justify-center rounded-full border border-[#22d3ee]/40 bg-[#1e1b4b]/80 text-[#22d3ee] shadow-[0_0_16px_rgba(34,211,238,0.25)]"
+                  className="absolute -left-[1.9rem] top-1 flex h-8 w-8 items-center justify-center rounded-full border border-terminal-cyan/40 bg-terminal-panel text-terminal-cyan shadow-terminal-glow"
                   aria-hidden
                 >
                   <Icon className="h-4 w-4" />
                 </span>
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#22d3ee]/80">{formatWhen(item.at)}</p>
-                <p className="mt-1 text-sm leading-relaxed text-white/85">
+                <p className="text-xs font-semibold uppercase tracking-wide text-terminal-cyan/80">{formatWhen(item.at)}</p>
+                <p className="mt-1 text-sm leading-relaxed text-terminal-text">
                   {t(item.messageKey, {
                     defaultValue: INTERVENTION_DEFAULTS[item.messageKey] ?? item.messageKey,
                   })}
                 </p>
                 {typeof item.savedUsd === "number" ? (
-                  <p className="mt-2 inline-flex rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-300">
+                  <p className="mt-2 inline-flex rounded-full border border-terminal-positive/30 bg-terminal-positive/10 px-2.5 py-0.5 text-xs font-semibold text-terminal-positive">
                     {t("coach.interventions.savedUsd", {
                       amount: item.savedUsd,
                       defaultValue: "Saved: ${{amount}}",

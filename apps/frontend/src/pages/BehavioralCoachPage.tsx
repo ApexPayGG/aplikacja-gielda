@@ -20,6 +20,16 @@ import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { normalizeCoachAiDescription } from "../utils/runtimeI18n";
 import { resolveUiLocaleForCopy } from "../i18n";
 import { isFreePlan } from "../utils/subscriptionTier";
+import {
+  TERMINAL_APP_BG,
+  TERMINAL_COACH_PANEL,
+  TERMINAL_DANGER_PANEL,
+  TERMINAL_INFO_BANNER,
+  TERMINAL_LIVE_STATUS,
+  TERMINAL_PAGE_SHELL,
+  TERMINAL_PAGE_SUBTITLE,
+  TERMINAL_PAGE_TITLE,
+} from "../components/terminal/terminalStyles";
 
 type CoachSnapshot = CoachSnapshotLike & {
   userId: string;
@@ -189,17 +199,17 @@ export function BehavioralCoachPage() {
   );
 
   return (
-    <div className="relative overflow-x-hidden">
-      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:py-10">
-        <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div className={`${TERMINAL_APP_BG} relative overflow-x-hidden`}>
+      <div className={`${TERMINAL_PAGE_SHELL} mx-auto max-w-6xl space-y-6 py-8 sm:py-10`}>
+        <header className={`${TERMINAL_COACH_PANEL} flex flex-col gap-4 md:flex-row md:items-end md:justify-between`}>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#22d3ee]">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-terminal-cyan">
               {t("coach.brandLabel", { defaultValue: "StockAI Coach" })}
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            <h1 className={`mt-2 ${TERMINAL_PAGE_TITLE}`}>
               {t("coach.title", { defaultValue: "Behavioral Coach" })}
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-white/60 sm:text-base">
+            <p className={`mt-2 max-w-2xl ${TERMINAL_PAGE_SUBTITLE}`}>
               {t("coach.subtitle", {
                 defaultValue: "Spot FOMO, revenge trading, and overtrading before they cost you real capital.",
               })}
@@ -210,7 +220,7 @@ export function BehavioralCoachPage() {
               className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold ${
                 usingMock
                   ? "border-amber-400/40 bg-amber-500/10 text-amber-200"
-                  : "border-white/15 bg-[#1e1b4b]/20 text-white/70"
+                  : "border-terminal-borderMuted bg-terminal-panelSecondary text-terminal-textSecondary"
               }`}
             >
               {usingMock ? t("common.apiMockBadge") : t("common.apiLiveBadge")}
@@ -219,8 +229,8 @@ export function BehavioralCoachPage() {
               <span
                 className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold ${
                   behavioralSyncSource === "api"
-                    ? "border-emerald-400/35 bg-emerald-500/10 text-emerald-200"
-                    : "border-white/15 bg-white/5 text-white/65"
+                    ? "border-terminal-positive/35 bg-terminal-positive/10 text-terminal-positive"
+                    : "border-terminal-borderMuted bg-terminal-panelSecondary text-terminal-textMuted"
                 }`}
               >
                 {behavioralSyncSource === "api"
@@ -231,29 +241,27 @@ export function BehavioralCoachPage() {
           </div>
         </header>
 
-        <section className="rounded-2xl border border-white/10 bg-[#1e1b4b]/10 p-4 backdrop-blur-md">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-white/60">{t("cooldown.title")}</h2>
+        <section className={TERMINAL_COACH_PANEL}>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">{t("cooldown.title")}</h2>
           {cooldown?.active ? (
-            <div className="mt-3 rounded-xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-100">
+            <div className={`mt-3 ${TERMINAL_DANGER_PANEL}`}>
               <p className="font-medium">{cooldown.message}</p>
               {cooldown.unlocksAt ? (
                 <p className="mt-2 text-red-200/80">
                   {t("cooldown.unlocksIn")}{" "}
-                  <span className="font-mono font-semibold text-white">{formatCountdown(cooldown.unlocksAt, nowTs)}</span>
+                  <span className="font-mono font-semibold text-terminal-text">{formatCountdown(cooldown.unlocksAt, nowTs)}</span>
                 </p>
               ) : null}
             </div>
           ) : (
-            <p className="mt-3 rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+            <p className="mt-3 rounded-lg border border-terminal-positive/30 bg-terminal-positive/10 px-4 py-3 text-sm text-terminal-positive">
               {t("cooldown.inactive")}
             </p>
           )}
-          {cooldownError ? <p className="mt-2 text-xs text-red-300">{cooldownError}</p> : null}
+          {cooldownError ? <p className="mt-2 text-xs text-terminal-negative">{cooldownError}</p> : null}
         </section>
 
-        {error ? (
-          <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">{error}</div>
-        ) : null}
+        {error ? <div className={TERMINAL_DANGER_PANEL}>{error}</div> : null}
 
         <TraderPsycheProfileSection
           metrics={psycheMetrics}
@@ -291,16 +299,16 @@ export function BehavioralCoachPage() {
         {showBrokerPaywall ? <BrokerIntegrationPaywall /> : null}
 
         {!loading && coachAiNote ? (
-          <section className="rounded-2xl border border-[#22d3ee]/20 bg-gradient-to-br from-[#a855f7]/30 to-[#22d3ee]/10 p-5 backdrop-blur-md">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[#22d3ee]">
+          <section className={TERMINAL_INFO_BANNER}>
+            <p className={`${TERMINAL_LIVE_STATUS} inline-flex`}>
               <SparklesIcon className="h-4 w-4" aria-hidden />
               {t("coach.aiCoach", { defaultValue: "AI coach note" })}
             </p>
-            <p className="mt-3 text-base leading-relaxed text-white/90">“{coachAiNote}”</p>
+            <p className="mt-3 text-base leading-relaxed text-terminal-text">“{coachAiNote}”</p>
           </section>
         ) : !loading ? (
-          <section className="rounded-2xl border border-white/10 bg-[#1e1b4b]/15 p-5 backdrop-blur-md">
-            <p className="text-sm text-white/60">
+          <section className={TERMINAL_COACH_PANEL}>
+            <p className="text-sm text-terminal-textMuted">
               {t("coach.aiDescriptionEmpty", { defaultValue: "No AI coach content yet." })}
             </p>
           </section>

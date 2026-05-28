@@ -39,12 +39,12 @@ function MetricBar({ label, score }: { label: string; score: number }) {
   return (
     <div>
       <div className="mb-1 flex items-center justify-between text-xs">
-        <span className="text-white/70">{label}</span>
-        <span className="font-mono font-semibold text-[#22d3ee]">{score}</span>
+        <span className="text-terminal-textSecondary">{label}</span>
+        <span className="font-mono font-semibold text-terminal-cyan">{score}</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full border border-white/10 bg-[#1e1b4b]/30">
+      <div className="h-2 overflow-hidden rounded-full border border-terminal-borderMuted bg-terminal-panelSecondary">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-[#a855f7] to-[#22d3ee]"
+          className="h-full rounded-full bg-gradient-to-r from-terminal-cyan/80 to-terminal-cyan"
           style={{ width: `${score}%` }}
         />
       </div>
@@ -94,13 +94,13 @@ export function TraderPsycheProfileSection({ metrics, growthScore, history = [],
           <h2 className={GLASS_SECTION_TITLE}>
             {t("coach.psycheProfileTitle", { defaultValue: "Your trader psyche profile" })}
           </h2>
-          <p className="mt-1 text-sm text-white/55">
+          <p className="mt-1 text-sm text-terminal-textMuted">
             {t("coach.psycheProfileSubtitle", {
               defaultValue: "Metrics synced with paper trading and your emotion journal.",
             })}
           </p>
         </div>
-        <span className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-[#22d3ee]/25 bg-[#22d3ee]/10 px-3 py-1 text-xs font-medium text-[#22d3ee] sm:w-auto">
+        <span className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-terminal-cyan/25 bg-terminal-cyan/10 px-3 py-1 text-xs font-medium text-terminal-cyan sm:w-auto">
           <SparklesIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
           {t("coach.psycheIndex", {
             score: loading ? "—" : averageScore,
@@ -110,7 +110,7 @@ export function TraderPsycheProfileSection({ metrics, growthScore, history = [],
       </div>
 
       {loading ? (
-        <div className="h-56 animate-pulse rounded-xl bg-white/5 sm:h-64" aria-hidden />
+        <div className="h-56 animate-pulse rounded-lg bg-terminal-panelSecondary sm:h-64" aria-hidden />
       ) : (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="flex w-full min-w-0 flex-col">
@@ -130,7 +130,7 @@ export function TraderPsycheProfileSection({ metrics, growthScore, history = [],
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "rgba(26, 5, 56, 0.95)",
+                      backgroundColor: "rgb(11 18 32 / 0.98)",
                       border: "1px solid rgba(255,255,255,0.12)",
                       borderRadius: "12px",
                       color: "#fff",
@@ -148,8 +148,8 @@ export function TraderPsycheProfileSection({ metrics, growthScore, history = [],
               <MetricBar key={row.metricKey} label={metricLabel(row.metricKey)} score={row.score} />
             ))}
             {historyChartData.length > 1 ? (
-              <div className="mt-2 rounded-xl border border-white/10 bg-white/5 p-3">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/50">
+              <div className="mt-2 rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/70 p-3">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-terminal-textMuted">
                   {t("coach.growthTrend", { defaultValue: "Growth trend (30 days)" })}
                 </p>
                 <div className="h-28 w-full min-w-0">
@@ -159,7 +159,7 @@ export function TraderPsycheProfileSection({ metrics, growthScore, history = [],
                       <YAxis domain={[0, 100]} tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 10 }} width={28} />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "rgba(26, 5, 56, 0.95)",
+                          backgroundColor: "rgb(11 18 32 / 0.98)",
                           border: "1px solid rgba(255,255,255,0.12)",
                           borderRadius: "12px",
                           color: "#fff",

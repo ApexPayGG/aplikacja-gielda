@@ -9,6 +9,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { PsycheRadarPoint } from "../../utils/behavioralCoachData";
 import { buildTraderProfileSharePayloads } from "../../utils/traderProfileShare";
+import { GLASS_BTN_PRIMARY } from "./glassStyles";
+import { TERMINAL_DROPDOWN_PANEL, TERMINAL_INFO_BANNER, TERMINAL_SECTION_TITLE } from "../terminal/terminalStyles";
 
 type Props = {
   metrics: PsycheRadarPoint[];
@@ -26,10 +28,10 @@ type ShareOption = {
 
 const SHARE_OPTIONS: ShareOption[] = [
   { id: "linkedin", label: "LinkedIn", sublabel: "Professional post + link", accent: "bg-[#0A66C2]/20 text-[#6CB6FF]" },
-  { id: "twitter", label: "X (Twitter)", sublabel: "Tweet intent with hashtags", accent: "bg-white/10 text-white" },
+  { id: "twitter", label: "X (Twitter)", sublabel: "Tweet intent with hashtags", accent: "bg-terminal-panelSecondary text-terminal-text" },
   { id: "facebook", label: "Facebook", sublabel: "Share + text to clipboard", accent: "bg-[#1877F2]/20 text-[#7CB8FF]" },
-  { id: "threads", label: "Threads", sublabel: "Same payload as X", accent: "bg-white/10 text-white/90" },
-  { id: "copy", label: "Copy link", sublabel: "Discord · Telegram · WhatsApp", accent: "bg-[#22d3ee]/15 text-[#22d3ee]" },
+  { id: "threads", label: "Threads", sublabel: "Same payload as X", accent: "bg-terminal-panelSecondary text-terminal-textSecondary" },
+  { id: "copy", label: "Copy link", sublabel: "Discord · Telegram · WhatsApp", accent: "bg-terminal-cyan/15 text-terminal-cyan" },
 ];
 
 function openShareWindow(url: string): void {
@@ -159,11 +161,11 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#22d3ee]/35 bg-gradient-to-r from-[#a855f7]/40 to-[#22d3ee]/20 px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_24px_rgba(34,211,238,0.12)] backdrop-blur-md transition hover:border-[#22d3ee]/55 hover:shadow-[0_0_28px_rgba(34,211,238,0.2)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        className={`inline-flex min-h-12 w-full sm:w-auto ${GLASS_BTN_PRIMARY} disabled:cursor-not-allowed disabled:opacity-50`}
       >
-        <ShareIcon className="h-5 w-5 text-[#22d3ee]" aria-hidden />
+        <ShareIcon className="h-5 w-5 text-terminal-cyan" aria-hidden />
         {t("coach.share.profileCta", { defaultValue: "Share profile" })}
-        <ChevronDownIcon className={`h-4 w-4 text-white/70 transition ${open ? "rotate-180" : ""}`} aria-hidden />
+        <ChevronDownIcon className={`h-4 w-4 text-terminal-textSecondary transition ${open ? "rotate-180" : ""}`} aria-hidden />
       </button>
 
       {open ? (
@@ -176,13 +178,13 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
           />
           <div
             role="menu"
-            className="fixed inset-x-3 bottom-3 z-30 max-h-[min(70vh,28rem)] overflow-y-auto rounded-2xl border border-white/10 bg-[#0f111c]/98 shadow-[0_16px_48px_rgba(168,85,247,0.55)] backdrop-blur-md md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:right-auto md:top-full md:mt-2 md:max-h-none md:min-w-[20rem]"
+            className={`fixed inset-x-3 bottom-3 z-30 max-h-[min(70vh,28rem)] overflow-y-auto md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:right-auto md:top-full md:mt-2 md:max-h-none md:min-w-[20rem] ${TERMINAL_DROPDOWN_PANEL}`}
           >
-          <div className="border-b border-white/10 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#22d3ee]">
+          <div className="border-b border-terminal-border px-4 py-3">
+            <p className={TERMINAL_SECTION_TITLE}>
               {t("coach.share.centerTitle", { defaultValue: "Share center" })}
             </p>
-            <p className="mt-0.5 text-xs text-white/55">
+            <p className="mt-0.5 text-xs text-terminal-textMuted">
               {t("coach.share.scoresLine", {
                 discipline: payloads.disciplineScore,
                 fomo: payloads.fomoScore,
@@ -197,23 +199,23 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
                   type="button"
                   role="menuitem"
                   onClick={() => void handleShare(option.id)}
-                  className="flex min-h-12 w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-white/5"
+                  className="flex min-h-12 w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-terminal-panelSecondary"
                 >
                   <span className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${option.accent}`}>
                     {option.id === "copy" ? <LinkIcon className="h-4 w-4" /> : option.label.slice(0, 2)}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-semibold text-white">
+                    <span className="block text-sm font-semibold text-terminal-text">
                       {t(`coach.share.channels.${option.id}.label`, { defaultValue: option.label })}
                     </span>
-                    <span className="block text-[11px] text-white/45">
+                    <span className="block text-[11px] text-terminal-textMuted">
                       {t(`coach.share.channels.${option.id}.sublabel`, { defaultValue: option.sublabel })}
                     </span>
                   </span>
                   {copiedChannel === option.id ? (
-                    <CheckIcon className="h-4 w-4 shrink-0 text-[#22d3ee]" aria-hidden />
+                    <CheckIcon className="h-4 w-4 shrink-0 text-terminal-cyan" aria-hidden />
                   ) : option.id === "copy" ? (
-                    <ClipboardDocumentIcon className="h-4 w-4 shrink-0 text-white/35" aria-hidden />
+                    <ClipboardDocumentIcon className="h-4 w-4 shrink-0 text-terminal-textMuted" aria-hidden />
                   ) : null}
                 </button>
               </li>
@@ -226,7 +228,7 @@ export function TraderProfileShareMenu({ metrics, disabled }: Props) {
       {toast ? (
         <div
           role="status"
-          className="absolute left-0 right-0 top-full z-40 mt-2 rounded-xl border border-[#22d3ee]/30 bg-[#1e1b4b]/95 px-4 py-3 text-sm text-white shadow-lg backdrop-blur-md"
+          className={`absolute left-0 right-0 top-full z-40 mt-2 text-sm ${TERMINAL_INFO_BANNER}`}
         >
           {toast}
         </div>
