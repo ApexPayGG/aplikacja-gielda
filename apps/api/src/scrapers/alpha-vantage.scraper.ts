@@ -29,7 +29,7 @@ export async function fetchAlphaVantageGlobalQuote(symbol: string): Promise<Mark
     apikey: apiKey,
   });
   const res = await fetch(`${BASE}?${params}`);
-  if (!res.ok) throw new Error(`Alpha Vantage HTTP ${res.status}: ${await res.text()}`);
+  if (!res.ok) throw new Error(`Alpha Vantage HTTP ${res.status}`);
 
   const data = (await res.json()) as AlphaVantageGlobalQuoteResponse;
   if (data["Error Message"]) throw new Error(`Alpha Vantage: ${data["Error Message"]}`);
@@ -69,15 +69,15 @@ export async function fetchAlphaVantageLatestRSI(
   });
 
   const res = await fetch(`${BASE}?${params}`);
-  if (!res.ok) throw new Error(`Alpha Vantage HTTP ${res.status}: ${await res.text()}`);
+  if (!res.ok) throw new Error(`Alpha Vantage HTTP ${res.status}`);
 
   const data = (await res.json()) as Record<string, unknown>;
-  if (typeof data["Error Message"] === "string") throw new Error(`Alpha Vantage: ${data["Error Message"]}`);
-  if (typeof data.Note === "string") throw new Error(`Alpha Vantage rate limit: ${data.Note}`);
+  if (typeof data["Error Message"] === "string") throw new Error("Alpha Vantage returned an error response");
+  if (typeof data.Note === "string" || typeof data.Information === "string") throw new Error("Alpha Vantage rate limit or informational response");
 
   const series = data["Technical Analysis: RSI"] as Record<string, { RSI?: string }> | undefined;
   if (!series || typeof series !== "object") {
-    throw new Error(`Alpha Vantage RSI unexpected: ${JSON.stringify(data).slice(0, 400)}`);
+    throw new Error("Alpha Vantage RSI response missing Technical Analysis series");
   }
 
   const dates = Object.keys(series).sort((a, b) => b.localeCompare(a));

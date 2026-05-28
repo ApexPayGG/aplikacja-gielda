@@ -21,9 +21,18 @@ export type NewsInsertData = {
 };
 
 export async function insertQuote(symbol: string, data: QuoteInsertData): Promise<Quote> {
-  return prisma.quote.create({
-    data: {
-      symbol: symbol.toUpperCase(),
+  const normalizedSymbol = symbol.toUpperCase();
+
+  return prisma.quote.upsert({
+    where: {
+      symbol_timestamp_source: {
+        symbol: normalizedSymbol,
+        timestamp: data.timestamp,
+        source: data.source,
+      },
+    },
+    create: {
+      symbol: normalizedSymbol,
       timestamp: data.timestamp,
       open: new Prisma.Decimal(data.open),
       high: new Prisma.Decimal(data.high),
@@ -31,6 +40,13 @@ export async function insertQuote(symbol: string, data: QuoteInsertData): Promis
       close: new Prisma.Decimal(data.close),
       volume: BigInt(data.volume),
       source: data.source,
+    },
+    update: {
+      open: new Prisma.Decimal(data.open),
+      high: new Prisma.Decimal(data.high),
+      low: new Prisma.Decimal(data.low),
+      close: new Prisma.Decimal(data.close),
+      volume: BigInt(data.volume),
     },
   });
 }

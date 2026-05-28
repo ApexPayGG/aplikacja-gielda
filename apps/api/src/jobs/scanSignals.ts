@@ -12,7 +12,7 @@ export const SCAN_SIGNALS_QUEUE_NAME = "scan-signals";
 export const ALERT_QUEUE_NAME = "alert-push";
 const TOP_TICKERS_CACHE_KEY = "scan-signals:top_tickers";
 const TOP_TICKERS_TTL_SEC = 60 * 5;
-const SCANNER_BASE_URL = (process.env.SCANNER_BASE_URL ?? "http://localhost:8000").replace(/\/+$/, "");
+const SCANNER_BASE_URL = process.env.SCANNER_BASE_URL?.trim().replace(/\/+$/, "") ?? "";
 
 export interface ScanSignalsResult {
   processed: number;
@@ -167,6 +167,46 @@ function resolveConfidence(
   return calculateConfidence(anomalies.length, patterns.length);
 }
 
+function runLocalScannerAnalysis(input: { ticker: string; bars: MarketBar[] }): ScannerResponse {
+  const bars = input.bars.filter((bar) =>
+    Number.isFinite(bar.close) &&
+    Number.isFinite(bar.volume) &&
+    bar.close > 0 &&
+    bar.volume >= 0,
+  );
+
+  if (bars.length < 10) return { anomalies: [], patterns: [] };
+
+  const latest = bars[bars.length - 1];
+  const previous = bars.slice(Math.max(0, bars.length - 11), -1);
+  const avgVolume = previous.reduce((sum, bar) => sum + bar.volume, 0) / Math.max(1, previous.length);
+  const ma5 = bars.slice(-5).reduce((sum, bar) => sum + bar.close, 0) / 5;
+  const ma10 = bars.slice(-10).reduce((sum, bar) => sum + bar.close, 0) / 10;
+  const prevClose = bars[bars.length - 2]?.close ?? latest.close;
+  const dailyMovePct = prevClose > 0 ? ((latest.close - prevClose) / prevClose) * 100 : 0;
+
+  const anomalies: unknown[] = [];
+  const patterns: unknown[] = [];
+
+  if (avgVolume > 0 && latest.volume > avgVolume * 1.8) {
+    anomalies.push({
+      type: "volume_spike",
+      confidence: Math.min(95, Math.round(60 + ((latest.volume / avgVolume) - 1.8) * 10)),
+      volumeRatio: Number((latest.volume / avgVolume).toFixed(2)),
+    });
+  }
+
+  if (latest.close > ma5 && ma5 > ma10 && dailyMovePct > 0) {
+    patterns.push({
+      type: "momentum_continuation",
+      confidence: Math.min(95, Math.max(55, Math.round(60 + dailyMovePct * 4))),
+      dailyMovePct: Number(dailyMovePct.toFixed(2)),
+    });
+  }
+
+  return { anomalies, patterns };
+}
+
 function calculateBacktestData(bars: MarketBar[], confidence: number): {
   historical_count: number;
   win_rate: number;
@@ -224,7 +264,10 @@ async function getTopTickersFromCacheOrDb(
 }
 
 async function defaultFetchAnalyze(input: { ticker: string; bars: MarketBar[] }): Promise<ScannerResponse> {
-  // Chosen integration: REST call to scanner microservice.
+  if (!SCANNER_BASE_URL) {
+    return runLocalScannerAnalysis(input);
+  }
+
   const res = await fetch(`${SCANNER_BASE_URL}/scanner/api/analyze`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
