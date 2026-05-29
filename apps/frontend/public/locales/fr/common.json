@@ -593,7 +593,7 @@
       "tiers": {
         "pro": {
           "body": "Know what is happening.",
-          "cta": "Join beta",
+          "cta": "View pricing",
           "features": [
             "AI Brief",
             "Signals",
@@ -604,7 +604,7 @@
         },
         "proPlus": {
           "body": "Know what it means.",
-          "cta": "Join beta",
+          "cta": "View pricing",
           "features": [
             "Full Premium Analysis",
             "Historical Twins",
@@ -616,7 +616,7 @@
         "trial": {
           "name": "Trial",
           "body": "7-day Pro+ experience without a credit card.",
-          "cta": "Start trial",
+          "cta": "Start 7-day trial",
           "duration": "7 days",
           "features": [
             "Limited Pro+ modules",
@@ -638,7 +638,11 @@
       },
       "title": "EUR pricing",
       "yearly": "yearly",
-      "betaNote": "EUR checkout migration in progress. Join the beta waitlist for trial access while Stripe EUR prices are configured."
+      "betaNote": "7-day trial. No card required to start. Upgrade when ready.",
+      "cta": {
+        "viewPricing": "View pricing",
+        "startTrialFirst": "Start trial first"
+      }
     },
     "problem": {
       "cards": {
@@ -1502,8 +1506,8 @@
       "getProPlus": "Get Pro+",
       "redirecting": "Redirection…",
       "signIn": "Connectez-vous pour vous abonner",
-      "startProTrialSoon": "Start trial soon",
-      "startProPlusTrialSoon": "Start Pro+ trial soon"
+      "startProTrial": "Get Pro",
+      "startProPlusTrial": "Get Pro+"
     },
     "plans": {
       "billedMonthly": "Billed monthly in EUR",
@@ -1541,7 +1545,7 @@
       },
       "payment": {
         "question": "Quels moyens de paiement ?",
-        "answer": "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured."
+        "answer": "Payments are processed by Stripe in EUR. Pro and Pro+ checkout is available when subscription checkout is enabled."
       },
       "security": {
         "question": "Mes données sont-elles sécurisées ?",
@@ -1552,14 +1556,10 @@
         "answer": "Simulation sur données réelles sans risquer de capital."
       }
     },
-    "checkoutMigration": {
-      "banner": "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
-      "note": "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
-      "contactLink": "Contact us"
-    },
     "investorOs": {
       "comingSoon": "Coming soon",
-      "note": "Checkout not available yet - join the beta waitlist for early access."
+      "note": "Investor OS and selected partner features are not publicly available yet. Join the waitlist for updates.",
+      "cta": "Join waitlist"
     }
   },
   "companies": {
@@ -1570,13 +1570,13 @@
     "valueAccessDesc": "9 languages, 130+ exchanges, and a trial to get started."
   },
   "waitlistPage": {
-    "seoDescription": "Join the beta waitlist for StockAI Pro EUR trial access.",
-    "benefit1": "Priority access to the 7-day trial and beta features.",
+    "seoDescription": "Get notified about Investor OS and partner features on StockAI Pro.",
+    "benefit1": "Early access when Investor OS launches.",
     "benefit2": "Priority access to new AI modules.",
     "benefit3": "Influence the product roadmap and premium features.",
     "benefit4": "Dedicated onboarding materials for founding users.",
-    "subhead": "Join the waitlist for trial-first EUR access while checkout migration is in progress.",
-    "title": "Join the beta",
-    "ctaJoin": "Join beta"
+    "subhead": "Investor OS and selected partner features are not publicly available yet.",
+    "title": "Join the waitlist",
+    "ctaJoin": "Join waitlist"
   }
 }

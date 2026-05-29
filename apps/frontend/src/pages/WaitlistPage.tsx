@@ -82,7 +82,7 @@ export function WaitlistPage() {
       <SEOHead
         title="Waitlist — StockAI Pro Early Access"
         description={t("waitlistPage.seoDescription", {
-          defaultValue: "Join the beta waitlist for StockAI Pro EUR trial access.",
+          defaultValue: "Get notified about Investor OS and partner features on StockAI Pro.",
         })}
       />
 
@@ -92,12 +92,12 @@ export function WaitlistPage() {
       >
         <div className="mx-auto max-w-4xl">
           <h1 className="text-4xl font-bold text-white md:text-5xl">
-            {t("waitlistPage.title", { defaultValue: "Join the beta" })}
+            {t("waitlistPage.title", { defaultValue: "Join the waitlist" })}
           </h1>
           <p className="mt-4 max-w-2xl text-base text-white/90 md:text-lg">
             {t("waitlistPage.subhead", {
               defaultValue:
-                "Join the waitlist for trial-first EUR access while checkout migration is in progress.",
+                "Investor OS and selected partner features are not publicly available yet.",
             })}
           </p>
 
@@ -145,7 +145,7 @@ export function WaitlistPage() {
                   className="inline-flex rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
                   style={{ backgroundColor: colors.brandDark }}
                 >
-                  {submitting ? t("waitlistPage.ctaSubmitting", { defaultValue: "Submitting…" }) : t("waitlistPage.ctaJoin", { defaultValue: "Join the waitlist" })}
+                  {submitting ? t("waitlistPage.ctaSubmitting", { defaultValue: "Submitting…" }) : t("waitlistPage.ctaJoin", { defaultValue: "Join waitlist" })}
                 </button>
 
                 {error ? <p className="text-sm text-negative">{error}</p> : null}

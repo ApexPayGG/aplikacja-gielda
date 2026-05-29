@@ -903,7 +903,7 @@
       "tiers": {
         "pro": {
           "body": "Wiedz, co się dzieje.",
-          "cta": "Rozpocznij 7-dniowy trial",
+          "cta": "Zobacz cennik",
           "features": [
             "AI Brief",
             "Sygnały",
@@ -914,7 +914,7 @@
         },
         "proPlus": {
           "body": "Wiedz, co to znaczy.",
-          "cta": "Rozpocznij 7-dniowy trial",
+          "cta": "Zobacz cennik",
           "features": [
             "Pełna analiza Premium",
             "Historical Twins",
@@ -949,7 +949,11 @@
       "title": "Cennik EUR",
       "yearly": "yearly",
       "checkoutError": "Checkout is not available yet.",
-      "betaNote": "7-dniowy trial. Bez karty. Ulepsz plan, gdy będziesz gotowy."
+      "betaNote": "7-dniowy trial bez karty. Zmień plan, gdy będziesz gotowy.",
+      "cta": {
+        "viewPricing": "Zobacz cennik",
+        "startTrialFirst": "Najpierw trial"
+      }
     },
     "problem": {
       "cards": {
@@ -2014,8 +2018,8 @@
       "getProPlus": "Get Pro+",
       "redirecting": "Przekierowywanie…",
       "signIn": "Zaloguj się, aby subskrybować",
-      "startProTrialSoon": "Start trial soon",
-      "startProPlusTrialSoon": "Start Pro+ trial soon"
+      "startProTrial": "Get Pro",
+      "startProPlusTrial": "Get Pro+"
     },
     "plans": {
       "billedMonthly": "Billed monthly in EUR",
@@ -2048,12 +2052,12 @@
         "answer": "Tak. Anuluj w ustawieniach konta. Dostęp pozostaje do końca bieżącego okresu rozliczeniowego."
       },
       "trial": {
-        "question": "Is there a free trial?",
-        "answer": "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live."
+        "question": "Czy jest darmowy trial?",
+        "answer": "7-dniowy trial Pro+ bez karty lub 14-dniowy trial z kartą, który przechodzi w wybrany plan po checkout."
       },
       "payment": {
         "question": "Jakie metody płatności?",
-        "answer": "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured."
+        "answer": "Płatności są obsługiwane przez Stripe w EUR. Checkout Pro i Pro+ działa po włączeniu subskrypcji."
       },
       "security": {
         "question": "Czy dane są bezpieczne?",
@@ -2064,14 +2068,10 @@
         "answer": "Symulacja inwestowania na danych rynkowych bez ryzyka kapitału — idealna do nauki."
       }
     },
-    "checkoutMigration": {
-      "banner": "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
-      "note": "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
-      "contactLink": "Contact us"
-    },
     "investorOs": {
-      "comingSoon": "Coming soon",
-      "note": "Checkout not available yet - join the beta waitlist for early access."
+      "comingSoon": "Wkrótce",
+      "note": "Investor OS i wybrane funkcje partnerskie nie są jeszcze publicznie dostępne. Dołącz do listy, aby otrzymywać aktualizacje.",
+      "cta": "Dołącz do listy"
     }
   },
   "replayModePage": {
@@ -2157,14 +2157,14 @@
     "openMenu": "Otwórz menu"
   },
   "waitlistPage": {
-    "seoDescription": "Dołącz do listy beta StockAI Pro - dostęp trial w EUR.",
-    "benefit1": "Priorytetowy dostęp do 7-dniowego trialu i funkcji beta.",
-    "benefit2": "Priority access to new AI modules.",
-    "benefit3": "Influence the product roadmap and premium features.",
-    "benefit4": "Dedicated onboarding materials for founding users.",
-    "subhead": "Dołącz do listy oczekujących na trial-first EUR, dopóki trwa migracja checkoutu.",
-    "title": "Dołącz do beta",
-    "ctaJoin": "Dołącz do beta"
+    "seoDescription": "Powiadomienia o Investor OS i funkcjach partnerskich w StockAI Pro.",
+    "benefit1": "Wczesny dostęp po premierze Investor OS.",
+    "benefit2": "Priorytetowy dostęp do nowych modułów AI.",
+    "benefit3": "Wpływ na roadmapę produktu i funkcje premium.",
+    "benefit4": "Materiały onboardingowe dla użytkowników founding.",
+    "subhead": "Investor OS i wybrane funkcje partnerskie nie są jeszcze publicznie dostępne.",
+    "title": "Dołącz do listy",
+    "ctaJoin": "Dołącz do listy"
   },
   "contactPage": {
     "title": "Kontakt",

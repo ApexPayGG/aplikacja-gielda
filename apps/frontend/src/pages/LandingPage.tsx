@@ -19,6 +19,7 @@ import { SEOHead } from "../components/SEOHead";
 import { BrandLogo } from "../components/BrandLogo";
 import { CountryFlag } from "../components/CountryFlag";
 import { LANGUAGE_OPTIONS, resolveLanguageCode } from "../constants/languages";
+import { EUR_CHECKOUT_ENABLED } from "../config/checkout";
 import {
   annualSavingsPercent,
   formatEurPrice,
@@ -107,6 +108,10 @@ function landingTierPrice(tierId: (typeof pricingTiers)[number]["id"], billingCy
   if (tierId === "pro") return formatEurPrice("PRO", billingCycle);
   return formatEurPrice("PRO_PLUS", billingCycle);
 }
+
+const PAID_TIER_CTA = EUR_CHECKOUT_ENABLED
+  ? { to: "/pricing", labelKey: "landing.pricing.cta.viewPricing", defaultLabel: "View pricing" }
+  : { to: "/register", labelKey: "landing.pricing.cta.startTrialFirst", defaultLabel: "Start trial first" };
 
 const HERO_TICKERS = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META", "JPM", "XOM", "V"] as const;
 
@@ -1444,10 +1449,10 @@ export function LandingPage() {
                       ))}
                     </ul>
                     <Link
-                      to="/waitlist?source=landing"
+                      to={PAID_TIER_CTA.to}
                       className="mt-8 inline-flex w-full justify-center rounded-full bg-terminal-cyan py-3 text-center text-sm font-bold text-terminal-buttonText transition hover:bg-terminal-cyanStrong"
                     >
-                      {t(tier.ctaKey, { defaultValue: "Start 7-day trial" })}
+                      {t(PAID_TIER_CTA.labelKey, { defaultValue: PAID_TIER_CTA.defaultLabel })}
                     </Link>
                   </article>
                 );
@@ -1492,10 +1497,10 @@ export function LandingPage() {
                     </Link>
                   ) : (
                     <Link
-                      to="/waitlist?source=landing"
+                      to={PAID_TIER_CTA.to}
                       className={`mt-8 inline-flex w-full justify-center rounded-full border-2 border-terminal-cyan py-3 text-sm font-bold text-terminal-cyan transition hover:bg-terminal-cyan/10`}
                     >
-                      {t(tier.ctaKey, { defaultValue: "Start 7-day trial" })}
+                      {t(PAID_TIER_CTA.labelKey, { defaultValue: PAID_TIER_CTA.defaultLabel })}
                     </Link>
                   )}
                 </article>

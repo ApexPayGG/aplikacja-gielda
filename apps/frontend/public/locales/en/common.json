@@ -894,7 +894,7 @@
       "tiers": {
         "pro": {
           "body": "Know what is happening.",
-          "cta": "Start 7-day trial",
+          "cta": "View pricing",
           "features": [
             "AI Brief",
             "Signals",
@@ -905,7 +905,7 @@
         },
         "proPlus": {
           "body": "Know what it means.",
-          "cta": "Start 7-day trial",
+          "cta": "View pricing",
           "features": [
             "Full Premium Analysis",
             "Historical Twins",
@@ -940,7 +940,11 @@
       "title": "EUR pricing",
       "yearly": "yearly",
       "checkoutError": "Checkout is not available yet.",
-      "betaNote": "7-day trial. No card required. Upgrade when you are ready."
+      "betaNote": "7-day trial. No card required to start. Upgrade when ready.",
+      "cta": {
+        "viewPricing": "View pricing",
+        "startTrialFirst": "Start trial first"
+      }
     },
     "problem": {
       "cards": {
@@ -2027,14 +2031,14 @@
     "openMenu": "Open menu"
   },
   "waitlistPage": {
-    "seoDescription": "Join the beta waitlist for StockAI Pro EUR trial access.",
-    "benefit1": "Priority access to the 7-day trial and beta features.",
+    "seoDescription": "Get notified about Investor OS and partner features on StockAI Pro.",
+    "benefit1": "Early access when Investor OS launches.",
     "benefit2": "Priority access to new AI modules.",
     "benefit3": "Influence the product roadmap and premium features.",
     "benefit4": "Dedicated onboarding materials for founding users.",
-    "subhead": "Join the waitlist for trial-first EUR access while checkout migration is in progress.",
-    "title": "Join the beta",
-    "ctaJoin": "Join beta"
+    "subhead": "Investor OS and selected partner features are not publicly available yet.",
+    "title": "Join the waitlist",
+    "ctaJoin": "Join waitlist"
   },
   "contactPage": {
     "title": "Contact",
@@ -2454,8 +2458,8 @@
       "getProPlus": "Get Pro+",
       "redirecting": "Redirecting…",
       "signIn": "Sign in to subscribe",
-      "startProTrialSoon": "Start trial soon",
-      "startProPlusTrialSoon": "Start Pro+ trial soon"
+      "startProTrial": "Get Pro",
+      "startProPlusTrial": "Get Pro+"
     },
     "plans": {
       "billedMonthly": "Billed monthly in EUR",
@@ -2489,11 +2493,11 @@
       },
       "trial": {
         "question": "Is there a free trial?",
-        "answer": "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live."
+        "answer": "Start with a 7-day Pro+ trial (no card) or a 14-day trial with card that converts to your chosen plan after checkout."
       },
       "payment": {
         "question": "What payment methods do you accept?",
-        "answer": "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured."
+        "answer": "Payments are processed by Stripe in EUR. Pro and Pro+ checkout is available when subscription checkout is enabled."
       },
       "security": {
         "question": "Is my data secure?",
@@ -2504,14 +2508,10 @@
         "answer": "Paper trading simulates investing on real market data without risking capital — ideal for practice."
       }
     },
-    "checkoutMigration": {
-      "banner": "Checkout migration in progress - beta access only. EUR checkout is being migrated. Join the trial waitlist or contact us for beta access.",
-      "note": "EUR checkout will be enabled after Stripe EUR Price IDs are configured. Beta access is currently manual.",
-      "contactLink": "Contact us"
-    },
     "investorOs": {
       "comingSoon": "Coming soon",
-      "note": "Checkout not available yet - join the beta waitlist for early access."
+      "note": "Investor OS and selected partner features are not publicly available yet. Join the waitlist for updates.",
+      "cta": "Join waitlist"
     }
   },
   "companies": {
