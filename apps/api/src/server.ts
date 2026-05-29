@@ -64,6 +64,7 @@ import {
   requireActiveAccess,
   requireActiveAccessIfAuthenticated,
 } from "./middleware/requireActiveAccess";
+import { productAccessMiddleware, useProductRouter } from "./middleware/productAccessMiddleware";
 import { createPremiumLlmRateLimitMiddleware } from "./services/premiumLlmRateLimit";
 import { optionalAuth } from "./modules/auth/authMiddleware";
 import { createQuotesRouter } from "./routes/quotes";
@@ -226,66 +227,66 @@ export function createApp(): express.Express {
   app.use(createUserProfileRouter());
   app.use(createWaitlistRouter());
   app.use(createContactRouter());
-  app.use(createExportRouter());
+  useProductRouter(app, createExportRouter());
   app.use(createStripeRouter());
-  app.use(createWatchlistRouter());
-  app.use(createCopilotRouter());
-  app.use(createDividendsRouter());
-  app.use(createDividendRouter());
-  app.use(createBacktestRouter());
-  app.use(createPortfolioRouter());
-  app.use(createPaperTradingRouter());
-  app.use(createExitIntelligenceRouter());
+  useProductRouter(app, createWatchlistRouter());
+  useProductRouter(app, createCopilotRouter());
+  useProductRouter(app, createDividendsRouter());
+  useProductRouter(app, createDividendRouter());
+  useProductRouter(app, createBacktestRouter());
+  useProductRouter(app, createPortfolioRouter());
+  useProductRouter(app, createPaperTradingRouter());
+  useProductRouter(app, createExitIntelligenceRouter());
   app.use(createQuotesRouter());
-  app.use(createAlphaJournalRouter());
-  app.use(createAlphaCalendarRouter());
-  app.use(createSignalMemoryRouter());
-  app.use(createSignalsListRouter());
+  useProductRouter(app, createAlphaJournalRouter());
+  useProductRouter(app, createAlphaCalendarRouter());
+  useProductRouter(app, createSignalMemoryRouter());
+  useProductRouter(app, createSignalsListRouter());
   app.use(createCompanyLogosRouter());
-  app.use(createSignalDnaRouter());
-  app.use(createReverseScreenerRouter());
-  app.use(createBehavioralRouter());
-  app.use(createPsycheRouter());
-  app.use(createDailyCheckinRouter());
-  app.use(createWeeklyReviewRouter());
-  app.use(createEmotionalRouter());
-  app.use(createPostTradeReflectionRouter());
-  app.use(createPreMortemRouter());
-  app.use(createReplayRouter());
-  app.use(createStrategyDnaRouter());
-  app.use(createTrackRecordRouter());
-  app.use(createMirrorRouter());
-  app.use(createSkillTreeRouter());
-  app.use(createEarningsRouter());
-  app.use(createInsiderRouter());
-  app.use(createNewsHalfLifeRouter());
-  app.use(createCrowdWisdomRouter());
-  app.use(createGlossaryRouter());
-  app.use(createDigestRouter());
-  app.use(createMarketEventsRouter({ prisma }));
-  app.use(createDiscordSyncRouter());
-  app.use(createNotificationsRouter());
-  app.use(createVolatilityRouter());
-  app.use(createDividendCalcRouter());
-  app.use(createAlpacaRouter());
-  app.use(createAutopilotRouter());
-  app.use(createNewsSentimentRouter());
-  app.use(createTraderPsycheRouter());
-  app.use(createMarketSignalsRouter());
-  app.use(createCompanyRouter());
+  useProductRouter(app, createSignalDnaRouter());
+  useProductRouter(app, createReverseScreenerRouter());
+  useProductRouter(app, createBehavioralRouter());
+  useProductRouter(app, createPsycheRouter());
+  useProductRouter(app, createDailyCheckinRouter());
+  useProductRouter(app, createWeeklyReviewRouter());
+  useProductRouter(app, createEmotionalRouter());
+  useProductRouter(app, createPostTradeReflectionRouter());
+  useProductRouter(app, createPreMortemRouter());
+  useProductRouter(app, createReplayRouter());
+  useProductRouter(app, createStrategyDnaRouter());
+  useProductRouter(app, createTrackRecordRouter());
+  useProductRouter(app, createMirrorRouter());
+  useProductRouter(app, createSkillTreeRouter());
+  useProductRouter(app, createEarningsRouter());
+  useProductRouter(app, createInsiderRouter());
+  useProductRouter(app, createNewsHalfLifeRouter());
+  useProductRouter(app, createCrowdWisdomRouter());
+  useProductRouter(app, createGlossaryRouter());
+  useProductRouter(app, createDigestRouter());
+  useProductRouter(app, createMarketEventsRouter({ prisma }));
+  useProductRouter(app, createDiscordSyncRouter());
+  useProductRouter(app, createNotificationsRouter());
+  useProductRouter(app, createVolatilityRouter());
+  useProductRouter(app, createDividendCalcRouter());
+  useProductRouter(app, createAlpacaRouter());
+  useProductRouter(app, createAutopilotRouter());
+  useProductRouter(app, createNewsSentimentRouter());
+  useProductRouter(app, createTraderPsycheRouter());
+  useProductRouter(app, createMarketSignalsRouter());
+  useProductRouter(app, createCompanyRouter());
   app.use(createAffiliateRouter());
   app.use(createAdminRouter());
   app.use(createAdminAffiliateRouter());
   const premiumLlmRateLimit = createPremiumLlmRateLimitMiddleware({ prisma });
   const premiumRouter = createPremiumCompanyRouter(prisma);
   app.use("/api/premium", requireAuth, requireActiveAccess, premiumLlmRateLimit, premiumRouter);
-  app.use(createHistoricalTwinsRouter(prisma));
-  app.use("/api/position-size", createPositionSizeRouter(prisma));
-  app.use("/api/stress-test", createStressTestRouter(prisma));
-  app.use("/api/concentration", createConcentrationRouter(prisma));
-  app.use(createCorrelationRouter());
-  app.use(createReactionsRouter());
-  app.use("/api/tax", createTaxRouter(prisma));
+  useProductRouter(app, createHistoricalTwinsRouter(prisma));
+  app.use("/api/position-size", ...productAccessMiddleware, createPositionSizeRouter(prisma));
+  app.use("/api/stress-test", ...productAccessMiddleware, createStressTestRouter(prisma));
+  app.use("/api/concentration", ...productAccessMiddleware, createConcentrationRouter(prisma));
+  useProductRouter(app, createCorrelationRouter());
+  useProductRouter(app, createReactionsRouter());
+  app.use("/api/tax", ...productAccessMiddleware, createTaxRouter(prisma));
   app.use(createSitemapRouter());
 
   app.get("/health", (_req: Request, res: Response) => {
@@ -502,7 +503,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.post("/api/dividends/tax-calculator-pl", (req: Request, res: Response) => {
+  app.post("/api/dividends/tax-calculator-pl", ...productAccessMiddleware, (req: Request, res: Response) => {
     try {
       const body = req.body as {
         shares?: unknown;
@@ -556,7 +557,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.get("/api/screeners/dividend/growth", async (_req: Request, res: Response, next: NextFunction) => {
+  app.get("/api/screeners/dividend/growth", ...productAccessMiddleware, async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const minYears = Math.min(30, Math.max(1, parseInt(String(_req.query.minYears ?? "5"), 10) || 5));
       const minYield = Math.min(50, Math.max(0, parseFloat(String(_req.query.minYield ?? "3")) || 3));
@@ -617,7 +618,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.get("/api/intelligence/dividend/comparison/sector", async (_req: Request, res: Response, next: NextFunction) => {
+  app.get("/api/intelligence/dividend/comparison/sector", ...productAccessMiddleware, async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const sectors = await getSectorComparison();
       res.json(sectors);
@@ -626,7 +627,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.get("/api/intelligence/dividend/:symbol/alerts", async (req: Request, res: Response, next: NextFunction) => {
+  app.get("/api/intelligence/dividend/:symbol/alerts", ...productAccessMiddleware, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const symbol = (req.params.symbol ?? "").trim();
       if (!symbol) return res.status(400).json({ error: "Missing symbol" });
@@ -638,7 +639,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.get("/api/intelligence/dividend/:symbol", async (req: Request, res: Response, next: NextFunction) => {
+  app.get("/api/intelligence/dividend/:symbol", ...productAccessMiddleware, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const symbol = (req.params.symbol ?? "").trim();
       if (!symbol) return res.status(400).json({ error: "Missing symbol" });
@@ -654,6 +655,7 @@ export function createApp(): express.Express {
 
   app.get(
     "/api/ai/dividend/sustainability/:symbol",
+    ...productAccessMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const sym = (req.params.symbol ?? "").trim().toUpperCase();
@@ -693,7 +695,7 @@ export function createApp(): express.Express {
     },
   );
 
-  app.get("/api/dividends/:symbol", async (req: Request, res: Response, next: NextFunction) => {
+  app.get("/api/dividends/:symbol", ...productAccessMiddleware, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const symbol = (req.params.symbol ?? "").trim();
       if (!symbol) return res.status(400).json({ error: "Missing symbol" });
