@@ -64,7 +64,7 @@ import {
   requireActiveAccess,
   requireActiveAccessIfAuthenticated,
 } from "./middleware/requireActiveAccess";
-import { productAccessMiddleware, useProductRouter } from "./middleware/productAccessMiddleware";
+import { requireProductAccessForApi, useProductRouter } from "./middleware/productAccessMiddleware";
 import { createPremiumLlmRateLimitMiddleware } from "./services/premiumLlmRateLimit";
 import { optionalAuth } from "./modules/auth/authMiddleware";
 import { createQuotesRouter } from "./routes/quotes";
@@ -223,12 +223,19 @@ export function createApp(): express.Express {
   app.use(createRateLimiterMiddleware({ prisma }));
   app.use(createInputSanitizerMiddleware());
 
+  app.get("/health", (_req: Request, res: Response) => {
+    res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });
+  });
+
+  app.get("/api/redis/stats", redisStatsHandler);
+
   app.use(createAuthRouter());
   app.use(createUserProfileRouter());
   app.use(createWaitlistRouter());
   app.use(createContactRouter());
-  useProductRouter(app, createExportRouter());
   app.use(createStripeRouter());
+  app.use(requireProductAccessForApi);
+  useProductRouter(app, createExportRouter());
   useProductRouter(app, createWatchlistRouter());
   useProductRouter(app, createCopilotRouter());
   useProductRouter(app, createDividendsRouter());
@@ -281,19 +288,13 @@ export function createApp(): express.Express {
   const premiumRouter = createPremiumCompanyRouter(prisma);
   app.use("/api/premium", requireAuth, requireActiveAccess, premiumLlmRateLimit, premiumRouter);
   useProductRouter(app, createHistoricalTwinsRouter(prisma));
-  app.use("/api/position-size", ...productAccessMiddleware, createPositionSizeRouter(prisma));
-  app.use("/api/stress-test", ...productAccessMiddleware, createStressTestRouter(prisma));
-  app.use("/api/concentration", ...productAccessMiddleware, createConcentrationRouter(prisma));
+  app.use("/api/position-size", createPositionSizeRouter(prisma));
+  app.use("/api/stress-test", createStressTestRouter(prisma));
+  app.use("/api/concentration", createConcentrationRouter(prisma));
   useProductRouter(app, createCorrelationRouter());
   useProductRouter(app, createReactionsRouter());
-  app.use("/api/tax", ...productAccessMiddleware, createTaxRouter(prisma));
+  app.use("/api/tax", createTaxRouter(prisma));
   app.use(createSitemapRouter());
-
-  app.get("/health", (_req: Request, res: Response) => {
-    res.json({ status: "ok", service: "stockai-api", ts: new Date().toISOString() });
-  });
-
-  app.get("/api/redis/stats", redisStatsHandler);
 
   app.post("/api/test/scrape/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -503,7 +504,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.post("/api/dividends/tax-calculator-pl", ...productAccessMiddleware, (req: Request, res: Response) => {
+  app.post("/api/dividends/tax-calculator-pl", (req: Request, res: Response) => {
     try {
       const body = req.body as {
         shares?: unknown;
@@ -557,7 +558,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.get("/api/screeners/dividend/growth", ...productAccessMiddleware, async (_req: Request, res: Response, next: NextFunction) => {
+  app.get("/api/screeners/dividend/growth", async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const minYears = Math.min(30, Math.max(1, parseInt(String(_req.query.minYears ?? "5"), 10) || 5));
       const minYield = Math.min(50, Math.max(0, parseFloat(String(_req.query.minYield ?? "3")) || 3));
@@ -618,7 +619,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.get("/api/intelligence/dividend/comparison/sector", ...productAccessMiddleware, async (_req: Request, res: Response, next: NextFunction) => {
+  app.get("/api/intelligence/dividend/comparison/sector", async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const sectors = await getSectorComparison();
       res.json(sectors);
@@ -627,7 +628,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.get("/api/intelligence/dividend/:symbol/alerts", ...productAccessMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+  app.get("/api/intelligence/dividend/:symbol/alerts", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const symbol = (req.params.symbol ?? "").trim();
       if (!symbol) return res.status(400).json({ error: "Missing symbol" });
@@ -639,7 +640,7 @@ export function createApp(): express.Express {
     }
   });
 
-  app.get("/api/intelligence/dividend/:symbol", ...productAccessMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+  app.get("/api/intelligence/dividend/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const symbol = (req.params.symbol ?? "").trim();
       if (!symbol) return res.status(400).json({ error: "Missing symbol" });
@@ -655,7 +656,6 @@ export function createApp(): express.Express {
 
   app.get(
     "/api/ai/dividend/sustainability/:symbol",
-    ...productAccessMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const sym = (req.params.symbol ?? "").trim().toUpperCase();
@@ -695,7 +695,7 @@ export function createApp(): express.Express {
     },
   );
 
-  app.get("/api/dividends/:symbol", ...productAccessMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+  app.get("/api/dividends/:symbol", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const symbol = (req.params.symbol ?? "").trim();
       if (!symbol) return res.status(400).json({ error: "Missing symbol" });

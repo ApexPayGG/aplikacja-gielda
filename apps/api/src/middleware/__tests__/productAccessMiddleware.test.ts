@@ -3,9 +3,13 @@ import { after, before, describe, it } from "node:test";
 import express from "express";
 import { requireAuth } from "../../modules/auth/authMiddleware";
 import { signAuthToken } from "../../modules/auth/authJwt";
-import { createRequireActiveAccess, TRIAL_EXPIRED_RESPONSE } from "../../middleware/requireActiveAccess";
-import { requireProductAccessForApi, useProductRouter } from "../../middleware/productAccessMiddleware";
-import { createSignalsListRouter } from "../signalsList";
+import { createRequireActiveAccess, TRIAL_EXPIRED_RESPONSE } from "../requireActiveAccess";
+import {
+  isPublicApiPath,
+  requireProductAccessForApi,
+  useProductRouter,
+} from "../productAccessMiddleware";
+import { createSignalsListRouter } from "../../routes/signalsList";
 import { withTestServer } from "../../testHelpers/httpServer";
 
 const mockDb = {
@@ -22,23 +26,12 @@ const mockDb = {
           trialKind: "without_card",
         };
       }
-      if (where.id === "user-active") {
-        return {
-          id: "user-active",
-          role: "USER",
-          tier: "FREE",
-          subscriptionStatus: "free",
-          trialStartedAt: new Date(),
-          trialEndsAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-          trialKind: "without_card",
-        };
-      }
       return null;
     },
   },
 } as never;
 
-describe("signalsList access hardening", () => {
+describe("productAccessMiddleware", () => {
   const oldSecret = process.env.JWT_SECRET;
 
   before(() => {
@@ -49,7 +42,30 @@ describe("signalsList access hardening", () => {
     process.env.JWT_SECRET = oldSecret;
   });
 
-  it("returns 401 without auth token", async () => {
+  it("isPublicApiPath allows company search and brief preview paths", () => {
+    assert.equal(isPublicApiPath("/api/companies/search"), true);
+    assert.equal(isPublicApiPath("/api/companies/AAPL"), true);
+    assert.equal(isPublicApiPath("/api/companies/AAPL/brief"), true);
+    assert.equal(isPublicApiPath("/api/signals"), false);
+  });
+
+  it("GET /health is public when registered before requireProductAccessForApi", async () => {
+    const app = express();
+    app.get("/health", (_req, res) => {
+      res.json({ status: "ok" });
+    });
+    app.use(requireProductAccessForApi);
+    useProductRouter(app, createSignalsListRouter());
+
+    await withTestServer(app, async (baseUrl) => {
+      const res = await fetch(`${baseUrl}/health`);
+      assert.equal(res.status, 200);
+      const body = (await res.json()) as { status: string };
+      assert.equal(body.status, "ok");
+    });
+  });
+
+  it("GET /api/signals without token returns 401", async () => {
     const app = express();
     app.use(requireProductAccessForApi);
     useProductRouter(app, createSignalsListRouter());
@@ -60,11 +76,19 @@ describe("signalsList access hardening", () => {
     });
   });
 
-  it("returns 403 TRIAL_EXPIRED for expired trial user", async () => {
+  it("GET /api/signals with expired trial returns 403 TRIAL_EXPIRED", async () => {
     const app = express();
     const access = createRequireActiveAccess({ db: mockDb });
     const token = signAuthToken({ sub: "user-expired", email: "exp@example.com" });
-    app.use(requireAuth, access, createSignalsListRouter());
+
+    app.use((req, res, next) => {
+      if (!req.path.startsWith("/api/")) return next();
+      if (req.path === "/api/signals") {
+        return requireAuth(req, res, () => access(req, res, next));
+      }
+      return requireProductAccessForApi(req, res, next);
+    });
+    useProductRouter(app, createSignalsListRouter());
 
     await withTestServer(app, async (baseUrl) => {
       const res = await fetch(`${baseUrl}/api/signals`, {
