@@ -402,12 +402,13 @@ wait
 
 **Expected:**
 
-- All HTTP 200 with `{ imported, symbol, quotesCount }`.
-- API logs: **one** `single_flight_acquired` for `company_import`; others `single_flight_wait` / `single_flight_cache_hit_after_wait`.
-- `quotesCount >= 10` after first import completes.
+- All HTTP 200 with `{ imported, symbol, quotesCount, shared?, cacheHit? }`.
+- API logs: **one** `single_flight_acquired` for `company_import`; waiters log `single_flight_wait` until import completes, then `single_flight_cache_hit_after_wait` and often `company_import_wait_final_read` (lock released, final DB count).
+- **Parallel wave:** leader `shared: false`; waiters `shared: true`, `cacheHit: true`, and **`quotesCount` within ~10 of leader** (e.g. ~200–260 for US 365d EODHD) — not partial counts (27/33) while leader still imports.
+- Waiters do **not** exit early on `quotesCount >= 10` alone while the import lock is still held; they return when `quotesCount >= 200` or lock is gone and `quotesCount >= 10`.
 - No duplicate EODHD burst (watch EODHD rate / ingest logs — manual).
 
-Second wave immediately after should return `cacheHit: true` or `imported: false` with `quotesCount >= 10` without new provider calls.
+Second wave immediately after should return `cacheHit: true` or `imported: false` with `quotesCount >= 10` without new provider calls (preflight cache — no lock).
 
 ### Premium verdict (if enabled)
 

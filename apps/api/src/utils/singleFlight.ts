@@ -129,6 +129,25 @@ async function releaseLock(
   }
 }
 
+/** True when another holder still owns the single-flight lock (Redis key exists). */
+export async function isSingleFlightLockHeld(
+  lockKey: string,
+  redis?: SingleFlightRedis,
+): Promise<boolean> {
+  const client = resolveRedis(redis);
+  if (!client) {
+    const entry = memoryLocks.get(lockKey);
+    return entry !== undefined && entry.expiresAt > Date.now();
+  }
+  try {
+    const current = await client.get(lockKey);
+    return current !== null && current !== undefined;
+  } catch {
+    const entry = memoryLocks.get(lockKey);
+    return entry !== undefined && entry.expiresAt > Date.now();
+  }
+}
+
 async function waitForResult<T>(
   readAfterWait: (() => Promise<T | null | undefined>) | undefined,
   maxWaitMs: number,

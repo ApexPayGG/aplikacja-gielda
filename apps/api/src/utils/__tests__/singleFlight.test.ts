@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it, mock } from "node:test";
 import {
+  isSingleFlightLockHeld,
   SingleFlightTimeoutError,
   withSingleFlight,
   type SingleFlightRedis,
@@ -108,5 +109,13 @@ describe("withSingleFlight", () => {
 
     await assert.rejects(() => withSingleFlight("lock:test:5", { redis, scope: "test" }, fn));
     assert.equal(store.has("lock:test:5"), false);
+  });
+
+  it("isSingleFlightLockHeld reflects Redis key presence", async () => {
+    const { redis, store } = createMockRedis();
+    store.set("lock:test:held", "token");
+    assert.equal(await isSingleFlightLockHeld("lock:test:held", redis), true);
+    store.delete("lock:test:held");
+    assert.equal(await isSingleFlightLockHeld("lock:test:held", redis), false);
   });
 });

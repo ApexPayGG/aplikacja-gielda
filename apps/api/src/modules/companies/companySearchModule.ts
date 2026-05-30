@@ -2,7 +2,8 @@ import process from "node:process";
 import { prisma } from "../../db";
 import { searchCompanies } from "../../db/company-queries";
 import { upsertFundamental } from "../../db/queries";
-import { withSingleFlight } from "../../utils/singleFlight";
+import { isSingleFlightLockHeld, withSingleFlight } from "../../utils/singleFlight";
+import pino from "pino";
 
 type EodhdSearchRow = Record<string, unknown>;
 type EodhdQuoteRow = {
@@ -815,6 +816,13 @@ async function importFundamentals(
 }
 
 const MIN_ON_DEMAND_QUOTES = 10;
+/** ~365d EODHD on-demand import; waiters should not return until import is largely complete. */
+const EXPECTED_IMPORT_MIN_QUOTES = 200;
+
+const companyImportLogger = pino({
+  level: process.env.LOG_LEVEL ?? "info",
+  base: { scope: "company_import" },
+});
 
 export type CompanyOnDemandImportResult = {
   imported: boolean;
@@ -831,6 +839,54 @@ async function countQuotesForSymbol(canonical: string): Promise<number> {
 function companyImportLockKey(exchange: string, canonical: string): string {
   const ex = exchange.trim().toUpperCase() || "US";
   return `singleflight:company-import:${ex}:${canonical.trim().toUpperCase()}`;
+}
+
+/**
+ * Waiter read during active import: do not return partial counts while lock is held.
+ * Exported for unit tests.
+ */
+export function evaluateCompanyImportWaitRead(input: {
+  quotesCount: number;
+  lockHeld: boolean;
+  existingCount: number;
+  symbol: string;
+}): CompanyOnDemandImportResult | null {
+  const symbol = input.symbol.trim().toUpperCase();
+  const count = input.quotesCount;
+  const imported = count > input.existingCount;
+
+  if (count >= EXPECTED_IMPORT_MIN_QUOTES) {
+    return { imported, symbol, quotesCount: count, shared: true, cacheHit: true };
+  }
+  if (!input.lockHeld && count >= MIN_ON_DEMAND_QUOTES) {
+    return { imported, symbol, quotesCount: count, shared: true, cacheHit: true };
+  }
+  return null;
+}
+
+async function readCompanyImportWaitState(
+  lockKey: string,
+  canonical: string,
+  existingCount: number,
+  exchange: string,
+): Promise<CompanyOnDemandImportResult | null> {
+  const quotesCount = await countQuotesForSymbol(canonical);
+  const lockHeld = await isSingleFlightLockHeld(lockKey);
+  const result = evaluateCompanyImportWaitRead({
+    quotesCount,
+    lockHeld,
+    existingCount,
+    symbol: canonical,
+  });
+  if (result && !lockHeld) {
+    companyImportLogger.info({
+      msg: "company_import_wait_final_read",
+      symbol: canonical,
+      exchange: exchange.trim().toUpperCase(),
+      quotesCount,
+    });
+  }
+  return result;
 }
 
 async function runEodhdCompanyImport(input: {
@@ -892,19 +948,8 @@ export async function importCompanyOnDemand(input: {
         lockTtlSeconds: 120,
         maxWaitMs: 30_000,
         waitMs: 400,
-        readAfterWait: async (): Promise<CompanyOnDemandImportResult | null> => {
-          const count = await countQuotesForSymbol(canonical);
-          if (count >= MIN_ON_DEMAND_QUOTES) {
-            return {
-              imported: count > existingCount,
-              symbol: canonical,
-              quotesCount: count,
-              shared: true,
-              cacheHit: true,
-            };
-          }
-          return null;
-        },
+        readAfterWait: async (): Promise<CompanyOnDemandImportResult | null> =>
+          readCompanyImportWaitState(lockKey, canonical, existingCount, exchange),
       },
       async (): Promise<CompanyOnDemandImportResult> => {
         const result = await runEodhdCompanyImport(input);
@@ -912,16 +957,8 @@ export async function importCompanyOnDemand(input: {
       },
     );
   } catch (error) {
-    const after = await countQuotesForSymbol(canonical);
-    if (after >= MIN_ON_DEMAND_QUOTES) {
-      return {
-        imported: after > existingCount,
-        symbol: canonical,
-        quotesCount: after,
-        shared: true,
-        cacheHit: true,
-      };
-    }
+    const finalized = await readCompanyImportWaitState(lockKey, canonical, existingCount, exchange);
+    if (finalized) return finalized;
     throw error;
   }
 }
