@@ -382,7 +382,48 @@ Browser: company page chart loads for AAPL without “No quote history yet”; S
 
 ---
 
-## 10. MarketSignals smoke
+## 10. Cost guard / single-flight smoke
+
+**Prerequisite:** Redis reachable from API (`REDIS_URL`). Check API logs for `single_flight_*` and `scope=company_import` (no `api_token` in logs).
+
+### On-demand company import (P0)
+
+Run **5 parallel** requests for the same symbol (pick a thin symbol not yet in DB, or use a test ticker after deleting quotes in staging only):
+
+```bash
+SYM=NVDA
+EX=US
+for i in 1 2 3 4 5; do
+  docker exec stockai-api-prod curl -sS \
+    "http://127.0.0.1:3000/api/companies/search/import?symbol=$SYM&exchange=$EX" &
+done
+wait
+```
+
+**Expected:**
+
+- All HTTP 200 with `{ imported, symbol, quotesCount }`.
+- API logs: **one** `single_flight_acquired` for `company_import`; others `single_flight_wait` / `single_flight_cache_hit_after_wait`.
+- `quotesCount >= 10` after first import completes.
+- No duplicate EODHD burst (watch EODHD rate / ingest logs — manual).
+
+Second wave immediately after should return `cacheHit: true` or `imported: false` with `quotesCount >= 10` without new provider calls.
+
+### Premium verdict (if enabled)
+
+5 parallel `GET /api/premium/AAPL/verdict` with active JWT → one build path; others wait and hit Redis cache (`singleflight:premium:verdict:AAPL`).
+
+### AI brief (existing lock via `withBriefGenerationLock`)
+
+5 parallel brief requests same symbol+locale → one Claude generation; waiters receive cached brief or `BriefGenerationBusyError` after timeout (existing behavior).
+
+### News sentiment refresh
+
+Repeated `GET /api/v1/news-sentiment/AAPL` without cache → **one** BullMQ job id `refresh__AAPL` (no timestamp suffix); worker `acquireGenerationLock` prevents parallel provider refresh for same ticker.
+
+---
+
+## 11. MarketSignals smoke
 
 ```bash
 # Ops health - unauthenticated -> 401 or 403 (depends on guard)
@@ -425,7 +466,7 @@ Follow [market-signals-ops-runbook.md](./market-signals-ops-runbook.md) before e
 
 ---
 
-## 11. Autopilot smoke
+## 12. Autopilot smoke
 
 ```bash
 # Worker started in API logs
@@ -440,7 +481,7 @@ grep ENCRYPTION_SECRET /root/aplikacja-gielda/.env.production
 
 ---
 
-## 12. Cleanup
+## 13. Cleanup
 
 - [ ] Delete launch smoke test users from DB.
 - [ ] Cancel or note Stripe test subscriptions/customers in Dashboard (test mode vs live mode as appropriate).
@@ -462,6 +503,7 @@ grep ENCRYPTION_SECRET /root/aplikacja-gielda/.env.production
 | eToro disclosure visible; etoro active if tracking required | ☐ |
 | GA4 consent-gated | ☐ |
 | Market data US quotes + history ≥10 bars | ☐ |
+| Cost guard: parallel import coalesced | ☐ |
 | MarketSignals ops + scheduler off | ☐ |
 | Autopilot ENCRYPTION_SECRET + worker | ☐ |
 | Cleanup complete | ☐ |

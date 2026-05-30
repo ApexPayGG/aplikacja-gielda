@@ -1,16 +1,13 @@
-import { randomUUID } from "node:crypto";
 import type { AnalysisResult } from "../ai/analysis";
 import { cacheJsonGet, cacheJsonSet } from "../cache/jsonCache";
-import { isRedisConfigured, REDIS_TTL_SEC, redisKeys } from "../config/redis";
-import { getCacheRedis } from "../redis";
+import { REDIS_TTL_SEC, redisKeys } from "../config/redis";
+import { SingleFlightTimeoutError, withSingleFlight } from "../utils/singleFlight";
 
 /**
  * GLOBAL CACHE SCOPE — company AI brief only (`cache:v1:analysis:{SYMBOL}:{lang}`).
  * Never use for: Behavioral Coach, Personal Fit, portfolio, watchlist insights, decision journal.
  * Premium personal-fit uses `premiumPersonalFit` with userId in the key.
  */
-
-const LOCK_POLL_MS = 250;
 
 function lockTtlSec(): number {
   const raw = Number(process.env.AI_BRIEF_LOCK_TTL_SEC ?? 45);
@@ -21,8 +18,6 @@ function lockWaitMs(): number {
   const raw = Number(process.env.AI_BRIEF_LOCK_WAIT_MS ?? 45_000);
   return Number.isFinite(raw) && raw >= 200 ? raw : 45_000;
 }
-
-const memoryLocks = new Map<string, { token: string; expiresAt: number }>();
 
 export class BriefGenerationBusyError extends Error {
   readonly symbol: string;
@@ -106,62 +101,6 @@ export async function storeCachedBrief(
   await cacheJsonSet(briefDataKey(sym, lang), payload, briefCacheTtlSec());
 }
 
-async function acquireMemoryLock(lockKey: string, token: string, ttlSec: number): Promise<boolean> {
-  const now = Date.now();
-  const existing = memoryLocks.get(lockKey);
-  if (existing && existing.expiresAt > now && existing.token !== token) {
-    return false;
-  }
-  memoryLocks.set(lockKey, { token, expiresAt: now + ttlSec * 1000 });
-  return true;
-}
-
-async function releaseMemoryLock(lockKey: string, token: string): Promise<void> {
-  const existing = memoryLocks.get(lockKey);
-  if (existing?.token === token) memoryLocks.delete(lockKey);
-}
-
-async function acquireLock(lockKey: string, token: string, ttlSec: number): Promise<boolean> {
-  if (!isRedisConfigured()) {
-    return acquireMemoryLock(lockKey, token, ttlSec);
-  }
-  try {
-    const redis = getCacheRedis();
-    const ok = await redis.set(lockKey, token, "EX", ttlSec, "NX");
-    return ok === "OK";
-  } catch {
-    return acquireMemoryLock(lockKey, token, ttlSec);
-  }
-}
-
-async function releaseLock(lockKey: string, token: string): Promise<void> {
-  if (!isRedisConfigured()) {
-    await releaseMemoryLock(lockKey, token);
-    return;
-  }
-  try {
-    const redis = getCacheRedis();
-    const current = await redis.get(lockKey);
-    if (current === token) await redis.del(lockKey);
-  } catch {
-    await releaseMemoryLock(lockKey, token);
-  }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function waitForExactCache(symbol: string, localeTag: string, maxMs: number): Promise<AnalysisResult | null> {
-  const deadline = Date.now() + maxMs;
-  while (Date.now() < deadline) {
-    const hit = await peekCachedBriefExact(symbol, localeTag);
-    if (hit) return hit;
-    await sleep(LOCK_POLL_MS);
-  }
-  return null;
-}
-
 /**
  * Single-flight guard: one Claude/translation run per symbol+lang; waiters poll cache.
  */
@@ -173,22 +112,34 @@ export async function withBriefGenerationLock<T>(
   const sym = symbol.trim().toUpperCase();
   const lang = (localeTag.trim() || "en").trim();
   const lockKey = briefLockKey(sym, lang);
-  const token = randomUUID();
-  const ttlSec = lockTtlSec();
-
-  const acquired = await acquireLock(lockKey, token, ttlSec);
-  if (!acquired) {
-    const waited = await waitForExactCache(sym, lang, lockWaitMs());
-    if (waited) return waited as T;
-    throw new BriefGenerationBusyError(sym, lang);
-  }
 
   try {
-    const cached = await peekCachedBriefExact(sym, lang);
-    if (cached) return cached as T;
-    return await work();
-  } finally {
-    await releaseLock(lockKey, token);
+    const result = await withSingleFlight<AnalysisResult>(
+      lockKey,
+      {
+        scope: "ai_brief",
+        lockTtlSeconds: lockTtlSec(),
+        maxWaitMs: lockWaitMs(),
+        waitMs: 250,
+        readAfterWait: async (): Promise<AnalysisResult | null> => {
+          const hit = await peekCachedBriefExact(sym, lang);
+          return hit ?? null;
+        },
+      },
+      async (): Promise<AnalysisResult> => {
+        const cached = await peekCachedBriefExact(sym, lang);
+        if (cached) return cached;
+        return (await work()) as AnalysisResult;
+      },
+    );
+    return result as T;
+  } catch (error) {
+    if (error instanceof SingleFlightTimeoutError) {
+      const waited = await peekCachedBriefExact(sym, lang);
+      if (waited) return waited as T;
+      throw new BriefGenerationBusyError(sym, lang);
+    }
+    throw error;
   }
 }
 

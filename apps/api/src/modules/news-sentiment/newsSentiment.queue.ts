@@ -38,8 +38,11 @@ export async function enqueueRefreshTickerIntel(
   const normalized = normalizeNewsSentimentTicker(ticker);
   if (!normalized) return undefined;
   const data: RefreshTickerIntelJobData = { ticker: normalized, force: options?.force ?? false };
+  const jobId = options?.force
+    ? `refresh__${normalized}__${Date.now()}`
+    : `refresh__${normalized}`;
   const job = await getNewsSentimentQueue().add(NEWS_SENTIMENT_JOB_NAMES.REFRESH_TICKER_INTEL, data, {
-    jobId: `refresh__${normalized}__${Date.now()}`,
+    jobId,
   });
   return job.id ?? undefined;
 }

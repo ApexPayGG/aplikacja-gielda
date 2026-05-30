@@ -2,6 +2,7 @@ import process from "node:process";
 import { prisma } from "../../db";
 import { searchCompanies } from "../../db/company-queries";
 import { upsertFundamental } from "../../db/queries";
+import { withSingleFlight } from "../../utils/singleFlight";
 
 type EodhdSearchRow = Record<string, unknown>;
 type EodhdQuoteRow = {
@@ -813,11 +814,30 @@ async function importFundamentals(
   if (dividendYield != null) await upsertFundamental(canonicalTicker, "dividend_yield", dividendYield, 0);
 }
 
-export async function importCompanyOnDemand(input: {
+const MIN_ON_DEMAND_QUOTES = 10;
+
+export type CompanyOnDemandImportResult = {
+  imported: boolean;
+  symbol: string;
+  quotesCount: number;
+  shared?: boolean;
+  cacheHit?: boolean;
+};
+
+async function countQuotesForSymbol(canonical: string): Promise<number> {
+  return prisma.quote.count({ where: { symbol: canonical.toUpperCase() } });
+}
+
+function companyImportLockKey(exchange: string, canonical: string): string {
+  const ex = exchange.trim().toUpperCase() || "US";
+  return `singleflight:company-import:${ex}:${canonical.trim().toUpperCase()}`;
+}
+
+async function runEodhdCompanyImport(input: {
   symbol: string;
   exchange: string;
   name?: string;
-}): Promise<{ imported: boolean; symbol: string; quotesCount: number }> {
+}): Promise<CompanyOnDemandImportResult> {
   const token = getApiToken();
   const { canonical, eodTicker, exchange } = toEodTicker(input.symbol, input.exchange);
   const fallbackName = input.name?.trim() || canonical;
@@ -844,6 +864,66 @@ export async function importCompanyOnDemand(input: {
   await sleep(REQUEST_DELAY_MS);
 
   return { imported: true, symbol: canonical, quotesCount };
+}
+
+export async function importCompanyOnDemand(input: {
+  symbol: string;
+  exchange: string;
+  name?: string;
+}): Promise<CompanyOnDemandImportResult> {
+  const { canonical, exchange } = toEodTicker(input.symbol, input.exchange);
+  const existingCount = await countQuotesForSymbol(canonical);
+  if (existingCount >= MIN_ON_DEMAND_QUOTES) {
+    return {
+      imported: false,
+      symbol: canonical,
+      quotesCount: existingCount,
+      cacheHit: true,
+    };
+  }
+
+  const lockKey = companyImportLockKey(exchange, canonical);
+
+  try {
+    return await withSingleFlight<CompanyOnDemandImportResult>(
+      lockKey,
+      {
+        scope: "company_import",
+        lockTtlSeconds: 120,
+        maxWaitMs: 30_000,
+        waitMs: 400,
+        readAfterWait: async (): Promise<CompanyOnDemandImportResult | null> => {
+          const count = await countQuotesForSymbol(canonical);
+          if (count >= MIN_ON_DEMAND_QUOTES) {
+            return {
+              imported: count > existingCount,
+              symbol: canonical,
+              quotesCount: count,
+              shared: true,
+              cacheHit: true,
+            };
+          }
+          return null;
+        },
+      },
+      async (): Promise<CompanyOnDemandImportResult> => {
+        const result = await runEodhdCompanyImport(input);
+        return { ...result, shared: false };
+      },
+    );
+  } catch (error) {
+    const after = await countQuotesForSymbol(canonical);
+    if (after >= MIN_ON_DEMAND_QUOTES) {
+      return {
+        imported: after > existingCount,
+        symbol: canonical,
+        quotesCount: after,
+        shared: true,
+        cacheHit: true,
+      };
+    }
+    throw error;
+  }
 }
 
 export async function searchCompaniesOnDemand(

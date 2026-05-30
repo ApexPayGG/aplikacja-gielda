@@ -3,6 +3,7 @@ import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import { cacheJsonGet, cacheJsonSet } from "../cache/jsonCache";
 import { REDIS_TTL_SEC, redisKeys } from "../config/redis";
+import { withSingleFlight } from "../utils/singleFlight";
 import { findHistoricalTwins } from "../modules/premiumAnalysis/historicalTwinModule";
 import { generateCatchAi, generateCinematicStoryAi } from "../modules/premiumAnalysis/storyAndCatchAiModule";
 import { getRequestPath, resolveUserTier } from "../services/aiBriefRateLimit";
@@ -432,11 +433,30 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       const cacheKey = redisKeys.premiumVerdict(ticker);
       const cached = await cacheJsonGet<Awaited<ReturnType<typeof buildVerdict>>>(cacheKey);
       if (cached) return res.json(cached);
-      const canonicalSymbol = await resolveCanonicalSymbol(prisma, ticker);
-      if (!canonicalSymbol) return res.status(404).json({ error: "Ticker not found" });
-      const data = (await buildVerdict(prisma, canonicalSymbol)) ?? (await buildVerdictFromLatestQuote(prisma, canonicalSymbol));
+
+      const data = await withSingleFlight(
+        `singleflight:premium:verdict:${ticker}`,
+        {
+          scope: "premium_verdict",
+          lockTtlSeconds: 90,
+          maxWaitMs: 12_000,
+          waitMs: 400,
+          readAfterWait: async () => cacheJsonGet<Awaited<ReturnType<typeof buildVerdict>>>(cacheKey),
+        },
+        async () => {
+          const hit = await cacheJsonGet<Awaited<ReturnType<typeof buildVerdict>>>(cacheKey);
+          if (hit) return hit;
+          const canonicalSymbol = await resolveCanonicalSymbol(prisma, ticker);
+          if (!canonicalSymbol) return null;
+          const built =
+            (await buildVerdict(prisma, canonicalSymbol)) ??
+            (await buildVerdictFromLatestQuote(prisma, canonicalSymbol));
+          if (!built) return null;
+          await cacheJsonSet(cacheKey, built, REDIS_TTL_SEC.PREMIUM_VERDICT);
+          return built;
+        },
+      );
       if (!data) return res.status(404).json({ error: "Ticker not found" });
-      await cacheJsonSet(cacheKey, data, REDIS_TTL_SEC.PREMIUM_VERDICT);
       res.json(data);
     } catch (error) {
       next(error);
