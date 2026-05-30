@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
-import { trackEvent } from "../utils/analytics";
+import { ANALYTICS_EVENTS, analyticsFailureReason, trackConversionEvent } from "../utils/analytics";
 import { BrandLogo } from "../components/BrandLogo";
 import { ResendVerificationEmail } from "../components/ResendVerificationEmail";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -16,7 +16,7 @@ function safeRedirectPath(from: unknown): string {
 }
 
 export function LoginPage() {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const navigate = useNavigate();
   const location = useLocation();
   const [params] = useSearchParams();
@@ -36,15 +36,29 @@ export function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-      trackEvent("login");
+      trackConversionEvent(ANALYTICS_EVENTS.LOGIN, undefined, i18n.language);
       navigate(redirectFrom, { replace: true });
     } catch (e) {
       const message = apiErrorMessage(e);
       if (message === "Please verify your email first") {
         setNeedsVerification(true);
+        trackConversionEvent(ANALYTICS_EVENTS.VERIFY_EMAIL_REQUIRED, undefined, i18n.language);
+        trackConversionEvent(
+          ANALYTICS_EVENTS.LOGIN_FAILED,
+          { reason: "verify_required" },
+          i18n.language,
+        );
         setError(t("auth.verifyEmailFirst"));
         return;
       }
+      trackConversionEvent(
+        ANALYTICS_EVENTS.LOGIN_FAILED,
+        {
+          reason:
+            message === "Invalid credentials" ? "invalid_credentials" : analyticsFailureReason(e),
+        },
+        i18n.language,
+      );
       setError(message);
     } finally {
       setLoading(false);

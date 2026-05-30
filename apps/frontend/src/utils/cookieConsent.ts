@@ -7,20 +7,22 @@ function isCookieConsentType(value: string | null): value is CookieConsentType {
 }
 
 export function getCookieConsent(): CookieConsentType | null {
-  if (typeof window === "undefined") {
+  const storage = (globalThis as { window?: { localStorage?: Storage } }).window?.localStorage;
+  if (!storage) {
     return null;
   }
 
-  const consent = window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY);
+  const consent = storage.getItem(COOKIE_CONSENT_STORAGE_KEY);
   return isCookieConsentType(consent) ? consent : null;
 }
 
 export function setCookieConsent(type: CookieConsentType): void {
-  if (typeof window === "undefined") {
+  const storage = (globalThis as { window?: { localStorage?: Storage } }).window?.localStorage;
+  if (!storage) {
     return;
   }
 
-  window.localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, type);
+  storage.setItem(COOKIE_CONSENT_STORAGE_KEY, type);
 }
 
 export function hasCookieConsent(): boolean {

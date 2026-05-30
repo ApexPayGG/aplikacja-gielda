@@ -281,15 +281,50 @@ Browser: eToro CTA shows **affiliate disclosure + CFD warning** before button ([
 
 ## 8. GA4 / cookie smoke
 
-Browser DevTools (incognito recommended):
+**Prerequisite:** production frontend built with `VITE_GA_MEASUREMENT_ID` set at build time (see `.env.production.example`). Fallback ID in code is for dev only.
+
+Browser DevTools (incognito recommended). Use **GA4 DebugView** or **Realtime** after consent.
+
+### Consent gate
 
 1. Load `https://stock-ai.pro` -> **View Page Source** (or fetch `index.html` from frontend container):
-   - Must **NOT** contain `googletagmanager.com`, `gtag/js`, or `G-XE45H4W6BW`.
-2. Before accepting cookies -> Network tab -> no requests to `google-analytics.com` / `googletagmanager.com`.
-3. Click **Accept all** on cookie banner -> GA script injected (`gtag/js?id=G-...`) -> `page_view` events on navigation.
-4. Clear site data -> choose **Necessary only** -> no GA script; navigate -> still no GA requests.
+   - Must **NOT** contain `googletagmanager.com`, `gtag/js`, or hardcoded measurement ID in HTML.
+2. Before accepting cookies -> Network tab -> **no** requests to `google-analytics.com` / `googletagmanager.com`.
+3. Click **Accept all** on cookie banner -> GA script injected (`gtag/js?id=G-...`) -> `page_view` on navigation.
+4. Clear site data -> choose **Necessary only** -> no GA script; navigate -> **still no GA requests** (conversion events must not fire).
 
-Payment success: after consent, completing checkout fires `payment_success` (not `purchase`) with plan from auth tier - no revenue amount.
+### Conversion event matrix (after Accept all)
+
+| User action | Expected GA4 event | Key params (no PII) |
+|-------------|-------------------|---------------------|
+| Any route change | `page_view` | `page_path`, `page_title`, `locale`, UTM* |
+| Open `/pricing` | `pricing_page_view` | `locale`, UTM* |
+| Toggle billing | `select_billing_cycle` | `cycle` |
+| Click paid plan checkout | `select_plan` | `plan`, `billing` |
+| Stripe redirect starts | `begin_checkout` | `plan`, `billing`, `currency` |
+| Checkout API error | `begin_checkout_failed` | `plan`, `billing`, `reason` |
+| `/payment-success` ready | `payment_success` | `plan`, `access_state`, `subscription_status` |
+| `/payment-cancel` | `payment_cancel_view` | `locale` |
+| Register submit | `register_started` | `locale` |
+| Register OK | `sign_up` | `verification_email_sent` (0 or 1) |
+| Register fail | `register_failed` | `reason` |
+| Login OK | `login` | `locale` |
+| Login unverified | `verify_email_required`, `login_failed` | `reason=verify_required` |
+| Login bad password | `login_failed` | `reason=invalid_credentials` |
+| Verify link OK | `verify_success` | — |
+| Verify link bad | `verify_failed` | `reason` |
+| Resend verify click | `resend_verification_click` | — |
+| Resend verify done | `resend_verification_result` | `outcome=ok` |
+| Forgot password submit | `forgot_password_requested` | — |
+| Forgot password done | `forgot_password_result` | `outcome=ok` |
+| Reset password OK | `reset_password_success` | — |
+| Reset password fail | `reset_password_failed` | `reason` |
+
+\*UTM (`utm_source`, `utm_medium`, `utm_campaign`, `gclid`, etc.) captured once per session from landing URL.
+
+**Never expect in params:** `email`, `user_id`, `token`, password, stack traces.
+
+Payment success: fires `payment_success` (not `purchase`) — no revenue amount in GA.
 
 ---
 

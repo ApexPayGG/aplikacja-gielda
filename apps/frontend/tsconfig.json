@@ -15,5 +15,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "vite.config.ts", "public/locales/**/common.json"]
+  "include": ["src", "vite.config.ts", "public/locales/**/common.json"],
+  "exclude": ["src/**/__tests__/**", "src/**/*.test.ts"]
 }

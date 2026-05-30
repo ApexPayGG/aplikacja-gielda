@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { fetchUserAccess, type UserAccessSnapshot } from "../services/access";
-import { trackEvent } from "../utils/analytics";
+import { ANALYTICS_EVENTS, trackConversionEvent } from "../utils/analytics";
 import { normalizeUserPlan } from "../utils/subscriptionTier";
 
 type LoadStatus = "loading" | "ready" | "error";
@@ -170,11 +170,16 @@ export function PaymentSuccessPage() {
     if (status !== "ready" || !access || paymentEventSent.current) return;
     paymentEventSent.current = true;
     const normalizedPlan = normalizeUserPlan(access.tier);
-    trackEvent("payment_success", {
-      plan: normalizedPlan === "PRO+" ? "pro_plus" : normalizedPlan.toLowerCase(),
-      accessState: access.accessState,
-    });
-  }, [access, status]);
+    trackConversionEvent(
+      ANALYTICS_EVENTS.PAYMENT_SUCCESS,
+      {
+        plan: normalizedPlan === "PRO+" ? "pro_plus" : normalizedPlan.toLowerCase(),
+        access_state: access.accessState,
+        subscription_status: access.subscriptionStatus ?? "unknown",
+      },
+      i18n.language,
+    );
+  }, [access, i18n.language, status]);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bgSecondary px-4 py-10">

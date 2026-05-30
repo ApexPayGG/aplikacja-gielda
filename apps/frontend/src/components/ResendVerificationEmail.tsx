@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { resendVerificationEmail } from "../services/api";
+import { ANALYTICS_EVENTS, trackConversionEvent } from "../utils/analytics";
 
 type ResendState = "idle" | "sending" | "sent";
 
@@ -10,7 +11,7 @@ type ResendVerificationEmailProps = {
 };
 
 export function ResendVerificationEmail({ email, className = "" }: ResendVerificationEmailProps) {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const [state, setState] = useState<ResendState>("idle");
 
   const normalizedEmail = email.trim();
@@ -19,10 +20,21 @@ export function ResendVerificationEmail({ email, className = "" }: ResendVerific
   async function onResend(): Promise<void> {
     if (!canSend) return;
     setState("sending");
+    trackConversionEvent(ANALYTICS_EVENTS.RESEND_VERIFICATION_CLICK, undefined, i18n.language);
     try {
       await resendVerificationEmail(normalizedEmail);
+      trackConversionEvent(
+        ANALYTICS_EVENTS.RESEND_VERIFICATION_RESULT,
+        { outcome: "ok" },
+        i18n.language,
+      );
       setState("sent");
     } catch {
+      trackConversionEvent(
+        ANALYTICS_EVENTS.RESEND_VERIFICATION_RESULT,
+        { outcome: "failed" },
+        i18n.language,
+      );
       setState("idle");
     }
   }

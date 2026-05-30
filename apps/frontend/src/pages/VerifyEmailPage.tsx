@@ -3,11 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { ResendVerificationEmail } from "../components/ResendVerificationEmail";
 import { verifyEmailToken } from "../services/api";
+import { ANALYTICS_EVENTS, trackConversionEvent } from "../utils/analytics";
 
 type VerificationState = "loading" | "success" | "error";
 
 export function VerifyEmailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [params] = useSearchParams();
   const token = params.get("token") ?? "";
   const [state, setState] = useState<VerificationState>("loading");
@@ -17,22 +18,34 @@ export function VerifyEmailPage() {
     let active = true;
     async function run(): Promise<void> {
       if (!token.trim()) {
-        if (active) setState("error");
+        if (active) {
+          setState("error");
+          trackConversionEvent(ANALYTICS_EVENTS.VERIFY_FAILED, { reason: "missing_token" }, i18n.language);
+        }
         return;
       }
       try {
         const result = await verifyEmailToken(token);
         if (!active) return;
-        setState(result.verified ? "success" : "error");
+        if (result.verified) {
+          setState("success");
+          trackConversionEvent(ANALYTICS_EVENTS.VERIFY_SUCCESS, undefined, i18n.language);
+        } else {
+          setState("error");
+          trackConversionEvent(ANALYTICS_EVENTS.VERIFY_FAILED, { reason: "invalid_token" }, i18n.language);
+        }
       } catch {
-        if (active) setState("error");
+        if (active) {
+          setState("error");
+          trackConversionEvent(ANALYTICS_EVENTS.VERIFY_FAILED, { reason: "request_failed" }, i18n.language);
+        }
       }
     }
     void run();
     return () => {
       active = false;
     };
-  }, [token]);
+  }, [token, i18n.language]);
 
   return (
     <div className="mx-auto flex min-h-screen max-w-md items-center px-4">

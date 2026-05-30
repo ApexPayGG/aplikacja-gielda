@@ -1,8 +1,14 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { ANALYTICS_EVENTS, trackConversionEvent } from "../utils/analytics";
 
 export function PaymentCancelPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    trackConversionEvent(ANALYTICS_EVENTS.PAYMENT_CANCEL_VIEW, undefined, i18n.language);
+  }, [i18n.language]);
   return (
     <div className="flex min-h-screen items-center justify-center bg-bgSecondary px-4 py-10">
       <section className="w-full max-w-xl rounded-3xl border border-border bg-bgPrimary p-8 text-center shadow-[0_24px_72px_rgba(168,85,247,0.14)] sm:p-10">

@@ -2,10 +2,11 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { resetPassword } from "../services/api";
+import { ANALYTICS_EVENTS, analyticsFailureReason, trackConversionEvent } from "../utils/analytics";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function ResetPasswordPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [params] = useSearchParams();
   const token = useMemo(() => String(params.get("token") ?? "").trim(), [params]);
   const [newPassword, setNewPassword] = useState("");
@@ -18,14 +19,29 @@ export function ResetPasswordPage() {
     event.preventDefault();
     setError(null);
     if (!token) {
+      trackConversionEvent(
+        ANALYTICS_EVENTS.RESET_PASSWORD_FAILED,
+        { reason: "missing_token" },
+        i18n.language,
+      );
       setError(t("auth.resetPasswordMissingToken", { defaultValue: "Missing password reset token." }));
       return;
     }
     if (newPassword.length < 8) {
+      trackConversionEvent(
+        ANALYTICS_EVENTS.RESET_PASSWORD_FAILED,
+        { reason: "validation_error" },
+        i18n.language,
+      );
       setError(t("auth.resetPasswordTooShort", { defaultValue: "Password must be at least 8 characters." }));
       return;
     }
     if (newPassword !== confirmPassword) {
+      trackConversionEvent(
+        ANALYTICS_EVENTS.RESET_PASSWORD_FAILED,
+        { reason: "validation_error" },
+        i18n.language,
+      );
       setError(t("auth.resetPasswordMismatch", { defaultValue: "Passwords must match." }));
       return;
     }
@@ -33,8 +49,14 @@ export function ResetPasswordPage() {
     setLoading(true);
     try {
       await resetPassword(token, newPassword);
+      trackConversionEvent(ANALYTICS_EVENTS.RESET_PASSWORD_SUCCESS, undefined, i18n.language);
       setDone(true);
     } catch (e) {
+      trackConversionEvent(
+        ANALYTICS_EVENTS.RESET_PASSWORD_FAILED,
+        { reason: analyticsFailureReason(e) },
+        i18n.language,
+      );
       setError(apiErrorMessage(e));
     } finally {
       setLoading(false);

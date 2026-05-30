@@ -18,7 +18,11 @@ type AuthContextValue = {
   token: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name?: string) => Promise<{ email: string }>;
+  register: (
+    email: string,
+    password: string,
+    name?: string,
+  ) => Promise<{ email: string; verificationEmailSent: boolean }>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 };
@@ -80,7 +84,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       ...(name ? { name } : {}),
     });
-    return { email: data.user.email };
+    return {
+      email: data.user.email,
+      verificationEmailSent: Boolean(data.verificationEmailSent),
+    };
   }, []);
 
   const logout = useCallback(() => {

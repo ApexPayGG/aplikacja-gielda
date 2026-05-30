@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { forgotPassword } from "../services/api";
+import { ANALYTICS_EVENTS, analyticsFailureReason, trackConversionEvent } from "../utils/analytics";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function ForgotPasswordPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,10 +16,17 @@ export function ForgotPasswordPage() {
     event.preventDefault();
     setError(null);
     setLoading(true);
+    trackConversionEvent(ANALYTICS_EVENTS.FORGOT_PASSWORD_REQUESTED, undefined, i18n.language);
     try {
       await forgotPassword(email);
+      trackConversionEvent(ANALYTICS_EVENTS.FORGOT_PASSWORD_RESULT, { outcome: "ok" }, i18n.language);
       setSent(true);
     } catch (e) {
+      trackConversionEvent(
+        ANALYTICS_EVENTS.FORGOT_PASSWORD_RESULT,
+        { outcome: "failed", reason: analyticsFailureReason(e) },
+        i18n.language,
+      );
       setError(apiErrorMessage(e));
     } finally {
       setLoading(false);

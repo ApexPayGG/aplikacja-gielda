@@ -14,7 +14,7 @@ import { PageErrorBoundary } from "./components/PageErrorBoundary";
 import { useAuth } from "./context/AuthContext";
 import { useUserAccess } from "./hooks/useUserAccess";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
-import { initializeGA4, trackPageView } from "./utils/analytics";
+import { captureUtmOnce, initializeGA4, trackPageView } from "./utils/analytics";
 import { getCookieConsent, type CookieConsentType } from "./utils/cookieConsent";
 import { GlassAmbient } from "./components/behavioral-coach/GlassAmbient";
 import { TerminalAppShell } from "./components/terminal";
@@ -160,6 +160,10 @@ export default function App() {
   const showFloatingEmotionalWidget =
     token && !location.pathname.startsWith("/dashboard") && !inOnboarding && showTerminalShell;
   useKeyboardShortcuts();
+
+  useEffect(() => {
+    captureUtmOnce();
+  }, []);
 
   useEffect(() => {
     if (cookieConsent === "all") {

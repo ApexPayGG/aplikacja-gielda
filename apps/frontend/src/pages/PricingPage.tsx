@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { DisclosureNote } from "../components/affiliate/DisclosureNote";
@@ -14,7 +14,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { createStripeCheckoutSession } from "../services/api";
 import { EUR_CHECKOUT_ENABLED } from "../config/checkout";
-import { trackEvent } from "../utils/analytics";
+import { ANALYTICS_EVENTS, analyticsFailureReason, trackConversionEvent } from "../utils/analytics";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import {
   annualSavingsPercent,
@@ -74,7 +74,8 @@ function PlanFeatureList({ planKey }: { planKey: "free" | "pro" | "proPlus" }) {
 }
 
 export function PricingPage() {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
+  const pricingViewSent = useRef(false);
   const { token } = useAuth();
   const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
@@ -84,6 +85,18 @@ export function PricingPage() {
 
   const isLoggedIn = Boolean(token);
   const checkoutEnabled = EUR_CHECKOUT_ENABLED;
+
+  useEffect(() => {
+    if (pricingViewSent.current) return;
+    pricingViewSent.current = true;
+    trackConversionEvent(ANALYTICS_EVENTS.PRICING_PAGE_VIEW, undefined, i18n.language);
+  }, [i18n.language]);
+
+  function handleBillingCycleChange(cycle: BillingCycle): void {
+    if (billingCycle === cycle) return;
+    setBillingCycle(cycle);
+    trackConversionEvent(ANALYTICS_EVENTS.SELECT_BILLING_CYCLE, { cycle }, i18n.language);
+  }
 
   const pricingNote = useMemo(
     () =>
@@ -154,7 +167,16 @@ export function PricingPage() {
     try {
       setCheckoutLoadingPlan(plan);
       window.localStorage.setItem("checkout_plan", plan);
-      trackEvent("begin_checkout", { plan, billing: billingCycle, currency: "EUR" });
+      trackConversionEvent(
+        ANALYTICS_EVENTS.SELECT_PLAN,
+        { plan, billing: billingCycle },
+        i18n.language,
+      );
+      trackConversionEvent(
+        ANALYTICS_EVENTS.BEGIN_CHECKOUT,
+        { plan, billing: billingCycle, currency: "EUR" },
+        i18n.language,
+      );
       const { url } = await createStripeCheckoutSession({
         userId,
         plan,
@@ -162,6 +184,11 @@ export function PricingPage() {
       });
       window.location.href = url;
     } catch (error) {
+      trackConversionEvent(
+        ANALYTICS_EVENTS.BEGIN_CHECKOUT_FAILED,
+        { plan, billing: billingCycle, reason: analyticsFailureReason(error) },
+        i18n.language,
+      );
       console.error("Failed to start Stripe checkout", error);
       const message = apiErrorMessage(error);
       setCheckoutError(
@@ -184,7 +211,7 @@ export function PricingPage() {
       >
         <button
           type="button"
-          onClick={() => setBillingCycle("monthly")}
+          onClick={() => handleBillingCycleChange("monthly")}
           className={`rounded-md px-4 py-1.5 text-xs font-semibold transition ${
             billingCycle === "monthly"
               ? "bg-terminal-cyan text-terminal-buttonText"
@@ -196,7 +223,7 @@ export function PricingPage() {
         </button>
         <button
           type="button"
-          onClick={() => setBillingCycle("yearly")}
+          onClick={() => handleBillingCycleChange("yearly")}
           className={`relative rounded-md px-4 py-1.5 text-xs font-semibold transition ${
             billingCycle === "yearly"
               ? "bg-terminal-cyan text-terminal-buttonText"

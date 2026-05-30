@@ -3,12 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
-import { trackEvent } from "../utils/analytics";
+import { ANALYTICS_EVENTS, analyticsFailureReason, trackConversionEvent } from "../utils/analytics";
 import { ResendVerificationEmail } from "../components/ResendVerificationEmail";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function RegisterPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { register } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,11 +22,21 @@ export function RegisterPage() {
     setError(null);
     setRegisteredEmail(null);
     setLoading(true);
+    trackConversionEvent(ANALYTICS_EVENTS.REGISTER_STARTED, undefined, i18n.language);
     try {
       const result = await register(email, password, name);
       setRegisteredEmail(result.email);
-      trackEvent("sign_up");
+      trackConversionEvent(
+        ANALYTICS_EVENTS.SIGN_UP,
+        { verification_email_sent: result.verificationEmailSent ? 1 : 0 },
+        i18n.language,
+      );
     } catch (e) {
+      trackConversionEvent(
+        ANALYTICS_EVENTS.REGISTER_FAILED,
+        { reason: analyticsFailureReason(e) },
+        i18n.language,
+      );
       setError(apiErrorMessage(e));
     } finally {
       setLoading(false);
