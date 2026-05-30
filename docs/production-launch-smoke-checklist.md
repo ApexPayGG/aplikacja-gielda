@@ -14,8 +14,8 @@ Repeatable post-deploy verification for **stock-ai.pro**. Use after every produc
 | Production env template | [../.env.production.example](../.env.production.example) |
 | EUR pricing model (PRICING.1) | [PRICING_EUR_MIGRATION.md](./PRICING_EUR_MIGRATION.md) |
 
-**Production host:** `https://stock-ai.pro`  
-**VPS deploy dir (typical):** `/root/aplikacja-gielda`  
+**Production host:** `https://stock-ai.pro`
+**VPS deploy dir (typical):** `/root/aplikacja-gielda`
 **Env file on VPS:** `.env.production` (never commit)
 
 ---
@@ -328,7 +328,61 @@ Payment success: fires `payment_success` (not `purchase`) — no revenue amount 
 
 ---
 
-## 9. MarketSignals smoke
+## 9. Market data smoke
+
+**Prerequisite:** API scheduler/ingest running on VPS (`market-scrape`, optional `fetch-quotes` when `POLYGON_LIVE_QUOTES_ENABLED=true`, `eodhd-import-gpw` for GPW). See `GET /api/quotes/ingest-status`.
+
+### Pass criteria
+
+- **US large caps:** `GET /api/quotes/latest?ticker=` → HTTP 200; history endpoints return **≥ 10** bars.
+- **GPW / EU:** pass only after EODHD import job populated `quotes` / `companies` (symbol variants `PKN.WAR`, `SAP.XETRA`). Otherwise expect 404 or thin data — not a launch blocker if landing disclaimer is live.
+- **Premium:** if verdict uses `fallback_quote_only`, UI shows **Limited data — quote-only analysis** (not a full fundamental verdict).
+- **Signals:** `/api/signals` with active user JWT → HTTP 200 (empty list OK); must not 500.
+
+### Matrix (curl from API container)
+
+Replace `TICKER` / paths as needed. Public quote routes need no JWT.
+
+| Market | Tickers | search | latest | history `?ticker=` | legacy `/:symbol` | legacy `/:symbol/history` |
+|--------|---------|--------|--------|-------------------|-------------------|---------------------------|
+| US | AAPL, MSFT, NVDA, TSLA, SPY | ✓ | ✓ | ✓ ≥10 bars | ✓ | ✓ |
+| ETF | SPY, QQQ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| GPW (if advertised) | PKN, PKO, PZU, CDR, DNP | ✓ | after import | after import | after import | after import |
+| EU (if advertised) | SAP, BMW, ASML | ✓ | after import | after import | after import | after import |
+
+```bash
+# Example US smoke
+for T in AAPL MSFT NVDA TSLA SPY; do
+  docker exec stockai-api-prod curl -sS -o /dev/null -w "%{http_code} latest $T\n" \
+    "http://127.0.0.1:3000/api/quotes/latest?ticker=$T"
+  docker exec stockai-api-prod curl -sS \
+    "http://127.0.0.1:3000/api/quotes/history?ticker=$T&limit=30" | head -c 200
+  echo
+done
+
+# Company + premium (USER_JWT with active trial/subscription)
+docker exec stockai-api-prod curl -sS -w "\n%{http_code}" \
+  "http://127.0.0.1:3000/api/companies/AAPL"
+docker exec stockai-api-prod curl -sS -w "\n%{http_code}" \
+  -H "Authorization: Bearer USER_JWT" \
+  "http://127.0.0.1:3000/api/premium/AAPL/verdict"
+
+# Signals list (non-fatal empty)
+docker exec stockai-api-prod curl -sS -w "\n%{http_code}" \
+  -H "Authorization: Bearer USER_JWT" \
+  "http://127.0.0.1:3000/api/signals?limit=20"
+
+# Dividend read (if product enabled)
+docker exec stockai-api-prod curl -sS -w "\n%{http_code}" \
+  -H "Authorization: Bearer USER_JWT" \
+  "http://127.0.0.1:3000/api/dividends/AAPL"
+```
+
+Browser: company page chart loads for AAPL without “No quote history yet”; Signals page loads without fatal error.
+
+---
+
+## 10. MarketSignals smoke
 
 ```bash
 # Ops health - unauthenticated -> 401 or 403 (depends on guard)
@@ -371,7 +425,7 @@ Follow [market-signals-ops-runbook.md](./market-signals-ops-runbook.md) before e
 
 ---
 
-## 10. Autopilot smoke
+## 11. Autopilot smoke
 
 ```bash
 # Worker started in API logs
@@ -386,7 +440,7 @@ grep ENCRYPTION_SECRET /root/aplikacja-gielda/.env.production
 
 ---
 
-## 11. Cleanup
+## 12. Cleanup
 
 - [ ] Delete launch smoke test users from DB.
 - [ ] Cancel or note Stripe test subscriptions/customers in Dashboard (test mode vs live mode as appropriate).
@@ -407,6 +461,7 @@ grep ENCRYPTION_SECRET /root/aplikacja-gielda/.env.production
 | Affiliate admin 401/403/200 | ☐ |
 | eToro disclosure visible; etoro active if tracking required | ☐ |
 | GA4 consent-gated | ☐ |
+| Market data US quotes + history ≥10 bars | ☐ |
 | MarketSignals ops + scheduler off | ☐ |
 | Autopilot ENCRYPTION_SECRET + worker | ☐ |
 | Cleanup complete | ☐ |

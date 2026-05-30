@@ -49,6 +49,12 @@ function stringifyValue(value: unknown): string {
   return "";
 }
 
+function isQuoteOnlyVerdict(verdict: PremiumVerdictResponse | null): boolean {
+  if (!verdict?.components || typeof verdict.components !== "object") return false;
+  const comps = verdict.components as Record<string, { raw?: { mode?: string } }>;
+  return Object.values(comps).some((entry) => entry?.raw?.mode === "fallback_quote_only");
+}
+
 function resolveVerdict(score: number, label: string | undefined): "BULL" | "BEAR" | "NEUTRAL" {
   const normalized = (label ?? "").toLowerCase();
   if (normalized.includes("bear") || normalized.includes("sell") || score <= 35) return "BEAR";
@@ -112,6 +118,7 @@ export function PremiumCompanyAnalysis() {
     reset,
   } = usePremiumAnalysisStore();
   const typedVerdict = verdict as PremiumVerdictResponse | null;
+  const quoteOnlyLimited = useMemo(() => isQuoteOnlyVerdict(typedVerdict), [typedVerdict]);
   const typedPersonalFit = personalFit as PremiumPersonalFitResponse | null;
   const typedStory = story as PremiumStoryResponse | null;
   const typedTwins = twins as PremiumTwinsResponse | null;
@@ -240,6 +247,16 @@ export function PremiumCompanyAnalysis() {
               Verdict unavailable.
             </p>
           ) : (
+            <div className="space-y-4">
+              {quoteOnlyLimited ? (
+                <p
+                  className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm text-amber-200"
+                  role="status"
+                >
+                  Limited data — quote-only analysis. / Ograniczone dane — analiza tylko na podstawie
+                  notowań.
+                </p>
+              ) : null}
             <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr] lg:items-center">
               <div className="flex justify-center">
                 <div
@@ -308,6 +325,7 @@ export function PremiumCompanyAnalysis() {
                   Continue to Personal Fit
                 </button>
               </div>
+            </div>
             </div>
           )}
         </section>

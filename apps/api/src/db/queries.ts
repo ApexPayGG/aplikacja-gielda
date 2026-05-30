@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import type { Fundamental, News, Quote, TechnicalIndicator } from "@prisma/client";
+import { buildQuoteSymbolCandidates, baseTickerFromSymbol } from "../utils/quoteSymbolResolution";
 import { prisma } from "./index";
 
 export type QuoteInsertData = {
@@ -113,6 +114,36 @@ export async function getLatestQuote(symbol: string): Promise<Quote | null> {
   });
 }
 
+export async function resolveCompanyExchange(symbol: string): Promise<string | null> {
+  const normalized = symbol.trim().toUpperCase();
+  const base = baseTickerFromSymbol(normalized);
+  const company = await prisma.company.findFirst({
+    where: {
+      OR: [
+        { symbol: normalized },
+        { symbol: base },
+        { symbol: { startsWith: `${base}.` } },
+      ],
+    },
+    select: { exchange: true },
+    orderBy: { symbol: "asc" },
+  });
+  return company?.exchange ?? null;
+}
+
+export async function getLatestQuoteForCandidates(
+  ticker: string,
+  exchange?: string | null,
+): Promise<{ quote: Quote; resolvedSymbol: string } | null> {
+  const resolvedExchange = exchange ?? (await resolveCompanyExchange(ticker));
+  const candidates = buildQuoteSymbolCandidates(ticker, resolvedExchange);
+  for (const sym of candidates) {
+    const row = await getLatestQuote(sym);
+    if (row) return { quote: row, resolvedSymbol: sym };
+  }
+  return null;
+}
+
 export async function getQuoteHistory(symbol: string, days: number): Promise<Quote[]> {
   const since = new Date();
   since.setUTCDate(since.getUTCDate() - Math.max(1, Math.floor(days)));
@@ -123,6 +154,20 @@ export async function getQuoteHistory(symbol: string, days: number): Promise<Quo
     },
     orderBy: { timestamp: "asc" },
   });
+}
+
+export async function getQuoteHistoryForCandidates(
+  ticker: string,
+  days: number,
+  exchange?: string | null,
+): Promise<{ rows: Quote[]; resolvedSymbol: string } | null> {
+  const resolvedExchange = exchange ?? (await resolveCompanyExchange(ticker));
+  const candidates = buildQuoteSymbolCandidates(ticker, resolvedExchange);
+  for (const sym of candidates) {
+    const rows = await getQuoteHistory(sym, days);
+    if (rows.length > 0) return { rows, resolvedSymbol: sym };
+  }
+  return null;
 }
 
 export async function getRecentNews(symbol: string, limit: number): Promise<News[]> {

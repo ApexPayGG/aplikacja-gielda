@@ -4,6 +4,10 @@ import { Prisma } from "@prisma/client";
 import pino from "pino";
 import { prisma } from "../db/index";
 import { getCacheRedis } from "../redis";
+import {
+  buildQuoteSymbolCandidates,
+  MIN_QUOTE_HISTORY_BARS,
+} from "../utils/quoteSymbolResolution";
 
 const QUOTES_RATE_LIMIT = 50;
 const QUOTES_RATE_WINDOW_SEC = 60;
@@ -98,17 +102,6 @@ function serializeLiveQuote(row: {
   };
 }
 
-function quoteSymbolCandidates(ticker: string): string[] {
-  const normalized = ticker.trim().toUpperCase();
-  if (!normalized) return [];
-  const out = [normalized];
-  const base = normalized.split(".")[0]?.trim() ?? normalized;
-  if (base && !out.includes(base)) out.push(base);
-  const us = `${base}.US`;
-  if (base && !out.includes(us)) out.push(us);
-  return out;
-}
-
 function baseTickerSymbol(symbol: string): string {
   return symbol.trim().toUpperCase().replace(/\.US$/, "");
 }
@@ -168,21 +161,29 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
     try {
       const ticker = parseTicker(req.query.ticker);
       if (!ticker) return res.status(400).json({ error: "Invalid or missing ticker" });
-      const row = await db.liveQuote.findFirst({
-        where: { ticker },
-        orderBy: { createdAt: "desc" },
-      });
-      if (row) {
-        res.json({ quote: serializeLiveQuote(row) });
-        return;
+      const candidates = buildQuoteSymbolCandidates(ticker);
+      for (const candidate of candidates) {
+        const row = await db.liveQuote.findFirst({
+          where: { ticker: candidate },
+          orderBy: { createdAt: "desc" },
+        });
+        if (row) {
+          return res.json({
+            quote: serializeLiveQuote(row),
+            resolvedSymbol: candidate,
+          });
+        }
       }
 
       const fallback = await db.quote.findFirst({
-        where: { symbol: { in: quoteSymbolCandidates(ticker) } },
+        where: { symbol: { in: candidates } },
         orderBy: [{ timestamp: "desc" }, { id: "desc" }],
       });
       if (!fallback) return res.status(404).json({ error: "No quote found for ticker" });
-      res.json({ quote: serializeHistoricalQuoteFallback(fallback) });
+      res.json({
+        quote: serializeHistoricalQuoteFallback(fallback),
+        resolvedSymbol: fallback.symbol,
+      });
     } catch (e) {
       next(e);
     }
@@ -193,16 +194,72 @@ export function createQuotesRouter(deps?: Partial<QuotesRouteDeps>): Router {
       const ticker = parseTicker(req.query.ticker);
       if (!ticker) return res.status(400).json({ error: "Invalid or missing ticker" });
       const limit = Math.min(500, Math.max(1, parseInt(String(req.query.limit ?? "100"), 10) || 100));
-      const rows = await db.liveQuote.findMany({
-        where: { ticker },
-        orderBy: { createdAt: "desc" },
-        take: limit,
-      });
+      const candidates = buildQuoteSymbolCandidates(ticker);
+
+      let bestLive: { candidate: string; rows: ReturnType<typeof serializeLiveQuote>[] } | null = null;
+      for (const candidate of candidates) {
+        const rows = await db.liveQuote.findMany({
+          where: { ticker: candidate },
+          orderBy: { createdAt: "desc" },
+          take: limit,
+        });
+        if (rows.length > (bestLive?.rows.length ?? 0)) {
+          bestLive = { candidate, rows: rows.map(serializeLiveQuote) };
+        }
+      }
+      if (bestLive && bestLive.rows.length >= MIN_QUOTE_HISTORY_BARS) {
+        return res.json({
+          ticker,
+          resolvedSymbol: bestLive.candidate,
+          limit,
+          count: bestLive.rows.length,
+          quotes: bestLive.rows,
+          source: "live_quotes",
+        });
+      }
+
+      const days = Math.min(365, Math.max(1, Math.ceil(limit / 2)));
+      const since = new Date();
+      since.setUTCDate(since.getUTCDate() - days);
+      for (const candidate of candidates) {
+        const legacyRows = await db.quote.findMany({
+          where: {
+            symbol: candidate,
+            timestamp: { gte: since },
+          },
+          orderBy: { timestamp: "asc" },
+        });
+        if (legacyRows.length >= MIN_QUOTE_HISTORY_BARS) {
+          const sliced = legacyRows.slice(-limit);
+          return res.json({
+            ticker,
+            resolvedSymbol: candidate,
+            limit,
+            count: sliced.length,
+            quotes: sliced.map((row) =>
+              serializeHistoricalQuoteFallback({
+                id: row.id,
+                symbol: row.symbol,
+                open: row.open,
+                high: row.high,
+                low: row.low,
+                close: row.close,
+                volume: row.volume,
+                timestamp: row.timestamp,
+              }),
+            ),
+            source: "quotes_fallback",
+          });
+        }
+      }
+
       res.json({
         ticker,
+        resolvedSymbol: ticker,
         limit,
-        count: rows.length,
-        quotes: rows.map(serializeLiveQuote),
+        count: bestLive?.rows.length ?? 0,
+        quotes: bestLive?.rows ?? [],
+        source: bestLive ? "live_quotes" : "none",
       });
     } catch (e) {
       next(e);

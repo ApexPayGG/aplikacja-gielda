@@ -1179,6 +1179,9 @@ export function LandingPage() {
             </div>
           </div>
         </div>
+        <p className="relative z-10 mx-auto max-w-3xl px-4 pb-6 text-center text-xs text-white/50 md:text-sm">
+          {t("landing.stats.coverageDisclaimer")}
+        </p>
       </section>
 
       {/* ═══ PROBLEM ═══ */}

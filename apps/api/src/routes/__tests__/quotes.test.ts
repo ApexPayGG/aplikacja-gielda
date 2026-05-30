@@ -73,7 +73,9 @@ describe("quotes routes", () => {
   let queryRawResponses: unknown[] = [];
 
   const findFirst = mock.fn(async () => liveLatestRow);
+  const liveFindMany = mock.fn(async () => [] as unknown[]);
   const historicalFindFirst = mock.fn(async () => historicalLatestRow);
+  const historicalFindMany = mock.fn(async () => [] as unknown[]);
   const queryRaw = mock.fn(async () => queryRawResponses.shift() ?? []);
 
   beforeEach(async () => {
@@ -91,6 +93,10 @@ describe("quotes routes", () => {
       updatedAt: new Date("2026-05-07T10:00:00.000Z"),
     };
     historicalLatestRow = null;
+    liveFindMany.mock.resetCalls();
+    liveFindMany.mock.mockImplementation(async () => []);
+    historicalFindMany.mock.resetCalls();
+    historicalFindMany.mock.mockImplementation(async () => []);
     queryRawResponses = [
       [
         {
@@ -112,8 +118,8 @@ describe("quotes routes", () => {
     app.use(
       createQuotesRouter({
         db: {
-          liveQuote: { findFirst, findMany: mock.fn(async () => []) },
-          quote: { findFirst: historicalFindFirst },
+          liveQuote: { findFirst, findMany: liveFindMany },
+          quote: { findFirst: historicalFindFirst, findMany: historicalFindMany },
           $queryRaw: queryRaw,
         } as never,
         rateStore: new InMemoryRateStore() as never,
@@ -266,5 +272,35 @@ describe("quotes routes", () => {
     );
     const metaQuote = body.quotes.find((q) => q.ticker === "META");
     assert.equal(metaQuote?.internalTicker, "META.US");
+  });
+
+  it("GET /api/quotes/history falls back to legacy quotes when live is empty", async () => {
+    const bars = Array.from({ length: 12 }, (_, i) => ({
+      id: BigInt(100 + i),
+      symbol: "AAPL.US",
+      open: new Prisma.Decimal("100"),
+      high: new Prisma.Decimal("101"),
+      low: new Prisma.Decimal("99"),
+      close: new Prisma.Decimal("100.5"),
+      volume: BigInt(1000 + i),
+      timestamp: new Date(Date.UTC(2026, 0, i + 1)),
+    }));
+    liveFindMany.mock.mockImplementation(async () => []);
+    historicalFindMany.mock.mockImplementation(async (...args: unknown[]) => {
+      const query = args[0] as { where?: { symbol?: string } } | undefined;
+      if (query?.where?.symbol === "AAPL.US") return bars;
+      return [];
+    });
+
+    const res = await fetch(`${baseUrl}/api/quotes/history?ticker=AAPL&limit=30`);
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as {
+      count: number;
+      resolvedSymbol: string;
+      source: string;
+    };
+    assert.equal(body.resolvedSymbol, "AAPL.US");
+    assert.equal(body.source, "quotes_fallback");
+    assert.ok(body.count >= 10);
   });
 });

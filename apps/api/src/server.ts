@@ -21,7 +21,9 @@ import {
 import {
   getLatestIndicator,
   getLatestQuote,
+  getLatestQuoteForCandidates,
   getQuoteHistory,
+  getQuoteHistoryForCandidates,
   getRecentNews,
   insertIndicator,
   insertNews,
@@ -436,10 +438,11 @@ export function createApp(): express.Express {
         res.json(cached);
         return;
       }
-      const row = await getLatestQuote(sym);
-      if (!row) return res.status(404).json({ error: "No quote found" });
-      await cacheJsonSet(cacheKey, row, REDIS_TTL_SEC.QUOTES);
-      res.json(row);
+      const resolved = await getLatestQuoteForCandidates(sym);
+      if (!resolved) return res.status(404).json({ error: "No quote found" });
+      const payload = { ...resolved.quote, resolvedSymbol: resolved.resolvedSymbol };
+      await cacheJsonSet(cacheKey, payload, REDIS_TTL_SEC.QUOTES);
+      res.json(payload);
     } catch (e) {
       next(e);
     }
@@ -448,8 +451,16 @@ export function createApp(): express.Express {
   app.get("/api/quotes/:symbol/history", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const days = Math.min(365, Math.max(1, parseInt(String(req.query.days ?? "30"), 10) || 30));
-      const rows = await getQuoteHistory(req.params.symbol ?? "", days);
-      res.json({ symbol: (req.params.symbol ?? "").toUpperCase(), days, count: rows.length, data: rows });
+      const sym = (req.params.symbol ?? "").trim().toUpperCase();
+      const resolved = await getQuoteHistoryForCandidates(sym, days);
+      const rows = resolved?.rows ?? [];
+      res.json({
+        symbol: sym,
+        resolvedSymbol: resolved?.resolvedSymbol ?? sym,
+        days,
+        count: rows.length,
+        data: rows,
+      });
     } catch (e) {
       next(e);
     }

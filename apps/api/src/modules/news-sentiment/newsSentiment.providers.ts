@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { PolygonClient } from "../../../../../packages/data/src/polygon/client";
 import { fetchEodhdDaily } from "../../scrapers/eodhd.scraper";
 import { fetchFinnhubCompanyNews, fetchFinnhubQuoteDetailed } from "../../scrapers/finnhub.scraper";
+import { toEodhdSymbolFromTicker } from "../../utils/quoteSymbolResolution";
 import {
   computeIntradayChangePct,
   computeMa200,
@@ -209,7 +210,7 @@ function parseJsonFromText(raw: string): unknown {
 }
 
 function toEodhdSymbol(ticker: string): string {
-  return `${normalizeNewsSentimentTicker(ticker)}.US`;
+  return toEodhdSymbolFromTicker(normalizeNewsSentimentTicker(ticker));
 }
 
 async function safeFinnhubNews(ticker: string, status: ProviderStatus): Promise<FilterableNewsItem[]> {

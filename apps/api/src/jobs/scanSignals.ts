@@ -97,6 +97,28 @@ function quoteSelect() {
   return { timestamp: true, open: true, high: true, low: true, close: true, volume: true, symbol: true } as const;
 }
 
+async function resolveCompanyExchangeForScan(deps: ScanSignalsDeps, ticker: string): Promise<string | null> {
+  const normalizedTicker = ticker.trim().toUpperCase();
+  const base = tickerBase(normalizedTicker);
+  type CompanyFindFirst = (args: {
+    where: Record<string, unknown>;
+    select: { exchange: true };
+  }) => Promise<{ exchange: string | null } | null>;
+  const companyAccessor = (deps.db as unknown as { company?: { findFirst?: CompanyFindFirst } }).company;
+  if (!companyAccessor?.findFirst) return null;
+  const companyRow = await companyAccessor.findFirst({
+    where: {
+      OR: [
+        { symbol: normalizedTicker },
+        { symbol: base },
+        { symbol: { startsWith: `${base}.` } },
+      ],
+    },
+    select: { exchange: true },
+  });
+  return companyRow?.exchange ?? null;
+}
+
 async function fetchQuotesForTicker(
   deps: ScanSignalsDeps,
   ticker: string,
@@ -292,16 +314,21 @@ export async function runScanSignalsJob(depsInput?: Partial<ScanSignalsDeps>): P
   const tickers = await getTopTickersFromCacheOrDb(deps, 30);
   const quoteRowsByTicker = new Map<string, QuoteRow[]>();
   const eligibleTickers: string[] = [];
+  let skippedNoQuotes = 0;
+  let skippedNotEnoughBars = 0;
+  let skippedNoPattern = 0;
 
   for (const ticker of tickers) {
     out.processed += 1;
     try {
       const rows = await fetchQuotesForTicker(deps, ticker);
       if (rows.length === 0) {
+        skippedNoQuotes += 1;
         scanSignalsLogger.info({ msg: "skip_no_quotes", ticker });
         continue;
       }
       if (rows.length < 10) {
+        skippedNotEnoughBars += 1;
         scanSignalsLogger.info({ msg: "skip_not_enough_bars", ticker, bars: rows.length });
         continue;
       }
@@ -324,7 +351,10 @@ export async function runScanSignalsJob(depsInput?: Partial<ScanSignalsDeps>): P
       const scanResult = await deps.fetchAnalyze({ ticker, bars });
       const anomalies = Array.isArray(scanResult.anomalies) ? scanResult.anomalies : [];
       const patterns = Array.isArray(scanResult.patterns) ? scanResult.patterns : [];
-      if (anomalies.length === 0 && patterns.length === 0) continue;
+      if (anomalies.length === 0 && patterns.length === 0) {
+        skippedNoPattern += 1;
+        continue;
+      }
 
       const confidence = resolveConfidence(anomalies, patterns);
       const backtest = calculateBacktestData(bars, confidence);
@@ -333,10 +363,11 @@ export async function runScanSignalsJob(depsInput?: Partial<ScanSignalsDeps>): P
           (anomalies[0] as { type?: string } | undefined)?.type ??
           "scanner_signal",
       );
+      const companyExchange = await resolveCompanyExchangeForScan(deps, ticker);
       const latestSignal = await deps.db.signal.create({
         data: {
           ticker: ticker.toUpperCase(),
-          exchange: "US",
+          exchange: companyExchange?.trim().toUpperCase() || "US",
           pattern_type: patternType,
           confidence,
           technical_data: ({ anomalies, patterns, barsCount: bars.length } as unknown) as Prisma.InputJsonValue,
@@ -370,7 +401,16 @@ export async function runScanSignalsJob(depsInput?: Partial<ScanSignalsDeps>): P
     }
   }
 
-  scanSignalsLogger.info({ msg: "scan_signals_finished", ...out });
+  scanSignalsLogger.info({
+    msg: "scan_signals_summary",
+    processed: out.processed,
+    eligible: eligibleTickers.length,
+    created: out.signals_created,
+    alerts_queued: out.alerts_queued,
+    skipped_no_quotes: skippedNoQuotes,
+    skipped_not_enough_bars: skippedNotEnoughBars,
+    skipped_no_pattern: skippedNoPattern,
+  });
   return out;
 }
 
