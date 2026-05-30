@@ -32,6 +32,7 @@ async function main(): Promise<void> {
       dlq,
       cache,
       topLimit: Number.isFinite(topLimit) && topLimit > 0 ? topLimit : 100,
+      liveQuoteSymbolsEnv: process.env.POLYGON_LIVE_QUOTES_SYMBOLS,
       traceId,
       ingestBucket: new Date(),
     });

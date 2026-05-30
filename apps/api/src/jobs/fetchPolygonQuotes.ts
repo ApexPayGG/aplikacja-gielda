@@ -7,6 +7,7 @@ import { Prisma } from "@prisma/client";
 import { PolygonClient } from "../../../../packages/data/src/polygon/client";
 import { prisma } from "../db/index";
 import { createRedisConnection, getCacheRedis } from "../redis";
+import { resolvePolygonLiveQuoteTickers } from "./polygonLiveQuoteTickers";
 import { runIngestJob, STANDARD_INGEST_JOB_OPTIONS, WEEKDAY_REALTIME_CRON } from "./schedulerConfig";
 
 export const FETCH_QUOTES_QUEUE_NAME = "fetch-quotes";
@@ -28,6 +29,7 @@ export interface FetchPolygonQuotesResult {
   failed: number;
   dlqEnqueued: number;
   ingestBucket: string;
+  source?: "env_symbols" | "polygon_reference";
 }
 
 export interface FetchPolygonQuotesDeps {
@@ -36,6 +38,8 @@ export interface FetchPolygonQuotesDeps {
   dlq: Pick<Queue, "add">;
   cache: Pick<ReturnType<typeof getCacheRedis>, "setex">;
   topLimit: number;
+  /** Override process.env.POLYGON_LIVE_QUOTES_SYMBOLS (tests). */
+  liveQuoteSymbolsEnv?: string;
   traceId: string;
   ingestBucket: Date;
 }
@@ -63,7 +67,13 @@ function toDec2Required(n: number): Prisma.Decimal {
 export async function runFetchPolygonQuotesJob(deps: FetchPolygonQuotesDeps): Promise<FetchPolygonQuotesResult> {
   const bucket = floorToFiveMinuteUtc(deps.ingestBucket);
   const traceId = deps.traceId;
-  const tickers = await deps.polygon.getTopStocks(deps.topLimit, traceId);
+  const { tickers, source } = await resolvePolygonLiveQuoteTickers({
+    symbolsEnv: deps.liveQuoteSymbolsEnv,
+    topLimit: deps.topLimit,
+    traceId,
+    polygon: deps.polygon,
+    logger: fetchPolygonQuotesLogger,
+  });
 
   let upserted = 0;
   let failed = 0;
@@ -124,6 +134,7 @@ export async function runFetchPolygonQuotesJob(deps: FetchPolygonQuotesDeps): Pr
     failed,
     dlqEnqueued,
     ingestBucket: bucket.toISOString(),
+    source,
   };
 
   try {
@@ -162,12 +173,14 @@ export function registerFetchPolygonQuotes(
           const polygon = new PolygonClient({
             logger: fetchPolygonQuotesLogger.child({ traceId }),
           });
+          const topLimit = Number(process.env.POLYGON_TOP_STOCKS_LIMIT ?? "100");
           return runFetchPolygonQuotesJob({
             db: prisma,
             polygon,
             dlq,
             cache: getCacheRedis(),
-            topLimit: 100,
+            topLimit: Number.isFinite(topLimit) && topLimit > 0 ? topLimit : 100,
+            liveQuoteSymbolsEnv: process.env.POLYGON_LIVE_QUOTES_SYMBOLS,
             traceId,
             ingestBucket: new Date(),
           });

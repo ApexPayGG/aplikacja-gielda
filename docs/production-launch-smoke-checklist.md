@@ -132,7 +132,7 @@ docker logs stockai-api-prod --tail=200 2>&1 | grep -i 'polygon live quotes'
 # Optional: inspect BullMQ repeat jobs in Redis (fetch-quotes queue) - should be empty when disabled
 ```
 
-Manual one-shot ingest (`npm run job:fetch-quotes` / GitHub polygon-live-ingest workflow) remains available when `POLYGON_API_KEY` is set; it does not require `POLYGON_LIVE_QUOTES_ENABLED`.
+Manual one-shot ingest (`npm run job:fetch-quotes` / GitHub polygon-live-ingest workflow) remains available when `POLYGON_API_KEY` is set; it does not require `POLYGON_LIVE_QUOTES_ENABLED`. Prefer `POLYGON_LIVE_QUOTES_SYMBOLS=AAPL,MSFT,NVDA,TSLA,SPY,QQQ` for canary (see **Polygon live canary**).
 
 ---
 
@@ -421,6 +421,41 @@ Second wave immediately after should return `cacheHit: true` or `imported: false
 ### News sentiment refresh
 
 Repeated `GET /api/v1/news-sentiment/AAPL` without cache → **one** BullMQ job id `refresh__AAPL` (no timestamp suffix); worker `acquireGenerationLock` prevents parallel provider refresh for same ticker.
+
+---
+
+## Polygon live canary
+
+**Do not** enable the permanent scheduler (`POLYGON_LIVE_QUOTES_ENABLED=true` on API restart) until Polygon entitlement for live quotes is confirmed. Keep production scheduler **disabled**; run a **manual one-shot** canary only.
+
+**Prerequisites:** `POLYGON_API_KEY` set; `POLYGON_LIVE_QUOTES_SYMBOLS` lists launch universe (recommended); Redis + DB reachable.
+
+On VPS (from `apps/api` or container with env):
+
+```bash
+# One-shot — does NOT require POLYGON_LIVE_QUOTES_ENABLED=true
+POLYGON_LIVE_QUOTES_ENABLED=true \
+POLYGON_LIVE_QUOTES_SYMBOLS=AAPL,MSFT,NVDA,TSLA,SPY,QQQ \
+POLYGON_TOP_STOCKS_LIMIT=25 \
+npm run job:fetch-quotes
+```
+
+**Expected JSON result:**
+
+- `source: "env_symbols"`, `tickersTargeted: 6` when symbols env is set.
+- **Entitlement OK:** `upserted >= 1`, `failed: 0` (or acceptable partial failures logged per ticker).
+- **403 / NOT_AUTHORIZED on `/v2/last/trade` or aggregates:** do **not** set `POLYGON_LIVE_QUOTES_ENABLED=true`; fix plan or stay on EODHD historical only.
+
+**Verify after canary:**
+
+```bash
+docker exec stockai-api-prod curl -sS http://127.0.0.1:3000/api/quotes/ingest-status
+# Inspect live_quotes rows for AAPL, MSFT, NVDA, TSLA, SPY, QQQ (recent ingestBucket)
+```
+
+**Logs:** `polygon_live_quotes_symbols_override` (env list); avoid relying on `polygon_reference_tickers_loaded` in production (alphabetical reference tickers, not market-cap universe).
+
+Without `POLYGON_LIVE_QUOTES_SYMBOLS`, fallback calls Polygon reference tickers (A, AA, AAA…) — **not recommended** for production canary.
 
 ---
 

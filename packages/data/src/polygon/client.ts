@@ -168,7 +168,7 @@ export class PolygonClient {
     }>(path, tid);
 
     const out = (json.results ?? []).map((r) => r.ticker).filter((t): t is string => Boolean(t));
-    this.log.info({ traceId: tid, count: out.length }, "polygon top tickers loaded");
+    this.log.info({ traceId: tid, count: out.length }, "polygon reference tickers loaded");
     return out.slice(0, cap);
   }
 

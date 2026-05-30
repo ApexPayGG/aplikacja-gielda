@@ -60,6 +60,7 @@ describe("fetchPolygonQuotes job", () => {
     };
 
     const out = await runFetchPolygonQuotesJob(deps);
+    assert.equal(out.source, "polygon_reference");
     assert.equal(out.upserted, 1);
     assert.equal(out.failed, 1);
     assert.equal(out.dlqEnqueued, 1);
@@ -68,5 +69,47 @@ describe("fetchPolygonQuotes job", () => {
     assert.equal(create.ticker, "AAA");
     assert.equal(Number(create.price), 10.5);
     assert.ok(dlq.length >= 1);
+  });
+
+  it("runFetchPolygonQuotesJob uses env symbols without getTopStocks", async () => {
+    const getTopStocks = async () => {
+      throw new Error("getTopStocks should not be called");
+    };
+    const upserts: string[] = [];
+    const deps: FetchPolygonQuotesDeps = {
+      db: {
+        liveQuote: {
+          upsert: async (args: { create: { ticker: string } }) => {
+            upserts.push(args.create.ticker);
+            return { id: BigInt(1) };
+          },
+        },
+      } as unknown as FetchPolygonQuotesDeps["db"],
+      polygon: {
+        getTopStocks,
+        getLatestQuote: async (ticker: string) => ({
+          ticker,
+          price: 1,
+          open: 1,
+          high: 1,
+          low: 1,
+          close: 1,
+          volume: BigInt(1),
+          vwap: 1,
+        }),
+      },
+      dlq: { add: async () => undefined } as unknown as FetchPolygonQuotesDeps["dlq"],
+      cache: { setex: async () => "OK" } as unknown as FetchPolygonQuotesDeps["cache"],
+      topLimit: 25,
+      liveQuoteSymbolsEnv: "AAPL,MSFT",
+      traceId: "trace-env",
+      ingestBucket: new Date("2026-05-07T12:00:00.000Z"),
+    };
+
+    const out = await runFetchPolygonQuotesJob(deps);
+    assert.equal(out.source, "env_symbols");
+    assert.equal(out.tickersTargeted, 2);
+    assert.deepEqual(upserts, ["AAPL", "MSFT"]);
+    assert.equal(out.upserted, 2);
   });
 });
