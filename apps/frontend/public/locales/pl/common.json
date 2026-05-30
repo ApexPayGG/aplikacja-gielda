@@ -952,7 +952,7 @@
       },
       "title": "Cennik EUR",
       "yearly": "yearly",
-      "checkoutError": "Checkout is not available yet.",
+      "checkoutError": "Rozpocznij trial teraz. Płatny checkout jest dostępny dla planów Pro i Pro+.",
       "betaNote": "7-dniowy trial bez karty. Zmień plan, gdy będziesz gotowy.",
       "cta": {
         "viewPricing": "Zobacz cennik",
@@ -2062,7 +2062,7 @@
       },
       "payment": {
         "question": "Jakie metody płatności?",
-        "answer": "Płatności są obsługiwane przez Stripe w EUR. Checkout Pro i Pro+ działa po włączeniu subskrypcji."
+        "answer": "Płatności są obsługiwane przez Stripe w EUR. Plany Pro i Pro+ obsługują rozliczenie miesięczne i roczne."
       },
       "security": {
         "question": "Czy dane są bezpieczne?",
@@ -2075,7 +2075,7 @@
     },
     "investorOs": {
       "comingSoon": "Wkrótce",
-      "note": "Investor OS i wybrane funkcje partnerskie nie są jeszcze publicznie dostępne. Dołącz do listy, aby otrzymywać aktualizacje.",
+      "note": "Investor OS pojawi się wkrótce i nie jest jeszcze dostępny w checkout.",
       "cta": "Dołącz do listy"
     }
   },
@@ -2167,7 +2167,7 @@
     "benefit2": "Priorytetowy dostęp do nowych modułów AI.",
     "benefit3": "Wpływ na roadmapę produktu i funkcje premium.",
     "benefit4": "Materiały onboardingowe dla użytkowników founding.",
-    "subhead": "Investor OS i wybrane funkcje partnerskie nie są jeszcze publicznie dostępne.",
+    "subhead": "Investor OS pojawi się wkrótce i nie jest jeszcze dostępny w checkout.",
     "title": "Dołącz do listy",
     "ctaJoin": "Dołącz do listy"
   },

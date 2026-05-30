@@ -348,7 +348,7 @@ const PATCHES = {
       },
       pricing: {
         badge: "Frühbucherpreis",
-        betaNote: "EUR checkout migration in progress. Join the beta waitlist for trial access.",
+        betaNote: "7-day trial. No card required to start. Upgrade when ready.",
         monthly: "Monatlich",
         popular: "Am beliebtesten",
         save: "27 % sparen",
@@ -422,7 +422,7 @@ const PATCHES = {
       },
       pricing: {
         badge: "先行ユーザー価格",
-        betaNote: "EUR checkout migration in progress. Join the beta waitlist for trial access.",
+        betaNote: "7-day trial. No card required to start. Upgrade when ready.",
         monthly: "月額",
         popular: "一番人気",
         save: "27%お得",

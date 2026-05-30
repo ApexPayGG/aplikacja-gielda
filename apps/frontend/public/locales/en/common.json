@@ -944,7 +944,7 @@
       },
       "title": "EUR pricing",
       "yearly": "yearly",
-      "checkoutError": "Checkout is not available yet.",
+      "checkoutError": "Start your trial now. Paid checkout is available for Pro and Pro+ plans.",
       "betaNote": "7-day trial. No card required to start. Upgrade when ready.",
       "cta": {
         "viewPricing": "View pricing",
@@ -2041,7 +2041,7 @@
     "benefit2": "Priority access to new AI modules.",
     "benefit3": "Influence the product roadmap and premium features.",
     "benefit4": "Dedicated onboarding materials for founding users.",
-    "subhead": "Investor OS and selected partner features are not publicly available yet.",
+    "subhead": "Investor OS is coming soon and is not available for checkout yet.",
     "title": "Join the waitlist",
     "ctaJoin": "Join waitlist"
   },
@@ -2508,7 +2508,7 @@
       },
       "payment": {
         "question": "What payment methods do you accept?",
-        "answer": "Payments are processed by Stripe in EUR. Pro and Pro+ checkout is available when subscription checkout is enabled."
+        "answer": "Payments are processed by Stripe in EUR. Pro and Pro+ plans support monthly and yearly billing."
       },
       "security": {
         "question": "Is my data secure?",
@@ -2521,7 +2521,7 @@
     },
     "investorOs": {
       "comingSoon": "Coming soon",
-      "note": "Investor OS and selected partner features are not publicly available yet. Join the waitlist for updates.",
+      "note": "Investor OS is coming soon and is not available for checkout yet.",
       "cta": "Join waitlist"
     }
   },

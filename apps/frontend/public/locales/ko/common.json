@@ -585,7 +585,7 @@
     },
     "pricing": {
       "badge": "Trial-first",
-      "checkoutError": "Checkout is not available yet.",
+      "checkoutError": "Start your trial now. Paid checkout is available for Pro and Pro+ plans.",
       "monthly": "monthly",
       "popular": "Most Popular",
       "save": "Save ~17%",
@@ -1541,11 +1541,11 @@
       },
       "trial": {
         "question": "Is there a free trial?",
-        "answer": "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live."
+        "answer": "Start with a 7-day Pro+ trial (no card) or a 14-day trial with card that converts to your chosen plan after checkout."
       },
       "payment": {
         "question": "결제 수단은?",
-        "answer": "Payments are processed by Stripe in EUR. Pro and Pro+ checkout is available when subscription checkout is enabled."
+        "answer": "Payments are processed by Stripe in EUR. Pro and Pro+ plans support monthly and yearly billing."
       },
       "security": {
         "question": "데이터는 안전한가요?",
@@ -1558,7 +1558,7 @@
     },
     "investorOs": {
       "comingSoon": "Coming soon",
-      "note": "Investor OS and selected partner features are not publicly available yet. Join the waitlist for updates.",
+      "note": "Investor OS is coming soon and is not available for checkout yet.",
       "cta": "Join waitlist"
     }
   },
@@ -1575,7 +1575,7 @@
     "benefit2": "Priority access to new AI modules.",
     "benefit3": "Influence the product roadmap and premium features.",
     "benefit4": "Dedicated onboarding materials for founding users.",
-    "subhead": "Investor OS and selected partner features are not publicly available yet.",
+    "subhead": "Investor OS is coming soon and is not available for checkout yet.",
     "title": "Join the waitlist",
     "ctaJoin": "Join waitlist"
   }

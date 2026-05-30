@@ -64,11 +64,11 @@ const PRICING_PAGE = {
       },
       trial: {
         question: "Is there a free trial?",
-        answer: "Start with a 7-day Pro+ trial (no card) or 14-day trial with card that converts to your chosen plan when EUR checkout is live.",
+        answer: "Start with a 7-day Pro+ trial (no card) or a 14-day trial with card that converts to your chosen plan after checkout.",
       },
       payment: {
         question: "What payment methods do you accept?",
-        answer: "Payments will be processed by Stripe in EUR. Checkout migration is in progress - beta access is manual until EUR Price IDs are configured.",
+        answer: "Payments are processed by Stripe in EUR. Pro and Pro+ plans support monthly and yearly billing.",
       },
       security: {
         question: "Is my data secure?",

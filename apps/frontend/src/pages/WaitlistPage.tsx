@@ -97,7 +97,7 @@ export function WaitlistPage() {
           <p className="mt-4 max-w-2xl text-base text-white/90 md:text-lg">
             {t("waitlistPage.subhead", {
               defaultValue:
-                "Investor OS and selected partner features are not publicly available yet.",
+                "Investor OS is coming soon and is not available for checkout yet.",
             })}
           </p>
 

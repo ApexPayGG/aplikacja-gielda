@@ -128,7 +128,7 @@ export function PricingPage() {
         question: t("pricingPage.faq.payment.question", { defaultValue: "What payment methods do you accept?" }),
         answer: t("pricingPage.faq.payment.answer", {
           defaultValue:
-            "Payments are processed by Stripe in EUR. Pro and Pro+ checkout is available when subscription checkout is enabled.",
+            "Payments are processed by Stripe in EUR. Pro and Pro+ plans support monthly and yearly billing.",
         }),
       },
       {
@@ -415,8 +415,7 @@ export function PricingPage() {
           </div>
           <p className="mt-4 text-xs text-terminal-textMuted">
             {t("pricingPage.investorOs.note", {
-              defaultValue:
-                "Investor OS and selected partner features are not publicly available yet. Join the waitlist for updates.",
+              defaultValue: "Investor OS is coming soon and is not available for checkout yet.",
             })}
           </p>
           <TerminalButton variant="outline" className="mt-4" disabled>
