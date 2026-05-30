@@ -2,8 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { fetchUserAccess, type UserAccessSnapshot } from "../services/access";
 import { trackEvent } from "../utils/analytics";
 import { normalizeUserPlan } from "../utils/subscriptionTier";
+
+type LoadStatus = "loading" | "ready" | "error";
 
 function formatPlanLabel(tier: string | null | undefined): string {
   const plan = normalizeUserPlan(tier);
@@ -12,12 +15,102 @@ function formatPlanLabel(tier: string | null | undefined): string {
   return "Free";
 }
 
+function formatTrialEndDate(iso: string | null | undefined, locale: string): string | null {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (!Number.isFinite(date.getTime())) return null;
+  return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(date);
+}
+
+function isCanceledSubscription(status: string | null | undefined): boolean {
+  const normalized = String(status ?? "")
+    .trim()
+    .toLowerCase();
+  return normalized === "canceled" || normalized === "cancelled";
+}
+
+function resolveAccessMessage(
+  access: UserAccessSnapshot,
+  t: (key: string, options?: Record<string, unknown>) => string,
+  locale: string,
+): { subtitle: string; trialEndLine: string | null } {
+  const plan = formatPlanLabel(access.tier);
+
+  if (access.accessState === "SUBSCRIPTION_TRIALING") {
+    const subtitle = t("errorPages.paymentSuccessProTrialActive", {
+      plan,
+      defaultValue: `Your ${plan} trial is active.`,
+    });
+    const trialEnd = formatTrialEndDate(access.trialEndsAt, locale);
+    const trialEndLine = trialEnd
+      ? t("errorPages.paymentSuccessTrialEnds", {
+          date: trialEnd,
+          defaultValue: "Trial ends on {{date}}.",
+        })
+      : null;
+    return { subtitle, trialEndLine };
+  }
+
+  if (access.accessState === "SUBSCRIPTION_ACTIVE") {
+    return {
+      subtitle: t("errorPages.paymentSuccessPlanActive", {
+        plan,
+        defaultValue: `Your ${plan} plan is active.`,
+      }),
+      trialEndLine: null,
+    };
+  }
+
+  if (access.accessState === "TRIAL_ACTIVE" && isCanceledSubscription(access.subscriptionStatus)) {
+    return {
+      subtitle: t("errorPages.paymentSuccessTrialRemains", {
+        defaultValue: "Your trial remains active.",
+      }),
+      trialEndLine: null,
+    };
+  }
+
+  if (access.accessState === "TRIAL_ACTIVE") {
+    const trialEnd = formatTrialEndDate(access.trialEndsAt, locale);
+    return {
+      subtitle: t("errorPages.paymentSuccessTrialRemains", {
+        defaultValue: "Your trial remains active.",
+      }),
+      trialEndLine: trialEnd
+        ? t("errorPages.paymentSuccessTrialEnds", {
+            date: trialEnd,
+            defaultValue: "Trial ends on {{date}}.",
+          })
+        : null,
+    };
+  }
+
+  if (access.canUseProduct && plan !== "Free") {
+    return {
+      subtitle: t("errorPages.paymentSuccessPlanActive", {
+        plan,
+        defaultValue: `Your ${plan} plan is active.`,
+      }),
+      trialEndLine: null,
+    };
+  }
+
+  return {
+    subtitle: t("errorPages.paymentSuccessAccessPending", {
+      defaultValue: "Payment received. We're refreshing your access status.",
+    }),
+    trialEndLine: null,
+  };
+}
+
 const confettiOffsets = [4, 10, 16, 22, 28, 34, 40, 46, 52, 58, 64, 70, 76, 82, 88, 94];
 
 export function PaymentSuccessPage() {
-  const { t } = useTranslation();
-  const { user, refreshUser } = useAuth();
-  const [isRefreshing, setIsRefreshing] = useState(true);
+  const { t, i18n } = useTranslation();
+  const { refreshUser } = useAuth();
+  const [access, setAccess] = useState<UserAccessSnapshot | null>(null);
+  const [status, setStatus] = useState<LoadStatus>("loading");
+  const paymentEventSent = useRef(false);
 
   useEffect(() => {
     document.title = t("errorPages.seoPaymentSuccessTitle", {
@@ -26,20 +119,62 @@ export function PaymentSuccessPage() {
   }, [t]);
 
   useEffect(() => {
-    void refreshUser().finally(() => setIsRefreshing(false));
+    let active = true;
+
+    const loadAccess = async () => {
+      setStatus("loading");
+      try {
+        const [snapshot] = await Promise.all([fetchUserAccess(), refreshUser()]);
+        if (!active) return;
+        setAccess(snapshot);
+        setStatus("ready");
+      } catch {
+        if (!active) return;
+        setAccess(null);
+        setStatus("error");
+        try {
+          await refreshUser();
+        } catch {
+          // ignore secondary refresh failure
+        }
+      }
+    };
+
+    void loadAccess();
+    return () => {
+      active = false;
+    };
   }, [refreshUser]);
 
-  const plan = useMemo(() => formatPlanLabel(user?.tier), [user?.tier]);
-  const paymentEventSent = useRef(false);
+  const message = useMemo(() => {
+    if (status === "loading") {
+      return {
+        subtitle: t("errorPages.paymentSuccessRefreshing", {
+          defaultValue: "Updating your subscription...",
+        }),
+        trialEndLine: null,
+      };
+    }
+    if (status === "error" || !access) {
+      return {
+        subtitle: t("errorPages.paymentSuccessAccessPending", {
+          defaultValue: "Payment received. We're refreshing your access status.",
+        }),
+        trialEndLine: null,
+      };
+    }
+    return resolveAccessMessage(access, t, i18n.language);
+  }, [access, i18n.language, status, t]);
 
   useEffect(() => {
-    if (isRefreshing || paymentEventSent.current) return;
+    if (status !== "ready" || !access || paymentEventSent.current) return;
     paymentEventSent.current = true;
-    const normalizedPlan = normalizeUserPlan(user?.tier);
+    const normalizedPlan = normalizeUserPlan(access.tier);
     trackEvent("payment_success", {
       plan: normalizedPlan === "PRO+" ? "pro_plus" : normalizedPlan.toLowerCase(),
+      accessState: access.accessState,
     });
-  }, [isRefreshing, user?.tier]);
+  }, [access, status]);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bgSecondary px-4 py-10">
@@ -64,20 +199,27 @@ export function PaymentSuccessPage() {
         <h1 className="mt-6 text-3xl font-bold text-textPrimary">
           {t("errorPages.paymentSuccessTitle", { defaultValue: "Payment successful!" })}
         </h1>
-        <p className="mt-3 text-base text-textSecondary">
-          {isRefreshing
-            ? t("errorPages.paymentSuccessRefreshing", {
-                defaultValue: "Updating your subscription...",
-              })
-            : t("errorPages.paymentSuccessSubtitle", { plan, defaultValue: "Your {{plan}} plan is active." })}
-        </p>
+        <p className="mt-3 text-base text-textSecondary">{message.subtitle}</p>
+        {message.trialEndLine ? (
+          <p className="mt-2 text-sm text-textSecondary">{message.trialEndLine}</p>
+        ) : null}
 
-        <Link
-          to="/dashboard"
-          className="mt-8 inline-flex w-full justify-center rounded-xl bg-brandDark px-5 py-3 text-sm font-semibold text-white transition hover:brightness-110"
-        >
-          {t("errorPages.goToApp", { defaultValue: "Go to app" })}
-        </Link>
+        <div className="mt-8 flex flex-col gap-3">
+          <Link
+            to="/dashboard"
+            className="inline-flex w-full justify-center rounded-xl bg-brandDark px-5 py-3 text-sm font-semibold text-white transition hover:brightness-110"
+          >
+            {t("errorPages.goToApp", { defaultValue: "Go to app" })}
+          </Link>
+          {status === "error" ? (
+            <Link
+              to="/pricing"
+              className="inline-flex w-full justify-center rounded-xl border border-borderStrong bg-bgPrimary px-5 py-3 text-sm font-semibold text-textPrimary transition hover:bg-bgSecondary"
+            >
+              {t("errorPages.backToPricing", { defaultValue: "Back to pricing" })}
+            </Link>
+          ) : null}
+        </div>
       </section>
     </div>
   );
