@@ -49,6 +49,7 @@ describe("auth routes", () => {
             throw new Error("Password must be at least 8 characters");
           }
         },
+        resendVerificationFn: async () => undefined,
         getUserByIdFn: async (id) =>
           id === "u-1"
             ? { id, email: "jan@example.com", name: "Jan", tier: "FREE", role: "USER" }
@@ -159,6 +160,17 @@ describe("auth routes", () => {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ token: "good-reset-token", newPassword: "newPassword123" }),
+    });
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { ok: boolean };
+    assert.equal(body.ok, true);
+  });
+
+  it("POST /api/auth/resend-verification returns 200 with ok true", async () => {
+    const res = await fetch(`${baseUrl}/api/auth/resend-verification`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "jan@example.com" }),
     });
     assert.equal(res.status, 200);
     const body = (await res.json()) as { ok: boolean };

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
+import { ResendVerificationEmail } from "../components/ResendVerificationEmail";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 export function RegisterPage() {
@@ -60,12 +61,15 @@ export function RegisterPage() {
               </div>
 
               {registeredEmail ? (
-                <p className="rounded-xl border border-positive/30 bg-positive/10 px-3 py-2 text-sm text-positive">
-                  {t("auth.registerCheckEmail", {
-                    email: registeredEmail ?? "",
-                    defaultValue: "Check your inbox — we sent an activation link to {{email}}",
-                  })}
-                </p>
+                <div className="space-y-3 rounded-xl border border-positive/30 bg-positive/10 px-3 py-2 text-sm text-positive">
+                  <p>
+                    {t("auth.registerCheckEmail", {
+                      email: registeredEmail ?? "",
+                      defaultValue: "Check your inbox — we sent an activation link to {{email}}",
+                    })}
+                  </p>
+                  <ResendVerificationEmail email={registeredEmail} className="text-positive" />
+                </div>
               ) : null}
 
               <label className="block space-y-1.5 text-sm text-textSecondary">

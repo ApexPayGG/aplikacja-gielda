@@ -2104,6 +2104,11 @@ export async function forgotPassword(email: string): Promise<{ ok: boolean }> {
   return data;
 }
 
+export async function resendVerificationEmail(email: string): Promise<{ ok: boolean }> {
+  const { data } = await publicApi.post<{ ok: boolean }>("/auth/resend-verification", { email });
+  return data;
+}
+
 export async function resetPassword(token: string, newPassword: string): Promise<{ ok: boolean }> {
   const { data } = await publicApi.post<{ ok: boolean }>("/auth/reset-password", {
     token,

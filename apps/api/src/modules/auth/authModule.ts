@@ -11,6 +11,45 @@ import { signAuthToken } from "./authJwt";
 
 const SALT_ROUNDS = 10;
 const PASSWORD_RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
+const VERIFY_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
+
+type AuthDb = Pick<typeof prisma, "$queryRaw" | "$executeRaw">;
+
+type AuthModuleDeps = {
+  fetchImpl?: typeof fetch;
+  db?: AuthDb;
+};
+
+let authModuleDeps: AuthModuleDeps = {};
+
+function getAuthDb(): AuthDb {
+  return authModuleDeps.db ?? prisma;
+}
+
+/** Test-only hook to mock Resend HTTP / DB without changing production call sites. */
+export function configureAuthModuleDeps(deps: AuthModuleDeps): void {
+  authModuleDeps = { ...authModuleDeps, ...deps };
+}
+
+/** @deprecated Use configureAuthModuleDeps */
+export function configureAuthEmailDeps(deps: Pick<AuthModuleDeps, "fetchImpl">): void {
+  configureAuthModuleDeps(deps);
+}
+
+export function resetAuthModuleDeps(): void {
+  authModuleDeps = {};
+}
+
+/** @deprecated Use resetAuthModuleDeps */
+export function resetAuthEmailDeps(): void {
+  resetAuthModuleDeps();
+}
+
+function logEmailDeliveryError(context: string, error: unknown): void {
+  const message = error instanceof Error ? error.message : String(error);
+  const safeMessage = message.replace(/https?:\/\/\S+/g, "[url-redacted]");
+  console.error(`[auth] ${context}: ${safeMessage}`);
+}
 
 export type AuthUserPayload = {
   id: string;
@@ -68,7 +107,8 @@ async function sendResendEmail(input: { to: string; subject: string; text: strin
     throw new Error("RESEND_API_KEY is not set");
   }
 
-  const response = await fetch("https://api.resend.com/emails", {
+  const fetchImpl = authModuleDeps.fetchImpl ?? fetch;
+  const response = await fetchImpl("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -130,7 +170,7 @@ export async function registerUser(input: {
   assertEmail(email);
   assertPassword(password);
 
-  const existing = await prisma.$queryRaw<Array<{ id: string }>>`
+  const existing = await getAuthDb().$queryRaw<Array<{ id: string }>>`
     SELECT id FROM users WHERE email = ${email} LIMIT 1
   `;
   if (existing.length > 0) {
@@ -140,10 +180,10 @@ export async function registerUser(input: {
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
   const id = crypto.randomUUID();
   const verifyToken = crypto.randomBytes(32).toString("hex");
-  const verifyTokenExp = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const verifyTokenExp = new Date(Date.now() + VERIFY_TOKEN_TTL_MS);
   const trialStartedAt = new Date();
   const trialEndsAt = new Date(trialStartedAt.getTime() + TRIAL_RULES.without_card.days * 24 * 60 * 60 * 1000);
-  const users = await prisma.$queryRaw<
+  const users = await getAuthDb().$queryRaw<
     Array<{ id: string; email: string; name: string | null; tier: string; role: string }>
   >`
     INSERT INTO users (
@@ -159,8 +199,14 @@ export async function registerUser(input: {
   const user = users[0];
   if (!user) throw new Error("Failed to create user");
 
-  await sendVerificationEmail(user.email, verifyToken);
-  return { user: toAuthUser(user), verificationEmailSent: true };
+  let verificationEmailSent = true;
+  try {
+    await sendVerificationEmail(user.email, verifyToken);
+  } catch (error) {
+    verificationEmailSent = false;
+    logEmailDeliveryError(`verification email failed for ${user.email}`, error);
+  }
+  return { user: toAuthUser(user), verificationEmailSent };
 }
 
 export async function loginUser(input: { email: string; password: string }): Promise<AuthSuccessPayload> {
@@ -170,7 +216,7 @@ export async function loginUser(input: { email: string; password: string }): Pro
   assertEmail(email);
   assertPassword(password);
 
-  const users = await prisma.$queryRaw<
+  const users = await getAuthDb().$queryRaw<
     Array<{
       id: string;
       email: string;
@@ -200,7 +246,7 @@ export async function loginUser(input: { email: string; password: string }): Pro
     throw new Error("Please verify your email first");
   }
 
-  await prisma.$executeRaw`UPDATE users SET last_login_at = NOW() WHERE id = ${user.id}`;
+  await getAuthDb().$executeRaw`UPDATE users SET last_login_at = NOW() WHERE id = ${user.id}`;
 
   const token = signAuthToken({ sub: user.id, email: user.email });
   return {
@@ -215,7 +261,7 @@ export async function verifyEmailToken(tokenInput: string): Promise<void> {
     throw new Error("Invalid verification token");
   }
 
-  const users = await prisma.$queryRaw<Array<{ id: string; email: string; name: string | null; verify_token_exp: Date | null }>>`
+  const users = await getAuthDb().$queryRaw<Array<{ id: string; email: string; name: string | null; verify_token_exp: Date | null }>>`
     SELECT id, email, name, verify_token_exp
     FROM users
     WHERE verify_token = ${token}
@@ -226,7 +272,7 @@ export async function verifyEmailToken(tokenInput: string): Promise<void> {
     throw new Error("Verification token expired or invalid");
   }
 
-  await prisma.$executeRaw`
+  await getAuthDb().$executeRaw`
     UPDATE users
     SET email_verified = true,
         verify_token = NULL,
@@ -241,7 +287,7 @@ export async function requestPasswordReset(input: { email: string }): Promise<vo
   const email = normalizeEmail(input.email);
   assertEmail(email);
 
-  const users = await prisma.$queryRaw<Array<{ id: string; email: string }>>`
+  const users = await getAuthDb().$queryRaw<Array<{ id: string; email: string }>>`
     SELECT id, email
     FROM users
     WHERE email = ${email}
@@ -254,13 +300,68 @@ export async function requestPasswordReset(input: { email: string }): Promise<vo
 
   const resetToken = crypto.randomBytes(32).toString("hex");
   const resetTokenExp = new Date(Date.now() + PASSWORD_RESET_TOKEN_TTL_MS);
-  await prisma.$executeRaw`
+  await getAuthDb().$executeRaw`
     UPDATE users
     SET password_reset_token = ${resetToken},
         password_reset_token_exp = ${resetTokenExp}
     WHERE id = ${user.id}
   `;
-  await sendPasswordResetEmail(user.email, resetToken);
+  try {
+    await sendPasswordResetEmail(user.email, resetToken);
+  } catch (error) {
+    logEmailDeliveryError(`password reset email failed for ${user.email}`, error);
+  }
+}
+
+export async function resendVerificationEmail(input: { email: string }): Promise<void> {
+  const email = normalizeEmail(input.email);
+  try {
+    assertEmail(email);
+  } catch {
+    return;
+  }
+
+  const users = await getAuthDb().$queryRaw<
+    Array<{
+      id: string;
+      email: string;
+      email_verified: boolean;
+      verify_token: string | null;
+      verify_token_exp: Date | null;
+    }>
+  >`
+    SELECT id, email, email_verified, verify_token, verify_token_exp
+    FROM users
+    WHERE email = ${email}
+    LIMIT 1
+  `;
+  const user = users[0];
+  if (!user || user.email_verified) {
+    return;
+  }
+
+  const now = Date.now();
+  const hasValidToken =
+    Boolean(user.verify_token?.trim()) &&
+    user.verify_token_exp != null &&
+    user.verify_token_exp.getTime() > now;
+
+  const verifyToken = hasValidToken ? user.verify_token! : crypto.randomBytes(32).toString("hex");
+  if (!hasValidToken) {
+    const verifyTokenExp = new Date(now + VERIFY_TOKEN_TTL_MS);
+    await getAuthDb().$executeRaw`
+      UPDATE users
+      SET verify_token = ${verifyToken},
+          verify_token_exp = ${verifyTokenExp}
+      WHERE id = ${user.id}
+    `;
+  }
+
+  try {
+    await sendVerificationEmail(user.email, verifyToken);
+  } catch (error) {
+    logEmailDeliveryError(`resend verification email failed for ${user.email}`, error);
+  }
 }
 
 export async function resetPassword(input: { token: string; newPassword: string }): Promise<void> {
@@ -272,7 +373,7 @@ export async function resetPassword(input: { token: string; newPassword: string 
   }
   assertPassword(newPassword);
 
-  const users = await prisma.$queryRaw<Array<{ id: string; password_reset_token_exp: Date | null }>>`
+  const users = await getAuthDb().$queryRaw<Array<{ id: string; password_reset_token_exp: Date | null }>>`
     SELECT id, password_reset_token_exp
     FROM users
     WHERE password_reset_token = ${token}
@@ -284,7 +385,7 @@ export async function resetPassword(input: { token: string; newPassword: string 
   }
 
   const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
-  await prisma.$executeRaw`
+  await getAuthDb().$executeRaw`
     UPDATE users
     SET password_hash = ${passwordHash},
         password_reset_token = NULL,
@@ -294,7 +395,7 @@ export async function resetPassword(input: { token: string; newPassword: string 
 }
 
 export async function getAuthUserById(userId: string): Promise<AuthUserPayload | null> {
-  const users = await prisma.$queryRaw<
+  const users = await getAuthDb().$queryRaw<
     Array<{ id: string; email: string; name: string | null; tier: string; role: string }>
   >`
     SELECT id, email, name, tier, role

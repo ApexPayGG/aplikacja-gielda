@@ -35,7 +35,7 @@ export function generatePasswordResetEmail(token: string, email: string): string
                   Otrzymaliśmy prośbę o reset hasła dla konta <strong>${safeEmail}</strong>.
                 </p>
                 <p style="margin:0 0 24px 0;font-size:14px;line-height:1.6;color:#6b7280;">
-                  Link wygasa po 24 godzinach.
+                  Link wygasa po 1 godzinie.
                 </p>
                 <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 24px 0;">
                   <tr>

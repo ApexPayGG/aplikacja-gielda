@@ -24,6 +24,7 @@ describe("rate limiter middleware", () => {
     app.post("/api/auth/login", (_req, res) => res.json({ ok: true }));
     app.post("/api/auth/register", (_req, res) => res.json({ ok: true }));
     app.post("/api/auth/forgot-password", (_req, res) => res.json({ ok: true }));
+    app.post("/api/auth/resend-verification", (_req, res) => res.json({ ok: true }));
     app.post("/api/contact", (_req, res) => res.json({ ok: true }));
     app.post("/api/stripe/create-checkout-session", (_req, res) => res.json({ ok: true }));
     app.get("/api/premium/signal", (_req, res) => res.json({ ok: true }));
@@ -72,6 +73,13 @@ describe("rate limiter middleware", () => {
     }
     const blockedForgot = await fetch(`${baseUrl}/api/auth/forgot-password`, { method: "POST" });
     assert.equal(blockedForgot.status, 429);
+
+    for (let i = 0; i < 3; i++) {
+      const resendRes = await fetch(`${baseUrl}/api/auth/resend-verification`, { method: "POST" });
+      assert.equal(resendRes.status, 200);
+    }
+    const blockedResend = await fetch(`${baseUrl}/api/auth/resend-verification`, { method: "POST" });
+    assert.equal(blockedResend.status, 429);
   });
 
   it("limits /api/contact to 3 attempts per hour per IP", async () => {

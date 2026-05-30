@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
 import { BrandLogo } from "../components/BrandLogo";
+import { ResendVerificationEmail } from "../components/ResendVerificationEmail";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 
 function safeRedirectPath(from: unknown): string {
@@ -24,12 +25,14 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsVerification, setNeedsVerification] = useState(false);
   const redirectFrom = safeRedirectPath((location.state as { from?: string } | null)?.from);
   const isCheckoutReturn = redirectFrom.startsWith("/pricing");
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     setError(null);
+    setNeedsVerification(false);
     setLoading(true);
     try {
       await login(email, password);
@@ -38,6 +41,7 @@ export function LoginPage() {
     } catch (e) {
       const message = apiErrorMessage(e);
       if (message === "Please verify your email first") {
+        setNeedsVerification(true);
         setError(t("auth.verifyEmailFirst"));
         return;
       }
@@ -108,6 +112,7 @@ export function LoginPage() {
               </p>
 
               {error ? <p className="text-sm text-negative">{error}</p> : null}
+              {needsVerification && email.trim() ? <ResendVerificationEmail email={email} /> : null}
 
               <button
                 type="submit"

@@ -185,7 +185,11 @@
     "verifyEmailWorking": "Weryfikujemy email…",
     "verifyEmailInvalidLink": "Link wygasł lub jest nieprawidłowy.",
     "verifyBackRegister": "Wróć do rejestracji",
-    "backToLogin": "Powrót do logowania"
+    "backToLogin": "Powrót do logowania",
+    "resendVerificationButton": "Wyślij ponownie link aktywacyjny",
+    "resendVerificationSending": "Wysyłanie…",
+    "resendVerificationSent": "Jeśli ten adres istnieje w systemie, wyślemy nowy link aktywacyjny.",
+    "resendVerificationEmailPlaceholder": "twoj@email.com"
   },
   "profilePage": {
     "saved": "Zmiany zostały zapisane.",

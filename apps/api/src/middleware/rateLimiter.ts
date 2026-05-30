@@ -23,6 +23,7 @@ type TierCacheRecord = {
 const AUTH_LOGIN_LIMIT = { limit: 5, windowSec: 15 * 60 };
 const AUTH_REGISTER_LIMIT = { limit: 3, windowSec: 60 * 60 };
 const AUTH_FORGOT_PASSWORD_LIMIT = { limit: 3, windowSec: 60 * 60 };
+const AUTH_RESEND_VERIFICATION_LIMIT = { limit: 3, windowSec: 60 * 60 };
 const CONTACT_LIMIT = { limit: 3, windowSec: 60 * 60 };
 const STRIPE_LIMIT = { limit: 10, windowSec: 60 };
 /** Monthly Premium Analysis calls for unauthenticated / FREE users only. */
@@ -194,6 +195,17 @@ export function createRateLimiterMiddleware(deps?: RateLimiterDeps): RequestHand
           `rate:auth:forgot-password:ip:${ip}`,
           AUTH_FORGOT_PASSWORD_LIMIT.limit,
           AUTH_FORGOT_PASSWORD_LIMIT.windowSec,
+        );
+        if (!ok) return;
+      }
+
+      if (method === "POST" && path === "/api/auth/resend-verification") {
+        const ok = await enforceLimit(
+          res,
+          store,
+          `rate:auth:resend-verification:ip:${ip}`,
+          AUTH_RESEND_VERIFICATION_LIMIT.limit,
+          AUTH_RESEND_VERIFICATION_LIMIT.windowSec,
         );
         if (!ok) return;
       }

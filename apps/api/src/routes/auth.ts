@@ -5,6 +5,7 @@ import {
   loginUser,
   registerUser,
   requestPasswordReset,
+  resendVerificationEmail,
   resetPassword,
   verifyEmailToken,
 } from "../modules/auth/authModule";
@@ -16,6 +17,7 @@ type AuthRouteDeps = {
   loginFn: typeof loginUser;
   verifyEmailFn: typeof verifyEmailToken;
   forgotPasswordFn: typeof requestPasswordReset;
+  resendVerificationFn: typeof resendVerificationEmail;
   resetPasswordFn: typeof resetPassword;
   getUserByIdFn: typeof getAuthUserById;
 };
@@ -26,6 +28,7 @@ export function createAuthRouter(depsInput?: Partial<AuthRouteDeps>): Router {
     loginFn: depsInput?.loginFn ?? loginUser,
     verifyEmailFn: depsInput?.verifyEmailFn ?? verifyEmailToken,
     forgotPasswordFn: depsInput?.forgotPasswordFn ?? requestPasswordReset,
+    resendVerificationFn: depsInput?.resendVerificationFn ?? resendVerificationEmail,
     resetPasswordFn: depsInput?.resetPasswordFn ?? resetPassword,
     getUserByIdFn: depsInput?.getUserByIdFn ?? getAuthUserById,
   };
@@ -105,6 +108,16 @@ export function createAuthRouter(depsInput?: Partial<AuthRouteDeps>): Router {
         res.redirect("/login?verified=false");
         return;
       }
+      next(error);
+    }
+  });
+
+  router.post("/api/auth/resend-verification", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = req.body as Record<string, unknown>;
+      await deps.resendVerificationFn({ email: String(body.email ?? "") });
+      res.json({ ok: true });
+    } catch (error) {
       next(error);
     }
   });

@@ -187,7 +187,11 @@
     "verifyEmailWorking": "Verifying email…",
     "verifyEmailInvalidLink": "The link expired or is invalid.",
     "verifyBackRegister": "Back to sign up",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "resendVerificationButton": "Resend verification email",
+    "resendVerificationSending": "Sending…",
+    "resendVerificationSent": "If this email exists, we’ll send a new verification link.",
+    "resendVerificationEmailPlaceholder": "your@email.com"
   },
   "profilePage": {
     "saved": "Your changes were saved.",

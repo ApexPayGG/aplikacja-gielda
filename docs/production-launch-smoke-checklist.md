@@ -22,6 +22,7 @@ Repeatable post-deploy verification for **stock-ai.pro**. Use after every produc
 
 ## 0. Known operational notes
 
+- **Resend (required before launch):** set live `RESEND_API_KEY` on the API container and verify the sending domain in the Resend dashboard. Confirm both senders work: `hello@stock-ai.pro` (auth, onboarding, contact) and `digest@stock-ai.pro` (daily digest). Without this, registration and password reset complete in DB but verification/reset emails may not deliver.
 - **`GET /api/affiliate/brokers` may return `brokers: []`** when no brokers have `is_active=true` in Postgres. This is expected until ops activates brokers.
 - **eToro CTA** uses tracked `POST /api/affiliate/click` only when `etoro` is active in DB; otherwise it falls back to hardcoded med.etoro.com URLs (disclosure still shown). For production click tracking, activate eToro - see [section 7 Affiliate/admin smoke](#7-affiliateadmin-smoke).
 - **Private beta:** most public HTTPS routes require HTTP Basic Auth. Prefer **internal Docker checks** (`docker exec ... curl http://api:3000/...`) for API smoke, or pass `-u 'beta-user:password'` for edge checks. Exceptions: `/health`, `/api/health`, `/api/stripe/webhook` (see [PRIVATE_BETA_ACCESS.md](./PRIVATE_BETA_ACCESS.md)).
@@ -186,16 +187,32 @@ docker exec stockai-api-prod curl -sS -w "\n%{http_code}" \
 docker exec stockai-api-prod curl -sS -X POST http://127.0.0.1:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"launch-smoke+REPLACE@example.com","password":"SmokeTest!234"}'
+# Expected: 201, verificationEmailSent true when Resend is configured
 
-# Verify email flag in DB (on VPS, adjust container name)
+# Verify email (required before login — email_verified must be true)
+VERIFY_TOKEN=$(docker exec stockai-timescaledb-prod psql -U postgres -d stockai -t -A \
+  -c "SELECT verify_token FROM users WHERE email = 'launch-smoke+REPLACE@example.com' LIMIT 1;")
+docker exec stockai-api-prod curl -sS "http://127.0.0.1:3000/api/auth/verify?token=${VERIFY_TOKEN}" \
+  -H "Accept: application/json"
+# Expected: {"verified":true}
+# Or open in browser: https://stock-ai.pro/verify?token=VERIFY_TOKEN
+
 docker exec stockai-timescaledb-prod psql -U postgres -d stockai \
   -c "SELECT email, email_verified FROM users WHERE email LIKE 'launch-smoke%' ORDER BY created_at DESC LIMIT 1;"
+# Expected: email_verified = t
 
-# Login -> token present
+# Login -> token present (only after verify)
 docker exec stockai-api-prod curl -sS -X POST http://127.0.0.1:3000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"launch-smoke+REPLACE@example.com","password":"SmokeTest!234"}'
 # Expected: JSON with token string length > 20
+# Before verify: 403 "Please verify your email first"
+
+# Resend verification (neutral response, no enumeration)
+docker exec stockai-api-prod curl -sS -X POST http://127.0.0.1:3000/api/auth/resend-verification \
+  -H "Content-Type: application/json" \
+  -d '{"email":"launch-smoke+REPLACE@example.com"}'
+# Expected: {"ok":true}
 
 # Delete test user when done (section 11)
 ```
