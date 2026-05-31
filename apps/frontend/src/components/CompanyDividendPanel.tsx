@@ -1,15 +1,65 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { getCompanyDividendTickerHistory, getDividendHealth, type DividendHealthData } from "../services/api";
+import {
+  isRawAuthErrorMessage,
+  resolveCompanyDividendLoadError,
+} from "./dividend/dividendHubApiError";
+import { ModuleCTAButton, TerminalButton, TERMINAL_ACCENT_RAIL_AMBER, cn } from "./terminal";
 import { colors } from "../styles/designSystem";
-import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { isNoDividendError, isNoDividendMessage } from "../utils/isNoDividendError";
 
 type Props = {
   symbol: string;
   locale: string;
   companyName?: string | null;
+  onBackToOverview?: () => void;
 };
+
+function CompanyDividendAccessState({
+  message,
+  detail,
+  onBackToOverview,
+  t,
+}: {
+  message: string;
+  detail: string;
+  onBackToOverview?: () => void;
+  t: ReturnType<typeof useTranslation>["t"];
+}) {
+  return (
+    <div className={cn("rounded-lg border border-amber-400/25 bg-terminal-panelSecondary/40 p-3 sm:p-4", TERMINAL_ACCENT_RAIL_AMBER)}>
+      <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-300/80">
+        {t("company.dividend.authEyebrow", { defaultValue: "Access required" })}
+      </p>
+      <p className="mt-1.5 text-sm font-semibold text-terminal-text">{message}</p>
+      <p className="mt-1 text-xs leading-relaxed text-terminal-textSecondary">{detail}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Link to="/login">
+          <ModuleCTAButton variant="primary" size="sm">
+            {t("dividendHub.signInCta", { defaultValue: "Sign in" })}
+          </ModuleCTAButton>
+        </Link>
+        <Link to="/pricing">
+          <ModuleCTAButton variant="secondary" size="sm">
+            {t("dividendHub.pricingCta", { defaultValue: "View plans" })}
+          </ModuleCTAButton>
+        </Link>
+        {onBackToOverview ? (
+          <TerminalButton variant="ghost" size="sm" type="button" onClick={onBackToOverview}>
+            {t("company.dividend.backOverview", { defaultValue: "Back to Overview" })}
+          </TerminalButton>
+        ) : null}
+        <Link to="/dividend">
+          <TerminalButton variant="ghost" size="sm">
+            {t("company.dividend.openHub", { defaultValue: "Open Dividend Hub" })}
+          </TerminalButton>
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 function healthColor(score: number): string {
   if (score > 70) return colors.positive;
@@ -47,7 +97,7 @@ function NoDividendEmptyState({
           style={{ backgroundColor: "rgba(91, 45, 130, 0.12)" }}
           aria-hidden
         >
-          📈
+          DIV
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="text-base font-semibold leading-snug" style={{ color: colors.textPrimary }}>
@@ -64,12 +114,12 @@ function NoDividendEmptyState({
             {companyName?.trim()
               ? t("company.dividend.noDividend.description", {
                   defaultValue:
-                    "{{companyName}} focuses on growth and reinvests profits instead of paying shareholders — common for many tech companies.",
+                    "{{companyName}} focuses on growth and reinvests profits instead of paying shareholders - common for many tech companies.",
                   companyName: displayName,
                 })
               : t("company.dividend.noDividend.descriptionGeneric", {
                   defaultValue:
-                    "Many growth companies reinvest profits instead of paying dividends — a deliberate strategy, not missing data.",
+                    "Many growth companies reinvest profits instead of paying dividends - a deliberate strategy, not missing data.",
                 })}
           </p>
           <p className="mt-3 text-sm leading-relaxed" style={{ color: colors.textMuted }}>
@@ -83,7 +133,7 @@ function NoDividendEmptyState({
   );
 }
 
-export function CompanyDividendPanel({ symbol, locale, companyName }: Props) {
+export function CompanyDividendPanel({ symbol, locale, companyName, onBackToOverview }: Props) {
   const { t } = useTranslation("common");
   const [health, setHealth] = useState<DividendHealthData | null>(null);
   const [history, setHistory] = useState<
@@ -91,6 +141,7 @@ export function CompanyDividendPanel({ symbol, locale, companyName }: Props) {
   >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [accessDenied, setAccessDenied] = useState<{ message: string; detail: string } | null>(null);
   const [noDividend, setNoDividend] = useState(false);
 
   useEffect(() => {
@@ -98,6 +149,7 @@ export function CompanyDividendPanel({ symbol, locale, companyName }: Props) {
     (async () => {
       setLoading(true);
       setError(null);
+      setAccessDenied(null);
       setNoDividend(false);
       setHealth(null);
       setHistory([]);
@@ -115,7 +167,13 @@ export function CompanyDividendPanel({ symbol, locale, companyName }: Props) {
           setLoading(false);
           return;
         }
-        setError(apiErrorMessage(healthResult.reason));
+        const resolved = resolveCompanyDividendLoadError(healthResult.reason, t);
+        if (resolved.accessDenied) {
+          setAccessDenied({ message: resolved.message, detail: resolved.detail });
+          setLoading(false);
+          return;
+        }
+        setError(resolved.message);
         setLoading(false);
         return;
       }
@@ -150,13 +208,39 @@ export function CompanyDividendPanel({ symbol, locale, companyName }: Props) {
     );
   }
 
+  if (accessDenied) {
+    return (
+      <CompanyDividendAccessState
+        message={accessDenied.message}
+        detail={accessDenied.detail}
+        onBackToOverview={onBackToOverview}
+        t={t}
+      />
+    );
+  }
+
   if (noDividend || (error && isNoDividendMessage(error))) {
     return <NoDividendEmptyState companyName={companyName} symbol={symbol} t={t} />;
   }
 
   if (error || !health) {
+    if (error && isRawAuthErrorMessage(error)) {
+      return (
+        <CompanyDividendAccessState
+          message={t("company.dividend.authTitle", {
+            defaultValue: "Dividend data requires an active session or plan access.",
+          })}
+          detail={t("company.dividend.authBody", {
+            defaultValue:
+              "Refresh your session or view plans to unlock dividend history and payout risk.",
+          })}
+          onBackToOverview={onBackToOverview}
+          t={t}
+        />
+      );
+    }
     return (
-      <p className="rounded-lg border px-4 py-3 text-sm" style={{ borderColor: colors.border, color: colors.textSecondary }}>
+      <p className="rounded-md border border-terminal-borderMuted bg-terminal-bgAlt/50 px-3 py-2 text-xs text-terminal-textSecondary">
         {error ??
           t("company.dividend.unavailable", {
             defaultValue: "Dividend data is not available for this symbol.",

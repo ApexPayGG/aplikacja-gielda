@@ -1,4 +1,4 @@
-import { SparklesIcon } from "@heroicons/react/24/outline";
+﻿import { SparklesIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { AnalysisResponse } from "../services/api";
@@ -16,9 +16,16 @@ type Props = {
   loading?: boolean;
   error?: string | null;
   limitReached?: BriefLimitReached | null;
+  /** Terminal cockpit readability - spacing and width only; no content changes. */
+  variant?: "default" | "terminal";
 };
 
-export function AnalysisBrief({ analysis, loading, error, limitReached }: Props) {
+const TERMINAL_BRIEF_SHELL = "rounded-lg border border-terminal-border bg-terminal-panel/80 p-3 sm:p-4";
+const TERMINAL_BRIEF_BODY =
+  "max-w-3xl text-sm leading-[1.65] tracking-normal text-terminal-textSecondary";
+
+export function AnalysisBrief({ analysis, loading, error, limitReached, variant = "default" }: Props) {
+  const isTerminal = variant === "terminal";
   const { t, i18n } = useTranslation();
 
   if (limitReached) {
@@ -45,12 +52,22 @@ export function AnalysisBrief({ analysis, loading, error, limitReached }: Props)
 
   if (loading) {
     return (
-      <div className={`animate-pulse ${GLASS_SECTION}`}>
-        <div className="h-4 w-1/3 rounded bg-slate-700" />
+      <div
+        className={
+          isTerminal
+            ? `${TERMINAL_BRIEF_SHELL} animate-pulse`
+            : `animate-pulse ${GLASS_SECTION}`
+        }
+      >
+        <div className={isTerminal ? "h-3 w-1/3 rounded bg-terminal-panelSecondary" : "h-4 w-1/3 rounded bg-slate-700"} />
         <div className="mt-4 space-y-2">
-          <div className="h-3 rounded bg-slate-700" />
-          <div className="h-3 rounded bg-slate-700" />
-          <div className="h-3 w-5/6 rounded bg-slate-700" />
+          <div className={isTerminal ? "h-3 rounded bg-terminal-panelSecondary" : "h-3 rounded bg-slate-700"} />
+          <div className={isTerminal ? "h-3 rounded bg-terminal-panelSecondary" : "h-3 rounded bg-slate-700"} />
+          <div
+            className={
+              isTerminal ? "h-3 w-5/6 rounded bg-terminal-panelSecondary" : "h-3 w-5/6 rounded bg-slate-700"
+            }
+          />
         </div>
       </div>
     );
@@ -64,7 +81,7 @@ export function AnalysisBrief({ analysis, loading, error, limitReached }: Props)
           {safe ||
             t("analysisBrief.unavailable", {
               defaultValue:
-                "AI brief is temporarily unavailable. Showing sector-based context when possible — try again in a moment.",
+                "AI brief is temporarily unavailable. Showing sector-based context when possible - try again in a moment.",
             })}
         </p>
       </div>
@@ -81,6 +98,33 @@ export function AnalysisBrief({ analysis, loading, error, limitReached }: Props)
       : [{ lang: analysis.requestedLang ?? i18n.language, body: analysis.brief }];
 
   const sections = pickBriefSectionsForLocale(rawSections, i18n.language);
+
+  if (isTerminal) {
+    return (
+      <div className={TERMINAL_BRIEF_SHELL}>
+        <div className="mb-2 flex items-center gap-2 border-b border-terminal-borderMuted/80 pb-2">
+          <SparklesIcon className="h-4 w-4 text-terminal-cyan" />
+          <h3 className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
+            {t("analysisBrief.title", { defaultValue: "AI brief" })}
+          </h3>
+        </div>
+        <p className="mb-3 font-mono text-[10px] text-terminal-textMuted">
+          {t("analysisBrief.updated", { defaultValue: "Updated" })}{" "}
+          {formatLocaleDateTime(analysis.updatedAt, i18n.language)}
+        </p>
+        <div className={`max-h-[min(520px,60vh)] overflow-y-auto pr-1 ${TERMINAL_BRIEF_BODY}`}>
+          {sections.map((sec, index) => (
+            <div
+              key={`${sec.lang}-${index}`}
+              className={index > 0 ? "mt-5 whitespace-pre-wrap" : "whitespace-pre-wrap"}
+            >
+              {sec.body}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={GLASS_SECTION}>

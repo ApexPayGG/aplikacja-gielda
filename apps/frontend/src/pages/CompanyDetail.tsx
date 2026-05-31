@@ -1,4 +1,4 @@
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowTopRightOnSquareIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -157,6 +157,117 @@ function toEtoroMarket(exchangeRaw?: string | null): "US" | "EU" | null {
 }
 
 type CompanyTabId = "overview" | "ai-brief" | "signals" | "dividend" | "premium-analysis";
+
+const PREMIUM_LOCKED_MODULES = [
+  {
+    id: "verdict",
+    titleKey: "company.premium.module.verdict",
+    benefitKey: "company.premium.module.verdictBenefit",
+    defaultTitle: "Executive verdict",
+    defaultBenefit: "One-screen institutional stance on quality, momentum, and risk.",
+  },
+  {
+    id: "valuation",
+    titleKey: "company.premium.module.valuation",
+    benefitKey: "company.premium.module.valuationBenefit",
+    defaultTitle: "Valuation context",
+    defaultBenefit: "Where price sits versus history, peers, and implied expectations.",
+  },
+  {
+    id: "scenarios",
+    titleKey: "company.premium.module.scenarios",
+    benefitKey: "company.premium.module.scenariosBenefit",
+    defaultTitle: "Bull / base / bear scenarios",
+    defaultBenefit: "Structured upside and downside paths with explicit drivers.",
+  },
+  {
+    id: "risk",
+    titleKey: "company.premium.module.risk",
+    benefitKey: "company.premium.module.riskBenefit",
+    defaultTitle: "Risk map",
+    defaultBenefit: "Ranked threats — macro, fundamental, and event-driven.",
+  },
+  {
+    id: "twins",
+    titleKey: "company.premium.module.twins",
+    benefitKey: "company.premium.module.twinsBenefit",
+    defaultTitle: "Historical twins",
+    defaultBenefit: "Analog periods and companies to benchmark outcomes.",
+  },
+  {
+    id: "fit",
+    titleKey: "company.premium.module.fit",
+    benefitKey: "company.premium.module.fitBenefit",
+    defaultTitle: "Personal fit",
+    defaultBenefit: "How this name aligns with your profile, horizon, and constraints.",
+  },
+] as const;
+
+function PremiumAnalysisLockedPreview({
+  premiumHref,
+  symbol,
+}: {
+  premiumHref: string;
+  symbol: string;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <AccentPanel variant="cyan" className="p-2.5 sm:p-3">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
+            {t("company.premium.previewEyebrow", { defaultValue: "Locked preview" })}
+          </p>
+          <h2 className="mt-0.5 text-sm font-semibold text-terminal-text">
+            {t("company.tabs.premiumAnalysis", { defaultValue: "Premium Analysis" })}
+          </h2>
+          <p className="mt-1 max-w-xl text-xs leading-relaxed text-terminal-textSecondary">
+            {t("company.premium.previewLead", {
+              symbol,
+              defaultValue: "Unlock the full institutional-style analysis for {{symbol}}.",
+            })}
+          </p>
+        </div>
+        <TerminalBadge variant="warning" className="shrink-0 font-mono text-[10px] uppercase">
+          {t("company.premium.lockedBadge", { defaultValue: "Locked" })}
+        </TerminalBadge>
+      </div>
+
+      <ul className="mt-3 grid gap-1.5 sm:grid-cols-2">
+        {PREMIUM_LOCKED_MODULES.map((mod) => (
+          <li
+            key={mod.id}
+            className="flex gap-2 rounded-md border border-terminal-borderMuted/80 bg-terminal-bgAlt/40 px-2.5 py-2"
+          >
+            <LockClosedIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-terminal-textMuted" aria-hidden />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-terminal-text">
+                {t(mod.titleKey, { defaultValue: mod.defaultTitle })}
+              </p>
+              <p className="mt-0.5 text-[11px] leading-snug text-terminal-textMuted">
+                {t(mod.benefitKey, { defaultValue: mod.defaultBenefit })}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-terminal-borderMuted/80 pt-3">
+        <Link to={premiumHref}>
+          <ModuleCTAButton variant="primary" size="sm">
+            {t("company.premiumOpen", { defaultValue: "Open Premium Analysis" })}
+          </ModuleCTAButton>
+        </Link>
+        <p className="text-[10px] text-terminal-textMuted">
+          {t("company.premium.usageNote", {
+            defaultValue: "Included in premium analysis usage limits.",
+          })}
+        </p>
+      </div>
+    </AccentPanel>
+  );
+}
 
 export function CompanyDetail() {
   const { t, i18n } = useTranslation();
@@ -530,6 +641,7 @@ export function CompanyDetail() {
           {activeTab === "ai-brief" ? (
             <AccentPanel variant="cyan" className="p-2.5 sm:p-3">
               <AnalysisBrief
+                variant="terminal"
                 analysis={analysis}
                 loading={analysisLoading}
                 error={analysisError}
@@ -581,27 +693,17 @@ export function CompanyDetail() {
 
           {activeTab === "dividend" ? (
             <TerminalPanel className={cn(TERMINAL_ACCENT_RAIL_AMBER, "p-2.5 sm:p-3")}>
-              <CompanyDividendPanel symbol={sym} locale={currentLang} companyName={companyName} />
+              <CompanyDividendPanel
+                symbol={sym}
+                locale={currentLang}
+                companyName={companyName}
+                onBackToOverview={() => setActiveTab("overview")}
+              />
             </TerminalPanel>
           ) : null}
 
           {activeTab === "premium-analysis" ? (
-            <AccentPanel variant="cyan" className="p-2.5 sm:p-3">
-              <h2 className="text-sm font-semibold text-terminal-text">
-                {t("company.tabs.premiumAnalysis", { defaultValue: "Premium Analysis" })}
-              </h2>
-              <p className="mt-1 text-xs text-terminal-textSecondary">
-                {t("company.premiumTeaser", {
-                  defaultValue:
-                    "Unlock advanced narrative, valuation context, and risk scenarios for this company.",
-                })}
-              </p>
-              <Link to={premiumHref} className="mt-2 inline-block">
-                <ModuleCTAButton variant="primary" size="sm">
-                  {t("company.premiumOpen", { defaultValue: "Open Premium Analysis" })}
-                </ModuleCTAButton>
-              </Link>
-            </AccentPanel>
+            <PremiumAnalysisLockedPreview premiumHref={premiumHref} symbol={sym} />
           ) : null}
         </div>
 
