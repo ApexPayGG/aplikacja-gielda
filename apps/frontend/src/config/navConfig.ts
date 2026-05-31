@@ -57,6 +57,10 @@ export function isPublicShellRoute(pathname: string): boolean {
 }
 
 export function isTerminalNavActive(pathname: string, item: TerminalNavItem): boolean {
+  if (item.id === "dividend-hub") {
+    if (pathname === "/dividend-compound") return false;
+    return pathname === "/dividend" || pathname.startsWith("/dividend/");
+  }
   return item.matchPaths.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );

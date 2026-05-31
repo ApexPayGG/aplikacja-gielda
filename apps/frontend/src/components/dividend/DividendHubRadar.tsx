@@ -4,15 +4,16 @@ import { useTranslation } from "react-i18next";
 import { getDividendCalendar } from "../../services/api";
 import { CompanyLogo } from "../CompanyLogo";
 import {
-  TERMINAL_DANGER_TEXT,
-  TERMINAL_DIVIDEND_ROW,
-  TERMINAL_LINK_ACCENT,
-  TERMINAL_DIVIDEND_TABLE,
-  TERMINAL_DIVIDEND_TABLE_HEAD,
-  TERMINAL_PAGE_SUBTITLE,
-  TERMINAL_SECTION_TITLE,
-  TERMINAL_TEXT_MUTED,
-} from "../terminal/terminalStyles";
+  EmptyStatePanel,
+  SectionEyebrow,
+  TerminalDataTable,
+  TerminalDataTableBody,
+  TerminalDataTableCell,
+  TerminalDataTableHead,
+  TerminalDataTableHeaderCell,
+  TerminalDataTableRow,
+} from "../terminal";
+import { TERMINAL_DANGER_TEXT, TERMINAL_LINK_ACCENT, TERMINAL_TEXT_MUTED } from "../terminal/terminalStyles";
 import { formatDividendPerShareAmount } from "../../utils/dividendFormat";
 import { DividendHubAccessGate } from "./DividendHubAccessGate";
 import { resolveDividendHubLoadError } from "./dividendHubApiError";
@@ -65,10 +66,10 @@ export function DividendHubRadar() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className={TERMINAL_SECTION_TITLE}>
+        <SectionEyebrow accent>
           {t("dividendHub.radarTitle", { defaultValue: "Dividend radar" })}
-        </h2>
-        <p className={`mt-2 ${TERMINAL_PAGE_SUBTITLE}`}>
+        </SectionEyebrow>
+        <p className={`mt-2 text-xs leading-relaxed text-terminal-textSecondary sm:text-sm`}>
           {t("dividendHub.radarSubtitle", {
             defaultValue:
               "Upcoming dividend events from synced database records. Dividend event detected — review dividend quality and payout risk.",
@@ -76,111 +77,96 @@ export function DividendHubRadar() {
         </p>
       </div>
 
-      <section className={TERMINAL_DIVIDEND_TABLE}>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className={TERMINAL_DIVIDEND_TABLE_HEAD}>
-              <tr>
-                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
-                  {t("dividend.columnSymbol", { defaultValue: "Ticker" })}
-                </th>
-                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
-                  {t("dividend.columnExDate", { defaultValue: "Ex-Date" })}
-                </th>
-                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
-                  {t("dividend.columnPayDate", { defaultValue: "Pay date" })}
-                </th>
-                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
-                  {t("dividend.columnFrequency", { defaultValue: "Payout frequency" })}
-                </th>
-                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
-                  {t("dividend.columnYield", { defaultValue: "Yield %" })}
-                </th>
-                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
-                  {t("dividend.columnDividendPerShare", { defaultValue: "Dividend / share" })}
-                </th>
-                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
-                  {t("dividend.columnDataStatus", { defaultValue: "Data" })}
-                </th>
-                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
-                  {t("dividendHub.radarAction", { defaultValue: "Analyze" })}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={8} className="px-4 py-6 text-sm text-terminal-textMuted">
-                    {t("common.loading", { defaultValue: "Loading..." })}
-                  </td>
-                </tr>
-              ) : null}
-              {error ? (
-                <tr>
-                  <td colSpan={8}>
-                    {accessDenied ? (
-                      <DividendHubAccessGate message={error} />
-                    ) : (
-                      <p className={`px-4 py-6 text-sm ${TERMINAL_DANGER_TEXT}`}>{error}</p>
-                    )}
-                  </td>
-                </tr>
-              ) : null}
-              {!loading && !error && rows.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-4 py-6 text-sm text-terminal-textMuted">
-                    {t("dividendHub.radarEmpty", {
-                      defaultValue:
-                        "No upcoming dividend events in this date range. Open the screener or dividend intelligence for per-symbol detail.",
-                    })}
-                  </td>
-                </tr>
-              ) : null}
-              {!loading && !error
-                ? rows.map((company) => (
-                    <tr key={`${company.symbol}-${company.exDate}`} className={TERMINAL_DIVIDEND_ROW}>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <CompanyLogo symbol={company.symbol} logoUrl={company.logoUrl} size="xs" shape="rounded" />
-                          <span className="font-semibold text-terminal-text">{company.symbol}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 font-mono text-xs text-terminal-textSecondary">
-                        {formatExDateLabel(company.exDate)}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-xs text-terminal-textSecondary">
-                        {formatExDateLabel(company.payDate)}
-                      </td>
-                      <td className="px-4 py-3 text-terminal-textSecondary">
-                        {formatFrequencyLabel(company.frequency, t)}
-                      </td>
-                      <td className="px-4 py-3 text-terminal-textSecondary">
-                        {company.yieldPct > 0 ? `${company.yieldPct.toFixed(2)}%` : "—"}
-                      </td>
-                      <td className="px-4 py-3 text-terminal-textSecondary">
-                        {formatDividendPerShareAmount(company.dividendPerShare, company.symbol, {
-                          currency: company.currency,
-                        })}
-                      </td>
-                      <td className="px-4 py-3">
-                        <DividendDataStatusBadge status={company.dataStatus} />
-                      </td>
-                      <td className="px-4 py-3">
-                        <Link
-                          to="/dividend/intelligence"
-                          state={{ symbol: company.symbol }}
-                          className={`text-xs font-semibold ${TERMINAL_LINK_ACCENT}`}
-                        >
-                          {t("dividendHub.radarAnalyze", { defaultValue: "Intelligence" })}
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                : null}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      {loading ? (
+        <p className="py-6 text-center text-sm text-terminal-textMuted">
+          {t("common.loading", { defaultValue: "Loading..." })}
+        </p>
+      ) : null}
+
+      {error ? (
+        accessDenied ? (
+          <DividendHubAccessGate message={error} />
+        ) : (
+          <p className={`py-4 text-sm ${TERMINAL_DANGER_TEXT}`}>{error}</p>
+        )
+      ) : null}
+
+      {!loading && !error && rows.length === 0 ? (
+        <EmptyStatePanel
+          message={t("dividendHub.radarEmpty", {
+            defaultValue:
+              "No upcoming dividend events in this date range. Open the screener or dividend intelligence for per-symbol detail.",
+          })}
+        />
+      ) : null}
+
+      {!loading && !error && rows.length > 0 ? (
+        <TerminalDataTable>
+          <TerminalDataTableHead>
+            <tr>
+              <TerminalDataTableHeaderCell>
+                {t("dividend.columnSymbol", { defaultValue: "Ticker" })}
+              </TerminalDataTableHeaderCell>
+              <TerminalDataTableHeaderCell>
+                {t("dividend.columnExDate", { defaultValue: "Ex-Date" })}
+              </TerminalDataTableHeaderCell>
+              <TerminalDataTableHeaderCell>
+                {t("dividend.columnPayDate", { defaultValue: "Pay date" })}
+              </TerminalDataTableHeaderCell>
+              <TerminalDataTableHeaderCell>
+                {t("dividend.columnFrequency", { defaultValue: "Payout frequency" })}
+              </TerminalDataTableHeaderCell>
+              <TerminalDataTableHeaderCell>
+                {t("dividend.columnYield", { defaultValue: "Yield %" })}
+              </TerminalDataTableHeaderCell>
+              <TerminalDataTableHeaderCell>
+                {t("dividend.columnDividendPerShare", { defaultValue: "Dividend / share" })}
+              </TerminalDataTableHeaderCell>
+              <TerminalDataTableHeaderCell>
+                {t("dividend.columnDataStatus", { defaultValue: "Data" })}
+              </TerminalDataTableHeaderCell>
+              <TerminalDataTableHeaderCell>
+                {t("dividendHub.radarAction", { defaultValue: "Analyze" })}
+              </TerminalDataTableHeaderCell>
+            </tr>
+          </TerminalDataTableHead>
+          <TerminalDataTableBody>
+            {rows.map((company) => (
+              <TerminalDataTableRow key={`${company.symbol}-${company.exDate}`}>
+                <TerminalDataTableCell>
+                  <div className="flex items-center gap-2">
+                    <CompanyLogo symbol={company.symbol} logoUrl={company.logoUrl} size="xs" shape="rounded" />
+                    <span className="font-semibold text-terminal-text">{company.symbol}</span>
+                  </div>
+                </TerminalDataTableCell>
+                <TerminalDataTableCell mono>{formatExDateLabel(company.exDate)}</TerminalDataTableCell>
+                <TerminalDataTableCell mono>{formatExDateLabel(company.payDate)}</TerminalDataTableCell>
+                <TerminalDataTableCell>{formatFrequencyLabel(company.frequency, t)}</TerminalDataTableCell>
+                <TerminalDataTableCell mono>
+                  {company.yieldPct > 0 ? `${company.yieldPct.toFixed(2)}%` : "—"}
+                </TerminalDataTableCell>
+                <TerminalDataTableCell>
+                  {formatDividendPerShareAmount(company.dividendPerShare, company.symbol, {
+                    currency: company.currency,
+                  })}
+                </TerminalDataTableCell>
+                <TerminalDataTableCell>
+                  <DividendDataStatusBadge status={company.dataStatus} />
+                </TerminalDataTableCell>
+                <TerminalDataTableCell>
+                  <Link
+                    to="/dividend/intelligence"
+                    state={{ symbol: company.symbol }}
+                    className={`text-xs font-semibold ${TERMINAL_LINK_ACCENT}`}
+                  >
+                    {t("dividendHub.radarAnalyze", { defaultValue: "Intelligence" })}
+                  </Link>
+                </TerminalDataTableCell>
+              </TerminalDataTableRow>
+            ))}
+          </TerminalDataTableBody>
+        </TerminalDataTable>
+      ) : null}
 
       <p className={TERMINAL_TEXT_MUTED}>
         {t("dividendHub.radarFootnote", {

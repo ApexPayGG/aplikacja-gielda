@@ -74,12 +74,12 @@ export function TerminalSidebar({ className, onNavigate }: TerminalSidebarProps)
   return (
     <aside
       className={cn(
-        "flex h-full w-[15.5rem] shrink-0 flex-col border-r border-terminal-border bg-terminal-panel/95 backdrop-blur-xl",
+        "flex h-full w-[15.75rem] shrink-0 flex-col border-r border-terminal-border bg-terminal-panel shadow-terminal-panel",
         className,
       )}
     >
       <div className="border-b border-terminal-border px-4 py-3">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-terminal-textMuted">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-terminal-cyan/80">
           {t("terminalNav.workspace")}
         </p>
       </div>

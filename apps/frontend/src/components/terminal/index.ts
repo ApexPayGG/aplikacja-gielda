@@ -25,3 +25,23 @@ export { TerminalSection } from "./TerminalSection";
 export { TerminalSidebar } from "./TerminalSidebar";
 export { TerminalTopBar } from "./TerminalTopBar";
 export { TerminalAppShell } from "./TerminalAppShell";
+export {
+  AppWorkspaceShell,
+  WorkspaceSidebar,
+  WorkspaceTopBar,
+  PageCommandHeader,
+  TerminalWorkspacePage,
+  TerminalPanel,
+  MetricTile,
+  TerminalDataTable,
+  TerminalDataTableBody,
+  TerminalDataTableCell,
+  TerminalDataTableHead,
+  TerminalDataTableHeaderCell,
+  TerminalDataTableRow,
+  TerminalTabs,
+  EmptyStatePanel,
+  ModuleCTAButton,
+  SectionEyebrow,
+  type TerminalTabItem,
+} from "./TerminalWorkspace";

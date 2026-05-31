@@ -5,6 +5,34 @@
 
 export const TERMINAL_APP_BG = "min-h-screen bg-terminal-bg text-terminal-text";
 
+/** StockAI Pro Terminal OS — workspace page canvas */
+export const TERMINAL_OS_CONTENT =
+  "mx-auto w-full max-w-[90rem] px-3 py-4 text-terminal-text sm:px-4 sm:py-5 lg:px-6";
+
+export const TERMINAL_OS_EYEBROW =
+  "font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-terminal-textMuted";
+
+export const TERMINAL_OS_PAGE_TITLE =
+  "text-xl font-bold tracking-tight text-terminal-text sm:text-2xl md:text-[1.65rem]";
+
+export const TERMINAL_OS_PAGE_SUBTITLE =
+  "max-w-3xl text-xs leading-relaxed text-terminal-textSecondary sm:text-sm";
+
+export const TERMINAL_OS_PANEL =
+  "rounded-lg border border-terminal-border bg-terminal-panel shadow-terminal-panel";
+
+export const TERMINAL_OS_TAB_LIST =
+  "inline-flex flex-wrap gap-0 rounded-md border border-terminal-border bg-terminal-panelSecondary/60 p-0.5";
+
+export const TERMINAL_OS_TAB_IDLE =
+  "rounded-[5px] px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-terminal-textMuted transition hover:bg-terminal-panelSecondary hover:text-terminal-text";
+
+export const TERMINAL_OS_TAB_ACTIVE =
+  "rounded-[5px] border border-terminal-cyan/40 bg-terminal-cyan/12 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-terminal-cyan shadow-[inset_0_0_0_1px_rgba(34,211,238,0.2)]";
+
+export const TERMINAL_EMPTY_STATE_PANEL =
+  "rounded-lg border border-dashed border-terminal-borderMuted bg-terminal-panelSecondary/50 px-5 py-8 text-center";
+
 export const TERMINAL_PAGE_SHELL = "mx-auto w-full max-w-[90rem] px-3 sm:px-4";
 
 export const TERMINAL_PANEL =

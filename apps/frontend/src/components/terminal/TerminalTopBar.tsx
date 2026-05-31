@@ -48,7 +48,7 @@ export function TerminalTopBar({ onOpenSidebar, className }: TerminalTopBarProps
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-terminal-border bg-terminal-bg/92 px-3 backdrop-blur-xl sm:px-4",
+        "sticky top-0 z-30 flex h-12 items-center gap-2.5 border-b border-terminal-border bg-terminal-bg/95 px-3 backdrop-blur-xl sm:gap-3 sm:px-4",
         className,
       )}
     >

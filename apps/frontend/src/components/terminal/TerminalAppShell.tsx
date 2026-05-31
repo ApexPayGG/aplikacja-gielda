@@ -43,7 +43,7 @@ export function TerminalAppShell({ children, banner, className }: TerminalAppShe
       <div className="flex min-w-0 flex-1 flex-col">
         <TerminalTopBar onOpenSidebar={() => setMobileNavOpen(true)} />
         {banner}
-        <div className="flex-1 overflow-x-hidden">{children}</div>
+        <div className="flex-1 overflow-x-hidden bg-terminal-bg">{children}</div>
       </div>
     </div>
   );

@@ -58,7 +58,7 @@ export function GlobalSearchBar({ variant = "desktop" }: GlobalSearchBarProps) {
   }
 
   return (
-    <div className="hidden h-10 w-[240px] max-w-[240px] shrink-0 grow-0 basis-[240px] md:block">
+    <div className="hidden h-9 min-w-0 flex-1 max-w-md md:block">
       <CompanySearchAutocomplete placeholder={placeholder} compact variant="terminal" />
     </div>
   );

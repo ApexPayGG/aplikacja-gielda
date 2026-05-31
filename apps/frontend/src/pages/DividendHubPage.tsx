@@ -10,18 +10,7 @@ import {
   parseDividendHubView,
   type DividendHubView,
 } from "../components/dividend/dividendHubShared";
-import {
-  TERMINAL_DIVIDEND_PAGE,
-  TERMINAL_DIVIDEND_PAGE_INNER,
-  TERMINAL_FILTER_CHIP,
-  TERMINAL_FILTER_CHIP_ACTIVE,
-  TERMINAL_PAGE_SUBTITLE,
-  TERMINAL_PAGE_TITLE,
-} from "../components/terminal/terminalStyles";
-
-function hubTabClass(active: boolean): string {
-  return active ? TERMINAL_FILTER_CHIP_ACTIVE : TERMINAL_FILTER_CHIP;
-}
+import { TerminalPanel, TerminalTabs, TerminalWorkspacePage } from "../components/terminal";
 
 function tabLabel(view: DividendHubView, t: ReturnType<typeof useTranslation>["t"]): string {
   switch (view) {
@@ -41,53 +30,44 @@ export function DividendHubPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const view = useMemo(() => parseDividendHubView(searchParams.get("view")), [searchParams]);
 
+  const tabs = useMemo(
+    () =>
+      DIVIDEND_HUB_VIEWS.map((id) => ({
+        id,
+        label: tabLabel(id, t),
+      })),
+    [t],
+  );
+
   function setView(next: DividendHubView): void {
     setSearchParams(next === "radar" ? {} : { view: next }, { replace: true });
   }
 
   return (
-    <div className={TERMINAL_DIVIDEND_PAGE}>
-      <div className={TERMINAL_DIVIDEND_PAGE_INNER}>
-        <header className="space-y-2">
-          <h1 className={TERMINAL_PAGE_TITLE}>
-            {t("dividendHub.title", { defaultValue: "Dividend Hub" })}
-          </h1>
-          <p className={TERMINAL_PAGE_SUBTITLE}>
-            {t("dividendHub.subtitle", {
-              defaultValue:
-                "Research dividend quality, income screening and tools in one place — part of your investing workflow.",
-            })}
-          </p>
-        </header>
+    <TerminalWorkspacePage
+      eyebrow={t("terminalNav.dividendHub", { defaultValue: "Dividend Hub" })}
+      title={t("dividendHub.title", { defaultValue: "Dividend Hub" })}
+      subtitle={t("dividendHub.subtitle", {
+        defaultValue:
+          "Research dividend quality, income screening and tools in one place — part of your investing workflow.",
+      })}
+      contentClassName="space-y-4"
+    >
+      <DividendHubDisclaimer />
 
-        <DividendHubDisclaimer />
+      <TerminalTabs
+        tabs={tabs}
+        activeId={view}
+        onChange={setView}
+        ariaLabel={t("dividendHub.tabsAria", { defaultValue: "Dividend Hub sections" })}
+      />
 
-        <nav
-          className="flex flex-wrap gap-2"
-          role="tablist"
-          aria-label={t("dividendHub.tabsAria", { defaultValue: "Dividend Hub sections" })}
-        >
-          {DIVIDEND_HUB_VIEWS.map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              role="tab"
-              aria-selected={view === tab}
-              className={hubTabClass(view === tab)}
-              onClick={() => setView(tab)}
-            >
-              {tabLabel(tab, t)}
-            </button>
-          ))}
-        </nav>
-
-        <div role="tabpanel" className="min-h-[12rem]">
-          {view === "radar" ? <DividendHubRadar /> : null}
-          {view === "screener" ? <DividendHubScreener /> : null}
-          {view === "intelligence" ? <DividendHubToolPanel view="intelligence" /> : null}
-          {view === "compound" ? <DividendHubToolPanel view="compound" /> : null}
-        </div>
-      </div>
-    </div>
+      <TerminalPanel className="p-4 sm:p-5" role="tabpanel">
+        {view === "radar" ? <DividendHubRadar /> : null}
+        {view === "screener" ? <DividendHubScreener /> : null}
+        {view === "intelligence" ? <DividendHubToolPanel view="intelligence" /> : null}
+        {view === "compound" ? <DividendHubToolPanel view="compound" /> : null}
+      </TerminalPanel>
+    </TerminalWorkspacePage>
   );
 }

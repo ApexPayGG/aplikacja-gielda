@@ -6,7 +6,9 @@ import { DailyCheckInWidget, type DailyCheckInWidgetState } from "../components/
 import { EventRiskRadarWidget } from "../components/EventRiskRadarWidget";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import {
+  EmptyStatePanel,
   MarketDelta,
+  ModuleCTAButton,
   StatusPill,
   TerminalBadge,
   TerminalButton,
@@ -19,11 +21,11 @@ import {
   TerminalTableHead,
   TerminalTableHeaderCell,
   TerminalTableRow,
+  TerminalWorkspacePage,
 } from "../components/terminal";
 import { useAuth } from "../context/AuthContext";
 import { getCompanyDetail, getLatestQuoteBySymbol, getWatchlist } from "../services/api";
 import { enrichItemsWithCompanyLogos } from "../utils/companyLogoEnrichment";
-import { TERMINAL_APP_BG, TERMINAL_PAGE_SHELL } from "../components/terminal/terminalStyles";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
 import { formatCurrency } from "../utils/formatters";
 
@@ -237,14 +239,14 @@ export function Dashboard() {
         </div>
         <div className="flex flex-wrap gap-1.5">
           <Link to="/companies">
-            <TerminalButton variant="primary" size="sm">
+            <ModuleCTAButton variant="primary" size="sm">
               {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
-            </TerminalButton>
+            </ModuleCTAButton>
           </Link>
           <Link to="/signals">
-            <TerminalButton variant="secondary" size="sm">
+            <ModuleCTAButton variant="secondary" size="sm">
               {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
-            </TerminalButton>
+            </ModuleCTAButton>
           </Link>
           <Link to="/behavioral-coach">
             <TerminalButton variant="ghost" size="sm">
@@ -341,38 +343,28 @@ export function Dashboard() {
   );
 
   return (
-    <div className={`min-h-full ${TERMINAL_APP_BG}`}>
-      <div className={`${TERMINAL_PAGE_SHELL} max-w-none py-2 text-terminal-text sm:py-3 lg:py-3`}>
+    <TerminalWorkspacePage
+      eyebrow={t("dashboard.eyebrow", { defaultValue: "Command center" })}
+      title={
+        firstName
+          ? t("dashboard.greeting", { name: firstName, defaultValue: "Good morning, {{name}}" })
+          : t("dashboard.greetingGeneric", { defaultValue: "Welcome back" })
+      }
+      subtitle={todayLabel}
+      status={<StatusPill variant={marketState.variant}>{marketState.label}</StatusPill>}
+      actions={
+        !isEmptyDashboard ? (
+          <Link to="/companies" className="hidden sm:block">
+            <ModuleCTAButton variant="outline" size="sm">
+              {t("dashboard.companiesTitle", { defaultValue: "Companies" })}
+            </ModuleCTAButton>
+          </Link>
+        ) : null
+      }
+      contentClassName="space-y-3"
+    >
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="min-w-0 space-y-2.5">
-            <header className="border-b border-terminal-borderMuted pb-2.5">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-textMuted">
-                    {t("dashboard.eyebrow", { defaultValue: "Command center" })}
-                  </p>
-                  <h1 className="text-lg font-bold tracking-tight text-terminal-text sm:text-xl">
-                    {firstName
-                      ? t("dashboard.greeting", { name: firstName, defaultValue: "Good morning, {{name}}" })
-                      : t("dashboard.greetingGeneric", { defaultValue: "Welcome back" })}
-                  </h1>
-                  <p className="mt-0.5 text-[11px] text-terminal-textSecondary sm:text-xs">{todayLabel}</p>
-                  <div className="mt-2">
-                    <StatusPill variant={marketState.variant}>{marketState.label}</StatusPill>
-                  </div>
-                </div>
-                {!isEmptyDashboard ? (
-                  <Link to="/companies" className="hidden sm:block">
-                    <TerminalButton variant="outline" size="sm">
-                      {t("dashboard.companiesTitle", { defaultValue: "Companies" })}
-                    </TerminalButton>
-                  </Link>
-                ) : null}
-              </div>
-            </header>
-
-            {kpiRow}
-          </div>
+          <div className="min-w-0 space-y-2.5">{kpiRow}</div>
 
           <aside className="space-y-2.5 lg:sticky lg:top-16 lg:self-start">
             <DailyCheckInWidget compact appearance="terminal" onStateChange={setCheckInState} />
@@ -410,16 +402,18 @@ export function Dashboard() {
               ) : null}
 
               {!watchlistLoading && !watchlistError && watchlistRows.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-terminal-borderMuted bg-terminal-panelSecondary/30 px-4 py-5 text-sm">
-                  <p className="text-terminal-textSecondary">
-                    {t("watchlist.empty", { defaultValue: "You are not observing any companies yet." })}
-                  </p>
-                  <Link to="/companies" className="mt-3 inline-block">
-                    <TerminalButton variant="primary" size="sm">
-                      {t("dashboard.emptyWatchlistCta", { defaultValue: "Browse companies" })}
-                    </TerminalButton>
-                  </Link>
-                </div>
+                <EmptyStatePanel
+                  message={t("watchlist.empty", {
+                    defaultValue: "You are not observing any companies yet.",
+                  })}
+                  actions={
+                    <Link to="/companies">
+                      <ModuleCTAButton variant="primary" size="sm">
+                        {t("dashboard.emptyWatchlistCta", { defaultValue: "Browse companies" })}
+                      </ModuleCTAButton>
+                    </Link>
+                  }
+                />
               ) : null}
 
               {!watchlistLoading && !watchlistError && watchlistRows.length > 0 ? (
@@ -491,25 +485,28 @@ export function Dashboard() {
               ) : null}
 
               {!watchlistLoading && !watchlistError && latestSignals.length === 0 ? (
-                <div className="rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/30 px-4 py-4 text-sm">
-                  <p className="font-medium text-terminal-text">
-                    {t("dashboard.signalsWaiting", {
-                      defaultValue: "No signals — the market is waiting for a setup",
-                    })}
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Link to="/signals">
-                      <TerminalButton variant="primary" size="sm">
-                        {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
-                      </TerminalButton>
-                    </Link>
-                    <Link to="/companies">
-                      <TerminalButton variant="secondary" size="sm">
-                        {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
-                      </TerminalButton>
-                    </Link>
-                  </div>
-                </div>
+                <EmptyStatePanel
+                  title={t("dashboard.signalsWaiting", {
+                    defaultValue: "No signals — the market is waiting for a setup",
+                  })}
+                  message={t("dashboard.emptySignalsHint", {
+                    defaultValue: "Signals appear when your watchlist moves ±2% intraday.",
+                  })}
+                  actions={
+                    <>
+                      <Link to="/signals">
+                        <ModuleCTAButton variant="primary" size="sm">
+                          {t("dashboard.hero.ctaSignals", { defaultValue: "View signals" })}
+                        </ModuleCTAButton>
+                      </Link>
+                      <Link to="/companies">
+                        <ModuleCTAButton variant="secondary" size="sm">
+                          {t("dashboard.hero.ctaBrowse", { defaultValue: "Browse companies" })}
+                        </ModuleCTAButton>
+                      </Link>
+                    </>
+                  }
+                />
               ) : null}
 
               {!watchlistLoading && !watchlistError && latestSignals.length > 0 ? (
@@ -588,8 +585,7 @@ export function Dashboard() {
           </aside>
         </div>
 
-        <InvestmentDisclaimer variant="drawer" className="mt-4" collapsible />
-      </div>
-    </div>
+      <InvestmentDisclaimer variant="drawer" className="mt-4" collapsible />
+    </TerminalWorkspacePage>
   );
 }

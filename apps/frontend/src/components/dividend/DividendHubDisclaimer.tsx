@@ -1,16 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { TERMINAL_PANEL_MUTED, TERMINAL_TEXT_MUTED } from "../terminal/terminalStyles";
+import { TerminalPanel } from "../terminal";
+import { TERMINAL_TEXT_MUTED } from "../terminal/terminalStyles";
 
 export function DividendHubDisclaimer() {
   const { t } = useTranslation();
 
   return (
-    <aside
-      className={`${TERMINAL_PANEL_MUTED} flex gap-3 p-4 sm:p-5`}
-      role="note"
-      aria-label={t("dividendHub.disclaimerAria", { defaultValue: "Dividend data disclaimer" })}
-    >
+    <aside aria-label={t("dividendHub.disclaimerAria", { defaultValue: "Dividend data disclaimer" })}>
+    <TerminalPanel muted className="flex gap-3 p-4 sm:p-5" role="note">
       <InformationCircleIcon className="mt-0.5 h-5 w-5 shrink-0 text-terminal-cyan" aria-hidden />
       <div className={`space-y-1.5 text-sm leading-relaxed ${TERMINAL_TEXT_MUTED}`}>
         <p>
@@ -25,6 +23,7 @@ export function DividendHubDisclaimer() {
           })}
         </p>
       </div>
+    </TerminalPanel>
     </aside>
   );
 }
