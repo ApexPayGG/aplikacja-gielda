@@ -2,6 +2,7 @@ import type { ComponentType, SVGProps } from "react";
 import {
   AcademicCapIcon,
   ArrowTrendingUpIcon,
+  BanknotesIcon,
   BellAlertIcon,
   BriefcaseIcon,
   CalendarDaysIcon,
@@ -118,6 +119,14 @@ export const TERMINAL_MAIN_NAV: TerminalNavItem[] = [
     enabled: true,
     icon: CalendarDaysIcon,
     matchPaths: ["/earnings-predictor"],
+  },
+  {
+    id: "dividend-hub",
+    labelKey: "terminalNav.dividendHub",
+    to: "/dividend",
+    enabled: true,
+    icon: BanknotesIcon,
+    matchPaths: ["/dividend"],
   },
   {
     id: "insider",

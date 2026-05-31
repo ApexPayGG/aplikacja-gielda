@@ -16,7 +16,8 @@ import {
   TERMINAL_SUCCESS_TEXT,
 } from "../terminal/terminalStyles";
 import { colors } from "../../styles/designSystem";
-import { apiErrorMessage } from "../../utils/apiErrorMessage";
+import { DividendHubAccessGate } from "./DividendHubAccessGate";
+import { resolveDividendHubLoadError } from "./dividendHubApiError";
 import { formatDividendPerShareAmount } from "../../utils/dividendFormat";
 import { mapCompanyRow, parseDateValue, type DividendCompanyRow } from "./dividendHubShared";
 import { DividendDataStatusBadge, formatFrequencyLabel } from "./DividendDataStatusBadge";
@@ -42,6 +43,7 @@ export function DividendHubScreener() {
   const [rows, setRows] = useState<DividendGrowthRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [accessDenied, setAccessDenied] = useState(false);
   const [search, setSearch] = useState("");
   const [yieldMin, setYieldMin] = useState("");
   const [yieldMax, setYieldMax] = useState("");
@@ -54,6 +56,7 @@ export function DividendHubScreener() {
   const loadCompanies = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setAccessDenied(false);
     try {
       const response = await getDividendGrowthScreener(
         3,
@@ -65,11 +68,13 @@ export function DividendHubScreener() {
       setRows(response.data);
     } catch (err) {
       setRows([]);
-      setError(apiErrorMessage(err));
+      const resolved = resolveDividendHubLoadError(err, t);
+      setAccessDenied(resolved.accessDenied);
+      setError(resolved.message);
     } finally {
       setLoading(false);
     }
-  }, [frequencyFilter]);
+  }, [frequencyFilter, t]);
 
   useEffect(() => {
     void loadCompanies();
@@ -220,6 +225,7 @@ export function DividendHubScreener() {
       <ScreenerTable
         loading={loading}
         error={error}
+        accessDenied={accessDenied}
         rows={filteredAndSorted}
         hoveredSymbol={hoveredSymbol}
         onHover={setHoveredSymbol}
@@ -234,6 +240,7 @@ export function DividendHubScreener() {
 function ScreenerTable({
   loading,
   error,
+  accessDenied,
   rows,
   hoveredSymbol,
   onHover,
@@ -243,6 +250,7 @@ function ScreenerTable({
 }: {
   loading: boolean;
   error: string | null;
+  accessDenied: boolean;
   rows: DividendCompanyRow[];
   hoveredSymbol: string | null;
   onHover: (symbol: string | null) => void;
@@ -293,8 +301,12 @@ function ScreenerTable({
             ) : null}
             {error ? (
               <tr>
-                <td className={`px-4 py-6 text-sm ${TERMINAL_DANGER_TEXT}`} colSpan={8}>
-                  {error}
+                <td colSpan={8}>
+                  {accessDenied ? (
+                    <DividendHubAccessGate message={error} />
+                  ) : (
+                    <p className={`px-4 py-6 text-sm ${TERMINAL_DANGER_TEXT}`}>{error}</p>
+                  )}
                 </td>
               </tr>
             ) : null}

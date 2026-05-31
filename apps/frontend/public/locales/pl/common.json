@@ -647,7 +647,10 @@
     "intelligenceCta": "Otwórz dividend intelligence",
     "compoundBody": "Symuluj wzrost portfela z reinwestycją dywidendy lub wypłatą gotówki według własnych założeń.",
     "compoundCta": "Otwórz kalkulator compound",
-    "backToHub": "← Dividend Hub"
+    "backToHub": "← Dividend Hub",
+    "authRequired": "Zaloguj się lub aktywuj plan, aby zobaczyć kalendarz dywidend.",
+    "signInCta": "Zaloguj się",
+    "pricingCta": "Zobacz plany"
   },
   "dividend": {
     "colAnnual": "Dywidenda roczna",
@@ -1244,6 +1247,7 @@
     "newsSentiment": "News & Sentiment",
     "alertsSignals": "Alerty i sygnały",
     "earningsHub": "Earnings Hub",
+    "dividendHub": "Dividend Hub",
     "insider13f": "Insider & 13F",
     "economicCalendar": "Kalendarz makro",
     "portfolio": "Portfel",

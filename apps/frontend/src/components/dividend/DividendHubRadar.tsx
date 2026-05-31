@@ -13,8 +13,9 @@ import {
   TERMINAL_SECTION_TITLE,
   TERMINAL_TEXT_MUTED,
 } from "../terminal/terminalStyles";
-import { apiErrorMessage } from "../../utils/apiErrorMessage";
 import { formatDividendPerShareAmount } from "../../utils/dividendFormat";
+import { DividendHubAccessGate } from "./DividendHubAccessGate";
+import { resolveDividendHubLoadError } from "./dividendHubApiError";
 import { calendarEventToRow, formatExDateLabel, type DividendCompanyRow } from "./dividendHubShared";
 import { DividendDataStatusBadge, formatFrequencyLabel } from "./DividendDataStatusBadge";
 
@@ -33,11 +34,13 @@ export function DividendHubRadar() {
   const [rows, setRows] = useState<DividendCompanyRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [accessDenied, setAccessDenied] = useState(false);
   const range = useMemo(() => defaultCalendarRange(), []);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setAccessDenied(false);
     try {
       const response = await getDividendCalendar({
         from: range.from,
@@ -47,11 +50,13 @@ export function DividendHubRadar() {
       setRows(response.events.map(calendarEventToRow));
     } catch (err) {
       setRows([]);
-      setError(apiErrorMessage(err));
+      const resolved = resolveDividendHubLoadError(err, t);
+      setAccessDenied(resolved.accessDenied);
+      setError(resolved.message);
     } finally {
       setLoading(false);
     }
-  }, [range.from, range.to]);
+  }, [range.from, range.to, t]);
 
   useEffect(() => {
     void load();
@@ -112,8 +117,12 @@ export function DividendHubRadar() {
               ) : null}
               {error ? (
                 <tr>
-                  <td colSpan={8} className={`px-4 py-6 text-sm ${TERMINAL_DANGER_TEXT}`}>
-                    {error}
+                  <td colSpan={8}>
+                    {accessDenied ? (
+                      <DividendHubAccessGate message={error} />
+                    ) : (
+                      <p className={`px-4 py-6 text-sm ${TERMINAL_DANGER_TEXT}`}>{error}</p>
+                    )}
                   </td>
                 </tr>
               ) : null}

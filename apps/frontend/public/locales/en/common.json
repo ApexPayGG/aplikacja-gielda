@@ -529,7 +529,10 @@
     "intelligenceCta": "Open dividend intelligence",
     "compoundBody": "Simulate portfolio growth with dividend reinvestment versus cash payout using your own assumptions.",
     "compoundCta": "Open compound calculator",
-    "backToHub": "← Dividend Hub"
+    "backToHub": "← Dividend Hub",
+    "authRequired": "Sign in or activate your plan to view dividend calendar data.",
+    "signInCta": "Sign in",
+    "pricingCta": "View plans"
   },
   "dividend": {
     "colAnnual": "Annual dividend",
@@ -1185,6 +1188,7 @@
     "newsSentiment": "News & Sentiment",
     "alertsSignals": "Alerts & Signals",
     "earningsHub": "Earnings Hub",
+    "dividendHub": "Dividend Hub",
     "insider13f": "Insider & 13F",
     "economicCalendar": "Economic Calendar",
     "portfolio": "Portfolio",
