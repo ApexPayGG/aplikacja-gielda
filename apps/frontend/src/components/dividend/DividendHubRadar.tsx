@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getDividendGrowthScreener, type DividendGrowthRow } from "../../services/api";
+import { getDividendCalendar } from "../../services/api";
 import { CompanyLogo } from "../CompanyLogo";
 import {
   TERMINAL_DANGER_TEXT,
@@ -15,44 +15,47 @@ import {
 } from "../terminal/terminalStyles";
 import { apiErrorMessage } from "../../utils/apiErrorMessage";
 import { formatDividendPerShareAmount } from "../../utils/dividendFormat";
-import { formatExDateLabel, mapCompanyRow, parseDateValue } from "./dividendHubShared";
+import { calendarEventToRow, formatExDateLabel, type DividendCompanyRow } from "./dividendHubShared";
+import { DividendDataStatusBadge, formatFrequencyLabel } from "./DividendDataStatusBadge";
+
+function defaultCalendarRange(): { from: string; to: string } {
+  const from = new Date();
+  const to = new Date(from);
+  to.setUTCMonth(to.getUTCMonth() + 3);
+  return {
+    from: from.toISOString().slice(0, 10),
+    to: to.toISOString().slice(0, 10),
+  };
+}
 
 export function DividendHubRadar() {
   const { t } = useTranslation();
-  const [rows, setRows] = useState<DividendGrowthRow[]>([]);
+  const [rows, setRows] = useState<DividendCompanyRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const range = useMemo(() => defaultCalendarRange(), []);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await getDividendGrowthScreener(3, 0, 200, 1);
-      setRows(response.data);
+      const response = await getDividendCalendar({
+        from: range.from,
+        to: range.to,
+        limit: 100,
+      });
+      setRows(response.events.map(calendarEventToRow));
     } catch (err) {
       setRows([]);
       setError(apiErrorMessage(err));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [range.from, range.to]);
 
   useEffect(() => {
     void load();
   }, [load]);
-
-  const upcoming = useMemo(() => {
-    const now = Date.now();
-    return rows
-      .map(mapCompanyRow)
-      .filter((row) => {
-        if (!row.exDate || row.exDate === "-") return false;
-        const ts = parseDateValue(row.exDate);
-        return ts > now;
-      })
-      .sort((a, b) => parseDateValue(a.exDate) - parseDateValue(b.exDate))
-      .slice(0, 25);
-  }, [rows]);
 
   return (
     <div className="space-y-4">
@@ -63,7 +66,7 @@ export function DividendHubRadar() {
         <p className={`mt-2 ${TERMINAL_PAGE_SUBTITLE}`}>
           {t("dividendHub.radarSubtitle", {
             defaultValue:
-              "Upcoming ex-dates from synced dividend history in the growth screener universe. Full calendar view ships in a later release.",
+              "Upcoming dividend events from synced database records. Dividend event detected — review dividend quality and payout risk.",
           })}
         </p>
       </div>
@@ -80,10 +83,19 @@ export function DividendHubRadar() {
                   {t("dividend.columnExDate", { defaultValue: "Ex-Date" })}
                 </th>
                 <th className="px-4 py-3 font-semibold text-terminal-textMuted">
+                  {t("dividend.columnPayDate", { defaultValue: "Pay date" })}
+                </th>
+                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
+                  {t("dividend.columnFrequency", { defaultValue: "Payout frequency" })}
+                </th>
+                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
                   {t("dividend.columnYield", { defaultValue: "Yield %" })}
                 </th>
                 <th className="px-4 py-3 font-semibold text-terminal-textMuted">
                   {t("dividend.columnDividendPerShare", { defaultValue: "Dividend / share" })}
+                </th>
+                <th className="px-4 py-3 font-semibold text-terminal-textMuted">
+                  {t("dividend.columnDataStatus", { defaultValue: "Data" })}
                 </th>
                 <th className="px-4 py-3 font-semibold text-terminal-textMuted">
                   {t("dividendHub.radarAction", { defaultValue: "Analyze" })}
@@ -93,31 +105,31 @@ export function DividendHubRadar() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-sm text-terminal-textMuted">
+                  <td colSpan={8} className="px-4 py-6 text-sm text-terminal-textMuted">
                     {t("common.loading", { defaultValue: "Loading..." })}
                   </td>
                 </tr>
               ) : null}
               {error ? (
                 <tr>
-                  <td colSpan={5} className={`px-4 py-6 text-sm ${TERMINAL_DANGER_TEXT}`}>
+                  <td colSpan={8} className={`px-4 py-6 text-sm ${TERMINAL_DANGER_TEXT}`}>
                     {error}
                   </td>
                 </tr>
               ) : null}
-              {!loading && !error && upcoming.length === 0 ? (
+              {!loading && !error && rows.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-sm text-terminal-textMuted">
+                  <td colSpan={8} className="px-4 py-6 text-sm text-terminal-textMuted">
                     {t("dividendHub.radarEmpty", {
                       defaultValue:
-                        "No upcoming ex-dates in the current dataset. Open the screener or dividend intelligence for per-symbol detail.",
+                        "No upcoming dividend events in this date range. Open the screener or dividend intelligence for per-symbol detail.",
                     })}
                   </td>
                 </tr>
               ) : null}
               {!loading && !error
-                ? upcoming.map((company) => (
-                    <tr key={company.symbol} className={TERMINAL_DIVIDEND_ROW}>
+                ? rows.map((company) => (
+                    <tr key={`${company.symbol}-${company.exDate}`} className={TERMINAL_DIVIDEND_ROW}>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <CompanyLogo symbol={company.symbol} logoUrl={company.logoUrl} size="xs" shape="rounded" />
@@ -127,11 +139,22 @@ export function DividendHubRadar() {
                       <td className="px-4 py-3 font-mono text-xs text-terminal-textSecondary">
                         {formatExDateLabel(company.exDate)}
                       </td>
-                      <td className="px-4 py-3 text-terminal-textSecondary">{company.yieldPct.toFixed(2)}%</td>
+                      <td className="px-4 py-3 font-mono text-xs text-terminal-textSecondary">
+                        {formatExDateLabel(company.payDate)}
+                      </td>
+                      <td className="px-4 py-3 text-terminal-textSecondary">
+                        {formatFrequencyLabel(company.frequency, t)}
+                      </td>
+                      <td className="px-4 py-3 text-terminal-textSecondary">
+                        {company.yieldPct > 0 ? `${company.yieldPct.toFixed(2)}%` : "—"}
+                      </td>
                       <td className="px-4 py-3 text-terminal-textSecondary">
                         {formatDividendPerShareAmount(company.dividendPerShare, company.symbol, {
                           currency: company.currency,
                         })}
+                      </td>
+                      <td className="px-4 py-3">
+                        <DividendDataStatusBadge status={company.dataStatus} />
                       </td>
                       <td className="px-4 py-3">
                         <Link
@@ -152,7 +175,8 @@ export function DividendHubRadar() {
 
       <p className={TERMINAL_TEXT_MUTED}>
         {t("dividendHub.radarFootnote", {
-          defaultValue: "Coverage depends on dividend sync symbols in the database; not a complete market calendar.",
+          defaultValue:
+            "Educational and informational analysis only. Coverage depends on dividend sync symbols in the database; not a complete market calendar.",
         })}
       </p>
     </div>

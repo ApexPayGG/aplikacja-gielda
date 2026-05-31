@@ -378,7 +378,12 @@
     "watch": "監視",
     "years": "増配年数",
     "yearsBack": "遡る年数",
-    "yield": "配当利回り"
+    "yield": "配当利回り",
+    "columnFrequency": "配当頻度",
+    "columnPayDate": "支払日",
+    "columnDataStatus": "データ",
+    "frequencyFilter": "配当頻度",
+    "frequencyAll": "すべて"
   },
   "dividendcompound": {
     "axisYear": "年",

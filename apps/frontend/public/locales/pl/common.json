@@ -638,11 +638,11 @@
     "tabIntelligence": "Intelligence",
     "tabCompound": "Compound",
     "radarTitle": "Radar dywidendowy",
-    "radarSubtitle": "Nadchodzące dni ex z zsynchronizowanej historii w uniwersum growth screenera. Pełny kalendarz w kolejnej wersji.",
-    "radarEmpty": "Brak nadchodzących dni ex w bieżącym zbiorze. Użyj screenera lub intelligence dla szczegółów per symbol.",
+    "radarSubtitle": "Nadchodzące wydarzenia dywidendowe z bazy. Wykryto wydarzenie dywidendowe — oceń jakość wypłaty i ryzyko.",
+    "radarEmpty": "Brak nadchodzących wydarzeń w tym zakresie dat. Użyj screenera lub intelligence dla szczegółów per symbol.",
     "radarAction": "Analiza",
     "radarAnalyze": "Intelligence",
-    "radarFootnote": "Zakres zależy od symboli w sync dywidend; to nie pełny kalendarz rynkowy.",
+    "radarFootnote": "Wyłącznie analiza edukacyjna i informacyjna. Zakres zależy od symboli w sync dywidend; to nie pełny kalendarz rynkowy.",
     "intelligenceBody": "Safety score, trend, kontekst sektorowy i alerty dywidendowe per symbol — do analizy, nie jako instrukcja transakcyjna.",
     "intelligenceCta": "Otwórz dividend intelligence",
     "compoundBody": "Symuluj wzrost portfela z reinwestycją dywidendy lub wypłatą gotówki według własnych założeń.",
@@ -674,7 +674,41 @@
     "watch": "Obserwuj",
     "years": "Lata Wzrostu",
     "yearsBack": "Lat wstecz",
-    "yield": "Stopa Dywidendy"
+    "yield": "Stopa Dywidendy",
+    "columnSymbol": "Symbol",
+    "columnName": "Nazwa",
+    "columnYield": "Yield %",
+    "columnHealth": "Ocena kondycji",
+    "columnExDate": "Dzień ex",
+    "columnPayDate": "Data wypłaty",
+    "columnFrequency": "Częstotliwość wypłat",
+    "columnDataStatus": "Dane",
+    "columnDividendPerShare": "Dywidenda / akcję",
+    "frequencyFilter": "Częstotliwość wypłat",
+    "frequencyAll": "Wszystkie",
+    "frequencyUnknown": "—",
+    "frequency": {
+      "quarterly": "Kwartalna",
+      "monthly": "Miesięczna",
+      "annual": "Roczna",
+      "semi_annual": "Półroczna",
+      "weekly": "Tygodniowa",
+      "other": "Inna"
+    },
+    "dataStatus": {
+      "confirmed": "Potwierdzone",
+      "estimated": "Szacowane",
+      "stale": "Nieaktualne",
+      "missing": "Brak"
+    },
+    "dataStatusHint": {
+      "confirmed": "Zsynchronizowane wydarzenie dywidendowe z danych dostawcy.",
+      "estimated": "Szacowana data lub wypłata — zweryfikuj u emitenta.",
+      "stale": "Dane mogą być nieaktualne — odśwież lub sprawdź u emitenta.",
+      "missing": "Niepełny rekord dywidendy w naszej bazie."
+    },
+    "noResults": "Brak wyników dla wybranych filtrów.",
+    "exportLabel": "Eksport dywidend"
   },
   "dividendcompound": {
     "axisYear": "Rok",

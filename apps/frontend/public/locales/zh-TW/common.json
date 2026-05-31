@@ -378,7 +378,12 @@
     "watch": "觀察",
     "years": "成長年數",
     "yearsBack": "回溯年數",
-    "yield": "股息殖利率"
+    "yield": "股息殖利率",
+    "columnFrequency": "配息頻率",
+    "columnPayDate": "付息日",
+    "columnDataStatus": "資料",
+    "frequencyFilter": "配息頻率",
+    "frequencyAll": "全部"
   },
   "dividendcompound": {
     "axisYear": "年份",

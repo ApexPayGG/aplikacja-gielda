@@ -378,7 +378,12 @@
     "watch": "Beobachten",
     "years": "Wachstumsjahre",
     "yearsBack": "Jahre zurück",
-    "yield": "Dividendenrendite"
+    "yield": "Dividendenrendite",
+    "columnFrequency": "Ausschüttungsfrequenz",
+    "columnPayDate": "Zahltag",
+    "columnDataStatus": "Daten",
+    "frequencyFilter": "Ausschüttungsfrequenz",
+    "frequencyAll": "Alle"
   },
   "dividendcompound": {
     "axisYear": "Jahr",

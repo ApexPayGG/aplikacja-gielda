@@ -520,11 +520,11 @@
     "tabIntelligence": "Intelligence",
     "tabCompound": "Compound",
     "radarTitle": "Dividend radar",
-    "radarSubtitle": "Upcoming ex-dates from synced dividend history in the growth screener universe. Full calendar view ships in a later release.",
-    "radarEmpty": "No upcoming ex-dates in the current dataset. Open the screener or dividend intelligence for per-symbol detail.",
+    "radarSubtitle": "Upcoming dividend events from synced database records. Dividend event detected — review dividend quality and payout risk.",
+    "radarEmpty": "No upcoming dividend events in this date range. Open the screener or dividend intelligence for per-symbol detail.",
     "radarAction": "Analyze",
     "radarAnalyze": "Intelligence",
-    "radarFootnote": "Coverage depends on dividend sync symbols in the database; not a complete market calendar.",
+    "radarFootnote": "Educational and informational analysis only. Coverage depends on dividend sync symbols in the database; not a complete market calendar.",
     "intelligenceBody": "Per-symbol safety score, trend direction, sector context and dividend alerts — for research, not trade instructions.",
     "intelligenceCta": "Open dividend intelligence",
     "compoundBody": "Simulate portfolio growth with dividend reinvestment versus cash payout using your own assumptions.",
@@ -570,7 +570,33 @@
     "columnYield": "Yield %",
     "columnHealth": "Health Score",
     "columnExDate": "Ex-Date",
+    "columnPayDate": "Pay date",
+    "columnFrequency": "Payout frequency",
+    "columnDataStatus": "Data",
     "columnDividendPerShare": "Dividend / share",
+    "frequencyFilter": "Payout frequency",
+    "frequencyAll": "All",
+    "frequencyUnknown": "—",
+    "frequency": {
+      "quarterly": "Quarterly",
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "semi_annual": "Semi-annual",
+      "weekly": "Weekly",
+      "other": "Other"
+    },
+    "dataStatus": {
+      "confirmed": "Confirmed",
+      "estimated": "Estimated",
+      "stale": "Stale",
+      "missing": "Missing"
+    },
+    "dataStatusHint": {
+      "confirmed": "Synced dividend event from provider data.",
+      "estimated": "Estimated date or payout — verify with official sources.",
+      "stale": "Data may be outdated — refresh or check the issuer.",
+      "missing": "Incomplete dividend record in our database."
+    },
     "noResults": "No results for the selected filters.",
     "exportLabel": "Export dividends"
   },

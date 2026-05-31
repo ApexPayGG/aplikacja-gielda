@@ -1,4 +1,4 @@
-import type { DividendGrowthRow } from "../../services/api";
+import type { DividendDataStatus, DividendGrowthRow } from "../../services/api";
 import { inferCurrencyFromSymbol } from "../../utils/dividendFormat";
 
 export type DividendHubView = "radar" | "screener" | "intelligence" | "compound";
@@ -18,8 +18,11 @@ export interface DividendCompanyRow {
   yieldPct: number;
   healthScore: number;
   exDate: string;
+  payDate: string;
   dividendPerShare: number | null;
   currency: string;
+  frequency: string | null;
+  dataStatus: DividendDataStatus;
 }
 
 export function clamp(value: number, min: number, max: number): number {
@@ -61,9 +64,18 @@ export function mapCompanyRow(row: DividendGrowthRow): DividendCompanyRow {
       : typeof extended.latestExDate === "string"
         ? extended.latestExDate
         : "-";
+  const payDate = typeof extended.payDate === "string" ? extended.payDate : "-";
   const dividendPerShare = toNumber(
-    extended.dividendPerShare ?? extended.latestDividendPerShare ?? extended.amountPerShare ?? null,
+    extended.dividendPerShare ?? extended.latestDividendPerShare ?? extended.amount ?? extended.amountPerShare ?? null,
   );
+  const frequency = typeof extended.frequency === "string" ? extended.frequency : null;
+  const dataStatus =
+    extended.dataStatus === "confirmed" ||
+    extended.dataStatus === "estimated" ||
+    extended.dataStatus === "stale" ||
+    extended.dataStatus === "missing"
+      ? extended.dataStatus
+      : "missing";
   const exchange = typeof extended.exchange === "string" ? extended.exchange : null;
   const currency = inferCurrencyFromSymbol(row.symbol, {
     exchange,
@@ -87,8 +99,37 @@ export function mapCompanyRow(row: DividendGrowthRow): DividendCompanyRow {
     yieldPct,
     healthScore,
     exDate,
+    payDate,
     dividendPerShare,
     currency,
+    frequency,
+    dataStatus,
+  };
+}
+
+export function calendarEventToRow(event: {
+  symbol: string;
+  exDate: string;
+  payDate: string | null;
+  amount: number | null;
+  currency: string;
+  yield: number | null;
+  frequency: string | null;
+  dataStatus: DividendDataStatus;
+}): DividendCompanyRow {
+  return {
+    symbol: event.symbol,
+    name: event.symbol,
+    logoUrl: null,
+    sector: "—",
+    yieldPct: event.yield ?? 0,
+    healthScore: 0,
+    exDate: event.exDate,
+    payDate: event.payDate ?? "-",
+    dividendPerShare: event.amount,
+    currency: event.currency,
+    frequency: event.frequency,
+    dataStatus: event.dataStatus,
   };
 }
 

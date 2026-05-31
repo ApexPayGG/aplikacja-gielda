@@ -61,7 +61,8 @@ export const redisKeys = {
     minYield: number;
     limit: number;
     offset: number;
-  }) => `${KEY_PREFIX}:screener:dividend:growth:v2:${shortHash(JSON.stringify(filters))}`,
+    frequency?: string | null;
+  }) => `${KEY_PREFIX}:screener:dividend:growth:v3:${shortHash(JSON.stringify(filters))}`,
   analysisBrief: (symbol: string, langKey: string) =>
     `${KEY_PREFIX}:analysis:${symbol.trim().toUpperCase()}:${langKey}`,
   /** Single-flight lock while generating a shared company brief */

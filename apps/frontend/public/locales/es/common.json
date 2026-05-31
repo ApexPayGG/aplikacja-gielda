@@ -378,7 +378,12 @@
     "watch": "Vigilar",
     "years": "Años de Crecimiento",
     "yearsBack": "Años atrás",
-    "yield": "Rendimiento por Dividendo"
+    "yield": "Rendimiento por Dividendo",
+    "columnFrequency": "Frecuencia de pago",
+    "columnPayDate": "Fecha de pago",
+    "columnDataStatus": "Datos",
+    "frequencyFilter": "Frecuencia de pago",
+    "frequencyAll": "Todas"
   },
   "dividendcompound": {
     "axisYear": "Año",

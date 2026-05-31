@@ -1342,6 +1342,38 @@ export async function getCompanyDividendTickerHistory(
   return data;
 }
 
+export type DividendDataStatus = "confirmed" | "estimated" | "stale" | "missing";
+
+export interface DividendCalendarEvent {
+  symbol: string;
+  exDate: string;
+  payDate: string | null;
+  amount: number | null;
+  currency: string;
+  yield: number | null;
+  frequency: string | null;
+  source: string;
+  dataStatus: DividendDataStatus;
+}
+
+export interface DividendCalendarResponse {
+  events: DividendCalendarEvent[];
+  count: number;
+  from: string;
+  to: string;
+  disclaimer?: string;
+}
+
+export async function getDividendCalendar(params?: {
+  from?: string;
+  to?: string;
+  symbols?: string;
+  limit?: number;
+}): Promise<DividendCalendarResponse> {
+  const { data } = await api.get<DividendCalendarResponse>("/dividends/calendar", { params });
+  return data;
+}
+
 export interface DividendGrowthRow {
   symbol: string;
   latestYear: number;
@@ -1350,6 +1382,12 @@ export interface DividendGrowthRow {
   cagr5Y: number | null;
   cagr10Y: number | null;
   latestYield: number | null;
+  exDate?: string | null;
+  payDate?: string | null;
+  amount?: number | null;
+  currency?: string | null;
+  frequency?: string | null;
+  dataStatus?: DividendDataStatus;
 }
 
 export interface DividendGrowthScreenerResponse {
@@ -1370,9 +1408,10 @@ export async function getDividendGrowthScreener(
   minYield = 3,
   limit = 50,
   page = 1,
+  frequency?: string,
 ): Promise<DividendGrowthScreenerResponse> {
   const { data } = await api.get<DividendGrowthScreenerResponse>("/screeners/dividend/growth", {
-    params: { minYears, minYield, limit, page },
+    params: { minYears, minYield, limit, page, ...(frequency ? { frequency } : {}) },
   });
   return data;
 }

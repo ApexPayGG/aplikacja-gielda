@@ -378,7 +378,12 @@
     "watch": "관찰",
     "years": "성장 연수",
     "yearsBack": "과거 연수",
-    "yield": "배당 수익률"
+    "yield": "배당 수익률",
+    "columnFrequency": "배당 주기",
+    "columnPayDate": "지급일",
+    "columnDataStatus": "데이터",
+    "frequencyFilter": "배당 주기",
+    "frequencyAll": "전체"
   },
   "dividendcompound": {
     "axisYear": "연도",

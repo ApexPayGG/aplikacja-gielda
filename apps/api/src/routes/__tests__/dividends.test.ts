@@ -238,6 +238,49 @@ describe("dividends screener route", () => {
     assert.equal(typeof res.json.filters, "object");
   });
 
+  it("GET /api/dividends/calendar returns events in range", async () => {
+    const futureEx = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+    const futurePay = new Date(futureEx.getTime() + 10 * 24 * 60 * 60 * 1000);
+    (prisma.dividend.findMany as any) = async (args?: { where?: { exDate?: { gte: Date; lte: Date } } }) => {
+      if (args?.where?.exDate) {
+        return [
+          {
+            symbol: "AAA",
+            exDate: futureEx,
+            payDate: futurePay,
+            amount: 0.5,
+            currency: "USD",
+            yield: 4.1,
+            frequency: "quarterly",
+            source: "eodhd",
+            createdAt: new Date(),
+          },
+        ];
+      }
+      return [
+        { symbol: "AAA", yield: 6.1, frequency: "quarterly" },
+        { symbol: "BBB", yield: 2.2, frequency: "monthly" },
+        { symbol: "CCC", yield: 4.5, frequency: null },
+      ];
+    };
+
+    const from = new Date().toISOString().slice(0, 10);
+    const to = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const res = await get(`/api/dividends/calendar?from=${from}&to=${to}&limit=10`);
+    assert.equal(res.status, 200);
+    assert.ok(Array.isArray(res.json.events));
+    assert.equal(res.json.events[0].symbol, "AAA");
+    assert.ok(["confirmed", "estimated", "stale", "missing"].includes(res.json.events[0].dataStatus));
+  });
+
+  it("filters screener by frequency=quarterly", async () => {
+    const res = await get("/api/dividends/screener?frequency=quarterly");
+    assert.equal(res.status, 200);
+    for (const row of res.json.results) {
+      assert.equal(row.frequency, "quarterly");
+    }
+  });
+
   it("GET /api/dividends/AAPL returns full profile with history + score", async () => {
     const res = await get("/api/dividends/AAPL");
     assert.equal(res.status, 200);

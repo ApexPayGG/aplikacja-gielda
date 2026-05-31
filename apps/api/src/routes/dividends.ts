@@ -1,6 +1,13 @@
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import { prisma } from "../db/index";
+import {
+  getDividendCalendar,
+  normalizeFrequencyToken,
+  parseCalendarLimit,
+  parseCalendarSymbols,
+  parseIsoDateParam,
+} from "../services/dividendCalendarService";
 
 type TrendParam = "rising" | "stable" | "falling";
 type SortBy = "score" | "yield" | "growth";
@@ -16,6 +23,7 @@ interface ScreenerRow {
   sector: string | null;
   logo: string | null;
   market_cap: number | null;
+  frequency: string | null;
 }
 
 function parseNumberParam(value: unknown): number | null | undefined {
@@ -37,6 +45,11 @@ function parseSortBy(value: unknown): SortBy | null {
   if (v === "growth") return "growth";
   if (v === "score") return "score";
   return null;
+}
+
+function parseFrequencyFilter(value: unknown): string | undefined {
+  const normalized = normalizeFrequencyToken(String(value ?? ""));
+  return normalized ?? undefined;
 }
 
 function normalizeTrendFromDb(value: string | null | undefined): TrendParam | null {
@@ -134,6 +147,34 @@ async function calculateDividendHealthSafe(input: {
 export function createDividendsRouter(): Router {
   const router = Router();
 
+  router.get("/api/dividends/calendar", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const now = new Date();
+      const defaultFrom = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+      const defaultTo = new Date(defaultFrom);
+      defaultTo.setUTCMonth(defaultTo.getUTCMonth() + 3);
+
+      const from = parseIsoDateParam(req.query.from, defaultFrom);
+      const to = parseIsoDateParam(req.query.to, defaultTo);
+      if (from.getTime() > to.getTime()) {
+        res.status(400).json({ error: "Invalid date range: from must be on or before to" });
+        return;
+      }
+
+      const symbols = parseCalendarSymbols(req.query.symbols);
+      const limit = parseCalendarLimit(req.query.limit);
+
+      const payload = await getDividendCalendar({ from, to, symbols, limit });
+      res.json({
+        ...payload,
+        disclaimer:
+          "Educational and informational analysis only. Dividend event detected - review dividend quality and payout risk.",
+      });
+    } catch (e) {
+      next(e);
+    }
+  });
+
   router.get("/api/dividends/screener", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const dyMin = parseNumberParam(req.query.dy_min);
@@ -144,6 +185,12 @@ export function createDividendsRouter(): Router {
       const sector = String(req.query.sector ?? "").trim();
       const exchange = String(req.query.exchange ?? "").trim().toUpperCase();
       const sortBy = parseSortBy(req.query.sort_by);
+      const frequencyFilter = parseFrequencyFilter(req.query.frequency);
+
+      if (req.query.frequency !== undefined && !frequencyFilter) {
+        res.status(400).json({ error: "Invalid frequency filter" });
+        return;
+      }
 
       if (dyMin === null || dyMax === null || yearsMin === null || payoutMax === null) {
         res.status(400).json({ error: "Invalid number in query params" });
@@ -169,7 +216,7 @@ export function createDividendsRouter(): Router {
         }),
         prisma.dividend.findMany({
           orderBy: [{ symbol: "asc" }, { exDate: "desc" }],
-          select: { symbol: true, yield: true },
+          select: { symbol: true, yield: true, frequency: true },
         }),
         prisma.dividendHistory.findMany({
           orderBy: [{ symbol: "asc" }, { year: "asc" }],
@@ -191,9 +238,11 @@ export function createDividendsRouter(): Router {
         }
       }
       const byLatestYield = new Map<string, number | null>();
+      const byLatestFrequency = new Map<string, string | null>();
       for (const d of dividends) {
         if (!byLatestYield.has(d.symbol)) {
           byLatestYield.set(d.symbol, d.yield ?? null);
+          byLatestFrequency.set(d.symbol, d.frequency ?? null);
         }
       }
       const byYears = new Map<string, number[]>();
@@ -226,6 +275,7 @@ export function createDividendsRouter(): Router {
           sector: company.sector ?? null,
           logo: company.logoUrl ?? null,
           market_cap: null,
+          frequency: byLatestFrequency.get(ticker) ?? null,
         });
       }
 
@@ -237,6 +287,10 @@ export function createDividendsRouter(): Router {
         if (trend !== undefined && r.trend !== trend) return false;
         if (sector && r.sector !== sector) return false;
         if (exchange && r.exchange !== exchange) return false;
+        if (frequencyFilter) {
+          const rowFreq = normalizeFrequencyToken(r.frequency);
+          if (!rowFreq || rowFreq !== frequencyFilter) return false;
+        }
         return true;
       });
 
@@ -257,6 +311,7 @@ export function createDividendsRouter(): Router {
         logo: r.logo,
         market_cap: r.market_cap,
         score: r.score,
+        frequency: r.frequency,
       }));
 
       res.json({
@@ -271,6 +326,7 @@ export function createDividendsRouter(): Router {
           sector: sector || null,
           exchange: exchange || null,
           sort_by: sortBy,
+          frequency: frequencyFilter ?? null,
         },
       });
     } catch (e) {

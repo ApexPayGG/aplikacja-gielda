@@ -573,16 +573,19 @@ export function createApp(): express.Express {
     try {
       const minYears = Math.min(30, Math.max(1, parseInt(String(_req.query.minYears ?? "5"), 10) || 5));
       const minYield = Math.min(50, Math.max(0, parseFloat(String(_req.query.minYield ?? "3")) || 3));
-      const limit = Math.min(50, Math.max(1, parseInt(String(_req.query.limit ?? "50"), 10) || 50));
+      const limit = Math.min(200, Math.max(1, parseInt(String(_req.query.limit ?? "50"), 10) || 50));
       const page = Math.max(1, parseInt(String(_req.query.page ?? "1"), 10) || 1);
       const offset = (page - 1) * limit;
       const debug = isDividendGrowthScreenerDebugRequest(_req);
+      const frequencyRaw = String(_req.query.frequency ?? "").trim();
+      const frequency = frequencyRaw ? frequencyRaw : undefined;
 
       const result = await searchGrowthScreener({
         minYears,
         minYield,
         limit,
         offset,
+        frequency,
         includeDebug: debug,
       });
 
@@ -602,13 +605,19 @@ export function createApp(): express.Express {
         };
       }
 
-      const redisCacheKey = redisKeys.screenerDividendGrowth({ minYears, minYield, limit, offset });
+      const redisCacheKey = redisKeys.screenerDividendGrowth({
+        minYears,
+        minYield,
+        limit,
+        offset,
+        frequency: frequency ?? null,
+      });
       const screenerDebug = debug
         ? {
             ...(result.debug ?? {
               _warning: "searchGrowthScreener nie zwrócił debug (includeDebug)",
             }),
-            redisKeyPrefix: "cache:v1:screener:dividend:growth:v2",
+            redisKeyPrefix: "cache:v1:screener:dividend:growth:v3",
             redisCacheKey,
           }
         : undefined;

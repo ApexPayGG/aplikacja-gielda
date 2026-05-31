@@ -2,6 +2,11 @@ import type { Dividend, DividendHistory } from "@prisma/client";
 import { cacheJsonGet, cacheJsonSet } from "../cache/jsonCache";
 import { REDIS_TTL_SEC, redisKeys } from "../config/redis";
 import { prisma } from "../db/index";
+import {
+  normalizeFrequencyToken,
+  resolveDividendDataStatus,
+  type DividendDataStatus,
+} from "./dividendCalendarService";
 
 const PL_DIVIDEND_TAX_RATE = 0.19;
 
@@ -49,6 +54,7 @@ export interface GrowthScreenerFilters {
   minYield: number;
   limit: number;
   offset: number;
+  frequency?: string;
   /** Gdy true — zwróć `debug` z licznikami filtrów (endpoint `?debug=1`). */
   includeDebug?: boolean;
 }
@@ -73,6 +79,12 @@ export interface GrowthScreenerItem {
   cagr5Y: number | null;
   cagr10Y: number | null;
   latestYield: number | null;
+  exDate?: string | null;
+  payDate?: string | null;
+  amount?: number | null;
+  currency?: string | null;
+  frequency?: string | null;
+  dataStatus?: DividendDataStatus;
 }
 
 function computeYoYGrowth(rowsAsc: Array<{ totalAmount: number }>): number | null {
@@ -92,13 +104,51 @@ function computeCagr(rowsAsc: Array<{ totalAmount: number }>, requiredYears: num
   return (Math.pow(latest / base, 1 / periods) - 1) * 100;
 }
 
+async function loadLatestDividendBySymbol(symbols: string[]): Promise<Map<string, Dividend>> {
+  if (symbols.length === 0) return new Map();
+  const rows = await prisma.dividend.findMany({
+    where: { symbol: { in: symbols } },
+    orderBy: [{ symbol: "asc" }, { exDate: "desc" }],
+  });
+  const map = new Map<string, Dividend>();
+  for (const row of rows) {
+    if (!map.has(row.symbol)) map.set(row.symbol, row);
+  }
+  return map;
+}
+
+function enrichGrowthItem(base: GrowthScreenerItem, dividend: Dividend | undefined): GrowthScreenerItem {
+  if (!dividend?.exDate) {
+    return {
+      ...base,
+      frequency: dividend?.frequency ?? null,
+      dataStatus: "missing",
+    };
+  }
+  return {
+    ...base,
+    exDate: dividend.exDate.toISOString(),
+    payDate: dividend.payDate ? dividend.payDate.toISOString() : null,
+    amount: dividend.amount,
+    currency: dividend.currency ?? "USD",
+    frequency: dividend.frequency ?? null,
+    dataStatus: resolveDividendDataStatus(dividend),
+  };
+}
+
 export async function searchGrowthScreener(filters: GrowthScreenerFilters): Promise<{
   items: GrowthScreenerItem[];
   total: number;
   debug?: GrowthScreenerDebug;
 }> {
-  const { minYears, minYield, limit, offset, includeDebug } = filters;
-  const cacheKey = redisKeys.screenerDividendGrowth({ minYears, minYield, limit, offset });
+  const { minYears, minYield, limit, offset, frequency, includeDebug } = filters;
+  const cacheKey = redisKeys.screenerDividendGrowth({
+    minYears,
+    minYield,
+    limit,
+    offset,
+    frequency: frequency ?? null,
+  });
 
   if (!includeDebug) {
     const cached = await cacheJsonGet<{ items: GrowthScreenerItem[]; total: number }>(cacheKey);
@@ -177,9 +227,19 @@ export async function searchGrowthScreener(filters: GrowthScreenerFilters): Prom
     });
   }
 
-  candidates.sort((a, b) => (b.cagr5Y ?? -999) - (a.cagr5Y ?? -999));
-  const total = candidates.length;
-  const items = candidates.slice(offset, offset + limit);
+  const latestBySymbol = await loadLatestDividendBySymbol(candidates.map((c) => c.symbol));
+  const frequencyFilter = frequency ? normalizeFrequencyToken(frequency) : null;
+  const enriched = candidates
+    .map((item) => enrichGrowthItem(item, latestBySymbol.get(item.symbol)))
+    .filter((item) => {
+      if (!frequencyFilter) return true;
+      const rowFreq = normalizeFrequencyToken(item.frequency);
+      return rowFreq === frequencyFilter;
+    });
+
+  enriched.sort((a, b) => (b.cagr5Y ?? -999) - (a.cagr5Y ?? -999));
+  const total = enriched.length;
+  const items = enriched.slice(offset, offset + limit);
 
   const debug: GrowthScreenerDebug | undefined = includeDebug
     ? {
@@ -188,7 +248,7 @@ export async function searchGrowthScreener(filters: GrowthScreenerFilters): Prom
         excludedByMinYears,
         excludedByYieldBelowMin,
         symbolsWithUnknownYield,
-        candidatesBeforeSlice: candidates.length,
+        candidatesBeforeSlice: enriched.length,
       }
     : undefined;
 

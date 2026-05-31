@@ -19,8 +19,11 @@ import { colors } from "../../styles/designSystem";
 import { apiErrorMessage } from "../../utils/apiErrorMessage";
 import { formatDividendPerShareAmount } from "../../utils/dividendFormat";
 import { mapCompanyRow, parseDateValue, type DividendCompanyRow } from "./dividendHubShared";
+import { DividendDataStatusBadge, formatFrequencyLabel } from "./DividendDataStatusBadge";
 
-type SortKey = "symbol" | "name" | "yieldPct" | "healthScore" | "exDate" | "dividendPerShare";
+const FREQUENCY_FILTER_VALUES = ["", "quarterly", "monthly", "annual", "semi_annual"] as const;
+
+type SortKey = "symbol" | "name" | "yieldPct" | "healthScore" | "exDate" | "dividendPerShare" | "frequency";
 type SortDirection = "asc" | "desc";
 
 function formatPercent(value: number): string {
@@ -43,6 +46,7 @@ export function DividendHubScreener() {
   const [yieldMin, setYieldMin] = useState("");
   const [yieldMax, setYieldMax] = useState("");
   const [sector, setSector] = useState("all");
+  const [frequencyFilter, setFrequencyFilter] = useState<(typeof FREQUENCY_FILTER_VALUES)[number]>("");
   const [hoveredSymbol, setHoveredSymbol] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("yieldPct");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
@@ -51,7 +55,13 @@ export function DividendHubScreener() {
     setLoading(true);
     setError(null);
     try {
-      const response = await getDividendGrowthScreener(3, 0, 200, 1);
+      const response = await getDividendGrowthScreener(
+        3,
+        0,
+        200,
+        1,
+        frequencyFilter || undefined,
+      );
       setRows(response.data);
     } catch (err) {
       setRows([]);
@@ -59,7 +69,7 @@ export function DividendHubScreener() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [frequencyFilter]);
 
   useEffect(() => {
     void loadCompanies();
@@ -92,15 +102,19 @@ export function DividendHubScreener() {
       const leftValue =
         sortKey === "exDate"
           ? parseDateValue(left.exDate)
-          : sortKey === "symbol" || sortKey === "name"
-            ? left[sortKey].toLowerCase()
-            : left[sortKey] ?? 0;
+          : sortKey === "frequency"
+            ? (left.frequency ?? "").toLowerCase()
+            : sortKey === "symbol" || sortKey === "name"
+              ? left[sortKey].toLowerCase()
+              : left[sortKey] ?? 0;
       const rightValue =
         sortKey === "exDate"
           ? parseDateValue(right.exDate)
-          : sortKey === "symbol" || sortKey === "name"
-            ? right[sortKey].toLowerCase()
-            : right[sortKey] ?? 0;
+          : sortKey === "frequency"
+            ? (right.frequency ?? "").toLowerCase()
+            : sortKey === "symbol" || sortKey === "name"
+              ? right[sortKey].toLowerCase()
+              : right[sortKey] ?? 0;
 
       if (leftValue < rightValue) return -1 * directionFactor;
       if (leftValue > rightValue) return 1 * directionFactor;
@@ -133,7 +147,7 @@ export function DividendHubScreener() {
       </div>
 
       <section className={TERMINAL_DIVIDEND_PANEL}>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           <label className="text-sm">
             <span className={TERMINAL_FORM_LABEL}>{t("dividend.searchLabel", { defaultValue: "Search" })}</span>
             <input
@@ -176,6 +190,26 @@ export function DividendHubScreener() {
               {sectors.map((sectorName) => (
                 <option key={sectorName} value={sectorName}>
                   {sectorName}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="text-sm">
+            <span className={TERMINAL_FORM_LABEL}>
+              {t("dividend.frequencyFilter", { defaultValue: "Payout frequency" })}
+            </span>
+            <select
+              value={frequencyFilter}
+              onChange={(event) =>
+                setFrequencyFilter(event.target.value as (typeof FREQUENCY_FILTER_VALUES)[number])
+              }
+              className={`${TERMINAL_INPUT} mt-1`}
+            >
+              <option value="">{t("dividend.frequencyAll", { defaultValue: "All" })}</option>
+              {FREQUENCY_FILTER_VALUES.filter((v) => v).map((value) => (
+                <option key={value} value={value}>
+                  {formatFrequencyLabel(value, t)}
                 </option>
               ))}
             </select>
@@ -229,6 +263,7 @@ function ScreenerTable({
                   ["yieldPct", "dividend.columnYield", "Yield %"],
                   ["healthScore", "dividend.columnHealth", "Health Score"],
                   ["exDate", "dividend.columnExDate", "Ex-Date"],
+                  ["frequency", "dividend.columnFrequency", "Payout frequency"],
                   ["dividendPerShare", "dividend.columnDividendPerShare", "Dividend / share"],
                 ] as const
               ).map(([key, labelKey, fallback]) => (
@@ -243,26 +278,29 @@ function ScreenerTable({
                   </button>
                 </th>
               ))}
+              <th className="px-4 py-3 font-semibold text-terminal-textMuted">
+                {t("dividend.columnDataStatus", { defaultValue: "Data" })}
+              </th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td className="px-4 py-6 text-sm text-terminal-textMuted" colSpan={6}>
+                <td className="px-4 py-6 text-sm text-terminal-textMuted" colSpan={8}>
                   {t("common.loading", { defaultValue: "Loading..." })}
                 </td>
               </tr>
             ) : null}
             {error ? (
               <tr>
-                <td className={`px-4 py-6 text-sm ${TERMINAL_DANGER_TEXT}`} colSpan={6}>
+                <td className={`px-4 py-6 text-sm ${TERMINAL_DANGER_TEXT}`} colSpan={8}>
                   {error}
                 </td>
               </tr>
             ) : null}
             {!loading && !error && rows.length === 0 ? (
               <tr>
-                <td className="px-4 py-6 text-sm text-terminal-textMuted" colSpan={6}>
+                <td className="px-4 py-6 text-sm text-terminal-textMuted" colSpan={8}>
                   {t("dividend.noResults", { defaultValue: "No results for the selected filters." })}
                 </td>
               </tr>
@@ -316,9 +354,15 @@ function ScreenerTable({
                       </td>
                       <td className="px-4 py-3 font-mono text-xs text-terminal-textSecondary">{company.exDate}</td>
                       <td className="px-4 py-3 text-terminal-textSecondary">
+                        {formatFrequencyLabel(company.frequency, t)}
+                      </td>
+                      <td className="px-4 py-3 text-terminal-textSecondary">
                         {formatDividendPerShareAmount(company.dividendPerShare, company.symbol, {
                           currency: company.currency,
                         })}
+                      </td>
+                      <td className="px-4 py-3">
+                        <DividendDataStatusBadge status={company.dataStatus} />
                       </td>
                     </tr>
                   );

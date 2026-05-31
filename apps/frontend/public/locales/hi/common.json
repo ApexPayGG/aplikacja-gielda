@@ -378,7 +378,12 @@
     "watch": "निगरानी",
     "years": "ग्रोथ के वर्ष",
     "yearsBack": "पिछले वर्ष",
-    "yield": "डिविडेंड यील्ड"
+    "yield": "डिविडेंड यील्ड",
+    "columnFrequency": "भुगतान आवृत्ति",
+    "columnPayDate": "भुगतान तिथि",
+    "columnDataStatus": "डेटा",
+    "frequencyFilter": "भुगतान आवृत्ति",
+    "frequencyAll": "सभी"
   },
   "dividendcompound": {
     "axisYear": "वर्ष",
