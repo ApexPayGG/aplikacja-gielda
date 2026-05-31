@@ -15,7 +15,16 @@ import {
 } from "./TerminalTable";
 import {
   TERMINAL_EMPTY_STATE_PANEL,
+  TERMINAL_ACCENT_RAIL_AMBER,
+  TERMINAL_ACCENT_RAIL_CYAN,
+  TERMINAL_ACCENT_RAIL_LIME,
+  TERMINAL_COCKPIT_BAND,
+  TERMINAL_COMPACT_EMPTY,
+  TERMINAL_MODULE_PANEL,
   TERMINAL_OS_CONTENT,
+  TERMINAL_PANEL_ELEVATED_AMBER,
+  TERMINAL_PANEL_ELEVATED_CYAN,
+  TERMINAL_PANEL_ELEVATED_LIME,
   TERMINAL_OS_EYEBROW,
   TERMINAL_OS_PAGE_TITLE,
   TERMINAL_OS_PAGE_SUBTITLE,
@@ -59,6 +68,7 @@ type PageCommandHeaderProps = {
   actions?: ReactNode;
   status?: ReactNode;
   className?: string;
+  dense?: boolean;
 };
 
 /** Command-center page header — eyebrow, headline, subtitle, optional status rail. */
@@ -69,20 +79,28 @@ export function PageCommandHeader({
   actions,
   status,
   className,
+  dense = false,
 }: PageCommandHeaderProps) {
   return (
     <header
       className={cn(
-        "border-b border-terminal-border pb-4",
+        dense ? "border-b border-terminal-borderMuted/80 pb-2.5" : "border-b border-terminal-border pb-4",
         className,
       )}
     >
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+      <div
+        className={cn(
+          "flex flex-col lg:flex-row lg:items-start lg:justify-between",
+          dense ? "gap-2" : "gap-3",
+        )}
+      >
         <div className="min-w-0 flex-1">
-          {eyebrow ? <SectionEyebrow className="mb-2">{eyebrow}</SectionEyebrow> : null}
-          <h1 className={TERMINAL_OS_PAGE_TITLE}>{title}</h1>
-          {subtitle ? <p className={cn(TERMINAL_OS_PAGE_SUBTITLE, "mt-2")}>{subtitle}</p> : null}
-          {status ? <div className="mt-3">{status}</div> : null}
+          {eyebrow ? <SectionEyebrow className={dense ? "mb-1" : "mb-2"}>{eyebrow}</SectionEyebrow> : null}
+          <h1 className={cn(TERMINAL_OS_PAGE_TITLE, dense && "text-lg sm:text-xl md:text-2xl")}>{title}</h1>
+          {subtitle ? (
+            <p className={cn(TERMINAL_OS_PAGE_SUBTITLE, dense ? "mt-1" : "mt-2")}>{subtitle}</p>
+          ) : null}
+          {status ? <div className={dense ? "mt-1.5" : "mt-3"}>{status}</div> : null}
         </div>
         {actions ? (
           <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
@@ -100,6 +118,7 @@ type TerminalWorkspacePageProps = {
   status?: ReactNode;
   className?: string;
   contentClassName?: string;
+  dense?: boolean;
   children?: ReactNode;
 };
 
@@ -112,12 +131,13 @@ export function TerminalWorkspacePage({
   status,
   className,
   contentClassName,
+  dense = false,
   children,
 }: TerminalWorkspacePageProps) {
   const hasHeader = Boolean(eyebrow || title || subtitle || actions || status);
 
   return (
-    <div className={cn(TERMINAL_OS_CONTENT, className)}>
+    <div className={cn(TERMINAL_OS_CONTENT, dense && "py-3 sm:py-4", className)}>
       {hasHeader && title ? (
         <PageCommandHeader
           eyebrow={eyebrow}
@@ -125,13 +145,93 @@ export function TerminalWorkspacePage({
           subtitle={subtitle}
           actions={actions}
           status={status}
+          dense={dense}
         />
       ) : null}
       {children ? (
-        <div className={cn(hasHeader ? "mt-5 space-y-4" : "space-y-4", contentClassName)}>
+        <div
+          className={cn(
+            hasHeader ? (dense ? "mt-2" : "mt-5") : undefined,
+            dense ? "space-y-2" : "space-y-4",
+            contentClassName,
+          )}
+        >
           {children}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+export type AccentPanelVariant = "cyan" | "amber" | "lime" | "base";
+
+const ACCENT_PANEL_CLASS: Record<AccentPanelVariant, string> = {
+  cyan: TERMINAL_PANEL_ELEVATED_CYAN,
+  amber: TERMINAL_PANEL_ELEVATED_AMBER,
+  lime: TERMINAL_PANEL_ELEVATED_LIME,
+  base: TERMINAL_MODULE_PANEL,
+};
+
+const ACCENT_RAIL_CLASS: Record<AccentPanelVariant, string> = {
+  cyan: TERMINAL_ACCENT_RAIL_CYAN,
+  amber: TERMINAL_ACCENT_RAIL_AMBER,
+  lime: TERMINAL_ACCENT_RAIL_LIME,
+  base: "",
+};
+
+/** Command cockpit band — gradient header strip for KPI / setup modules. */
+export function CockpitBand({ className, children }: { className?: string; children: ReactNode }) {
+  return <div className={cn(TERMINAL_COCKPIT_BAND, "p-2.5 sm:p-3", className)}>{children}</div>;
+}
+
+export function AccentPanel({
+  variant = "base",
+  showRail = true,
+  className,
+  children,
+}: {
+  variant?: AccentPanelVariant;
+  showRail?: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        ACCENT_PANEL_CLASS[variant],
+        showRail && ACCENT_RAIL_CLASS[variant],
+        "pl-2.5 sm:pl-3",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Dense terminal empty state — less SaaS padding than EmptyStatePanel. */
+export function CompactEmptyState({
+  title,
+  message,
+  actions,
+  className,
+}: {
+  title?: ReactNode;
+  message: ReactNode;
+  actions?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn(TERMINAL_COMPACT_EMPTY, className)}>
+      {title ? (
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-textMuted">
+          {title}
+        </p>
+      ) : null}
+      <p className={cn("text-xs leading-snug text-terminal-textSecondary", title ? "mt-1.5" : undefined)}>
+        {message}
+      </p>
+      {actions ? <div className="mt-2.5 flex flex-wrap gap-2">{actions}</div> : null}
     </div>
   );
 }

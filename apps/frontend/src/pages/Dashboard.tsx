@@ -6,13 +6,19 @@ import { DailyCheckInWidget, type DailyCheckInWidgetState } from "../components/
 import { EventRiskRadarWidget } from "../components/EventRiskRadarWidget";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
 import {
-  EmptyStatePanel,
+  AccentPanel,
+  cn,
+  CockpitBand,
+  CompactEmptyState,
   MarketDelta,
   ModuleCTAButton,
   StatusPill,
+  TERMINAL_ACCENT_RAIL_AMBER,
+  TERMINAL_ACCENT_RAIL_CYAN,
+  TERMINAL_ACCENT_RAIL_LIME,
+  TERMINAL_MODULE_PANEL,
   TerminalBadge,
   TerminalButton,
-  TerminalCard,
   TerminalMetricCard,
   TerminalSection,
   TerminalTable,
@@ -220,11 +226,11 @@ export function Dashboard() {
 
   const watchlistSymbols = useMemo(() => watchlistRows.map((row) => row.symbol), [watchlistRows]);
 
-  const compactHero = (
-    <TerminalCard variant="default" className="border-terminal-border bg-terminal-panelSecondary/30 p-3">
+  const hubSetupPanel = (
+    <div className="border-t border-terminal-cyan/15 pt-2.5">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
             {t("dashboard.hero.eyebrow", { defaultValue: "Your StockAI hub" })}
           </p>
           <h2 className="mt-0.5 text-sm font-bold text-terminal-text">
@@ -255,8 +261,8 @@ export function Dashboard() {
           </Link>
         </div>
       </div>
-      <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-terminal-borderMuted pt-2">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-terminal-textMuted">
+      <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-terminal-borderMuted/70 pt-2">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-terminal-textMuted">
           {t("dashboard.hero.popularLabel", { defaultValue: "Popular to start" })}
         </p>
         {SUGGESTED_TICKERS.map((symbol) => (
@@ -267,51 +273,88 @@ export function Dashboard() {
           </Link>
         ))}
       </div>
-    </TerminalCard>
+    </div>
   );
 
-  const kpiRow = (
-    <div className="grid grid-cols-2 gap-2 xl:grid-cols-4">
-      <TerminalMetricCard
-        className="p-2.5 sm:p-3"
-        label={t("dashboard.statWatchlist", { defaultValue: "Watchlist companies" })}
-        value={hasWatchlistMetrics ? String(quickStats.watchlistCount) : noDataLabel}
-        hint={
-          hasWatchlistMetrics
-            ? t("dashboard.kpi.watchlistHint", { defaultValue: "Symbols tracked today" })
-            : t("dashboard.kpi.watchlistEmpty", { defaultValue: "Add your first ticker" })
-        }
-      />
-      <TerminalMetricCard
-        className="p-2.5 sm:p-3"
-        label={t("dashboard.statSignals", { defaultValue: "Active signals" })}
-        value={hasWatchlistMetrics ? String(quickStats.signalCount) : noDataLabel}
-        hint={t("dashboard.kpi.signalsHint", {
-          defaultValue: "Watchlist moves at or above ±2%",
+  const watchlistOperationalStrip = (
+    <div className="flex flex-wrap items-center justify-between gap-2 border-t border-terminal-positive/20 pt-2.5">
+      <div className="flex items-center gap-2">
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-terminal-positive shadow-[0_0_6px_rgba(74,222,128,0.55)]" />
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-terminal-positive">
+          {t("dashboard.hub.operational", { defaultValue: "Watchlist operational" })}
+        </p>
+      </div>
+      <TerminalBadge variant="default">
+        {t("dashboard.watchlistCount", {
+          count: quickStats.watchlistCount,
+          defaultValue: "{{count}} companies",
         })}
-      />
+      </TerminalBadge>
+    </div>
+  );
+
+  const kpiTile = (
+    rail: string,
+    label: string,
+    value: string,
+    hint: string,
+    valueClassName?: string,
+  ) => (
+    <div className={cn(TERMINAL_MODULE_PANEL, rail, "overflow-hidden")}>
       <TerminalMetricCard
-        className="p-2.5 sm:p-3"
-        label={t("dashboard.kpi.eventRisk", { defaultValue: "Event risk" })}
-        value={eventRiskKpi.value}
-        hint={eventRiskKpi.hint}
-      />
-      <TerminalMetricCard
-        className="p-2.5 sm:p-3"
-        label={t("dashboard.kpi.psyche", { defaultValue: "Psyche / risk state" })}
-        value={psycheKpi.value}
-        hint={psycheKpi.hint}
+        className="border-0 bg-transparent p-2 shadow-none sm:p-2.5"
+        label={label}
+        value={value}
+        hint={hint}
+        valueClassName={valueClassName}
       />
     </div>
   );
 
+  const kpiRow = (
+    <div className="grid grid-cols-2 gap-1.5 xl:grid-cols-4">
+      {kpiTile(
+        TERMINAL_ACCENT_RAIL_CYAN,
+        t("dashboard.statWatchlist", { defaultValue: "Watchlist companies" }),
+        hasWatchlistMetrics ? String(quickStats.watchlistCount) : noDataLabel,
+        hasWatchlistMetrics
+          ? t("dashboard.kpi.watchlistHint", { defaultValue: "Symbols tracked today" })
+          : t("dashboard.kpi.watchlistEmpty", { defaultValue: "Add your first ticker" }),
+        hasWatchlistMetrics ? "text-terminal-cyan" : undefined,
+      )}
+      {kpiTile(
+        TERMINAL_ACCENT_RAIL_LIME,
+        t("dashboard.statSignals", { defaultValue: "Active signals" }),
+        hasWatchlistMetrics ? String(quickStats.signalCount) : noDataLabel,
+        t("dashboard.kpi.signalsHint", {
+          defaultValue: "Watchlist moves at or above ±2%",
+        }),
+        hasWatchlistMetrics && quickStats.signalCount > 0 ? "text-terminal-positive" : undefined,
+      )}
+      {kpiTile(
+        TERMINAL_ACCENT_RAIL_AMBER,
+        t("dashboard.kpi.eventRisk", { defaultValue: "Event risk" }),
+        eventRiskKpi.value,
+        eventRiskKpi.hint,
+        hasWatchlistMetrics ? "text-amber-300/90" : undefined,
+      )}
+      {kpiTile(
+        TERMINAL_ACCENT_RAIL_CYAN,
+        t("dashboard.kpi.psyche", { defaultValue: "Psyche / risk state" }),
+        psycheKpi.value,
+        psycheKpi.hint,
+        checkInState.hasCheckedIn ? "text-terminal-positive" : undefined,
+      )}
+    </div>
+  );
+
   const riskStateCard = (
-    <TerminalCard variant="default" className="p-3">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-textMuted">
+    <AccentPanel variant="amber" className="p-2.5 sm:p-3">
+      <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-300/80">
         {t("dashboard.rail.riskState", { defaultValue: "Today's risk state" })}
       </p>
       {checkInState.hasCheckedIn && checkInState.riskLevel ? (
-        <div className="mt-2 space-y-1.5">
+        <div className="mt-1.5 space-y-1">
           <TerminalBadge
             variant={
               checkInState.riskLevel === "HIGH"
@@ -333,17 +376,18 @@ export function Dashboard() {
           ) : null}
         </div>
       ) : (
-        <p className="mt-1.5 text-[11px] leading-snug text-terminal-textSecondary">
+        <p className="mt-1 text-[11px] leading-snug text-terminal-textSecondary">
           {t("dashboard.rail.riskPending", {
             defaultValue: "Complete your daily check-in to log today's risk mindset.",
           })}
         </p>
       )}
-    </TerminalCard>
+    </AccentPanel>
   );
 
   return (
     <TerminalWorkspacePage
+      dense
       eyebrow={t("dashboard.eyebrow", { defaultValue: "Command center" })}
       title={
         firstName
@@ -361,48 +405,44 @@ export function Dashboard() {
           </Link>
         ) : null
       }
-      contentClassName="space-y-3"
+      contentClassName="space-y-2"
+      className="pb-2"
     >
-        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="min-w-0 space-y-2.5">{kpiRow}</div>
+      <div className="grid items-start gap-2 lg:grid-cols-[minmax(0,1fr)_292px] lg:gap-2.5 xl:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="min-w-0 space-y-2">
+          <CockpitBand>
+            {kpiRow}
+            {isEmptyDashboard ? hubSetupPanel : watchlistOperationalStrip}
+          </CockpitBand>
 
-          <aside className="space-y-2.5 lg:sticky lg:top-16 lg:self-start">
-            <DailyCheckInWidget compact appearance="terminal" onStateChange={setCheckInState} />
-            {riskStateCard}
-          </aside>
-        </div>
-
-        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="min-w-0 space-y-3">
-            {isEmptyDashboard ? compactHero : null}
-
-            <TerminalSection
-              className="p-3 sm:p-4"
-              title={t("dashboard.watchlistTitle", { defaultValue: "Watchlist" })}
-              actions={
-                <TerminalBadge variant="default">
-                  {t("dashboard.watchlistCount", {
-                    count: quickStats.watchlistCount,
-                    defaultValue: "{{count}} companies",
-                  })}
-                </TerminalBadge>
-              }
-              contentClassName="space-y-0"
-            >
+          <TerminalSection
+            className={cn(TERMINAL_MODULE_PANEL, TERMINAL_ACCENT_RAIL_CYAN, "p-2.5 sm:p-3")}
+            title={t("dashboard.watchlistTitle", { defaultValue: "Watchlist" })}
+            actions={
+              <TerminalBadge variant="default">
+                {t("dashboard.watchlistCount", {
+                  count: quickStats.watchlistCount,
+                  defaultValue: "{{count}} companies",
+                })}
+              </TerminalBadge>
+            }
+            contentClassName="space-y-0"
+          >
               {watchlistLoading ? (
-                <p className="rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/50 px-4 py-3 text-sm text-terminal-textSecondary">
+                <p className="rounded-md border border-terminal-borderMuted/80 bg-terminal-bgAlt/50 px-3 py-2 text-xs text-terminal-textSecondary">
                   {t("common.loading", { defaultValue: "Loading..." })}
                 </p>
               ) : null}
 
               {watchlistError ? (
-                <p className="rounded-lg border border-terminal-negative/30 bg-terminal-negative/10 px-4 py-3 text-sm text-terminal-negative">
+                <p className="rounded-md border border-terminal-negative/30 bg-terminal-negative/10 px-3 py-2 text-xs text-terminal-negative">
                   {watchlistError}
                 </p>
               ) : null}
 
               {!watchlistLoading && !watchlistError && watchlistRows.length === 0 ? (
-                <EmptyStatePanel
+                <CompactEmptyState
+                  title={t("dashboard.watchlistEmptyLabel", { defaultValue: "No symbols" })}
                   message={t("watchlist.empty", {
                     defaultValue: "You are not observing any companies yet.",
                   })}
@@ -468,24 +508,26 @@ export function Dashboard() {
               ) : null}
             </TerminalSection>
 
+          <div className={cn(TERMINAL_MODULE_PANEL, TERMINAL_ACCENT_RAIL_AMBER, "overflow-hidden")}>
             <EventRiskRadarWidget watchlistSymbols={watchlistSymbols} />
+          </div>
 
-            <TerminalSection
-              className="p-3 sm:p-4"
-              title={t("dashboard.signalsTitle", { defaultValue: "Recent signals" })}
-              subtitle={t("dashboard.emptySignalsHint", {
-                defaultValue: "Signals appear when your watchlist moves ±2% intraday.",
-              })}
-              contentClassName="space-y-0"
-            >
+          <TerminalSection
+            className={cn(TERMINAL_MODULE_PANEL, TERMINAL_ACCENT_RAIL_LIME, "p-2.5 sm:p-3")}
+            title={t("dashboard.signalsTitle", { defaultValue: "Recent signals" })}
+            subtitle={t("dashboard.emptySignalsHint", {
+              defaultValue: "Signals appear when your watchlist moves ±2% intraday.",
+            })}
+            contentClassName="space-y-0"
+          >
               {watchlistLoading ? (
-                <p className="rounded-lg border border-terminal-borderMuted bg-terminal-panelSecondary/50 px-4 py-3 text-sm text-terminal-textSecondary">
+                <p className="rounded-md border border-terminal-borderMuted/80 bg-terminal-bgAlt/50 px-3 py-2 text-xs text-terminal-textSecondary">
                   {t("common.loading", { defaultValue: "Loading..." })}
                 </p>
               ) : null}
 
               {!watchlistLoading && !watchlistError && latestSignals.length === 0 ? (
-                <EmptyStatePanel
+                <CompactEmptyState
                   title={t("dashboard.signalsWaiting", {
                     defaultValue: "No signals — the market is waiting for a setup",
                   })}
@@ -564,28 +606,36 @@ export function Dashboard() {
                 </TerminalTable>
               ) : null}
             </TerminalSection>
-          </div>
-
-          <aside className="space-y-2.5 lg:sticky lg:top-16 lg:self-start">
-            {checkInState.aiMessage ? (
-              <TerminalCard variant="default" className="p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
-                  {t("dashboard.rail.aiBrief", { defaultValue: "AI market brief" })}
-                </p>
-                <p className="mt-1.5 text-[11px] leading-relaxed text-terminal-textSecondary">
-                  {checkInState.aiMessage}
-                </p>
-                <Link to="/behavioral-coach" className="mt-2 inline-block">
-                  <TerminalButton variant="ghost" size="sm">
-                    {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
-                  </TerminalButton>
-                </Link>
-              </TerminalCard>
-            ) : null}
-          </aside>
         </div>
 
-      <InvestmentDisclaimer variant="drawer" className="mt-4" collapsible />
+        <aside className="space-y-2 lg:sticky lg:top-14 lg:max-h-[calc(100vh-3.5rem)] lg:self-start lg:overflow-y-auto">
+          <AccentPanel variant="cyan" className="p-2 sm:p-2.5">
+            <DailyCheckInWidget compact appearance="terminal" onStateChange={setCheckInState} />
+          </AccentPanel>
+          {riskStateCard}
+          {checkInState.aiMessage ? (
+            <AccentPanel variant="cyan" className="p-2.5 sm:p-3">
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-cyan">
+                {t("dashboard.rail.aiBrief", { defaultValue: "AI market brief" })}
+              </p>
+              <p className="mt-1 text-[11px] leading-relaxed text-terminal-textSecondary">
+                {checkInState.aiMessage}
+              </p>
+              <Link to="/behavioral-coach" className="mt-1.5 inline-block">
+                <TerminalButton variant="ghost" size="sm">
+                  {t("checkin.done.coachCta", { defaultValue: "Behavioral Coach" })}
+                </TerminalButton>
+              </Link>
+            </AccentPanel>
+          ) : null}
+        </aside>
+      </div>
+
+      <InvestmentDisclaimer
+        variant="drawer"
+        className="mt-2 border-terminal-borderMuted/40 bg-transparent opacity-75"
+        collapsible
+      />
     </TerminalWorkspacePage>
   );
 }

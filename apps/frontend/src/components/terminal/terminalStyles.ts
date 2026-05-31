@@ -33,6 +33,29 @@ export const TERMINAL_OS_TAB_ACTIVE =
 export const TERMINAL_EMPTY_STATE_PANEL =
   "rounded-lg border border-dashed border-terminal-borderMuted bg-terminal-panelSecondary/50 px-5 py-8 text-center";
 
+/** Dashboard / command cockpit — semantic depth surfaces */
+export const TERMINAL_COCKPIT_BAND =
+  "rounded-lg border border-terminal-cyan/20 bg-gradient-to-br from-[#071426] via-[#081b2d] to-[#050914] shadow-terminal-panel";
+
+export const TERMINAL_ACCENT_RAIL_CYAN = "border-l-2 border-l-terminal-cyan/70";
+export const TERMINAL_ACCENT_RAIL_AMBER = "border-l-2 border-l-amber-400/75";
+export const TERMINAL_ACCENT_RAIL_LIME = "border-l-2 border-l-terminal-positive/75";
+
+export const TERMINAL_PANEL_ELEVATED_CYAN =
+  "rounded-lg border border-terminal-cyan/25 bg-gradient-to-br from-[#071426]/95 via-[#0a1a2e] to-[#050914] shadow-[0_0_20px_rgba(34,211,238,0.07)]";
+
+export const TERMINAL_PANEL_ELEVATED_AMBER =
+  "rounded-lg border border-amber-400/25 bg-gradient-to-br from-[#141008]/55 via-[#0c1828] to-[#050914]";
+
+export const TERMINAL_PANEL_ELEVATED_LIME =
+  "rounded-lg border border-terminal-positive/25 bg-gradient-to-br from-[#0a1f14]/45 via-[#081b2d] to-[#050914]";
+
+export const TERMINAL_MODULE_PANEL =
+  "rounded-lg border border-terminal-border bg-terminal-panel shadow-terminal-panel";
+
+export const TERMINAL_COMPACT_EMPTY =
+  "rounded-md border border-dashed border-terminal-borderMuted/70 bg-terminal-bgAlt/50 px-3 py-3.5 text-left";
+
 export const TERMINAL_PAGE_SHELL = "mx-auto w-full max-w-[90rem] px-3 sm:px-4";
 
 export const TERMINAL_PANEL =

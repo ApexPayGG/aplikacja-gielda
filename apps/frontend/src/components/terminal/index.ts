@@ -43,5 +43,9 @@ export {
   EmptyStatePanel,
   ModuleCTAButton,
   SectionEyebrow,
+  CockpitBand,
+  AccentPanel,
+  CompactEmptyState,
+  type AccentPanelVariant,
   type TerminalTabItem,
 } from "./TerminalWorkspace";
