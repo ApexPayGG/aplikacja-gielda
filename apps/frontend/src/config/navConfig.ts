@@ -61,6 +61,12 @@ export function isTerminalNavActive(pathname: string, item: TerminalNavItem): bo
     if (pathname === "/dividend-compound") return false;
     return pathname === "/dividend" || pathname.startsWith("/dividend/");
   }
+  if (item.id === "companies") {
+    return pathname === "/companies" || pathname.startsWith("/companies/");
+  }
+  if (item.id === "stock-analysis") {
+    return pathname === "/company" || pathname.startsWith("/company/");
+  }
   return item.matchPaths.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
@@ -82,7 +88,7 @@ export const TERMINAL_MAIN_NAV: TerminalNavItem[] = [
     to: "/companies",
     enabled: true,
     icon: ChartBarSquareIcon,
-    matchPaths: ["/companies", "/company"],
+    matchPaths: ["/companies"],
   },
   {
     id: "stock-analysis",

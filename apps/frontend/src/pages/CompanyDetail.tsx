@@ -11,7 +11,22 @@ import { EtoroCTAButton } from "../components/EtoroCTAButton";
 import { SEOHead } from "../components/SEOHead";
 import { CompanyLogo } from "../components/CompanyLogo";
 import { WatchlistButton } from "../components/WatchlistButton";
-import { colors } from "../styles/designSystem";
+import {
+  AccentPanel,
+  cn,
+  CockpitBand,
+  MarketDelta,
+  ModuleCTAButton,
+  TERMINAL_ACCENT_RAIL_AMBER,
+  TERMINAL_ACCENT_RAIL_CYAN,
+  TERMINAL_ACCENT_RAIL_LIME,
+  TERMINAL_MODULE_PANEL,
+  TerminalBadge,
+  TerminalButton,
+  TerminalPanel,
+  TerminalTabs,
+  TerminalWorkspacePage,
+} from "../components/terminal";
 import { getCompanyBrief, getCompanyDetail, getNews, getQuoteHistory } from "../services/api";
 import type { AnalysisResponse, Company, NewsRow, QuoteRow } from "../services/api";
 import { apiErrorMessage } from "../utils/apiErrorMessage";
@@ -65,6 +80,57 @@ function parseNumber(value: string | null): number | null {
   if (!value) return null;
   const parsed = Number(value.replace(/,/g, "."));
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseDescriptionMeta(
+  description: string,
+  locale: string,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): { chips: Array<{ id: string; label: string; value: string }>; narrative: string | null } {
+  const labelMap: Record<string, string> = {
+    Market: t("company.meta.market", { defaultValue: "Market" }),
+    Exchange: t("company.meta.exchange", { defaultValue: "Exchange" }),
+    Country: t("company.meta.country", { defaultValue: "Country" }),
+    Currency: t("company.meta.currency", { defaultValue: "Currency" }),
+    MarketCap: t("company.meta.marketCap", { defaultValue: "Market cap" }),
+    Sector: t("company.meta.sector", { defaultValue: "Sector" }),
+    Industry: t("company.meta.industry", { defaultValue: "Industry" }),
+  };
+  const skipInChips = new Set(["pe", "p/e", "peratio"]);
+  const chips: Array<{ id: string; label: string; value: string }> = [];
+  const narrativeParts: string[] = [];
+
+  for (const segment of description.split(";").map((s) => s.trim()).filter(Boolean)) {
+    const eq = segment.indexOf("=");
+    if (eq === -1) {
+      narrativeParts.push(segment);
+      continue;
+    }
+    const key = segment.slice(0, eq).trim();
+    const rawValue = segment.slice(eq + 1).trim();
+    if (skipInChips.has(key.toLowerCase())) continue;
+    if (key.toLowerCase() === "marketcap") {
+      const parsed = parseNumber(rawValue);
+      const currency = extractMetric(description, ["Currency"])?.toUpperCase() ?? "USD";
+      chips.push({
+        id: key,
+        label: labelMap.MarketCap,
+        value: parsed ? formatMarketCap(parsed, currency, locale) : rawValue,
+      });
+      continue;
+    }
+    chips.push({
+      id: key,
+      label: labelMap[key] ?? key,
+      value: rawValue,
+    });
+  }
+
+  const narrative = narrativeParts.join(" ").trim();
+  return {
+    chips,
+    narrative: narrative ? formatCompanyDescription(narrative, locale) : null,
+  };
 }
 
 function toEtoroMarket(exchangeRaw?: string | null): "US" | "EU" | null {
@@ -183,6 +249,14 @@ export function CompanyDetail() {
     );
   }, [news, sym, company?.sector, company?.industry, t]);
 
+  const descriptionMeta = useMemo(() => {
+    if (!company?.description) return { chips: [] as Array<{ id: string; label: string; value: string }>, narrative: null as string | null };
+    return parseDescriptionMeta(company.description, currentLang, t);
+  }, [company?.description, currentLang, t]);
+
+  const panelTitleClass =
+    "font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-terminal-textMuted";
+
   useEffect(() => {
     if (!sym) return;
     let cancelled = false;
@@ -248,7 +322,7 @@ export function CompanyDetail() {
     return (
       <>
         <SEOHead title={seoTitle} description={seoDescription} structuredData={seoStructuredData} />
-        <div className="mx-auto max-w-4xl px-4 py-20 text-center text-slate-500">
+        <div className="mx-auto max-w-[90rem] px-4 py-16 text-center text-sm text-terminal-textMuted">
           {t("company.loading", { defaultValue: "Loading company..." })}
         </div>
       </>
@@ -259,9 +333,9 @@ export function CompanyDetail() {
     return (
       <>
         <SEOHead title={seoTitle} description={seoDescription} structuredData={seoStructuredData} />
-        <div className="mx-auto max-w-4xl px-4 py-20">
-          <p className="text-red-300">{error ?? t("company.notFound", { defaultValue: "Company not found" })}</p>
-          <Link to="/companies" className="mt-4 inline-block hover:underline" style={{ color: colors.brandMedium }}>
+        <div className="mx-auto max-w-[90rem] px-4 py-16">
+          <p className="text-sm text-terminal-negative">{error ?? t("company.notFound", { defaultValue: "Company not found" })}</p>
+          <Link to="/companies" className="mt-3 inline-block text-sm text-terminal-cyan hover:underline">
             {t("company.backToCompanies", { defaultValue: "← Companies" })}
           </Link>
         </div>
@@ -269,39 +343,52 @@ export function CompanyDetail() {
     );
   }
 
-  return (
-    <div className="min-h-screen">
-      <SEOHead title={seoTitle} description={seoDescription} structuredData={seoStructuredData} />
-      <div className="mx-auto max-w-[1280px] px-4 py-6 lg:px-6">
-        <Link to="/companies" className="mb-4 inline-block text-sm hover:underline" style={{ color: colors.brandMedium }}>
-          {t("company.backToCompanies", { defaultValue: "← Companies" })}
-        </Link>
+  const ohlcItems = [
+    { label: "Open", value: formatPrice(latestQuote ? Number(latestQuote.open) : null, currentLang) },
+    { label: "High", value: formatPrice(latestQuote ? Number(latestQuote.high) : null, currentLang) },
+    { label: "Low", value: formatPrice(latestQuote ? Number(latestQuote.low) : null, currentLang) },
+    { label: "Close", value: formatPrice(latestQuote ? Number(latestQuote.close) : null, currentLang) },
+    { label: "Volume", value: formatVolume(latestQuote ? Number(latestQuote.volume) : null, currentLang) },
+  ];
 
-        <section
-          className="rounded-2xl border p-4 shadow-sm lg:p-5"
-          style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-        >
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 items-start gap-4">
+  return (
+    <>
+      <SEOHead title={seoTitle} description={seoDescription} structuredData={seoStructuredData} />
+      <TerminalWorkspacePage
+        dense
+        className="pb-3"
+        contentClassName="space-y-2"
+        eyebrow={t("company.eyebrow", { defaultValue: "Stock analysis" })}
+        title={company.name}
+        subtitle={
+          <span className="font-mono text-terminal-cyan">{company.symbol}</span>
+        }
+        actions={
+          <Link to="/companies">
+            <TerminalButton variant="ghost" size="sm">
+              {t("company.backToCompanies", { defaultValue: "← Companies" })}
+            </TerminalButton>
+          </Link>
+        }
+      >
+        <CockpitBand>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex min-w-0 flex-1 items-start gap-3">
               <CompanyLogo symbol={company.symbol} logoUrl={company.logoUrl} size="lg" shape="rounded" />
-              <div className="min-w-0">
-                <h1 className="truncate text-2xl font-semibold lg:text-3xl" style={{ color: colors.textPrimary }}>
-                  {company.name}
-                </h1>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <span
-                    className="rounded-md px-2 py-1 text-xs font-semibold"
-                    style={{ backgroundColor: colors.bgTertiary, color: colors.textSecondary }}
-                  >
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <TerminalBadge variant="ai" className="font-mono">
                     {company.symbol}
-                  </span>
+                  </TerminalBadge>
                   {company.exchange ? (
-                    <span
-                      className="rounded-md px-2 py-1 text-xs font-semibold uppercase"
-                      style={{ backgroundColor: "#eef2ff", color: colors.brandDark }}
-                    >
+                    <TerminalBadge variant="default" className="uppercase">
                       {company.exchange}
-                    </span>
+                    </TerminalBadge>
+                  ) : null}
+                  {etoroMarket ? (
+                    <TerminalBadge variant="default" className="uppercase text-amber-300/90">
+                      {etoroMarket}
+                    </TerminalBadge>
                   ) : null}
                   <WatchlistButton symbol={company.symbol} />
                 </div>
@@ -310,220 +397,172 @@ export function CompanyDetail() {
                     href={company.webUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-xs hover:underline"
-                    style={{ color: colors.brandMedium }}
+                    className="mt-1.5 inline-flex max-w-full items-center gap-1 truncate text-[11px] text-terminal-cyan hover:underline"
                   >
-                    {company.webUrl}
-                    <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
+                    <span className="truncate">{company.webUrl}</span>
+                    <ArrowTopRightOnSquareIcon className="h-3 w-3 shrink-0" />
                   </a>
                 ) : null}
               </div>
             </div>
-            <div className="w-full max-w-sm lg:text-right">
-              <p className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: colors.textMuted }}>
-                {t("company.lastClose", { defaultValue: "Last close" })}
-              </p>
-              <div className="mt-1 flex flex-wrap items-center gap-2 lg:justify-end">
-                <span className="font-mono text-4xl font-semibold" style={{ color: colors.brandDark }}>
-                  {formatPrice(latestClose, currentLang)}
-                </span>
-                <span
-                  className="rounded-md px-2 py-1 text-xs font-semibold"
-                  style={{
-                    backgroundColor:
-                      changePct == null ? colors.bgTertiary : (changePct ?? 0) >= 0 ? "rgba(0, 168, 107, 0.14)" : "rgba(229, 57, 53, 0.14)",
-                    color: changePct == null ? colors.textSecondary : (changePct ?? 0) >= 0 ? colors.positive : colors.negative,
-                  }}
-                >
-                  {formatSignedPercent(changePct, currentLang)}
-                </span>
+
+            <div className="flex w-full shrink-0 flex-col gap-2 sm:max-w-xs lg:items-end lg:text-right">
+              <div>
+                <p className={panelTitleClass}>{t("company.lastClose", { defaultValue: "Last close" })}</p>
+                <div className="mt-0.5 flex flex-wrap items-baseline gap-2 lg:justify-end">
+                  <span className="font-mono text-2xl font-bold tabular-nums text-terminal-text sm:text-3xl">
+                    {formatPrice(latestClose, currentLang)}
+                  </span>
+                  {changePct != null && Number.isFinite(changePct) ? (
+                    <MarketDelta value={changePct} />
+                  ) : (
+                    <span className="text-xs text-terminal-textMuted">{formatSignedPercent(changePct, currentLang)}</span>
+                  )}
+                </div>
               </div>
-              {etoroMarket ? (
-                <EtoroCTAButton sourcePage="company_detail" ticker={sym} className="mt-3" />
-              ) : null}
-              <Link
-                to={premiumHref}
-                className="mt-2 inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white lg:w-auto"
-                style={{
-                  backgroundImage: `linear-gradient(90deg, ${colors.brandDark} 0%, ${colors.brandMedium} 100%)`,
-                }}
-              >
-                {t("company.premiumAnalysis", { defaultValue: "Premium Analysis" })}
-              </Link>
+              <div className="flex flex-wrap gap-2 lg:justify-end">
+                <Link to={premiumHref}>
+                  <ModuleCTAButton variant="primary" size="sm">
+                    {t("company.premiumAnalysis", { defaultValue: "Premium Analysis" })}
+                  </ModuleCTAButton>
+                </Link>
+              </div>
             </div>
           </div>
-        </section>
 
-        <div className="mt-4 border-b" style={{ borderColor: colors.border }}>
-          <nav
-            role="tablist"
-            aria-label={t("company.tabsLabel", { defaultValue: "Company sections" })}
-            className="-mb-px flex flex-wrap gap-2"
-          >
-            {tabs.map((tab) => {
-              const isActive = tab.id === activeTab;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => setActiveTab(tab.id)}
-                  className="rounded-t-lg border px-4 py-2 text-sm font-semibold transition"
-                  style={{
-                    borderColor: colors.border,
-                    backgroundColor: isActive ? colors.bgSecondary : colors.bgPrimary,
-                    color: isActive ? colors.brandDark : colors.textSecondary,
-                  }}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
+          {etoroMarket ? (
+            <AccentPanel variant="amber" showRail className="mt-2.5 p-2 sm:p-2.5">
+              <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-amber-300/75">
+                {t("company.partnerRail", { defaultValue: "Partner / compliance" })}
+              </p>
+              <EtoroCTAButton
+                sourcePage="company_detail"
+                ticker={sym}
+                className="mt-1.5 [&_button]:!w-auto [&_button]:!py-1.5 [&_button]:!text-xs [&_div.rounded-lg]:!border-amber-400/20 [&_div.rounded-lg]:!bg-terminal-panelSecondary/60 [&_div.rounded-lg]:!p-2 [&_div.rounded-lg]:!text-[11px]"
+              />
+            </AccentPanel>
+          ) : null}
+        </CockpitBand>
 
-        <div className="mt-4">
+        <TerminalTabs
+          tabs={tabs}
+          activeId={activeTab}
+          onChange={setActiveTab}
+          ariaLabel={t("company.tabsLabel", { defaultValue: "Company sections" })}
+        />
+
+        <div className="space-y-2">
           {activeTab === "overview" ? (
-            <section className="grid gap-4 xl:grid-cols-[1.45fr_1fr]">
-              <div className="space-y-4">
-                <article
-                  className="rounded-xl border p-4"
-                  style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-                >
-                  <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-                    {t("company.priceChart", { defaultValue: "Price chart" })}
-                  </h2>
-                  <div className="mt-3">
+            <section className="grid gap-2 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+              <div className="space-y-2">
+                <TerminalPanel className={cn(TERMINAL_ACCENT_RAIL_CYAN, "p-2.5 sm:p-3")}>
+                  <h2 className={panelTitleClass}>{t("company.priceChart", { defaultValue: "Price chart" })}</h2>
+                  <div className="mt-2">
                     <CompanyPriceChart quotes={sortedQuotes} sessionOhlc={sessionOhlc} />
                   </div>
-                </article>
+                </TerminalPanel>
 
-                <article
-                  className="rounded-xl border p-4"
-                  style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-                >
-                  <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
+                <div className={cn(TERMINAL_MODULE_PANEL, "p-2.5 sm:p-3")}>
+                  <h2 className={panelTitleClass}>
                     {t("company.ohlcSession", { defaultValue: "Latest session (OHLCV)" })}
                   </h2>
-                  <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
-                    {[
-                      { label: "Open", value: formatPrice(latestQuote ? Number(latestQuote.open) : null, currentLang) },
-                      { label: "High", value: formatPrice(latestQuote ? Number(latestQuote.high) : null, currentLang) },
-                      { label: "Low", value: formatPrice(latestQuote ? Number(latestQuote.low) : null, currentLang) },
-                      { label: "Close", value: formatPrice(latestQuote ? Number(latestQuote.close) : null, currentLang) },
-                      { label: "Volume", value: formatVolume(latestQuote ? Number(latestQuote.volume) : null, currentLang) },
-                    ].map((item) => (
+                  <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-3 xl:grid-cols-5">
+                    {ohlcItems.map((item) => (
                       <div
                         key={item.label}
-                        className="rounded-lg border px-3 py-2"
-                        style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
+                        className="rounded-md border border-terminal-borderMuted bg-terminal-bgAlt/50 px-2 py-1.5"
                       >
-                        <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-terminal-textMuted">
                           {item.label}
                         </p>
-                        <p className="mt-1 font-mono text-sm font-semibold" style={{ color: colors.textPrimary }}>
+                        <p className="mt-0.5 font-mono text-xs font-semibold tabular-nums text-terminal-text">
                           {item.value}
                         </p>
                       </div>
                     ))}
                   </div>
-                </article>
+                </div>
               </div>
 
-              <div className="space-y-4">
-                <article
-                  className="rounded-xl border p-4"
-                  style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-                >
-                  <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: colors.textSecondary }}>
-                    Fundamentals
-                  </h2>
-                  <div className="mt-3 grid grid-cols-2 gap-3">
-                    {fundamentals.map((item) => (
-                      <div
-                        key={item.label}
-                        className="rounded-lg border px-3 py-2"
-                        style={{ borderColor: colors.borderStrong, backgroundColor: colors.bgPrimary }}
-                      >
-                        <p className="text-xs uppercase tracking-wide" style={{ color: colors.textMuted }}>
-                          {item.label}
-                        </p>
-                        <p className="mt-1 text-sm font-semibold" style={{ color: colors.textPrimary }}>
-                          {item.value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <span
-                      className="rounded-full px-3 py-1 text-xs font-semibold"
-                      style={{ backgroundColor: colors.bgTertiary, color: colors.brandDark }}
+              <TerminalPanel className={cn(TERMINAL_ACCENT_RAIL_LIME, "p-2.5 sm:p-3")}>
+                <h2 className={panelTitleClass}>
+                  {t("company.fundamentals", { defaultValue: "Fundamentals" })}
+                </h2>
+                <div className="mt-2 grid grid-cols-2 gap-1.5">
+                  {fundamentals.map((item) => (
+                    <div
+                      key={item.label}
+                      className="rounded-md border border-terminal-borderMuted bg-terminal-bgAlt/50 px-2 py-1.5"
                     >
-                      Sector: {company.sector || "N/A"}
-                    </span>
-                    <span
-                      className="rounded-full px-3 py-1 text-xs font-semibold"
-                      style={{ backgroundColor: colors.bgTertiary, color: colors.brandMedium }}
-                    >
-                      Industry: {company.industry || "N/A"}
-                    </span>
-                  </div>
-                  {company.description ? (
-                    <p className="mt-4 text-sm leading-relaxed" style={{ color: colors.textSecondary }}>
-                      {formatCompanyDescription(company.description, currentLang)}
-                    </p>
+                      <p className="font-mono text-[9px] uppercase tracking-wide text-terminal-textMuted">
+                        {item.label}
+                      </p>
+                      <p className="mt-0.5 text-xs font-semibold text-terminal-text">{item.value}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {company.sector ? (
+                    <TerminalBadge variant="default">
+                      {t("company.meta.sector", { defaultValue: "Sector" })}: {company.sector}
+                    </TerminalBadge>
                   ) : null}
-                </article>
-              </div>
+                  {company.industry ? (
+                    <TerminalBadge variant="ai">
+                      {t("company.meta.industry", { defaultValue: "Industry" })}: {company.industry}
+                    </TerminalBadge>
+                  ) : null}
+                  {descriptionMeta.chips.map((chip) => (
+                    <TerminalBadge key={chip.id} variant="default">
+                      {chip.label}: {chip.value}
+                    </TerminalBadge>
+                  ))}
+                </div>
+                {descriptionMeta.narrative ? (
+                  <p className="mt-2 text-xs leading-relaxed text-terminal-textSecondary">
+                    {descriptionMeta.narrative}
+                  </p>
+                ) : null}
+              </TerminalPanel>
             </section>
           ) : null}
 
           {activeTab === "ai-brief" ? (
-            <section
-              className="rounded-xl border p-4"
-              style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-            >
+            <AccentPanel variant="cyan" className="p-2.5 sm:p-3">
               <AnalysisBrief
                 analysis={analysis}
                 loading={analysisLoading}
                 error={analysisError}
                 limitReached={analysisLimit}
               />
-            </section>
+            </AccentPanel>
           ) : null}
 
           {activeTab === "signals" ? (
-            <div className="space-y-4">
+            <div className="space-y-2">
               <section>
                 <MarketSignalsPanel ticker={sym} lookbackDays={30} />
               </section>
-              <section
-                className="rounded-xl border p-4"
-                style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-              >
-                <h2 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>
+              <TerminalPanel className={cn(TERMINAL_ACCENT_RAIL_CYAN, "p-2.5 sm:p-3")}>
+                <h2 className={cn(panelTitleClass, "text-terminal-text")}>
                   {t("company.signals.newsHeading", { defaultValue: "News headlines" })}
                 </h2>
-                <ul className="mt-3 divide-y rounded-lg border" style={{ borderColor: colors.border }}>
+                <ul className="mt-2 divide-y divide-terminal-borderMuted rounded-md border border-terminal-border">
                   {displayNews.map((n) => (
-                    <li key={`${n.id}-${n.timestamp}`} className="px-4 py-3" style={{ borderColor: colors.border }}>
+                    <li key={`${n.id}-${n.timestamp}`} className="px-3 py-2">
                       {n.url && n.url !== "#" ? (
                         <a
                           href={n.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-medium hover:underline"
-                          style={{ color: colors.brandDark }}
+                          className="text-sm font-medium text-terminal-text hover:text-terminal-cyan hover:underline"
                         >
                           {n.title}
                         </a>
                       ) : (
-                        <p className="font-medium" style={{ color: colors.brandDark }}>
-                          {n.title}
-                        </p>
+                        <p className="text-sm font-medium text-terminal-text">{n.title}</p>
                       )}
-                      <p className="mt-1 text-xs" style={{ color: colors.textMuted }}>
+                      <p className="mt-0.5 font-mono text-[10px] text-terminal-textMuted">
                         {new Date(n.timestamp).toLocaleDateString(i18n.resolvedLanguage || "en", {
                           day: "numeric",
                           month: "short",
@@ -536,51 +575,44 @@ export function CompanyDetail() {
                     </li>
                   ))}
                 </ul>
-              </section>
+              </TerminalPanel>
             </div>
           ) : null}
 
           {activeTab === "dividend" ? (
-            <section
-              className="rounded-xl border p-4"
-              style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-            >
+            <TerminalPanel className={cn(TERMINAL_ACCENT_RAIL_AMBER, "p-2.5 sm:p-3")}>
               <CompanyDividendPanel symbol={sym} locale={currentLang} companyName={companyName} />
-            </section>
+            </TerminalPanel>
           ) : null}
 
           {activeTab === "premium-analysis" ? (
-            <section
-              className="rounded-xl border p-4"
-              style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}
-            >
-              <h2 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>
-                Premium Analysis
+            <AccentPanel variant="cyan" className="p-2.5 sm:p-3">
+              <h2 className="text-sm font-semibold text-terminal-text">
+                {t("company.tabs.premiumAnalysis", { defaultValue: "Premium Analysis" })}
               </h2>
-              <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
-                Unlock advanced narrative, valuation context, and risk scenarios for this company.
+              <p className="mt-1 text-xs text-terminal-textSecondary">
+                {t("company.premiumTeaser", {
+                  defaultValue:
+                    "Unlock advanced narrative, valuation context, and risk scenarios for this company.",
+                })}
               </p>
-              <Link
-                to={premiumHref}
-                className="mt-4 inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white"
-                style={{
-                  backgroundImage: `linear-gradient(90deg, ${colors.brandDark} 0%, ${colors.brandMedium} 100%)`,
-                }}
-              >
-                Open Premium Analysis
+              <Link to={premiumHref} className="mt-2 inline-block">
+                <ModuleCTAButton variant="primary" size="sm">
+                  {t("company.premiumOpen", { defaultValue: "Open Premium Analysis" })}
+                </ModuleCTAButton>
               </Link>
-            </section>
+            </AccentPanel>
           ) : null}
         </div>
 
         {etoroMarket ? (
-          <p className="mt-4 text-xs" style={{ color: colors.textMuted }}>
+          <p className="text-[10px] leading-snug text-terminal-textMuted/80">
             {t("etoro.company.disclaimer", {
               defaultValue: "CFDs involve risk. 76% of retail accounts lose money.",
             })}
           </p>
         ) : null}
-      </div>
-    </div>
+      </TerminalWorkspacePage>
+    </>
   );
 }
