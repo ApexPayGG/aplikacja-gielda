@@ -42,9 +42,7 @@ type MobileDrawerLink = {
 
 const marketsLinks: NavDropdownItem[] = [
   { to: "/signals", labelKey: "nav.signals" },
-  { to: "/dividend", labelKey: "nav.dividend" },
-  { to: "/dividend-screener", labelKey: "nav.dividendScreener", icon: BanknotesIcon },
-  { to: "/dividend/intelligence", labelKey: "nav.dividendIntelligence" },
+  { to: "/dividend", labelKey: "nav.dividendHub", icon: BanknotesIcon },
   { to: "/alpha", labelKey: "nav.alphaCalendar" },
 ];
 
@@ -99,7 +97,6 @@ function isMarketsPath(pathname: string): boolean {
   return (
     pathname.startsWith("/signals") ||
     pathname.startsWith("/dividend") ||
-    pathname.startsWith("/dividend-screener") ||
     pathname.startsWith("/alpha") ||
     pathname.startsWith("/companies") ||
     pathname.startsWith("/company/")

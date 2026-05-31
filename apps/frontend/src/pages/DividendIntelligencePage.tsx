@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { DividendHubBackLink } from "../components/dividend/DividendHubBackLink";
 import { getCompanyDetail, getDividendAlerts, getDividendIntelligence, type Company } from "../services/api";
 import { CompanyLogo } from "../components/CompanyLogo";
 import {
@@ -57,10 +59,20 @@ function isDividendIntelligenceNotFound(error: unknown): boolean {
   return msg.includes("dividend intelligence not found") || msg.includes("dividend data not found");
 }
 
+function initialSymbolFromLocation(state: unknown): string {
+  if (state && typeof state === "object" && "symbol" in state) {
+    const sym = String((state as { symbol: unknown }).symbol).trim().toUpperCase();
+    if (sym) return sym;
+  }
+  return "AAPL";
+}
+
 export function DividendIntelligencePage() {
   const { t } = useTranslation();
-  const [input, setInput] = useState("AAPL");
-  const [symbol, setSymbol] = useState("AAPL");
+  const location = useLocation();
+  const initialSymbol = initialSymbolFromLocation(location.state);
+  const [input, setInput] = useState(initialSymbol);
+  const [symbol, setSymbol] = useState(initialSymbol);
   const [intelligence, setIntelligence] = useState<DividendIntelligence | null>(null);
   const [alerts, setAlerts] = useState<DividendAlert[]>([]);
   const [company, setCompany] = useState<Company | null>(null);
@@ -176,7 +188,8 @@ export function DividendIntelligencePage() {
   return (
     <div className={TERMINAL_DIVIDEND_PAGE}>
       <div className={TERMINAL_DIVIDEND_PAGE_INNER}>
-        <header>
+        <header className="space-y-2">
+          <DividendHubBackLink />
           <h1 className={TERMINAL_PAGE_TITLE}>
             {t("dividendIntelligence.title", { defaultValue: "Dividend Intelligence" })}
           </h1>

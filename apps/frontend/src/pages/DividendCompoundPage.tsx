@@ -1,5 +1,6 @@
 import { useMemo, useState, type CSSProperties, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { DividendHubBackLink } from "../components/dividend/DividendHubBackLink";
 import {
   calculateDividendCompound,
   type DividendCompoundResponse,
@@ -107,7 +108,8 @@ export function DividendCompoundPage() {
   return (
     <div className={TERMINAL_DIVIDEND_PAGE}>
       <div className={`${TERMINAL_DIVIDEND_PAGE_INNER} max-w-5xl`}>
-        <header className={TERMINAL_TOOL_HERO}>
+        <header className={`${TERMINAL_TOOL_HERO} space-y-2`}>
+          <DividendHubBackLink />
           <h1 className={TERMINAL_PAGE_TITLE}>{t("dividendcompound.title", { defaultValue: "Dividend Compound Calculator" })}</h1>
           <p className={TERMINAL_PAGE_SUBTITLE}>
             {t("dividendcompound.subtitle", {
