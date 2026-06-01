@@ -8,6 +8,7 @@ import {
   buildStockAIDataSnapshot,
   createSnapshotHash,
 } from "../modules/premiumAnalysis/dataSnapshot";
+import { buildPremiumAnalysisBundle } from "../modules/premiumAnalysis/premiumAnalysisOrchestrator";
 import { findHistoricalTwins } from "../modules/premiumAnalysis/historicalTwinModule";
 import { generateCatchAi, generateCinematicStoryAi } from "../modules/premiumAnalysis/storyAndCatchAiModule";
 import { getRequestPath, resolveUserTier } from "../services/aiBriefRateLimit";
@@ -447,6 +448,33 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
         snapshot,
         snapshotHash: createSnapshotHash(snapshot),
       });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.get("/:ticker/analysis", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const ticker = String(req.params.ticker ?? "").trim().toUpperCase();
+      if (!ticker) return res.status(400).json({ error: "Missing ticker" });
+      const userId = tryGetAuthenticatedUserId(req);
+      const tier = await resolveUserTier(req, prisma);
+      const language = String(req.query.language ?? "en").trim() || "en";
+      const bundle = await buildPremiumAnalysisBundle({
+        symbol: ticker,
+        prisma,
+        userId,
+        plan: tier,
+        language,
+        telemetry: {
+          endpoint: getRequestPath(req) || `/api/premium/${ticker}/analysis`,
+          plan: tier,
+          symbol: ticker,
+          lang: language,
+          userId,
+        },
+      });
+      res.json(bundle);
     } catch (error) {
       next(error);
     }

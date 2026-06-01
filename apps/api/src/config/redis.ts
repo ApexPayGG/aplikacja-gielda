@@ -37,6 +37,8 @@ export const REDIS_TTL_SEC = {
   PREMIUM_TWINS: 7 * 86_400,
   /** Premium analysis catch */
   PREMIUM_CATCH: 86_400,
+  /** Full premium analysis contract bundle (snapshot-hash keyed) */
+  PREMIUM_ANALYSIS_BUNDLE: 86_400,
   /** XML sitemap payload */
   SITEMAP: 3_600,
 } as const;
@@ -82,6 +84,8 @@ export const redisKeys = {
   premiumTwins: (symbol: string, limit: number, minMatch: number) =>
     `${KEY_PREFIX}:premium:twins:${symbol.trim().toUpperCase()}:l${limit}:m${minMatch}`,
   premiumCatch: (symbol: string) => `${KEY_PREFIX}:premium:catch:${symbol.trim().toUpperCase()}`,
+  premiumAnalysisBundle: (symbol: string, snapshotHash: string, language: string) =>
+    `${KEY_PREFIX}:premium:analysis:v1:${symbol.trim().toUpperCase()}:${snapshotHash}:${shortHash(language.trim().toLowerCase() || "en")}`,
   sitemapXml: () => `${KEY_PREFIX}:sitemap:xml`,
 } as const;
 

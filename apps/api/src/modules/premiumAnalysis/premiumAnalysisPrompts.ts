@@ -1,0 +1,79 @@
+import { PREMIUM_ANALYSIS_CONTRACT_VERSION } from "./premiumAnalysisModelTasks";
+import type { StockAIDataSnapshot } from "./dataSnapshot";
+
+export function buildPremiumAnalysisSystemPrompt(): string {
+  return `You are StockAI Premium Analysis - an institutional-style equity research assistant.
+Return ONLY valid JSON (no markdown, no code fences) matching PremiumAnalysisContract v${PREMIUM_ANALYSIS_CONTRACT_VERSION}.
+
+Rules:
+- Educational framing only. No guaranteed returns. No direct "you should buy/sell" instructions.
+- Use ONLY data provided in the StockAIDataSnapshot. Do not invent analyst consensus, price targets, or metrics not grounded in the snapshot.
+- Every numeric claim in metrics/levels/priceTarget must include basis, source, and asOf when available from snapshot fields.
+- If snapshot fields are missing, not_wired, stale, or requires_access, list them in missingData/dataCoverage - do not fabricate values.
+- executiveVerdict.label must be one of: avoid, watch, hold, constructive, bullish.
+- executiveVerdict.confidence: 0-100. Use lower confidence when evidence is weak.
+- executiveVerdict.horizonMonths: explicit integer (typically 12).
+- scenarios.scenarios: exactly three objects with name bull, base, bear (one each). probabilityPct should sum to ~100.
+- Each scenario needs drivers, risks, invalidation. priceTarget is optional; only include if grounded in snapshot quote/technical levels.
+- riskMap.items: severity and likelihood each low|medium|high.
+- decisionNote: educational synthesis; stance one of avoid, watch, research, constructive, cautious.
+- thesisInvalidators: at least one item.
+- historicalTwins: do not claim real analyst data; matchCount may be 0 if twins not in snapshot.
+- personalFit: include only if userContext in snapshot is ok with usable fields; otherwise omit personalFit key.
+- dataFreshness must reflect snapshot computedAt, version, sources with status, coverage and missingData arrays.
+- version must be "${PREMIUM_ANALYSIS_CONTRACT_VERSION}".
+- symbol must match snapshot symbol (resolved symbol if provided).
+- generatedAt: ISO-8601 UTC now.`;
+}
+
+function compactSnapshotForPrompt(snapshot: StockAIDataSnapshot): Record<string, unknown> {
+  return {
+    version: snapshot.version,
+    symbol: snapshot.symbol,
+    resolvedSymbol: snapshot.resolvedSymbol,
+    computedAt: snapshot.computedAt,
+    company: snapshot.company,
+    quote: snapshot.quote,
+    technical: snapshot.technical,
+    fundamentals: snapshot.fundamentals,
+    news: snapshot.news.status === "ok" ? snapshot.news : { status: snapshot.news.status },
+    marketSignals: snapshot.marketSignals,
+    dividend: snapshot.dividend,
+    userContext:
+      snapshot.userContext.status === "ok" ? snapshot.userContext : { status: snapshot.userContext.status },
+    dataCoverage: snapshot.dataCoverage,
+    missingData: snapshot.missingData,
+  };
+}
+
+export function buildPremiumAnalysisUserPrompt(
+  snapshot: StockAIDataSnapshot,
+  language = "en",
+): string {
+  const langNote =
+    language === "pl"
+      ? "Write all narrative text fields in Polish. Keep JSON keys in English."
+      : "Write all narrative text fields in English.";
+  return `${langNote}
+
+Build a complete PremiumAnalysisContract JSON for the following StockAIDataSnapshot:
+
+${JSON.stringify(compactSnapshotForPrompt(snapshot))}`;
+}
+
+export function buildPremiumAnalysisRepairPrompt(
+  snapshot: StockAIDataSnapshot,
+  validationSummary: string,
+  priorRaw: string,
+  language = "en",
+): string {
+  return `${buildPremiumAnalysisUserPrompt(snapshot, language)}
+
+Your previous JSON failed validation:
+${validationSummary}
+
+Previous output (truncated):
+${priorRaw.slice(0, 4000)}
+
+Return corrected JSON only that passes PremiumAnalysisContractSchema. Fix scenario names (exactly one bull, one base, one bear), verdict label enum, required fields, and datetime fields.`;
+}
