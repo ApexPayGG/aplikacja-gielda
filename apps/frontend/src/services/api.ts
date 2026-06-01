@@ -1273,7 +1273,7 @@ export interface DividendHealthData {
 }
 
 export async function getDividendHealth(ticker: string): Promise<DividendHealthData> {
-  const { data } = await publicApi.get<DividendHealthData>(
+  const { data } = await api.get<DividendHealthData>(
     `/dividend/${encodeURIComponent(ticker.trim().toUpperCase())}`,
   );
   return data;
@@ -1335,7 +1335,7 @@ export async function getCompanyDividendTickerHistory(
   symbol: string,
   years = 8,
 ): Promise<DividendTickerHistoryResponse> {
-  const { data } = await publicApi.get<DividendTickerHistoryResponse>(
+  const { data } = await api.get<DividendTickerHistoryResponse>(
     `/dividends/${encodeURIComponent(symbol)}`,
     { params: { years } },
   );

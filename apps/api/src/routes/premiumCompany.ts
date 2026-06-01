@@ -4,6 +4,10 @@ import { Router } from "express";
 import { cacheJsonGet, cacheJsonSet } from "../cache/jsonCache";
 import { REDIS_TTL_SEC, redisKeys } from "../config/redis";
 import { withSingleFlight } from "../utils/singleFlight";
+import {
+  buildStockAIDataSnapshot,
+  createSnapshotHash,
+} from "../modules/premiumAnalysis/dataSnapshot";
 import { findHistoricalTwins } from "../modules/premiumAnalysis/historicalTwinModule";
 import { generateCatchAi, generateCinematicStoryAi } from "../modules/premiumAnalysis/storyAndCatchAiModule";
 import { getRequestPath, resolveUserTier } from "../services/aiBriefRateLimit";
@@ -425,6 +429,28 @@ async function buildVerdictFromLatestQuote(prisma: PrismaClient, ticker: string)
 
 export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
   const router = Router();
+
+  router.get("/:ticker/snapshot", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const ticker = String(req.params.ticker ?? "").trim().toUpperCase();
+      if (!ticker) return res.status(400).json({ error: "Missing ticker" });
+      const userId = tryGetAuthenticatedUserId(req);
+      const tier = await resolveUserTier(req, prisma);
+      const snapshot = await buildStockAIDataSnapshot({
+        symbol: ticker,
+        prisma,
+        includeDividend: true,
+        userId,
+        plan: tier,
+      });
+      res.json({
+        snapshot,
+        snapshotHash: createSnapshotHash(snapshot),
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
 
   router.get("/:ticker/verdict", async (req: Request, res: Response, next: NextFunction) => {
     try {
