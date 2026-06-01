@@ -88,8 +88,8 @@ function scoreColor(score: number): number {
   return 0xef4444;
 }
 
-function formatPrice(value?: number): string {
-  if (value === undefined || Number.isNaN(value)) return "n/a";
+function formatPrice(value?: number | null): string {
+  if (value == null || !Number.isFinite(value)) return "n/a";
   return value.toFixed(2);
 }
 
