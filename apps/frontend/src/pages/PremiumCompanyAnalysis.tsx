@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { isPremiumAnalysisV2Enabled } from "../config/featureFlags";
-import { PremiumCompanyAnalysisV2 } from "./PremiumCompanyAnalysisV2";
 import { usePremiumAnalysisStore } from "../stores/premiumAnalysisStore";
 import type {
   PremiumCatchResponse,
@@ -16,6 +15,11 @@ import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/designSystem";
 import { trackEvent } from "../utils/analytics";
 import { normalizeUserPlan } from "../utils/subscriptionTier";
+
+
+const PremiumCompanyAnalysisV2 = lazy(() =>
+  import("./PremiumCompanyAnalysisV2").then((module) => ({ default: module.PremiumCompanyAnalysisV2 })),
+);
 
 type Tier = "FREE" | "PRO" | "PRO_PLUS";
 
@@ -102,7 +106,17 @@ export function PremiumCompanyAnalysis() {
   const v2Enabled = isPremiumAnalysisV2Enabled();
 
   if (v2Enabled && !forceLegacy) {
-    return <PremiumCompanyAnalysisV2 onUseLegacy={() => setForceLegacy(true)} />;
+    return (
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-terminal-bg px-4 py-8 text-sm text-terminal-textSecondary">
+            Loading Premium Analysis V2...
+          </div>
+        }
+      >
+        <PremiumCompanyAnalysisV2 onUseLegacy={() => setForceLegacy(true)} />
+      </Suspense>
+    );
   }
 
   return <PremiumCompanyAnalysisLegacy forceLegacyNotice={forceLegacy} />;
