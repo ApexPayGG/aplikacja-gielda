@@ -8,7 +8,10 @@ import {
   buildStockAIDataSnapshot,
   createSnapshotHash,
 } from "../modules/premiumAnalysis/dataSnapshot";
-import { buildPremiumAnalysisBundle } from "../modules/premiumAnalysis/premiumAnalysisOrchestrator";
+import {
+  buildPremiumAnalysisBundle,
+  PremiumAnalysisUsageLimitExceededError,
+} from "../modules/premiumAnalysis/premiumAnalysisOrchestrator";
 import { findHistoricalTwins } from "../modules/premiumAnalysis/historicalTwinModule";
 import { generateCatchAi, generateCinematicStoryAi } from "../modules/premiumAnalysis/storyAndCatchAiModule";
 import { getRequestPath, resolveUserTier } from "../services/aiBriefRateLimit";
@@ -465,6 +468,7 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
         prisma,
         userId,
         plan: tier,
+        clientIp: req.ip || req.socket?.remoteAddress || null,
         language,
         telemetry: {
           endpoint: getRequestPath(req) || `/api/premium/${ticker}/analysis`,
@@ -476,6 +480,16 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       });
       res.json(bundle);
     } catch (error) {
+      if (error instanceof PremiumAnalysisUsageLimitExceededError) {
+        return res.status(429).json({
+          error: error.code,
+          message:
+            "Daily limit of fresh Premium Analysis generations reached. Cached analyses remain available.",
+          tier: error.tier,
+          limit: error.limit,
+          resetIn: error.resetIn,
+        });
+      }
       next(error);
     }
   });

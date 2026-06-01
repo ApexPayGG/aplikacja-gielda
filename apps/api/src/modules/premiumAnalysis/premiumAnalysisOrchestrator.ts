@@ -3,10 +3,12 @@ import type { PrismaClient } from "@prisma/client";
 import process from "node:process";
 import { cacheJsonGet, cacheJsonSet } from "../../cache/jsonCache";
 import { REDIS_TTL_SEC, redisKeys } from "../../config/redis";
+import type { UserTier } from "../../services/aiBriefRateLimit";
 import {
   logAiCallFromAnthropicResponse,
   type AiCallTelemetry,
 } from "../../services/aiCostTelemetry";
+import { enforcePremiumAnalysisDailyLimit } from "../../services/premiumAnalysisUsageLimit";
 import {
   buildStockAIDataSnapshot,
   createSnapshotHash,
@@ -52,9 +54,25 @@ export type BuildPremiumAnalysisBundleInput = {
   prisma: PrismaClient;
   userId?: string | null;
   plan?: string | null;
+  clientIp?: string | null;
   language?: string;
   telemetry?: Partial<AiCallTelemetry>;
 };
+
+export class PremiumAnalysisUsageLimitExceededError extends Error {
+  readonly code = "PREMIUM_ANALYSIS_DAILY_LIMIT";
+  readonly statusCode = 429;
+
+  constructor(
+    message: string,
+    public readonly tier: UserTier,
+    public readonly limit: number,
+    public readonly resetIn: number,
+  ) {
+    super(message);
+    this.name = "PremiumAnalysisUsageLimitExceededError";
+  }
+}
 
 function parseJsonObject(raw: string): unknown | null {
   const text = String(raw ?? "").trim();
@@ -198,6 +216,20 @@ export async function buildPremiumAnalysisBundle(
   let contract: PremiumAnalysisContract | null = null;
 
   if (hasAnthropicKey()) {
+    const usage = await enforcePremiumAnalysisDailyLimit({
+      tier: input.plan ?? "FREE",
+      userId: input.userId ?? null,
+      clientIp: input.clientIp ?? null,
+    });
+    if (!usage.allowed) {
+      throw new PremiumAnalysisUsageLimitExceededError(
+        "Daily limit of fresh Premium Analysis generations reached.",
+        usage.tier,
+        usage.limit,
+        usage.resetIn,
+      );
+    }
+
     try {
       const first = await callAnthropicForContract(snapshot, language, undefined, input.telemetry);
       contract = first.contract;
@@ -229,7 +261,8 @@ export async function buildPremiumAnalysisBundle(
           retryCount: 1,
         };
       }
-    } catch {
+    } catch (error) {
+      if (error instanceof PremiumAnalysisUsageLimitExceededError) throw error;
       contract = null;
       provider = { name: "fallback", model: null, retryCount };
     }

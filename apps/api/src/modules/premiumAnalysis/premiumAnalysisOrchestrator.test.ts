@@ -6,7 +6,10 @@ import {
   PremiumAnalysisContractSchema,
   validatePremiumAnalysisContract,
 } from "./premiumAnalysisContract";
-import { readValidatedPremiumAnalysisCache } from "./premiumAnalysisOrchestrator";
+import {
+  PremiumAnalysisUsageLimitExceededError,
+  readValidatedPremiumAnalysisCache,
+} from "./premiumAnalysisOrchestrator";
 
 function minimalSnapshot(overrides?: Partial<StockAIDataSnapshot>): StockAIDataSnapshot {
   const computedAt = new Date().toISOString();
@@ -94,6 +97,19 @@ describe("premiumAnalysisFallback", () => {
     assert.ok(!blob.includes("strong buy"));
     assert.equal(contract.historicalTwins.matchCount, 0);
     assert.equal(contract.valuationContext.metrics.every((m) => m.source !== "analyst_consensus"), true);
+  });
+});
+
+describe("PremiumAnalysisUsageLimitExceededError", () => {
+  it("exposes 429 response fields", () => {
+    const err = new PremiumAnalysisUsageLimitExceededError("limited", "PRO", 3, 3600);
+    assert.equal(err.code, "PREMIUM_ANALYSIS_DAILY_LIMIT");
+    assert.equal(err.statusCode, 429);
+    assert.equal(err.tier, "PRO");
+    assert.equal(err.limit, 3);
+    assert.equal(err.resetIn, 3600);
+    assert.equal(err.name, "PremiumAnalysisUsageLimitExceededError");
+    assert.equal(err.message, "limited");
   });
 });
 
