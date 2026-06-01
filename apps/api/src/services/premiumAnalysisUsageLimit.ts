@@ -19,6 +19,10 @@ export const PREMIUM_ANALYSIS_PRO_PLUS_DAILY_LIMIT = parsePremiumAnalysisDailyLi
   process.env.PREMIUM_ANALYSIS_PRO_PLUS_DAILY_LIMIT,
   10,
 );
+export const PREMIUM_ANALYSIS_TRIAL_DAILY_LIMIT = parsePremiumAnalysisDailyLimit(
+  process.env.PREMIUM_ANALYSIS_TRIAL_DAILY_LIMIT,
+  PREMIUM_ANALYSIS_PRO_PLUS_DAILY_LIMIT,
+);
 export const PREMIUM_ANALYSIS_WINDOW_SEC = 86_400;
 
 type CounterStore = {
@@ -33,8 +37,14 @@ export type EnforcePremiumAnalysisDailyLimitInput = {
   tier: UserTier | string;
   userId?: string | null;
   clientIp?: string | null;
+  accessState?: string | null;
+  canUseProduct?: boolean | null;
   store?: CounterStore;
 };
+
+export function isActiveTrialAccess(accessState: unknown): boolean {
+  return accessState === "TRIAL_ACTIVE" || accessState === "SUBSCRIPTION_TRIALING";
+}
 
 function normalizeTier(value: unknown): UserTier {
   const normalized = String(value ?? "")
@@ -49,9 +59,15 @@ function sanitizeSubjectId(id: string): string {
   return id.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 128) || "unknown";
 }
 
-function dailyLimitForTier(tier: UserTier): number {
+function dailyLimitForInput(input: EnforcePremiumAnalysisDailyLimitInput): number {
+  if (input.canUseProduct === false) return 0;
+
+  const tier = normalizeTier(input.tier);
   if (tier === "PRO_PLUS") return PREMIUM_ANALYSIS_PRO_PLUS_DAILY_LIMIT;
   if (tier === "PRO") return PREMIUM_ANALYSIS_PRO_DAILY_LIMIT;
+  if (tier === "FREE" && isActiveTrialAccess(input.accessState)) {
+    return PREMIUM_ANALYSIS_TRIAL_DAILY_LIMIT;
+  }
   return 0;
 }
 
@@ -116,7 +132,7 @@ export async function enforcePremiumAnalysisDailyLimit(
   input: EnforcePremiumAnalysisDailyLimitInput,
 ): Promise<PremiumAnalysisUsageLimitResult> {
   const tier = normalizeTier(input.tier);
-  const limit = dailyLimitForTier(tier);
+  const limit = dailyLimitForInput(input);
   if (limit <= 0) {
     return { allowed: false, limit, resetIn: PREMIUM_ANALYSIS_WINDOW_SEC, tier };
   }

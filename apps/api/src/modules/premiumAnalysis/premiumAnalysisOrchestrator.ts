@@ -55,6 +55,8 @@ export type BuildPremiumAnalysisBundleInput = {
   userId?: string | null;
   plan?: string | null;
   clientIp?: string | null;
+  accessState?: string | null;
+  canUseProduct?: boolean | null;
   language?: string;
   telemetry?: Partial<AiCallTelemetry>;
 };
@@ -220,6 +222,8 @@ export async function buildPremiumAnalysisBundle(
       tier: input.plan ?? "FREE",
       userId: input.userId ?? null,
       clientIp: input.clientIp ?? null,
+      accessState: input.accessState ?? null,
+      canUseProduct: input.canUseProduct ?? null,
     });
     if (!usage.allowed) {
       throw new PremiumAnalysisUsageLimitExceededError(

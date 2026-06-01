@@ -15,6 +15,7 @@ import {
 import { findHistoricalTwins } from "../modules/premiumAnalysis/historicalTwinModule";
 import { generateCatchAi, generateCinematicStoryAi } from "../modules/premiumAnalysis/storyAndCatchAiModule";
 import { getRequestPath, resolveUserTier } from "../services/aiBriefRateLimit";
+import { getUserAccessById } from "../services/userAccessState";
 import { tryGetAuthenticatedUserId } from "../modules/auth/authMiddleware";
 
 type VerdictLabel = "STRONG BUY" | "BUY" | "HOLD" | "SELL" | "STRONG SELL";
@@ -463,12 +464,23 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
       const userId = tryGetAuthenticatedUserId(req);
       const tier = await resolveUserTier(req, prisma);
       const language = String(req.query.language ?? "en").trim() || "en";
+      let accessState: string | null = null;
+      let canUseProduct: boolean | null = null;
+      if (userId) {
+        const access = await getUserAccessById(userId, prisma);
+        if (access) {
+          accessState = access.accessState;
+          canUseProduct = access.canUseProduct;
+        }
+      }
       const bundle = await buildPremiumAnalysisBundle({
         symbol: ticker,
         prisma,
         userId,
         plan: tier,
         clientIp: req.ip || req.socket?.remoteAddress || null,
+        accessState,
+        canUseProduct,
         language,
         telemetry: {
           endpoint: getRequestPath(req) || `/api/premium/${ticker}/analysis`,
