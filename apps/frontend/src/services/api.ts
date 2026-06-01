@@ -2077,6 +2077,171 @@ export async function getPremiumCatch(ticker: string): Promise<PremiumCatchRespo
   });
 }
 
+
+export type PremiumFieldStatus = "ok" | "missing" | "stale" | "not_wired" | "requires_access";
+
+export type PremiumNumericClaim = {
+  value: number;
+  unit?: string;
+  basis: string;
+  source: string;
+  asOf?: string;
+};
+
+export type PremiumDataFreshness = {
+  computedAt: string;
+  snapshotVersion: string;
+  sources: Array<{ id: string; asOf?: string | null; status: PremiumFieldStatus }>;
+  coverage: string[];
+  missingData: string[];
+};
+
+export type PremiumExecutiveVerdict = {
+  label: "avoid" | "watch" | "hold" | "constructive" | "bullish";
+  headline: string;
+  summary: string;
+  confidence: number;
+  horizonMonths: number;
+  educationalNote: string;
+};
+
+export type PremiumBusinessEngine = {
+  overview: string;
+  competitiveDynamics: string;
+  catalysts: string[];
+  risks: string[];
+};
+
+export type PremiumValuationContext = {
+  summary: string;
+  metrics: PremiumNumericClaim[];
+  relativeToPeers?: string;
+  historicalContext?: string;
+};
+
+export type PremiumTechnicalSetup = {
+  summary: string;
+  trend: string;
+  levels: PremiumNumericClaim[];
+  momentumNotes?: string;
+};
+
+export type PremiumScenarioName = "bull" | "base" | "bear";
+
+export type PremiumScenario = {
+  name: PremiumScenarioName;
+  probabilityPct: number;
+  narrative: string;
+  drivers: string[];
+  risks: string[];
+  invalidation: string;
+  priceTarget?: PremiumNumericClaim;
+};
+
+export type PremiumScenarioSet = {
+  horizonMonths: number;
+  scenarios: PremiumScenario[];
+};
+
+export type PremiumRiskMapItem = {
+  id: string;
+  title: string;
+  description: string;
+  severity: "low" | "medium" | "high";
+  likelihood: "low" | "medium" | "high";
+  category: string;
+};
+
+export type PremiumRiskMap = {
+  summary: string;
+  items: PremiumRiskMapItem[];
+};
+
+export type PremiumHistoricalTwinsSummary = {
+  summary: string;
+  matchCount: number;
+  avgOutcomePct?: PremiumNumericClaim;
+  lesson: string;
+};
+
+export type PremiumPersonalFit = {
+  summary: string;
+  alignmentScore: number;
+  matches: string[];
+  mismatches: string[];
+  suggestedActions: string[];
+};
+
+export type PremiumThesisInvalidator = {
+  trigger: string;
+  impact: "low" | "medium" | "high";
+  monitor: string;
+};
+
+export type PremiumThesisInvalidators = {
+  summary: string;
+  items: PremiumThesisInvalidator[];
+};
+
+export type PremiumDecisionNote = {
+  note: string;
+  stance: "avoid" | "watch" | "research" | "constructive" | "cautious";
+  keyQuestions: string[];
+};
+
+export type PremiumAnalysisContract = {
+  version: "1.0";
+  symbol: string;
+  generatedAt: string;
+  dataFreshness: PremiumDataFreshness;
+  executiveVerdict: PremiumExecutiveVerdict;
+  businessEngine: PremiumBusinessEngine;
+  valuationContext: PremiumValuationContext;
+  technicalSetup: PremiumTechnicalSetup;
+  scenarios: PremiumScenarioSet;
+  riskMap: PremiumRiskMap;
+  historicalTwins: PremiumHistoricalTwinsSummary;
+  personalFit?: PremiumPersonalFit;
+  thesisInvalidators: PremiumThesisInvalidators;
+  decisionNote: PremiumDecisionNote;
+  dataCoverage: string[];
+  missingData: string[];
+};
+
+export type PremiumAnalysisCacheStatus = "hit" | "miss" | "fallback";
+
+export type PremiumAnalysisProviderMeta = {
+  name: "anthropic" | "fallback";
+  model: string | null;
+  latencyMs?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  retryCount?: number;
+};
+
+export type PremiumAnalysisBundle = {
+  contract: PremiumAnalysisContract;
+  snapshotHash: string;
+  snapshotVersion: string;
+  generatedAt: string;
+  cacheStatus: PremiumAnalysisCacheStatus;
+  provider: PremiumAnalysisProviderMeta;
+};
+
+export async function getPremiumAnalysis(
+  ticker: string,
+  options?: { language?: string },
+): Promise<PremiumAnalysisBundle> {
+  const language = (options?.language ?? "en").trim() || "en";
+  return getPremiumWithTickerFallback(ticker, async (candidate) => {
+    const { data } = await api.get<PremiumAnalysisBundle>(
+      `/premium/${encodeURIComponent(candidate)}/analysis`,
+      { params: { language } },
+    );
+    return data;
+  });
+}
+
 export type StripeCheckoutPlan = "pro" | "pro_plus";
 export type StripeCheckoutBilling = "monthly" | "yearly";
 export type WaitlistSource = "landing" | "pricing" | "signal";

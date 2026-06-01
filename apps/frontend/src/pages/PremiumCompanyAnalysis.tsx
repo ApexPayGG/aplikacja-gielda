@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { isPremiumAnalysisV2Enabled } from "../config/featureFlags";
+import { PremiumCompanyAnalysisV2 } from "./PremiumCompanyAnalysisV2";
 import { usePremiumAnalysisStore } from "../stores/premiumAnalysisStore";
 import type {
   PremiumCatchResponse,
@@ -96,6 +98,17 @@ function readTrackedTickers(key: string): string[] {
 }
 
 export function PremiumCompanyAnalysis() {
+  const [forceLegacy, setForceLegacy] = useState(false);
+  const v2Enabled = isPremiumAnalysisV2Enabled();
+
+  if (v2Enabled && !forceLegacy) {
+    return <PremiumCompanyAnalysisV2 onUseLegacy={() => setForceLegacy(true)} />;
+  }
+
+  return <PremiumCompanyAnalysisLegacy forceLegacyNotice={forceLegacy} />;
+}
+
+function PremiumCompanyAnalysisLegacy({ forceLegacyNotice = false }: { forceLegacyNotice?: boolean }) {
   const { symbol = "" } = useParams();
   const navigate = useNavigate();
   const { user, isLoading: isAuthLoading } = useAuth();
@@ -542,6 +555,14 @@ export function PremiumCompanyAnalysis() {
         <Link to={`/company/${encodeURIComponent(ticker)}`} className="mb-4 inline-block text-sm hover:underline" style={{ color: colors.brandMedium }}>
           ← Back to company
         </Link>
+        {forceLegacyNotice ? (
+          <p
+            className="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm text-amber-200"
+            role="status"
+          >
+            Premium Analysis V2 is unavailable in this session. Showing the legacy 5-screen flow.
+          </p>
+        ) : null}
         <header
           className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border px-5 py-4"
           style={{ borderColor: colors.border, backgroundColor: colors.bgPrimary, boxShadow: "0 8px 24px rgba(168,85,247, 0.1)" }}
