@@ -1,23 +1,58 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import express from "express";
-import { createRateLimiterMiddleware } from "../rateLimiter";
+import {
+  createMemoryRateLimitStore,
+  createRateLimiterMiddleware,
+  isActiveTrialPremiumAccess,
+  type PremiumRateLimitAccess,
+} from "../rateLimiter";
+
+type TestLimiterDeps = {
+  getUserTier?: (userId: string) => Promise<"FREE" | "PRO" | "PRO_PLUS">;
+  getUserAccess?: (userId: string) => Promise<PremiumRateLimitAccess | null>;
+};
+
+describe("isActiveTrialPremiumAccess", () => {
+  it("recognizes active trial states with product access", () => {
+    assert.equal(
+      isActiveTrialPremiumAccess({ accessState: "TRIAL_ACTIVE", canUseProduct: true }),
+      true,
+    );
+    assert.equal(
+      isActiveTrialPremiumAccess({ accessState: "SUBSCRIPTION_TRIALING", canUseProduct: true }),
+      true,
+    );
+    assert.equal(
+      isActiveTrialPremiumAccess({ accessState: "TRIAL_EXPIRED", canUseProduct: false }),
+      false,
+    );
+    assert.equal(
+      isActiveTrialPremiumAccess({ accessState: "TRIAL_ACTIVE", canUseProduct: false }),
+      false,
+    );
+  });
+});
 
 describe("rate limiter middleware", () => {
   let server: ReturnType<express.Express["listen"]> | null = null;
   let baseUrl = "";
 
-  async function startServer(): Promise<void> {
+  async function startServer(extra?: TestLimiterDeps): Promise<void> {
     const app = express();
     app.set("trust proxy", true);
     app.use(express.json());
+    const store = createMemoryRateLimitStore();
     app.use(
       createRateLimiterMiddleware({
+        store,
         getUserTier: async (userId) => {
           if (userId === "pro-user") return "PRO";
           if (userId === "plus-user") return "PRO_PLUS";
           return "FREE";
         },
+        getUserAccess: async () => null,
+        ...extra,
       }),
     );
 
@@ -126,6 +161,109 @@ describe("rate limiter middleware", () => {
     for (let i = 0; i < 60; i++) {
       const plusRes = await fetch(`${baseUrl}/api/premium/signal?userId=plus-user`);
       assert.equal(plusRes.status, 200);
+    }
+  });
+
+  it("limits unauthenticated /api/premium/* by IP", async () => {
+    for (let i = 0; i < 10; i++) {
+      const okRes = await fetch(`${baseUrl}/api/premium/signal`);
+      assert.equal(okRes.status, 200);
+    }
+    const blocked = await fetch(`${baseUrl}/api/premium/signal`);
+    assert.equal(blocked.status, 429);
+  });
+});
+
+describe("premium trial-aware global rate limiter", () => {
+  let server: ReturnType<express.Express["listen"]> | null = null;
+  let baseUrl = "";
+
+  const trialAccessByUser: Record<string, PremiumRateLimitAccess | null> = {
+    "trial-active-user": { accessState: "TRIAL_ACTIVE", canUseProduct: true },
+    "stripe-trial-user": { accessState: "SUBSCRIPTION_TRIALING", canUseProduct: true },
+    "trial-expired-user": { accessState: "TRIAL_EXPIRED", canUseProduct: false },
+    "no-access-user": { accessState: "NO_ACCESS", canUseProduct: false },
+    "free-user": null,
+  };
+
+  async function startTrialServer(): Promise<void> {
+    const app = express();
+    app.set("trust proxy", true);
+    app.use(express.json());
+    const store = createMemoryRateLimitStore();
+    app.use(
+      createRateLimiterMiddleware({
+        store,
+        getUserTier: async (userId) => {
+          if (userId === "pro-user") return "PRO";
+          if (userId === "plus-user") return "PRO_PLUS";
+          return "FREE";
+        },
+        getUserAccess: async (userId) => trialAccessByUser[userId] ?? null,
+      }),
+    );
+    app.get("/api/premium/signal", (_req, res) => res.json({ ok: true }));
+
+    await new Promise<void>((resolve) => {
+      server = app.listen(0, () => resolve());
+    });
+    const addr = server!.address();
+    if (!addr || typeof addr === "string") throw new Error("no port");
+    baseUrl = `http://127.0.0.1:${addr.port}`;
+  }
+
+  beforeEach(async () => {
+    await startTrialServer();
+  });
+
+  afterEach(async () => {
+    await new Promise<void>((resolve, reject) => {
+      if (!server) return resolve();
+      server.close((err) => (err ? reject(err) : resolve()));
+      server = null;
+    });
+  });
+
+  it("PRO and PRO_PLUS bypass free monthly premium limit", async () => {
+    for (let i = 0; i < 15; i++) {
+      const proRes = await fetch(`${baseUrl}/api/premium/signal?userId=pro-user`);
+      assert.equal(proRes.status, 200);
+      const plusRes = await fetch(`${baseUrl}/api/premium/signal?userId=plus-user`);
+      assert.equal(plusRes.status, 200);
+    }
+  });
+
+  it("FREE without trial hits PREMIUM_FREE_MONTHLY_LIMIT", async () => {
+    for (let i = 0; i < 10; i++) {
+      const okRes = await fetch(`${baseUrl}/api/premium/signal?userId=free-user`);
+      assert.equal(okRes.status, 200);
+    }
+    const blocked = await fetch(`${baseUrl}/api/premium/signal?userId=free-user`);
+    assert.equal(blocked.status, 429);
+  });
+
+  it("FREE + TRIAL_ACTIVE bypasses global premium free monthly limit", async () => {
+    for (let i = 0; i < 15; i++) {
+      const okRes = await fetch(`${baseUrl}/api/premium/signal?userId=trial-active-user`);
+      assert.equal(okRes.status, 200);
+    }
+  });
+
+  it("FREE + SUBSCRIPTION_TRIALING bypasses global premium free monthly limit", async () => {
+    for (let i = 0; i < 15; i++) {
+      const okRes = await fetch(`${baseUrl}/api/premium/signal?userId=stripe-trial-user`);
+      assert.equal(okRes.status, 200);
+    }
+  });
+
+  it("FREE + TRIAL_EXPIRED or NO_ACCESS still hits free premium limit", async () => {
+    for (const userId of ["trial-expired-user", "no-access-user"]) {
+      for (let i = 0; i < 10; i++) {
+        const okRes = await fetch(`${baseUrl}/api/premium/signal?userId=${userId}`);
+        assert.equal(okRes.status, 200);
+      }
+      const blocked = await fetch(`${baseUrl}/api/premium/signal?userId=${userId}`);
+      assert.equal(blocked.status, 429);
     }
   });
 });

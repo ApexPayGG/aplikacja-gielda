@@ -1,12 +1,19 @@
 import type { PrismaClient } from "@prisma/client";
 import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { getCacheRedis } from "../redis";
+import { getUserAccessById } from "../services/userAccessState";
 
 type UserTier = "FREE" | "PRO" | "PRO_PLUS";
+
+export type PremiumRateLimitAccess = {
+  accessState: string;
+  canUseProduct: boolean;
+};
 
 type RateLimiterDeps = {
   prisma?: PrismaClient;
   getUserTier?: (userId: string) => Promise<UserTier>;
+  getUserAccess?: (userId: string) => Promise<PremiumRateLimitAccess | null>;
   now?: () => Date;
   store?: CounterStore;
 };
@@ -28,6 +35,13 @@ const CONTACT_LIMIT = { limit: 3, windowSec: 60 * 60 };
 const STRIPE_LIMIT = { limit: 10, windowSec: 60 };
 /** Monthly Premium Analysis calls for unauthenticated / FREE users only. */
 const PREMIUM_FREE_MONTHLY_LIMIT = 10;
+
+export function isActiveTrialPremiumAccess(access: unknown): boolean {
+  if (!access || typeof access !== "object") return false;
+  const record = access as PremiumRateLimitAccess;
+  if (record.canUseProduct !== true) return false;
+  return record.accessState === "TRIAL_ACTIVE" || record.accessState === "SUBSCRIPTION_TRIALING";
+}
 
 function normalizeTier(value: unknown): UserTier {
   const normalized = String(value ?? "")
@@ -77,7 +91,7 @@ function getSecondsUntilNextMonth(now: Date): number {
   return Math.max(1, Math.ceil(diffMs / 1000));
 }
 
-function createMemoryStore(): CounterStore {
+export function createMemoryRateLimitStore(): CounterStore {
   const store = new Map<string, { count: number; expiresAt: number }>();
 
   return {
@@ -111,8 +125,15 @@ function createCounterStore(): CounterStore {
       },
     };
   } catch {
-    return createMemoryStore();
+    return createMemoryRateLimitStore();
   }
+}
+
+let defaultRateLimitStore: CounterStore | null = null;
+
+function getDefaultRateLimitStore(): CounterStore {
+  if (!defaultRateLimitStore) defaultRateLimitStore = createCounterStore();
+  return defaultRateLimitStore;
 }
 
 async function enforceLimit(
@@ -138,7 +159,7 @@ async function enforceLimit(
 
 export function createRateLimiterMiddleware(deps?: RateLimiterDeps): RequestHandler {
   const now = deps?.now ?? (() => new Date());
-  const store = deps?.store ?? createCounterStore();
+  const store = deps?.store ?? getDefaultRateLimitStore();
   const tierCache = new Map<string, TierCacheRecord>();
 
   const defaultGetUserTier = async (userId: string): Promise<UserTier> => {
@@ -158,6 +179,15 @@ export function createRateLimiterMiddleware(deps?: RateLimiterDeps): RequestHand
   };
 
   const getUserTier = deps?.getUserTier ?? defaultGetUserTier;
+
+  const defaultGetUserAccess = async (userId: string): Promise<PremiumRateLimitAccess | null> => {
+    if (!deps?.prisma) return null;
+    const access = await getUserAccessById(userId, deps.prisma).catch(() => null);
+    if (!access) return null;
+    return { accessState: access.accessState, canUseProduct: access.canUseProduct };
+  };
+
+  const getUserAccess = deps?.getUserAccess ?? defaultGetUserAccess;
 
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -252,6 +282,12 @@ export function createRateLimiterMiddleware(deps?: RateLimiterDeps): RequestHand
 
         const tier = await getUserTier(requestUserId);
         if (tier === "PRO" || tier === "PRO_PLUS") {
+          next();
+          return;
+        }
+
+        const access = await getUserAccess(requestUserId);
+        if (isActiveTrialPremiumAccess(access)) {
           next();
           return;
         }
