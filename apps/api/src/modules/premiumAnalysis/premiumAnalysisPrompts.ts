@@ -23,7 +23,12 @@ Rules:
 - dataFreshness must reflect snapshot computedAt, version, sources with status, coverage and missingData arrays.
 - version must be "${PREMIUM_ANALYSIS_CONTRACT_VERSION}".
 - symbol must match snapshot symbol (resolved symbol if provided).
-- generatedAt: ISO-8601 UTC now.`;
+- generatedAt: ISO-8601 UTC now.
+- Output must be compact JSON only: short sentences, no long paragraphs, minimal whitespace.
+- Max 3 bullets per array unless schema requires otherwise.
+- riskMap.items: max 5. valuationContext.metrics: max 6. thesisInvalidators.items: max 5.
+- historicalTwins: brief; matchCount may be 0.
+- If data is weak, be concise and conservative rather than verbose or speculative.`;
 }
 
 function compactSnapshotForPrompt(snapshot: StockAIDataSnapshot): Record<string, unknown> {

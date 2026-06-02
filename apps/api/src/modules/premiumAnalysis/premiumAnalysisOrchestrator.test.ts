@@ -7,8 +7,13 @@ import {
   validatePremiumAnalysisContract,
 } from "./premiumAnalysisContract";
 import {
+  ANALYSIS_MAX_TOKENS,
+  ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS,
+  ANALYSIS_TOTAL_SOFT_BUDGET_MS,
   PremiumAnalysisUsageLimitExceededError,
+  likelyTruncatedAnthropicResponse,
   readValidatedPremiumAnalysisCache,
+  shouldAttemptPremiumAnalysisRepair,
 } from "./premiumAnalysisOrchestrator";
 
 function minimalSnapshot(overrides?: Partial<StockAIDataSnapshot>): StockAIDataSnapshot {
@@ -110,6 +115,81 @@ describe("PremiumAnalysisUsageLimitExceededError", () => {
     assert.equal(err.resetIn, 3600);
     assert.equal(err.name, "PremiumAnalysisUsageLimitExceededError");
     assert.equal(err.message, "limited");
+  });
+});
+
+describe("premium analysis latency guard", () => {
+  it("detects max_tokens truncation signals", () => {
+    assert.equal(
+      likelyTruncatedAnthropicResponse({
+        contract: null,
+        raw: "{}",
+        model: "claude-sonnet-4-6",
+        latencyMs: 1000,
+        stopReason: "max_tokens",
+      }),
+      true,
+    );
+    assert.equal(
+      likelyTruncatedAnthropicResponse({
+        contract: null,
+        raw: "x".repeat(ANALYSIS_MAX_TOKENS * 3),
+        model: "claude-sonnet-4-6",
+        latencyMs: 1000,
+        outputTokens: ANALYSIS_MAX_TOKENS,
+      }),
+      true,
+    );
+    assert.equal(
+      likelyTruncatedAnthropicResponse({
+        contract: null,
+        raw: '{"ok":true}',
+        model: "claude-sonnet-4-6",
+        latencyMs: 1000,
+        outputTokens: 120,
+        stopReason: "end_turn",
+      }),
+      false,
+    );
+  });
+
+  it("skips repair when first response is truncated", () => {
+    const startedAt = Date.now() - 10_000;
+    const first = {
+      contract: null,
+      raw: "",
+      model: "claude-sonnet-4-6",
+      latencyMs: 60_000,
+      outputTokens: ANALYSIS_MAX_TOKENS,
+      stopReason: "max_tokens",
+    };
+    assert.equal(shouldAttemptPremiumAnalysisRepair(first, startedAt), false);
+  });
+
+  it("skips repair when soft budget is exhausted", () => {
+    const startedAt = Date.now() - (ANALYSIS_TOTAL_SOFT_BUDGET_MS - ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS + 1);
+    const first = {
+      contract: null,
+      raw: '{"invalid":true}',
+      model: "claude-sonnet-4-6",
+      latencyMs: 50_000,
+      outputTokens: 500,
+      stopReason: "end_turn",
+    };
+    assert.equal(shouldAttemptPremiumAnalysisRepair(first, startedAt), false);
+  });
+
+  it("allows repair when budget remains and response is not truncated", () => {
+    const startedAt = Date.now() - 5_000;
+    const first = {
+      contract: null,
+      raw: '{"invalid":true}',
+      model: "claude-sonnet-4-6",
+      latencyMs: 5_000,
+      outputTokens: 800,
+      stopReason: "end_turn",
+    };
+    assert.equal(shouldAttemptPremiumAnalysisRepair(first, startedAt), true);
   });
 });
 

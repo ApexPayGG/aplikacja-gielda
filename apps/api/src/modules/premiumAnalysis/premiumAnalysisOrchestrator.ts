@@ -26,8 +26,21 @@ import {
 } from "./premiumAnalysisContract";
 import { resolvePremiumAnalysisModel } from "./premiumAnalysisModelTasks";
 
-const ANALYSIS_MAX_TOKENS = 4096;
+export const ANALYSIS_MAX_TOKENS = 2800;
+export const ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS = 20_000;
+export const ANALYSIS_TOTAL_SOFT_BUDGET_MS = 75_000;
+export const ANALYSIS_SINGLE_CALL_WARN_MS = 45_000;
 const ANALYSIS_TEMPERATURE = 0.2;
+
+export type AnthropicContractCallResult = {
+  contract: PremiumAnalysisContract | null;
+  raw: string;
+  model: string;
+  latencyMs: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  stopReason?: string | null;
+};
 
 export type PremiumAnalysisCacheStatus = "hit" | "miss" | "fallback";
 
@@ -98,6 +111,30 @@ function hasAnthropicKey(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
 }
 
+export function likelyTruncatedAnthropicResponse(
+  result: AnthropicContractCallResult,
+  maxTokens: number = ANALYSIS_MAX_TOKENS,
+): boolean {
+  if (result.stopReason === "max_tokens") return true;
+  if (result.outputTokens != null && result.outputTokens >= maxTokens) return true;
+  if (!result.contract && (result.outputTokens ?? 0) >= Math.floor(maxTokens * 0.95)) return true;
+  if (!result.contract && result.raw.length >= maxTokens * 3) return true;
+  return false;
+}
+
+export function shouldAttemptPremiumAnalysisRepair(
+  first: AnthropicContractCallResult,
+  anthropicStartedAtMs: number,
+  nowMs: number = Date.now(),
+): boolean {
+  if (first.contract) return false;
+  if (likelyTruncatedAnthropicResponse(first)) return false;
+  const elapsed = nowMs - anthropicStartedAtMs;
+  const repairDeadline = ANALYSIS_TOTAL_SOFT_BUDGET_MS - ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS;
+  if (elapsed >= repairDeadline) return false;
+  return true;
+}
+
 export function readValidatedPremiumAnalysisCache(
   cached: unknown,
 ): PremiumAnalysisContract | null {
@@ -118,14 +155,7 @@ async function callAnthropicForContract(
   language: string,
   repair?: { validationSummary: string; priorRaw: string },
   telemetry?: Partial<AiCallTelemetry>,
-): Promise<{
-  contract: PremiumAnalysisContract | null;
-  raw: string;
-  model: string;
-  latencyMs: number;
-  inputTokens?: number;
-  outputTokens?: number;
-}> {
+): Promise<AnthropicContractCallResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   if (!apiKey) {
     return {
@@ -173,6 +203,11 @@ async function callAnthropicForContract(
   const validated = parsed != null ? validatePremiumAnalysisContract(parsed) : null;
   const contract = validated?.success ? validated.data : null;
 
+  const stopReason =
+    "stop_reason" in response && typeof response.stop_reason === "string"
+      ? response.stop_reason
+      : null;
+
   return {
     contract,
     raw,
@@ -180,6 +215,7 @@ async function callAnthropicForContract(
     latencyMs: Date.now() - startedAt,
     inputTokens: response.usage?.input_tokens,
     outputTokens: response.usage?.output_tokens,
+    stopReason,
   };
 }
 
@@ -234,11 +270,12 @@ export async function buildPremiumAnalysisBundle(
       );
     }
 
+    const anthropicStartedAt = Date.now();
     try {
       const first = await callAnthropicForContract(snapshot, language, undefined, input.telemetry);
       contract = first.contract;
       provider = {
-        name: "anthropic",
+        name: contract ? "anthropic" : "fallback",
         model: first.model,
         latencyMs: first.latencyMs,
         inputTokens: first.inputTokens,
@@ -246,7 +283,7 @@ export async function buildPremiumAnalysisBundle(
         retryCount: 0,
       };
 
-      if (!contract) {
+      if (!contract && shouldAttemptPremiumAnalysisRepair(first, anthropicStartedAt)) {
         const validationSummary = "JSON parse failed or schema validation failed on first attempt.";
         retryCount = 1;
         const second = await callAnthropicForContract(
@@ -256,19 +293,23 @@ export async function buildPremiumAnalysisBundle(
           input.telemetry,
         );
         contract = second.contract;
+        const useAnthropic = contract != null && !likelyTruncatedAnthropicResponse(second);
+        if (!useAnthropic) contract = null;
         provider = {
-          name: contract ? "anthropic" : "fallback",
+          name: useAnthropic ? "anthropic" : "fallback",
           model: second.model,
           latencyMs: (provider.latencyMs ?? 0) + second.latencyMs,
           inputTokens: (provider.inputTokens ?? 0) + (second.inputTokens ?? 0),
           outputTokens: (provider.outputTokens ?? 0) + (second.outputTokens ?? 0),
           retryCount: 1,
         };
+      } else if (contract) {
+        provider = { ...provider, name: "anthropic" };
       }
     } catch (error) {
       if (error instanceof PremiumAnalysisUsageLimitExceededError) throw error;
       contract = null;
-      provider = { name: "fallback", model: null, retryCount };
+      provider = { name: "fallback", model: provider.model, retryCount };
     }
   }
 
@@ -283,13 +324,27 @@ export async function buildPremiumAnalysisBundle(
       );
     }
     cacheStatus = "fallback";
-    provider = { name: "fallback", model: null, retryCount };
+    provider = {
+      name: "fallback",
+      model: provider.model,
+      latencyMs: provider.latencyMs,
+      inputTokens: provider.inputTokens,
+      outputTokens: provider.outputTokens,
+      retryCount,
+    };
   } else {
     const check = validatePremiumAnalysisContract(contract);
     if (!check.success) {
       contract = buildFallbackPremiumAnalysisContract(snapshot);
       cacheStatus = "fallback";
-      provider = { name: "fallback", model: provider.model, retryCount };
+      provider = {
+        name: "fallback",
+        model: provider.model,
+        latencyMs: provider.latencyMs,
+        inputTokens: provider.inputTokens,
+        outputTokens: provider.outputTokens,
+        retryCount,
+      };
     }
   }
 
