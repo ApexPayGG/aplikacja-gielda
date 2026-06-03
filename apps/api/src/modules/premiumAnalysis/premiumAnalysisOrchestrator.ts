@@ -32,6 +32,8 @@ export const ANALYSIS_MAX_TOKENS = 2800;
 export const ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS = 20_000;
 export const ANALYSIS_TOTAL_SOFT_BUDGET_MS = 75_000;
 export const ANALYSIS_SINGLE_CALL_WARN_MS = 45_000;
+/** Max first-call latency before skipping repair (fast failures only). */
+export const ANALYSIS_REPAIR_MAX_FIRST_CALL_LATENCY_MS = 20_000;
 export const PREMIUM_ANALYSIS_SINGLE_FLIGHT_LOCK_TTL_SEC = 120;
 export const PREMIUM_ANALYSIS_SINGLE_FLIGHT_WAIT_MS = 750;
 export const PREMIUM_ANALYSIS_SINGLE_FLIGHT_MAX_WAIT_MS = 70_000;
@@ -134,6 +136,7 @@ export function shouldAttemptPremiumAnalysisRepair(
 ): boolean {
   if (first.contract) return false;
   if (likelyTruncatedAnthropicResponse(first)) return false;
+  if (first.latencyMs >= ANALYSIS_REPAIR_MAX_FIRST_CALL_LATENCY_MS) return false;
   if (first.latencyMs >= ANALYSIS_SINGLE_CALL_WARN_MS) return false;
   const elapsed = nowMs - anthropicStartedAtMs;
   const repairDeadline = ANALYSIS_TOTAL_SOFT_BUDGET_MS - ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS;

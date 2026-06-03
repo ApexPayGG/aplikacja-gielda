@@ -9,7 +9,7 @@ import {
 import {
   ANALYSIS_MAX_TOKENS,
   ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS,
-  ANALYSIS_SINGLE_CALL_WARN_MS,
+  ANALYSIS_REPAIR_MAX_FIRST_CALL_LATENCY_MS,
   ANALYSIS_TOTAL_SOFT_BUDGET_MS,
   buildPremiumAnalysisSingleFlightTimeoutBundle,
   PremiumAnalysisUsageLimitExceededError,
@@ -168,13 +168,26 @@ describe("premium analysis latency guard", () => {
     assert.equal(shouldAttemptPremiumAnalysisRepair(first, startedAt), false);
   });
 
-  it("skips repair when first call latency exceeds warn threshold", () => {
+  it("skips repair when first call is too slow for repair budget", () => {
     const startedAt = Date.now() - 5_000;
     const first = {
       contract: null,
       raw: '{"invalid":true}',
       model: "claude-sonnet-4-6",
-      latencyMs: ANALYSIS_SINGLE_CALL_WARN_MS,
+      latencyMs: ANALYSIS_REPAIR_MAX_FIRST_CALL_LATENCY_MS,
+      outputTokens: 800,
+      stopReason: "end_turn",
+    };
+    assert.equal(shouldAttemptPremiumAnalysisRepair(first, startedAt), false);
+  });
+
+  it("skips repair for production-like slow first call around 42s", () => {
+    const startedAt = Date.now() - 5_000;
+    const first = {
+      contract: null,
+      raw: '{"invalid":true}',
+      model: "claude-sonnet-4-6",
+      latencyMs: 42_729,
       outputTokens: 800,
       stopReason: "end_turn",
     };
@@ -194,13 +207,13 @@ describe("premium analysis latency guard", () => {
     assert.equal(shouldAttemptPremiumAnalysisRepair(first, startedAt), false);
   });
 
-  it("allows repair when budget remains and response is not truncated", () => {
+  it("allows repair only when first call is fast, budget remains, and response is not truncated", () => {
     const startedAt = Date.now() - 5_000;
     const first = {
       contract: null,
       raw: '{"invalid":true}',
       model: "claude-sonnet-4-6",
-      latencyMs: 5_000,
+      latencyMs: ANALYSIS_REPAIR_MAX_FIRST_CALL_LATENCY_MS - 1,
       outputTokens: 800,
       stopReason: "end_turn",
     };
