@@ -61,14 +61,13 @@ import { createPaperTradingRouter } from "./routes/paperTrading";
 import { createExitIntelligenceRouter } from "./routes/exitIntelligence";
 import { createAnalysisRouter, createCompanyBriefHandler } from "./routes/analysis";
 import { createAiBriefRateLimitMiddleware } from "./services/aiBriefRateLimit";
-import { requireAuth } from "./modules/auth/authMiddleware";
+import { optionalAuth, requireAuth } from "./modules/auth/authMiddleware";
 import {
   requireActiveAccess,
   requireActiveAccessIfAuthenticated,
 } from "./middleware/requireActiveAccess";
 import { requireProductAccessForApi, useProductRouter } from "./middleware/productAccessMiddleware";
 import { createPremiumLlmRateLimitMiddleware } from "./services/premiumLlmRateLimit";
-import { optionalAuth } from "./modules/auth/authMiddleware";
 import { createQuotesRouter } from "./routes/quotes";
 import { createAlphaJournalRouter } from "./routes/alphaJournal";
 import { createAlphaCalendarRouter } from "./routes/alphaCalendar";
@@ -222,6 +221,7 @@ export function createApp(): express.Express {
       },
     }),
   );
+  app.use(optionalAuth);
   app.use(createRateLimiterMiddleware({ prisma }));
   app.use(createInputSanitizerMiddleware());
 

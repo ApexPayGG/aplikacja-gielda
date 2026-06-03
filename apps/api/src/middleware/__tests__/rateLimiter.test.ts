@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import express from "express";
+import { optionalAuth } from "../../modules/auth/authMiddleware";
+import { signAuthToken } from "../../modules/auth/authJwt";
 import {
   createMemoryRateLimitStore,
   createRateLimiterMiddleware,
@@ -265,5 +267,79 @@ describe("premium trial-aware global rate limiter", () => {
       const blocked = await fetch(`${baseUrl}/api/premium/signal?userId=${userId}`);
       assert.equal(blocked.status, 429);
     }
+  });
+});
+
+describe("optionalAuth before global rate limiter", () => {
+  let server: ReturnType<express.Express["listen"]> | null = null;
+  let baseUrl = "";
+  const oldJwtSecret = process.env.JWT_SECRET;
+  const trialBearerUserId = "trial-bearer-user";
+
+  beforeEach(async () => {
+    process.env.JWT_SECRET = "test-secret";
+    const app = express();
+    app.set("trust proxy", true);
+    app.use(express.json());
+    const store = createMemoryRateLimitStore();
+    app.use(optionalAuth);
+    app.use(
+      createRateLimiterMiddleware({
+        store,
+        getUserTier: async () => "FREE",
+        getUserAccess: async (userId) => {
+          if (userId === trialBearerUserId) {
+            return { accessState: "TRIAL_ACTIVE", canUseProduct: true };
+          }
+          return null;
+        },
+      }),
+    );
+    app.get("/api/premium/signal", (_req, res) => res.json({ ok: true }));
+
+    await new Promise<void>((resolve) => {
+      server = app.listen(0, () => resolve());
+    });
+    const addr = server!.address();
+    if (!addr || typeof addr === "string") throw new Error("no port");
+    baseUrl = `http://127.0.0.1:${addr.port}`;
+  });
+
+  afterEach(async () => {
+    if (oldJwtSecret === undefined) {
+      delete process.env.JWT_SECRET;
+    } else {
+      process.env.JWT_SECRET = oldJwtSecret;
+    }
+    await new Promise<void>((resolve, reject) => {
+      if (!server) return resolve();
+      server.close((err) => (err ? reject(err) : resolve()));
+      server = null;
+    });
+  });
+
+  it("Bearer token trial user bypasses global premium free monthly cap", async () => {
+    const token = signAuthToken({
+      sub: trialBearerUserId,
+      email: "trial@example.com",
+    });
+    const headers = { authorization: `Bearer ${token}` };
+
+    for (let i = 0; i < 15; i++) {
+      const res = await fetch(`${baseUrl}/api/premium/signal`, { headers });
+      assert.equal(res.status, 200);
+    }
+  });
+
+  it("invalid Bearer token remains IP-limited on premium routes", async () => {
+    const headers = { authorization: "Bearer invalid-token" };
+
+    for (let i = 0; i < 10; i++) {
+      const res = await fetch(`${baseUrl}/api/premium/signal`, { headers });
+      assert.equal(res.status, 200);
+    }
+
+    const blocked = await fetch(`${baseUrl}/api/premium/signal`, { headers });
+    assert.equal(blocked.status, 429);
   });
 });
