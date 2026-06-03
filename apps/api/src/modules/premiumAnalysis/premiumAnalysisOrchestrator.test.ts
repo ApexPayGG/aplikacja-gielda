@@ -9,7 +9,9 @@ import {
 import {
   ANALYSIS_MAX_TOKENS,
   ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS,
+  ANALYSIS_SINGLE_CALL_WARN_MS,
   ANALYSIS_TOTAL_SOFT_BUDGET_MS,
+  buildPremiumAnalysisSingleFlightTimeoutBundle,
   PremiumAnalysisUsageLimitExceededError,
   likelyTruncatedAnthropicResponse,
   readValidatedPremiumAnalysisCache,
@@ -166,6 +168,19 @@ describe("premium analysis latency guard", () => {
     assert.equal(shouldAttemptPremiumAnalysisRepair(first, startedAt), false);
   });
 
+  it("skips repair when first call latency exceeds warn threshold", () => {
+    const startedAt = Date.now() - 5_000;
+    const first = {
+      contract: null,
+      raw: '{"invalid":true}',
+      model: "claude-sonnet-4-6",
+      latencyMs: ANALYSIS_SINGLE_CALL_WARN_MS,
+      outputTokens: 800,
+      stopReason: "end_turn",
+    };
+    assert.equal(shouldAttemptPremiumAnalysisRepair(first, startedAt), false);
+  });
+
   it("skips repair when soft budget is exhausted", () => {
     const startedAt = Date.now() - (ANALYSIS_TOTAL_SOFT_BUDGET_MS - ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS + 1);
     const first = {
@@ -190,6 +205,19 @@ describe("premium analysis latency guard", () => {
       stopReason: "end_turn",
     };
     assert.equal(shouldAttemptPremiumAnalysisRepair(first, startedAt), true);
+  });
+});
+
+describe("premium analysis single-flight timeout fallback", () => {
+  it("returns validated fallback bundle without cache write fields", () => {
+    const snapshot = minimalSnapshot();
+    const bundle = buildPremiumAnalysisSingleFlightTimeoutBundle(snapshot, "hash-test");
+    assert.equal(bundle.cacheStatus, "fallback");
+    assert.equal(bundle.provider.name, "fallback");
+    assert.equal(bundle.provider.retryCount, 0);
+    assert.equal(bundle.snapshotHash, "hash-test");
+    const validated = validatePremiumAnalysisContract(bundle.contract);
+    assert.equal(validated.success, true);
   });
 });
 

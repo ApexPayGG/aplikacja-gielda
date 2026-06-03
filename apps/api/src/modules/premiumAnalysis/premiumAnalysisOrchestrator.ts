@@ -9,10 +9,12 @@ import {
   type AiCallTelemetry,
 } from "../../services/aiCostTelemetry";
 import { enforcePremiumAnalysisDailyLimit } from "../../services/premiumAnalysisUsageLimit";
+import { SingleFlightTimeoutError, withSingleFlight } from "../../utils/singleFlight";
 import {
   buildStockAIDataSnapshot,
   createSnapshotHash,
   STOCK_AI_DATA_SNAPSHOT_VERSION,
+  type StockAIDataSnapshot,
 } from "./dataSnapshot";
 import { buildFallbackPremiumAnalysisContract } from "./premiumAnalysisFallback";
 import {
@@ -30,6 +32,9 @@ export const ANALYSIS_MAX_TOKENS = 2800;
 export const ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS = 20_000;
 export const ANALYSIS_TOTAL_SOFT_BUDGET_MS = 75_000;
 export const ANALYSIS_SINGLE_CALL_WARN_MS = 45_000;
+export const PREMIUM_ANALYSIS_SINGLE_FLIGHT_LOCK_TTL_SEC = 120;
+export const PREMIUM_ANALYSIS_SINGLE_FLIGHT_WAIT_MS = 750;
+export const PREMIUM_ANALYSIS_SINGLE_FLIGHT_MAX_WAIT_MS = 70_000;
 const ANALYSIS_TEMPERATURE = 0.2;
 
 export type AnthropicContractCallResult = {
@@ -129,6 +134,7 @@ export function shouldAttemptPremiumAnalysisRepair(
 ): boolean {
   if (first.contract) return false;
   if (likelyTruncatedAnthropicResponse(first)) return false;
+  if (first.latencyMs >= ANALYSIS_SINGLE_CALL_WARN_MS) return false;
   const elapsed = nowMs - anthropicStartedAtMs;
   const repairDeadline = ANALYSIS_TOTAL_SOFT_BUDGET_MS - ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS;
   if (elapsed >= repairDeadline) return false;
@@ -150,101 +156,79 @@ async function loadCachedContract(
   return readValidatedPremiumAnalysisCache(cached);
 }
 
-async function callAnthropicForContract(
-  snapshot: Awaited<ReturnType<typeof buildStockAIDataSnapshot>>,
-  language: string,
-  repair?: { validationSummary: string; priorRaw: string },
-  telemetry?: Partial<AiCallTelemetry>,
-): Promise<AnthropicContractCallResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
-  if (!apiKey) {
-    return {
-      contract: null,
-      raw: "",
-      model: resolvePremiumAnalysisModel("executive_verdict"),
-      latencyMs: 0,
-    };
-  }
-
-  const model = resolvePremiumAnalysisModel("executive_verdict");
-  const startedAt = Date.now();
-  const client = new Anthropic({ apiKey });
-  const userContent = repair
-    ? buildPremiumAnalysisRepairPrompt(snapshot, repair.validationSummary, repair.priorRaw, language)
-    : buildPremiumAnalysisUserPrompt(snapshot, language);
-
-  const response = await client.messages.create({
-    model,
-    max_tokens: ANALYSIS_MAX_TOKENS,
-    temperature: ANALYSIS_TEMPERATURE,
-    system: buildPremiumAnalysisSystemPrompt(),
-    messages: [{ role: "user", content: userContent }],
-  });
-
-  logAiCallFromAnthropicResponse(
-    {
-      endpoint: telemetry?.endpoint ?? "/api/premium/analysis",
-      plan: telemetry?.plan ?? "unknown",
-      symbol: telemetry?.symbol ?? snapshot.symbol,
-      lang: telemetry?.lang ?? language,
-      userId: telemetry?.userId ?? null,
-      cacheHit: false,
-      meta: { bundle: "premium_analysis", repair: Boolean(repair) },
-      ...telemetry,
-    },
-    model,
-    startedAt,
-    response.usage,
-  );
-
-  const block = response.content[0];
-  const raw = block && block.type === "text" ? block.text : "";
-  const parsed = parseJsonObject(raw);
-  const validated = parsed != null ? validatePremiumAnalysisContract(parsed) : null;
-  const contract = validated?.success ? validated.data : null;
-
-  const stopReason =
-    "stop_reason" in response && typeof response.stop_reason === "string"
-      ? response.stop_reason
-      : null;
-
+function buildPremiumAnalysisCacheHitBundle(
+  cached: PremiumAnalysisContract,
+  snapshotHash: string,
+): PremiumAnalysisBundle {
   return {
-    contract,
-    raw,
-    model,
-    latencyMs: Date.now() - startedAt,
-    inputTokens: response.usage?.input_tokens,
-    outputTokens: response.usage?.output_tokens,
-    stopReason,
+    contract: cached,
+    snapshotHash,
+    snapshotVersion: STOCK_AI_DATA_SNAPSHOT_VERSION,
+    generatedAt: cached.generatedAt,
+    cacheStatus: "hit",
+    provider: { name: "anthropic", model: null },
   };
 }
 
-export async function buildPremiumAnalysisBundle(
-  input: BuildPremiumAnalysisBundleInput,
-): Promise<PremiumAnalysisBundle> {
-  const language = (input.language ?? "en").trim().toLowerCase() || "en";
-  const ticker = input.symbol.trim().toUpperCase();
-  const snapshot = await buildStockAIDataSnapshot({
-    symbol: ticker,
-    prisma: input.prisma,
-    includeDividend: true,
-    userId: input.userId ?? null,
-    plan: input.plan ?? null,
-  });
-  const snapshotHash = createSnapshotHash(snapshot);
-  const cacheKey = redisKeys.premiumAnalysisBundle(ticker, snapshotHash, language);
-
+async function readCachedBundleAfterWait(
+  cacheKey: string,
+  snapshotHash: string,
+): Promise<PremiumAnalysisBundle | null> {
   const cached = await loadCachedContract(cacheKey);
-  if (cached) {
-    return {
-      contract: cached,
-      snapshotHash,
-      snapshotVersion: STOCK_AI_DATA_SNAPSHOT_VERSION,
-      generatedAt: cached.generatedAt,
-      cacheStatus: "hit",
-      provider: { name: "anthropic", model: null },
-    };
+  if (!cached) return null;
+  return buildPremiumAnalysisCacheHitBundle(cached, snapshotHash);
+}
+
+function buildPremiumAnalysisLockKey(
+  ticker: string,
+  snapshotHash: string,
+  language: string,
+): string {
+  return `singleflight:premium:analysis:${ticker}:${snapshotHash}:${language}`;
+}
+
+/** Waiter timeout: deterministic fallback without Anthropic or cache write. */
+export function buildPremiumAnalysisSingleFlightTimeoutBundle(
+  snapshot: StockAIDataSnapshot,
+  snapshotHash: string,
+): PremiumAnalysisBundle {
+  const contract = buildFallbackPremiumAnalysisContract(snapshot);
+  const fallbackCheck = validatePremiumAnalysisContract(contract);
+  if (!fallbackCheck.success) {
+    throw new Error(
+      `Fallback premium analysis contract invalid: ${formatZodSummary(fallbackCheck.error)}`,
+    );
   }
+  return {
+    contract,
+    snapshotHash,
+    snapshotVersion: STOCK_AI_DATA_SNAPSHOT_VERSION,
+    generatedAt: contract.generatedAt,
+    cacheStatus: "fallback",
+    provider: { name: "fallback", model: null, retryCount: 0 },
+  };
+}
+
+type RunPremiumAnalysisFreshGenerationInput = {
+  snapshot: StockAIDataSnapshot;
+  snapshotHash: string;
+  cacheKey: string;
+  language: string;
+  plan?: string | null;
+  userId?: string | null;
+  clientIp?: string | null;
+  accessState?: string | null;
+  canUseProduct?: boolean | null;
+  telemetry?: Partial<AiCallTelemetry>;
+};
+
+async function runPremiumAnalysisFreshGeneration(
+  input: RunPremiumAnalysisFreshGenerationInput,
+): Promise<PremiumAnalysisBundle> {
+  const { snapshot, snapshotHash, cacheKey, language } = input;
+
+  const leaderCacheHit = await readCachedBundleAfterWait(cacheKey, snapshotHash);
+  if (leaderCacheHit) return leaderCacheHit;
 
   let retryCount = 0;
   let provider: PremiumAnalysisProviderMeta = {
@@ -358,4 +342,130 @@ export async function buildPremiumAnalysisBundle(
     cacheStatus,
     provider,
   };
+}
+
+async function callAnthropicForContract(
+  snapshot: Awaited<ReturnType<typeof buildStockAIDataSnapshot>>,
+  language: string,
+  repair?: { validationSummary: string; priorRaw: string },
+  telemetry?: Partial<AiCallTelemetry>,
+): Promise<AnthropicContractCallResult> {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) {
+    return {
+      contract: null,
+      raw: "",
+      model: resolvePremiumAnalysisModel("executive_verdict"),
+      latencyMs: 0,
+    };
+  }
+
+  const model = resolvePremiumAnalysisModel("executive_verdict");
+  const startedAt = Date.now();
+  const client = new Anthropic({ apiKey });
+  const userContent = repair
+    ? buildPremiumAnalysisRepairPrompt(snapshot, repair.validationSummary, repair.priorRaw, language)
+    : buildPremiumAnalysisUserPrompt(snapshot, language);
+
+  const response = await client.messages.create({
+    model,
+    max_tokens: ANALYSIS_MAX_TOKENS,
+    temperature: ANALYSIS_TEMPERATURE,
+    system: buildPremiumAnalysisSystemPrompt(),
+    messages: [{ role: "user", content: userContent }],
+  });
+
+  logAiCallFromAnthropicResponse(
+    {
+      endpoint: telemetry?.endpoint ?? "/api/premium/analysis",
+      plan: telemetry?.plan ?? "unknown",
+      symbol: telemetry?.symbol ?? snapshot.symbol,
+      lang: telemetry?.lang ?? language,
+      userId: telemetry?.userId ?? null,
+      cacheHit: false,
+      meta: { bundle: "premium_analysis", repair: Boolean(repair) },
+      ...telemetry,
+    },
+    model,
+    startedAt,
+    response.usage,
+  );
+
+  const block = response.content[0];
+  const raw = block && block.type === "text" ? block.text : "";
+  const parsed = parseJsonObject(raw);
+  const validated = parsed != null ? validatePremiumAnalysisContract(parsed) : null;
+  const contract = validated?.success ? validated.data : null;
+
+  const stopReason =
+    "stop_reason" in response && typeof response.stop_reason === "string"
+      ? response.stop_reason
+      : null;
+
+  return {
+    contract,
+    raw,
+    model,
+    latencyMs: Date.now() - startedAt,
+    inputTokens: response.usage?.input_tokens,
+    outputTokens: response.usage?.output_tokens,
+    stopReason,
+  };
+}
+
+export async function buildPremiumAnalysisBundle(
+  input: BuildPremiumAnalysisBundleInput,
+): Promise<PremiumAnalysisBundle> {
+  const language = (input.language ?? "en").trim().toLowerCase() || "en";
+  const ticker = input.symbol.trim().toUpperCase();
+  const snapshot = await buildStockAIDataSnapshot({
+    symbol: ticker,
+    prisma: input.prisma,
+    includeDividend: true,
+    userId: input.userId ?? null,
+    plan: input.plan ?? null,
+  });
+  const snapshotHash = createSnapshotHash(snapshot);
+  const cacheKey = redisKeys.premiumAnalysisBundle(ticker, snapshotHash, language);
+
+  const cached = await loadCachedContract(cacheKey);
+  if (cached) {
+    return buildPremiumAnalysisCacheHitBundle(cached, snapshotHash);
+  }
+
+  const lockKey = buildPremiumAnalysisLockKey(ticker, snapshotHash, language);
+  const readAfterWait = () => readCachedBundleAfterWait(cacheKey, snapshotHash);
+
+  try {
+    return await withSingleFlight(
+      lockKey,
+      {
+        scope: "premium_analysis",
+        lockTtlSeconds: PREMIUM_ANALYSIS_SINGLE_FLIGHT_LOCK_TTL_SEC,
+        waitMs: PREMIUM_ANALYSIS_SINGLE_FLIGHT_WAIT_MS,
+        maxWaitMs: PREMIUM_ANALYSIS_SINGLE_FLIGHT_MAX_WAIT_MS,
+        readAfterWait,
+      },
+      () =>
+        runPremiumAnalysisFreshGeneration({
+          snapshot,
+          snapshotHash,
+          cacheKey,
+          language,
+          plan: input.plan,
+          userId: input.userId,
+          clientIp: input.clientIp,
+          accessState: input.accessState,
+          canUseProduct: input.canUseProduct,
+          telemetry: input.telemetry,
+        }),
+    );
+  } catch (error) {
+    if (error instanceof SingleFlightTimeoutError) {
+      const lateHit = await readCachedBundleAfterWait(cacheKey, snapshotHash);
+      if (lateHit) return lateHit;
+      return buildPremiumAnalysisSingleFlightTimeoutBundle(snapshot, snapshotHash);
+    }
+    throw error;
+  }
 }
