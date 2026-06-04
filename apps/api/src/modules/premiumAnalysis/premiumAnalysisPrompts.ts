@@ -28,7 +28,17 @@ Rules:
 - Max 3 bullets per array unless schema requires otherwise.
 - riskMap.items: max 5. valuationContext.metrics: max 6. thesisInvalidators.items: max 5.
 - historicalTwins: brief; matchCount may be 0.
-- If data is weak, be concise and conservative rather than verbose or speculative.`;
+- If data is weak, be concise and conservative rather than verbose or speculative.
+
+Hard contract shape (exact JSON keys and types):
+- Output a single valid JSON object matching PremiumAnalysisContract exactly. No markdown fences.
+- Required top-level sections: businessEngine, technicalSetup (not technicalContext), valuationContext, scenarios, executiveVerdict, dataFreshness, riskMap, historicalTwins, thesisInvalidators, decisionNote.
+- Do not alias company for businessEngine or technicalContext for technicalSetup.
+- dataFreshness.computedAt: ISO-8601 datetime string. Each dataFreshness.sources[] entry must include id (string), status, and optional asOf.
+- executiveVerdict.headline and executiveVerdict.educationalNote are required strings.
+- scenarios.horizonMonths: integer. Each scenarios.scenarios[] entry must include narrative (string).
+- valuationContext.summary required. valuationContext.metrics[].value must be JSON numbers, not strings. metrics[].asOf must be a string timestamp when present, not null.
+- Keep the response compact to stay within the max token budget.`;
 }
 
 function compactSnapshotForPrompt(snapshot: StockAIDataSnapshot): Record<string, unknown> {

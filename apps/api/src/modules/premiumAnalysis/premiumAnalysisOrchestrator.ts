@@ -27,6 +27,7 @@ import {
   validatePremiumAnalysisContract,
 } from "./premiumAnalysisContract";
 import type { ZodError, ZodIssue } from "zod";
+import { normalizePremiumAnalysisCandidate } from "./premiumAnalysisCandidateNormalizer";
 import { resolvePremiumAnalysisModel } from "./premiumAnalysisModelTasks";
 
 export const ANALYSIS_MAX_TOKENS = 2800;
@@ -124,7 +125,8 @@ export type PremiumAnalysisValidationFailureSummary = {
 type PremiumAnalysisLlmDiagnosticEvent =
   | "premium_analysis_llm_empty_response"
   | "premium_analysis_llm_parse_failed"
-  | "premium_analysis_llm_validation_failed";
+  | "premium_analysis_llm_validation_failed"
+  | "premium_analysis_llm_normalized_contract";
 
 function formatZodIssuePath(path: PropertyKey[]): string {
   return path.map((segment) => String(segment)).join(".");
@@ -221,11 +223,25 @@ function buildPremiumAnalysisLlmDiagnosticBase(
   return base;
 }
 
+function logPremiumAnalysisNormalizedSuccess(
+  ctx: PremiumAnalysisLlmCallContext,
+  changedFields: string[],
+  rawLength: number,
+): void {
+  if (!changedFields.length) return;
+  logPremiumAnalysisLlmDiagnostic("premium_analysis_llm_normalized_contract", {
+    ...buildPremiumAnalysisLlmDiagnosticBase(ctx),
+    rawLength,
+    changedFields,
+  });
+}
+
 function logPremiumAnalysisContractFailure(
   ctx: PremiumAnalysisLlmCallContext,
   raw: string,
   blockType: string | undefined,
   parsed: unknown,
+  normalized: unknown,
   validated: ReturnType<typeof validatePremiumAnalysisContract> | null,
 ): void {
   const rawLength = raw.length;
@@ -258,6 +274,7 @@ function logPremiumAnalysisContractFailure(
       ...base,
       rawLength,
       parsedTopLevelKeys: extractParsedTopLevelKeys(parsed),
+      normalizedTopLevelKeys: extractParsedTopLevelKeys(normalized),
       validationIssues: summary.validationIssues,
       issueCount: summary.issueCount,
       ...(rawPreview ? { rawPreview } : {}),
@@ -557,7 +574,11 @@ async function callAnthropicForContract(
   const blockType = block?.type;
   const raw = block && block.type === "text" ? block.text : "";
   const parsed = parseJsonObject(raw);
-  const validated = parsed != null ? validatePremiumAnalysisContract(parsed) : null;
+  const normalizedResult =
+    parsed != null ? normalizePremiumAnalysisCandidate(parsed, snapshot) : { candidate: null, changedFields: [] };
+  const normalized = normalizedResult.candidate;
+  const validated =
+    normalized != null ? validatePremiumAnalysisContract(normalized) : null;
   const contract = validated?.success ? validated.data : null;
 
   const stopReason =
@@ -566,22 +587,27 @@ async function callAnthropicForContract(
       : null;
 
   const latencyMs = Date.now() - startedAt;
-  if (!contract) {
+  const diagnosticCtx: PremiumAnalysisLlmCallContext = {
+    symbol: telemetry?.symbol ?? snapshot.symbol,
+    language,
+    model,
+    repair: Boolean(repair),
+    latencyMs,
+    stopReason,
+    inputTokens: response.usage?.input_tokens,
+    outputTokens: response.usage?.output_tokens,
+    snapshotHash,
+  };
+
+  if (contract) {
+    logPremiumAnalysisNormalizedSuccess(diagnosticCtx, normalizedResult.changedFields, raw.length);
+  } else {
     logPremiumAnalysisContractFailure(
-      {
-        symbol: telemetry?.symbol ?? snapshot.symbol,
-        language,
-        model,
-        repair: Boolean(repair),
-        latencyMs,
-        stopReason,
-        inputTokens: response.usage?.input_tokens,
-        outputTokens: response.usage?.output_tokens,
-        snapshotHash,
-      },
+      diagnosticCtx,
       raw,
       blockType,
       parsed,
+      normalized,
       validated,
     );
   }
