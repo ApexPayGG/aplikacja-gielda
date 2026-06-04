@@ -6,16 +6,22 @@ import {
   PremiumAnalysisContractSchema,
   validatePremiumAnalysisContract,
 } from "./premiumAnalysisContract";
+import { z } from "zod";
 import {
   ANALYSIS_MAX_TOKENS,
   ANALYSIS_REPAIR_MIN_TIME_BUDGET_MS,
   ANALYSIS_REPAIR_MAX_FIRST_CALL_LATENCY_MS,
   ANALYSIS_TOTAL_SOFT_BUDGET_MS,
+  buildPremiumAnalysisRawPreview,
   buildPremiumAnalysisSingleFlightTimeoutBundle,
+  extractParsedTopLevelKeys,
+  extractValidationIssues,
+  isPremiumAnalysisDebugRawEnabled,
   PremiumAnalysisUsageLimitExceededError,
   likelyTruncatedAnthropicResponse,
   readValidatedPremiumAnalysisCache,
   shouldAttemptPremiumAnalysisRepair,
+  summarizePremiumAnalysisValidationFailure,
 } from "./premiumAnalysisOrchestrator";
 
 function minimalSnapshot(overrides?: Partial<StockAIDataSnapshot>): StockAIDataSnapshot {
@@ -218,6 +224,58 @@ describe("premium analysis latency guard", () => {
       stopReason: "end_turn",
     };
     assert.equal(shouldAttemptPremiumAnalysisRepair(first, startedAt), true);
+  });
+});
+
+describe("premium analysis validation diagnostics helpers", () => {
+  it("extracts compact Zod validation issues", () => {
+    const schema = z.object({
+      executiveVerdict: z.object({ headline: z.string().min(1) }),
+    });
+    const parsed = schema.safeParse({ executiveVerdict: { headline: "" } });
+    assert.equal(parsed.success, false);
+    if (parsed.success) return;
+
+    const summary = summarizePremiumAnalysisValidationFailure(parsed.error);
+    assert.ok(summary.issueCount >= 1);
+    assert.ok(summary.validationIssues.length >= 1);
+    assert.match(summary.validationIssues[0]?.path ?? "", /executiveVerdict/);
+    assert.equal(typeof summary.validationIssues[0]?.code, "string");
+    assert.equal(typeof summary.validationIssues[0]?.message, "string");
+  });
+
+  it("extracts sorted top-level keys from parsed object", () => {
+    assert.deepEqual(extractParsedTopLevelKeys({ zeta: 1, alpha: 2 }), ["alpha", "zeta"]);
+    assert.equal(extractParsedTopLevelKeys(null), null);
+    assert.equal(extractParsedTopLevelKeys(["x"]), null);
+  });
+
+  it("omits raw preview unless debug flag is enabled", () => {
+    const old = process.env.PREMIUM_ANALYSIS_DEBUG_RAW;
+    try {
+      delete process.env.PREMIUM_ANALYSIS_DEBUG_RAW;
+      assert.equal(isPremiumAnalysisDebugRawEnabled(), false);
+      assert.equal(buildPremiumAnalysisRawPreview("secret-output"), undefined);
+
+      process.env.PREMIUM_ANALYSIS_DEBUG_RAW = "1";
+      assert.equal(isPremiumAnalysisDebugRawEnabled(), true);
+      assert.equal(buildPremiumAnalysisRawPreview("abcdef"), "abcdef");
+      assert.equal(buildPremiumAnalysisRawPreview("x".repeat(1200))?.length, 1000);
+    } finally {
+      if (old === undefined) delete process.env.PREMIUM_ANALYSIS_DEBUG_RAW;
+      else process.env.PREMIUM_ANALYSIS_DEBUG_RAW = old;
+    }
+  });
+
+  it("maps contract validation failures via extractValidationIssues", () => {
+    const invalid = { version: "9.9", symbol: "X" };
+    const result = validatePremiumAnalysisContract(invalid);
+    assert.equal(result.success, false);
+    if (result.success) return;
+
+    const issues = extractValidationIssues(result.error, 5);
+    assert.ok(issues.length >= 1);
+    assert.ok(issues.every((issue) => issue.path.length >= 0 && issue.message.length > 0));
   });
 });
 

@@ -26,6 +26,7 @@ import {
   type PremiumAnalysisContract,
   validatePremiumAnalysisContract,
 } from "./premiumAnalysisContract";
+import type { ZodError, ZodIssue } from "zod";
 import { resolvePremiumAnalysisModel } from "./premiumAnalysisModelTasks";
 
 export const ANALYSIS_MAX_TOKENS = 2800;
@@ -107,11 +108,161 @@ function parseJsonObject(raw: string): unknown | null {
   }
 }
 
-function formatZodSummary(error: import("zod").ZodError): string {
-  return error.issues
-    .slice(0, 12)
-    .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+export type PremiumAnalysisValidationIssueDiagnostic = {
+  path: string;
+  code: string;
+  message: string;
+  expected?: unknown;
+  received?: unknown;
+};
+
+export type PremiumAnalysisValidationFailureSummary = {
+  validationIssues: PremiumAnalysisValidationIssueDiagnostic[];
+  issueCount: number;
+};
+
+type PremiumAnalysisLlmDiagnosticEvent =
+  | "premium_analysis_llm_empty_response"
+  | "premium_analysis_llm_parse_failed"
+  | "premium_analysis_llm_validation_failed";
+
+function formatZodIssuePath(path: PropertyKey[]): string {
+  return path.map((segment) => String(segment)).join(".");
+}
+
+function zodIssueExtras(issue: ZodIssue): Pick<
+  PremiumAnalysisValidationIssueDiagnostic,
+  "expected" | "received"
+> {
+  const extras: Pick<PremiumAnalysisValidationIssueDiagnostic, "expected" | "received"> = {};
+  if ("expected" in issue) extras.expected = issue.expected;
+  if ("received" in issue) extras.received = issue.received;
+  return extras;
+}
+
+export function extractValidationIssues(
+  error: ZodError,
+  maxIssues = 24,
+): PremiumAnalysisValidationIssueDiagnostic[] {
+  return error.issues.slice(0, maxIssues).map((issue) => ({
+    path: formatZodIssuePath(issue.path),
+    code: issue.code,
+    message: issue.message,
+    ...zodIssueExtras(issue),
+  }));
+}
+
+export function summarizePremiumAnalysisValidationFailure(
+  error: ZodError,
+  maxIssues = 24,
+): PremiumAnalysisValidationFailureSummary {
+  return {
+    validationIssues: extractValidationIssues(error, maxIssues),
+    issueCount: error.issues.length,
+  };
+}
+
+export function extractParsedTopLevelKeys(parsed: unknown): string[] | null {
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+  return Object.keys(parsed as Record<string, unknown>).sort();
+}
+
+export function isPremiumAnalysisDebugRawEnabled(): boolean {
+  return process.env.PREMIUM_ANALYSIS_DEBUG_RAW === "1";
+}
+
+export function buildPremiumAnalysisRawPreview(raw: string, maxLen = 1000): string | undefined {
+  if (!isPremiumAnalysisDebugRawEnabled()) return undefined;
+  const text = String(raw ?? "");
+  if (!text) return undefined;
+  return text.length <= maxLen ? text : text.slice(0, maxLen);
+}
+
+function formatZodSummary(error: ZodError): string {
+  return extractValidationIssues(error, 12)
+    .map((issue) => `${issue.path}: ${issue.message}`)
     .join("; ");
+}
+
+function logPremiumAnalysisLlmDiagnostic(
+  event: PremiumAnalysisLlmDiagnosticEvent,
+  payload: Record<string, unknown>,
+): void {
+  console.info(JSON.stringify({ event, ...payload }));
+}
+
+type PremiumAnalysisLlmCallContext = {
+  symbol: string;
+  language: string;
+  model: string;
+  repair: boolean;
+  latencyMs: number;
+  stopReason: string | null;
+  inputTokens?: number;
+  outputTokens?: number;
+  snapshotHash?: string | null;
+};
+
+function buildPremiumAnalysisLlmDiagnosticBase(
+  ctx: PremiumAnalysisLlmCallContext,
+): Record<string, unknown> {
+  const base: Record<string, unknown> = {
+    symbol: ctx.symbol,
+    language: ctx.language,
+    model: ctx.model,
+    repair: ctx.repair,
+    latencyMs: ctx.latencyMs,
+    stopReason: ctx.stopReason,
+    snapshotVersion: STOCK_AI_DATA_SNAPSHOT_VERSION,
+  };
+  if (ctx.inputTokens != null) base.inputTokens = ctx.inputTokens;
+  if (ctx.outputTokens != null) base.outputTokens = ctx.outputTokens;
+  if (ctx.snapshotHash) base.snapshotHash = ctx.snapshotHash;
+  return base;
+}
+
+function logPremiumAnalysisContractFailure(
+  ctx: PremiumAnalysisLlmCallContext,
+  raw: string,
+  blockType: string | undefined,
+  parsed: unknown,
+  validated: ReturnType<typeof validatePremiumAnalysisContract> | null,
+): void {
+  const rawLength = raw.length;
+  const rawPreview = buildPremiumAnalysisRawPreview(raw);
+  const base = buildPremiumAnalysisLlmDiagnosticBase(ctx);
+
+  const hasTextBlock = blockType === "text";
+  if (!hasTextBlock || !raw.trim()) {
+    logPremiumAnalysisLlmDiagnostic("premium_analysis_llm_empty_response", {
+      ...base,
+      rawLength,
+      contentBlockType: blockType ?? "missing",
+      ...(rawPreview ? { rawPreview } : {}),
+    });
+    return;
+  }
+
+  if (parsed == null) {
+    logPremiumAnalysisLlmDiagnostic("premium_analysis_llm_parse_failed", {
+      ...base,
+      rawLength,
+      ...(rawPreview ? { rawPreview } : {}),
+    });
+    return;
+  }
+
+  if (validated && !validated.success) {
+    const summary = summarizePremiumAnalysisValidationFailure(validated.error);
+    logPremiumAnalysisLlmDiagnostic("premium_analysis_llm_validation_failed", {
+      ...base,
+      rawLength,
+      parsedTopLevelKeys: extractParsedTopLevelKeys(parsed),
+      validationIssues: summary.validationIssues,
+      issueCount: summary.issueCount,
+      ...(rawPreview ? { rawPreview } : {}),
+    });
+  }
 }
 
 function hasAnthropicKey(): boolean {
@@ -259,7 +410,13 @@ async function runPremiumAnalysisFreshGeneration(
 
     const anthropicStartedAt = Date.now();
     try {
-      const first = await callAnthropicForContract(snapshot, language, undefined, input.telemetry);
+      const first = await callAnthropicForContract(
+        snapshot,
+        language,
+        undefined,
+        input.telemetry,
+        input.snapshotHash,
+      );
       contract = first.contract;
       provider = {
         name: contract ? "anthropic" : "fallback",
@@ -278,6 +435,7 @@ async function runPremiumAnalysisFreshGeneration(
           language,
           { validationSummary, priorRaw: first.raw || "{}" },
           input.telemetry,
+          input.snapshotHash,
         );
         contract = second.contract;
         const useAnthropic = contract != null && !likelyTruncatedAnthropicResponse(second);
@@ -352,6 +510,7 @@ async function callAnthropicForContract(
   language: string,
   repair?: { validationSummary: string; priorRaw: string },
   telemetry?: Partial<AiCallTelemetry>,
+  snapshotHash?: string | null,
 ): Promise<AnthropicContractCallResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   if (!apiKey) {
@@ -395,6 +554,7 @@ async function callAnthropicForContract(
   );
 
   const block = response.content[0];
+  const blockType = block?.type;
   const raw = block && block.type === "text" ? block.text : "";
   const parsed = parseJsonObject(raw);
   const validated = parsed != null ? validatePremiumAnalysisContract(parsed) : null;
@@ -405,11 +565,32 @@ async function callAnthropicForContract(
       ? response.stop_reason
       : null;
 
+  const latencyMs = Date.now() - startedAt;
+  if (!contract) {
+    logPremiumAnalysisContractFailure(
+      {
+        symbol: telemetry?.symbol ?? snapshot.symbol,
+        language,
+        model,
+        repair: Boolean(repair),
+        latencyMs,
+        stopReason,
+        inputTokens: response.usage?.input_tokens,
+        outputTokens: response.usage?.output_tokens,
+        snapshotHash,
+      },
+      raw,
+      blockType,
+      parsed,
+      validated,
+    );
+  }
+
   return {
     contract,
     raw,
     model,
-    latencyMs: Date.now() - startedAt,
+    latencyMs,
     inputTokens: response.usage?.input_tokens,
     outputTokens: response.usage?.output_tokens,
     stopReason,
