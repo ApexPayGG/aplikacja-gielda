@@ -25,11 +25,11 @@ function minimalSnapshot(overrides?: Partial<StockAIDataSnapshot>): StockAIDataS
 
   return {
     version: STOCK_AI_DATA_SNAPSHOT_VERSION,
-    symbol: "NVDA.US",
-    resolvedSymbol: "NVDA.US",
+    symbol: "AMD.US",
+    resolvedSymbol: "AMD.US",
     computedAt,
     company: {
-      name: ok("NVIDIA"),
+      name: ok("Advanced Micro Devices"),
       exchange: ok("NASDAQ"),
       sector: ok("Technology"),
       industry: ok("Semiconductors"),
@@ -82,8 +82,9 @@ describe("normalizePremiumAnalysisCandidate", () => {
     const parsed = { technicalContext: { summary: "Trend up", trend: "Bullish", levels: [] } };
     const { candidate, changedFields } = normalizePremiumAnalysisCandidate(parsed, snapshot);
     const record = asRecord(candidate);
-    assert.ok(record.technicalSetup);
-    assert.deepEqual(record.technicalSetup, parsed.technicalContext);
+    const ts = asRecord(record.technicalSetup);
+    assert.equal(ts.summary, "Trend up");
+    assert.equal(ts.trend, "Bullish");
     assert.match(changedFields.join(","), /technicalContext/);
   });
 
@@ -188,6 +189,106 @@ describe("normalizePremiumAnalysisCandidate", () => {
     assert.equal(JSON.stringify(parsed), before);
   });
 
+  it("fills executiveVerdict.summary from aliases", () => {
+    const parsed = {
+      generatedAt,
+      decisionNote: { note: "Educational synthesis." },
+      executiveVerdict: {
+        headline: "Constructive AMD setup",
+        educationalNote: "Not investment advice.",
+        verdictSummary: "Educational constructive view on AMD.",
+      },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const ev = asRecord(asRecord(candidate).executiveVerdict);
+    assert.equal(ev.summary, "Educational constructive view on AMD.");
+  });
+
+  it("normalizes nested businessEngine aliases", () => {
+    const parsed = {
+      businessEngine: {
+        businessOverview: "CPU and GPU platform.",
+        marketPosition: "Competitive in data center.",
+        growthDrivers: "AI accelerators",
+        headwinds: "Cyclical demand",
+      },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const be = asRecord(asRecord(candidate).businessEngine);
+    assert.equal(be.overview, "CPU and GPU platform.");
+    assert.equal(be.competitiveDynamics, "Competitive in data center.");
+    assert.deepEqual(be.catalysts, ["AI accelerators"]);
+    assert.deepEqual(be.risks, ["Cyclical demand"]);
+  });
+
+  it("converts businessEngine catalyst and risk strings to arrays", () => {
+    const parsed = {
+      businessEngine: {
+        overview: "Overview",
+        competitiveDynamics: "Dynamics",
+        catalysts: "Single catalyst",
+        risks: "Single risk",
+      },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const be = asRecord(asRecord(candidate).businessEngine);
+    assert.deepEqual(be.catalysts, ["Single catalyst"]);
+    assert.deepEqual(be.risks, ["Single risk"]);
+  });
+
+  it("normalizes technicalSetup summary and trend aliases", () => {
+    const parsed = {
+      technicalSetup: {
+        setup: "Price above support.",
+        direction: "Uptrend",
+      },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const ts = asRecord(asRecord(candidate).technicalSetup);
+    assert.equal(ts.summary, "Price above support.");
+    assert.equal(ts.trend, "Uptrend");
+  });
+
+  it("creates technicalSetup levels from snapshot support and resistance when levels missing", () => {
+    const parsed = { generatedAt, technicalSetup: { summary: "Trend", trend: "Up" } };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const levels = asRecord(asRecord(candidate).technicalSetup).levels as Record<string, unknown>[];
+    assert.equal(levels.length, 2);
+    assert.equal(levels[0]?.value, 92);
+    assert.equal(levels[1]?.value, 108);
+  });
+
+  it("deletes null scenario priceTarget", () => {
+    const parsed = {
+      scenarios: {
+        scenarios: [{ name: "bull", priceTarget: null }, { name: "base" }],
+      },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const scenarios = asRecord(asRecord(candidate).scenarios).scenarios as Record<string, unknown>[];
+    assert.equal("priceTarget" in (scenarios[0] ?? {}), false);
+  });
+
+  it("normalizes riskMap summary and item required fields", () => {
+    const parsed = {
+      riskMap: {
+        items: [
+          { name: "Valuation", summary: "High multiple", severity: "unknown", likelihood: null },
+        ],
+      },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const riskMap = asRecord(asRecord(candidate).riskMap);
+    assert.equal(riskMap.summary, "Risk map derived from model-provided risk items.");
+    const item = (riskMap.items as Record<string, unknown>[])[0];
+    assert.equal(item?.id, "Valuation");
+    assert.equal(item?.title, "Valuation");
+    assert.equal(item?.description, "High multiple");
+    assert.equal(item?.category, "general");
+    assert.equal(item?.severity, "medium");
+    assert.equal(item?.likelihood, "medium");
+  });
+
   it("reduces validation issues for NVDA-like drift candidate", () => {
     const nvdaLike = {
       version: "1.0",
@@ -254,6 +355,115 @@ describe("normalizePremiumAnalysisCandidate", () => {
     }
 
     assert.ok(after.error.issues.length < before.error.issues.length);
+  });
+
+  it("normalizes AMD-like nested drift candidate toward full validation", () => {
+    const amdLike = {
+      version: "1.0",
+      symbol: "AMD.US",
+      generatedAt,
+      dataFreshness: {
+        snapshotVersion: "1.0",
+        sources: [{ status: "ok" }],
+        coverage: ["quote.latest"],
+        missingData: [],
+      },
+      executiveVerdict: {
+        label: "constructive",
+        headline: "AMD constructive educational view",
+        educationalNote: "Educational only, not investment advice.",
+        confidence: 68,
+        horizonMonths: 12,
+      },
+      businessEngine: {
+        businessOverview: "CPU and GPU platform exposure.",
+        industryDynamics: "Technology / Semiconductors",
+        drivers: "AI and data center demand",
+        keyRisks: "Cyclicality and competition",
+      },
+      technicalSetup: {
+        setup: "Holding above recent support.",
+        trendLabel: "Modest uptrend",
+      },
+      valuationContext: {
+        summary: "Valuation context from snapshot fundamentals.",
+        metrics: [{ value: "32.1", basis: "P/E", source: "fundamentals", asOf: null }],
+      },
+      scenarios: {
+        scenarios: [
+          {
+            name: "bull",
+            probabilityPct: 30,
+            rationale: "Upside from AI demand",
+            drivers: ["AI"],
+            risks: ["Macro"],
+            invalidation: "Break support",
+            priceTarget: null,
+          },
+          {
+            name: "base",
+            probabilityPct: 50,
+            summary: "Steady execution",
+            drivers: ["Share gains"],
+            risks: ["Valuation"],
+            invalidation: "Guidance cut",
+            priceTarget: null,
+          },
+          {
+            name: "bear",
+            probabilityPct: 20,
+            description: "Cyclical downturn",
+            drivers: ["Inventory"],
+            risks: ["Demand"],
+            invalidation: "Revenue miss",
+            priceTarget: null,
+          },
+        ],
+      },
+      riskMap: {
+        items: [
+          { factor: "Valuation", detail: "Premium multiple leaves less room for misses." },
+        ],
+      },
+      historicalTwins: { summary: "Limited analogs", matchCount: 0, lesson: "Patience helps." },
+      thesisInvalidators: {
+        summary: "Watch demand",
+        items: [{ trigger: "Revenue miss", impact: "high", monitor: "Earnings" }],
+      },
+      decisionNote: {
+        note: "Educational synthesis for AMD.",
+        stance: "research",
+        keyQuestions: ["Is AI demand durable?"],
+      },
+      dataCoverage: ["quote.latest"],
+      missingData: [],
+    };
+
+    const before = validatePremiumAnalysisContract(amdLike);
+    assert.equal(before.success, false);
+    if (before.success) return;
+
+    const { candidate, changedFields } = normalizePremiumAnalysisCandidate(amdLike, snapshot);
+    assert.ok(changedFields.length > 0);
+
+    const after = validatePremiumAnalysisContract(candidate);
+    assert.equal(after.success, true);
+    if (!after.success) return;
+
+    assert.equal(after.data.executiveVerdict.summary, "Educational synthesis for AMD.");
+    assert.equal(after.data.businessEngine.overview, "CPU and GPU platform exposure.");
+    assert.equal(after.data.businessEngine.competitiveDynamics, "Technology / Semiconductors");
+    assert.deepEqual(after.data.businessEngine.catalysts, ["AI and data center demand"]);
+    assert.deepEqual(after.data.businessEngine.risks, ["Cyclicality and competition"]);
+    assert.equal(after.data.technicalSetup.summary, "Holding above recent support.");
+    assert.equal(after.data.technicalSetup.trend, "Modest uptrend");
+    assert.ok(after.data.technicalSetup.levels.length >= 1);
+    assert.equal(after.data.scenarios.horizonMonths, 12);
+    assert.equal(after.data.scenarios.scenarios[0].priceTarget, undefined);
+    assert.equal(after.data.riskMap.summary, "Risk map derived from model-provided risk items.");
+    assert.equal(after.data.riskMap.items[0].id, "Valuation");
+    assert.equal(after.data.riskMap.items[0].title, "Valuation");
+    assert.equal(after.data.riskMap.items[0].category, "general");
   });
 });
 

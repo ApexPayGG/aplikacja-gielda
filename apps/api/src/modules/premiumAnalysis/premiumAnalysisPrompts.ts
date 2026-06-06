@@ -38,6 +38,11 @@ Hard contract shape (exact JSON keys and types):
 - executiveVerdict.headline and executiveVerdict.educationalNote are required strings.
 - scenarios.horizonMonths: integer. Each scenarios.scenarios[] entry must include narrative (string).
 - valuationContext.summary required. valuationContext.metrics[].value must be JSON numbers, not strings. metrics[].asOf must be a string timestamp when present, not null.
+- businessEngine must include overview, competitiveDynamics, catalysts[] (strings), risks[] (strings).
+- technicalSetup must include summary, trend, levels[] (numeric value, basis, source).
+- riskMap must include summary and items[] with id, title, description, severity, likelihood, category.
+- executiveVerdict.summary is required (not only headline).
+- Do not set optional objects such as priceTarget to null; omit priceTarget when unavailable.
 - Keep the response compact to stay within the max token budget.`;
 }
 
