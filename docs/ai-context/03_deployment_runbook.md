@@ -1,4 +1,4 @@
-﻿# Deployment Runbook
+# Deployment Runbook
 
 **Target:** Production VPS running Docker Compose (`docker-compose.prod.yml`)
 **Domain:** https://stock-ai.pro
@@ -86,9 +86,9 @@ See also `docs/production-launch-smoke-checklist.md`.
 ## Rollback caution
 
 - Prefer **forward fix** on `main` plus fast-forward deploy.
-- `git merge --ff-only` will **fail** if VPS has local commits â€” resolve drift before deploy.
+- `git merge --ff-only` will **fail** if VPS has local commits — resolve drift before deploy.
 - Do not force-push `main` without explicit owner approval.
-- Rolling back Docker images without matching git SHA causes opaque drift â€” tag or note the deployed commit in deploy notes.
+- Rolling back Docker images without matching git SHA causes opaque drift — tag or note the deployed commit in deploy notes.
 
 ---
 

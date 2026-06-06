@@ -1,7 +1,7 @@
-﻿# Premium Analysis V2 Status
+# Premium Analysis V2 Status
 
 **Endpoint:** `GET /api/premium/:ticker/analysis?language=en`
-**Feature flag (frontend):** `VITE_PREMIUM_ANALYSIS_V2_ENABLED` or `localStorage.stockai.premiumAnalysisV2` â€” default OFF until explicitly enabled
+**Feature flag (frontend):** `VITE_PREMIUM_ANALYSIS_V2_ENABLED` or `localStorage.stockai.premiumAnalysisV2` — default OFF until explicitly enabled
 
 ---
 
@@ -10,7 +10,7 @@
 ```
 buildStockAIDataSnapshot
   -> createSnapshotHash
-  -> cache lookup (Redis) â€” hit skips usage limit and Anthropic
+  -> cache lookup (Redis) — hit skips usage limit and Anthropic
   -> withSingleFlight (leader only)
        -> leader cache recheck
        -> enforcePremiumAnalysisDailyLimit (fresh generation only)
@@ -28,7 +28,7 @@ buildStockAIDataSnapshot
 | File | Purpose |
 |------|---------|
 | `premiumAnalysisOrchestrator.ts` | Orchestration, repair guard, telemetry, single-flight |
-| `premiumAnalysisCandidateNormalizer.ts` | Deterministic schema drift fixes (2Lâ€“2O) |
+| `premiumAnalysisCandidateNormalizer.ts` | Deterministic schema drift fixes (2L–2O) |
 | `premiumAnalysisContract.ts` | Zod schema |
 | `premiumAnalysisUsageLimit.ts` | Daily fresh-generation limits (trial-aware) |
 | `rateLimiter.ts` | Global monthly `/api/premium/*` cap (trial-aware) |
@@ -47,11 +47,11 @@ buildStockAIDataSnapshot
 | `d0fc5f7a` | Normalize tail metadata (2N) |
 | `04a635f5` | Normalize historicalTwins.summary (2O) |
 
-Earlier infra (not repeated here): 2Aâ€“2I covering contract foundation, orchestrator, usage limits, trial access, latency guard, single-flight, auth-aware rate limiter.
+Earlier infra (not repeated here): 2A–2I covering contract foundation, orchestrator, usage limits, trial access, latency guard, single-flight, auth-aware rate limiter.
 
 ---
 
-## Normalizer coverage (2Lâ€“2O)
+## Normalizer coverage (2L–2O)
 
 **Top-level / aliases**
 
@@ -114,10 +114,10 @@ Debug raw preview: `PREMIUM_ANALYSIS_DEBUG_RAW=1` only (max 1000 chars).
 
 ## Next recommended improvements
 
-1. **Cache test for ORCL** â€” second request should be cache hit; confirm usage limit skipped.
-2. **max_tokens / prompt compaction** â€” reduce truncation `parse_failed` rate (separate from normalizer).
-3. **Data coverage** â€” wire more snapshot fields; reduce conservative fallback frequency.
-4. **Quality gate** â€” optional post-validation checks for weak/empty narratives while still schema-valid.
+1. **Cache test for ORCL** — second request should be cache hit; confirm usage limit skipped.
+2. **max_tokens / prompt compaction** — reduce truncation `parse_failed` rate (separate from normalizer).
+3. **Data coverage** — wire more snapshot fields; reduce conservative fallback frequency.
+4. **Quality gate** — optional post-validation checks for weak/empty narratives while still schema-valid.
 
 ---
 

@@ -1,4 +1,4 @@
-﻿# Project State
+# Project State
 
 **Product:** Stock-AI Pro / Stock-AI Co-pilot
 **Production domain:** https://stock-ai.pro
@@ -9,9 +9,9 @@
 
 ## Current focus
 
-1. **Premium Analysis V2** â€” backend pipeline is production-stable for auth, rate limits, single-flight, repair budget, validation telemetry, and contract normalization (commits through `04a635f5`).
-2. **Cursor-first workflow** â€” repo docs under `docs/ai-context/` and `.cursor/rules/` are the operational source of truth for agents and humans.
-3. **Safe backend-only deploys** â€” API changes deploy without frontend rebuild when scope is limited to `apps/api`.
+1. **Premium Analysis V2** — backend pipeline is production-stable for auth, rate limits, single-flight, repair budget, validation telemetry, and contract normalization (commits through `04a635f5`).
+2. **Cursor-first workflow** — repo docs under `docs/ai-context/` and `.cursor/rules/` are the operational source of truth for agents and humans.
+3. **Safe backend-only deploys** — API changes deploy without frontend rebuild when scope is limited to `apps/api`.
 
 ---
 
@@ -37,7 +37,7 @@
 
 ---
 
-## Premium Analysis V2 â€” summary status
+## Premium Analysis V2 — summary status
 
 | Area | Status |
 |------|--------|
@@ -45,8 +45,8 @@
 | 429 global monthly cap | Addressed for active trial users |
 | 504 long double-call paths | Mitigated (repair budget, single-flight, latency guard) |
 | Deterministic fallback | Still used when parse/validation fails after normalization |
-| Anthropic success path | **Proven on ORCL** after 2O â€” full contract, `premium_analysis_llm_normalized_contract` log |
-| Normalizer (2Lâ€“2O) | Handles top-level and nested schema drift before Zod validation |
+| Anthropic success path | **Proven on ORCL** after 2O — full contract, `premium_analysis_llm_normalized_contract` log |
+| Normalizer (2L–2O) | Handles top-level and nested schema drift before Zod validation |
 
 See `06_premium_analysis_v2_status.md` for full technical history.
 
@@ -61,9 +61,17 @@ See `06_premium_analysis_v2_status.md` for full technical history.
 
 ---
 
+## Operational session layer
+
+- **Start here:** `docs/ai-context/00_index.md` — reading order, Local vs VPS, truth-source rules.
+- **Active tasks:** `docs/ai-context/08_active_tasks.md`
+- **Session restart handoff:** `docs/ai-context/09_session_handoff.md`
+
+---
+
 ## Agent entry points
 
-- **Any major change:** read this file first.
+- **Any major change:** read `00_index.md`, then this file.
 - **Premium Analysis work:** read `06_premium_analysis_v2_status.md`.
 - **Deploy:** read `03_deployment_runbook.md`.
 - **Financial/LLM output:** read `07_financial_safety.md`.
@@ -72,6 +80,6 @@ See `06_premium_analysis_v2_status.md` for full technical history.
 
 ## Related legacy docs (still useful)
 
-- `STOCKAI_PRO_PROJECT_INSTRUCTIONS.md` â€” stack, conventions, pricing overview
-- `STOCKAI_PRO_STRATEGIC_BRIEF_v5_0.md` / v7 variants â€” product vision
-- `docs/production-launch-smoke-checklist.md` â€” post-deploy smoke tests
+- `STOCKAI_PRO_PROJECT_INSTRUCTIONS.md` — stack, conventions, pricing overview
+- `STOCKAI_PRO_STRATEGIC_BRIEF_v5_0.md` / v7 variants — product vision
+- `docs/production-launch-smoke-checklist.md` — post-deploy smoke tests

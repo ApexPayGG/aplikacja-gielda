@@ -1,4 +1,4 @@
-﻿# Product Decisions (ADR-style)
+# Product Decisions (ADR-style)
 
 Lightweight decision log for Cursor agents. Not a substitute for owner sign-off on pricing or legal text.
 
@@ -28,7 +28,7 @@ Lightweight decision log for Cursor agents. Not a substitute for owner sign-off 
 
 ## ADR-003: LLM output normalized and Zod-validated before frontend use
 
-**Status:** Accepted (2Lâ€“2O)
+**Status:** Accepted (2L–2O)
 
 **Decision:** No raw Anthropic JSON reaches the client without `normalizePremiumAnalysisCandidate` + `validatePremiumAnalysisContract`.
 
@@ -60,7 +60,7 @@ Lightweight decision log for Cursor agents. Not a substitute for owner sign-off 
 
 **Decision:** Premium Analysis pipeline changes typically require only `api` container rebuild/restart on VPS.
 
-**Consequences:** Frontend feature flags and service worker may lag until a separate frontend deploy â€” document in QA steps.
+**Consequences:** Frontend feature flags and service worker may lag until a separate frontend deploy — document in QA steps.
 
 ---
 

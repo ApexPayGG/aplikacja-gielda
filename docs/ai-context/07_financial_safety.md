@@ -1,4 +1,4 @@
-﻿# Financial Domain Safety
+# Financial Domain Safety
 
 Rules for Stock-AI Pro features that surface market data, AI analysis, or educational investment context.
 
@@ -6,11 +6,11 @@ Rules for Stock-AI Pro features that surface market data, AI analysis, or educat
 
 ## Core principles
 
-1. **Educational framing** â€” not personalized investment advice or guaranteed outcomes.
-2. **No fabricated market facts** â€” do not invent analyst ratings, consensus targets, historical twins, or metrics not grounded in snapshot/data sources.
-3. **Show uncertainty** â€” missing, stale, `not_wired`, or `requires_access` fields must appear in `missingData` / `dataCoverage` and narrative where relevant.
-4. **Schema-validated LLM output** â€” Zod validation is mandatory before caching or returning contracts to clients.
-5. **Conservative fallback** â€” deterministic fallback contract is allowed; it must validate and avoid analyst fiction (see `premiumAnalysisFallback.ts` tests).
+1. **Educational framing** — not personalized investment advice or guaranteed outcomes.
+2. **No fabricated market facts** — do not invent analyst ratings, consensus targets, historical twins, or metrics not grounded in snapshot/data sources.
+3. **Show uncertainty** — missing, stale, `not_wired`, or `requires_access` fields must appear in `missingData` / `dataCoverage` and narrative where relevant.
+4. **Schema-validated LLM output** — Zod validation is mandatory before caching or returning contracts to clients.
+5. **Conservative fallback** — deterministic fallback contract is allowed; it must validate and avoid analyst fiction (see `premiumAnalysisFallback.ts` tests).
 
 ---
 
