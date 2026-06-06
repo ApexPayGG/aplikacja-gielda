@@ -1,0 +1,36 @@
+﻿---
+description: Stock-AI Pro operating rules for agents â€” scope, context docs, and change discipline
+alwaysApply: true
+---
+
+# Project Operating Rules
+
+## Before major changes
+
+1. Read `docs/ai-context/01_project_state.md`.
+2. For Premium Analysis work, read `docs/ai-context/06_premium_analysis_v2_status.md`.
+3. For deploy-related tasks, read `docs/ai-context/03_deployment_runbook.md`.
+
+## Change discipline
+
+- Prefer **small, focused diffs**. Do not touch unrelated files.
+- Match existing patterns in the surrounding module (naming, imports, test style).
+- Do not modify application code when the task is **docs or Cursor rules only**.
+- Do not modify `package.json`, Docker, env files, migrations, Stripe, pricing, or auth policies unless explicitly requested.
+- Summarize **changed files** and **risks** at the end of substantive work.
+- Commit only when the user explicitly asks.
+
+## Unknowns
+
+- If a fact is not in repo docs or code, write **UNKNOWN - verify**. Do not guess production config, secrets, or VPS paths.
+
+## Premium Analysis defaults
+
+- No extra Anthropic calls beyond existing orchestrator repair rules.
+- Do not weaken normalizer, validation, single-flight, or usage limits without explicit approval.
+- Backend-only tasks: do not change frontend unless requested.
+
+## Testing
+
+- Run targeted tests and `npm run build` in `apps/api` after backend changes.
+- See `security-and-testing.mdc` for financial and validation requirements.

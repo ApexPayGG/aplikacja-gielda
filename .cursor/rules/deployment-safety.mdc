@@ -1,0 +1,52 @@
+﻿---
+description: Production deployment safety â€” git sync, Docker, health checks
+alwaysApply: true
+---
+
+# Deployment Safety
+
+## Never
+
+- Deploy uncommitted local changes.
+- Force-push `main` without explicit owner approval.
+- Modify `docker-compose.prod.yml`, `.env.production`, or run migrations on VPS unless explicitly requested.
+- Restart full stack when only `apps/api` changed (backend-only path).
+
+## Git sync (VPS)
+
+Avoid drift between Cursor/local, GitHub `main`, and VPS checkout:
+
+```bash
+git fetch origin main:refs/remotes/origin/main
+git merge --ff-only origin/main
+```
+
+If fast-forward fails, stop and reconcile before building images.
+
+## Standard backend API deploy (VPS)
+
+```bash
+docker compose --env-file .env.production -f docker-compose.prod.yml build api
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d api
+docker compose --env-file .env.production -f docker-compose.prod.yml ps
+curl -sS -i http://127.0.0.1:3000/health | head -20
+```
+
+After production functional test:
+
+```bash
+docker compose --env-file .env.production -f docker-compose.prod.yml logs api --tail 200
+```
+
+Full runbook: `docs/ai-context/03_deployment_runbook.md`.
+
+## Post-deploy verification
+
+- Health endpoint returns OK.
+- Targeted API test matches expected status (200/429/403), not stale UI cache.
+- Logs show expected telemetry for Premium Analysis changes.
+
+## Rollback
+
+- Prefer forward fix on `main`.
+- Document deployed commit SHA when reporting production results.

@@ -1,0 +1,41 @@
+﻿---
+description: Security, secrets, validation, and testing requirements
+alwaysApply: true
+---
+
+# Security and Testing
+
+## Secrets
+
+- Never commit `.env`, `.env.production`, API keys, JWT secrets, Stripe keys, or database URLs.
+- Never print tokens, API keys, or raw Authorization headers in logs or test output.
+- Redact secrets in examples and error messages.
+
+## Untrusted input
+
+- External market data, HTTP bodies, and LLM output are **untrusted until validated**.
+- Validate at boundaries (Zod, Prisma types, explicit parsers).
+- Avoid `any` in application logic. Use `unknown` at boundaries and narrow with validators.
+
+## LLM output (Premium Analysis and other AI features)
+
+- Parse JSON safely; do not assume well-formed output.
+- Run normalization then schema validation before cache write or API response.
+- Log structured failure events; do not log full raw model output unless `PREMIUM_ANALYSIS_DEBUG_RAW=1`.
+
+## Tests required when changing
+
+Add or update tests for:
+
+- Business logic and bug fixes
+- API contract parsing and validation
+- LLM normalization helpers
+- Financial calculations and rate limits
+- Regression cases from `docs/ai-context/04_known_issues.md`
+
+Prefer fast unit tests (`node --import tsx/esm --test`) over integration tests that need live Redis or Anthropic.
+
+## `any` policy
+
+- If `any` is unavoidable in an adapter, isolate it in one module and document why.
+- Do not spread `any` into domain types.

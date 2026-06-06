@@ -1,0 +1,39 @@
+﻿---
+description: Financial domain safety â€” educational framing, no fabricated investment data
+globs:
+  - apps/api/src/modules/premiumAnalysis/**
+  - apps/api/src/services/dividend*
+  - apps/api/src/routes/premium*
+  - apps/frontend/src/pages/Premium*
+  - apps/frontend/src/components/premium-analysis/**
+alwaysApply: false
+---
+
+# Financial Domain Safety
+
+Read `docs/ai-context/07_financial_safety.md` for full context.
+
+## Must
+
+- Use educational framing; avoid certainty and guaranteed returns.
+- Surface missing, stale, or inaccessible data via snapshot status and contract fields.
+- Schema-validate LLM output before frontend or cache exposure.
+- Keep deterministic fallback conservative and test-covered.
+
+## Must not
+
+- Fabricate analyst ratings, price targets, consensus, or historical twin performance.
+- Use the normalizer to invent investment thesis, catalysts, or risks not present in model text or allowed snapshot fields.
+- Present LLM output as guaranteed truth.
+- Remove disclaimers or weaken product access to bypass limits.
+
+## Normalizer boundary
+
+- OK: alias renames (`technicalContext` -> `technicalSetup`), type coercion for numeric strings, metadata defaults (`riskMap` severity), snapshot-based technical levels.
+- Not OK: inventing bullish/bearish narratives, fake metrics, or analyst data.
+
+## Premium Analysis failures
+
+- Parse/validation failure -> deterministic fallback (200), with structured logs.
+- Usage limit exceeded -> 429 `PREMIUM_ANALYSIS_DAILY_LIMIT`, not fallback.
+- Do not add Anthropic repair calls beyond existing guarded repair path.

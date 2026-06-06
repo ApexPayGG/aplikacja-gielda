@@ -35,8 +35,11 @@ Thumbs.db
 *.swp
 *.swo
 
-# Local editor metadata
-.cursor/
+# Local editor metadata (track shared Cursor rules only)
+.cursor/*
+!.cursor/rules/
+.cursor/rules/*
+!.cursor/rules/*.mdc
 
 # Duplicate / vendor logo asset packs (use apps/frontend/public/logo.png only)
 LOGO NOWE.png
