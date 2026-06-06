@@ -23,12 +23,12 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 
 | Field | Value |
 |-------|-------|
-| **status** | `pending` |
+| **status** | `done` |
 | **owner** | operator (VPS Cursor or SSH) |
 | **risk** | medium — drift causes false smoke results |
 | **scope** | Production checkout on VPS: `git rev-parse HEAD`, `git log -1 --oneline`, compare to GitHub `main` and PA V2 commits in `06` |
 | **blocked_by** | none |
-| **next_action** | On VPS: run SHA commands from `03_deployment_runbook.md` drift section; record result in `09_session_handoff.md` |
+| **next_action** | Completed: VPS synced to 757f0b43; containers running; API health 200. Next: PA-V2-SMOKE.1. |
 
 ---
 
@@ -40,8 +40,8 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 | **owner** | operator (VPS) |
 | **risk** | medium — unverified production behavior |
 | **scope** | Two authenticated `GET /api/premium/ORCL/analysis` requests; logs for `premium_analysis_llm_normalized_contract` vs cache hit; see `06` QA checklist |
-| **blocked_by** | `VPS-VERIFY.1` (know deployed commit before interpreting results) |
-| **next_action** | After VPS SHA recorded: run smoke per `06_premium_analysis_v2_status.md`; update `04_known_issues.md` if new findings |
+| **blocked_by** | none |
+| **next_action** | Run authenticated ORCL Premium Analysis V2 smoke on VPS; verify first request/provider path and second request cache hit. |
 
 ---
 

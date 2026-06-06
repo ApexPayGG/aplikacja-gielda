@@ -9,8 +9,8 @@ Short restart document for new Cursor sessions. **Update this file after substan
 | Field | Value |
 |-------|-------|
 | **current local branch** | `main` |
-| **current local commit** | `verify with git log -1 --oneline` - expected message: `docs: add Cursor session handoff and active tasks` |
-| **VPS commit** | `unknown until verified` — run on production checkout per `03_deployment_runbook.md` |
+| **current local commit** | `verify with git log -1 --oneline` - do not hardcode self-referential SHA |
+| **VPS commit** | `757f0b43` (`docs: add Cursor session handoff and active tasks`) |
 
 ---
 
@@ -20,19 +20,20 @@ Short restart document for new Cursor sessions. **Update this file after substan
 - **Operational layer added:** `00_index.md`, `08_active_tasks.md`, `09_session_handoff.md` (this file), minimal links in `01` and `project-operating-rules.mdc`.
 - UTF-8 mojibake cleanup completed for docs/ai-context/01–07 and verified clean.
 - **OPERATOR-OS.1** completed in the current governance commit (session handoff, active tasks, operational layer).
+- VPS-VERIFY.1 completed: production checkout synced to 757f0b43, containers running, API health 200.
 
 ---
 
 ## Current focus
 
-VPS-VERIFY.1 — verify production SHA before PA V2 smoke.
+PA-V2-SMOKE.1 — authenticated ORCL cache smoke.
 
 ---
 
 ## Next operator step
 
-1. **VPS:** verify production git SHA and compare with local main.
-2. Update this file with VPS SHA; then run `PA-V2-SMOKE.1` if VPS is at or past PA V2 normalizer commits (`04a635f5`+)
+1. **Run PA-V2-SMOKE.1 on VPS:** authenticated ORCL analysis request twice, then inspect logs/cache behavior.
+2. Update this file and `08_active_tasks.md` with smoke results; update `04_known_issues.md` if new findings.
 
 ---
 
@@ -40,7 +41,6 @@ VPS-VERIFY.1 — verify production SHA before PA V2 smoke.
 
 | Blocker | Notes |
 |---------|-------|
-| VPS SHA unknown | Cannot confirm ORCL smoke reflects latest API image |
 | `STRIPE-LIVE.1` | Blocked on owner + live Stripe verification |
 
 ---
