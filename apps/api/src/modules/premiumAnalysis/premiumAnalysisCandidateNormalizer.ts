@@ -15,6 +15,8 @@ const DEFAULT_DECISION_KEY_QUESTIONS = [
 
 const HISTORICAL_TWINS_ZERO_LESSON =
   "No validated historical twin lesson is available in the current snapshot.";
+const HISTORICAL_TWINS_ZERO_SUMMARY =
+  "No validated historical twin set is available in the current snapshot.";
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -399,13 +401,32 @@ function normalizeHistoricalTwinsSection(
   historicalTwins: Record<string, unknown>,
   changed: string[],
 ): void {
+  if (!pickString(historicalTwins.summary)) {
+    const summary = pickString(
+      historicalTwins.overview,
+      historicalTwins.description,
+      historicalTwins.takeaway,
+      historicalTwins.insight,
+      historicalTwins.conclusion,
+      historicalTwins.lesson,
+    );
+    if (summary) {
+      historicalTwins.summary = summary;
+      changed.push("historicalTwins.summary");
+    } else if (historicalTwins.matchCount === 0) {
+      historicalTwins.summary = HISTORICAL_TWINS_ZERO_SUMMARY;
+      changed.push("historicalTwins.summary");
+    }
+  }
+
   if (pickString(historicalTwins.lesson)) return;
 
+  const summaryForLesson = pickString(historicalTwins.summary);
   const lesson = pickString(
     historicalTwins.takeaway,
     historicalTwins.insight,
     historicalTwins.conclusion,
-    historicalTwins.summary,
+    summaryForLesson === HISTORICAL_TWINS_ZERO_SUMMARY ? undefined : summaryForLesson,
   );
   if (lesson) {
     historicalTwins.lesson = lesson;

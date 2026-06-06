@@ -44,7 +44,7 @@ Hard contract shape (exact JSON keys and types):
 - executiveVerdict.summary is required (not only headline).
 - Do not set optional objects such as priceTarget to null; omit priceTarget when unavailable.
 - dataCoverage and missingData must be string arrays at top level and inside dataFreshness.
-- historicalTwins.lesson required; if no validated twins, state that no validated twin lesson is available.
+- historicalTwins.summary and historicalTwins.lesson required; if no validated twins exist, state that no validated twin set is available.
 - thesisInvalidators.summary required; each item needs trigger, impact (low|medium|high), monitor.
 - decisionNote must include note and keyQuestions[].
 - Keep the response compact to stay within the max token budget.`;

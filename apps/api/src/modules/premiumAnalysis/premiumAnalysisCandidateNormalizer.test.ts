@@ -318,6 +318,23 @@ describe("normalizePremiumAnalysisCandidate", () => {
     assert.deepEqual(record.missingData, ["news"]);
   });
 
+  it("fills historicalTwins summary from aliases", () => {
+    const parsed = { historicalTwins: { overview: "No close analogs in snapshot.", matchCount: 0 } };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const twins = asRecord(asRecord(candidate).historicalTwins);
+    assert.equal(twins.summary, "No close analogs in snapshot.");
+  });
+
+  it("fills historicalTwins summary conservatively when matchCount is 0", () => {
+    const parsed = { historicalTwins: { matchCount: 0 } };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const twins = asRecord(asRecord(candidate).historicalTwins);
+    assert.equal(
+      twins.summary,
+      "No validated historical twin set is available in the current snapshot.",
+    );
+  });
+
   it("fills historicalTwins lesson conservatively when matchCount is 0", () => {
     const parsed = { historicalTwins: { matchCount: 0 } };
     const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
@@ -665,6 +682,110 @@ describe("normalizePremiumAnalysisCandidate", () => {
     assert.equal(after.data.thesisInvalidators.items[0].monitor, "Revenue miss");
     assert.equal(after.data.decisionNote.note, "Educational only, not investment advice.");
     assert.ok(after.data.decisionNote.keyQuestions.length >= 1);
+  });
+
+  it("normalizes CRM-like candidate when only historicalTwins.summary is missing", () => {
+    const crmLike = {
+      version: "1.0",
+      symbol: "CRM.US",
+      generatedAt,
+      dataFreshness: {
+        computedAt: generatedAt,
+        snapshotVersion: "1.0",
+        sources: [{ status: "ok", id: "quotes" }],
+        coverage: ["quote.latest"],
+        missingData: ["news"],
+      },
+      executiveVerdict: {
+        label: "constructive",
+        headline: "CRM educational constructive view",
+        educationalNote: "Educational only, not investment advice.",
+        summary: "Educational constructive stance on Salesforce.",
+        confidence: 70,
+        horizonMonths: 12,
+      },
+      businessEngine: {
+        overview: "Enterprise software platform.",
+        competitiveDynamics: "Technology / Software",
+        catalysts: ["AI monetization"],
+        risks: ["Valuation and competition"],
+      },
+      technicalSetup: {
+        summary: "Range-bound trend.",
+        trend: "Sideways",
+        levels: [{ value: 92, basis: "60-session support", source: "quote_history_60d", asOf: generatedAt }],
+      },
+      valuationContext: {
+        summary: "Valuation from snapshot fundamentals.",
+        metrics: [{ value: 28.5, basis: "P/E", source: "fundamentals", asOf: generatedAt }],
+      },
+      scenarios: {
+        horizonMonths: 12,
+        scenarios: [
+          {
+            name: "bull",
+            probabilityPct: 30,
+            narrative: "Upside case",
+            drivers: ["AI"],
+            risks: ["Macro"],
+            invalidation: "Break support",
+          },
+          {
+            name: "base",
+            probabilityPct: 50,
+            narrative: "Steady execution",
+            drivers: ["Demand"],
+            risks: ["Valuation"],
+            invalidation: "Guidance cut",
+          },
+          {
+            name: "bear",
+            probabilityPct: 20,
+            narrative: "Downside case",
+            drivers: ["Rates"],
+            risks: ["Growth"],
+            invalidation: "Revenue miss",
+          },
+        ],
+      },
+      riskMap: {
+        summary: "Key risks",
+        items: [
+          {
+            id: "r1",
+            title: "Valuation",
+            description: "Premium multiple risk.",
+            severity: "medium",
+            likelihood: "medium",
+            category: "valuation",
+          },
+        ],
+      },
+      historicalTwins: { matchCount: 0, lesson: "No twin lesson available from model output." },
+      thesisInvalidators: {
+        summary: "Watch growth",
+        items: [{ trigger: "Revenue miss", impact: "high", monitor: "Earnings" }],
+      },
+      decisionNote: {
+        note: "Educational synthesis for CRM.",
+        stance: "research",
+        keyQuestions: ["Is AI monetization durable?"],
+      },
+      dataCoverage: ["quote.latest"],
+      missingData: ["news"],
+    };
+
+    const before = validatePremiumAnalysisContract(crmLike);
+    assert.equal(before.success, false);
+    if (before.success) return;
+
+    const { candidate } = normalizePremiumAnalysisCandidate(crmLike, snapshot);
+    const after = validatePremiumAnalysisContract(candidate);
+    assert.equal(after.success, true);
+    if (!after.success) return;
+
+    assert.equal(after.data.historicalTwins.summary, "No twin lesson available from model output.");
+    assert.equal(after.data.historicalTwins.lesson, "No twin lesson available from model output.");
   });
 });
 
