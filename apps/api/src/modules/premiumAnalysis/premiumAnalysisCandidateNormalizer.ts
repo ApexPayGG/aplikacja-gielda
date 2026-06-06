@@ -7,6 +7,15 @@ export type NormalizePremiumAnalysisCandidateResult = {
 
 type RiskLevel = "low" | "medium" | "high";
 
+const DEFAULT_DECISION_KEY_QUESTIONS = [
+  "Which snapshot fields are missing or stale?",
+  "Does the thesis remain valid if key risks materialize?",
+  "What data would invalidate the current view?",
+] as const;
+
+const HISTORICAL_TWINS_ZERO_LESSON =
+  "No validated historical twin lesson is available in the current snapshot.";
+
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -47,6 +56,15 @@ function toNonEmptyStringArray(value: unknown): string[] {
     .filter((item) => item.length > 0);
 }
 
+function sanitizeStringArray(value: unknown): string[] {
+  return toNonEmptyStringArray(value);
+}
+
+function sanitizeKeyQuestions(value: unknown): string[] {
+  const questions = sanitizeStringArray(value);
+  return questions.slice(0, 5);
+}
+
 function stringArrayFromAliases(
   source: Record<string, unknown>,
   keys: string[],
@@ -71,6 +89,23 @@ function coerceNumericString(value: unknown): number | undefined {
 function normalizeRiskLevel(value: unknown): RiskLevel {
   const normalized = typeof value === "string" ? value.trim().toLowerCase() : "";
   if (normalized === "low" || normalized === "high") return normalized;
+  return "medium";
+}
+
+function normalizeImpactLevel(value: unknown): RiskLevel {
+  const normalized = typeof value === "string" ? value.trim().toLowerCase() : "";
+  if (normalized === "low" || normalized === "minor" || normalized.includes("low risk")) return "low";
+  if (
+    normalized === "high" ||
+    normalized === "severe" ||
+    normalized === "critical" ||
+    normalized.includes("high risk")
+  ) {
+    return "high";
+  }
+  if (normalized === "medium" || normalized === "moderate" || normalized.includes("medium risk")) {
+    return "medium";
+  }
   return "medium";
 }
 
@@ -313,6 +348,181 @@ function normalizeTechnicalSetupSection(
   }
 }
 
+function normalizeDataCoverageTail(
+  out: Record<string, unknown>,
+  snapshot: StockAIDataSnapshot,
+  changed: string[],
+): void {
+  const snapshotCoverage = sanitizeStringArray(snapshot.dataCoverage);
+  const snapshotMissing = sanitizeStringArray(snapshot.missingData);
+
+  if (isPlainObject(out.dataFreshness)) {
+    const dataFreshness = out.dataFreshness;
+    if (!Array.isArray(dataFreshness.coverage)) {
+      const fromTop = sanitizeStringArray(out.dataCoverage);
+      dataFreshness.coverage = fromTop.length ? fromTop : snapshotCoverage;
+      changed.push("dataFreshness.coverage");
+    } else {
+      dataFreshness.coverage = sanitizeStringArray(dataFreshness.coverage);
+    }
+    if (!Array.isArray(dataFreshness.missingData)) {
+      const fromTop = sanitizeStringArray(out.missingData);
+      dataFreshness.missingData = fromTop.length ? fromTop : snapshotMissing;
+      changed.push("dataFreshness.missingData");
+    } else {
+      dataFreshness.missingData = sanitizeStringArray(dataFreshness.missingData);
+    }
+  }
+
+  if (!Array.isArray(out.dataCoverage)) {
+    const fromFreshness = isPlainObject(out.dataFreshness)
+      ? sanitizeStringArray(out.dataFreshness.coverage)
+      : [];
+    out.dataCoverage = fromFreshness.length ? fromFreshness : snapshotCoverage;
+    changed.push("dataCoverage");
+  } else {
+    out.dataCoverage = sanitizeStringArray(out.dataCoverage);
+  }
+
+  if (!Array.isArray(out.missingData)) {
+    const fromFreshness = isPlainObject(out.dataFreshness)
+      ? sanitizeStringArray(out.dataFreshness.missingData)
+      : [];
+    out.missingData = fromFreshness.length ? fromFreshness : snapshotMissing;
+    changed.push("missingData");
+  } else {
+    out.missingData = sanitizeStringArray(out.missingData);
+  }
+}
+
+function normalizeHistoricalTwinsSection(
+  historicalTwins: Record<string, unknown>,
+  changed: string[],
+): void {
+  if (pickString(historicalTwins.lesson)) return;
+
+  const lesson = pickString(
+    historicalTwins.takeaway,
+    historicalTwins.insight,
+    historicalTwins.conclusion,
+    historicalTwins.summary,
+  );
+  if (lesson) {
+    historicalTwins.lesson = lesson;
+    changed.push("historicalTwins.lesson");
+    return;
+  }
+
+  if (historicalTwins.matchCount === 0) {
+    historicalTwins.lesson = HISTORICAL_TWINS_ZERO_LESSON;
+    changed.push("historicalTwins.lesson");
+  }
+}
+
+function normalizeThesisInvalidatorsSection(
+  thesisInvalidators: Record<string, unknown>,
+  changed: string[],
+): void {
+  if (!pickString(thesisInvalidators.summary)) {
+    const summary = pickString(
+      thesisInvalidators.overview,
+      thesisInvalidators.description,
+      thesisInvalidators.note,
+    );
+    thesisInvalidators.summary =
+      summary ?? "Educational invalidators derived from model-provided triggers.";
+    changed.push("thesisInvalidators.summary");
+  }
+
+  if (!Array.isArray(thesisInvalidators.items)) return;
+
+  thesisInvalidators.items = thesisInvalidators.items.map((item, index) => {
+    if (!isPlainObject(item)) return item;
+    const next = { ...item };
+
+    const impact = normalizeImpactLevel(next.impact);
+    if (next.impact !== impact) {
+      next.impact = impact;
+      changed.push(`thesisInvalidators.items[${index}].impact`);
+    }
+
+    if (!pickString(next.monitor)) {
+      const monitor = pickString(
+        next.metric,
+        next.watch,
+        next.watchItem,
+        next.dataPoint,
+        next.trigger,
+      );
+      next.monitor = monitor ?? "Monitor related data and news flow.";
+      changed.push(`thesisInvalidators.items[${index}].monitor`);
+    }
+
+    return next;
+  });
+}
+
+function normalizeDecisionNoteSection(
+  out: Record<string, unknown>,
+  changed: string[],
+): void {
+  const executiveVerdict = isPlainObject(out.executiveVerdict) ? out.executiveVerdict : null;
+
+  if (!isPlainObject(out.decisionNote)) {
+    if (!executiveVerdict) return;
+    const note = pickString(
+      executiveVerdict.educationalNote,
+      executiveVerdict.summary,
+      executiveVerdict.headline,
+    );
+    if (!note) return;
+
+    out.decisionNote = {
+      note,
+      stance: pickString(executiveVerdict.stance) ?? "research",
+      keyQuestions: [...DEFAULT_DECISION_KEY_QUESTIONS],
+    };
+    changed.push("decisionNote");
+    return;
+  }
+
+  const decisionNote = out.decisionNote;
+  if (!pickString(decisionNote.note)) {
+    const note = pickString(
+      decisionNote.summary,
+      decisionNote.explanation,
+      decisionNote.rationale,
+      decisionNote.educationalNote,
+      executiveVerdict?.educationalNote,
+      executiveVerdict?.summary,
+    );
+    if (note) {
+      decisionNote.note = note;
+      changed.push("decisionNote.note");
+    }
+  }
+
+  const existingQuestions = sanitizeKeyQuestions(decisionNote.keyQuestions);
+  if (!existingQuestions.length) {
+    const fromAliases = sanitizeKeyQuestions(decisionNote.questions);
+    if (fromAliases.length) {
+      decisionNote.keyQuestions = fromAliases;
+      changed.push("decisionNote.keyQuestions");
+    } else {
+      const single = pickString(decisionNote.keyQuestion);
+      if (single) {
+        decisionNote.keyQuestions = [single];
+        changed.push("decisionNote.keyQuestions");
+      } else {
+        decisionNote.keyQuestions = [...DEFAULT_DECISION_KEY_QUESTIONS];
+        changed.push("decisionNote.keyQuestions");
+      }
+    }
+  } else {
+    decisionNote.keyQuestions = existingQuestions;
+  }
+}
+
 function normalizeRiskMapSection(riskMap: Record<string, unknown>, changed: string[]): void {
   const items = Array.isArray(riskMap.items) ? riskMap.items : [];
 
@@ -505,6 +715,17 @@ export function normalizePremiumAnalysisCandidate(
   }
 
   tryNormalizeBusinessEngine(out, snapshot, changed);
+
+  if (isPlainObject(out.historicalTwins)) {
+    normalizeHistoricalTwinsSection(out.historicalTwins, changed);
+  }
+
+  if (isPlainObject(out.thesisInvalidators)) {
+    normalizeThesisInvalidatorsSection(out.thesisInvalidators, changed);
+  }
+
+  normalizeDecisionNoteSection(out, changed);
+  normalizeDataCoverageTail(out, snapshot, changed);
 
   return { candidate: out, changedFields: changed };
 }

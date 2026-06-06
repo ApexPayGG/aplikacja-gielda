@@ -289,6 +289,84 @@ describe("normalizePremiumAnalysisCandidate", () => {
     assert.equal(item?.likelihood, "medium");
   });
 
+  it("fills dataFreshness coverage and missingData from snapshot or top-level arrays", () => {
+    const parsed = {
+      generatedAt,
+      dataCoverage: ["quote.latest", "fundamentals.peTtm"],
+      missingData: ["news", ""],
+      dataFreshness: { snapshotVersion: "1.0", sources: [{ status: "ok", id: "quotes" }] },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const df = asRecord(asRecord(candidate).dataFreshness);
+    assert.deepEqual(df.coverage, ["quote.latest", "fundamentals.peTtm"]);
+    assert.deepEqual(df.missingData, ["news"]);
+  });
+
+  it("fills top-level dataCoverage and missingData from dataFreshness or snapshot", () => {
+    const parsed = {
+      generatedAt,
+      dataFreshness: {
+        snapshotVersion: "1.0",
+        sources: [{ status: "ok", id: "quotes" }],
+        coverage: ["quote.latest"],
+        missingData: ["news"],
+      },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const record = asRecord(candidate);
+    assert.deepEqual(record.dataCoverage, ["quote.latest"]);
+    assert.deepEqual(record.missingData, ["news"]);
+  });
+
+  it("fills historicalTwins lesson conservatively when matchCount is 0", () => {
+    const parsed = { historicalTwins: { matchCount: 0 } };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const twins = asRecord(asRecord(candidate).historicalTwins);
+    assert.equal(
+      twins.lesson,
+      "No validated historical twin lesson is available in the current snapshot.",
+    );
+  });
+
+  it("normalizes thesisInvalidators summary", () => {
+    const parsed = {
+      thesisInvalidators: {
+        overview: "Watch execution risk.",
+        items: [{ trigger: "Miss", impact: "medium", monitor: "Earnings" }],
+      },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const invalidators = asRecord(asRecord(candidate).thesisInvalidators);
+    assert.equal(invalidators.summary, "Watch execution risk.");
+  });
+
+  it("normalizes thesisInvalidators item impact aliases and monitor aliases", () => {
+    const parsed = {
+      thesisInvalidators: {
+        summary: "Triggers",
+        items: [{ trigger: "Revenue miss", impact: "severe", metric: "Quarterly revenue" }],
+      },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const item = (asRecord(asRecord(candidate).thesisInvalidators).items as Record<string, unknown>[])[0];
+    assert.equal(item?.impact, "high");
+    assert.equal(item?.monitor, "Quarterly revenue");
+  });
+
+  it("fills decisionNote note and keyQuestions from aliases or defaults", () => {
+    const parsed = {
+      executiveVerdict: {
+        educationalNote: "Educational only.",
+        summary: "Constructive educational view.",
+      },
+      decisionNote: { stance: "research", questions: ["Is demand durable?"] },
+    };
+    const { candidate } = normalizePremiumAnalysisCandidate(parsed, snapshot);
+    const note = asRecord(asRecord(candidate).decisionNote);
+    assert.equal(note.note, "Educational only.");
+    assert.deepEqual(note.keyQuestions, ["Is demand durable?"]);
+  });
+
   it("reduces validation issues for NVDA-like drift candidate", () => {
     const nvdaLike = {
       version: "1.0",
@@ -464,6 +542,129 @@ describe("normalizePremiumAnalysisCandidate", () => {
     assert.equal(after.data.riskMap.items[0].id, "Valuation");
     assert.equal(after.data.riskMap.items[0].title, "Valuation");
     assert.equal(after.data.riskMap.items[0].category, "general");
+  });
+
+  it("normalizes INTC-like tail drift candidate toward full validation", () => {
+    const intcSnapshot = minimalSnapshot({
+      symbol: "INTC.US",
+      resolvedSymbol: "INTC.US",
+      company: {
+        name: {
+          status: "ok",
+          value: "Intel",
+          asOf: generatedAt,
+          source: "test",
+        },
+        exchange: minimalSnapshot().company.exchange,
+        sector: minimalSnapshot().company.sector,
+        industry: { status: "ok", value: "Semiconductors", asOf: generatedAt, source: "test" },
+        country: minimalSnapshot().company.country,
+        currency: minimalSnapshot().company.currency,
+      },
+    });
+
+    const intcLike = {
+      version: "1.0",
+      symbol: "INTC.US",
+      generatedAt,
+      dataFreshness: {
+        computedAt: generatedAt,
+        snapshotVersion: "1.0",
+        sources: [{ status: "ok" }],
+      },
+      executiveVerdict: {
+        label: "watch",
+        headline: "INTC educational watch view",
+        educationalNote: "Educational only, not investment advice.",
+        confidence: 55,
+        horizonMonths: 12,
+        summary: "Educational watch stance on Intel.",
+      },
+      businessEngine: {
+        overview: "CPU and foundry exposure.",
+        competitiveDynamics: "Technology / Semiconductors",
+        catalysts: ["PC recovery"],
+        risks: ["Competition and margins"],
+      },
+      technicalSetup: {
+        summary: "Range-bound price action.",
+        trend: "Sideways",
+        levels: [{ value: 92, basis: "60-session support", source: "quote_history_60d", asOf: generatedAt }],
+      },
+      valuationContext: {
+        summary: "Valuation context from snapshot fundamentals.",
+        metrics: [{ value: 18.5, basis: "P/E", source: "fundamentals", asOf: generatedAt }],
+      },
+      scenarios: {
+        horizonMonths: 12,
+        scenarios: [
+          {
+            name: "bull",
+            probabilityPct: 25,
+            narrative: "Recovery case",
+            drivers: ["PC"],
+            risks: ["Macro"],
+            invalidation: "Break support",
+          },
+          {
+            name: "base",
+            probabilityPct: 50,
+            narrative: "Steady turnaround",
+            drivers: ["Execution"],
+            risks: ["Competition"],
+            invalidation: "Guidance cut",
+          },
+          {
+            name: "bear",
+            probabilityPct: 25,
+            narrative: "Further pressure",
+            drivers: ["Share loss"],
+            risks: ["Margins"],
+            invalidation: "Revenue miss",
+          },
+        ],
+      },
+      riskMap: {
+        summary: "Key risks",
+        items: [
+          {
+            id: "r1",
+            title: "Execution",
+            description: "Turnaround execution remains uncertain.",
+            severity: "medium",
+            likelihood: "medium",
+            category: "execution",
+          },
+        ],
+      },
+      historicalTwins: { summary: "No validated analogs in snapshot.", matchCount: 0 },
+      thesisInvalidators: {
+        items: [{ trigger: "Revenue miss", impact: "critical" }],
+      },
+      decisionNote: { stance: "research" },
+    };
+
+    const before = validatePremiumAnalysisContract(intcLike);
+    assert.equal(before.success, false);
+    if (before.success) return;
+
+    const { candidate, changedFields } = normalizePremiumAnalysisCandidate(intcLike, intcSnapshot);
+    assert.ok(changedFields.length > 0);
+
+    const after = validatePremiumAnalysisContract(candidate);
+    assert.equal(after.success, true);
+    if (!after.success) return;
+
+    assert.deepEqual(after.data.dataCoverage, ["quote.latest"]);
+    assert.deepEqual(after.data.missingData, ["news"]);
+    assert.deepEqual(after.data.dataFreshness.coverage, ["quote.latest"]);
+    assert.deepEqual(after.data.dataFreshness.missingData, ["news"]);
+    assert.equal(after.data.historicalTwins.lesson, "No validated analogs in snapshot.");
+    assert.equal(after.data.thesisInvalidators.summary, "Educational invalidators derived from model-provided triggers.");
+    assert.equal(after.data.thesisInvalidators.items[0].impact, "high");
+    assert.equal(after.data.thesisInvalidators.items[0].monitor, "Revenue miss");
+    assert.equal(after.data.decisionNote.note, "Educational only, not investment advice.");
+    assert.ok(after.data.decisionNote.keyQuestions.length >= 1);
   });
 });
 
