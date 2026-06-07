@@ -36,12 +36,12 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 
 | Field | Value |
 |-------|-------|
-| **status** | `pending` |
+| **status** | `done` |
 | **owner** | operator (VPS) |
 | **risk** | medium — unverified production behavior |
 | **scope** | Two authenticated `GET /api/premium/ORCL/analysis` requests; logs for `premium_analysis_llm_normalized_contract` vs cache hit; see `06` QA checklist |
 | **blocked_by** | none |
-| **next_action** | Run authenticated ORCL Premium Analysis V2 smoke on VPS; verify first request/provider path and second request cache hit. |
+| **next_action** | Completed: ORCL V2 UI smoke passed with stable cache hit on two requests; no premium/analysis API errors in logs. Next: PA-V2-2D. |
 
 ---
 
@@ -49,12 +49,12 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 
 | Field | Value |
 |-------|-------|
-| **status** | `ready_after_smoke` |
+| **status** | `ready` |
 | **owner** | backend operator |
 | **risk** | high — touches usage limits and cost controls |
 | **scope** | `apps/api` premium analysis usage, cache TTL/envelope, rate limit behavior (no change until smoke confirms baseline) |
-| **blocked_by** | `PA-V2-SMOKE.1` |
-| **next_action** | Wait for ORCL smoke pass; then scope 2D diff against `06` and `07` |
+| **blocked_by** | none |
+| **next_action** | Scope controlled 2D implementation: cache envelope/provider provenance, quota/rate governance, optional lazy load/analytics. Do not enable V2 globally. |
 
 ---
 

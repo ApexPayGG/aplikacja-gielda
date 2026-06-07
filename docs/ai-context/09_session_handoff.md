@@ -21,19 +21,19 @@ Short restart document for new Cursor sessions. **Update this file after substan
 - UTF-8 mojibake cleanup completed for docs/ai-context/01–07 and verified clean.
 - **OPERATOR-OS.1** completed in the current governance commit (session handoff, active tasks, operational layer).
 - VPS-VERIFY.1 completed: production checkout synced to 757f0b43, containers running, API health 200.
+- PA-V2-SMOKE.1 completed: ORCL V2 UI opened, two /analysis requests returned cacheStatus=hit/provider=anthropic, no premium/analysis API errors.
 
 ---
 
 ## Current focus
 
-PA-V2-SMOKE.1 — authenticated ORCL cache smoke.
+PA-V2-2D — controlled V2 cost governance and cache metadata.
 
 ---
 
 ## Next operator step
 
-1. **Run PA-V2-SMOKE.1 on VPS:** authenticated ORCL analysis request twice, then inspect logs/cache behavior.
-2. Update this file and `08_active_tasks.md` with smoke results; update `04_known_issues.md` if new findings.
+Prepare PA-V2-2D scope in Cursor Local. Do not enable V2 globally.
 
 ---
 
@@ -53,6 +53,7 @@ PA-V2-SMOKE.1 — authenticated ORCL cache smoke.
 - After backend changes: targeted tests + `apps/api` build (not required for docs-only tasks).
 - `optionalAuth` must stay before rate limiter in `server.ts`.
 - Do not weaken PA V2 normalizer, validation, single-flight, or usage limits without approval.
+- Observed ORCL `dividend_scraper skip_no_company` is unrelated to PA V2 smoke; consider under Dividend Hub / data quality audit, not PA 2D.
 
 ---
 
