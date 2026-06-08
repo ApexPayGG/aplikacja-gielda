@@ -8,7 +8,10 @@ import {
   logAiCallFromAnthropicResponse,
   type AiCallTelemetry,
 } from "../../services/aiCostTelemetry";
-import { enforcePremiumAnalysisDailyLimit } from "../../services/premiumAnalysisUsageLimit";
+import {
+  enforcePremiumAnalysisDailyLimit,
+  type PremiumAnalysisUsageLimitResult,
+} from "../../services/premiumAnalysisUsageLimit";
 import { SingleFlightTimeoutError, withSingleFlight } from "../../utils/singleFlight";
 import {
   buildStockAIDataSnapshot,
@@ -85,6 +88,13 @@ export type ParsedPremiumAnalysisCacheEntry = {
   cachedAt: string;
 };
 
+export type PremiumAnalysisDailyUsageMeta = {
+  limit: number;
+  remaining: number;
+  resetIn: number;
+  tier: UserTier;
+};
+
 export type PremiumAnalysisBundle = {
   contract: PremiumAnalysisContract;
   snapshotHash: string;
@@ -92,6 +102,33 @@ export type PremiumAnalysisBundle = {
   generatedAt: string;
   cacheStatus: PremiumAnalysisCacheStatus;
   provider: PremiumAnalysisProviderMeta;
+  /** Present on fresh generation paths after daily limit enforcement (not cache hits). */
+  usage?: PremiumAnalysisDailyUsageMeta;
+};
+
+export type PremiumAnalysisOrchestratorDeps = {
+  loadCachedEntry?: (cacheKey: string) => Promise<ParsedPremiumAnalysisCacheEntry | null>;
+  readCachedBundleAfterWait?: (
+    cacheKey: string,
+    snapshotHash: string,
+  ) => Promise<PremiumAnalysisBundle | null>;
+  enforceDailyLimit?: (
+    input: Parameters<typeof enforcePremiumAnalysisDailyLimit>[0],
+  ) => Promise<PremiumAnalysisUsageLimitResult>;
+  hasAnthropicKey?: () => boolean;
+  callAnthropicForContract?: (
+    snapshot: StockAIDataSnapshot,
+    language: string,
+    repair?: { validationSummary: string; priorRaw: string },
+    telemetry?: Partial<AiCallTelemetry>,
+    snapshotHash?: string | null,
+  ) => Promise<AnthropicContractCallResult>;
+  cacheJsonSet?: (
+    key: string,
+    value: unknown,
+    ttlSec: number,
+  ) => Promise<void>;
+  buildSnapshot?: typeof buildStockAIDataSnapshot;
 };
 
 export type BuildPremiumAnalysisBundleInput = {
@@ -104,6 +141,9 @@ export type BuildPremiumAnalysisBundleInput = {
   canUseProduct?: boolean | null;
   language?: string;
   telemetry?: Partial<AiCallTelemetry>;
+  deps?: PremiumAnalysisOrchestratorDeps;
+  /** Test-only: bypass Prisma snapshot build */
+  snapshotOverride?: StockAIDataSnapshot;
 };
 
 export class PremiumAnalysisUsageLimitExceededError extends Error {
@@ -149,7 +189,8 @@ type PremiumAnalysisLlmDiagnosticEvent =
   | "premium_analysis_llm_empty_response"
   | "premium_analysis_llm_parse_failed"
   | "premium_analysis_llm_validation_failed"
-  | "premium_analysis_llm_normalized_contract";
+  | "premium_analysis_llm_normalized_contract"
+  | "premium_analysis_cache_served";
 
 function formatZodIssuePath(path: PropertyKey[]): string {
   return path.map((segment) => String(segment)).join(".");
@@ -414,10 +455,26 @@ export function buildPremiumAnalysisCacheEnvelope(input: {
   };
 }
 
-async function loadCachedEntry(cacheKey: string): Promise<ParsedPremiumAnalysisCacheEntry | null> {
+async function loadCachedEntryDefault(cacheKey: string): Promise<ParsedPremiumAnalysisCacheEntry | null> {
   const cached = await cacheJsonGet<unknown>(cacheKey);
   if (cached == null) return null;
   return parsePremiumAnalysisCacheEntry(cached);
+}
+
+function logPremiumAnalysisCacheServed(input: {
+  symbol: string;
+  language: string;
+  snapshotHash: string;
+  provider: PremiumAnalysisProviderMeta;
+  sourceCacheStatus: PremiumAnalysisCacheEnvelopeSourceStatus;
+}): void {
+  logPremiumAnalysisLlmDiagnostic("premium_analysis_cache_served", {
+    symbol: input.symbol,
+    language: input.language,
+    snapshotHash: input.snapshotHash,
+    providerName: input.provider.name,
+    sourceCacheStatus: input.sourceCacheStatus,
+  });
 }
 
 export function buildPremiumAnalysisCacheHitBundle(
@@ -434,13 +491,42 @@ export function buildPremiumAnalysisCacheHitBundle(
   };
 }
 
-async function readCachedBundleAfterWait(
+async function readCachedBundleAfterWaitWithDeps(
   cacheKey: string,
   snapshotHash: string,
+  deps: Required<Pick<PremiumAnalysisOrchestratorDeps, "loadCachedEntry">> &
+    Pick<PremiumAnalysisOrchestratorDeps, "readCachedBundleAfterWait">,
 ): Promise<PremiumAnalysisBundle | null> {
-  const entry = await loadCachedEntry(cacheKey);
+  if (deps.readCachedBundleAfterWait) {
+    return deps.readCachedBundleAfterWait(cacheKey, snapshotHash);
+  }
+  const entry = await deps.loadCachedEntry(cacheKey);
   if (!entry) return null;
   return buildPremiumAnalysisCacheHitBundle(entry, snapshotHash);
+}
+
+function resolvePremiumAnalysisOrchestratorDeps(
+  deps?: PremiumAnalysisOrchestratorDeps,
+): Required<
+  Pick<
+    PremiumAnalysisOrchestratorDeps,
+    | "loadCachedEntry"
+    | "enforceDailyLimit"
+    | "hasAnthropicKey"
+    | "callAnthropicForContract"
+    | "cacheJsonSet"
+  >
+> &
+  Pick<PremiumAnalysisOrchestratorDeps, "readCachedBundleAfterWait" | "buildSnapshot"> {
+  return {
+    loadCachedEntry: deps?.loadCachedEntry ?? loadCachedEntryDefault,
+    readCachedBundleAfterWait: deps?.readCachedBundleAfterWait,
+    enforceDailyLimit: deps?.enforceDailyLimit ?? enforcePremiumAnalysisDailyLimit,
+    hasAnthropicKey: deps?.hasAnthropicKey ?? hasAnthropicKey,
+    callAnthropicForContract: deps?.callAnthropicForContract ?? callAnthropicForContract,
+    cacheJsonSet: deps?.cacheJsonSet ?? cacheJsonSet,
+    buildSnapshot: deps?.buildSnapshot,
+  };
 }
 
 function buildPremiumAnalysisLockKey(
@@ -484,14 +570,16 @@ type RunPremiumAnalysisFreshGenerationInput = {
   accessState?: string | null;
   canUseProduct?: boolean | null;
   telemetry?: Partial<AiCallTelemetry>;
+  deps?: PremiumAnalysisOrchestratorDeps;
 };
 
-async function runPremiumAnalysisFreshGeneration(
+export async function runPremiumAnalysisFreshGeneration(
   input: RunPremiumAnalysisFreshGenerationInput,
 ): Promise<PremiumAnalysisBundle> {
   const { snapshot, snapshotHash, cacheKey, language } = input;
+  const deps = resolvePremiumAnalysisOrchestratorDeps(input.deps);
 
-  const leaderCacheHit = await readCachedBundleAfterWait(cacheKey, snapshotHash);
+  const leaderCacheHit = await readCachedBundleAfterWaitWithDeps(cacheKey, snapshotHash, deps);
   if (leaderCacheHit) return leaderCacheHit;
 
   let retryCount = 0;
@@ -500,9 +588,10 @@ async function runPremiumAnalysisFreshGeneration(
     model: null,
   };
   let contract: PremiumAnalysisContract | null = null;
+  let usageMeta: PremiumAnalysisDailyUsageMeta | undefined;
 
-  if (hasAnthropicKey()) {
-    const usage = await enforcePremiumAnalysisDailyLimit({
+  if (deps.hasAnthropicKey()) {
+    const usage = await deps.enforceDailyLimit({
       tier: input.plan ?? "FREE",
       userId: input.userId ?? null,
       clientIp: input.clientIp ?? null,
@@ -517,10 +606,16 @@ async function runPremiumAnalysisFreshGeneration(
         usage.resetIn,
       );
     }
+    usageMeta = {
+      limit: usage.limit,
+      remaining: usage.remaining,
+      resetIn: usage.resetIn,
+      tier: usage.tier,
+    };
 
     const anthropicStartedAt = Date.now();
     try {
-      const first = await callAnthropicForContract(
+      const first = await deps.callAnthropicForContract(
         snapshot,
         language,
         undefined,
@@ -540,7 +635,7 @@ async function runPremiumAnalysisFreshGeneration(
       if (!contract && shouldAttemptPremiumAnalysisRepair(first, anthropicStartedAt)) {
         const validationSummary = "JSON parse failed or schema validation failed on first attempt.";
         retryCount = 1;
-        const second = await callAnthropicForContract(
+        const second = await deps.callAnthropicForContract(
           snapshot,
           language,
           { validationSummary, priorRaw: first.raw || "{}" },
@@ -608,7 +703,7 @@ async function runPremiumAnalysisFreshGeneration(
     provider,
     sourceCacheStatus: cacheStatus === "fallback" ? "fallback" : "miss",
   });
-  await cacheJsonSet(cacheKey, envelope, REDIS_TTL_SEC.PREMIUM_ANALYSIS_BUNDLE);
+  await deps.cacheJsonSet(cacheKey, envelope, REDIS_TTL_SEC.PREMIUM_ANALYSIS_BUNDLE);
 
   return {
     contract,
@@ -617,6 +712,7 @@ async function runPremiumAnalysisFreshGeneration(
     generatedAt: contract.generatedAt,
     cacheStatus,
     provider,
+    usage: usageMeta,
   };
 }
 
@@ -726,23 +822,33 @@ export async function buildPremiumAnalysisBundle(
 ): Promise<PremiumAnalysisBundle> {
   const language = (input.language ?? "en").trim().toLowerCase() || "en";
   const ticker = input.symbol.trim().toUpperCase();
-  const snapshot = await buildStockAIDataSnapshot({
-    symbol: ticker,
-    prisma: input.prisma,
-    includeDividend: true,
-    userId: input.userId ?? null,
-    plan: input.plan ?? null,
-  });
+  const deps = resolvePremiumAnalysisOrchestratorDeps(input.deps);
+  const snapshot =
+    input.snapshotOverride ??
+    (await (deps.buildSnapshot ?? buildStockAIDataSnapshot)({
+      symbol: ticker,
+      prisma: input.prisma,
+      includeDividend: true,
+      userId: input.userId ?? null,
+      plan: input.plan ?? null,
+    }));
   const snapshotHash = createSnapshotHash(snapshot);
   const cacheKey = redisKeys.premiumAnalysisBundle(ticker, snapshotHash, language);
 
-  const cachedEntry = await loadCachedEntry(cacheKey);
+  const cachedEntry = await deps.loadCachedEntry(cacheKey);
   if (cachedEntry) {
+    logPremiumAnalysisCacheServed({
+      symbol: ticker,
+      language,
+      snapshotHash,
+      provider: cachedEntry.provider,
+      sourceCacheStatus: cachedEntry.sourceCacheStatus,
+    });
     return buildPremiumAnalysisCacheHitBundle(cachedEntry, snapshotHash);
   }
 
   const lockKey = buildPremiumAnalysisLockKey(ticker, snapshotHash, language);
-  const readAfterWait = () => readCachedBundleAfterWait(cacheKey, snapshotHash);
+  const readAfterWait = () => readCachedBundleAfterWaitWithDeps(cacheKey, snapshotHash, deps);
 
   try {
     return await withSingleFlight(
@@ -766,11 +872,12 @@ export async function buildPremiumAnalysisBundle(
           accessState: input.accessState,
           canUseProduct: input.canUseProduct,
           telemetry: input.telemetry,
+          deps: input.deps,
         }),
     );
   } catch (error) {
     if (error instanceof SingleFlightTimeoutError) {
-      const lateHit = await readCachedBundleAfterWait(cacheKey, snapshotHash);
+      const lateHit = await readCachedBundleAfterWaitWithDeps(cacheKey, snapshotHash, deps);
       if (lateHit) return lateHit;
       return buildPremiumAnalysisSingleFlightTimeoutBundle(snapshot, snapshotHash);
     }

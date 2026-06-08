@@ -30,7 +30,7 @@ type CounterStore = {
 };
 
 export type PremiumAnalysisUsageLimitResult =
-  | { allowed: true }
+  | { allowed: true; limit: number; remaining: number; resetIn: number; tier: UserTier }
   | { allowed: false; limit: number; resetIn: number; tier: UserTier };
 
 export type EnforcePremiumAnalysisDailyLimitInput = {
@@ -145,5 +145,5 @@ export async function enforcePremiumAnalysisDailyLimit(
   if (count > limit) {
     return { allowed: false, limit, resetIn, tier };
   }
-  return { allowed: true };
+  return { allowed: true, limit, remaining: Math.max(0, limit - count), resetIn, tier };
 }

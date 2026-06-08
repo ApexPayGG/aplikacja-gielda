@@ -490,6 +490,12 @@ export function createPremiumCompanyRouter(prisma: PrismaClient): Router {
           userId,
         },
       });
+      res.setHeader("X-Premium-Analysis-Cache", bundle.cacheStatus);
+      if (bundle.usage) {
+        res.setHeader("X-Premium-Analysis-Daily-Limit", String(bundle.usage.limit));
+        res.setHeader("X-Premium-Analysis-Daily-Remaining", String(bundle.usage.remaining));
+        res.setHeader("X-Premium-Analysis-Daily-Reset-In", String(bundle.usage.resetIn));
+      }
       res.json(bundle);
     } catch (error) {
       if (error instanceof PremiumAnalysisUsageLimitExceededError) {

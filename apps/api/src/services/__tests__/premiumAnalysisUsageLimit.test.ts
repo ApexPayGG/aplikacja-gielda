@@ -82,6 +82,9 @@ describe("premiumAnalysisUsageLimit", () => {
     for (let i = 0; i < PREMIUM_ANALYSIS_TRIAL_DAILY_LIMIT; i += 1) {
       const ok = await enforcePremiumAnalysisDailyLimit(input);
       assert.equal(ok.allowed, true);
+      if (ok.allowed) {
+        assert.equal(ok.remaining, PREMIUM_ANALYSIS_TRIAL_DAILY_LIMIT - (i + 1));
+      }
     }
 
     const blocked = await enforcePremiumAnalysisDailyLimit(input);
@@ -111,6 +114,9 @@ describe("premiumAnalysisUsageLimit", () => {
     for (let i = 0; i < PREMIUM_ANALYSIS_TRIAL_DAILY_LIMIT; i += 1) {
       const ok = await enforcePremiumAnalysisDailyLimit(input);
       assert.equal(ok.allowed, true);
+      if (ok.allowed) {
+        assert.equal(ok.remaining, PREMIUM_ANALYSIS_TRIAL_DAILY_LIMIT - (i + 1));
+      }
     }
 
     const blocked = await enforcePremiumAnalysisDailyLimit(input);

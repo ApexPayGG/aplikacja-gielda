@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { STOCK_AI_DATA_SNAPSHOT_VERSION, type StockAIDataSnapshot } from "./dataSnapshot";
+import type { PrismaClient } from "@prisma/client";
+import { createSnapshotHash, STOCK_AI_DATA_SNAPSHOT_VERSION, type StockAIDataSnapshot } from "./dataSnapshot";
 import { buildFallbackPremiumAnalysisContract } from "./premiumAnalysisFallback";
 import {
   PremiumAnalysisContractSchema,
@@ -19,10 +20,12 @@ import {
   isPremiumAnalysisDebugRawEnabled,
   PremiumAnalysisUsageLimitExceededError,
   likelyTruncatedAnthropicResponse,
+  buildPremiumAnalysisBundle,
   buildPremiumAnalysisCacheEnvelope,
   buildPremiumAnalysisCacheHitBundle,
   parsePremiumAnalysisCacheEntry,
   readValidatedPremiumAnalysisCache,
+  runPremiumAnalysisFreshGeneration,
   shouldAttemptPremiumAnalysisRepair,
   summarizePremiumAnalysisValidationFailure,
 } from "./premiumAnalysisOrchestrator";
@@ -353,5 +356,132 @@ describe("premiumAnalysisOrchestrator cache helper", () => {
     const hit = buildPremiumAnalysisCacheHitBundle(parsed!, "snap-hash");
     assert.equal(hit.cacheStatus, "hit");
     assert.equal(hit.provider.name, "fallback");
+  });
+});
+
+describe("premium analysis usage governance", () => {
+  it("cache hit does not call daily limit enforcement or attach usage metadata", async () => {
+    const snapshot = minimalSnapshot({ symbol: "ORCL.US" });
+    const contract = buildFallbackPremiumAnalysisContract(snapshot);
+    const parsed = parsePremiumAnalysisCacheEntry(
+      buildPremiumAnalysisCacheEnvelope({
+        contract,
+        provider: { name: "fallback", model: "claude-sonnet-4-6", retryCount: 0 },
+        sourceCacheStatus: "fallback",
+      }),
+    );
+    assert.notEqual(parsed, null);
+
+    let enforceCalls = 0;
+    const bundle = await buildPremiumAnalysisBundle({
+      symbol: "ORCL",
+      prisma: {} as PrismaClient,
+      snapshotOverride: snapshot,
+      deps: {
+        loadCachedEntry: async () => parsed,
+        enforceDailyLimit: async () => {
+          enforceCalls += 1;
+          return { allowed: true, limit: 3, remaining: 2, resetIn: 3600, tier: "PRO" };
+        },
+      },
+    });
+
+    assert.equal(enforceCalls, 0);
+    assert.equal(bundle.cacheStatus, "hit");
+    assert.equal(bundle.provider.name, "fallback");
+    assert.notEqual(bundle.provider.name, "anthropic");
+    assert.equal(bundle.usage, undefined);
+  });
+
+  it("fresh miss enforces daily limit, calls Anthropic path, and exposes usage metadata", async () => {
+    const snapshot = minimalSnapshot({ symbol: "ORCL.US" });
+    const snapshotHash = createSnapshotHash(snapshot);
+    let enforceCalls = 0;
+    let anthropicCalls = 0;
+    let cacheWrites = 0;
+
+    const bundle = await runPremiumAnalysisFreshGeneration({
+      snapshot,
+      snapshotHash,
+      cacheKey: "cache:v1:premium:analysis:test",
+      language: "en",
+      plan: "PRO",
+      userId: "user-pro",
+      deps: {
+        readCachedBundleAfterWait: async () => null,
+        loadCachedEntry: async () => null,
+        hasAnthropicKey: () => true,
+        enforceDailyLimit: async () => {
+          enforceCalls += 1;
+          return { allowed: true, limit: 3, remaining: 2, resetIn: 3600, tier: "PRO" };
+        },
+        callAnthropicForContract: async () => {
+          anthropicCalls += 1;
+          return {
+            contract: null,
+            raw: "{}",
+            model: "claude-sonnet-4-6",
+            latencyMs: 50,
+            stopReason: "max_tokens",
+          };
+        },
+        cacheJsonSet: async () => {
+          cacheWrites += 1;
+        },
+      },
+    });
+
+    assert.equal(enforceCalls, 1);
+    assert.equal(anthropicCalls, 1);
+    assert.equal(cacheWrites, 1);
+    assert.equal(bundle.cacheStatus, "fallback");
+    assert.equal(bundle.provider.name, "fallback");
+    assert.notEqual(bundle.provider.name, "anthropic");
+    assert.equal(bundle.usage?.limit, 3);
+    assert.equal(bundle.usage?.remaining, 2);
+    assert.equal(bundle.usage?.tier, "PRO");
+  });
+
+  it("leader recheck cache hit skips daily limit enforcement", async () => {
+    const snapshot = minimalSnapshot({ symbol: "ORCL.US" });
+    const contract = buildFallbackPremiumAnalysisContract(snapshot);
+    const parsed = parsePremiumAnalysisCacheEntry(
+      buildPremiumAnalysisCacheEnvelope({
+        contract,
+        provider: { name: "fallback", model: null, retryCount: 0 },
+        sourceCacheStatus: "fallback",
+      }),
+    );
+    assert.notEqual(parsed, null);
+    const hitBundle = buildPremiumAnalysisCacheHitBundle(parsed!, "hash-test");
+    let enforceCalls = 0;
+
+    const bundle = await runPremiumAnalysisFreshGeneration({
+      snapshot,
+      snapshotHash: "hash-test",
+      cacheKey: "cache:v1:premium:analysis:test",
+      language: "en",
+      plan: "PRO",
+      userId: "user-pro",
+      deps: {
+        readCachedBundleAfterWait: async () => hitBundle,
+        enforceDailyLimit: async () => {
+          enforceCalls += 1;
+          return { allowed: true, limit: 3, remaining: 2, resetIn: 3600, tier: "PRO" };
+        },
+      },
+    });
+
+    assert.equal(enforceCalls, 0);
+    assert.equal(bundle.cacheStatus, "hit");
+    assert.equal(bundle.provider.name, "fallback");
+    assert.equal(bundle.usage, undefined);
+  });
+
+  it("single-flight timeout fallback stays explicit fallback without usage metadata", () => {
+    const bundle = buildPremiumAnalysisSingleFlightTimeoutBundle(minimalSnapshot(), "hash-timeout");
+    assert.equal(bundle.cacheStatus, "fallback");
+    assert.equal(bundle.provider.name, "fallback");
+    assert.equal(bundle.usage, undefined);
   });
 });
