@@ -2,7 +2,7 @@
 
 Operator queue for Cursor-first workflow. Update status and `next_action` when work moves; link blockers to `09_session_handoff.md`.
 
-**Last updated:** May 2026 (initial queue after audit)
+**Last updated:** 2026-06-08 (delivery audit doc safety pass)
 
 ---
 
@@ -53,10 +53,14 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 | **owner** | backend operator |
 | **risk** | high — touches usage limits and cost controls |
 | **scope** | `apps/api` premium analysis usage, cache TTL/envelope, rate limit behavior (no change until smoke confirms baseline) |
-| **blocked_by** | none |
-| **next_action** | Proceed to PA-V2-2D Commit 2: quota visibility and cache-hit governance tests. Track ORCL probabilityPct validation as separate quality/normalizer issue. |
+| **blocked_by** | Commit 2 exists only as uncommitted local working-tree changes at audit time — not on `main`/GitHub/VPS. Must be reviewed separately before any commit or deploy. |
+| **next_action** | Review or discard the uncommitted Commit 2 diff on the operator machine; if kept, commit as a **separate app commit** only after review. Then PA-V2-2D Commit 3 (analytics). Track ORCL probabilityPct as I-002. |
 
-**Note:** Commit 1 (`9f0d3069` api: add premium analysis cache envelope) deployed and smoke passed — ORCL fallback cached and served on hit with `provider=fallback` (no anthropic hardcode).
+**Sync:** Local, GitHub `main`, and VPS are synchronized at `5eae8469`.
+
+**Commit 1 (`9f0d3069`):** Deployed and smoke tested (cache envelope / provider provenance).
+
+**Commit 2:** At audit time, **uncommitted working-tree changes only** — not committed, not deployed, not production-ready. A clean checkout at `5eae8469` does **not** include these app changes. Do not treat Commit 2 as done in persistent docs.
 
 ---
 

@@ -23,11 +23,12 @@ Do not run production deploy or VPS log inspection from Local unless SSH/remote 
 2. `09_session_handoff.md` — last session state, blockers, copy-paste prompt
 3. `08_active_tasks.md` — what to do next
 4. `01_project_state.md` — current focus and priorities
-5. Task-specific files below as needed
+5. `11_delivery_audit.md` — durable delivery status (what exists, deployed, partial, do-not-rebuild)
+6. Task-specific files below as needed
 
 ---
 
-## File roles (01–09)
+## File roles (01–11)
 
 | File | Role |
 |------|------|
@@ -41,6 +42,7 @@ Do not run production deploy or VPS log inspection from Local unless SSH/remote 
 | `07_financial_safety.md` | Financial domain and LLM output safety rules |
 | `08_active_tasks.md` | Operator task queue (status, owner, risk, next action) |
 | `09_session_handoff.md` | Short restart handoff for the next Cursor session |
+| `11_delivery_audit.md` | Cross-cutting delivery audit: product target, deployed vs partial, risks, order |
 
 ---
 
