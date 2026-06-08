@@ -10,7 +10,7 @@ Short restart document for new Cursor sessions. **Update this file after substan
 |-------|-------|
 | **current local branch** | `main` |
 | **current local commit** | `verify with git log -1 --oneline` - do not hardcode self-referential SHA |
-| **VPS commit** | `757f0b43` (`docs: add Cursor session handoff and active tasks`) |
+| **VPS commit** | `9f0d3069` (`api: add premium analysis cache envelope`) |
 
 ---
 
@@ -22,18 +22,19 @@ Short restart document for new Cursor sessions. **Update this file after substan
 - **OPERATOR-OS.1** completed in the current governance commit (session handoff, active tasks, operational layer).
 - VPS-VERIFY.1 completed: production checkout synced to 757f0b43, containers running, API health 200.
 - PA-V2-SMOKE.1 completed: ORCL V2 UI opened, two /analysis requests returned cacheStatus=hit/provider=anthropic, no premium/analysis API errors.
+- PA-V2-2D Commit 1 deployed: cache envelope/provenance live on API; ORCL fallback cached and served as cache hit with provider=fallback.
 
 ---
 
 ## Current focus
 
-PA-V2-2D — controlled V2 cost governance and cache metadata.
+PA-V2-2D Commit 2 — quota visibility and cache-hit governance tests.
 
 ---
 
 ## Next operator step
 
-Prepare PA-V2-2D scope in Cursor Local. Do not enable V2 globally.
+Prepare Commit 2 scope in Cursor Local. Do not change limits or enable V2 globally.
 
 ---
 
@@ -54,6 +55,7 @@ Prepare PA-V2-2D scope in Cursor Local. Do not enable V2 globally.
 - `optionalAuth` must stay before rate limiter in `server.ts`.
 - Do not weaken PA V2 normalizer, validation, single-flight, or usage limits without approval.
 - Observed ORCL `dividend_scraper skip_no_company` is unrelated to PA V2 smoke; consider under Dividend Hub / data quality audit, not PA 2D.
+- ORCL LLM validation failed on missing `scenarios.scenarios.*.probabilityPct`; track separately from cache envelope (see `04_known_issues.md` I-002).
 
 ---
 

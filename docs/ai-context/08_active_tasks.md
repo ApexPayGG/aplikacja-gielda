@@ -49,12 +49,14 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 
 | Field | Value |
 |-------|-------|
-| **status** | `ready` |
+| **status** | `in_progress` |
 | **owner** | backend operator |
 | **risk** | high — touches usage limits and cost controls |
 | **scope** | `apps/api` premium analysis usage, cache TTL/envelope, rate limit behavior (no change until smoke confirms baseline) |
 | **blocked_by** | none |
-| **next_action** | Scope controlled 2D implementation: cache envelope/provider provenance, quota/rate governance, optional lazy load/analytics. Do not enable V2 globally. |
+| **next_action** | Proceed to PA-V2-2D Commit 2: quota visibility and cache-hit governance tests. Track ORCL probabilityPct validation as separate quality/normalizer issue. |
+
+**Note:** Commit 1 (`9f0d3069` api: add premium analysis cache envelope) deployed and smoke passed — ORCL fallback cached and served on hit with `provider=fallback` (no anthropic hardcode).
 
 ---
 

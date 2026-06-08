@@ -19,6 +19,8 @@ Structured tracker for agents and operators. Update when status changes.
 | ID | Issue | Notes |
 |----|-------|-------|
 | I-001 | **Symbol-specific fallback** | Some tickers may still fallback if output is structurally incomplete beyond safe normalization. Use 2K telemetry (`parse_failed` vs `validation_failed`) to triage. |
+| I-002 | **ORCL `probabilityPct` validation** | Post–Commit 1 deploy: `premium_analysis_llm_validation_failed` — `scenarios.scenarios.*.probabilityPct` missing. PA V2 quality/normalizer issue, not cache-envelope failure. |
+| I-003 | **Daily digest Anthropic model** | Log: model not found `claude-sonnet-4-20250514`. Separate scheduler/config issue; unrelated to PA V2 cache envelope. |
 
 ---
 
