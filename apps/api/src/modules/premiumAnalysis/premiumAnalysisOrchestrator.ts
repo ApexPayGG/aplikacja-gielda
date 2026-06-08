@@ -53,13 +53,36 @@ export type AnthropicContractCallResult = {
 
 export type PremiumAnalysisCacheStatus = "hit" | "miss" | "fallback";
 
+export type PremiumAnalysisProviderName = "anthropic" | "fallback" | "legacy";
+
 export type PremiumAnalysisProviderMeta = {
-  name: "anthropic" | "fallback";
+  name: PremiumAnalysisProviderName;
   model: string | null;
   latencyMs?: number;
   inputTokens?: number;
   outputTokens?: number;
   retryCount?: number;
+};
+
+/** Redis cache envelope schema (v1). */
+export const PREMIUM_ANALYSIS_CACHE_ENVELOPE_SCHEMA_VERSION = 1 as const;
+
+export type PremiumAnalysisCacheEnvelopeSourceStatus = "miss" | "fallback";
+
+export type PremiumAnalysisCacheEnvelope = {
+  schemaVersion: typeof PREMIUM_ANALYSIS_CACHE_ENVELOPE_SCHEMA_VERSION;
+  contract: PremiumAnalysisContract;
+  provider: PremiumAnalysisProviderMeta;
+  /** cacheStatus at write time (fresh generation path only). */
+  sourceCacheStatus: PremiumAnalysisCacheEnvelopeSourceStatus;
+  cachedAt: string;
+};
+
+export type ParsedPremiumAnalysisCacheEntry = {
+  contract: PremiumAnalysisContract;
+  provider: PremiumAnalysisProviderMeta;
+  sourceCacheStatus: PremiumAnalysisCacheEnvelopeSourceStatus;
+  cachedAt: string;
 };
 
 export type PremiumAnalysisBundle = {
@@ -312,32 +335,102 @@ export function shouldAttemptPremiumAnalysisRepair(
   return true;
 }
 
-export function readValidatedPremiumAnalysisCache(
-  cached: unknown,
-): PremiumAnalysisContract | null {
-  const result = validatePremiumAnalysisContract(cached);
-  return result.success ? result.data : null;
+function normalizeStoredProvider(raw: unknown): PremiumAnalysisProviderMeta {
+  if (raw == null || typeof raw !== "object") {
+    return { name: "legacy", model: null };
+  }
+  const provider = raw as Record<string, unknown>;
+  const name = provider.name;
+  if (name === "anthropic" || name === "fallback" || name === "legacy") {
+    return {
+      name,
+      model: typeof provider.model === "string" || provider.model === null ? provider.model : null,
+      latencyMs: typeof provider.latencyMs === "number" ? provider.latencyMs : undefined,
+      inputTokens: typeof provider.inputTokens === "number" ? provider.inputTokens : undefined,
+      outputTokens: typeof provider.outputTokens === "number" ? provider.outputTokens : undefined,
+      retryCount: typeof provider.retryCount === "number" ? provider.retryCount : undefined,
+    };
+  }
+  return { name: "legacy", model: null };
 }
 
-async function loadCachedContract(
-  cacheKey: string,
-): Promise<PremiumAnalysisContract | null> {
+function isPremiumAnalysisCacheEnvelope(value: unknown): value is PremiumAnalysisCacheEnvelope {
+  if (value == null || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  return (
+    record.schemaVersion === PREMIUM_ANALYSIS_CACHE_ENVELOPE_SCHEMA_VERSION &&
+    record.contract != null &&
+    typeof record === "object"
+  );
+}
+
+/** Parse Redis cache payload: envelope v1 or legacy bare contract. */
+export function parsePremiumAnalysisCacheEntry(cached: unknown): ParsedPremiumAnalysisCacheEntry | null {
+  if (cached == null) return null;
+
+  if (isPremiumAnalysisCacheEnvelope(cached)) {
+    const contractResult = validatePremiumAnalysisContract(cached.contract);
+    if (!contractResult.success) return null;
+    const sourceCacheStatus: PremiumAnalysisCacheEnvelopeSourceStatus =
+      cached.sourceCacheStatus === "fallback" ? "fallback" : "miss";
+    const cachedAt =
+      typeof cached.cachedAt === "string" && cached.cachedAt.trim()
+        ? cached.cachedAt
+        : contractResult.data.generatedAt;
+    return {
+      contract: contractResult.data,
+      provider: normalizeStoredProvider(cached.provider),
+      sourceCacheStatus,
+      cachedAt,
+    };
+  }
+
+  const legacyResult = validatePremiumAnalysisContract(cached);
+  if (!legacyResult.success) return null;
+  return {
+    contract: legacyResult.data,
+    provider: { name: "legacy", model: null },
+    sourceCacheStatus: "miss",
+    cachedAt: legacyResult.data.generatedAt,
+  };
+}
+
+export function readValidatedPremiumAnalysisCache(cached: unknown): PremiumAnalysisContract | null {
+  return parsePremiumAnalysisCacheEntry(cached)?.contract ?? null;
+}
+
+export function buildPremiumAnalysisCacheEnvelope(input: {
+  contract: PremiumAnalysisContract;
+  provider: PremiumAnalysisProviderMeta;
+  sourceCacheStatus: PremiumAnalysisCacheEnvelopeSourceStatus;
+  cachedAt?: string;
+}): PremiumAnalysisCacheEnvelope {
+  return {
+    schemaVersion: PREMIUM_ANALYSIS_CACHE_ENVELOPE_SCHEMA_VERSION,
+    contract: input.contract,
+    provider: input.provider,
+    sourceCacheStatus: input.sourceCacheStatus,
+    cachedAt: input.cachedAt ?? new Date().toISOString(),
+  };
+}
+
+async function loadCachedEntry(cacheKey: string): Promise<ParsedPremiumAnalysisCacheEntry | null> {
   const cached = await cacheJsonGet<unknown>(cacheKey);
   if (cached == null) return null;
-  return readValidatedPremiumAnalysisCache(cached);
+  return parsePremiumAnalysisCacheEntry(cached);
 }
 
-function buildPremiumAnalysisCacheHitBundle(
-  cached: PremiumAnalysisContract,
+export function buildPremiumAnalysisCacheHitBundle(
+  entry: ParsedPremiumAnalysisCacheEntry,
   snapshotHash: string,
 ): PremiumAnalysisBundle {
   return {
-    contract: cached,
+    contract: entry.contract,
     snapshotHash,
     snapshotVersion: STOCK_AI_DATA_SNAPSHOT_VERSION,
-    generatedAt: cached.generatedAt,
+    generatedAt: entry.contract.generatedAt,
     cacheStatus: "hit",
-    provider: { name: "anthropic", model: null },
+    provider: entry.provider,
   };
 }
 
@@ -345,9 +438,9 @@ async function readCachedBundleAfterWait(
   cacheKey: string,
   snapshotHash: string,
 ): Promise<PremiumAnalysisBundle | null> {
-  const cached = await loadCachedContract(cacheKey);
-  if (!cached) return null;
-  return buildPremiumAnalysisCacheHitBundle(cached, snapshotHash);
+  const entry = await loadCachedEntry(cacheKey);
+  if (!entry) return null;
+  return buildPremiumAnalysisCacheHitBundle(entry, snapshotHash);
 }
 
 function buildPremiumAnalysisLockKey(
@@ -510,7 +603,12 @@ async function runPremiumAnalysisFreshGeneration(
     }
   }
 
-  await cacheJsonSet(cacheKey, contract, REDIS_TTL_SEC.PREMIUM_ANALYSIS_BUNDLE);
+  const envelope = buildPremiumAnalysisCacheEnvelope({
+    contract,
+    provider,
+    sourceCacheStatus: cacheStatus === "fallback" ? "fallback" : "miss",
+  });
+  await cacheJsonSet(cacheKey, envelope, REDIS_TTL_SEC.PREMIUM_ANALYSIS_BUNDLE);
 
   return {
     contract,
@@ -638,9 +736,9 @@ export async function buildPremiumAnalysisBundle(
   const snapshotHash = createSnapshotHash(snapshot);
   const cacheKey = redisKeys.premiumAnalysisBundle(ticker, snapshotHash, language);
 
-  const cached = await loadCachedContract(cacheKey);
-  if (cached) {
-    return buildPremiumAnalysisCacheHitBundle(cached, snapshotHash);
+  const cachedEntry = await loadCachedEntry(cacheKey);
+  if (cachedEntry) {
+    return buildPremiumAnalysisCacheHitBundle(cachedEntry, snapshotHash);
   }
 
   const lockKey = buildPremiumAnalysisLockKey(ticker, snapshotHash, language);

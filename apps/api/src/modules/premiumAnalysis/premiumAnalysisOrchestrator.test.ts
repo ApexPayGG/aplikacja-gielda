@@ -19,6 +19,9 @@ import {
   isPremiumAnalysisDebugRawEnabled,
   PremiumAnalysisUsageLimitExceededError,
   likelyTruncatedAnthropicResponse,
+  buildPremiumAnalysisCacheEnvelope,
+  buildPremiumAnalysisCacheHitBundle,
+  parsePremiumAnalysisCacheEntry,
   readValidatedPremiumAnalysisCache,
   shouldAttemptPremiumAnalysisRepair,
   summarizePremiumAnalysisValidationFailure,
@@ -296,10 +299,59 @@ describe("premiumAnalysisOrchestrator cache helper", () => {
   it("ignores invalid cached payload", () => {
     const invalid = { version: "1.0", symbol: "X" };
     assert.equal(readValidatedPremiumAnalysisCache(invalid), null);
+    assert.equal(parsePremiumAnalysisCacheEntry(invalid), null);
   });
 
-  it("accepts valid cached payload", () => {
+  it("accepts valid legacy bare contract with legacy provider provenance", () => {
     const contract = buildFallbackPremiumAnalysisContract(minimalSnapshot());
     assert.notEqual(readValidatedPremiumAnalysisCache(contract), null);
+    const parsed = parsePremiumAnalysisCacheEntry(contract);
+    assert.notEqual(parsed, null);
+    assert.equal(parsed?.provider.name, "legacy");
+    assert.equal(parsed?.sourceCacheStatus, "miss");
+  });
+
+  it("parses envelope v1 and preserves provider metadata on cache hit bundle", () => {
+    const contract = buildFallbackPremiumAnalysisContract(minimalSnapshot());
+    const envelope = buildPremiumAnalysisCacheEnvelope({
+      contract,
+      provider: {
+        name: "anthropic",
+        model: "claude-test",
+        latencyMs: 1200,
+        inputTokens: 100,
+        outputTokens: 200,
+        retryCount: 0,
+      },
+      sourceCacheStatus: "miss",
+      cachedAt: "2026-06-06T19:49:56.063Z",
+    });
+    const parsed = parsePremiumAnalysisCacheEntry(envelope);
+    assert.notEqual(parsed, null);
+    assert.equal(parsed?.provider.name, "anthropic");
+    assert.equal(parsed?.provider.model, "claude-test");
+    assert.equal(parsed?.provider.latencyMs, 1200);
+
+    const hit = buildPremiumAnalysisCacheHitBundle(parsed!, "snap-hash");
+    assert.equal(hit.cacheStatus, "hit");
+    assert.equal(hit.provider.name, "anthropic");
+    assert.equal(hit.provider.model, "claude-test");
+    assert.notEqual(hit.provider.name, "legacy");
+  });
+
+  it("parses and serves fallback envelope with explicit fallback provenance", () => {
+    const contract = buildFallbackPremiumAnalysisContract(minimalSnapshot());
+    const envelope = buildPremiumAnalysisCacheEnvelope({
+      contract,
+      provider: { name: "fallback", model: null, retryCount: 1 },
+      sourceCacheStatus: "fallback",
+    });
+    const parsed = parsePremiumAnalysisCacheEntry(envelope);
+    assert.equal(parsed?.provider.name, "fallback");
+    assert.equal(parsed?.sourceCacheStatus, "fallback");
+
+    const hit = buildPremiumAnalysisCacheHitBundle(parsed!, "snap-hash");
+    assert.equal(hit.cacheStatus, "hit");
+    assert.equal(hit.provider.name, "fallback");
   });
 });

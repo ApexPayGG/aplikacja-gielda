@@ -2211,7 +2211,7 @@ export type PremiumAnalysisContract = {
 export type PremiumAnalysisCacheStatus = "hit" | "miss" | "fallback";
 
 export type PremiumAnalysisProviderMeta = {
-  name: "anthropic" | "fallback";
+  name: "anthropic" | "fallback" | "legacy";
   model: string | null;
   latencyMs?: number;
   inputTokens?: number;
