@@ -53,4 +53,5 @@ Structured tracker for agents and operators. Update when status changes.
 
 - Premium analysis: check Network tab for `/api/premium/{TICKER}/analysis`, not only UI message.
 - Compare API `cacheStatus`, `provider.name`, and logs for `premium_analysis_llm_normalized_contract` vs `validation_failed`.
+- **Cache-hit governance (Commit 2, post-`fead6995`):** on cache hit expect `X-Premium-Analysis-Cache: hit`, no daily usage headers, no JSON `usage`; log `premium_analysis_cache_served` with correct `providerName`.
 - After frontend deploy, confirm lazy chunk hash changed if V2 UI was updated.

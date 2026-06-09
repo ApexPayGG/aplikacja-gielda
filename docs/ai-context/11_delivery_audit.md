@@ -1,8 +1,8 @@
 # Delivery Audit - StockAI Pro
 
 **Purpose:** Durable project memory for Cursor sessions. Chat threads are not source of truth.
-**Audit date:** 2026-06-08
-**Verified sync point:** `5eae8469` (`docs: record premium analysis cache envelope deploy`) - local `git rev-parse HEAD` matches operator-reported GitHub/VPS SHA.
+**Audit date:** 2026-06-08 (initial); **last status update:** 2026-06-08 (Commit 2 deploy + smoke)
+**Verified sync point:** `fead6995` (`api: add premium analysis quota visibility`) — local / GitHub / VPS synchronized after API-only deploy.
 **Auditor scope:** Read-only inspection of repo docs, code, git history, and working tree. No application edits, no deploy, no commit.
 
 **Note on missing doc paths:** `03_todo_lista.md`, `05_deployment.md`, and `06_testing.md` do not exist. Use `03_deployment_runbook.md`, `05_product_decisions.md`, and `06_premium_analysis_v2_status.md` instead.
@@ -13,11 +13,11 @@
 
 | Check | Result |
 |-------|--------|
-| Local HEAD | `5eae8469` |
-| Uncommitted application changes (audit-time) | **May exist on operator machine only** - PA-V2-2D Commit 2 app diff was **not** committed at audit time. Not on `main`/GitHub/VPS. **Clean checkouts at `5eae8469` do not include Commit 2 app changes.** Review or discard separately before any app commit. |
-| Last API feature commit in history | `9f0d3069` (`api: add premium analysis cache envelope`) |
-| Production API cache envelope | **DEPLOYED** + **SMOKE_TESTED** (operator-confirmed ORCL fallback -> cache hit `provider=fallback`) |
-| PA V2 globally enabled | **No** - frontend flag default OFF (`featureFlags.ts`, env `VITE_PREMIUM_ANALYSIS_V2_ENABLED`) |
+| Local HEAD | `fead6995` |
+| PA-V2-2D Commit 2 on `main` | **Yes** — `fead6995` (`api: add premium analysis quota visibility`) |
+| PA-V2-2D Commit 2 in production | **DEPLOYED** + **SMOKE_TESTED** (API-only deploy; `/health` 200) |
+| PA-V2-2D Commit 1 | **DEPLOYED** + **SMOKE_TESTED** — `9f0d3069` (cache envelope) |
+| PA V2 globally enabled | **No** — not approved; frontend flag default OFF (`featureFlags.ts`, env `VITE_PREMIUM_ANALYSIS_V2_ENABLED`) |
 | `.cursor/rules/` tracked | 4 files: `project-operating-rules.mdc`, `security-and-testing.mdc`, `deployment-safety.mdc`, `financial-domain-safety.mdc` |
 
 ---
@@ -50,7 +50,8 @@
 | Stripe checkout resolver (EUR) | **DONE** (code) | `stripeEurPricing.ts`, `stripe.ts` - gated on env Price IDs |
 | Stripe webhooks + tier sync | **DONE** (code) | `stripeModule.ts`, tests in `stripe.test.ts` |
 | Premium Analysis V2 backend pipeline | **DONE** | Orchestrator, contract, normalizer 2L-2O, usage limits, single-flight, repair budget, telemetry |
-| Premium Analysis cache envelope v1 | **DONE** | `9f0d3069` - `PremiumAnalysisCacheEnvelope`, provider provenance |
+| Premium Analysis cache envelope v1 | **DONE** | `9f0d3069` — `PremiumAnalysisCacheEnvelope`, provider provenance |
+| PA-V2-2D Commit 2 quota visibility + governance | **DONE** | `fead6995` — usage metadata on fresh miss, headers, `premium_analysis_cache_served` log, governance tests |
 | Premium Analysis V2 UI | **DONE** (flagged) | `PremiumCompanyAnalysisV2.tsx`, lazy load, legacy fallback UI |
 | Global `/api/premium/*` rate limiter (trial-aware) | **DONE** | `rateLimiter.ts`, `optionalAuth` order in `server.ts` |
 | AI cost telemetry | **DONE** | `aiCostTelemetry.ts` on Anthropic calls |
@@ -68,17 +69,17 @@
 
 ## 3. What has been implemented and deployed to production?
 
-Operator and docs confirm production at **`5eae8469`** (docs commit). **Last deployed API feature** for PA 2D is **`9f0d3069`** (cache envelope - parent of docs commit).
+Operator confirms production at **`fead6995`** after API-only deploy. **Last deployed API feature:** PA-V2-2D Commit 2 (`fead6995`).
 
 | Capability | Status | Notes |
 |------------|--------|-------|
 | Premium Analysis V2 infra (2A-2O) | **DEPLOYED** | Commits through `04a635f5` in history; VPS verified in OPERATOR-OS / VPS-VERIFY.1 |
-| PA-V2-2D Commit 1 - cache envelope | **DEPLOYED** | `9f0d3069`; ORCL smoke: fallback cached, hit serves `provider=fallback` |
-| Cursor governance docs layer | **DEPLOYED** | `00`, `08`, `09` on main |
+| PA-V2-2D Commit 1 — cache envelope | **DEPLOYED** + **SMOKE_TESTED** | `9f0d3069`; ORCL: fallback cached, hit serves `provider=fallback` |
+| PA-V2-2D Commit 2 — quota visibility | **DEPLOYED** + **SMOKE_TESTED** | `fead6995`; ORCL cache-hit governance smoke passed (see section 4) |
+| Cursor governance docs layer | **DEPLOYED** | `00`–`11` on main |
 | Private beta nginx / TLS stack | **DEPLOYED** | **UNKNOWN - verify** exact nginx/basic-auth config on VPS |
-| EUR live Stripe checkout | **Not deployed as live** | Resolver returns `EUR_CHECKOUT_NOT_CONFIGURED` without real Price IDs - **BLOCKED** (`STRIPE-LIVE.1`) |
-| PA V2 UI globally on | **Not deployed** | Feature flag OFF by default in production frontend unless operator enabled locally |
-| PA-V2-2D Commit 2 (quota visibility) | **Not deployed** | At audit time, may exist only as **uncommitted working-tree changes** on operator machine - not on `main`; see section 5 |
+| EUR live Stripe checkout | **Not deployed as live** | Resolver returns `EUR_CHECKOUT_NOT_CONFIGURED` without real Price IDs — **BLOCKED** (`STRIPE-LIVE.1`) |
+| PA V2 UI globally on | **Not deployed / not approved** | Feature flag OFF by default; global rollout requires explicit operator approval |
 
 ---
 
@@ -92,7 +93,8 @@ Operator and docs confirm production at **`5eae8469`** (docs commit). **Last dep
 | Full production launch checklist | **PARTIAL** | `docs/production-launch-smoke-checklist.md` exists; not all sections confirmed in ai-context |
 | EUR Stripe checkout live | **Not smoke tested** | Blocked on configuration |
 | GA `/g/collect` | **TODO** | Task GA-SMOKE.1 pending |
-| Commit 2 governance (cache hit skips quota) | **Not applicable in prod** | Commit 2 not on `main`; not deployed; not smoke tested in production |
+| Commit 2 cache-hit governance (ORCL V2) | **SMOKE_TESTED** | HTTP 200; `X-Premium-Analysis-Cache: hit`; daily usage headers absent; JSON `cacheStatus=hit`, `provider.name=fallback`, no `usage`; log `premium_analysis_cache_served` with `providerName=fallback`, `sourceCacheStatus=fallback` |
+| Commit 2 fresh-miss usage visibility | **PARTIAL** | Not re-smoked on prod in this pass; covered by unit tests; optional follow-up smoke on cache-busting symbol |
 
 ---
 
@@ -100,8 +102,7 @@ Operator and docs confirm production at **`5eae8469`** (docs commit). **Last dep
 
 | Item | Status | Gap |
 |------|--------|-----|
-| **PA-V2-2D Commit 2** | **PARTIAL** (working tree only at audit time) | Uncommitted app diff on operator machine at audit time - **not committed, not deployed, not production-ready**. Intended scope (if ever committed): quota visibility, governance tests, cache-served log, response headers. **Must be reviewed separately**; do not assume it exists in future sessions or clean checkouts. |
-| **PA-V2-2D Commit 3** (frontend analytics) | **TODO** | Referenced in `08_active_tasks.md`; not started in git |
+| **PA-V2-2D Commit 3** (frontend analytics) | **TODO** | Next recommended work; optional frontend `usage` typing deferred from Commit 2 |
 | **EUR Stripe checkout** | **PARTIAL** | PRICING.3 code complete; production env Price IDs + owner sign-off missing |
 | **Investor OS tier** | **PARTIAL** | Pricing/copy/waitlist only; checkout returns `INVESTOR_OS_CHECKOUT_NOT_SUPPORTED` |
 | **Premium Analysis V2 UI rollout** | **PARTIAL** | Backend production-stable; UI behind `localStorage` / env flag |
@@ -119,18 +120,16 @@ Operator and docs confirm production at **`5eae8469`** (docs commit). **Last dep
 
 Prioritized by active task queue and known gaps:
 
-1. **Review or discard** uncommitted Commit 2 app diff on operator machine (`git status`) - **separate from** docs-only commits.
-2. **If Commit 2 diff is kept after review** - commit as a dedicated app commit; then API-only deploy + post-deploy smoke.
-3. **PA-V2-2D Commit 3** - frontend analytics for cache/quota visibility (if still in scope; after Commit 2 is on `main` if pursued).
-4. **I-002** - normalizer or prompt fix for `scenarios.scenarios.*.probabilityPct` (separate from 2D).
-5. **I-003** - align digest (and possibly other modules) to valid Anthropic model IDs (`premiumAnalysisModelTasks.ts` uses `claude-sonnet-4-6`; digest still on `claude-sonnet-4-20250514`).
-6. **O-001** - prompt compaction / `max_tokens` budget.
-7. **STRIPE-LIVE.1** - live EUR Price IDs, webhook smoke, owner checkpoint.
-8. **GA-SMOKE.1** - production analytics verification.
-9. **INVESTOR-DIVIDEND-HUB.1** - read-only architecture audit (dividend data quality, `skip_no_company` cases).
-10. **MARKET-DATA.1** - provider coverage matrix vs snapshot fields.
-11. **Investor OS product** - tier in DB, checkout, feature gating (future).
-12. **Optional:** quality gate for weak-but-valid contracts; PA V2 global UI rollout decision.
+1. **PA-V2-2D Commit 3** — frontend analytics and optional `usage` typing (recommended next).
+2. **I-002** — normalizer or prompt fix for `scenarios.scenarios.*.probabilityPct` (separate from 2D; still open).
+3. **I-003** — align digest (and possibly other modules) to valid Anthropic model IDs (still open).
+4. **O-001** — prompt compaction / `max_tokens` budget.
+5. **STRIPE-LIVE.1** — live EUR Price IDs, webhook smoke, owner checkpoint.
+6. **GA-SMOKE.1** — production analytics verification.
+7. **INVESTOR-DIVIDEND-HUB.1** — read-only architecture audit (dividend data quality, `skip_no_company` cases).
+8. **MARKET-DATA.1** — provider coverage matrix vs snapshot fields.
+9. **Investor OS product** — tier in DB, checkout, feature gating (future).
+10. **Optional:** quality gate for weak-but-valid contracts; PA V2 global UI rollout (not approved).
 
 ---
 
@@ -140,12 +139,13 @@ Tag: **DO_NOT_REBUILD**
 
 | System | Why |
 |--------|-----|
-| Premium Analysis V2 orchestrator + Zod contract | Months of commits 2A-2O + 2D Commit 1; production-proven path |
+| Premium Analysis V2 orchestrator + Zod contract | Months of commits 2A-2O + 2D Commits 1-2; production-proven path |
 | Normalizer layers 2L-2O | Extensive tests; alias-only financial safety rules |
 | Single-flight coalescing (`withSingleFlight`) | ADR-007; waiters must not double-charge |
 | Daily usage limits + trial-aware global rate limiter | Financial safety; `optionalAuth` order is critical |
 | Deterministic fallback contract | ADR-005; validated, no analyst fiction |
 | Cache envelope v1 + provider provenance | Deployed `9f0d3069`; extend, do not replace with bare contract cache |
+| Commit 2 quota visibility + cache-served telemetry | Deployed `fead6995`; extend in Commit 3, do not weaken cache-hit quota skip |
 | Trial lifecycle (PRICING.4) + `getUserAccessState` | DB fields, middleware, frontend gates |
 | EUR pricing config + Stripe EUR resolver (PRICING.3) | Wire env, do not rewrite checkout flow |
 | Dividend hybrid pipeline (EODHD/Finnhub) + BullMQ sync | `DIVIDEND_DATA_SOURCES.md`, scheduler jobs |
@@ -179,7 +179,7 @@ Tag: **DO_NOT_REBUILD**
 | **Usage limits / billing / cost controls** | Critical | Never weaken `enforcePremiumAnalysisDailyLimit`, rate limiter order, single-flight, or cache-hit quota skip without approval (`07`, R-003, R-004) |
 | **LLM output financial safety** | Critical | Zod + normalizer + fallback; no fabricated metrics (`07`, R-002) |
 | **Stripe live activation** | Critical | `STRIPE-LIVE.1` blocked; test with scoped smoke before enabling |
-| **Uncommitted Commit 2 drift** | High | App changes not on `main`; docs must not imply they exist in clean checkouts; risk of lost work or mixing docs/app commits |
+| **Fresh-miss usage smoke gap** | Low | Commit 2 cache-hit governance smoke passed; fresh-miss `usage` + daily headers not re-verified on prod in this pass |
 | **Cache hit mis-reporting provider** | High | Commit 1 fixed hardcoded anthropic; regression would break ops trust |
 | **Service worker / stale frontend bundles** | Medium | R-001; hard refresh after frontend deploy |
 | **max_tokens / parse failures** | Medium | O-001; drives fallback rate and cost |
@@ -193,17 +193,15 @@ Tag: **DO_NOT_REBUILD**
 ## 10. Recommended implementation order from here
 
 ```
-1. Read this audit; verify git at 5eae8469; run git status
-2. Review or discard uncommitted Commit 2 app diff (not on main - clean checkouts lack it)
-3. If kept: separate app commit only after review -> then API-only deploy -> smoke
-4. PA-V2-2D Commit 3: frontend analytics (if in scope; after Commit 2 on main if pursued)
-5. I-002: probabilityPct normalizer/prompt (quality, not billing)
-6. I-003: digest model ID alignment (quick config/code sweep)
-7. O-001: max_tokens / prompt compaction
-8. STRIPE-LIVE.1: owner checkpoint -> EUR Price IDs -> webhook smoke
-9. GA-SMOKE.1
-10. INVESTOR-DIVIDEND-HUB.1 + MARKET-DATA.1 (read-only audits)
-11. Investor OS / PA V2 global rollout (product decisions)
+1. Verify git at fead6995; Confirm Commit 1 + Commit 2 deployed and smoke tested
+2. PA-V2-2D Commit 3: frontend analytics + optional usage typing
+3. I-002: probabilityPct normalizer/prompt (quality, still open)
+4. I-003: digest model ID alignment (still open)
+5. O-001: max_tokens / prompt compaction
+6. STRIPE-LIVE.1: owner checkpoint -> EUR Price IDs -> webhook smoke
+7. GA-SMOKE.1
+8. INVESTOR-DIVIDEND-HUB.1 + MARKET-DATA.1 (read-only audits)
+9. Investor OS / PA V2 global rollout (not approved)
 ```
 
 **Do not:** enable V2 globally, push/deploy without checkpoint, or weaken financial safety controls during 2D work.
@@ -216,10 +214,10 @@ Tag: **DO_NOT_REBUILD**
 |------|----------|---------|
 | **Pricing / trial / access** | DEPLOYED | Trial-first EUR config; PRICING.4 enforcement on premium routes |
 | **Stripe / checkout** | PARTIAL / BLOCKED | Code ready; live EUR env + owner approval missing |
-| **Premium Analysis V2 backend** | DEPLOYED + SMOKE_TESTED | Full pipeline + cache envelope on prod |
-| **PA-V2-2D Commit 2** | PARTIAL (working tree only at audit time) | Not on `main`; not deployed; review or discard before any app commit |
-| **PA-V2-2D Commit 3** | TODO | Analytics |
-| **AI governance (cache/fallback/cost)** | DEPLOYED (C1) | Envelope, provenance, telemetry; C2 quota visibility not on main |
+| **Premium Analysis V2 backend** | DEPLOYED + SMOKE_TESTED | Full pipeline + cache envelope + quota visibility on prod |
+| **PA-V2-2D Commit 2** | DEPLOYED + SMOKE_TESTED | `fead6995`; cache-hit governance smoke passed (ORCL) |
+| **PA-V2-2D Commit 3** | TODO | Frontend analytics — recommended next |
+| **AI governance (cache/fallback/cost)** | DEPLOYED + SMOKE_TESTED | Envelope, provenance, cache-served log, cache-hit skips usage headers/metadata |
 | **Frontend pages / routing** | DEPLOYED | Broad SPA; PA V2 UI flag OFF by default |
 | **Backend API / usage limits** | DEPLOYED | Daily + monthly limits; trial-aware |
 | **Investor OS** | PARTIAL / Paused | Pricing copy only; no checkout |
@@ -264,4 +262,5 @@ Tag: **DO_NOT_REBUILD**
 | Date | Change |
 |------|--------|
 | 2026-06-08 | Initial delivery audit created (read-only verification at `5eae8469`). |
-| 2026-06-08 | Safety pass: Commit 2 documented as uncommitted working-tree only - not committed/deployed/production-ready. |
+| 2026-06-08 | Safety pass: Commit 2 documented as uncommitted working-tree only. |
+| 2026-06-08 | Post-deploy update: Commit 2 (`fead6995`) **DEPLOYED** + **SMOKE_TESTED**; cache-hit governance smoke recorded. |

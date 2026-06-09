@@ -2,7 +2,7 @@
 
 Operator queue for Cursor-first workflow. Update status and `next_action` when work moves; link blockers to `09_session_handoff.md`.
 
-**Last updated:** 2026-06-08 (delivery audit doc safety pass)
+**Last updated:** 2026-06-08 (PA-V2-2D Commit 2 deploy + smoke documented)
 
 ---
 
@@ -52,15 +52,20 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 | **status** | `in_progress` |
 | **owner** | backend operator |
 | **risk** | high — touches usage limits and cost controls |
-| **scope** | `apps/api` premium analysis usage, cache TTL/envelope, rate limit behavior (no change until smoke confirms baseline) |
-| **blocked_by** | Commit 2 exists only as uncommitted local working-tree changes at audit time — not on `main`/GitHub/VPS. Must be reviewed separately before any commit or deploy. |
-| **next_action** | Review or discard the uncommitted Commit 2 diff on the operator machine; if kept, commit as a **separate app commit** only after review. Then PA-V2-2D Commit 3 (analytics). Track ORCL probabilityPct as I-002. |
+| **scope** | `apps/api` premium analysis usage, cache TTL/envelope, rate limit behavior |
+| **blocked_by** | none (Commit 2 complete; Commit 3 not started) |
+| **next_action** | PA-V2-2D Commit 3 — frontend analytics / optional `usage` typing. Do **not** enable PA V2 globally without explicit approval. Track ORCL `probabilityPct` as I-002. |
 
-**Sync:** Local, GitHub `main`, and VPS are synchronized at `5eae8469`.
+**Sync:** Local, GitHub `main`, and VPS are synchronized at `fead6995` (`api: add premium analysis quota visibility`).
 
-**Commit 1 (`9f0d3069`):** Deployed and smoke tested (cache envelope / provider provenance).
+| Commit | Status | Notes |
+|--------|--------|-------|
+| **Commit 1** (`9f0d3069`) | **DEPLOYED** + **SMOKE_TESTED** | Cache envelope / provider provenance |
+| **Commit 2** (`fead6995`) | **DEPLOYED** + **SMOKE_TESTED** | Quota visibility, governance tests, cache-served log, response headers (API-only) |
 
-**Commit 2:** At audit time, **uncommitted working-tree changes only** — not committed, not deployed, not production-ready. A clean checkout at `5eae8469` does **not** include these app changes. Do not treat Commit 2 as done in persistent docs.
+**Commit 2 cache-hit governance smoke (ORCL V2, browser):** HTTP 200; `X-Premium-Analysis-Cache: hit`; daily usage headers **absent**; JSON `cacheStatus=hit`, `provider.name=fallback`, no `usage`. Logs: `premium_analysis_cache_served`, `symbol=ORCL`, `providerName=fallback`, `sourceCacheStatus=fallback`.
+
+**PA V2 global rollout:** OFF — not approved; feature flag remains default OFF.
 
 ---
 
