@@ -2,7 +2,7 @@
 
 Operator queue for Cursor-first workflow. Update status and `next_action` when work moves; link blockers to `09_session_handoff.md`.
 
-**Last updated:** 2026-06-13 (PA-V2-2D Commit 3 deploy + smoke documented)
+**Last updated:** 2026-06-13 (Stripe post-payment Pro monthly trial smoke documented)
 
 ---
 
@@ -89,21 +89,29 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 
 | Field | Value |
 |-------|-------|
-| **status** | `done` (checkout activation only) |
+| **status** | `done` (checkout + post-payment access smoke) |
 | **owner** | operator (VPS + browser) |
 | **risk** | high — billing and live money |
-| **scope** | Live EUR checkout path on production; closes when hosted checkout is operator-verified |
+| **scope** | Live EUR checkout on production; post-payment access upgrade for Pro monthly trial |
 | **blocked_by** | none |
-| **next_action** | Checkout activation complete. **Optional follow-up (not part of STRIPE-LIVE.1 closure):** after one real test payment, verify `checkout.session.completed` webhook returns 2xx and tier/subscription state updates in DB. Do **not** recreate Price IDs or Stripe products. |
+| **next_action** | Checkout and post-payment access smoke complete for **Pro monthly trial** (2026-06-13). **Monetization follow-up:** Stripe Customer Portal not implemented — users cannot self-cancel in-app; cancel active test trials manually in Stripe Dashboard unless intentionally retained. Do **not** recreate Price IDs or Stripe products. |
 
 **Code on `main` (repo evidence):** EUR resolver (`stripeEurPricing.ts`), checkout session + webhook routes (`stripe.ts`, `stripeModule.ts`), frontend gate (`VITE_EUR_CHECKOUT_ENABLED`); commit `acb5c037` on `main`.
 
-**Production checkout (operator-verified, smoke earlier; documented 2026-06-13):**
+**Production checkout (operator-verified; documented 2026-06-13):**
 
 - VPS `.env.production` (operator-reported): `STRIPE_SECRET_KEY=sk_live_...`, `STRIPE_WEBHOOK_SECRET`, all four `STRIPE_PRICE_*_EUR` — **SET**
 - `/pricing` → **Get Pro** / **Get Pro+** → hosted **`checkout.stripe.com`** (StockAI Pro **€29/mo**, **14-day** card trial)
 
-**Not fully smoke-tested:** post-payment `checkout.session.completed` webhook 2xx + DB tier/subscription update.
+**Post-payment smoke-tested (2026-06-13; Pro monthly trial only):**
+
+- Flow: `/pricing` → Pro monthly → Stripe Checkout LIVE → Revolut / 3DS → payment success page
+- Checkout UI: StockAI Pro / Pro, 14-day trial, €29/month after trial; EUR 0.00 card authorization (Revolut)
+- Payment success page: “Payment successful!”, “Your Pro trial is active.”, trial ends **Jun 27, 2026**
+- `GET /api/auth/me/access` (200): `tier=PRO`, `subscriptionStatus=trialing`, `accessState=SUBSCRIPTION_TRIALING`, `trialKind=with_card`, `trialEndsAt=2026-06-27T15:08:21.000Z`, `canUseProduct=true`, `upgradeRequired=false`
+- Closes highest billing risk for **Pro monthly trial start** (webhook/DB access upgrade verified via access state)
+
+**Not smoke-tested:** Pro+ plans, yearly billing, refund flow, in-app cancellation (Customer Portal missing).
 
 **Investor OS checkout** remains `501 INVESTOR_OS_CHECKOUT_NOT_SUPPORTED` — unchanged.
 
