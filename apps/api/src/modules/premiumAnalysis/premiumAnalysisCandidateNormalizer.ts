@@ -88,6 +88,53 @@ function coerceNumericString(value: unknown): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+function isValidProbabilityPct(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 100;
+}
+
+function parseProbabilityPct(value: unknown): number | undefined {
+  if (isValidProbabilityPct(value)) return value;
+  const coerced = coerceNumericString(value);
+  if (coerced != null && coerced >= 0 && coerced <= 100) return coerced;
+  return undefined;
+}
+
+function defaultScenarioProbabilityPct(name: unknown, index: number): number {
+  const normalized = typeof name === "string" ? name.trim().toLowerCase() : "";
+  if (normalized === "bull") return 25;
+  if (normalized === "base") return 50;
+  if (normalized === "bear") return 25;
+  if (index === 0) return 25;
+  if (index === 1) return 50;
+  return 25;
+}
+
+function normalizeScenarioProbabilityPct(
+  scenario: Record<string, unknown>,
+  index: number,
+): { probabilityPct: number; changed: boolean } {
+  const direct = parseProbabilityPct(scenario.probabilityPct);
+  if (direct != null) {
+    return {
+      probabilityPct: direct,
+      changed: scenario.probabilityPct !== direct,
+    };
+  }
+
+  const aliasKeys = ["probabilityPercent", "probability_pct", "probability", "likelihoodPct"] as const;
+  for (const key of aliasKeys) {
+    const fromAlias = parseProbabilityPct(scenario[key]);
+    if (fromAlias != null) {
+      return { probabilityPct: fromAlias, changed: true };
+    }
+  }
+
+  return {
+    probabilityPct: defaultScenarioProbabilityPct(scenario.name, index),
+    changed: true,
+  };
+}
+
 function normalizeRiskLevel(value: unknown): RiskLevel {
   const normalized = typeof value === "string" ? value.trim().toLowerCase() : "";
   if (normalized === "low" || normalized === "high") return normalized;
@@ -684,6 +731,11 @@ export function normalizePremiumAnalysisCandidate(
         if (next.priceTarget === null) {
           delete next.priceTarget;
           changed.push(`scenarios.scenarios[${index}].priceTarget`);
+        }
+        const probability = normalizeScenarioProbabilityPct(next, index);
+        if (probability.changed) {
+          next.probabilityPct = probability.probabilityPct;
+          changed.push(`scenarios.scenarios[${index}].probabilityPct`);
         }
         return next;
       });

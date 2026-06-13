@@ -787,6 +787,133 @@ describe("normalizePremiumAnalysisCandidate", () => {
     assert.equal(after.data.historicalTwins.summary, "No twin lesson available from model output.");
     assert.equal(after.data.historicalTwins.lesson, "No twin lesson available from model output.");
   });
+
+  it("normalizes ORCL-like candidate when scenarios.scenarios.*.probabilityPct is missing", () => {
+    const orclSnapshot = minimalSnapshot({
+      symbol: "ORCL.US",
+      resolvedSymbol: "ORCL.US",
+      company: {
+        name: {
+          status: "ok",
+          value: "Oracle",
+          asOf: generatedAt,
+          source: "test",
+        },
+        exchange: minimalSnapshot().company.exchange,
+        sector: minimalSnapshot().company.sector,
+        industry: { status: "ok", value: "Software", asOf: generatedAt, source: "test" },
+        country: minimalSnapshot().company.country,
+        currency: minimalSnapshot().company.currency,
+      },
+    });
+
+    const orclLike = {
+      version: "1.0",
+      symbol: "ORCL.US",
+      generatedAt,
+      dataFreshness: {
+        computedAt: generatedAt,
+        snapshotVersion: "1.0",
+        sources: [{ status: "ok" }],
+        coverage: ["quote.latest"],
+        missingData: ["news"],
+      },
+      executiveVerdict: {
+        label: "constructive",
+        headline: "ORCL educational constructive view",
+        educationalNote: "Educational only, not investment advice.",
+        confidence: 65,
+        horizonMonths: 12,
+        summary: "Educational constructive stance on Oracle.",
+      },
+      businessEngine: {
+        overview: "Enterprise software and cloud exposure.",
+        competitiveDynamics: "Technology / Software",
+        catalysts: ["Cloud demand"],
+        risks: ["Competition and valuation"],
+      },
+      technicalSetup: {
+        summary: "Range-bound price action.",
+        trend: "Sideways",
+        levels: [{ value: 92, basis: "60-session support", source: "quote_history_60d", asOf: generatedAt }],
+      },
+      valuationContext: {
+        summary: "Valuation context from snapshot fundamentals.",
+        metrics: [{ value: 22.5, basis: "P/E", source: "fundamentals", asOf: generatedAt }],
+      },
+      scenarios: {
+        horizonMonths: 12,
+        scenarios: [
+          {
+            name: "bull",
+            narrative: "Cloud acceleration case",
+            drivers: ["AI workloads"],
+            risks: ["Macro"],
+            invalidation: "Break support",
+          },
+          {
+            name: "base",
+            narrative: "Steady execution case",
+            drivers: ["Enterprise demand"],
+            risks: ["Valuation"],
+            invalidation: "Guidance cut",
+          },
+          {
+            name: "bear",
+            narrative: "Growth slowdown case",
+            drivers: ["Competition"],
+            risks: ["Margins"],
+            invalidation: "Revenue miss",
+          },
+        ],
+      },
+      riskMap: {
+        summary: "Key risks",
+        items: [
+          {
+            id: "r1",
+            title: "Valuation",
+            description: "Premium multiple risk.",
+            severity: "medium",
+            likelihood: "medium",
+            category: "valuation",
+          },
+        ],
+      },
+      historicalTwins: { summary: "No validated analogs in snapshot.", matchCount: 0, lesson: "Patience helps." },
+      thesisInvalidators: {
+        summary: "Watch cloud growth",
+        items: [{ trigger: "Revenue miss", impact: "high", monitor: "Earnings" }],
+      },
+      decisionNote: {
+        note: "Educational synthesis for ORCL.",
+        stance: "research",
+        keyQuestions: ["Is cloud growth durable?"],
+      },
+      dataCoverage: ["quote.latest"],
+      missingData: ["news"],
+    };
+
+    const before = validatePremiumAnalysisContract(orclLike);
+    assert.equal(before.success, false);
+    if (before.success) return;
+    assert.ok(
+      before.error.issues.some((issue) => issue.path.join(".").includes("probabilityPct")),
+      "expected validation failure on missing probabilityPct",
+    );
+
+    const { candidate, changedFields } = normalizePremiumAnalysisCandidate(orclLike, orclSnapshot);
+    const after = validatePremiumAnalysisContract(candidate);
+    assert.equal(after.success, true);
+    if (!after.success) return;
+
+    assert.equal(after.data.scenarios.scenarios[0].probabilityPct, 25);
+    assert.equal(after.data.scenarios.scenarios[1].probabilityPct, 50);
+    assert.equal(after.data.scenarios.scenarios[2].probabilityPct, 25);
+    assert.ok(changedFields.includes("scenarios.scenarios[0].probabilityPct"));
+    assert.ok(changedFields.includes("scenarios.scenarios[1].probabilityPct"));
+    assert.ok(changedFields.includes("scenarios.scenarios[2].probabilityPct"));
+  });
 });
 
 describe("premium analysis debug raw preview", () => {
