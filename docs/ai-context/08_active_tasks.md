@@ -2,7 +2,7 @@
 
 Operator queue for Cursor-first workflow. Update status and `next_action` when work moves; link blockers to `09_session_handoff.md`.
 
-**Last updated:** 2026-06-13 (Stripe LIVE checkout documented)
+**Last updated:** 2026-06-13 (PA-V2-2D Commit 3 deploy + smoke documented)
 
 ---
 
@@ -49,36 +49,39 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 
 | Field | Value |
 |-------|-------|
-| **status** | `in_progress` |
-| **owner** | backend operator |
+| **status** | `done` (Commits 1–3) |
+| **owner** | backend + frontend operator |
 | **risk** | high — touches usage limits and cost controls |
-| **scope** | `apps/api` premium analysis usage, cache TTL/envelope, rate limit behavior |
-| **blocked_by** | none (Commit 2 complete; Commit 3 not started) |
-| **next_action** | PA-V2-2D Commit 3 — frontend analytics / optional `usage` typing. Do **not** enable PA V2 globally without explicit approval. Track ORCL `probabilityPct` as I-002. |
+| **scope** | `apps/api` premium analysis usage, cache TTL/envelope, rate limit behavior; frontend PA V2 governance telemetry |
+| **blocked_by** | none |
+| **next_action** | Commits 1–3 complete. **Recommended next:** I-002 (`probabilityPct` normalizer/prompt). GA-SMOKE.1 (`/g/collect` / GTM delivery) remains open separately. Do **not** enable PA V2 globally without explicit approval. |
 
-**Sync:** Local, GitHub `main`, and VPS are synchronized at `fead6995` (`api: add premium analysis quota visibility`).
+**App deploy baseline:** API `fead6995`, frontend `be1a864d` (`frontend: add PA V2 loaded analytics and usage typing`). Current repo HEAD may be a later docs-only commit — verify with `git rev-parse HEAD` and `git log -1 --oneline`.
 
 | Commit | Status | Notes |
 |--------|--------|-------|
 | **Commit 1** (`9f0d3069`) | **DEPLOYED** + **SMOKE_TESTED** | Cache envelope / provider provenance |
 | **Commit 2** (`fead6995`) | **DEPLOYED** + **SMOKE_TESTED** | Quota visibility, governance tests, cache-served log, response headers (API-only) |
+| **Commit 3** (`be1a864d`) | **DEPLOYED** + **SMOKE_TESTED** | Frontend `premium_analysis_v2_view` + `premium_analysis_v2_loaded`; optional `usage` typing (frontend-only deploy) |
 
 **Commit 2 cache-hit governance smoke (ORCL V2, browser):** HTTP 200; `X-Premium-Analysis-Cache: hit`; daily usage headers **absent**; JSON `cacheStatus=hit`, `provider.name=fallback`, no `usage`. Logs: `premium_analysis_cache_served`, `symbol=ORCL`, `providerName=fallback`, `sourceCacheStatus=fallback`.
+
+**Commit 3 frontend telemetry smoke (ORCL V2, browser; V2 via `localStorage.stockai.premiumAnalysisV2=true`):** `dataLayer` contains `premium_analysis_v2_view` and `premium_analysis_v2_loaded`; loaded payload: `symbol=ORCL`, `language=en`, `cache_status=hit`, `provider_name=fallback`, `locale=en`; **no** `daily_limit`, `daily_remaining`, `daily_reset_in`, or `usage_tier` on cache hit (expected).
 
 **PA V2 global rollout:** OFF — not approved; feature flag remains default OFF.
 
 ---
 
-## GA-SMOKE.1 — Confirm `/g/collect`
+## GA-SMOKE.1 — Confirm `/g/collect` / GTM delivery
 
 | Field | Value |
 |-------|-------|
 | **status** | `pending` |
 | **owner** | operator (browser + VPS logs if needed) |
 | **risk** | low |
-| **scope** | Verify Google Analytics / gtag collect endpoint behavior on production frontend |
+| **scope** | Verify Google Analytics `/g/collect` (or GTM) network delivery on production frontend |
 | **blocked_by** | none |
-| **next_action** | Network tab on `stock-ai.pro`; confirm `/g/collect` requests; note in handoff |
+| **next_action** | Network tab on `stock-ai.pro`; confirm `/g/collect` requests. **Note:** Commit 3 `dataLayer` events (`premium_analysis_v2_loaded`) verified in browser — `/g/collect` not observed; treat as GTM delivery follow-up, not Commit 3 failure. |
 
 ---
 

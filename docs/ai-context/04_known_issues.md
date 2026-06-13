@@ -54,4 +54,5 @@ Structured tracker for agents and operators. Update when status changes.
 - Premium analysis: check Network tab for `/api/premium/{TICKER}/analysis`, not only UI message.
 - Compare API `cacheStatus`, `provider.name`, and logs for `premium_analysis_llm_normalized_contract` vs `validation_failed`.
 - **Cache-hit governance (Commit 2, post-`fead6995`):** on cache hit expect `X-Premium-Analysis-Cache: hit`, no daily usage headers, no JSON `usage`; log `premium_analysis_cache_served` with correct `providerName`.
+- **Frontend telemetry (Commit 3, post-`be1a864d`):** with V2 enabled (`localStorage.stockai.premiumAnalysisV2=true`), confirm `dataLayer` has `premium_analysis_v2_view` and `premium_analysis_v2_loaded`; on cache hit expect no `daily_*` or `usage_tier` in loaded payload. **`/g/collect` not observed** during Commit 3 smoke — track under GA-SMOKE.1 / GTM delivery; not a Commit 3 failure.
 - After frontend deploy, confirm lazy chunk hash changed if V2 UI was updated.

@@ -1,8 +1,8 @@
 # Delivery Audit - StockAI Pro
 
 **Purpose:** Durable project memory for Cursor sessions. Chat threads are not source of truth.
-**Audit date:** 2026-06-08 (initial); **last status update:** 2026-06-13 (Stripe LIVE checkout documented)
-**Verified sync point:** `fead6995` (`api: add premium analysis quota visibility`) — local / GitHub / VPS synchronized after API-only deploy.
+**Audit date:** 2026-06-08 (initial); **last status update:** 2026-06-13 (PA-V2-2D Commit 3 deploy + smoke)
+**App deploy baseline:** API `fead6995` (PA-V2-2D Commit 2); frontend `be1a864d` (PA-V2-2D Commit 3). Current repo HEAD may be a later docs-only commit — verify with `git rev-parse HEAD`.
 **Auditor scope:** Read-only inspection of repo docs, code, git history, and working tree. No application edits, no deploy, no commit.
 
 **Note on missing doc paths:** `03_todo_lista.md`, `05_deployment.md`, and `06_testing.md` do not exist. Use `03_deployment_runbook.md`, `05_product_decisions.md`, and `06_premium_analysis_v2_status.md` instead.
@@ -13,7 +13,9 @@
 
 | Check | Result |
 |-------|--------|
-| Local HEAD | `fead6995` |
+| Repo HEAD (verify) | `git rev-parse HEAD` — may be newer than app deploy baseline after docs commits |
+| PA-V2-2D Commit 3 deploy baseline | **`be1a864d`** (`frontend: add PA V2 loaded analytics and usage typing`) |
+| PA-V2-2D Commit 3 in production | **DEPLOYED** + **SMOKE_TESTED** (frontend deploy; `dataLayer` telemetry smoke) |
 | PA-V2-2D Commit 2 on `main` | **Yes** — `fead6995` (`api: add premium analysis quota visibility`) |
 | PA-V2-2D Commit 2 in production | **DEPLOYED** + **SMOKE_TESTED** (API-only deploy; `/health` 200) |
 | PA-V2-2D Commit 1 | **DEPLOYED** + **SMOKE_TESTED** — `9f0d3069` (cache envelope) |
@@ -54,6 +56,7 @@
 | Premium Analysis V2 backend pipeline | **DONE** | Orchestrator, contract, normalizer 2L-2O, usage limits, single-flight, repair budget, telemetry |
 | Premium Analysis cache envelope v1 | **DONE** | `9f0d3069` — `PremiumAnalysisCacheEnvelope`, provider provenance |
 | PA-V2-2D Commit 2 quota visibility + governance | **DONE** | `fead6995` — usage metadata on fresh miss, headers, `premium_analysis_cache_served` log, governance tests |
+| PA-V2-2D Commit 3 frontend analytics + `usage` typing | **DONE** | `be1a864d` — `premium_analysis_v2_view` / `premium_analysis_v2_loaded`; `PremiumAnalysisDailyUsageMeta` on frontend bundle |
 | Premium Analysis V2 UI | **DONE** (flagged) | `PremiumCompanyAnalysisV2.tsx`, lazy load, legacy fallback UI |
 | Global `/api/premium/*` rate limiter (trial-aware) | **DONE** | `rateLimiter.ts`, `optionalAuth` order in `server.ts` |
 | AI cost telemetry | **DONE** | `aiCostTelemetry.ts` on Anthropic calls |
@@ -71,13 +74,14 @@
 
 ## 3. What has been implemented and deployed to production?
 
-Operator confirms production at **`fead6995`** after API-only deploy. **Last deployed API feature:** PA-V2-2D Commit 2 (`fead6995`).
+Operator confirms **frontend app deploy baseline** at **`be1a864d`** after frontend deploy. **Last deployed API feature:** PA-V2-2D Commit 2 (`fead6995`). **Last deployed frontend feature:** PA-V2-2D Commit 3 (`be1a864d`).
 
 | Capability | Status | Notes |
 |------------|--------|-------|
 | Premium Analysis V2 infra (2A-2O) | **DEPLOYED** | Commits through `04a635f5` in history; VPS verified in OPERATOR-OS / VPS-VERIFY.1 |
 | PA-V2-2D Commit 1 — cache envelope | **DEPLOYED** + **SMOKE_TESTED** | `9f0d3069`; ORCL: fallback cached, hit serves `provider=fallback` |
 | PA-V2-2D Commit 2 — quota visibility | **DEPLOYED** + **SMOKE_TESTED** | `fead6995`; ORCL cache-hit governance smoke passed (see section 4) |
+| PA-V2-2D Commit 3 — frontend telemetry | **DEPLOYED** + **SMOKE_TESTED** | `be1a864d`; ORCL V2 `dataLayer` smoke: `premium_analysis_v2_loaded` with governance params; cache hit omits usage params |
 | Cursor governance docs layer | **DEPLOYED** | `00`–`11` on main |
 | Private beta nginx / TLS stack | **DEPLOYED** | **UNKNOWN - verify** exact nginx/basic-auth config on VPS |
 | EUR live Stripe checkout | **DEPLOYED** + **SMOKE_TESTED** (checkout path) | Code on `main`; operator-verified `/pricing` → `checkout.stripe.com` (€29/mo, 14-day trial); VPS env operator-reported SET |
@@ -95,8 +99,10 @@ Operator confirms production at **`fead6995`** after API-only deploy. **Last dep
 | Full production launch checklist | **PARTIAL** | `docs/production-launch-smoke-checklist.md` exists; not all sections confirmed in ai-context |
 | EUR Stripe checkout live | **SMOKE_TESTED** (checkout path) | STRIPE-LIVE.1 closed for activation: operator-verified `/pricing` → hosted `checkout.stripe.com` (Pro monthly EUR); VPS env operator-reported SET |
 | Stripe webhook after completed payment | **NOT FULLY SMOKE_TESTED** | Optional follow-up: `checkout.session.completed` 2xx + tier/subscription state in DB after real payment |
-| GA `/g/collect` | **TODO** | Task GA-SMOKE.1 pending |
+| GA `/g/collect` network delivery | **TODO** | GA-SMOKE.1 open; `/g/collect` not observed in Network during Commit 3 smoke — separate GTM delivery follow-up |
+| PA V2 frontend `dataLayer` telemetry (Commit 3) | **SMOKE_TESTED** | `premium_analysis_v2_view` + `premium_analysis_v2_loaded` on ORCL V2; cache hit omits usage params |
 | Commit 2 cache-hit governance (ORCL V2) | **SMOKE_TESTED** | HTTP 200; `X-Premium-Analysis-Cache: hit`; daily usage headers absent; JSON `cacheStatus=hit`, `provider.name=fallback`, no `usage`; log `premium_analysis_cache_served` with `providerName=fallback`, `sourceCacheStatus=fallback` |
+| Commit 3 frontend loaded telemetry (ORCL V2) | **SMOKE_TESTED** | `dataLayer` `premium_analysis_v2_loaded`: `symbol=ORCL`, `language=en`, `cache_status=hit`, `provider_name=fallback`, `locale=en`; no `daily_*` or `usage_tier` on cache hit |
 | Commit 2 fresh-miss usage visibility | **PARTIAL** | Not re-smoked on prod in this pass; covered by unit tests; optional follow-up smoke on cache-busting symbol |
 
 ---
@@ -105,7 +111,7 @@ Operator confirms production at **`fead6995`** after API-only deploy. **Last dep
 
 | Item | Status | Gap |
 |------|--------|-----|
-| **PA-V2-2D Commit 3** (frontend analytics) | **TODO** | Next recommended work; optional frontend `usage` typing deferred from Commit 2 |
+| **GA `/g/collect` / GTM delivery** | **PARTIAL** | Commit 3 `dataLayer` events verified; `/g/collect` not observed — GA-SMOKE.1 open |
 | **Investor OS tier** | **PARTIAL** | Pricing/copy/waitlist only; checkout returns `INVESTOR_OS_CHECKOUT_NOT_SUPPORTED` |
 | **Premium Analysis V2 UI rollout** | **PARTIAL** | Backend production-stable; UI behind `localStorage` / env flag |
 | **ORCL / symbol quality (I-002)** | **PARTIAL** | `probabilityPct` validation failures -> fallback; normalizer does not fill this field today |
@@ -122,16 +128,15 @@ Operator confirms production at **`fead6995`** after API-only deploy. **Last dep
 
 Prioritized by active task queue and known gaps:
 
-1. **PA-V2-2D Commit 3** — frontend analytics and optional `usage` typing (recommended next).
-2. **I-002** — normalizer or prompt fix for `scenarios.scenarios.*.probabilityPct` (separate from 2D; still open).
-3. **I-003** — align digest (and possibly other modules) to valid Anthropic model IDs (still open).
-4. **O-001** — prompt compaction / `max_tokens` budget.
-5. **GA-SMOKE.1** — production analytics verification.
-6. **Optional Stripe follow-up:** verify `checkout.session.completed` webhook 2xx + tier/subscription DB update (checkout path already live; not part of STRIPE-LIVE.1 closure).
-7. **INVESTOR-DIVIDEND-HUB.1** — read-only architecture audit (dividend data quality, `skip_no_company` cases).
-8. **MARKET-DATA.1** — provider coverage matrix vs snapshot fields.
-9. **Investor OS product** — tier in DB, checkout, feature gating (future).
-10. **Optional:** quality gate for weak-but-valid contracts; PA V2 global UI rollout (not approved).
+1. **I-002** — normalizer or prompt fix for `scenarios.scenarios.*.probabilityPct` (recommended next).
+2. **I-003** — align digest (and possibly other modules) to valid Anthropic model IDs (still open).
+3. **O-001** — prompt compaction / `max_tokens` budget.
+4. **GA-SMOKE.1** — production `/g/collect` / GTM delivery verification (`dataLayer` Commit 3 events already smoke-tested).
+5. **Optional Stripe follow-up:** verify `checkout.session.completed` webhook 2xx + tier/subscription DB update (checkout path already live; not part of STRIPE-LIVE.1 closure).
+6. **INVESTOR-DIVIDEND-HUB.1** — read-only architecture audit (dividend data quality, `skip_no_company` cases).
+7. **MARKET-DATA.1** — provider coverage matrix vs snapshot fields.
+8. **Investor OS product** — tier in DB, checkout, feature gating (future).
+9. **Optional:** quality gate for weak-but-valid contracts; PA V2 global UI rollout (not approved).
 
 ---
 
@@ -147,7 +152,8 @@ Tag: **DO_NOT_REBUILD**
 | Daily usage limits + trial-aware global rate limiter | Financial safety; `optionalAuth` order is critical |
 | Deterministic fallback contract | ADR-005; validated, no analyst fiction |
 | Cache envelope v1 + provider provenance | Deployed `9f0d3069`; extend, do not replace with bare contract cache |
-| Commit 2 quota visibility + cache-served telemetry | Deployed `fead6995`; extend in Commit 3, do not weaken cache-hit quota skip |
+| Commit 2 quota visibility + cache-served telemetry | Deployed `fead6995`; do not weaken cache-hit quota skip |
+| Commit 3 frontend PA V2 governance telemetry | Deployed `be1a864d`; extend analytics, do not weaken cache-hit usage param omission |
 | Trial lifecycle (PRICING.4) + `getUserAccessState` | DB fields, middleware, frontend gates |
 | EUR pricing config + Stripe EUR resolver + **live VPS env** | Deployed; **do not recreate** Dashboard Price IDs |
 | Dividend hybrid pipeline (EODHD/Finnhub) + BullMQ sync | `DIVIDEND_DATA_SOURCES.md`, scheduler jobs |
@@ -195,14 +201,13 @@ Tag: **DO_NOT_REBUILD**
 ## 10. Recommended implementation order from here
 
 ```
-1. PA-V2-2D Commit 3: frontend analytics + optional usage typing
-2. I-002: probabilityPct normalizer/prompt (quality, still open)
-3. I-003: digest model ID alignment (still open)
-4. O-001: max_tokens / prompt compaction
-5. GA-SMOKE.1
-6. Optional: Stripe post-payment webhook 2xx + tier/subscription DB smoke
-7. INVESTOR-DIVIDEND-HUB.1 + MARKET-DATA.1 (read-only audits)
-8. Investor OS / PA V2 global rollout (not approved)
+1. I-002: probabilityPct normalizer/prompt (recommended next)
+2. I-003: digest model ID alignment (still open)
+3. O-001: max_tokens / prompt compaction
+4. GA-SMOKE.1: /g/collect / GTM delivery (dataLayer Commit 3 events already smoke-tested)
+5. Optional: Stripe post-payment webhook 2xx + tier/subscription DB smoke
+6. INVESTOR-DIVIDEND-HUB.1 + MARKET-DATA.1 (read-only audits)
+7. Investor OS / PA V2 global rollout (not approved)
 ```
 
 **Do not:** enable V2 globally, push/deploy without checkpoint, or weaken financial safety controls during 2D work.
@@ -217,7 +222,8 @@ Tag: **DO_NOT_REBUILD**
 | **Stripe / checkout** | DEPLOYED + SMOKE_TESTED (checkout) | Code on `main`; operator-verified `/pricing` → hosted checkout; VPS env operator-reported SET; webhook post-payment not fully smoke-tested |
 | **Premium Analysis V2 backend** | DEPLOYED + SMOKE_TESTED | Full pipeline + cache envelope + quota visibility on prod |
 | **PA-V2-2D Commit 2** | DEPLOYED + SMOKE_TESTED | `fead6995`; cache-hit governance smoke passed (ORCL) |
-| **PA-V2-2D Commit 3** | TODO | Frontend analytics — recommended next |
+| **PA-V2-2D Commit 3** | DEPLOYED + SMOKE_TESTED | `be1a864d`; ORCL V2 `dataLayer` loaded telemetry; cache hit omits usage params |
+| **GA / GTM delivery** | PARTIAL / TODO | GA-SMOKE.1 open; `/g/collect` not observed; `dataLayer` events verified |
 | **AI governance (cache/fallback/cost)** | DEPLOYED + SMOKE_TESTED | Envelope, provenance, cache-served log, cache-hit skips usage headers/metadata |
 | **Frontend pages / routing** | DEPLOYED | Broad SPA; PA V2 UI flag OFF by default |
 | **Backend API / usage limits** | DEPLOYED | Daily + monthly limits; trial-aware |
@@ -266,3 +272,4 @@ Tag: **DO_NOT_REBUILD**
 | 2026-06-08 | Safety pass: Commit 2 documented as uncommitted working-tree only. |
 | 2026-06-08 | Post-deploy update: Commit 2 (`fead6995`) **DEPLOYED** + **SMOKE_TESTED**; cache-hit governance smoke recorded. |
 | 2026-06-13 | Stripe LIVE checkout documented: code on `main`; operator-verified `/pricing` → `checkout.stripe.com`; VPS env operator-reported SET; STRIPE-LIVE.1 closed for checkout activation only; post-payment webhook not fully smoke-tested. |
+| 2026-06-13 | Post-deploy update: Commit 3 (`be1a864d`) **DEPLOYED** + **SMOKE_TESTED**; ORCL V2 `dataLayer` `premium_analysis_v2_loaded` smoke recorded; cache hit omits usage params; `/g/collect` not observed (GA-SMOKE.1 remains open). |
