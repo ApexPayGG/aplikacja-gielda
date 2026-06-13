@@ -1,8 +1,8 @@
 # Delivery Audit - StockAI Pro
 
 **Purpose:** Durable project memory for Cursor sessions. Chat threads are not source of truth.
-**Audit date:** 2026-06-08 (initial); **last status update:** 2026-06-13 (Stripe post-payment Pro monthly trial smoke)
-**App deploy baseline:** API `fead6995` (PA-V2-2D Commit 2); frontend `be1a864d` (PA-V2-2D Commit 3). Current repo HEAD may be a later docs-only commit — verify with `git rev-parse HEAD`.
+**Audit date:** 2026-06-08 (initial); **last status update:** 2026-06-13 (Stripe Customer Portal deploy + production smoke)
+**App deploy baseline (PA V2):** API `fead6995` (PA-V2-2D Commit 2); frontend `be1a864d` (PA-V2-2D Commit 3). **App deploy baseline (billing):** API + frontend `577949d3` (Stripe Customer Portal). Current repo HEAD may be a later docs-only commit — verify with `git rev-parse HEAD`.
 **Auditor scope:** Read-only inspection of repo docs, code, git history, and working tree. No application edits, no deploy, no commit.
 
 **Note on missing doc paths:** `03_todo_lista.md`, `05_deployment.md`, and `06_testing.md` do not exist. Use `03_deployment_runbook.md`, `05_product_decisions.md`, and `06_premium_analysis_v2_status.md` instead.
@@ -15,14 +15,15 @@
 |-------|--------|
 | Repo HEAD (verify) | `git rev-parse HEAD` — may be newer than app deploy baseline after docs commits |
 | PA-V2-2D Commit 3 deploy baseline | **`be1a864d`** (`frontend: add PA V2 loaded analytics and usage typing`) |
+| Stripe Customer Portal deploy baseline | **`577949d3`** (`billing: add Stripe customer portal`) — API + frontend |
 | PA-V2-2D Commit 3 in production | **DEPLOYED** + **SMOKE_TESTED** (frontend deploy; `dataLayer` telemetry smoke) |
 | PA-V2-2D Commit 2 on `main` | **Yes** — `fead6995` (`api: add premium analysis quota visibility`) |
 | PA-V2-2D Commit 2 in production | **DEPLOYED** + **SMOKE_TESTED** (API-only deploy; `/health` 200) |
 | PA-V2-2D Commit 1 | **DEPLOYED** + **SMOKE_TESTED** — `9f0d3069` (cache envelope) |
 | PA V2 globally enabled | **No** — not approved; frontend flag default OFF (`featureFlags.ts`, env `VITE_PREMIUM_ANALYSIS_V2_ENABLED`) |
 | Stripe EUR live checkout | **DEPLOYED** + **SMOKE_TESTED** (checkout path) — code on `main`; operator-verified `/pricing` → `checkout.stripe.com`; VPS env operator-reported SET |
-| Stripe post-payment access (Pro monthly trial) | **SMOKE_TESTED** (2026-06-13) — `GET /api/auth/me/access` → `SUBSCRIPTION_TRIALING`, `tier=PRO`; Pro+/yearly not smoke-tested |
-| Stripe Customer Portal | **NOT IMPLEMENTED** | Cancel/manage in-app not available; active trials cancelled manually in Stripe Dashboard unless retained |
+| Stripe post-payment access (Pro monthly trial) | **SMOKE_TESTED** (2026-06-13) — `GET /api/auth/me/access` → `SUBSCRIPTION_TRIALING`, `tier=PRO`; Pro+/yearly/refund not smoke-tested |
+| Stripe Customer Portal | **DEPLOYED** + **SMOKE_TESTED** (2026-06-13) — `577949d3`; Settings **Manage billing** → portal; return to `/settings`; trialing access unchanged post-return. Dashboard: cancel + payment method + invoice history enabled; plan switching + quantity changes disabled |
 | `.cursor/rules/` tracked | 4 files: `project-operating-rules.mdc`, `security-and-testing.mdc`, `deployment-safety.mdc`, `financial-domain-safety.mdc` |
 
 ---
@@ -40,7 +41,7 @@
 - **Educational framing:** disclaimers, schema-validated LLM output, conservative fallback, no fabricated analyst data (`07_financial_safety.md`).
 - **Monorepo:** `apps/api` (Express/Prisma/BullMQ/Redis), `apps/frontend` (React/Vite SPA), Docker production on Hetzner VPS.
 
-**Target product maturity:** Production-hosted platform with broad feature surface. **EUR Stripe live checkout** is **code-complete on `main`** and **operator-verified in production** (`/pricing` → hosted `checkout.stripe.com`; VPS live keys/Price IDs operator-reported SET). **Post-payment webhook/DB access upgrade smoke-tested for Pro monthly trial on 2026-06-13** (`SUBSCRIPTION_TRIALING`, `tier=PRO`). **Stripe Customer Portal not implemented.** Investor OS checkout remains paused.
+**Target product maturity:** Production-hosted platform with broad feature surface. **EUR Stripe live checkout** is **code-complete on `main`** and **operator-verified in production** (`/pricing` → hosted `checkout.stripe.com`; VPS live keys/Price IDs operator-reported SET). **Post-payment webhook/DB access upgrade smoke-tested for Pro monthly trial on 2026-06-13** (`SUBSCRIPTION_TRIALING`, `tier=PRO`). **Stripe Customer Portal deployed and smoke-tested** (`577949d3`; Settings → Stripe portal; Dashboard cancel/payment/invoice enabled; plan switch disabled). Investor OS checkout remains paused.
 
 ---
 
@@ -55,6 +56,7 @@
 | Stripe checkout (EUR) — code | **DONE** (on `main`) | `stripeEurPricing.ts`, `stripe.ts`, `checkout.ts`; commit `acb5c037`; unit/route tests |
 | Stripe checkout — production path | **DEPLOYED** + **SMOKE_TESTED** (checkout) | Operator-verified `/pricing` → `checkout.stripe.com`; VPS env operator-reported SET (`sk_live_`, four `STRIPE_PRICE_*_EUR`) |
 | Stripe webhooks + tier sync | **DONE** (code) + **SMOKE_TESTED** (Pro monthly trial, 2026-06-13) | `stripeModule.ts`, tests in `stripe.test.ts`; access verified via `GET /api/auth/me/access` after live checkout |
+| Stripe Customer Portal | **DONE** (code) + **DEPLOYED** + **SMOKE_TESTED** (2026-06-13) | `577949d3` — `createCustomerPortalSession`, `POST /api/stripe/create-portal-session`, Settings **Manage billing**; portal smoke on trialing Pro user |
 | Premium Analysis V2 backend pipeline | **DONE** | Orchestrator, contract, normalizer 2L-2O, usage limits, single-flight, repair budget, telemetry |
 | Premium Analysis cache envelope v1 | **DONE** | `9f0d3069` — `PremiumAnalysisCacheEnvelope`, provider provenance |
 | PA-V2-2D Commit 2 quota visibility + governance | **DONE** | `fead6995` — usage metadata on fresh miss, headers, `premium_analysis_cache_served` log, governance tests |
@@ -76,7 +78,7 @@
 
 ## 3. What has been implemented and deployed to production?
 
-Operator confirms **frontend app deploy baseline** at **`be1a864d`** after frontend deploy. **Last deployed API feature:** PA-V2-2D Commit 2 (`fead6995`). **Last deployed frontend feature:** PA-V2-2D Commit 3 (`be1a864d`).
+Operator confirms **latest app deploy** at **`577949d3`** (Stripe Customer Portal — API + frontend). **PA V2 baselines:** API `fead6995` (Commit 2); frontend `be1a864d` (Commit 3).
 
 | Capability | Status | Notes |
 |------------|--------|-------|
@@ -87,6 +89,7 @@ Operator confirms **frontend app deploy baseline** at **`be1a864d`** after front
 | Cursor governance docs layer | **DEPLOYED** | `00`–`11` on main |
 | Private beta nginx / TLS stack | **DEPLOYED** | **UNKNOWN - verify** exact nginx/basic-auth config on VPS |
 | EUR live Stripe checkout | **DEPLOYED** + **SMOKE_TESTED** (checkout path) | Code on `main`; operator-verified `/pricing` → `checkout.stripe.com` (€29/mo, 14-day trial); VPS env operator-reported SET |
+| Stripe Customer Portal | **DEPLOYED** + **SMOKE_TESTED** | `577949d3`; Settings **Manage billing** → portal; return `/settings`; API `/health` + frontend `/settings` 200 after deploy |
 | PA V2 UI globally on | **Not deployed / not approved** | Feature flag OFF by default; global rollout requires explicit operator approval |
 
 ---
@@ -100,7 +103,8 @@ Operator confirms **frontend app deploy baseline** at **`be1a864d`** after front
 | ORCL cache envelope / fallback provenance | **SMOKE_TESTED** | Post-Commit 1 - `cacheStatus=hit`, `provider=fallback` (not hardcoded anthropic) |
 | Full production launch checklist | **PARTIAL** | `docs/production-launch-smoke-checklist.md` exists; not all sections confirmed in ai-context |
 | EUR Stripe checkout live | **SMOKE_TESTED** (checkout path) | STRIPE-LIVE.1 closed for activation: operator-verified `/pricing` → hosted `checkout.stripe.com` (Pro monthly EUR); VPS env operator-reported SET |
-| Stripe webhook after completed payment | **SMOKE_TESTED** (Pro monthly trial, 2026-06-13) | Live checkout → payment success → `tier=PRO`, `subscriptionStatus=trialing`, `accessState=SUBSCRIPTION_TRIALING`, `trialKind=with_card`; Pro+/yearly/refund/cancel not smoke-tested |
+| Stripe webhook after completed payment | **SMOKE_TESTED** (Pro monthly trial, 2026-06-13) | Live checkout → payment success → `tier=PRO`, `subscriptionStatus=trialing`, `accessState=SUBSCRIPTION_TRIALING`, `trialKind=with_card`; Pro+/yearly/refund not smoke-tested |
+| Stripe Customer Portal (Settings → portal) | **SMOKE_TESTED** (2026-06-13) | **Manage billing** → portal (Pro €29/mo, trial ending 27 Jun 2026; payment method; invoice history; cancel action); return → `/settings`; post-return access still trialing; API logs clean. Actual cancel/downgrade **not** smoke-tested |
 | GA `/g/collect` network delivery | **TODO** | GA-SMOKE.1 open; `/g/collect` not observed in Network during Commit 3 smoke — separate GTM delivery follow-up |
 | PA V2 frontend `dataLayer` telemetry (Commit 3) | **SMOKE_TESTED** | `premium_analysis_v2_view` + `premium_analysis_v2_loaded` on ORCL V2; cache hit omits usage params |
 | Commit 2 cache-hit governance (ORCL V2) | **SMOKE_TESTED** | HTTP 200; `X-Premium-Analysis-Cache: hit`; daily usage headers absent; JSON `cacheStatus=hit`, `provider.name=fallback`, no `usage`; log `premium_analysis_cache_served` with `providerName=fallback`, `sourceCacheStatus=fallback` |
@@ -113,7 +117,6 @@ Operator confirms **frontend app deploy baseline** at **`be1a864d`** after front
 
 | Item | Status | Gap |
 |------|--------|-----|
-| **Stripe Customer Portal** | **MISSING** | No in-app cancel/billing; Terms promise not fully met; manual cancel in Stripe Dashboard for test trials |
 | **GA `/g/collect` / GTM delivery** | **PARTIAL** | Commit 3 `dataLayer` events verified; `/g/collect` not observed — GA-SMOKE.1 open |
 | **Investor OS tier** | **PARTIAL** | Pricing/copy/waitlist only; checkout returns `INVESTOR_OS_CHECKOUT_NOT_SUPPORTED` |
 | **Premium Analysis V2 UI rollout** | **PARTIAL** | Backend production-stable; UI behind `localStorage` / env flag |
@@ -135,11 +138,10 @@ Prioritized by active task queue and known gaps:
 2. **I-003** — align digest (and possibly other modules) to valid Anthropic model IDs (still open).
 3. **O-001** — prompt compaction / `max_tokens` budget.
 4. **GA-SMOKE.1** — production `/g/collect` / GTM delivery verification (`dataLayer` Commit 3 events already smoke-tested).
-5. **Stripe Customer Portal** — in-app billing/cancel (monetization follow-up; active trials cancelled manually in Stripe Dashboard until implemented).
-6. **INVESTOR-DIVIDEND-HUB.1** — read-only architecture audit (dividend data quality, `skip_no_company` cases).
-7. **MARKET-DATA.1** — provider coverage matrix vs snapshot fields.
-8. **Investor OS product** — tier in DB, checkout, feature gating (future).
-9. **Optional:** quality gate for weak-but-valid contracts; PA V2 global UI rollout (not approved).
+5. **INVESTOR-DIVIDEND-HUB.1** — read-only architecture audit (dividend data quality, `skip_no_company` cases).
+6. **MARKET-DATA.1** — provider coverage matrix vs snapshot fields.
+7. **Investor OS product** — tier in DB, checkout, feature gating (future).
+8. **Optional:** quality gate for weak-but-valid contracts; PA V2 global UI rollout (not approved); portal cancel/downgrade webhook smoke on non-prod or disposable trial.
 
 ---
 
@@ -189,7 +191,7 @@ Tag: **DO_NOT_REBUILD**
 |------|----------|------------|
 | **Usage limits / billing / cost controls** | Critical | Never weaken `enforcePremiumAnalysisDailyLimit`, rate limiter order, single-flight, or cache-hit quota skip without approval (`07`, R-003, R-004) |
 | **LLM output financial safety** | Critical | Zod + normalizer + fallback; no fabricated metrics (`07`, R-002) |
-| **Stripe live checkout** | Low–Medium | Pro monthly trial path smoke-tested (2026-06-13); Customer Portal missing; never change keys/Price IDs without checkpoint |
+| **Stripe live checkout + portal** | Low–Medium | Pro monthly trial checkout + portal path smoke-tested (2026-06-13); active trial cancellable via portal; never change keys/Price IDs without checkpoint |
 | **Fresh-miss usage smoke gap** | Low | Commit 2 cache-hit governance smoke passed; fresh-miss `usage` + daily headers not re-verified on prod in this pass |
 | **Cache hit mis-reporting provider** | High | Commit 1 fixed hardcoded anthropic; regression would break ops trust |
 | **Service worker / stale frontend bundles** | Medium | R-001; hard refresh after frontend deploy |
@@ -208,9 +210,8 @@ Tag: **DO_NOT_REBUILD**
 2. I-003: digest model ID alignment (still open)
 3. O-001: max_tokens / prompt compaction
 4. GA-SMOKE.1: /g/collect / GTM delivery (dataLayer Commit 3 events already smoke-tested)
-5. Stripe Customer Portal (in-app cancel/billing)
-6. INVESTOR-DIVIDEND-HUB.1 + MARKET-DATA.1 (read-only audits)
-7. Investor OS / PA V2 global rollout (not approved)
+5. INVESTOR-DIVIDEND-HUB.1 + MARKET-DATA.1 (read-only audits)
+6. Investor OS / PA V2 global rollout (not approved)
 ```
 
 **Do not:** enable V2 globally, push/deploy without checkpoint, or weaken financial safety controls during 2D work.
@@ -222,7 +223,7 @@ Tag: **DO_NOT_REBUILD**
 | Area | Taxonomy | Summary |
 |------|----------|---------|
 | **Pricing / trial / access** | DEPLOYED | Trial-first EUR config; PRICING.4 enforcement on premium routes |
-| **Stripe / checkout** | DEPLOYED + SMOKE_TESTED | Checkout + Pro monthly trial post-payment access smoke-tested (2026-06-13); Customer Portal not implemented |
+| **Stripe / checkout / portal** | DEPLOYED + SMOKE_TESTED | Checkout + Pro monthly trial post-payment + Customer Portal smoke-tested (2026-06-13); portal cancel/downgrade webhook not smoke-tested |
 | **Premium Analysis V2 backend** | DEPLOYED + SMOKE_TESTED | Full pipeline + cache envelope + quota visibility on prod |
 | **PA-V2-2D Commit 2** | DEPLOYED + SMOKE_TESTED | `fead6995`; cache-hit governance smoke passed (ORCL) |
 | **PA-V2-2D Commit 3** | DEPLOYED + SMOKE_TESTED | `be1a864d`; ORCL V2 `dataLayer` loaded telemetry; cache hit omits usage params |
@@ -276,4 +277,5 @@ Tag: **DO_NOT_REBUILD**
 | 2026-06-08 | Post-deploy update: Commit 2 (`fead6995`) **DEPLOYED** + **SMOKE_TESTED**; cache-hit governance smoke recorded. |
 | 2026-06-13 | Stripe LIVE checkout documented: code on `main`; operator-verified `/pricing` → `checkout.stripe.com`; VPS env operator-reported SET; STRIPE-LIVE.1 closed for checkout activation; post-payment access later smoke-tested same day (Pro monthly trial). |
 | 2026-06-13 | Post-deploy update: Commit 3 (`be1a864d`) **DEPLOYED** + **SMOKE_TESTED**; ORCL V2 `dataLayer` `premium_analysis_v2_loaded` smoke recorded; cache hit omits usage params; `/g/collect` not observed (GA-SMOKE.1 remains open). |
-| 2026-06-13 | Stripe post-payment smoke: Pro monthly trial (Revolut/3DS) → `SUBSCRIPTION_TRIALING` / `tier=PRO` via `GET /api/auth/me/access`; Customer Portal still missing. |
+| 2026-06-13 | Stripe post-payment smoke: Pro monthly trial (Revolut/3DS) → `SUBSCRIPTION_TRIALING` / `tier=PRO` via `GET /api/auth/me/access`. |
+| 2026-06-13 | Stripe Customer Portal: `577949d3` **DEPLOYED** + **SMOKE_TESTED** — Settings **Manage billing** → portal → return `/settings`; Dashboard cancel/payment/invoice enabled; plan switch + quantity disabled; active Pro trial retained (cancellable via portal). |

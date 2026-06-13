@@ -2,7 +2,7 @@
 
 Operator queue for Cursor-first workflow. Update status and `next_action` when work moves; link blockers to `09_session_handoff.md`.
 
-**Last updated:** 2026-06-13 (Stripe post-payment Pro monthly trial smoke documented)
+**Last updated:** 2026-06-13 (Stripe Customer Portal deployed + production smoke documented)
 
 ---
 
@@ -56,7 +56,7 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 | **blocked_by** | none |
 | **next_action** | Commits 1–3 complete. **Recommended next:** I-002 (`probabilityPct` normalizer/prompt). GA-SMOKE.1 (`/g/collect` / GTM delivery) remains open separately. Do **not** enable PA V2 globally without explicit approval. |
 
-**App deploy baseline:** API `fead6995`, frontend `be1a864d` (`frontend: add PA V2 loaded analytics and usage typing`). Current repo HEAD may be a later docs-only commit — verify with `git rev-parse HEAD` and `git log -1 --oneline`.
+**App deploy baseline (PA V2):** API `fead6995`, frontend `be1a864d` (`frontend: add PA V2 loaded analytics and usage typing`). **Latest app deploy (billing):** API + frontend `577949d3` (`billing: add Stripe customer portal`). Current repo HEAD may be a later docs-only commit — verify with `git rev-parse HEAD` and `git log -1 --oneline`.
 
 | Commit | Status | Notes |
 |--------|--------|-------|
@@ -94,7 +94,7 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 | **risk** | high — billing and live money |
 | **scope** | Live EUR checkout on production; post-payment access upgrade for Pro monthly trial |
 | **blocked_by** | none |
-| **next_action** | Checkout and post-payment access smoke complete for **Pro monthly trial** (2026-06-13). **Monetization follow-up:** Stripe Customer Portal not implemented — users cannot self-cancel in-app; cancel active test trials manually in Stripe Dashboard unless intentionally retained. Do **not** recreate Price IDs or Stripe products. |
+| **next_action** | Checkout and post-payment access smoke complete for **Pro monthly trial** (2026-06-13). Customer Portal implemented separately — see STRIPE-PORTAL.1. Pro+/yearly/refund flows **not** smoke-tested. Do **not** recreate Price IDs or Stripe products. |
 
 **Code on `main` (repo evidence):** EUR resolver (`stripeEurPricing.ts`), checkout session + webhook routes (`stripe.ts`, `stripeModule.ts`), frontend gate (`VITE_EUR_CHECKOUT_ENABLED`); commit `acb5c037` on `main`.
 
@@ -111,9 +111,39 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 - `GET /api/auth/me/access` (200): `tier=PRO`, `subscriptionStatus=trialing`, `accessState=SUBSCRIPTION_TRIALING`, `trialKind=with_card`, `trialEndsAt=2026-06-27T15:08:21.000Z`, `canUseProduct=true`, `upgradeRequired=false`
 - Closes highest billing risk for **Pro monthly trial start** (webhook/DB access upgrade verified via access state)
 
-**Not smoke-tested:** Pro+ plans, yearly billing, refund flow, in-app cancellation (Customer Portal missing).
+**Not smoke-tested:** Pro+ plans, yearly billing, refund flow.
 
 **Investor OS checkout** remains `501 INVESTOR_OS_CHECKOUT_NOT_SUPPORTED` — unchanged.
+
+---
+
+## STRIPE-PORTAL.1 — Customer Portal (in-app billing)
+
+| Field | Value |
+|-------|-------|
+| **status** | `done` (deployed + production smoke) |
+| **owner** | operator (VPS + browser) |
+| **risk** | high — billing and live money |
+| **scope** | `POST /api/stripe/create-portal-session`; Settings **Manage billing** → Stripe Customer Portal |
+| **blocked_by** | none |
+| **next_action** | Deployed and smoke-tested (2026-06-13). Active Pro monthly card trial can be cancelled via portal if operator chooses. Do **not** recreate Price IDs or Stripe products. |
+
+**Code / deploy:** commit `577949d3` (`billing: add Stripe customer portal`) — API + frontend images rebuilt; `stockai-api-prod` and `stockai-frontend-prod` recreated; API `/health` HTTP 200; frontend `/settings` HTTPS HTTP 200.
+
+**Stripe Dashboard (LIVE; saved before deploy):**
+
+- **Enabled:** cancellation, payment method update, invoice history
+- **Disabled (intentional):** plan switching, quantity changes
+
+**Production smoke (2026-06-13; same Pro monthly card-trial user as STRIPE-LIVE.1):**
+
+- Settings showed **Manage billing** → Stripe Customer Portal opened
+- Portal: StockAI Pro, €29.00/month, free trial ending **27 Jun 2026**; payment method; invoice history; cancel subscription action
+- Return link **Powrót do Stock-AI.Pro** → `https://stock-ai.pro/settings`
+- After return, `GET /api/auth/me/access` (200): `tier=PRO`, `subscriptionStatus=trialing`, `accessState=SUBSCRIPTION_TRIALING`, `trialKind=with_card`, `trialEndsAt=2026-06-27T15:08:21.000Z`, `canUseProduct=true`, `upgradeRequired=false`
+- API logs after portal smoke clean for `stripe|portal|billing|subscription|error|exception`
+
+**Not smoke-tested via portal:** Pro+, yearly, refund, actual cancel-and-downgrade webhook path (portal cancel action visible; trial not cancelled during smoke).
 
 ---
 
