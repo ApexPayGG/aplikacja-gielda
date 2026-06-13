@@ -2,7 +2,7 @@
 
 Operator queue for Cursor-first workflow. Update status and `next_action` when work moves; link blockers to `09_session_handoff.md`.
 
-**Last updated:** 2026-06-08 (PA-V2-2D Commit 2 deploy + smoke documented)
+**Last updated:** 2026-06-13 (Stripe LIVE checkout documented)
 
 ---
 
@@ -82,16 +82,27 @@ Operator queue for Cursor-first workflow. Update status and `next_action` when w
 
 ---
 
-## STRIPE-LIVE.1 — EUR Price IDs / webhook smoke
+## STRIPE-LIVE.1 — EUR live checkout activation
 
 | Field | Value |
 |-------|-------|
-| **status** | `blocked` |
-| **owner** | operator (owner sign-off) |
+| **status** | `done` (checkout activation only) |
+| **owner** | operator (VPS + browser) |
 | **risk** | high — billing and live money |
-| **scope** | Stripe live EUR price IDs, webhook delivery, trial/checkout path |
-| **blocked_by** | owner approval; live keys and price ID verification on VPS |
-| **next_action** | Do not change Stripe config until explicitly requested; document blockers in `09` |
+| **scope** | Live EUR checkout path on production; closes when hosted checkout is operator-verified |
+| **blocked_by** | none |
+| **next_action** | Checkout activation complete. **Optional follow-up (not part of STRIPE-LIVE.1 closure):** after one real test payment, verify `checkout.session.completed` webhook returns 2xx and tier/subscription state updates in DB. Do **not** recreate Price IDs or Stripe products. |
+
+**Code on `main` (repo evidence):** EUR resolver (`stripeEurPricing.ts`), checkout session + webhook routes (`stripe.ts`, `stripeModule.ts`), frontend gate (`VITE_EUR_CHECKOUT_ENABLED`); commit `acb5c037` on `main`.
+
+**Production checkout (operator-verified, smoke earlier; documented 2026-06-13):**
+
+- VPS `.env.production` (operator-reported): `STRIPE_SECRET_KEY=sk_live_...`, `STRIPE_WEBHOOK_SECRET`, all four `STRIPE_PRICE_*_EUR` — **SET**
+- `/pricing` → **Get Pro** / **Get Pro+** → hosted **`checkout.stripe.com`** (StockAI Pro **€29/mo**, **14-day** card trial)
+
+**Not fully smoke-tested:** post-payment `checkout.session.completed` webhook 2xx + DB tier/subscription update.
+
+**Investor OS checkout** remains `501 INVESTOR_OS_CHECKOUT_NOT_SUPPORTED` — unchanged.
 
 ---
 
