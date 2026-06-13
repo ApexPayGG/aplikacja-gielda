@@ -9,6 +9,7 @@ import {
 import {
   constructWebhookEvent,
   createCheckoutSession,
+  createCustomerPortalSession,
   getUserSubscription,
   handleCheckoutSessionCompleted,
   handleInvoicePaymentFailed,
@@ -24,6 +25,7 @@ import {
 
 type StripeRouteDeps = {
   createCheckoutSessionFn: typeof createCheckoutSession;
+  createCustomerPortalSessionFn: typeof createCustomerPortalSession;
   getUserSubscriptionFn: typeof getUserSubscription;
   handleCheckoutSessionCompletedFn: typeof handleCheckoutSessionCompleted;
   handleSubscriptionDeletedFn: typeof handleSubscriptionDeleted;
@@ -70,6 +72,8 @@ async function canReadSubscription(
 export function createStripeRouter(depsInput?: Partial<StripeRouteDeps>): Router {
   const deps: StripeRouteDeps = {
     createCheckoutSessionFn: depsInput?.createCheckoutSessionFn ?? createCheckoutSession,
+    createCustomerPortalSessionFn:
+      depsInput?.createCustomerPortalSessionFn ?? createCustomerPortalSession,
     getUserSubscriptionFn: depsInput?.getUserSubscriptionFn ?? getUserSubscription,
     handleCheckoutSessionCompletedFn:
       depsInput?.handleCheckoutSessionCompletedFn ?? handleCheckoutSessionCompleted,
@@ -140,6 +144,37 @@ export function createStripeRouter(depsInput?: Partial<StripeRouteDeps>): Router
         }
         if (error instanceof Stripe.errors.StripeError) {
           console.error("Stripe checkout session error:", error.message);
+          return res.status(502).json({
+            error: "Payment provider error. Check Stripe price IDs and API keys.",
+          });
+        }
+        next(error);
+      }
+    },
+  );
+
+  router.post(
+    "/api/stripe/create-portal-session",
+    deps.requireAuthMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const authUserId = getAuthenticatedUserId(req);
+        const url = await deps.createCustomerPortalSessionFn(authUserId);
+        res.json({ url });
+      } catch (error) {
+        if (error instanceof Error && error.message === "User not found") {
+          return res.status(404).json({ error: error.message });
+        }
+        if (error instanceof Error && error.message === "STRIPE_CUSTOMER_NOT_FOUND") {
+          return res.status(400).json({ error: error.message });
+        }
+        if (isStripeConfigurationError(error)) {
+          return res
+            .status(503)
+            .json({ error: "Stripe is not configured. Set required STRIPE_* environment variables." });
+        }
+        if (error instanceof Stripe.errors.StripeError) {
+          console.error("Stripe portal session error:", error.message);
           return res.status(502).json({
             error: "Payment provider error. Check Stripe price IDs and API keys.",
           });

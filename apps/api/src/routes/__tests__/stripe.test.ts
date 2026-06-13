@@ -16,6 +16,7 @@ describe("stripe routes", () => {
   let updatedCalls = 0;
   let paymentFailedCalls = 0;
   let lastCheckoutUserId: string | null = null;
+  let lastPortalUserId: string | null = null;
   const oldJwtSecret = process.env.JWT_SECRET;
 
   beforeEach(async () => {
@@ -26,6 +27,7 @@ describe("stripe routes", () => {
     updatedCalls = 0;
     paymentFailedCalls = 0;
     lastCheckoutUserId = null;
+    lastPortalUserId = null;
 
     const app = express();
     app.use(express.json());
@@ -57,6 +59,19 @@ describe("stripe routes", () => {
             throw new Error("Database unavailable");
           }
           return `https://checkout.stripe.test/${userId}/${plan}/${billing}`;
+        },
+        createCustomerPortalSessionFn: async (userId) => {
+          lastPortalUserId = userId;
+          if (userId === "cfg") {
+            throw new Error("STRIPE_SECRET_KEY is not set");
+          }
+          if (userId === "no-cust") {
+            throw new Error("STRIPE_CUSTOMER_NOT_FOUND");
+          }
+          if (userId === "missing") {
+            throw new Error("User not found");
+          }
+          return `https://billing.stripe.test/portal/${userId}`;
         },
         getUserSubscriptionFn: async () => ({
           tier: "PRO",
@@ -116,6 +131,213 @@ describe("stripe routes", () => {
     const body = (await res.json()) as { url: string };
     assert.equal(body.url, "https://checkout.stripe.test/u-1/pro/monthly");
     assert.equal(lastCheckoutUserId, "u-1");
+  });
+
+  it("POST /api/stripe/create-portal-session returns URL for authenticated user", async () => {
+    const res = await fetch(`${baseUrl}/api/stripe/create-portal-session`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${authToken}`,
+      },
+      body: "{}",
+    });
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { url: string };
+    assert.equal(body.url, "https://billing.stripe.test/portal/u-1");
+    assert.equal(lastPortalUserId, "u-1");
+  });
+
+  it("POST /api/stripe/create-portal-session rejects unauthenticated request", async () => {
+    await closeTestServer(server);
+    server = null;
+
+    const unauthApp = express();
+    unauthApp.use(express.json());
+    unauthApp.use(
+      createStripeRouter({
+        requireAuthMiddleware: (_req, res) => {
+          res.status(401).json({ error: "Unauthorized" });
+        },
+        createCheckoutSessionFn: async () => "https://checkout.stripe.test/should-not-run",
+        createCustomerPortalSessionFn: async () => "https://billing.stripe.test/portal/should-not-run",
+        getUserSubscriptionFn: async () => ({
+          tier: "FREE",
+          status: "free",
+          currentPeriodEnd: null,
+        }),
+        constructWebhookEventFn: () => ({ type: "noop", data: { object: {} } }) as never,
+        handleCheckoutSessionCompletedFn: async () => {},
+        handleSubscriptionDeletedFn: async () => {},
+        handleSubscriptionUpdatedFn: async () => {},
+        handleInvoicePaymentFailedFn: async () => {},
+        getUserRoleFn: async () => "USER",
+      }),
+    );
+
+    const started = await startTestServer(unauthApp);
+    server = started.server;
+    const unauthBaseUrl = started.baseUrl;
+
+    const res = await fetch(`${unauthBaseUrl}/api/stripe/create-portal-session`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: "{}",
+    });
+    assert.equal(res.status, 401);
+  });
+
+  it("POST /api/stripe/create-portal-session returns STRIPE_CUSTOMER_NOT_FOUND", async () => {
+    await closeTestServer(server);
+    server = null;
+
+    const app = express();
+    app.use(express.json());
+    app.use(
+      createStripeRouter({
+        requireAuthMiddleware: (req: Request, _res, next) => {
+          (req as AuthenticatedRequest).auth = {
+            userId: "no-cust",
+            email: "user@example.com",
+          };
+          next();
+        },
+        getUserRoleFn: async () => "USER",
+        createCheckoutSessionFn: async () => "https://checkout.stripe.test",
+        createCustomerPortalSessionFn: async (userId) => {
+          if (userId === "no-cust") {
+            throw new Error("STRIPE_CUSTOMER_NOT_FOUND");
+          }
+          return "https://billing.stripe.test/portal";
+        },
+        getUserSubscriptionFn: async () => ({
+          tier: "PRO",
+          status: "trialing",
+          currentPeriodEnd: null,
+        }),
+        constructWebhookEventFn: () => ({ type: "noop", data: { object: {} } }) as never,
+        handleCheckoutSessionCompletedFn: async () => {},
+        handleSubscriptionDeletedFn: async () => {},
+        handleSubscriptionUpdatedFn: async () => {},
+        handleInvoicePaymentFailedFn: async () => {},
+      }),
+    );
+
+    const started = await startTestServer(app);
+    server = started.server;
+    const portalBaseUrl = started.baseUrl;
+
+    const res = await fetch(`${portalBaseUrl}/api/stripe/create-portal-session`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${authToken}`,
+      },
+      body: "{}",
+    });
+    assert.equal(res.status, 400);
+    const body = (await res.json()) as { error: string };
+    assert.equal(body.error, "STRIPE_CUSTOMER_NOT_FOUND");
+  });
+
+  it("POST /api/stripe/create-portal-session returns 404 when user not found", async () => {
+    await closeTestServer(server);
+    server = null;
+
+    const app = express();
+    app.use(express.json());
+    app.use(
+      createStripeRouter({
+        requireAuthMiddleware: (req: Request, _res, next) => {
+          (req as AuthenticatedRequest).auth = {
+            userId: "missing",
+            email: "user@example.com",
+          };
+          next();
+        },
+        getUserRoleFn: async () => "USER",
+        createCheckoutSessionFn: async () => "https://checkout.stripe.test",
+        createCustomerPortalSessionFn: async () => {
+          throw new Error("User not found");
+        },
+        getUserSubscriptionFn: async () => ({
+          tier: "FREE",
+          status: "free",
+          currentPeriodEnd: null,
+        }),
+        constructWebhookEventFn: () => ({ type: "noop", data: { object: {} } }) as never,
+        handleCheckoutSessionCompletedFn: async () => {},
+        handleSubscriptionDeletedFn: async () => {},
+        handleSubscriptionUpdatedFn: async () => {},
+        handleInvoicePaymentFailedFn: async () => {},
+      }),
+    );
+
+    const started = await startTestServer(app);
+    server = started.server;
+    const portalBaseUrl = started.baseUrl;
+
+    const res = await fetch(`${portalBaseUrl}/api/stripe/create-portal-session`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${authToken}`,
+      },
+      body: "{}",
+    });
+    assert.equal(res.status, 404);
+    const body = (await res.json()) as { error: string };
+    assert.equal(body.error, "User not found");
+  });
+
+  it("POST /api/stripe/create-portal-session returns 503 when Stripe is not configured", async () => {
+    await closeTestServer(server);
+    server = null;
+
+    const app = express();
+    app.use(express.json());
+    app.use(
+      createStripeRouter({
+        requireAuthMiddleware: (req: Request, _res, next) => {
+          (req as AuthenticatedRequest).auth = {
+            userId: "cfg",
+            email: "user@example.com",
+          };
+          next();
+        },
+        getUserRoleFn: async () => "USER",
+        createCheckoutSessionFn: async () => "https://checkout.stripe.test",
+        createCustomerPortalSessionFn: async () => {
+          throw new Error("STRIPE_SECRET_KEY is not set");
+        },
+        getUserSubscriptionFn: async () => ({
+          tier: "PRO",
+          status: "active",
+          currentPeriodEnd: null,
+        }),
+        constructWebhookEventFn: () => ({ type: "noop", data: { object: {} } }) as never,
+        handleCheckoutSessionCompletedFn: async () => {},
+        handleSubscriptionDeletedFn: async () => {},
+        handleSubscriptionUpdatedFn: async () => {},
+        handleInvoicePaymentFailedFn: async () => {},
+      }),
+    );
+
+    const started = await startTestServer(app);
+    server = started.server;
+    const portalBaseUrl = started.baseUrl;
+
+    const res = await fetch(`${portalBaseUrl}/api/stripe/create-portal-session`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${authToken}`,
+      },
+      body: "{}",
+    });
+    assert.equal(res.status, 503);
+    const body = (await res.json()) as { error: string };
+    assert.equal(body.error, "Stripe is not configured. Set required STRIPE_* environment variables.");
   });
 
   it("POST /api/stripe/create-checkout-session returns EUR_CHECKOUT_NOT_CONFIGURED", async () => {

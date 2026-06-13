@@ -2285,6 +2285,11 @@ export async function createStripeCheckoutSession(body: {
   return data;
 }
 
+export async function createStripeBillingPortalSession(): Promise<{ url: string }> {
+  const { data } = await api.post<{ url: string }>("/stripe/create-portal-session", {});
+  return data;
+}
+
 export async function joinWaitlist(body: {
   email: string;
   name?: string;

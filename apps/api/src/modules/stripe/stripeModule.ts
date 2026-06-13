@@ -210,6 +210,32 @@ export async function createCheckoutSession(input: CreateCheckoutSessionInput): 
   return session.url;
 }
 
+export async function createCustomerPortalSession(userId: string): Promise<string> {
+  const stripe = getStripe();
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { stripeCustomerId: true },
+  });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const customerId = user.stripeCustomerId?.trim();
+  if (!customerId) {
+    throw new Error("STRIPE_CUSTOMER_NOT_FOUND");
+  }
+
+  const session = await stripe.billingPortal.sessions.create({
+    customer: customerId,
+    return_url: "https://stock-ai.pro/settings",
+  });
+
+  if (!session.url) {
+    throw new Error("Stripe portal URL was not generated");
+  }
+
+  return session.url;
+}
+
 function getTierFromPriceId(priceId: string | undefined): UserTier | null {
   if (!priceId) return null;
 

@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import { BrokerCTAButton } from "../components/affiliate/BrokerCTAButton";
 import { TAX_COUNTRY_FLAGS } from "../constants/taxCountries";
 import { useAuth } from "../context/AuthContext";
+import { useUserAccess } from "../hooks/useUserAccess";
 import { api } from "../services/api";
 import {
+  createStripeBillingPortalSession,
   getAlpacaAccount,
   getAlpacaSettings,
   getNotificationPreferencesApi,
@@ -75,6 +77,7 @@ function normalizeSignalScore(score: number): number {
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const { access } = useUserAccess();
   const [userId] = useState<string>(() => readUserId());
   const [activeSection, setActiveSection] = useState<SettingsSectionId>("profile");
   const [languageNotice, setLanguageNotice] = useState<string | null>(null);
@@ -117,6 +120,8 @@ export function SettingsPage() {
     periodDays: number;
   } | null>(null);
   const [affiliateImpactError, setAffiliateImpactError] = useState<string | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+  const [portalError, setPortalError] = useState<string | null>(null);
 
   const statusLabel = useMemo(
     () => (mentorEnabled ? t("mentor.enabled") : t("mentor.disabled")),
@@ -128,6 +133,12 @@ export function SettingsPage() {
     if (tier.includes("PRO")) return "PRO";
     return "FREE";
   }, [user?.tier]);
+  const canManageBilling = useMemo(
+    () =>
+      access?.accessState === "SUBSCRIPTION_TRIALING" ||
+      access?.accessState === "SUBSCRIPTION_ACTIVE",
+    [access?.accessState],
+  );
   const selectedLanguage = useMemo(
     () => LANGUAGE_OPTIONS.find((opt) => i18n.resolvedLanguage?.startsWith(opt.code))?.code ?? "en",
     [i18n.resolvedLanguage],
@@ -137,6 +148,23 @@ export function SettingsPage() {
     await i18n.changeLanguage(next);
     window.localStorage.setItem("stockai.lang", next);
     setLanguageNotice(t("settings.language.saved", { defaultValue: "Language updated." }));
+  }
+
+  async function onManageBillingClick(): Promise<void> {
+    setPortalError(null);
+    setPortalLoading(true);
+    try {
+      const { url } = await createStripeBillingPortalSession();
+      window.location.href = url;
+    } catch {
+      setPortalError(
+        t("settingsPageSections.portalError", {
+          defaultValue: "Could not open billing portal. Please try again later.",
+        }),
+      );
+    } finally {
+      setPortalLoading(false);
+    }
   }
 
   function updateMentorEnabled(value: boolean): void {
@@ -473,6 +501,17 @@ export function SettingsPage() {
                 <Link to="/pricing" className={TERMINAL_BUTTON_PRIMARY}>
                   Upgrade plan
                 </Link>
+              ) : canManageBilling ? (
+                <button
+                  type="button"
+                  className={TERMINAL_BUTTON_PRIMARY}
+                  onClick={() => void onManageBillingClick()}
+                  disabled={portalLoading}
+                >
+                  {portalLoading
+                    ? t("common.loading", { defaultValue: "Loading..." })
+                    : t("settingsPageSections.manageBilling", { defaultValue: "Manage billing" })}
+                </button>
               ) : (
                 <p className="text-sm text-terminal-textSecondary">
                   {t("settingsPageSections.planActive", {
@@ -482,6 +521,9 @@ export function SettingsPage() {
                 </p>
               )}
             </div>
+            {portalError ? (
+              <p className="mt-2 text-sm text-terminal-negative">{portalError}</p>
+            ) : null}
             <div className={`mt-4 ${TERMINAL_INFO_BANNER}`}>
               <p className="text-sm text-terminal-text">
                 {t("settingsPageSections.apiProBanner", {

@@ -2278,7 +2278,10 @@
     "notificationsBadgeInactive": "Inactive",
     "telegramPlaceholder": "e.g. 123456789",
     "testNotification": "Send test notification",
-    "apiProBanner": "REST API is included on the {{plan}} plan."
+    "apiProBanner": "REST API is included on the {{plan}} plan.",
+    "manageBilling": "Manage billing",
+    "portalError": "Could not open billing portal. Please try again later.",
+    "planActive": "Your {{plan}} plan is active."
   },
   "volatility": {
     "errors": {

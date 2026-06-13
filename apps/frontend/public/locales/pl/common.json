@@ -2412,7 +2412,10 @@
     "notificationsBadgeInactive": "Nieaktywne",
     "telegramPlaceholder": "np. 123456789",
     "testNotification": "Testuj powiadomienie",
-    "apiProBanner": "API REST to funkcja planu {{plan}}."
+    "apiProBanner": "API REST to funkcja planu {{plan}}.",
+    "manageBilling": "Zarządzaj subskrypcją",
+    "portalError": "Nie udało się otworzyć panelu rozliczeń. Spróbuj ponownie później.",
+    "planActive": "Twój plan {{plan}} jest aktywny."
   },
   "notifications": {
     "aria": "Powiadomienia",
