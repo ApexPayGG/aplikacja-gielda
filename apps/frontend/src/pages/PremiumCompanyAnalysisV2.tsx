@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { InvestmentDisclaimer } from "../components/InvestmentDisclaimer";
@@ -29,7 +29,11 @@ import {
   premiumAnalysisV2CacheKey,
   setPremiumAnalysisV2SessionCache,
 } from "../utils/premiumAnalysisV2Session";
-import { trackEvent } from "../utils/analytics";
+import {
+  ANALYTICS_EVENTS,
+  trackEvent,
+  trackPremiumAnalysisV2Loaded,
+} from "../utils/analytics";
 
 type V2ErrorKind = "access" | "limit" | "generic";
 
@@ -230,6 +234,13 @@ export function PremiumCompanyAnalysisV2({ onUseLegacy }: PremiumCompanyAnalysis
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<{ kind: V2ErrorKind; message: string } | null>(null);
   const [showMissing, setShowMissing] = useState(false);
+  const loadedTelemetryKeysRef = useRef(new Set<string>());
+
+  const recordV2LoadedTelemetry = (payload: PremiumAnalysisBundle, telemetryKey: string) => {
+    if (loadedTelemetryKeysRef.current.has(telemetryKey)) return;
+    loadedTelemetryKeysRef.current.add(telemetryKey);
+    trackPremiumAnalysisV2Loaded(payload, { symbol: ticker, language }, language);
+  };
 
   useEffect(() => {
     if (!ticker || isAuthLoading) return;
@@ -237,6 +248,7 @@ export function PremiumCompanyAnalysisV2({ onUseLegacy }: PremiumCompanyAnalysis
     if (cached?.contract) {
       setBundle(cached);
       setError(null);
+      recordV2LoadedTelemetry(cached, cacheKey);
       return;
     }
 
@@ -253,6 +265,7 @@ export function PremiumCompanyAnalysisV2({ onUseLegacy }: PremiumCompanyAnalysis
         }
         setPremiumAnalysisV2SessionCache(cacheKey, payload);
         setBundle(payload);
+        recordV2LoadedTelemetry(payload, cacheKey);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -270,7 +283,7 @@ export function PremiumCompanyAnalysisV2({ onUseLegacy }: PremiumCompanyAnalysis
 
   useEffect(() => {
     if (!ticker) return;
-    trackEvent("premium_analysis_v2_view", { symbol: ticker, language });
+    trackEvent(ANALYTICS_EVENTS.PREMIUM_ANALYSIS_V2_VIEW, { symbol: ticker, language }, language);
   }, [language, ticker]);
 
   const contract = bundle?.contract;

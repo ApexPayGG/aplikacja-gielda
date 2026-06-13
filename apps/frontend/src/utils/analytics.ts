@@ -1,3 +1,4 @@
+import type { PremiumAnalysisBundle } from "../services/api";
 import { getCookieConsent } from "./cookieConsent";
 
 declare global {
@@ -59,6 +60,8 @@ export const ANALYTICS_EVENTS = {
   RESET_PASSWORD_SUCCESS: "reset_password_success",
   RESET_PASSWORD_FAILED: "reset_password_failed",
   PREMIUM_ANALYSIS_VIEW: "premium_analysis_view",
+  PREMIUM_ANALYSIS_V2_VIEW: "premium_analysis_v2_view",
+  PREMIUM_ANALYSIS_V2_LOADED: "premium_analysis_v2_loaded",
   AFFILIATE_CLICK: "affiliate_click",
   ERROR: "error",
 } as const;
@@ -250,4 +253,46 @@ export function trackConversionEvent(
   locale?: string,
 ): void {
   trackEvent(name, params, locale);
+}
+
+export type PremiumAnalysisV2LoadedContext = {
+  symbol: string;
+  language: string;
+};
+
+type PremiumAnalysisV2TelemetryBundle = Pick<
+  PremiumAnalysisBundle,
+  "cacheStatus" | "provider" | "usage"
+>;
+
+/** GA4 params for PA V2 governance telemetry (no model, tokens, or user identifiers). */
+export function buildPremiumAnalysisV2LoadedParams(
+  bundle: PremiumAnalysisV2TelemetryBundle,
+  context: PremiumAnalysisV2LoadedContext,
+): ConversionEventParams {
+  const params: ConversionEventParams = {
+    symbol: context.symbol,
+    language: context.language,
+    cache_status: bundle.cacheStatus,
+    provider_name: bundle.provider.name,
+  };
+  if (bundle.usage) {
+    params.daily_limit = bundle.usage.limit;
+    params.daily_remaining = bundle.usage.remaining;
+    params.daily_reset_in = bundle.usage.resetIn;
+    params.usage_tier = bundle.usage.tier;
+  }
+  return params;
+}
+
+export function trackPremiumAnalysisV2Loaded(
+  bundle: PremiumAnalysisV2TelemetryBundle,
+  context: PremiumAnalysisV2LoadedContext,
+  locale?: string,
+): void {
+  trackEvent(
+    ANALYTICS_EVENTS.PREMIUM_ANALYSIS_V2_LOADED,
+    buildPremiumAnalysisV2LoadedParams(bundle, context),
+    locale ?? context.language,
+  );
 }

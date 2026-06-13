@@ -1,14 +1,17 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import { getCookieConsent, setCookieConsent } from "../cookieConsent.js";
+import type { PremiumAnalysisBundle } from "../../services/api.js";
 import {
   ANALYTICS_EVENTS,
+  buildPremiumAnalysisV2LoadedParams,
   captureUtmOnce,
   getStoredUtmParams,
   mergeConversionParams,
   readUtmFromSearch,
   trackConversionEvent,
   trackEvent,
+  trackPremiumAnalysisV2Loaded,
 } from "../analytics.js";
 
 function createMemoryStorage(): Storage {
@@ -137,5 +140,109 @@ describe("analytics utilities", () => {
     const payload = gtagCalls[0]![2] as Record<string, unknown>;
     assert.equal(payload.email, undefined);
     assert.equal(payload.reason, "request_failed");
+  });
+});
+
+function minimalPremiumBundle(
+  overrides: Partial<Pick<PremiumAnalysisBundle, "cacheStatus" | "provider" | "usage">> = {},
+): Pick<PremiumAnalysisBundle, "cacheStatus" | "provider" | "usage"> {
+  return {
+    cacheStatus: "hit",
+    provider: { name: "fallback", model: "claude-sonnet-4-6" },
+    ...overrides,
+  };
+}
+
+describe("premium analysis v2 analytics", () => {
+  const gtagCalls: unknown[][] = [];
+
+  function gtagStub(...args: unknown[]): void {
+    gtagCalls.push(args);
+  }
+
+  beforeEach(() => {
+    gtagCalls.length = 0;
+    const sessionStore = createMemoryStorage();
+    const localStore = createMemoryStorage();
+    (globalThis as { window?: Window }).window = {
+      location: { search: "" },
+      sessionStorage: sessionStore,
+      localStorage: localStore,
+      document: {
+        title: "Test",
+        head: { appendChild: () => {} },
+        querySelector: () => null,
+        createElement: () => ({ async: true, setAttribute: () => {}, src: "" }),
+      },
+      dataLayer: [],
+      gtag: gtagStub,
+      __stockAiGaInitialized: true,
+    } as unknown as Window;
+    globalThis.localStorage = localStore;
+    globalThis.sessionStorage = sessionStore;
+    setCookieConsent("all");
+  });
+
+  it("buildPremiumAnalysisV2LoadedParams omits usage on cache hit", () => {
+    const params = buildPremiumAnalysisV2LoadedParams(
+      minimalPremiumBundle({ cacheStatus: "hit", provider: { name: "fallback", model: null } }),
+      { symbol: "ORCL", language: "en" },
+    );
+    assert.equal(params.symbol, "ORCL");
+    assert.equal(params.language, "en");
+    assert.equal(params.cache_status, "hit");
+    assert.equal(params.provider_name, "fallback");
+    assert.equal(params.daily_limit, undefined);
+    assert.equal(params.daily_remaining, undefined);
+    assert.equal(params.daily_reset_in, undefined);
+    assert.equal(params.usage_tier, undefined);
+    assert.equal((params as Record<string, unknown>).model, undefined);
+  });
+
+  it("buildPremiumAnalysisV2LoadedParams includes usage on fresh miss", () => {
+    const params = buildPremiumAnalysisV2LoadedParams(
+      minimalPremiumBundle({
+        cacheStatus: "fallback",
+        provider: { name: "fallback", model: null },
+        usage: { limit: 3, remaining: 2, resetIn: 3600, tier: "PRO" },
+      }),
+      { symbol: "ORCL", language: "pl" },
+    );
+    assert.equal(params.cache_status, "fallback");
+    assert.equal(params.provider_name, "fallback");
+    assert.equal(params.daily_limit, 3);
+    assert.equal(params.daily_remaining, 2);
+    assert.equal(params.daily_reset_in, 3600);
+    assert.equal(params.usage_tier, "PRO");
+  });
+
+  it("trackPremiumAnalysisV2Loaded sends governance event via gtag", () => {
+    trackPremiumAnalysisV2Loaded(
+      minimalPremiumBundle({
+        cacheStatus: "miss",
+        provider: { name: "anthropic", model: "claude-sonnet-4-6" },
+      }),
+      { symbol: "AAPL", language: "en" },
+      "en",
+    );
+    assert.equal(gtagCalls.length, 1);
+    assert.equal(gtagCalls[0]![0], "event");
+    assert.equal(gtagCalls[0]![1], ANALYTICS_EVENTS.PREMIUM_ANALYSIS_V2_LOADED);
+    const payload = gtagCalls[0]![2] as Record<string, unknown>;
+    assert.equal(payload.symbol, "AAPL");
+    assert.equal(payload.cache_status, "miss");
+    assert.equal(payload.provider_name, "anthropic");
+    assert.equal(payload.model, undefined);
+    assert.equal(payload.input_tokens, undefined);
+  });
+
+  it("trackPremiumAnalysisV2Loaded does not throw when gtag is missing", () => {
+    (globalThis as { window?: Window }).window = {
+      ...(globalThis as { window: Window }).window,
+      gtag: undefined,
+    } as Window;
+    assert.doesNotThrow(() =>
+      trackPremiumAnalysisV2Loaded(minimalPremiumBundle(), { symbol: "ORCL", language: "en" }),
+    );
   });
 });

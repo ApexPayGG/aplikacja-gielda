@@ -2219,6 +2219,13 @@ export type PremiumAnalysisProviderMeta = {
   retryCount?: number;
 };
 
+export type PremiumAnalysisDailyUsageMeta = {
+  limit: number;
+  remaining: number;
+  resetIn: number;
+  tier: "FREE" | "PRO" | "PRO_PLUS";
+};
+
 export type PremiumAnalysisBundle = {
   contract: PremiumAnalysisContract;
   snapshotHash: string;
@@ -2226,6 +2233,8 @@ export type PremiumAnalysisBundle = {
   generatedAt: string;
   cacheStatus: PremiumAnalysisCacheStatus;
   provider: PremiumAnalysisProviderMeta;
+  /** Present on fresh generation paths after daily limit enforcement (not cache hits). */
+  usage?: PremiumAnalysisDailyUsageMeta;
 };
 
 export async function getPremiumAnalysis(
